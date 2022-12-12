@@ -1,0 +1,52 @@
+variables:
+  GIT_STRATEGY: clone
+
+stages:
+  - alpha
+  - beta
+  - production
+
+default:
+  before_script:
+    - source .env
+    - cp odoo.conf odoo.conf
+
+build-alpha:
+  stage: alpha
+  only:
+    refs:
+      - alpha
+  script:
+    - docker image prune -f
+    - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
+    - docker-compose -f docker-compose-gitlab-ci.yml up -d
+    - docker-compose restart
+  tags:
+    - build-alpha
+
+build-beta:
+  stage: beta
+  only:
+    refs:
+      - beta
+  script:
+    - docker image prune -f
+    - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
+    - docker-compose -f docker-compose-gitlab-ci.yml up -d
+    - docker-compose restart
+  tags:
+    - build-beta
+
+build-production:
+  stage: production
+  only:
+    refs:
+      - master
+  script:
+    - docker image prune -f
+    - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
+    - docker-compose -f docker-compose-gitlab-ci.yml up -d
+    - docker-compose restart
+  tags:
+    - build-production
+  when: manual
