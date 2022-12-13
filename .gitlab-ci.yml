@@ -9,7 +9,7 @@ stages:
 default:
   before_script:
     - source .env
-    - cp odoo.conf odoo.conf
+    - cp odoo.conf.template odoo.conf
 
 build-alpha:
   stage: alpha
