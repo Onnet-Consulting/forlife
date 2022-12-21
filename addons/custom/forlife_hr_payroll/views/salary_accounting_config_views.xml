@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="salary_accounting_config_view_tree" model="ir.ui.view">
+            <field name="name">salary_accounting_config_view_tree</field>
+            <field name="model">salary.accounting.config</field>
+            <field name="arch" type="xml">
+                <tree string="salary_accounting_config_tree">
+                    <field name="company_id"/>
+                    <field name="entry_id"/>
+                    <field name="purpose_id"/>
+                    <field name="debit_account_id"/>
+                    <field name="credit_account_id"/>
+                    <field name="debit_partner_id"/>
+                    <field name="credit_partner_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="salary_accounting_config_view_form" model="ir.ui.view">
+            <field name="name">salary_accounting_config_view_form</field>
+            <field name="model">salary.accounting.config</field>
+            <field name="arch" type="xml">
+                <form string="salary_accounting_config_form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="company_id"/>
+                                <field name="entry_id"/>
+                                <field name="purpose_id"/>
+                            </group>
+                            <group>
+                                <field name="debit_account_id"/>
+                                <field name="credit_account_id"/>
+                                <field name="debit_partner_id" context="{'salary_accounting_config': 1}"/>
+                                <field name="credit_partner_id" context="{'salary_accounting_config': 1}"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="salary_accounting_config_filter" model="ir.ui.view">
+            <field name="name">salary_accounting_config_filter</field>
+            <field name="model">salary.accounting.config</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="company_id"/>
+                    <field name="entry_id"/>
+                    <field name="purpose_id"/>
+                    <field name="debit_account_id"/>
+                    <field name="credit_account_id"/>
+                    <field name="debit_partner_id"/>
+                    <field name="credit_partner_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="salary_accounting_config_action" model="ir.actions.act_window">
+            <field name="name">Salary Accounting Configuration</field>
+            <field name="res_model">salary.accounting.config</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

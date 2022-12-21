@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="menu_forlife_hr_payroll_root" name="Payroll" sequence="195" web_icon="forlife_hr_payroll,static/description/icon.svg"/>
+
+        <menuitem id="menu_payroll_entries" name="Payroll Entries" parent="menu_forlife_hr_payroll_root" sequence="120"/>
+
+        <menuitem id="menu_salary_record" name="Salary Record" parent="menu_payroll_entries" action="salary_record_action" sequence="10"/>
+
+        <menuitem id="menu_import_salary_record" name="Import Salary Record" parent="menu_payroll_entries" action="import_salary_record_action" sequence="15"/>
+
+        <menuitem id="menu_salary_record_type" name="Salary Record Type" parent="menu_payroll_entries" action="salary_record_type_action" sequence="20"/>
+
+        <menuitem id="menu_salary_record_purpose" name="Salary Record Purpose" parent="menu_payroll_entries" action="salary_record_purpose_action" sequence="30"/>
+
+        <menuitem id="menu_salary_entry" name="Salary Entry" parent="menu_payroll_entries" action="salary_entry_action" sequence="40"/>
+
+        <menuitem id="menu_salary_accounting_config" name="Salary Accounting Configuration" parent="menu_payroll_entries" action="salary_accounting_config_action" sequence="50"/>
+
+        <menuitem id="menu_save_change_log_action" name="Save Change Log" parent="menu_payroll_entries" action="save_change_log_action" sequence="60"/>
+
+    </data>
+</odoo>

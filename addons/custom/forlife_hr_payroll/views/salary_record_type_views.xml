@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="salary_record_type_view_tree" model="ir.ui.view">
+            <field name="name">salary_record_type_view_tree</field>
+            <field name="model">salary.record.type</field>
+            <field name="arch" type="xml">
+                <tree string="salary_record_type_tree" editable="bottom">
+                    <field name="code" required="1" placeholder="code..."/>
+                    <field name="name" required="1" placeholder="name..."/>
+                    <field name="user_ids" widget="many2many_tags"/>
+                    <field name="group_ids" widget="many2many_tags"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="salary_record_type_filter" model="ir.ui.view">
+            <field name="name">salary_record_type_filter</field>
+            <field name="model">salary.record.type</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="code"/>
+                    <field name="name"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="salary_record_type_action" model="ir.actions.act_window">
+            <field name="name">Salary Record Type</field>
+            <field name="res_model">salary.record.type</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+    </data>
+</odoo>

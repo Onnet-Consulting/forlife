@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="salary_total_income_view_tree" model="ir.ui.view">
+            <field name="name">salary_total_income_view_tree</field>
+            <field name="model">salary.total.income</field>
+            <field name="arch" type="xml">
+                <tree string="salary_total_income_tree">
+                    <field name="salary_record_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="purpose_id"/>
+                    <field name="department_id"/>
+                    <field name="analytic_account_id"/>
+                    <field name="project_code"/>
+                    <field name="manufacture_order_code"/>
+                    <field name="internal_order_code"/>
+                    <field name="x_ttn" optional="show"/>
+                    <field name="note" optional="show"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>

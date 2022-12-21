@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="import_salary_record_data_file_sample" model="ir.attachment">
+            <field name="name">Template import TH số liệu lương.xlsx</field>
+            <field name="datas" type="base64" file="forlife_hr_payroll/static/xlsx/template_import_salary_record.xlsx"/>
+            <field name="company_id" eval="False"/>
+            <field name="public" eval="True"/>
+        </record>
+    </data>
+</odoo>
