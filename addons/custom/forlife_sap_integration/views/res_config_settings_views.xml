@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.integration</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='integration']" position="after">
+                    <h2>SAP Integration</h2>
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_right_pane">
+                                <label for="sap_url"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="sap_url" class="o_light_label"/>
+                                    </div>
+                                </div>
+                                <label for="sap_username"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="sap_username" class="o_light_label"/>
+                                    </div>
+                                </div>
+                                <label for="sap_password"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="sap_password" class="o_light_label" password="True"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

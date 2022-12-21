@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <function name="create_salary_record_sequence" model="salary.record"/>
+</odoo>
