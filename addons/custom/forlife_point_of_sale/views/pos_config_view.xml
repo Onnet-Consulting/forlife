@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="pos_config_view_form_inherit" model="ir.ui.view">
+            <field name="name">pos.config.form.view.inherit</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='other_devices']" position="before">
+                    <div class="col-12 col-lg-6 o_setting_box" id="store">
+                        <group>
+                            <field name="store_id"/>
+                        </group>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

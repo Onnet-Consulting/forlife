@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+       <record id="store_manager" model="res.groups">
+           <field name="name">Store Manager</field>
+           <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+       </record>
+
+       <record id="base.group_system" model="res.groups">
+           <field name="implied_ids" eval="[(4, ref('forlife_point_of_sale.store_manager'))]"/>
+       </record>
+
+    </data>
+</odoo>
