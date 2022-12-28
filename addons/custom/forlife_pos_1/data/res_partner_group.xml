@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="partner_group_1" model="res.partner.group">
+        <field name="name">Nhóm Khách hàng nước ngoài</field>
+        <field name="code">1000</field>
+        <field name="partner_type">customer</field>
+        <field name="auto_generate" eval="True"/>
+    </record>
+    <record id="partner_group_2" model="res.partner.group">
+        <field name="name">Nhóm Khách hàng nội địa</field>
+        <field name="code">2000</field>
+        <field name="partner_type">customer</field>
+        <field name="auto_generate" eval="True"/>
+    </record>
+    <record id="partner_group_3" model="res.partner.group">
+        <field name="name">Nhóm Khách hàng nội bộ</field>
+        <field name="code">3000</field>
+        <field name="partner_type">customer</field>
+        <field name="auto_generate" eval="True"/>
+    </record>
+    <record id="partner_group_4" model="res.partner.group">
+        <field name="name">Nhóm Khách hàng là nhân viên</field>
+        <field name="code">4000</field>
+        <field name="partner_type">customer</field>
+        <field name="auto_generate" eval="False"/>
+    </record>
+    <record id="partner_group_5" model="res.partner.group">
+        <field name="name">Nhóm Khách hàng cửa hàng</field>
+        <field name="code">5000</field>
+        <field name="partner_type">customer</field>
+        <field name="auto_generate" eval="False"/>
+    </record>
+    <record id="partner_group_c" model="res.partner.group">
+        <field name="name">Nhóm Khách hàng lẻ</field>
+        <field name="code">C</field>
+        <field name="partner_type">customer</field>
+        <field name="auto_generate" eval="True"/>
+    </record>
+</odoo>
