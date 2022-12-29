@@ -10,7 +10,6 @@ from phonenumbers.phonenumberutil import NumberParseException
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    # FIXME check required fields and how to add value for already exist records
     group_id = fields.Many2one('res.partner.group', string='Group')
     job_ids = fields.Many2many('res.partner.job', string='Jobs')
     customer_type = fields.Selection([('employee', 'Employee'), ('app', 'App member'), ('retail', 'Retail')], string='Customer type')
@@ -47,6 +46,9 @@ class ResPartner(models.Model):
 
     @api.model
     def sanitize_phone_and_mobile(self, values):
+        if self.env.context.get('initial_write_action'):
+            # don't validate phone and mobile of partner created by system
+            return {}
         new_value = {}
         if 'phone' in values:
             phone = values.get('phone')
