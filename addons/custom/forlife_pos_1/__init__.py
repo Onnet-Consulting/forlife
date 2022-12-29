@@ -13,7 +13,7 @@ def _update_required_attribute_for_fields(cr, registry):
     cr.execute("""
         UPDATE ir_model_fields
         SET required=TRUE
-        WHERE name='group_id'
+        WHERE name IN ('group_id', 'phone')
           AND model='res.partner';
     """)
     cr.commit()

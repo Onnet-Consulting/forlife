@@ -31,5 +31,8 @@
     'demo': [
         'demo/demo.xml',
     ],
+    'external_dependencies': {
+        'python': ['phonenumbers'],
+    },
     'post_init_hook': '_update_required_attribute_for_fields',
 }
