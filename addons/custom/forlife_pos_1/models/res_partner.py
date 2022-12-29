@@ -13,6 +13,7 @@ class ResPartner(models.Model):
     group_id = fields.Many2one('res.partner.group', string='Group')
     job_ids = fields.Many2many('res.partner.job', string='Jobs')
     customer_type = fields.Selection([('employee', 'Employee'), ('app', 'App member'), ('retail', 'Retail')], string='Customer type')
+    show_customer_type = fields.Boolean(compute='_compute_show_customer_type')
     birthday = fields.Date(string='Birthday')
     gender = fields.Selection([
         ('male', 'Male'),
@@ -21,6 +22,11 @@ class ResPartner(models.Model):
     ], string='Gender')
     ref = fields.Char(readonly=True)
     barcode = fields.Char(readonly=True)
+
+    @api.depends('group_id')
+    def _compute_show_customer_type(self):
+        for record in self:
+            record.show_customer_type = record.group_id == self.env.ref('forlife_pos_1.partner_group_c')
 
     @api.model_create_multi
     def create(self, vals_list):

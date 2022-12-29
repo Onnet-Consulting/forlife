@@ -11,7 +11,8 @@
             <field name="vat" position="before">
                 <field name="group_id"/>
 <!--                TODO: display customer_type for group KH le? only-->
-                <field name="customer_type"/>
+                <field name="show_customer_type" invisible="1"/>
+                <field name="customer_type" attrs="{'invisible': [('show_customer_type', '=', False)]}"/>
             </field>
             <field name="company_registry" position="before">
                 <field name="job_ids" widget="many2many_tags"/>
