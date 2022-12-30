@@ -29,8 +29,8 @@
     ],
     'assets': {
         'point_of_sale.assets': [
-            'forlife_point_of_sale/static/src/xml/ProductItem.xml',
-            'forlife_point_of_sale/static/src/js/db.js',
+            'forlife_point_of_sale/static/src/xml/*.xml',
+            'forlife_point_of_sale/static/src/js/*.js',
         ]
     }
 }

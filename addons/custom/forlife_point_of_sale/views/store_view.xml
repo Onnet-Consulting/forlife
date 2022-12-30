@@ -67,7 +67,7 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem id="store_menu" name="Store" parent="point_of_sale.menu_point_config_product" action="store_action" sequence="100"/>
+        <menuitem id="store_menu" name="Store" parent="point_of_sale.menu_point_config_product" action="store_action" sequence="3"/>
 
     </data>
 </odoo>
