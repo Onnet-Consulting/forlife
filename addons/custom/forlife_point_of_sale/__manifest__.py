@@ -32,9 +32,9 @@
             'forlife_point_of_sale/static/src/js/*.js',
             'forlife_point_of_sale/static/src/xml/*.xml',
         ],
-        'web.assets_backend': [
-            'forlife_point_of_sale/static/src/views/*.js',
-            'forlife_point_of_sale/static/src/views/*.xml',
-        ],
+        # 'web.assets_backend': [
+        #     'forlife_point_of_sale/static/src/views/*.js',
+        #     'forlife_point_of_sale/static/src/views/*.xml',
+        # ],
     }
 }
