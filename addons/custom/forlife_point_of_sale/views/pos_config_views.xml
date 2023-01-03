@@ -17,5 +17,16 @@
             </field>
         </record>
 
+        <record id="view_pos_config_kanban_inherit" model="ir.ui.view">
+            <field name="name">pos.config.kanban.view.inherit</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_config_kanban"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="js_class">pos_dashboard_kanban</attribute>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>

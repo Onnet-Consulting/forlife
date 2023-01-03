@@ -24,13 +24,17 @@
         'security/forlife_point_of_sale_security.xml',
         'security/ir.model.access.csv',
 
-        'views/store_view.xml',
-        'views/pos_config_view.xml',
+        'views/store_views.xml',
+        'views/pos_config_views.xml',
     ],
     'assets': {
         'point_of_sale.assets': [
-            'forlife_point_of_sale/static/src/xml/*.xml',
             'forlife_point_of_sale/static/src/js/*.js',
-        ]
+            'forlife_point_of_sale/static/src/xml/*.xml',
+        ],
+        'web.assets_backend': [
+            'forlife_point_of_sale/static/src/views/*.js',
+            'forlife_point_of_sale/static/src/views/*.xml',
+        ],
     }
 }
