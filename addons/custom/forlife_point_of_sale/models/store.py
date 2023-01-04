@@ -11,7 +11,7 @@ class Store(models.Model):
     contact_id = fields.Many2one('res.partner', string='Contact', required=True)
     cashier_ids = fields.Many2many('res.users', string='Cashiers', required=True)
     employee_ids = fields.Many2many('hr.employee', string='Employees')
-    brand = fields.Selection([('format', 'Format'), ('tokyolife', 'TokyoLife')], string='Brand', required=True)
+    branch_id = fields.Char(string='Branch', required=True) #fixme Many2one đến model branch
     stock_location_id = fields.Many2one('stock.location', string='Location', required=True)
     pos_config_ids = fields.One2many('pos.config', 'store_id', string='POS Config', readonly=True)
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method', required=True)
