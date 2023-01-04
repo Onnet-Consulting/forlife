@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_points_promotion_manager,points.promotion manager,model_points_promotion,forlife_promotion.promotion_manager,1,1,1,1
+access_points_promotion_user,points.promotion user,model_points_promotion,base.group_user,1,0,0,0
+access_points_promotion_line_manager,points.promotion.line manager,model_points_promotion_line,forlife_promotion.promotion_manager,1,1,1,1
+access_points_promotion_line_user,points.promotion.line user,model_points_promotion_line,base.group_user,1,0,0,0
+access_points_product_manager,points.product manager,model_points_promotion,forlife_promotion.promotion_manager,1,1,1,1
+access_points_product_user,points.product user,model_points_product,base.group_user,1,0,0,0
