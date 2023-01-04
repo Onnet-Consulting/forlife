@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="forlife_point_of_sale.PosDashboard" owl="1">
+        <t t-if="posData.data">
+            <div class="o_pos_dashboard container-fluid py-4 border-bottom bg-white">
+                <div class="row justify-content-between gap-3 gap-lg-0">
+                    <div style="font-size:25px; color: red;">
+                        Danh sách điểm bán lẻ đang mở. <t t-esc="posData.data"/>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </t>
+</templates>
