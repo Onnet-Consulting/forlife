@@ -8,5 +8,7 @@
 
         <menuitem id="points_promotion_menu" name="Points Promotion" parent="forlife_promotion.point_categ_menu" action="points_promotion_action" sequence="5"/>
 
+        <menuitem id="event_menu" name="Events" parent="forlife_promotion.point_categ_menu" action="event_action" sequence="10"/>
+
     </data>
 </odoo>

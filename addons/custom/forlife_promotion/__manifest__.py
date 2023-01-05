@@ -22,9 +22,12 @@
     'data': [
         'security/promotion_security.xml',
         'security/ir.model.access.csv',
+        'data/cron_job_data.xml',
+        'data/master_data.xml',
 
         'views/points_promotion_views.xml',
-        'views/points_promotion_line_views.xml',
+        'views/event_views.xml',
+        'views/points_product_views.xml',
 
         'views/menuitem.xml',
     ]
