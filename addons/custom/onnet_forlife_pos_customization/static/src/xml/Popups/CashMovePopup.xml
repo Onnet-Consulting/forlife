@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<t t-inherit="point_of_sale.CashMovePopup" t-inherit-mode="extension">
+    <xpath expr="//div//main[hasclass('body')]//div[hasclass('cash-move')]" position="inside">
+        <div>
+            <div>
+                <span style="float: left;">Mã phiếu</span>
+                <span>Loại</span>
+                <span style="float: right;">Cửa hàng</span>
+            </div>
+            <div>
+                <select style="float:left;" class="details">
+                    <t t-foreach="env.pos.bank_statement" t-as="bank" t-key="bank.id">
+                        <option t-att-value="bank.id">
+                            <t t-esc="bank.name"/>
+                        </option>
+                    </t>
+                </select>
+                <select class="details">
+                    <option value="1">Văn phòng</option>
+                    <option value="2">Cửa hàng</option>
+                    <option value="3">Chênh lệch khác</option>
+                </select>
+                <select style="float:right;" class="details">
+                    <t t-foreach="env.pos.pos_customizes" t-as="pos" t-key="pos.id">
+                        <option t-att-value="pos.id">
+                            <t t-esc="pos.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+        </div>
+    </xpath>
+</t>
