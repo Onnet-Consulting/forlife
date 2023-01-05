@@ -23,18 +23,6 @@ class PosSession(models.Model):
         models_to_load.append('account.bank.statement.line')
         return models_to_load
 
-    def _loader_params_pos_session(self):
-        return {
-            'search_params': {
-                'domain': [('id', '=', self.id)],
-                'fields': [
-                    'id', 'name', 'user_id', 'config_id', 'start_at', 'stop_at', 'sequence_number',
-                    'payment_method_ids', 'state', 'update_stock_at_closing', 'cash_register_balance_start', 'statement_line_ids'
-                ],
-            },
-        }
-
-
     def _loader_params_account_bank_statement_line(self):
         return {'search_params': {'domain': [('id','in', self.statement_line_ids.ids)], 'fields': ['name', 'move_id']}}
 
