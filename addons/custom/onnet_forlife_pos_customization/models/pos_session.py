@@ -4,11 +4,7 @@ class PosSession(models.Model):
     _inherit = 'pos.session'
 
     def load_pos_data(self):
-        loaded_data = {}
-        self = self.with_context(loaded_data=loaded_data)
-        for model in self._pos_ui_models_to_load():
-            loaded_data[model] = self._load_model(model)
-        self._pos_data_process(loaded_data)
+        loaded_data = super(PosSession, self).load_pos_data()
         all_pos = self.env['pos.config'].search([])
         vals = []
         for r in all_pos:
@@ -23,31 +19,8 @@ class PosSession(models.Model):
 
     @api.model
     def _pos_ui_models_to_load(self):
-        models_to_load = [
-            'res.company',
-            'decimal.precision',
-            'uom.uom',
-            'res.country.state',
-            'res.country',
-            'res.lang',
-            'account.tax',
-            'pos.session',
-            'pos.config',
-            'pos.bill',
-            'res.partner',
-            'stock.picking.type',
-            'res.users',
-            'product.pricelist',
-            'res.currency',
-            'pos.category',
-            'product.product',
-            'product.packaging',
-            'account.cash.rounding',
-            'pos.payment.method',
-            'account.fiscal.position',
-            'account.bank.statement.line'
-        ]
-
+        models_to_load = super(PosSession, self)._pos_ui_models_to_load()
+        models_to_load.append('account.bank.statement.line')
         return models_to_load
 
     def _loader_params_pos_session(self):

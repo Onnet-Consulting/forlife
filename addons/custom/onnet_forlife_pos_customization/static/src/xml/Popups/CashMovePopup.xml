@@ -6,7 +6,7 @@
             <div>
                 <span style="float: left;">Mã phiếu</span>
                 <span>Loại</span>
-                <span style="float: right;">Shop</span>
+                <span style="float: right;">Cửa hàng</span>
             </div>
             <div>
                 <select style="float:left;" class="details">
