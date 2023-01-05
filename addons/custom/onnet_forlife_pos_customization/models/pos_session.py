@@ -8,7 +8,7 @@ class PosSession(models.Model):
         all_pos = self.env['pos.config'].search([])
         vals = []
         for r in all_pos:
-            val.append({
+            vals.append({
                 'id': r.id,
                 'name': r.name
             })
