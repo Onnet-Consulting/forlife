@@ -9,7 +9,6 @@ odoo.define('onnet_forlife_pos_customization.popupcustomize', function (require)
             await super._processData(...arguments);
             this.bank_statement = loadedData['account.bank.statement.line'];
             this.pos_customizes = loadedData['pos.customize'];
-            return super._processData(...arguments);
         }
     }
 Registries.Model.extend(PosGlobalState, PosGlobalStateCustomize);

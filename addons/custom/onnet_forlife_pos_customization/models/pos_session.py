@@ -28,3 +28,27 @@ class PosSession(models.Model):
 
     def _get_pos_ui_account_bank_statement_line(self, params):
         return self.env['account.bank.statement.line'].search_read(**params['search_params'])
+
+    def try_cash_in_out(self, _type, amount, reason, extras):
+        res = super(PosSession, self).try_cash_in_out(_type, amount, reason, extras)
+        sign_2 = -1 if _type == 'in' else 1
+        sessions = self.filtered('cash_journal_id')
+        if extras['reference'] and extras['shop']:
+            payment = self.env['account.bank.statement.line'].create([
+                {
+                    'pos_session_id': extras['shop'],
+                    'journal_id': session.cash_journal_id.id,
+                    'amount': sign_2 * amount,
+                    'date': fields.Date.context_today(self),
+                    'payment_ref': '-'.join([session.name, extras['translatedType'], reason]),
+                }
+                for session in sessions
+            ])
+            bank_statement_lin = self.env['account.bank.statement.line'].sudo().search([('id','=', int(extras['reference']))])
+            try:
+                payment.move_id.write({
+                    'name': 'Ref- {}'.format(bank_statement_lin.name)
+                })
+            except Exception as e:
+                self.message_post(body=e)
+        return res

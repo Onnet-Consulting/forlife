@@ -20,12 +20,16 @@
     ],
 
     'data': [
+        'security/ir.model.access.csv',
+        'views/pos_shop_view.xml'
     ],
     'installable': True,
     'application': True,
     'assets': {
         'point_of_sale.assets': [
             'onnet_forlife_pos_customization/static/src/js/popup.js',
+            'onnet_forlife_pos_customization/static/src/js/onchange_selection.js',
+            'onnet_forlife_pos_customization/static/src/js/CashMoveButton.js',
             'onnet_forlife_pos_customization/static/src/xml/Popups/CashMovePopup.xml',
         ]
     }
