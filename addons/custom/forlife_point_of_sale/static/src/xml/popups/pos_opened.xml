@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="forlife_point_of_sale.PosOpenedPopup" owl="1">
+        <div class="popup pos-opened-popup">
+            <main class="body">
+                <div class="store-status">
+                    <div t-if="pos_opened.name">
+                        <h2>Opened POS:</h2>
+                        <ul>
+                            <t t-foreach="pos_opened.name" t-as="name" t-key="i">
+                                <li><t t-esc="name"/> </li>
+                            </t>
+                        </ul>
+                    </div>
+                    <div t-if="pos_opened.error">
+                        <h1><t t-esc="pos_opened.error"/> </h1>
+                    </div>
+
+                </div>
+            </main>
+            <footer class="footer pos-opened">
+                <div class="button cancel" t-on-click="cancel">
+                    <t t-esc="props.cancelText" />
+                </div>
+            </footer>
+        </div>
+    </t>
+
+</templates>

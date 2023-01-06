@@ -26,11 +26,14 @@
 
         'views/store_views.xml',
         'views/pos_config_views.xml',
+        'views/customer_facing_templates.xml'
     ],
     'assets': {
         'point_of_sale.assets': [
             'forlife_point_of_sale/static/src/js/*.js',
             'forlife_point_of_sale/static/src/xml/*.xml',
+            'forlife_point_of_sale/static/src/js/popups/*.js',
+            'forlife_point_of_sale/static/src/xml/popups/*.xml',
         ],
         # 'web.assets_backend': [
         #     'forlife_point_of_sale/static/src/views/*.js',
