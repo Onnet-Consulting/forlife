@@ -12,6 +12,7 @@
                     <field name="to_date"/>
                     <field name="point_addition"/>
                     <field name="state"/>
+                    <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object"/>
                 </tree>
             </field>
         </record>

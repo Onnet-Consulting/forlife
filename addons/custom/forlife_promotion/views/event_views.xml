@@ -13,6 +13,7 @@
                     <field name="value_conversion"/>
                     <field name="point_addition"/>
                     <field name="state"/>
+                    <button name="btn_load_points_promotion" string="Load Program" class="oe_highlight" states="new" type="object"/>
                 </tree>
             </field>
         </record>
@@ -46,17 +47,15 @@
                                 <field name="hour_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             </group>
                         </group>
+                        <group name="order_point" string="Order Point">
+                            <group>
+                                <field name="value_conversion" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                            <group>
+                                <field name="point_addition" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                        </group>
                         <notebook>
-                            <page name="order_point" string="Order Point">
-                                <group>
-                                    <group>
-                                        <field name="value_conversion" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                    </group>
-                                    <group>
-                                        <field name="point_addition" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                    </group>
-                                </group>
-                            </page>
                             <page name="product_point" string="Product Point">
                                 <field name="points_product_ids" readonly="1" force_save="1"/>
                             </page>

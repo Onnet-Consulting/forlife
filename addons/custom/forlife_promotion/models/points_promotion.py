@@ -51,3 +51,6 @@ class PointsPromotion(models.Model):
         res = self.search([('to_date', '<', fields.Datetime.now()), ('state', 'in', ('new', 'in_progress'))])
         if res:
             res.btn_finish()
+
+    def btn_load_all_points_promotion(self):
+        self.event_ids.btn_load_points_promotion()

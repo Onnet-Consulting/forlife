@@ -10,7 +10,7 @@ class Event(models.Model):
 
     points_promotion_id = fields.Many2one('points.promotion', string='Points Promotion', required=True)
     name = fields.Char('Event Name', required=True)
-    from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
+    from_date = fields.Datetime('From Date', required=True)
     to_date = fields.Datetime('To Date', required=True)
     month_ids = fields.Many2many('month.data', string='Months')
     dayofmonth_ids = fields.Many2many('dayofmonth.data', string='DayOfMonth')
@@ -32,6 +32,7 @@ class Event(models.Model):
     def onchange_points_promotion(self):
         for line in self:
             if line.points_promotion_id:
+                line.from_date = line.points_promotion_id.from_date
                 line.to_date = line.points_promotion_id.to_date
                 line.value_conversion = line.points_promotion_id.value_conversion
                 line.point_addition = line.points_promotion_id.point_addition
@@ -46,7 +47,7 @@ class Event(models.Model):
         self.state = 'effective'
 
     def btn_load_points_promotion(self):
-        for line in self:
+        for line in self.filtered(lambda s: s.state == 'new'):
             record = line.points_promotion_id.points_product_ids.filtered(lambda f: f.from_date >= line.from_date and f.to_date <= line.to_date)
             if record:
                 record.write({'event_id': line.id})

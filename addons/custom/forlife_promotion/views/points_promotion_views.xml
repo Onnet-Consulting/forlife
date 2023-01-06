@@ -29,18 +29,18 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <div class="oe_button_box" name="button_box">
+                        <!--<div class="oe_button_box" name="button_box">
                             <button name="btn_events" type="object" class="oe_stat_button" string="Events">
                                 <div class="o_stat_info">
                                     <span class="o_stat_text">Events</span>
                                 </div>
                             </button>
-                            <button name="btn_product_point_consumption" type="object" class="oe_stat_button" string="Product Point Consumption">
+                            <button name="btn_product_point_consumption" type="object" class="oe_stat_button" string="Product Point">
                                 <div class="o_stat_info">
-                                    <span class="o_stat_text">Product Point Consumption</span>
+                                    <span class="o_stat_text">Product Point</span>
                                 </div>
                             </button>
-                        </div>
+                        </div>-->
                         <group>
                             <group>
                                 <field name="name" attrs="{'readonly': [('state', '!=', 'new')]}"/>
@@ -60,22 +60,21 @@
                                 <field name="account_journal_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             </group>
                         </group>
+                        <group name="order_point" string="Order Point">
+                            <group>
+                                <field name="value_conversion" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                            <group>
+                                <field name="point_addition" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                        </group>
                         <notebook>
-                            <page name="order_point" string="Order Point">
-                                <group>
-                                    <group>
-                                        <field name="value_conversion" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                    </group>
-                                    <group>
-                                        <field name="point_addition" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                    </group>
-                                </group>
-                            </page>
                             <page name="product_point" string="Product Point">
-                                <field name="points_product_ids"/>
+                                <field name="points_product_ids" attrs="{'readonly': [('state', '=', 'finish')]}"/>
                             </page>
                             <page name="event" string="Events">
-                                <field name="event_ids" context="{'default_is_can_change_points_promotion': True}"/>
+                                <button name="btn_load_all_points_promotion" string="Load All" class="oe_highlight" type="object" attrs="{'invisible': [('state', '=', 'finish')]}"/>
+                                <field name="event_ids" context="{'default_is_can_change_points_promotion': True}" attrs="{'readonly': [('state', '=', 'finish')]}"/>
                             </page>
                         </notebook>
                     </sheet>

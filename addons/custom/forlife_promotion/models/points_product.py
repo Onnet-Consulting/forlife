@@ -12,7 +12,7 @@ class PointsProduct(models.Model):
     event_id = fields.Many2one('event', string='Events')
     product_ids = fields.Many2many('product.product', string='Products')
     point_addition = fields.Integer('Point Addition', required=True)
-    from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
+    from_date = fields.Datetime('From Date', required=True)
     to_date = fields.Datetime('To Date', required=True)
     state = fields.Selection([('new', _('New')), ('effective', _('Effective'))], string='State', default='new')
 
@@ -25,6 +25,7 @@ class PointsProduct(models.Model):
     def onchange_points_promotion(self):
         for line in self:
             if line.points_promotion_id:
+                line.from_date = line.points_promotion_id.from_date
                 line.to_date = line.points_promotion_id.to_date
 
     @api.constrains('points_promotion_id', 'from_date', 'to_date')
