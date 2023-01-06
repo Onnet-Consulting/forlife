@@ -26,7 +26,6 @@
 
         'views/store_views.xml',
         'views/pos_config_views.xml',
-        'views/customer_facing_templates.xml'
     ],
     'assets': {
         'point_of_sale.assets': [
