@@ -13,10 +13,14 @@
                             </t>
                         </ul>
                     </div>
-                    <div t-if="pos_opened.error">
-                        <h1><t t-esc="pos_opened.error"/> </h1>
-                    </div>
-
+                    <t t-else="">
+                        <div t-if="pos_opened.error">
+                            <h2><t t-esc="pos_opened.error"/> </h2>
+                        </div>
+                        <div t-else="">
+                            <h2>All pos closed</h2>
+                        </div>
+                    </t>
                 </div>
             </main>
             <footer class="footer pos-opened">
