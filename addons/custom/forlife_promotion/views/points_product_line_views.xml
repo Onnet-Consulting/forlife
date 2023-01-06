@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="points_product_line_view_tree" model="ir.ui.view">
+            <field name="name">points_product_line_view_tree</field>
+            <field name="model">points.product.line</field>
+            <field name="arch" type="xml">
+                <tree string="points_product_line_tree" editable="top" create="0" delete="0">
+                    <field name="points_product_id" readonly="1"/>
+                    <field name="point_addition"/>
+                    <field name="event_id" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="points_product_line_view_form" model="ir.ui.view">
+            <field name="name">points_product_line_view_form</field>
+            <field name="model">points.product.line</field>
+            <field name="arch" type="xml">
+                <form string="points_product_line_form">
+                    <sheet>
+                        <group>
+                            <field name="points_product_id"/>
+                            <field name="point_addition"/>
+                        </group>
+                    </sheet>
+                    <field name="event_id" invisible="1"/>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

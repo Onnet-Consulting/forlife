@@ -28,6 +28,7 @@
         'views/points_promotion_views.xml',
         'views/event_views.xml',
         'views/points_product_views.xml',
+        'views/points_product_line_views.xml',
 
         'views/menuitem.xml',
     ]

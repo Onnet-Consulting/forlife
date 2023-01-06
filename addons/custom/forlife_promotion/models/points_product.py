@@ -8,6 +8,7 @@ class PointsProduct(models.Model):
     _name = 'points.product'
     _description = 'Points Product'
 
+    name = fields.Char('Name', compute='_compute_name')
     points_promotion_id = fields.Many2one('points.promotion', string='Points Promotion', ondelete='cascade')
     product_ids = fields.Many2many('product.product', string='Products')
     point_addition = fields.Integer('Point Addition', required=True)
@@ -19,6 +20,10 @@ class PointsProduct(models.Model):
         ('data_uniq', 'unique (points_promotion_id, point_addition, from_date, to_date)', 'The combination of Point Addition, From Date and To Date must be unique !'),
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
+
+    def _compute_name(self):
+        for line in self:
+            line.name = '%s products' % len(line.product_ids)
 
     @api.onchange('points_promotion_id')
     def onchange_points_promotion(self):

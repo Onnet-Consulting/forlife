@@ -57,7 +57,7 @@
                         </group>
                         <notebook>
                             <page name="product_point" string="Product Point">
-                                <field name="points_product_ids" readonly="1" force_save="1"/>
+                                <field name="points_product_ids" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                             </page>
                         </notebook>
                     </sheet>
