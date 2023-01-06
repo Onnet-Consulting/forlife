@@ -10,6 +10,7 @@ class PointsProductLine(models.Model):
     points_product_id = fields.Many2one('points.product', string='Products', required=True)
     event_id = fields.Many2one('event', string='Event', ondelete='cascade')
     point_addition = fields.Integer('Point Additions', required=True)
+    state = fields.Selection([('new', _('New')), ('effective', _('Effective'))], string='State', related='points_product_id.state')
 
     _sql_constraints = [
         ('data_uniq', 'unique (points_product_id, event_id)', 'Points Product must be unique !')

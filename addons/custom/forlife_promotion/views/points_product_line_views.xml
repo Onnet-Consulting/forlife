@@ -9,6 +9,7 @@
                 <tree string="points_product_line_tree" editable="top" create="0" delete="0">
                     <field name="points_product_id" readonly="1"/>
                     <field name="point_addition"/>
+                    <field name="state"/>
                     <field name="event_id" invisible="1"/>
                 </tree>
             </field>
@@ -19,6 +20,9 @@
             <field name="model">points.product.line</field>
             <field name="arch" type="xml">
                 <form string="points_product_line_form">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
                     <sheet>
                         <group>
                             <field name="points_product_id"/>

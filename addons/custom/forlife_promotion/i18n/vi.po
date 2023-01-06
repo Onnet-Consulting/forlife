@@ -350,6 +350,7 @@ msgstr "Tên hiển thị"
 #. odoo-python
 #: code:addons/forlife_promotion/models/event.py:0
 #: code:addons/forlife_promotion/models/points_product.py:0
+#: code:addons/forlife_promotion/models/points_product_line.py:0
 #: model:ir.model.fields.selection,name:forlife_promotion.selection__event__state__effective
 #: model:ir.model.fields.selection,name:forlife_promotion.selection__points_product__state__effective
 #, python-format
@@ -563,6 +564,7 @@ msgstr "Tên đã tồn tại !"
 #. odoo-python
 #: code:addons/forlife_promotion/models/event.py:0
 #: code:addons/forlife_promotion/models/points_product.py:0
+#: code:addons/forlife_promotion/models/points_product_line.py:0
 #: code:addons/forlife_promotion/models/points_promotion.py:0
 #: model:ir.model.fields.selection,name:forlife_promotion.selection__event__state__new
 #: model:ir.model.fields.selection,name:forlife_promotion.selection__points_product__state__new
@@ -691,6 +693,7 @@ msgstr "Tháng 9"
 #. module: forlife_promotion
 #: model:ir.model.fields,field_description:forlife_promotion.field_event__state
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_product__state
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line__state
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__state
 msgid "State"
 msgstr "Trạng thái"
