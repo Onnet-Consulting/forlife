@@ -31,14 +31,14 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="points_promotion_id" domain="[('state', 'in', ('new', 'in_progress'))]" invisible="context.get('default_is_can_change_points_promotion', False)"
-                                       attrs="{'readonly': ['|', ('is_can_change_points_promotion', '=', True), ('state', '!=', 'new')]}"/>
+                                <field name="points_promotion_id" domain="[('state', 'in', ('new', 'in_progress'))]" invisible="context.get('default_is_lock_change_points_promotion', False)"
+                                       attrs="{'readonly': ['|', ('is_lock_change_points_promotion', '=', True), ('state', '!=', 'new')]}"/>
                                 <field name="name" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="from_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="to_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="store_ids" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="customer_conditions" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                <field name="is_can_change_points_promotion" invisible="1"/>
+                                <field name="is_lock_change_points_promotion" invisible="1"/>
                             </group>
                             <group>
                                 <field name="month_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>

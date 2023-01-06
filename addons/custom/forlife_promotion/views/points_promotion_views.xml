@@ -74,7 +74,7 @@
                             </page>
                             <page name="event" string="Events">
                                 <button name="btn_load_all_points_promotion" string="Load All" class="oe_highlight" type="object" attrs="{'invisible': [('state', '=', 'finish')]}"/>
-                                <field name="event_ids" context="{'default_is_can_change_points_promotion': True}" attrs="{'readonly': [('state', '=', 'finish')]}"/>
+                                <field name="event_ids" context="{'default_is_lock_change_points_promotion': True}" attrs="{'readonly': [('state', '=', 'finish')]}"/>
                             </page>
                         </notebook>
                     </sheet>

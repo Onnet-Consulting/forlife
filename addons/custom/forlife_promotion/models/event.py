@@ -22,7 +22,7 @@ class Event(models.Model):
     point_addition = fields.Integer('Point Addition', required=True)
     state = fields.Selection([('new', _('New')), ('effective', _('Effective'))], string='State', default='new')
     points_product_ids = fields.One2many('points.product', inverse_name='event_id', string='Points Product')
-    is_can_change_points_promotion = fields.Boolean('Can Change Points Promotion', default=False)
+    is_lock_change_points_promotion = fields.Boolean('Lock Change Points Promotion', default=False)
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -41,7 +41,7 @@ class Event(models.Model):
     def _constrains_date(self):
         for record in self:
             if record.points_promotion_id.from_date > record.from_date or record.points_promotion_id.to_date < record.to_date:
-                raise ValidationError(_('The duration of the point product must be within the duration of the program "%s"' % record.points_promotion_id.name))
+                raise ValidationError(_('The duration of the events must be within the duration of the program "%s"' % record.points_promotion_id.name))
 
     def btn_effective(self):
         self.state = 'effective'
