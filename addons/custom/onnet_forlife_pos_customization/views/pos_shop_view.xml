@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="pos_shop_view_form" model="ir.ui.view">
+        <field name="name">pos.shop.view.form</field>
+        <field name="model">pos.shop</field>
+        <field name="arch" type="xml">
+            <form string="POS SHOP">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="account_intermediary_pos"/>
+                        <field widget="section_and_note_one2many" mode="tree" name="pos_shop_line_ids">
+                            <form>
+                                <field name="pos_config_id"/>
+                                <field name="pos_shop_id"/>
+                            </form>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+        <record id="pos_shop_view_tree" model="ir.ui.view">
+        <field name="name">pos.shop.view.form</field>
+        <field name="model">pos.shop</field>
+        <field name="arch" type="xml">
+            <tree string="POS SHOP">
+                <field name="name" />
+                <field name="account_intermediary_pos"/>
+            </tree>
+        </field>
+    </record>
+
+        <record id="action_pos_shop_form" model="ir.actions.act_window">
+            <field name="name">Pos Shop</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">pos.shop</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" eval="False"/>
+            <field name="domain">[]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add a new pos shop
+                </p>
+            </field>
+        </record>
+
+
+        <menuitem id="menu_pos_shop" parent="point_of_sale.menu_point_config_product" action="action_pos_shop_form"
+                  sequence="19" groups="base.group_user"/>
+
+
+        <record model="ir.ui.view" id="pos_shop_line_tree">
+            <field name="name">pos.shop.line.tree</field>
+            <field name="model">pos.shop.line</field>
+            <field name="arch" type="xml">
+                <tree name="Shop Config">
+                    <field name="pos_config_id"/>
+                    <field name="pos_shop_id"/>
+
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="pos_shop_line_form">
+            <field name="name">pos.shop.line.tree</field>
+            <field name="model">pos.shop.line</field>
+            <field name="arch" type="xml">
+                <form name="Shop Config">
+                    <field name="pos_config_id"/>
+                    <field name="pos_shop_id"/>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>
