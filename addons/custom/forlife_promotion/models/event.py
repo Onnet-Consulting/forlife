@@ -21,7 +21,7 @@ class Event(models.Model):
     value_conversion = fields.Integer('Value Conversion', required=True)
     point_addition = fields.Integer('Point Addition', required=True)
     state = fields.Selection([('new', _('New')), ('effective', _('Effective'))], string='State', default='new')
-    points_product_ids = fields.One2many('points.product', inverse_name='event_id', string='Points Product')
+    points_product_ids = fields.Many2many('points.product', string='Points Product')
     is_lock_change_points_promotion = fields.Boolean('Lock Change Points Promotion', default=False)
 
     _sql_constraints = [
@@ -49,5 +49,4 @@ class Event(models.Model):
     def btn_load_points_promotion(self):
         for line in self.filtered(lambda s: s.state == 'new'):
             record = line.points_promotion_id.points_product_ids.filtered(lambda f: f.from_date >= line.from_date and f.to_date <= line.to_date)
-            if record:
-                record.write({'event_id': line.id})
+            line.write({'points_product_ids': [6, 0, record.ids]})

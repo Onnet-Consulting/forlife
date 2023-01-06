@@ -9,7 +9,6 @@ class PointsProduct(models.Model):
     _description = 'Points Product'
 
     points_promotion_id = fields.Many2one('points.promotion', string='Points Promotion', ondelete='cascade')
-    event_id = fields.Many2one('event', string='Events')
     product_ids = fields.Many2many('product.product', string='Products')
     point_addition = fields.Integer('Point Addition', required=True)
     from_date = fields.Datetime('From Date', required=True)
