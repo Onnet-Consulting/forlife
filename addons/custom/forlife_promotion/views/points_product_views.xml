@@ -7,7 +7,8 @@
             <field name="model">points.product</field>
             <field name="arch" type="xml">
                 <tree string="points_product_tree">
-                    <field name="product_ids"/>
+                    <field name="product_ids" invisible="1"/>
+                    <field name="name"/>
                     <field name="from_date"/>
                     <field name="to_date"/>
                     <field name="point_addition"/>
