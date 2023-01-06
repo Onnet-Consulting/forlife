@@ -1,7 +1,7 @@
 odoo.define('point_of_sale.CashMoveButton2', function (require) {
     'use strict';
 
-    const PosComponent = require('point_of_sale.PosComponent');
+    const CashMoveButton = require('point_of_sale.CashMoveButton');
     const Registries = require('point_of_sale.Registries');
     const { _t } = require('web.core');
     const { renderToString } = require('@web/core/utils/render');
@@ -10,8 +10,7 @@ odoo.define('point_of_sale.CashMoveButton2', function (require) {
         in: _t('in'),
         out: _t('out'),
     };
-
-    class CashMoveButton extends PosComponent {
+    const CashMoveButton2 = (CashMoveButton) => class extends CashMoveButton {
         async onClick() {
             const { confirmed, payload } = await this.showPopup('CashMovePopup');
             if (!confirmed) return;
@@ -45,16 +44,7 @@ odoo.define('point_of_sale.CashMoveButton2', function (require) {
                 3000
             );
         }
-        _getReceiptInfo(payload) {
-            const result = { ...payload };
-            result.cashier = this.env.pos.get_cashier();
-            result.company = this.env.pos.company;
-            return result;
-        }
     }
-    CashMoveButton.template = 'point_of_sale.CashMoveButton';
-
-    Registries.Component.add(CashMoveButton);
-
+    Registries.Component.extend(CashMoveButton, CashMoveButton2);
     return CashMoveButton;
 });
