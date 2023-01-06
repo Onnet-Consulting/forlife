@@ -49,4 +49,4 @@ class Event(models.Model):
     def btn_load_points_promotion(self):
         for line in self.filtered(lambda s: s.state == 'new'):
             record = line.points_promotion_id.points_product_ids.filtered(lambda f: f.from_date >= line.from_date and f.to_date <= line.to_date)
-            line.write({'points_product_ids': [6, 0, record.ids]})
+            line.write({'points_product_ids': [(6, 0, record.ids)]})
