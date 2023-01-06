@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-06 04:48+0000\n"
-"PO-Revision-Date: 2023-01-06 11:55+0700\n"
+"POT-Creation-Date: 2023-01-06 11:39+0000\n"
+"PO-Revision-Date: 2023-01-06 18:43+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,13 @@ msgstr ""
 "Plural-Forms: \n"
 "Language: vi\n"
 "X-Generator: Poedit 2.3\n"
+
+#. module: forlife_promotion
+#. odoo-python
+#: code:addons/forlife_promotion/models/points_product.py:0
+#, python-format
+msgid "%s products"
+msgstr "%s sản phẩm"
 
 #. module: forlife_promotion
 #: model:dayofmonth.data,name:forlife_promotion.dayofmonth10
@@ -290,6 +297,7 @@ msgstr "Mã đã tồn tại !"
 #: model:ir.model.fields,field_description:forlife_promotion.field_hour_data__create_uid
 #: model:ir.model.fields,field_description:forlife_promotion.field_month_data__create_uid
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_product__create_uid
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line__create_uid
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__create_uid
 msgid "Created by"
 msgstr "Được tạo bởi"
@@ -301,6 +309,7 @@ msgstr "Được tạo bởi"
 #: model:ir.model.fields,field_description:forlife_promotion.field_hour_data__create_date
 #: model:ir.model.fields,field_description:forlife_promotion.field_month_data__create_date
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_product__create_date
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line__create_date
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__create_date
 msgid "Created on"
 msgstr "Được tạo vào"
@@ -334,6 +343,7 @@ msgstr "Tháng 12"
 #: model:ir.model.fields,field_description:forlife_promotion.field_hour_data__display_name
 #: model:ir.model.fields,field_description:forlife_promotion.field_month_data__display_name
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_product__display_name
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line__display_name
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
@@ -357,6 +367,7 @@ msgstr "Ngày kết thúc không được trước ngày bắt đầu."
 
 #. module: forlife_promotion
 #: model:ir.model,name:forlife_promotion.model_event
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line__event_id
 msgid "Event"
 msgstr "Sự kiện"
 
@@ -426,6 +437,7 @@ msgstr "Giờ"
 #: model:ir.model.fields,field_description:forlife_promotion.field_hour_data__id
 #: model:ir.model.fields,field_description:forlife_promotion.field_month_data__id
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_product__id
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line__id
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__id
 msgid "ID"
 msgstr ""
@@ -460,6 +472,7 @@ msgstr "Tháng 6"
 #: model:ir.model.fields,field_description:forlife_promotion.field_hour_data____last_update
 #: model:ir.model.fields,field_description:forlife_promotion.field_month_data____last_update
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_product____last_update
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line____last_update
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion____last_update
 msgid "Last Modified on"
 msgstr ""
@@ -471,6 +484,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_promotion.field_hour_data__write_uid
 #: model:ir.model.fields,field_description:forlife_promotion.field_month_data__write_uid
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_product__write_uid
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line__write_uid
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__write_uid
 msgid "Last Updated by"
 msgstr ""
@@ -482,6 +496,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_promotion.field_hour_data__write_date
 #: model:ir.model.fields,field_description:forlife_promotion.field_month_data__write_date
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_product__write_date
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line__write_date
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__write_date
 msgid "Last Updated on"
 msgstr ""
@@ -533,6 +548,7 @@ msgstr "Tháng"
 #: model:ir.model.fields,field_description:forlife_promotion.field_general_info_master_data__name
 #: model:ir.model.fields,field_description:forlife_promotion.field_hour_data__name
 #: model:ir.model.fields,field_description:forlife_promotion.field_month_data__name
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product__name
 msgid "Name"
 msgstr "Tên"
 
@@ -591,6 +607,11 @@ msgid "Point Addition"
 msgstr "Điểm cộng"
 
 #. module: forlife_promotion
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line__point_addition
+msgid "Point Additions"
+msgstr ""
+
+#. module: forlife_promotion
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__point_customer_id
 msgid "Point Customer"
 msgstr "Đối tượng điểm"
@@ -603,9 +624,20 @@ msgstr "Thời hạn điểm"
 #. module: forlife_promotion
 #: model:ir.model,name:forlife_promotion.model_points_product
 #: model:ir.model.fields,field_description:forlife_promotion.field_event__points_product_ids
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product_line__points_product_id
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__points_product_ids
 msgid "Points Product"
 msgstr "Điểm sản phẩm"
+
+#. module: forlife_promotion
+#: model:ir.model,name:forlife_promotion.model_points_product_line
+msgid "Points Product Line"
+msgstr "Điểm sản phẩm sự kiện"
+
+#. module: forlife_promotion
+#: model:ir.model.constraint,message:forlife_promotion.constraint_points_product_line_data_uniq
+msgid "Points Product must be unique !"
+msgstr "Điểm sản phẩm là duy nhất !"
 
 #. module: forlife_promotion
 #: model:ir.actions.act_window,name:forlife_promotion.points_promotion_action
@@ -748,6 +780,16 @@ msgstr "danh sách sự kiện"
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.points_product_view_form
 msgid "points_product_form"
 msgstr "phom điểm sản phẩm"
+
+#. module: forlife_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_promotion.points_product_line_view_form
+msgid "points_product_line_form"
+msgstr "Phom điểm sản phẩm  sự kiện"
+
+#. module: forlife_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_promotion.points_product_line_view_tree
+msgid "points_product_line_tree"
+msgstr "Danh sách điểm sản phẩm sự kiện"
 
 #. module: forlife_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.points_product_view_tree

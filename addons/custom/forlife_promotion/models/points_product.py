@@ -23,7 +23,7 @@ class PointsProduct(models.Model):
 
     def _compute_name(self):
         for line in self:
-            line.name = '%s products' % len(line.product_ids)
+            line.name = _('%s products') % len(line.product_ids)
 
     @api.onchange('points_promotion_id')
     def onchange_points_promotion(self):
