@@ -7,7 +7,7 @@ class GeneralInfoMasterData(models.AbstractModel):
     _name = 'general.info.master.data'
     _description = 'General Info Master Data'
 
-    name = fields.Char('Name', required=True)
+    name = fields.Char('Name', required=True, translate=True)
     code = fields.Integer('Code', required=True)
 
     _sql_constraints = [
