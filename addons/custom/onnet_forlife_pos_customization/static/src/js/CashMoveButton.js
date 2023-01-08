@@ -24,7 +24,6 @@ odoo.define('onnet_forlife_pos_customization.CashMoveButton2', function (require
                 );
             }
             const extras = { formattedAmount, translatedType, reference, type_tranfer, shop };
-            debugger
             await this.rpc({
                 model: 'pos.session',
                 method: 'try_cash_in_out',
