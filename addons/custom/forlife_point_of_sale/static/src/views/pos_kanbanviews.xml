@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<templates>
-    <t t-name="forlife_point_of_sale.PosKanbanView" t-inherit="web.KanbanRenderer" t-inherit-mode="primary" owl="1">
-        <xpath expr="//div[hasclass('o_kanban_renderer')]" position="before">
-            <PosDashBoard />
-        </xpath>
-    </t>
-</templates>
