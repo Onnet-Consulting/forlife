@@ -16,12 +16,13 @@
     'category': 'Point of Sale customization',
 
     'depends': [
-        'point_of_sale'
+        'point_of_sale',
+        'forlife_point_of_sale'
     ],
 
     'data': [
         'security/ir.model.access.csv',
-        'views/pos_shop_view.xml'
+        'views/store.xml'
     ],
     'installable': True,
     'application': True,
