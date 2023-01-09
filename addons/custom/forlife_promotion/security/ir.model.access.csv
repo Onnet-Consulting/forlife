@@ -1,0 +1,13 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_points_promotion_manager,points.promotion manager,model_points_promotion,forlife_promotion.promotion_manager,1,1,1,1
+access_points_promotion_user,points.promotion user,model_points_promotion,base.group_user,1,0,0,0
+access_points_product_manager,points.product manager,model_points_product,forlife_promotion.promotion_manager,1,1,1,1
+access_points_product_user,points.product user,model_points_product,base.group_user,1,0,0,0
+access_points_product_line_manager,points.product.line manager,model_points_product_line,forlife_promotion.promotion_manager,1,1,1,1
+access_points_product_line_user,points.product.line user,model_points_product_line,base.group_user,1,0,0,0
+access_event_manager,event manager,model_event,forlife_promotion.promotion_manager,1,1,1,1
+access_event_user,event user,model_event,base.group_user,1,0,0,0
+access_month_data_user,month.data user,model_month_data,base.group_user,1,0,0,0
+access_dayofmonth_data_user,dayofmonth.data user,model_dayofmonth_data,base.group_user,1,0,0,0
+access_dayofweek_data_user,dayofweek.data user,model_dayofweek_data,base.group_user,1,0,0,0
+access_hour_data_user,hour.data user,model_hour_data,base.group_user,1,0,0,0

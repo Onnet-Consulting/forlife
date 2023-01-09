@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="event_view_tree" model="ir.ui.view">
+            <field name="name">event_view_tree</field>
+            <field name="model">event</field>
+            <field name="arch" type="xml">
+                <tree string="event_tree">
+                    <field name="name"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="value_conversion"/>
+                    <field name="point_addition"/>
+                    <field name="state"/>
+                    <button name="btn_load_points_promotion" string="Load Program" class="oe_highlight" states="new" type="object"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="event_view_form" model="ir.ui.view">
+            <field name="name">event_view_form</field>
+            <field name="model">event</field>
+            <field name="arch" type="xml">
+                <form string="event_form">
+                    <header>
+                        <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object"/>
+                        <button name="btn_load_points_promotion" string="Load Program" class="oe_highlight" states="new" type="object"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="points_promotion_id" domain="[('state', 'in', ('new', 'in_progress'))]" invisible="context.get('default_is_lock_change_points_promotion', False)"
+                                       attrs="{'readonly': ['|', ('is_lock_change_points_promotion', '=', True), ('state', '!=', 'new')]}"/>
+                                <field name="name" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="from_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="to_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="store_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="customer_conditions" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="is_lock_change_points_promotion" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="month_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="dayofmonth_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="dayofweek_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="hour_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                        </group>
+                        <group name="order_point" string="Order Point">
+                            <group>
+                                <field name="value_conversion" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                            <group>
+                                <field name="point_addition" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="product_point" string="Product Point">
+                                <field name="points_product_ids" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="event_view_search" model="ir.ui.view">
+            <field name="name">event_view_search</field>
+            <field name="model">event</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="name"/>
+                    <field name="points_promotion_id"/>
+                    <field name="store_ids"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="event_action" model="ir.actions.act_window">
+            <field name="name">Events</field>
+            <field name="res_model">event</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>
