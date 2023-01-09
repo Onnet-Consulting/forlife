@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pos_shop,pos.shop,model_pos_shop,base.group_user,1,1,1,1
+access_pos_shop_line,pos.shop.line,model_pos_shop_line,base.group_user,1,1,1,1

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ProductItem" t-inherit="point_of_sale.ProductItem" owl="1">
+        <xpath expr="//div[hasclass('product-img')]" position="replace">
+            <t/>
+        </xpath>
+    </t>
+
+</templates>
