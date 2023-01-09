@@ -40,3 +40,15 @@ class Store(models.Model):
         for k, v in group.items():
             res.append(_('Store ') + k + ': ' + ', '.join(v))
         return dict(data='; '.join(res))
+
+    @api.model
+    def get_pos_opened(self):
+        query = '''SELECT (SELECT name FROM pos_config WHERE id = ps.config_id) FROM pos_session ps 
+            WHERE ps.state = 'opened' 
+            AND ps.config_id IN (SELECT pos.id FROM pos_config pos 
+                                 WHERE pos.store_id IN (SELECT store_id FROM res_users_store_rel WHERE res_users_id = %s))'''
+        self.env.cr.execute(query, (self._uid,))
+        data = self.env.cr.fetchall()
+
+        return data
+
