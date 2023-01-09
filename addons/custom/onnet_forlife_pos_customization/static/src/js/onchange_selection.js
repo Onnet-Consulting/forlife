@@ -15,6 +15,7 @@ odoo.define('onnet_forlife_pos_customization.CashMovePopup2', function (require)
                 reference: '',
                 type_tranfer: '',
                 shop: '',
+                inputAmount: '',
             });
             this.inputAmountRef = useRef('input-amount-ref');
         }
