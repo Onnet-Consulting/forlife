@@ -45,7 +45,7 @@
                             <group>
                                 <field name="name" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="brand_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                <field name="store_ids" attrs="{'readonly': [('state', '!=', 'new')]}"/><!-- widget="many2many_tags"/>-->
+                                <field name="store_ids" widget="many2many_tags"/> attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="from_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="to_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="first_order" attrs="{'readonly': [('state', '!=', 'new')]}"/>
