@@ -29,23 +29,11 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <!--<div class="oe_button_box" name="button_box">
-                            <button name="btn_events" type="object" class="oe_stat_button" string="Events">
-                                <div class="o_stat_info">
-                                    <span class="o_stat_text">Events</span>
-                                </div>
-                            </button>
-                            <button name="btn_product_point_consumption" type="object" class="oe_stat_button" string="Product Point">
-                                <div class="o_stat_info">
-                                    <span class="o_stat_text">Product Point</span>
-                                </div>
-                            </button>
-                        </div>-->
                         <group>
                             <group>
                                 <field name="name" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="brand_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                <field name="store_ids" widget="many2many_tags"/> attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="store_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="from_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="to_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="first_order" attrs="{'readonly': [('state', '!=', 'new')]}"/>

@@ -36,7 +36,7 @@
                                 <field name="name" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="from_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="to_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                <field name="store_ids" widget="many2many_tags"/> attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="store_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="customer_conditions" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="is_lock_change_points_promotion" invisible="1"/>
                             </group>
