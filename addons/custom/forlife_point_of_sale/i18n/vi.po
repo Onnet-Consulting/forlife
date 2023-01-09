@@ -18,13 +18,6 @@ msgstr ""
 "X-Generator: Poedit 2.3\n"
 
 #. module: forlife_point_of_sale
-#. odoo-python
-#: code:addons/forlife_point_of_sale/models/store.py:0
-#, python-format
-msgid " opened by "
-msgstr " được mở bởi "
-
-#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__brand_id
 msgid "Brand"
 msgstr "Thương hiệu"
@@ -48,13 +41,6 @@ msgstr "Được tạo bởi"
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__create_date
 msgid "Created on"
 msgstr "Được tạo vào"
-
-#. module: forlife_point_of_sale
-#. odoo-javascript
-#: code:addons/forlife_point_of_sale/static/src/views/pos_dashboard.xml:0
-#, python-format
-msgid "Danh sách điểm bán lẻ đang mở."
-msgstr ""
 
 #. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__display_name
@@ -117,13 +103,6 @@ msgstr "Tìm kiếm"
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_pos_config__store_id
 #: model:ir.ui.menu,name:forlife_point_of_sale.store_menu
 msgid "Store"
-msgstr "Cửa hàng"
-
-#. module: forlife_point_of_sale
-#. odoo-python
-#: code:addons/forlife_point_of_sale/models/store.py:0
-#, python-format
-msgid "Store "
 msgstr "Cửa hàng"
 
 #. module: forlife_point_of_sale
