@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="onnet_inherit_view_pos">
+            <field name="name">onnet.inherit.view.pos</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='fiscal_position_id']" position="after">
+                    <field name="point_order"/>
+                    <field name="point_event_order"/>
+                    <field name="total_point"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
