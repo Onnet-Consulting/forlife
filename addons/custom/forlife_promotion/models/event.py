@@ -16,7 +16,7 @@ class Event(models.Model):
     dayofmonth_ids = fields.Many2many('dayofmonth.data', string='DayOfMonth')
     dayofweek_ids = fields.Many2many('dayofweek.data', string='DayOfWeek')
     hour_ids = fields.Many2many('hour.data', string='Hours')
-    store_ids = fields.Char(string='Stores', required=True)  # fixme Many2many model store định nghĩa trong module forlife_point_of_sale
+    store_ids = fields.Many2many('store', string='Stores', required=True)
     customer_conditions = fields.Char(string='Customer Conditions', required=True)  # fixme (many2many) cần phân tích thêm từ phía master data
     value_conversion = fields.Integer('Value Conversion', required=True)
     point_addition = fields.Integer('Point Addition', required=True)

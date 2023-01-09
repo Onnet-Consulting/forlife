@@ -10,7 +10,7 @@ class PointsPromotion(models.Model):
 
     name = fields.Char('Program Name', required=True)
     brand_id = fields.Char(string='Brand', required=True)  # fixme Many2one đến model brand
-    store_ids = fields.Char(string='Stores', required=True)  # fixme Many2many model store định nghĩa trong module forlife_point_of_sale
+    store_ids = fields.Many2many('store', string='Stores', required=True)
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
     first_order = fields.Integer('First Order')
