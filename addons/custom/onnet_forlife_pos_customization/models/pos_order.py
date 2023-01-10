@@ -9,7 +9,7 @@ class PosOrder(models.Model):
     point_order = fields.Integer('Point (+) Order', readonly=True)
     point_event_order = fields.Integer('Point event Order', readonly=True)
     total_point = fields.Integer('Total Point', readonly=True)
-    program_store_point = fields.Many2one('points.promotion', 'Program Store Point')
+    program_store_point_id = fields.Many2one('points.promotion', 'Program Store Point')
 
     @api.model
     def _order_fields(self, ui_order):
@@ -17,7 +17,8 @@ class PosOrder(models.Model):
         # print(create_Date)
         # print(self.session_id.config_id.store_id)
         program_promotion = self._get_program_promotion(data)
-        print(program_promotion)
+        if program_promotion:
+            data['program_store_point_id'] = program_promotion.id
         return data
 
     def _get_program_promotion(self, data):
@@ -25,7 +26,7 @@ class PosOrder(models.Model):
         session = self.env['pos.session'].sudo().search([('id', '=', data['session_id'])], limit=1)
         store = session.config_id.store_id
         program_promotion = self.env['points.promotion'].sudo().search(
-            [('store_ids', 'in', store.id), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date), ('to_date','>=',create_Date),('brand_id','=',store.brand_id)])
+            [('store_ids', 'in', store.id), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date), ('to_date','>=',create_Date),('x_brand_id','=',store.x_brand_id.id)])
         return program_promotion
 
     def _format_time_zone(self, time):
