@@ -22,7 +22,8 @@
 
     'data': [
         'security/ir.model.access.csv',
-        'views/store.xml'
+        'views/store.xml',
+        'views/account_move_views.xml',
     ],
     'installable': True,
     'application': True,

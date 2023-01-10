@@ -8,6 +8,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='payment_method_ids']" position="after">
                     <field name="account_intermediary_pos"/>
+                    <field name="other_receivable_account_id"/>
+                    <field name="other_payable_account_id"/>
+                    <field name="default_office_cash_account_id"/>
                 </xpath>
             </field>
             
