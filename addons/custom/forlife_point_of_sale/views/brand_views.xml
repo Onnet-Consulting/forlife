@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <tree string="brand_tree" editable="bottom">
                     <field name="name"/>
-                    <field name="code"/>
+                    <field name="code" readonly="1"/>
                 </tree>
             </field>
         </record>
