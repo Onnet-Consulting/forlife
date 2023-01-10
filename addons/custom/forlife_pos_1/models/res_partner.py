@@ -13,6 +13,7 @@ class ResPartner(models.Model):
     group_id = fields.Many2one('res.partner.group', string='Group')
     job_ids = fields.Many2many('res.partner.job', string='Jobs')
     customer_type = fields.Selection([('employee', 'Employee'), ('app', 'App member'), ('retail', 'Retail')], string='Customer type')
+    retail_type_ids = fields.Many2many('res.partner.retail', string='Retail types')
     show_customer_type = fields.Boolean(compute='_compute_show_customer_type')
     birthday = fields.Date(string='Birthday')
     gender = fields.Selection([

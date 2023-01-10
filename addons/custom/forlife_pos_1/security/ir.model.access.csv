@@ -3,3 +3,5 @@ base_group_user_res_partner_group,base.group.user_res.partner.group,model_res_pa
 base_group_system_res_partner_group,base.group.system_res_partner_group,model_res_partner_group,base.group_system,1,1,1,1
 base_group_user_res_partner_job,base.group.user_res.partner.job,model_res_partner_job,base.group_user,1,0,0,0
 base_group_system_res_partner_job,base.group.user_res.partner.job,model_res_partner_job,base.group_system,1,1,1,1
+base_group_user_res_partner_retail,base.group.user_res.partner.retail,model_res_partner_retail,base.group_user,1,0,0,0
+base_group_system_res_partner_retail,base.group.system_res.partner.retail,model_res_partner_retail,base.group_system,1,1,1,1

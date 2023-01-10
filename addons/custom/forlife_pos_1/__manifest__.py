@@ -23,9 +23,11 @@
         'data/res_partner_group.xml',
         'data/res_partner.xml',
         'data/ir_fields.xml',
+        'data/res_partner_retail.xml',
         'views/res_partner_group_views.xml',
         'views/res_partner_job_views.xml',
         'views/res_partner_views.xml',
+
     ],
 
     'demo': [
