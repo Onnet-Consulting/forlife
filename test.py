@@ -10,4 +10,4 @@ tz = 'Asia/Ho_Chi_Minh'
 create_Date = utcmoment.astimezone(pytz.timezone(tz))
 data = create_Date.strftime(localFormat)
 print(create_Date)
-print((create_Date.day))
+print((create_Date.month))

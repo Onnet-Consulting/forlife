@@ -18,7 +18,8 @@
     'depends': [
         'point_of_sale',
         'forlife_point_of_sale',
-        'forlife_promotion'
+        'forlife_promotion',
+        'base'
     ],
 
     'data': [
@@ -26,12 +27,6 @@
     ],
     'installable': True,
     'application': True,
-    'assets': {
-        'point_of_sale.assets': [
-            'forlife_pos_popup_cash/static/src/js/popup.js',
-            'forlife_pos_popup_cash/static/src/js/onchange_selection.js',
-            'forlife_pos_popup_cash/static/src/js/CashMoveButton.js',
-            'forlife_pos_popup_cash/static/src/xml/Popups/CashMovePopup.xml',
-        ]
-    }
+    # 'assets': {
+    # }
 }

@@ -24,7 +24,6 @@
     'data': [
         'security/ir.model.access.csv',
         'views/store.xml',
-        'views/pos_order.xml',
     ],
     'installable': True,
     'application': True,
