@@ -1,4 +1,4 @@
-odoo.define('onnet_forlife_pos_customization.CashMovePopup2', function (require) {
+odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
     'use strict';
 
     const AbstractAwaitablePopup = require('point_of_sale.AbstractAwaitablePopup');

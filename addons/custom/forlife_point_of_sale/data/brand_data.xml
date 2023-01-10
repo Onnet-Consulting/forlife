@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="brand_format_id" model="brand">
+            <field name="name">Format</field>
+        </record>
+
+        <record id="brand_tokyolife_id" model="brand">
+            <field name="name">TokyoLife</field>
+        </record>
+
+    </data>
+</odoo>

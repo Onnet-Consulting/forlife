@@ -23,7 +23,9 @@
     'data': [
         'security/forlife_point_of_sale_security.xml',
         'security/ir.model.access.csv',
+        'data/brand_data.xml',
 
+        'views/brand_views.xml',
         'views/store_views.xml',
         'views/pos_config_views.xml',
     ],
