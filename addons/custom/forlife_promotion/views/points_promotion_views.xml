@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="points_promotion_view_tree" model="ir.ui.view">
+            <field name="name">points_promotion_view_tree</field>
+            <field name="model">points.promotion</field>
+            <field name="arch" type="xml">
+                <tree string="points_promotion_tree">
+                    <field name="name"/>
+                    <field name="x_brand_id"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="value_conversion"/>
+                    <field name="point_addition"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="points_promotion_view_form" model="ir.ui.view">
+            <field name="name">points_promotion_view_form</field>
+            <field name="model">points.promotion</field>
+            <field name="arch" type="xml">
+                <form string="points_promotion_form">
+                    <header>
+                        <button name="btn_apply" string="Apply" class="oe_highlight" states="new" type="object"/>
+                        <button name="btn_finish" string="Finish" class="oe_highlight" states="in_progress" type="object"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="x_brand_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="store_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="from_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="to_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="first_order" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="payment_method_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="point_expiration" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                            <group>
+                                <field name="point_customer_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="acc_accumulate_points_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="acc_reduce_accumulated_points_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="acc_tax_reduce_accumulated_points_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="account_journal_id" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                        </group>
+                        <group name="order_point" string="Order Point">
+                            <group>
+                                <field name="value_conversion" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                            <group>
+                                <field name="point_addition" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="product_point" string="Product Point">
+                                <field name="points_product_ids" attrs="{'readonly': [('state', '=', 'finish')]}"/>
+                            </page>
+                            <page name="event" string="Events">
+                                <button name="btn_load_all_points_promotion" string="Load All" class="oe_highlight" type="object" attrs="{'invisible': [('state', '=', 'finish')]}"/>
+                                <field name="event_ids" context="{'default_is_lock_change_points_promotion': True}" attrs="{'readonly': [('state', '=', 'finish')]}"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="points_promotion_view_search" model="ir.ui.view">
+            <field name="name">points_promotion_view_search</field>
+            <field name="model">points.promotion</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="name"/>
+                    <field name="x_brand_id"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="points_promotion_action" model="ir.actions.act_window">
+            <field name="name">Points Promotion</field>
+            <field name="res_model">points.promotion</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>
