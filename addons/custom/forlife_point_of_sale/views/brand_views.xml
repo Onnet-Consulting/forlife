@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <tree string="brand_tree" editable="bottom">
                     <field name="name"/>
+                    <field name="code"/>
                 </tree>
             </field>
         </record>
@@ -18,6 +19,7 @@
             <field name="arch" type="xml">
                 <search string="Search">
                     <field name="name"/>
+                    <field name="code"/>
                 </search>
             </field>
         </record>
