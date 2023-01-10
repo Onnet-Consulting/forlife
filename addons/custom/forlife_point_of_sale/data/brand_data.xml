@@ -2,12 +2,14 @@
 <odoo>
     <data>
 
-        <record id="brand_format_id" model="brand">
+        <record id="brand_format" model="res.brand">
             <field name="name">Format</field>
+            <field name="code">format</field>
         </record>
 
-        <record id="brand_tokyolife_id" model="brand">
+        <record id="brand_tokyolife" model="res.brand">
             <field name="name">TokyoLife</field>
+            <field name="code">tokyolife</field>
         </record>
 
     </data>

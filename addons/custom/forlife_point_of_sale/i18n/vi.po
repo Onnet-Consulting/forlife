@@ -20,7 +20,7 @@ msgstr ""
 #. module: forlife_point_of_sale
 #: model:ir.actions.act_window,name:forlife_point_of_sale.brand_action
 #: model:ir.model,name:forlife_point_of_sale.model_brand
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__x_brand_id
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__brand_id
 #: model:ir.ui.menu,name:forlife_point_of_sale.brand_menu
 msgid "Brand"
 msgstr "Thương hiệu"

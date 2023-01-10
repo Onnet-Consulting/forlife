@@ -4,7 +4,7 @@
 
         <record id="brand_view_tree" model="ir.ui.view">
             <field name="name">brand_view_tree</field>
-            <field name="model">brand</field>
+            <field name="model">res.brand</field>
             <field name="arch" type="xml">
                 <tree string="brand_tree" editable="bottom">
                     <field name="name"/>
@@ -14,7 +14,7 @@
 
         <record id="brand_view_filter" model="ir.ui.view">
             <field name="name">brand_view_filter</field>
-            <field name="model">brand</field>
+            <field name="model">res.brand</field>
             <field name="arch" type="xml">
                 <search string="Search">
                     <field name="name"/>
@@ -24,7 +24,7 @@
 
         <record id="brand_action" model="ir.actions.act_window">
             <field name="name">Brand</field>
-            <field name="res_model">brand</field>
+            <field name="res_model">res.brand</field>
             <field name="view_mode">tree</field>
         </record>
 

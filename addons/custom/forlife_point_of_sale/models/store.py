@@ -11,7 +11,7 @@ class Store(models.Model):
     contact_id = fields.Many2one('res.partner', string='Contact', required=True)
     cashier_ids = fields.Many2many('res.users', string='Cashiers', required=True)
     employee_ids = fields.Many2many('hr.employee', string='Employees')
-    x_brand_id = fields.Many2one('brand', string='Brand', required=True) # fixme: để tên x_brand_id tránh gây ra lỗi kiểu dữ liệu khi upgrade module, ban đầu khai báo kiểu Char, sẽ điều chỉnh lại thành brand_id vào lần commit code sau
+    brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     stock_location_id = fields.Many2one('stock.location', string='Location', required=True)
     pos_config_ids = fields.One2many('pos.config', 'store_id', string='POS Config', readonly=True)
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method', required=True)
