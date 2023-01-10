@@ -13,7 +13,7 @@
     "license": "LGPL-3",
     'version': '16.0.1.0,0',
 
-    'category': 'Point of Sale customization',
+    'category': 'Point of Sale POPUP CASH IN/OUT',
 
     'depends': [
         'point_of_sale',
@@ -28,10 +28,10 @@
     'application': True,
     'assets': {
         'point_of_sale.assets': [
-            'onnet_forlife_pos_customization/static/src/js/popup.js',
-            'onnet_forlife_pos_customization/static/src/js/onchange_selection.js',
-            'onnet_forlife_pos_customization/static/src/js/CashMoveButton.js',
-            'onnet_forlife_pos_customization/static/src/xml/Popups/CashMovePopup.xml',
+            'forlife_pos_popup_cash/static/src/js/popup.js',
+            'forlife_pos_popup_cash/static/src/js/onchange_selection.js',
+            'forlife_pos_popup_cash/static/src/js/CashMoveButton.js',
+            'forlife_pos_popup_cash/static/src/xml/Popups/CashMovePopup.xml',
         ]
     }
 }

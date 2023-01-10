@@ -1,4 +1,4 @@
-odoo.define('onnet_forlife_pos_customization.popupcustomize', function (require) {
+odoo.define('forlife_pos_popup_cash.popupcustomize', function (require) {
 "use strict";
 
     const { PosGlobalState, Order } = require('point_of_sale.models');
