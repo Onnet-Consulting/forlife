@@ -12,9 +12,8 @@ class ResPartner(models.Model):
 
     group_id = fields.Many2one('res.partner.group', string='Group')
     job_ids = fields.Many2many('res.partner.job', string='Jobs')
-    customer_type = fields.Selection([('employee', 'Employee'), ('app', 'App member'), ('retail', 'Retail')], string='Customer type')
     retail_type_ids = fields.Many2many('res.partner.retail', string='Retail types')
-    show_customer_type = fields.Boolean(compute='_compute_show_customer_type')
+    show_customer_type = fields.Boolean(compute='_compute_show_retail_types')
     birthday = fields.Date(string='Birthday')
     gender = fields.Selection([
         ('male', 'Male'),
@@ -25,15 +24,23 @@ class ResPartner(models.Model):
     barcode = fields.Char(readonly=True)
 
     @api.depends('group_id')
-    def _compute_show_customer_type(self):
+    def _compute_show_retail_types(self):
         for record in self:
             record.show_customer_type = record.group_id == self.env.ref('forlife_pos_1.partner_group_c')
 
     @api.model_create_multi
     def create(self, vals_list):
+        env_context = self.env.context
+        # FIXME: when create partner on PoS, we must update context with is_pos_customer and brand_id
+        tokyolife_brand_id = self.env.ref('forlife_point_of_sale.brand_tokyolife_id').id
+        brand_id = env_context.get('is_pos_customer') and (env_context.get('brand_id') or tokyolife_brand_id)
+        default_retail_type = self.env['res.partner.retail'].search(
+            [('brand_id', '=', brand_id), ('retail_type', '=', 'customer')]
+        ) if brand_id else False
+
         for value in vals_list:
             group_id = value.get('group_id')
-            if self.env.context.get('from_create_company'):
+            if env_context.get('from_create_company'):
                 group_id = self.env.ref('forlife_pos_1.partner_group_3').id
             if group_id:
                 partner_group = self.env['res.partner.group'].browse(group_id)
@@ -43,6 +50,10 @@ class ResPartner(models.Model):
                     value['ref'] = partner_group.code + (value['ref'] or '')
             sanitized_phone_mobile = self.sanitize_phone_and_mobile(value)
             value.update(sanitized_phone_mobile)
+            # add default retail type for POS customer
+            if not value.get('retail_type_ids') and default_retail_type:
+                value.update({'retail_type_ids': [(4, default_retail_type.id)]})
+
         res = super().create(vals_list)
         return res
 

@@ -1,4 +1,45 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <record id="res_partner_retail_tokyolife_employee" model="res.partner.retail">
+        <field name="name">Lẻ nhân viên</field>
+        <field name="brand_id" ref="forlife_point_of_sale.brand_tokyolife_id"/>
+        <field name="code">1</field>
+        <field name="retail_type">employee</field>
+    </record>
+
+    <record id="res_partner_retail_tokyolife_app" model="res.partner.retail">
+        <field name="name">Lẻ App member</field>
+        <field name="brand_id" ref="forlife_point_of_sale.brand_tokyolife_id"/>
+        <field name="code">2</field>
+        <field name="retail_type">app</field>
+    </record>
+
+    <record id="res_partner_retail_tokyolife_customer" model="res.partner.retail">
+        <field name="name">Lẻ</field>
+        <field name="brand_id" ref="forlife_point_of_sale.brand_tokyolife_id"/>
+        <field name="code">3</field>
+        <field name="retail_type">customer</field>
+    </record>
+
+    <record id="res_partner_retail_format_employee" model="res.partner.retail">
+        <field name="name">Lẻ nhân viên</field>
+        <field name="brand_id" ref="forlife_point_of_sale.brand_format_id"/>
+        <field name="code">4</field>
+        <field name="retail_type">employee</field>
+    </record>
+
+    <record id="res_partner_retail_format_app" model="res.partner.retail">
+        <field name="name">Lẻ App member</field>
+        <field name="brand_id" ref="forlife_point_of_sale.brand_format_id"/>
+        <field name="code">5</field>
+        <field name="retail_type">app</field>
+    </record>
+
+    <record id="res_partner_retail_format_customer" model="res.partner.retail">
+        <field name="name">Lẻ</field>
+        <field name="brand_id" ref="forlife_point_of_sale.brand_format_id"/>
+        <field name="code">6</field>
+        <field name="retail_type">customer</field>
+    </record>
 
 </odoo>

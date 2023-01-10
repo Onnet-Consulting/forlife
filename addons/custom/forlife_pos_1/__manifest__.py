@@ -16,6 +16,7 @@
     'depends': [
         'point_of_sale',
         'contacts',
+        'forlife_point_of_sale',
     ],
 
     'data': [
@@ -27,7 +28,7 @@
         'views/res_partner_group_views.xml',
         'views/res_partner_job_views.xml',
         'views/res_partner_views.xml',
-
+        'views/res_partner_retail_views.xml',
     ],
 
     'demo': [

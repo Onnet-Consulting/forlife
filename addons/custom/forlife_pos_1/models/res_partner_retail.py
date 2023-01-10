@@ -8,8 +8,9 @@ class ResPartnerRetail(models.Model):
     _description = 'Partner Retail Type'
 
     name = fields.Char(string="Name", required=True)
-    # FIXME: uncomment below field after merge code from alpha branch
-    # brand_id = fields.Many2one('brand', string='Brand', required=True)
+    brand_id = fields.Many2one('brand', string='Brand', required=True)
     code = fields.Char(string="Code", required=True)
-    is_default = fields.Boolean(string='Is default', default=False,
-                                help="If new partner don't have any retail type, we will get all retail type with this field set to True")
+    retail_type = fields.Selection([('employee', 'Employee'), ('app', 'App'), ('customer', 'Customer')], string='Type')
+
+    def name_get(self):
+        return [(retail.id, '%s %s' % (retail.name, retail.brand_id.name)) for retail in self]
