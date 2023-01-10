@@ -4,12 +4,12 @@
 
         <record id="brand_format" model="res.brand">
             <field name="name">Format</field>
-            <field name="code">format</field>
+            <field name="code">FMT</field>
         </record>
 
         <record id="brand_tokyolife" model="res.brand">
             <field name="name">TokyoLife</field>
-            <field name="code">tokyolife</field>
+            <field name="code">TKL</field>
         </record>
 
     </data>

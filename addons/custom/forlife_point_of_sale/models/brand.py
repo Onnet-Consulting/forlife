@@ -3,7 +3,7 @@
 from odoo import api, fields, models, _
 
 
-class Brand(models.Model):
+class ResBrand(models.Model):
     _name = 'res.brand'
     _description = 'Brand'
 
@@ -11,6 +11,5 @@ class Brand(models.Model):
     code = fields.Char('Code', required=True)
 
     _sql_constraints = [
-        ('name_uniq', 'unique (name)', 'Brand name must be unique !'),
         ('code_uniq', 'unique (code)', 'Brand code must be unique !'),
     ]
