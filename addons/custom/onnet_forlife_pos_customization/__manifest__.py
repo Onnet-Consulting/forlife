@@ -17,14 +17,14 @@
 
     'depends': [
         'point_of_sale',
-        'forlife_point_of_sale'
+        'forlife_point_of_sale',
+        'forlife_promotion'
     ],
 
     'data': [
         'security/ir.model.access.csv',
         'views/store.xml',
         'views/pos_order.xml',
-        'views/pos_order_line.xml'
     ],
     'installable': True,
     'application': True,

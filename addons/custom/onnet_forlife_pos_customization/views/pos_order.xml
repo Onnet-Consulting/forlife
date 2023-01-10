@@ -11,6 +11,11 @@
                     <field name="point_order"/>
                     <field name="point_event_order"/>
                     <field name="total_point"/>
+                    <field name="program_store_point"/>
+                </xpath>
+                <xpath expr="//field[@name='lines']//tree//field[@name='full_product_name']" position="after">
+                    <field name="point_addition"/>
+                    <field name="point_event"/>
                 </xpath>
             </field>
         </record>
