@@ -16,9 +16,21 @@
             <field name="company_registry" position="before">
                 <field name="job_ids" widget="many2many_tags"/>
             </field>
-            <field name="mobile" position="after">
+
+        </field>
+    </record>
+
+    <record id="res_partner_form_email_inherit" model="ir.ui.view">
+        <field name="name">res.partner.email</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="mail.res_partner_view_form_inherit_mail"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='email']/.." position="after">
                 <field name="gender"/>
                 <field name="birthday"/>
+            </xpath>
+            <field name="email" position="before">
+
             </field>
         </field>
     </record>

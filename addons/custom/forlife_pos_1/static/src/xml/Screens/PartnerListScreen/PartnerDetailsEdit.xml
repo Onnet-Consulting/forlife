@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="forlife_pos_1.PartnerDetailsEdit" t-inherit="point_of_sale.PartnerDetailsEdit" t-inherit-mode="extension" owl="1">
+        <xpath expr="//select[@name='country_id']/.." position="after">
+<!--            FIXME: format birthday with locale-->
+            <div class="partner-detail">
+                <span class="label">Birthday</span>
+                <input type="date" class="detail customer-birthday" name="birthday" t-att-value="props.partner.birthday || ''"/>
+            </div>
+            <div class="partner-detail">
+                <span class="label">Gender</span>
+                <t t-set="customer_gender" t-value="props.partner.gender"/>
+                <select class="detail" name="gender" t-on-change="captureChange">
+                    <option value="">None</option>
+                    <option value="male" t-att-selected="customer_gender ? ((customer_gender === 'male') ? true : undefined) : undefined">Male</option>
+                    <option value="female" t-att-selected="customer_gender ? ((customer_gender === 'female') ? true : undefined) : undefined">Female</option>
+                    <option value="other" t-att-selected="customer_gender ? ((customer_gender === 'other') ? true : undefined) : undefined">Other</option>
+                </select>
+            </div>
+            <div class="partner-detail">
+                <span class="label">Group</span>
+                <select class="detail" name="group_id" t-on-change="captureChange">
+                    <t t-foreach="env.pos.partner_groups" t-as="group" t-key="group.id">
+                        <option t-att-value="group.id"
+                                t-att-selected="props.partner.group_id ? ((group.id === props.partner.group_id[0]) ? true : undefined): true">
+                            <t t-esc="group.name"/>
+                        </option>
+                    </t>
+                </select>
+            </div>
+
+        </xpath>
+    </t>
+</templates>

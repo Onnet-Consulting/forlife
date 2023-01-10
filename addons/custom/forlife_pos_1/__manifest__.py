@@ -38,4 +38,10 @@
         'python': ['phonenumbers'],
     },
     'post_init_hook': '_update_required_attribute_for_fields',
+    'assets': {
+        'point_of_sale.assets': [
+            'forlife_pos_1/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml',
+            'forlife_pos_1/static/src/js/models.js',
+        ]
+    },
 }
