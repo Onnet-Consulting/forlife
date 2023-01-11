@@ -7,7 +7,7 @@ class AccountBank(models.Model):
 
     def _prepare_move_line_default_vals(self, counterpart_account_id=None):
         res = super(AccountBank, self)._prepare_move_line_default_vals(counterpart_account_id)
-        if counterpart_account_id is None:
+        if counterpart_account_id is None and self.store_tranfer:
             res[1]['account_id'] = self.pos_session_id.config_id.store_id.account_intermediary_pos.id
             res[1]['partner_id'] = self.pos_session_id.config_id.store_id.contact_id.id
         return res
