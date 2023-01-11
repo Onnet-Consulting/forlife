@@ -72,7 +72,6 @@ class PosSession(models.Model):
         return move
 
     def try_cash_in_out(self, _type, amount, reason, extras):
-        print(extras['reference'])
         sign = 1 if _type == 'in' else -1
         sessions = self.filtered('cash_journal_id')
         if not sessions:
