@@ -17,12 +17,10 @@ class Store(models.Model):
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method', required=True)
 
     @api.model
-    def get_pos_opened(self):
-        query = '''SELECT (SELECT name FROM pos_config WHERE id = ps.config_id) FROM pos_session ps 
-            WHERE ps.state = 'opened' 
-            AND ps.config_id IN (SELECT pos.id FROM pos_config pos 
-                                 WHERE pos.store_id IN (SELECT store_id FROM res_users_store_rel WHERE res_users_id = %s))'''
-        self.env.cr.execute(query, (self._uid,))
+    def get_pos_opened(self, *args, **kwargs):
+        query = '''SELECT (SELECT name FROM pos_config WHERE id = ps.config_id) FROM pos_session ps WHERE ps.state = 'opened' AND ps.config_id = %s'''
+        config_id = args[0].get("config_id", 0)
+        self.env.cr.execute(query, (config_id,))
         data = self.env.cr.fetchall()
 
         return data

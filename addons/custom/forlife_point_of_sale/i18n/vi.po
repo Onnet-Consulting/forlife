@@ -192,3 +192,38 @@ msgstr "Chi tiết cửa hàng"
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.store_view_tree
 msgid "store_tree"
 msgstr "Danh sách cửa hàng"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/popups/pos_opened.xml:0
+#, python-format
+msgid "All pos closed"
+msgstr "Tất cả các POS đã đóng"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
+#, python-format
+msgid "Can't get all opened pos from backend"
+msgstr "Không lấy được các POS từ backend"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
+#, python-format
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/popups/pos_opened.xml:0
+#, python-format
+msgid "Opened POS:"
+msgstr "Các POS đang mở"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
+#, python-format
+msgid "Store Status"
+msgstr "Trạng thái cửa hàng"
