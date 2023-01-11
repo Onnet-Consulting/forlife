@@ -9,6 +9,7 @@ odoo.define('pos_iot.models', function (require) {
         async _processData(loadedData) {
             await super._processData(...arguments);
             this.default_partner_group = loadedData['default_partner_group'];
+            this.default_partner_retail_type_id = loadedData['default_partner_retail_type_id'];
         }
     }
     Registries.Model.extend(PosGlobalState, PosCustomPosGlobalState);

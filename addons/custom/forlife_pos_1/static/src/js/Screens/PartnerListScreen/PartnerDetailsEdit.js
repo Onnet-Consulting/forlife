@@ -8,6 +8,7 @@ odoo.define('forlife_pos_1.PartnerDetailsEdit', function (require) {
             super() {
                 super.setup();
                 this.changes['group_id'] = this.env.pos.default_partner_group.id;
+                this.changes['retail_type_ids'] = [[4, this.env.pos.default_partner_retail_type_id]];
             }
         }
 

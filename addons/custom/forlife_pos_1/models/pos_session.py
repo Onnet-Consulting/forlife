@@ -10,6 +10,11 @@ class PosSession(models.Model):
     def _pos_data_process(self, loaded_data):
         super()._pos_data_process(loaded_data)
         loaded_data['default_partner_group'] = self.env.ref('forlife_pos_1.partner_group_c').read(['name'])[0]
+        default_partner_retail_type = self.env['res.partner.retail'].search(
+            [('brand_id', '=', self.config_id.store_id.brand_id.id), ('retail_type', '=', 'customer')],
+            limit=1
+        )
+        loaded_data['default_partner_retail_type_id'] = default_partner_retail_type[0].id if default_partner_retail_type else False
 
     def _loader_params_res_partner(self):
         res = super()._loader_params_res_partner()

@@ -7,6 +7,7 @@ from phonenumbers import PhoneNumberFormat
 from phonenumbers.phonenumberutil import NumberParseException
 import uuid
 
+
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
@@ -21,7 +22,7 @@ class ResPartner(models.Model):
         ('other', 'Other')
     ], string='Gender')
     ref = fields.Char(readonly=True)
-    barcode = fields.Char(readonly=True)
+    barcode = fields.Char(readonly=True, company_dependent=False)  # a partner has only one barcode
 
     def generate_barcode(self):
         # TODO: add function generate barcode when create app customer
@@ -39,12 +40,10 @@ class ResPartner(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         env_context = self.env.context
-        # FIXME: when create partner on PoS, we must update context with is_pos_customer and brand_id
-        tokyolife_brand_id = self.env.ref('forlife_point_of_sale.brand_tokyolife_id').id
-        brand_id = env_context.get('is_pos_customer') and (env_context.get('brand_id') or tokyolife_brand_id)
-        default_retail_type = self.env['res.partner.retail'].search(
-            [('brand_id', '=', brand_id), ('retail_type', '=', 'customer')]
-        ) if brand_id else False
+        app_brand_code = env_context.get('is_app_customer') and env_context.get('brand_code')
+        if app_brand_code:
+            brand_id = self.env['brand'].search()
+        app_retail_type = self.env['res.partner.retail'].search([('')])
 
         for value in vals_list:
             group_id = value.get('group_id')
@@ -61,6 +60,8 @@ class ResPartner(models.Model):
             # add default retail type for POS customer
             if not value.get('retail_type_ids') and default_retail_type:
                 value.update({'retail_type_ids': [(4, default_retail_type.id)]})
+
+
 
         res = super().create(vals_list)
         return res
