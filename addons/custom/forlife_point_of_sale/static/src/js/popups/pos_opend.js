@@ -16,11 +16,10 @@ odoo.define('forlife_point_of_sale.PosOpenedPopup', function (require) {
                 name: [],
                 error: ""
             });
-            var pos_config_id = self.env.pos.pos_session.config_id[0]
             rpc.query({
                 model: 'store',
                 method: 'get_pos_opened',
-                args: [{"config_id": pos_config_id}],
+                args: [],
             }).then(function (pos_name) {
                 self.pos_opened.name = pos_name[0]
             }, function (err, ev) {
