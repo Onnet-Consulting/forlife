@@ -27,8 +27,13 @@ class PosSession(models.Model):
         return models_to_load
 
     def _loader_params_account_bank_statement_line(self):
-        statement_lines = self.env['account.bank.statement.line'].sudo().search(['|', ('to_store_tranfer','!=',False), ('from_store_tranfer','!=',False), ('pos_session_id','!=',self.id)])
-        statement_lines_pos = [x.id for x in statement_lines]
+        query = """select id from account_bank_statement_line where pos_session_id in
+        (select id from pos_session where config_id in
+        (select id as pos from pos_config where store_id = {}) and state = 'opened')
+        and is_reference = False and pos_session_id != {};
+                                                """.format(self.config_id.store_id.id, self.id)
+        self.env.cr.execute(query)
+        statement_lines_pos = self.env.cr.fetchall()
         return {'search_params': {'domain': [('id', 'in', statement_lines_pos)], 'fields': ['name', 'move_id']}}
 
     def _get_pos_ui_account_bank_statement_line(self, params):
@@ -92,7 +97,10 @@ class PosSession(models.Model):
             statement_line = self.env['account.bank.statement.line'].sudo().search([('id', '=', extras['reference'])])
             account_bank_st_line.write({
                 'ref': 'From {}'.format(statement_line.move_id.name),
-                'from_store_tranfer': statement_line.to_store_tranfer.id
+                'from_store_tranfer': statement_line.pos_session_id.config_id.id
+            })
+            statement_line.write({
+                'is_reference': True
             })
         message_content = [f"Cash {extras['translatedType']}", f'- Amount: {extras["formattedAmount"]}']
         if reason:

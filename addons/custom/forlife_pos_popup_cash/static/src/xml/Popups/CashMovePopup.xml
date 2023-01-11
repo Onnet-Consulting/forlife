@@ -4,14 +4,14 @@
     <xpath expr="//div//main[hasclass('body')]//div[hasclass('cash-move')]" position="inside">
         <div>
             <div>
-                <span style="float: left;margin-left: 20px;">Mã phiếu</span>
-                <span>Loại</span>
-                <span style="float: right;margin-right: 20px;" id="shop_label">Cửa hàng</span>
+                <span style="float: left; font-size:14px;margin-top:5px;">Mã phiếu</span>
+                <span style="font-size:14px;margin-right: 50px;" id="type_store">Loại</span>
+                <span style="float: right;display:none;font-size:14px;margin-top: 3px;" id="shop_label">Cửa hàng</span>
             </div>
             <div>
-                <div style="margin-top:10px;">
-                    <select name="reference" t-model="state.reference" id="ref" style="float:left;border: 1px solid black;width:141px;margin-top:3px;" class="details">
-                        <option>--Chọn mã phiếu--</option>
+                <div style="margin-top:10px;font-size:14px;">
+                    <select name="reference" t-model="state.reference" id="ref" style="float:left;border: 1px solid black;width:141px;" class="details">
+                        <option t-att-value="0">--Chọn mã phiếu--</option>
                         <t t-foreach="env.pos.bank_statement" t-as="bank" t-key="bank.id">
                             <option t-att-value="bank.id">
                                 <t t-esc="bank.name"/>
@@ -19,12 +19,12 @@
                         </t>
                     </select>
                 </div>
-                <div style="margin-bottom:-1px;">
+                <div style="margin-bottom:-1px;font-size:14px;">
                     <select style="margin-left: -119px;border: 1px solid black;margin-bottom:2px;" name="type_tranfer" t-model="state.type_tranfer" id="type"
                             t-on-click="checked_shop" class="details">
                         <option
-                                t-att-selected="false === value"
-                                t-att-value="false"
+                                t-att-selected="0 === value"
+                                t-att-value="0"
                         >--Chọn loại chuyển--
                         </option>
                         <option value="1">Văn phòng</option>
@@ -34,7 +34,7 @@
                 </div>
                 <div>
                     <select name="shop" t-model="state.shop" id="shop"
-                            style="float:right; display:none;margin-top: -20px;border: 1px solid black;" class="details">
+                            style="float:right; display:none;margin-top: -20px;border: 1px solid black;font-size:14px;" class="details">
                         <option>--Chọn cửa hàng--</option>
                         <t t-foreach="env.pos.pos_customizes" t-as="pos" t-key="pos.id">
                             <option t-att-value="pos.id">
