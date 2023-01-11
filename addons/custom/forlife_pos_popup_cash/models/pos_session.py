@@ -8,7 +8,7 @@ class PosSession(models.Model):
 
     def load_pos_data(self):
         loaded_data = super(PosSession, self).load_pos_data()
-        all_pos = self.env['pos.config'].search([])
+        all_pos = self.env['pos.config'].search([('store_id', '=', self.config_id.store_id.id), ('id', '!=', self.config_id.id)])
         vals = []
         for r in all_pos:
             vals.append({
@@ -27,9 +27,9 @@ class PosSession(models.Model):
         return models_to_load
 
     def _loader_params_account_bank_statement_line(self):
-        statement_lines = self.env['account.bank.statement.line'].sudo().search([('store_tranfer','=', self.config_id.id)])
+        statement_lines = self.env['account.bank.statement.line'].sudo().search(['|', ('to_store_tranfer','!=',False), ('from_store_tranfer','!=',False), ('pos_session_id','!=',self.id)])
         statement_lines_pos = [x.id for x in statement_lines]
-        return {'search_params': {'domain': [('id','in', statement_lines_pos)], 'fields': ['name', 'move_id']}}
+        return {'search_params': {'domain': [('id', 'in', statement_lines_pos)], 'fields': ['name', 'move_id']}}
 
     def _get_pos_ui_account_bank_statement_line(self, params):
         return self.env['account.bank.statement.line'].search_read(**params['search_params'])
@@ -83,14 +83,16 @@ class PosSession(models.Model):
                 'amount': sign * amount,
                 'date': fields.Date.context_today(self),
                 'payment_ref': '-'.join([session.name, extras['translatedType'], reason]),
-                'store_tranfer': extras['shop'] if 'shop' in extras and extras['shop'] and extras['type_tranfer'] == 2 else False
+                'to_store_tranfer': extras['shop'] if 'shop' in extras and extras['shop'] and extras['type_tranfer'] == 2 else False,
+                'is_reference': True if 'reference' in extras and extras['reference'] else False
             }
             for session in sessions
         ])
         if 'reference' in extras and extras['reference']:
             statement_line = self.env['account.bank.statement.line'].sudo().search([('id', '=', extras['reference'])])
             account_bank_st_line.write({
-                'ref': 'From {}'.format(statement_line.move_id.name)
+                'ref': 'From {}'.format(statement_line.move_id.name),
+                'from_store_tranfer': statement_line.to_store_tranfer.id
             })
         message_content = [f"Cash {extras['translatedType']}", f'- Amount: {extras["formattedAmount"]}']
         if reason:
