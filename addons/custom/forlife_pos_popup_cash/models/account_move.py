@@ -35,7 +35,6 @@ class AccountMove(models.Model):
                 credit_account = office_cash_account_id
             # more than amount transferred from POS
             elif sign_compare < 0:
-                print('more than amount transferred from POS')
                 debit_account = office_cash_account_id
                 credit_account = store_id.other_payable_account_id.id
         desc = 'POS-Office Transfer Diff: %s' % self.pos_trans_session_id.name or ''
