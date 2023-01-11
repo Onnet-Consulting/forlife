@@ -40,12 +40,12 @@ odoo.define('forlife_pos_popup_cash.CashMoveButton2', function (require) {
             }
             if (type == 'in'){
                  this.showNotification(
-                _.str.sprintf(this.env._t('Thực hiện thu %s thành công!'), formattedAmount),
+                _.str.sprintf(this.env._t('Successfully made a cash in of %s.'), formattedAmount),
                 3000
                 );
             }else {
                  this.showNotification(
-                _.str.sprintf(this.env._t('Thực hiện chi %s thành công!'), formattedAmount),
+                _.str.sprintf(this.env._t('Successfully made a cash out of %s.'), formattedAmount),
                 3000
                 );
             }
