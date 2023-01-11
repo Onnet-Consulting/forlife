@@ -27,14 +27,13 @@ class PosSession(models.Model):
         return models_to_load
 
     def _loader_params_account_bank_statement_line(self):
-        all_pos_in_stores = self.env['pos.config'].sudo().search([('store_id','=', self.config_id.store_id.id)])
-        list_session_same_stores = []
-        for rec in all_pos_in_stores:
-            for r in rec.session_ids:
-                if r.state == 'opened':
-                    list_session_same_stores.append(r.id)
-        statement_lines = self.env['account.bank.statement.line'].sudo().search([('pos_session_id','in',list_session_same_stores),('is_reference','=',False),('pos_session_id','!=',self.id)])
-        statement_lines_pos = [x.id for x in statement_lines]
+        query = """select id from account_bank_statement_line where pos_session_id in
+        (select id from pos_session where config_id in
+        (select id as pos from pos_config where store_id = {}) and state = 'opened')
+        and is_reference = False and pos_session_id != {};
+                                                """.format(self.config_id.store_id.id, self.id)
+        self.env.cr.execute(query)
+        statement_lines_pos = self.env.cr.fetchall()
         return {'search_params': {'domain': [('id', 'in', statement_lines_pos)], 'fields': ['name', 'move_id']}}
 
     def _get_pos_ui_account_bank_statement_line(self, params):
