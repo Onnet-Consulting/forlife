@@ -27,7 +27,13 @@ class PosSession(models.Model):
         return models_to_load
 
     def _loader_params_account_bank_statement_line(self):
-        statement_lines = self.env['account.bank.statement.line'].sudo().search(['|', ('to_store_tranfer','!=',False), ('from_store_tranfer','!=',False), ('pos_session_id','!=',self.id)])
+        all_pos_in_stores = self.env['pos.config'].sudo().search([('store_id','=', self.config_id.store_id.id)])
+        list_session_same_stores = []
+        for rec in all_pos_in_stores:
+            for r in rec.session_ids:
+                if r.state == 'opened':
+                    list_session_same_stores.append(r.id)
+        statement_lines = self.env['account.bank.statement.line'].sudo().search([('pos_session_id','in',list_session_same_stores),('is_reference','=',False),('pos_session_id','!=',self.id)])
         statement_lines_pos = [x.id for x in statement_lines]
         return {'search_params': {'domain': [('id', 'in', statement_lines_pos)], 'fields': ['name', 'move_id']}}
 
@@ -92,7 +98,10 @@ class PosSession(models.Model):
             statement_line = self.env['account.bank.statement.line'].sudo().search([('id', '=', extras['reference'])])
             account_bank_st_line.write({
                 'ref': 'From {}'.format(statement_line.move_id.name),
-                'from_store_tranfer': statement_line.to_store_tranfer.id
+                'from_store_tranfer': statement_line.pos_session_id.config_id.id
+            })
+            statement_line.write({
+                'is_reference': True
             })
         message_content = [f"Cash {extras['translatedType']}", f'- Amount: {extras["formattedAmount"]}']
         if reason:

@@ -3,8 +3,8 @@ from odoo import api, fields, models
 class AccountBank(models.Model):
     _inherit = 'account.bank.statement.line'
 
-    from_store_tranfer = fields.Many2one('pos.config', 'From POS?')
-    to_store_tranfer = fields.Many2one('pos.config', 'To POS?')
+    from_store_tranfer = fields.Many2one('pos.config', 'From POS?', readonly=True)
+    to_store_tranfer = fields.Many2one('pos.config', 'To POS?', readonly=True)
     is_reference = fields.Boolean('Is Reference Tranfer?')
 
     def _prepare_move_line_default_vals(self, counterpart_account_id=None):
