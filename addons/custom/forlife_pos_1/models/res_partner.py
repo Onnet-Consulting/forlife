@@ -62,7 +62,7 @@ class ResPartner(models.Model):
 
     @api.model
     def generate_partner_barcode(self):
-        return str(uuid.uuid1().int >> 74)  # 16 digits
+        return str(uuid.uuid4().int)[:16]  # 16 digits
 
     @api.model
     def get_app_retail_type(self):
@@ -80,8 +80,14 @@ class ResPartner(models.Model):
         app_retail_type_id = self.get_app_retail_type()
 
         for value in vals_list:
-            # generate ref
             group_id = value.get('group_id')
+            # add retail type for App customer
+            if app_retail_type_id:
+                value.update({'retail_type_ids': [(4, app_retail_type_id)]})
+                value.update({'barcode': self.generate_partner_barcode()})
+                group_id = self.env.ref('forlife_pos_1.partner_group_c').id
+
+            # generate ref
             if env_context.get('from_create_company'):
                 group_id = self.env.ref('forlife_pos_1.partner_group_3').id
             if group_id:
@@ -90,10 +96,7 @@ class ResPartner(models.Model):
                     value['ref'] = partner_group.sequence_id.next_by_id()
                 else:
                     value['ref'] = partner_group.code + (value['ref'] or '')
-            # add retail type for App customer
-            if app_retail_type_id:
-                value.update({'retail_type_ids': [(4, app_retail_type_id)]})
-                value.update({'barcode': self.generate_partner_barcode()})
+                value['group_id'] = group_id
 
         res = super().create(vals_list)
         return res
