@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 from phonenumbers import parse as parse_phone_number, format_number, is_valid_number
 from phonenumbers import PhoneNumberFormat
 from phonenumbers.phonenumberutil import NumberParseException
-
+import uuid
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
@@ -22,6 +22,14 @@ class ResPartner(models.Model):
     ], string='Gender')
     ref = fields.Char(readonly=True)
     barcode = fields.Char(readonly=True)
+
+    def generate_barcode(self):
+        # TODO: add function generate barcode when create app customer
+        new_barcode = (str(uuid.uuid1().int >> 74))
+
+    _sql_constraints = [
+        ('unique_barcode', 'UNIQUE(barcode)', 'Only one barcode occurrence by partner')
+    ]
 
     @api.depends('group_id')
     def _compute_show_retail_types(self):

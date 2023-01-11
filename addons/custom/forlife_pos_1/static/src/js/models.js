@@ -5,16 +5,12 @@ odoo.define('pos_iot.models', function (require) {
     const Registries = require('point_of_sale.Registries');
 
 
-    const PosIotPosGlobalState = (PosGlobalState) => class PosIotPosGlobalState extends PosGlobalState {
-        constructor() {
-            super(...arguments);
-        }
-
+    const PosCustomPosGlobalState = (PosGlobalState) => class extends PosGlobalState {
         async _processData(loadedData) {
             await super._processData(...arguments);
-            this.partner_groups = loadedData['res.partner.group'];
+            this.default_partner_group = loadedData['default_partner_group'];
         }
     }
-    Registries.Model.extend(PosGlobalState, PosIotPosGlobalState);
+    Registries.Model.extend(PosGlobalState, PosCustomPosGlobalState);
 
 });

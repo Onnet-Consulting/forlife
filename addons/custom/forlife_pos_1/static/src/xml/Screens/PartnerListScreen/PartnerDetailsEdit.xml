@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates id="template" xml:space="preserve">
-    <t t-name="forlife_pos_1.PartnerDetailsEdit" t-inherit="point_of_sale.PartnerDetailsEdit" t-inherit-mode="extension" owl="1">
+    <t t-name="PartnerDetailsEdit" t-inherit="point_of_sale.PartnerDetailsEdit" t-inherit-mode="extension">
         <xpath expr="//select[@name='country_id']/.." position="after">
 <!--            FIXME: format birthday with locale-->
             <div class="partner-detail">
                 <span class="label">Birthday</span>
-                <input type="date" class="detail customer-birthday" name="birthday" t-att-value="props.partner.birthday || ''"/>
+                <input type="date" class="detail customer-birthday" name="birthday" t-on-change="captureChange"
+                       t-att-value="props.partner.birthday || ''"/>
             </div>
             <div class="partner-detail">
                 <span class="label">Gender</span>
@@ -20,12 +21,9 @@
             <div class="partner-detail">
                 <span class="label">Group</span>
                 <select class="detail" name="group_id" t-on-change="captureChange">
-                    <t t-foreach="env.pos.partner_groups" t-as="group" t-key="group.id">
-                        <option t-att-value="group.id"
-                                t-att-selected="props.partner.group_id ? ((group.id === props.partner.group_id[0]) ? true : undefined): true">
-                            <t t-esc="group.name"/>
+                        <option t-att-value="env.pos.default_partner_group.id" t-att-selected="true">
+                            <t t-esc="env.pos.default_partner_group.name"/>
                         </option>
-                    </t>
                 </select>
             </div>
 
