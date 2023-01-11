@@ -19,14 +19,19 @@ msgstr ""
 
 #. module: forlife_point_of_sale
 #: model:ir.actions.act_window,name:forlife_point_of_sale.brand_action
-#: model:ir.model,name:forlife_point_of_sale.model_brand
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__x_brand_id
+#: model:ir.model,name:forlife_point_of_sale.model_res_brand
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__brand_id
 #: model:ir.ui.menu,name:forlife_point_of_sale.brand_menu
 msgid "Brand"
 msgstr "Thương hiệu"
 
 #. module: forlife_point_of_sale
-#: model:ir.model.constraint,message:forlife_point_of_sale.constraint_brand_name_uniq
+#: model:ir.model.constraint,message:forlife_point_of_sale.constraint_res_brand_code_uniq
+msgid "Brand code must be unique !"
+msgstr "Mã thương hiệu phải là duy nhất !"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.constraint,message:forlife_point_of_sale.constraint_res_brand_name_uniq
 msgid "Brand name must be unique !"
 msgstr "Tên thương hiệu phải là duy nhất !"
 
@@ -36,24 +41,29 @@ msgid "Cashiers"
 msgstr "Thu ngân"
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__contact_id
 msgid "Contact"
 msgstr "Liên hệ cửa hàng"
 
 #. module: forlife_point_of_sale
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_brand__create_uid
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__create_uid
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__create_uid
 msgid "Created by"
 msgstr "Được tạo bởi"
 
 #. module: forlife_point_of_sale
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_brand__create_date
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__create_date
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__create_date
 msgid "Created on"
 msgstr "Được tạo vào"
 
 #. module: forlife_point_of_sale
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_brand__display_name
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__display_name
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
@@ -64,25 +74,25 @@ msgid "Employees"
 msgstr "Nhân viên cửa hàng"
 
 #. module: forlife_point_of_sale
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_brand__id
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__id
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__id
 msgid "ID"
 msgstr ""
 
 #. module: forlife_point_of_sale
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_brand____last_update
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand____last_update
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: forlife_point_of_sale
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_brand__write_uid
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__write_uid
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: forlife_point_of_sale
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_brand__write_date
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__write_date
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__write_date
 msgid "Last Updated on"
 msgstr ""
@@ -93,7 +103,7 @@ msgid "Location"
 msgstr "Địa điểm kho"
 
 #. module: forlife_point_of_sale
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_brand__name
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__name
 msgid "Name"
 msgstr "Tên"
 
@@ -103,6 +113,13 @@ msgstr "Tên"
 #, python-format
 msgid "New"
 msgstr "Mới"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/popups/pos_opened.xml:0
+#, python-format
+msgid "Opened POS:"
+msgstr ""
 
 #. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__pos_config_ids
@@ -148,6 +165,13 @@ msgstr "Quản lý cửa hàng"
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.store_view_form
 msgid "Store Name"
 msgstr "Tên cửa hàng"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
+#, python-format
+msgid "Store Status"
+msgstr ""
 
 #. module: forlife_point_of_sale
 #: model:ir.model.constraint,message:forlife_point_of_sale.constraint_store_name_uniq

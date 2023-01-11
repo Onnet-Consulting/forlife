@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="account_move_view_form_inherit" model="ir.ui.view">
+            <field name="name">account.move.form.view.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <field name="invoice_vendor_bill_id" position="after">
+                    <field name="pos_transfer_cash_2office" invisible="1"/>
+                    <field name="pos_orig_amount"
+                           widget='monetary' options="{'currency_field': 'currency_id'}"
+                           attrs="{'invisible': [('pos_transfer_cash_2office', '=', False)]}"/>
+                </field>
+            </field>
+        </record>
+        <record id="account_move_view_filter_inherit" model="ir.ui.view">
+            <field name="name">account.move.filter.view.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_move_filter"/>
+            <field name="arch" type="xml">
+                <filter name="to_check" position="after">
+                    <separator/>
+                    <filter string="POS Cash Transfer" name="pos_cash_transfer"
+                            domain="[('pos_transfer_cash_2office', '=', True)]"/>
+                </filter>
+            </field>
+        </record>
+    </data>
+</odoo>
