@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="SetPaidPosOrdersButton" owl="1">
+        <div class="control-button o_paid_pos_order_button">
+            <i class="fa fa-link" role="img" aria-label="Paid Pos Orders"
+               title="Paid Pos Orders" /> Paid Pos Orders
+        </div>
+    </t>
+
+</templates>
