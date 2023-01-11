@@ -50,20 +50,20 @@ class AccountMove(models.Model):
                     'name': desc,
                     'partner_id': store_id.contact_id.id,
                     'account_id': debit_account,
-                    'debit': delta_amount > 0 and delta_amount or 0.0,
-                    'credit': delta_amount < 0 and -delta_amount or 0.0,
+                    'debit': delta_amount > 0 and delta_amount or -delta_amount,
+                    'credit': 0.0,
                 }),
                 # credit line
                 (0, 0, {
                     'name': desc,
                     'partner_id': store_id.contact_id.id,
                     'account_id': credit_account,
-                    'debit': delta_amount < 0 and -delta_amount or 0.0,
-                    'credit': delta_amount > 0 and delta_amount or 0.0,
+                    'debit': 0.0,
+                    'credit': delta_amount > 0 and delta_amount or -delta_amount,
                 }),
             ]
         }
-        move = self.create(move_val)._post(soft=False)
+        move = self.create(move_val)
         self.pos_trans_diff_move_id = move.id
         return move
 
@@ -83,6 +83,6 @@ class AccountMove(models.Model):
 
     def button_draft(self):
         for move in self:
-            if move.pos_trans_diff_move_id and move.pos_trans_diff_move_id.state == 'posted':
+            if move.pos_trans_diff_move_id and move.pos_trans_diff_move_id.state in ('draft', 'posted'):
                 raise UserError(_('You must set to draft and delete the journal entry related to pos transfer difference first!'))
         return super().button_draft()
