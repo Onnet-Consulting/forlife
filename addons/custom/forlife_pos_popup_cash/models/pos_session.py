@@ -27,7 +27,9 @@ class PosSession(models.Model):
         return models_to_load
 
     def _loader_params_account_bank_statement_line(self):
-        return {'search_params': {'domain': [('id','in', self.statement_line_ids.ids)], 'fields': ['name', 'move_id']}}
+        statement_lines = self.env['account.bank.statement.line'].sudo().search([('store_tranfer','=', self.config_id.id)])
+        statement_lines_pos = [x.id for x in statement_lines]
+        return {'search_params': {'domain': [('id','in', statement_lines_pos)], 'fields': ['name', 'move_id']}}
 
     def _get_pos_ui_account_bank_statement_line(self, params):
         return self.env['account.bank.statement.line'].search_read(**params['search_params'])
@@ -70,30 +72,33 @@ class PosSession(models.Model):
         return move
 
     def try_cash_in_out(self, _type, amount, reason, extras):
-        res = super(PosSession, self).try_cash_in_out(_type, amount, reason, extras)
-        sign_2 = -1 if _type == 'in' else 1
+        sign = 1 if _type == 'in' else -1
         sessions = self.filtered('cash_journal_id')
-        if extras['reference'] and extras['shop']:
-            payment = self.env['account.bank.statement.line'].create([
-                {
-                    'pos_session_id': extras['shop'],
-                    'journal_id': session.cash_journal_id.id,
-                    'amount': sign_2 * amount,
-                    'date': fields.Date.context_today(self),
-                    'payment_ref': '-'.join([session.name, extras['translatedType'], reason]),
-                }
-                for session in sessions
-            ])
-            bank_statement_lin = self.env['account.bank.statement.line'].sudo().search([('id','=', int(extras['reference']))])
-            try:
-                payment.move_id.write({
-                    'name': 'Ref- {}'.format(bank_statement_lin.name)
-                })
-            except Exception as e:
-                self.message_post(body=e)
+        if not sessions:
+            raise UserError(_("There is no cash payment method for this PoS Session"))
+        account_bank_st_line = self.env['account.bank.statement.line'].create([
+            {
+                'pos_session_id': session.id,
+                'journal_id': session.cash_journal_id.id,
+                'amount': sign * amount,
+                'date': fields.Date.context_today(self),
+                'payment_ref': '-'.join([session.name, extras['translatedType'], reason]),
+                'store_tranfer': extras['shop'] if 'shop' in extras and extras['shop'] and extras['type_tranfer'] == 2 else False
+            }
+            for session in sessions
+        ])
+        if 'reference' in extras and extras['reference']:
+            statement_line = self.env['account.bank.statement.line'].sudo().search([('id', '=', extras['reference'])])
+            account_bank_st_line.write({
+                'ref': 'From {}'.format(statement_line.move_id.name)
+            })
+        message_content = [f"Cash {extras['translatedType']}", f'- Amount: {extras["formattedAmount"]}']
+        if reason:
+            message_content.append(f'- Reason: {reason}')
+        self.message_post(body='<br/>\n'.join(message_content))
         if extras['type_tranfer'] == 1:
             if _type == 'in':
                 raise UserError(_('Amount transferred to company must be a negative number and transfer type \'out\''))
             for session in sessions:
                 session.create_pos_transfer_journal_entry(_type, amount, reason, extras)
-        return res
+        return True
