@@ -10,20 +10,9 @@
                 <xpath expr="//div[@id='other_devices']" position="before">
                     <div class="col-12 col-lg-6 o_setting_box" id="store">
                         <group>
-                            <field name="store_id"/>
+                            <field name="store_id" options="{'no_create': True}"/>
                         </group>
                     </div>
-                </xpath>
-            </field>
-        </record>
-
-        <record id="view_pos_config_kanban_inherit" model="ir.ui.view">
-            <field name="name">pos.config.kanban.view.inherit</field>
-            <field name="model">pos.config</field>
-            <field name="inherit_id" ref="point_of_sale.view_pos_config_kanban"/>
-            <field name="arch" type="xml">
-                <xpath expr="//kanban" position="attributes">
-                    <attribute name="js_class">pos_dashboard_kanban</attribute>
                 </xpath>
             </field>
         </record>

@@ -260,7 +260,7 @@ msgid "August"
 msgstr "Tháng 8"
 
 #. module: forlife_promotion
-#: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__x_brand_id
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__brand_id
 msgid "Brand"
 msgstr "Thương hiệu"
 

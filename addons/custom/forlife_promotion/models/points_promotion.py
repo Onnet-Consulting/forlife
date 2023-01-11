@@ -9,7 +9,7 @@ class PointsPromotion(models.Model):
     _description = 'Points Promotion'
 
     name = fields.Char('Program Name', required=True)
-    x_brand_id = fields.Many2one('brand', string='Brand', required=True) # fixme: để tên x_brand_id tránh gây ra lỗi kiểu dữ liệu khi upgrade module, ban đầu khai báo kiểu Char, sẽ điều chỉnh lại thành brand_id vào lần commit code sau
+    brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     store_ids = fields.Many2many('store', string='Stores', required=True)
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
@@ -33,7 +33,7 @@ class PointsPromotion(models.Model):
 
     def btn_apply(self):
         self.ensure_one()
-        res = self.search([('x_brand_id', '=', self.x_brand_id.id), ('state', '=', 'in_progress')])
+        res = self.search([('brand_id', '=', self.brand_id.id), ('state', '=', 'in_progress')])
         if res:
             raise ValidationError(_('The program cannot be executed because the program "%s" is in progress' % res.name))
         self.state = 'in_progress'
