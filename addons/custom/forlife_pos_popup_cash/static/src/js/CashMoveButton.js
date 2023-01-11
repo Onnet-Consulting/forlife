@@ -38,10 +38,17 @@ odoo.define('forlife_pos_popup_cash.CashMoveButton2', function (require) {
                     this.showPopup('ErrorPopup', { title: printResult.message.title, body: printResult.message.body });
                 }
             }
-            this.showNotification(
-                _.str.sprintf(this.env._t('Successfully made a cash %s of %s.'), type, formattedAmount),
+            if (type == 'in'){
+                 this.showNotification(
+                _.str.sprintf(this.env._t('Thực hiện thu %s thành công!'), formattedAmount),
                 3000
-            );
+                );
+            }else {
+                 this.showNotification(
+                _.str.sprintf(this.env._t('Thực hiện chi %s thành công!'), formattedAmount),
+                3000
+                );
+            }
         }
     }
     Registries.Component.extend(CashMoveButton, CashMoveButton2);
