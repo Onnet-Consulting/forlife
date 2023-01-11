@@ -10,7 +10,7 @@
     'author': "ForLife",
     'website': "",
 
-    'category': 'Point of Sale',
+    'category': 'Sales/Point Of Sale',
     'version': '1.0',
 
     'depends': [
@@ -39,8 +39,8 @@
     },
     'assets': {
         'point_of_sale.assets': [
-            'forlife_pos_1/static/src/xml/**/*.xml',
             'forlife_pos_1/static/src/js/**/*.js',
+            'forlife_pos_1/static/src/xml/**/*.xml',
         ]
     },
     'post_init_hook': '_update_required_attribute_for_fields',

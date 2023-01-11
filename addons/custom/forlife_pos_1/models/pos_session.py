@@ -14,7 +14,7 @@ class PosSession(models.Model):
             [('brand_id', '=', self.config_id.store_id.brand_id.id), ('retail_type', '=', 'customer')],
             limit=1
         )
-        loaded_data['default_partner_retail_type_id'] = default_partner_retail_type[0].id if default_partner_retail_type else False
+        loaded_data['default_partner_retail_type_id'] = default_partner_retail_type.id if default_partner_retail_type else False
 
     def _loader_params_res_partner(self):
         res = super()._loader_params_res_partner()
