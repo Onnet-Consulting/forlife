@@ -6,16 +6,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-04 10:03+0000\n"
-"PO-Revision-Date: 2023-01-04 17:12+0700\n"
+"POT-Creation-Date: 2023-01-12 09:23+0000\n"
+"PO-Revision-Date: 2023-01-12 09:23+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: vi\n"
-"X-Generator: Poedit 2.3\n"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/popups/pos_opened.xml:0
+#, python-format
+msgid "All pos closed"
+msgstr "Tất cả các POS đã đóng"
 
 #. module: forlife_point_of_sale
 #: model:ir.actions.act_window,name:forlife_point_of_sale.brand_action
@@ -31,6 +36,20 @@ msgid "Brand code must be unique !"
 msgstr "Mã thương hiệu phải là duy nhất !"
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
+#, python-format
+msgid "Can't get all opened pos from backend"
+msgstr "Không lấy được các POS từ backend"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
+#, python-format
+msgid "Cancel"
+msgstr "Hủy bỏ"
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__cashier_ids
 msgid "Cashiers"
 msgstr "Thu ngân"
@@ -39,6 +58,11 @@ msgstr "Thu ngân"
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__code
 msgid "Code"
 msgstr "Mã"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__company_id
+msgid "Company"
+msgstr "Công ty"
 
 #. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__contact_id
@@ -103,6 +127,13 @@ msgid "Name"
 msgstr "Tên"
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/popups/pos_opened.xml:0
+#, python-format
+msgid "Opened POS:"
+msgstr "Các POS đang mở"
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__pos_config_ids
 msgid "POS Config"
 msgstr "Danh sách POS"
@@ -122,6 +153,11 @@ msgstr "Cấu hình điểm bán lẻ"
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.store_view_filter
 msgid "Search"
 msgstr "Tìm kiếm"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,help:forlife_point_of_sale.field_store__code
+msgid "Short name used to identify your warehouse"
+msgstr "Mã cửa hàng liên kết từ mã kho"
 
 #. module: forlife_point_of_sale
 #: model:ir.actions.act_window,name:forlife_point_of_sale.store_action
@@ -148,6 +184,18 @@ msgid "Store Name"
 msgstr "Tên cửa hàng"
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
+#, python-format
+msgid "Store Status"
+msgstr "Trạng thái cửa hàng"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__warehouse_id
+msgid "Warehouse"
+msgstr "Kho"
+
+#. module: forlife_point_of_sale
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.brand_view_tree
 msgid "brand_tree"
 msgstr "danh sách thương hiệu"
@@ -161,38 +209,3 @@ msgstr "Chi tiết cửa hàng"
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.store_view_tree
 msgid "store_tree"
 msgstr "Danh sách cửa hàng"
-
-#. module: forlife_point_of_sale
-#. odoo-javascript
-#: code:addons/forlife_point_of_sale/static/src/xml/popups/pos_opened.xml:0
-#, python-format
-msgid "All pos closed"
-msgstr "Tất cả các POS đã đóng"
-
-#. module: forlife_point_of_sale
-#. odoo-javascript
-#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
-#, python-format
-msgid "Can't get all opened pos from backend"
-msgstr "Không lấy được các POS từ backend"
-
-#. module: forlife_point_of_sale
-#. odoo-javascript
-#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
-#, python-format
-msgid "Cancel"
-msgstr "Hủy bỏ"
-
-#. module: forlife_point_of_sale
-#. odoo-javascript
-#: code:addons/forlife_point_of_sale/static/src/xml/popups/pos_opened.xml:0
-#, python-format
-msgid "Opened POS:"
-msgstr "Các POS đang mở"
-
-#. module: forlife_point_of_sale
-#. odoo-javascript
-#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
-#, python-format
-msgid "Store Status"
-msgstr "Trạng thái cửa hàng"
