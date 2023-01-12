@@ -34,7 +34,7 @@ class ResPartner(models.Model):
         ('phone_number_group_uniq', 'unique(phone, group_id)', 'The phone number must be unique in each Partner Group !'),
     ]
 
-    @api.depends('phone')
+    @api.depends('phone', 'create_uid')
     def _compute_parsed_phone(self):
         for rec in self:
             rec.parsed_phone = self.get_valid_phone_number(rec.phone) if rec.phone else False
@@ -44,16 +44,16 @@ class ResPartner(models.Model):
         for rec in self:
             rec.parsed_mobile = self.get_valid_phone_number(rec.mobile) if rec.mobile else False
 
-    @api.constrains('phone')
+    @api.constrains('phone', 'create_uid')
     def _check_phone(self):
         for rec in self:
-            if rec.phone and not self.is_valid_phone_number(rec.phone):
+            if rec.create_uid and rec.create_uid.id != 1 and rec.phone and not self.is_valid_phone_number(rec.phone):
                 raise ValidationError(_('Invalid phone number - %s') % rec.phone)
 
-    @api.constrains('mobile')
+    @api.constrains('mobile', 'create_uid')
     def _check_mobile(self):
         for rec in self:
-            if rec.mobile and not self.is_valid_phone_number(rec.mobile):
+            if rec.create_uid and rec.create_uid.id != 1 and rec.mobile and not self.is_valid_phone_number(rec.mobile):
                 raise ValidationError(_('Invalid mobile number - %s') % rec.mobile)
 
     @api.depends('group_id')
@@ -89,8 +89,10 @@ class ResPartner(models.Model):
             group_id = value.get('group_id')
             # add retail type for App customer
             if app_retail_type_id:
-                value.update({'retail_type_ids': [(4, app_retail_type_id)]})
-                value.update({'barcode': self.generate_partner_barcode()})
+                value.update({
+                    'retail_type_ids': [(4, app_retail_type_id)],
+                    'barcode': self.generate_partner_barcode()
+                })
                 group_id = self.env.ref('forlife_pos_app_member.partner_group_c').id
 
             # generate ref
@@ -113,7 +115,11 @@ class ResPartner(models.Model):
             if len(self) > 1:
                 raise ValueError("Expected singleton: %s" % self)
             if not self.barcode:
-                values.update({'barcode': self.generate_partner_barcode()})
+                values.update({
+                    'barcode': self.generate_partner_barcode(),
+                    'retail_type_ids': [(4, app_retail_type_id)]
+                })
+
         return super().write(values)
 
     @api.model
