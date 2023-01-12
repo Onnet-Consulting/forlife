@@ -8,3 +8,4 @@ from . import res_partner_retail
 from . import pos_session
 from . import pos_config
 from . import models
+from . import stock_warehouse

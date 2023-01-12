@@ -3,9 +3,8 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-from phonenumbers import parse as parse_phone_number, format_number, is_valid_number
-from phonenumbers import PhoneNumberFormat
-from phonenumbers.phonenumberutil import NumberParseException
+from odoo.addons.forlife_pos_app_member.models.res_utility import get_valid_phone_number, is_valid_phone_number
+
 import uuid
 import random
 
@@ -37,23 +36,23 @@ class ResPartner(models.Model):
     @api.depends('phone', 'create_uid')
     def _compute_parsed_phone(self):
         for rec in self:
-            rec.parsed_phone = self.get_valid_phone_number(rec.phone) if rec.phone else False
+            rec.parsed_phone = get_valid_phone_number(rec.phone) if rec.phone else False
 
     @api.depends('mobile')
     def _compute_parsed_mobile(self):
         for rec in self:
-            rec.parsed_mobile = self.get_valid_phone_number(rec.mobile) if rec.mobile else False
+            rec.parsed_mobile = get_valid_phone_number(rec.mobile) if rec.mobile else False
 
     @api.constrains('phone', 'create_uid')
     def _check_phone(self):
         for rec in self:
-            if rec.create_uid and rec.create_uid.id != 1 and rec.phone and not self.is_valid_phone_number(rec.phone):
+            if rec.create_uid and rec.create_uid.id != 1 and rec.phone and not is_valid_phone_number(rec.phone):
                 raise ValidationError(_('Invalid phone number - %s') % rec.phone)
 
     @api.constrains('mobile', 'create_uid')
     def _check_mobile(self):
         for rec in self:
-            if rec.create_uid and rec.create_uid.id != 1 and rec.mobile and not self.is_valid_phone_number(rec.mobile):
+            if rec.create_uid and rec.create_uid.id != 1 and rec.mobile and not is_valid_phone_number(rec.mobile):
                 raise ValidationError(_('Invalid mobile number - %s') % rec.mobile)
 
     @api.depends('group_id')
@@ -131,34 +130,3 @@ class ResPartner(models.Model):
                 offset=offset, limit=limit, order=order, count=count
             )
         return super(ResPartner, self).search(args, offset=offset, limit=limit, order=order, count=count)
-
-    @api.model
-    def get_valid_phone_number(self, phone_number):
-        error_message = _('Invalid phone (mobile) number - %s') % phone_number
-        try:
-            parsed_number = parse_phone_number(phone_number)
-            format_type = PhoneNumberFormat.INTERNATIONAL  # keep region code
-        except NumberParseException as err:
-            if err.error_type == NumberParseException.INVALID_COUNTRY_CODE:
-                # the phone number without prefix region code -> default VieNam's phone number
-                parsed_number = parse_phone_number(phone_number, 'VN')
-                format_type = PhoneNumberFormat.NATIONAL
-            else:
-                raise ValidationError(error_message)
-        if not is_valid_number(parsed_number):
-            raise ValidationError(error_message)
-        return format_number(parsed_number, format_type)
-
-    @api.model
-    def is_valid_phone_number(self, phone_number):
-        try:
-            parsed_number = parse_phone_number(phone_number)
-        except NumberParseException as err:
-            if err.error_type == NumberParseException.INVALID_COUNTRY_CODE:
-                # the phone number without prefix region code -> default VieNam's phone number
-                parsed_number = parse_phone_number(phone_number, 'VN')
-            else:
-                return False
-        if not is_valid_number(parsed_number):
-            return False
-        return True
