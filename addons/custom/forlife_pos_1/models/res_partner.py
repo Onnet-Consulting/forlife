@@ -7,6 +7,7 @@ from phonenumbers import parse as parse_phone_number, format_number, is_valid_nu
 from phonenumbers import PhoneNumberFormat
 from phonenumbers.phonenumberutil import NumberParseException
 import uuid
+import random
 
 
 class ResPartner(models.Model):
@@ -62,7 +63,9 @@ class ResPartner(models.Model):
 
     @api.model
     def generate_partner_barcode(self):
-        return str(uuid.uuid4().int)[:16]  # 16 digits
+        random_str = str(uuid.uuid4().int)
+        barcode = ''.join(random.sample(random_str, k=16))  # pick 16 random digits
+        return barcode
 
     @api.model
     def get_app_retail_type(self):
