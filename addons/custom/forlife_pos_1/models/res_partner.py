@@ -63,9 +63,12 @@ class ResPartner(models.Model):
 
     @api.model
     def generate_partner_barcode(self):
-        random_str = str(uuid.uuid4().int)
-        barcode = ''.join(random.sample(random_str, k=16))  # pick 16 random digits
-        return barcode
+        while True:
+            random_str = str(uuid.uuid4().int)
+            barcode = ''.join(random.sample(random_str, k=16))  # pick 16 random digits
+            self._cr.execute("SELECT 1 FROM res_partner WHERE barcode = %s", [barcode])
+            if not self._cr.fetchall():
+                return barcode
 
     @api.model
     def get_app_retail_type(self):
