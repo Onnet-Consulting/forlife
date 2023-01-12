@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <record id="view_pos_order_form" model="ir.ui.view">
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form" />
+        <field name="arch" type="xml">
+            <field name="is_refunded" position="after">
+                <field name="payment_move_count" invisible="1"/>
+            </field>
+            <button name="refund" position="before">
+                <button
+                    name="%(action_pos_payment_change_wizard)d"
+                    context="{'pos_session_id' : session_id}"
+                    string="Change Payments"
+                    type="action"
+                />
+            </button>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_open_move_payment_change"
+                    type="object"
+                    icon="fa-pencil-square-o"
+                    class="oe_stat_button"
+                    attrs="{'invisible':[('payment_move_count','=',0)]}">
+                    <field name="payment_move_count" widget="statinfo" string="Adjust" />
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

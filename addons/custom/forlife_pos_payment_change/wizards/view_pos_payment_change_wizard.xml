@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_pos_payment_change_wizard_form" model="ir.ui.view">
+        <field name="model">pos.payment.change.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div>
+                        <label for="order_id"/>
+                        <field name="order_id"/>
+                    </div>
+                    <field name="amount_total" invisible="1" />
+                    <hr/>
+                    <div>
+                        <label for="line_ids"/>
+                        <field name="line_ids">
+                            <tree editable="bottom" create="0">
+                                <field name="payment_id" force_save="1"/>
+                                <field name="old_payment_method_id" force_save="1"/>
+                                <field name="amount" force_save="1" sum="Total"/>
+                                <field name="currency_id" force_save="1"/>
+                                <field name="new_payment_method_id" force_save="1"/>
+                            </tree>
+                        </field>
+                    </div>
+                    <footer>
+                        <button
+                            name="button_change_payment"
+                            string="Change Payments"
+                            type="object"
+                            class="oe_highlight"
+                        />
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pos_payment_change_wizard" model="ir.actions.act_window">
+        <field name="name">Change Payments</field>
+        <field name="res_model">pos.payment.change.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
