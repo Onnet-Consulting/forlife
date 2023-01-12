@@ -7,8 +7,8 @@
             <field name="model">res.brand</field>
             <field name="arch" type="xml">
                 <tree string="brand_tree" editable="bottom">
-                    <field name="name"/>
                     <field name="code" readonly="1"/>
+                    <field name="name"/>
                 </tree>
             </field>
         </record>
@@ -18,8 +18,8 @@
             <field name="model">res.brand</field>
             <field name="arch" type="xml">
                 <search string="Search">
-                    <field name="name"/>
                     <field name="code"/>
+                    <field name="name"/>
                 </search>
             </field>
         </record>

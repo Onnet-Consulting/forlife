@@ -31,11 +31,6 @@ msgid "Brand code must be unique !"
 msgstr "Mã thương hiệu phải là duy nhất !"
 
 #. module: forlife_point_of_sale
-#: model:ir.model.constraint,message:forlife_point_of_sale.constraint_res_brand_name_uniq
-msgid "Brand name must be unique !"
-msgstr "Tên thương hiệu phải là duy nhất !"
-
-#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__cashier_ids
 msgid "Cashiers"
 msgstr "Thu ngân"
@@ -108,20 +103,6 @@ msgid "Name"
 msgstr "Tên"
 
 #. module: forlife_point_of_sale
-#. odoo-python
-#: code:addons/forlife_point_of_sale/models/store.py:0
-#, python-format
-msgid "New"
-msgstr "Mới"
-
-#. module: forlife_point_of_sale
-#. odoo-javascript
-#: code:addons/forlife_point_of_sale/static/src/xml/popups/pos_opened.xml:0
-#, python-format
-msgid "Opened POS:"
-msgstr ""
-
-#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__pos_config_ids
 msgid "POS Config"
 msgstr "Danh sách POS"
@@ -165,18 +146,6 @@ msgstr "Quản lý cửa hàng"
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.store_view_form
 msgid "Store Name"
 msgstr "Tên cửa hàng"
-
-#. module: forlife_point_of_sale
-#. odoo-javascript
-#: code:addons/forlife_point_of_sale/static/src/js/popups/pos_opend.js:0
-#, python-format
-msgid "Store Status"
-msgstr ""
-
-#. module: forlife_point_of_sale
-#: model:ir.model.constraint,message:forlife_point_of_sale.constraint_store_name_uniq
-msgid "Store name must be unique !"
-msgstr "Tên cửa hàng phải là duy nhất !"
 
 #. module: forlife_point_of_sale
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.brand_view_tree
