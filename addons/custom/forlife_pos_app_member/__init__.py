@@ -9,7 +9,7 @@ def _update_required_attribute_for_fields(cr, registry):
     env = api.Environment(cr, SUPERUSER_ID, {'active_test': False, 'initial_write_action': True})
     partner_obj = env['res.partner']
     partners = partner_obj.search([('group_id', '=', False)])
-    partners.write({'group_id': env.ref('forlife_pos_1.partner_group_3').id})
+    partners.write({'group_id': env.ref('forlife_pos_app_member.partner_group_3').id})
     for partner in partners:
         partner_id = partner.id
         partner.write({

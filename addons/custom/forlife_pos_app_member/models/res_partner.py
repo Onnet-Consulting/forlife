@@ -59,7 +59,7 @@ class ResPartner(models.Model):
     @api.depends('group_id')
     def _compute_show_retail_types(self):
         for record in self:
-            record.show_customer_type = record.group_id == self.env.ref('forlife_pos_1.partner_group_c')
+            record.show_customer_type = record.group_id == self.env.ref('forlife_pos_app_member.partner_group_c')
 
     @api.model
     def generate_partner_barcode(self):
@@ -91,11 +91,11 @@ class ResPartner(models.Model):
             if app_retail_type_id:
                 value.update({'retail_type_ids': [(4, app_retail_type_id)]})
                 value.update({'barcode': self.generate_partner_barcode()})
-                group_id = self.env.ref('forlife_pos_1.partner_group_c').id
+                group_id = self.env.ref('forlife_pos_app_member.partner_group_c').id
 
             # generate ref
             if env_context.get('from_create_company'):
-                group_id = self.env.ref('forlife_pos_1.partner_group_3').id
+                group_id = self.env.ref('forlife_pos_app_member.partner_group_3').id
             if group_id:
                 partner_group = self.env['res.partner.group'].browse(group_id)
                 if partner_group.sequence_id:
@@ -121,7 +121,7 @@ class ResPartner(models.Model):
         env_context = self.env.context
         if env_context.get('is_app_customer'):
             return super(ResPartner, self).search(
-                expression.AND([[('group_id', '=', self.env.ref('forlife_pos_1.partner_group_c').id)], args]),
+                expression.AND([[('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_c').id)], args]),
                 offset=offset, limit=limit, order=order, count=count
             )
         return super(ResPartner, self).search(args, offset=offset, limit=limit, order=order, count=count)
