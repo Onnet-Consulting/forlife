@@ -104,7 +104,7 @@ class PosSession(models.Model):
                     'is_reference': True
                 })
             else:
-                raise UserError(_('Mã phiếu này đã được sử dụng!'))
+                raise UserError(_('The ticket already in use!'))
         message_content = [f"Cash {extras['translatedType']}", f'- Amount: {extras["formattedAmount"]}']
         if reason:
             message_content.append(f'- Reason: {reason}')

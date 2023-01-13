@@ -240,3 +240,10 @@ msgstr ""
 #, python-format
 msgid "out"
 msgstr ""
+
+#. module: forlife_pos_popup_cash
+#. odoo-python
+#: code:addons/forlife_pos_popup_cash/models/pos_session.py:0
+#, python-format
+msgid "The ticket already in use!"
+msgstr "Mã phiếu đã được sử dụng"
