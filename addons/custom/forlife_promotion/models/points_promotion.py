@@ -31,11 +31,27 @@ class PointsPromotion(models.Model):
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
 
+    @api.constrains('from_date', 'to_date')
+    def _constrains_date(self):
+        for record in self:
+            if record.points_product_ids:
+                if record.from_date > min(record.points_product_ids.mapped('from_date')) or record.to_date < max(record.points_product_ids.mapped('to_date')):
+                    raise ValidationError(_('Invalid program runtime. Please check time on points product tab !'))
+            if record.event_ids:
+                if record.from_date > min(record.event_ids.mapped('from_date')) or record.to_date < max(record.event_ids.mapped('to_date')):
+                    raise ValidationError(_('Invalid program runtime. Please check time on events tab !'))
+
+    def unlink(self):
+        for promotion in self:
+            if promotion.state != "new" or promotion.event_ids or promotion.points_product_ids.filtered(lambda s: s.state == 'effective'):
+                raise ValidationError(_("You can only delete the new points program, no events and points product have not effective!"))
+        return super().unlink()
+
     def btn_apply(self):
         self.ensure_one()
         res = self.search([('brand_id', '=', self.brand_id.id), ('state', '=', 'in_progress')])
         if res:
-            raise ValidationError(_('The program cannot be executed because the program "%s" is in progress' % res.name))
+            raise ValidationError(_("The program cannot be executed because the program '%s' is in progress") % res.name)
         self.state = 'in_progress'
 
     def btn_finish(self):
@@ -48,3 +64,34 @@ class PointsPromotion(models.Model):
 
     def btn_load_all_points_promotion(self):
         self.event_ids.btn_load_points_promotion()
+
+    def action_create_points_product(self):
+        ctx = dict(self._context)
+        ctx.update({
+            'default_points_promotion_id': self.id,
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Create Points Product'),
+            'res_model': 'points.product',
+            'target': 'new',
+            'view_mode': 'form',
+            'views': [[self.env.ref('forlife_promotion.points_product_view_form').id, 'form']],
+            'context': ctx,
+        }
+
+    def action_create_events(self):
+        ctx = dict(self._context)
+        ctx.update({
+            'default_points_promotion_id': self.id,
+            'default_is_lock_change_points_promotion': True,
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Create Event'),
+            'res_model': 'event',
+            'target': 'new',
+            'view_mode': 'form',
+            'views': [[self.env.ref('forlife_promotion.event_view_form').id, 'form']],
+            'context': ctx,
+        }
