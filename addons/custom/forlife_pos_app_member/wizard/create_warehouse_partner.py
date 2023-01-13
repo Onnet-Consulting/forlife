@@ -7,7 +7,7 @@ from odoo.exceptions import ValidationError, UserError
 
 class CreateWarehousePartner(models.TransientModel):
     _name = 'create.warehouse.partner'
-    _description = 'Add warehouse partner'
+    _description = 'Create Warehouse Partner Wizard'
 
     phone = fields.Char(required=True)
     warehouse_id = fields.Many2one('stock.warehouse', string='Warehouse', required=True)
@@ -48,7 +48,7 @@ class CreateWarehousePartner(models.TransientModel):
         warehouse = self.warehouse_id
         return {
             "company_type": "person",
-            "group_id": warehouse.env.ref('forlife_pos_app_member.partner_group_5').id,
+            "group_id": self.env.ref('forlife_pos_app_member.partner_group_5').id,
             "name": warehouse.name,
             "ref": warehouse.code,
             "phone": self.phone

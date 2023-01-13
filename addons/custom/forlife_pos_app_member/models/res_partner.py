@@ -12,7 +12,8 @@ import random
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    group_id = fields.Many2one('res.partner.group', string='Group', copy=False)
+    group_id = fields.Many2one('res.partner.group', string='Group', copy=False,
+                               default=lambda self: self.env.ref('forlife_pos_app_member.partner_group_3', raise_if_not_found=False))
     job_ids = fields.Many2many('res.partner.job', string='Jobs')
     retail_type_ids = fields.Many2many('res.partner.retail', string='Retail types', copy=False)
     show_customer_type = fields.Boolean(compute='_compute_show_retail_types')
@@ -43,16 +44,23 @@ class ResPartner(models.Model):
         for rec in self:
             rec.parsed_mobile = get_valid_phone_number(rec.mobile) if rec.mobile else False
 
-    @api.constrains('phone', 'create_uid')
+    @api.constrains('phone')
     def _check_phone(self):
         for rec in self:
-            if rec.create_uid and rec.create_uid.id != 1 and rec.phone and not is_valid_phone_number(rec.phone):
+            if rec.phone and not is_valid_phone_number(rec.phone):
                 raise ValidationError(_('Invalid phone number - %s') % rec.phone)
 
-    @api.constrains('mobile', 'create_uid')
+    @api.constrains('group_id', 'phone')
+    def _check_required_phone_in_group(self):
+        retail_customer_group = self.env.ref('forlife_pos_app_member.partner_group_c')
+        for rec in self:
+            if not rec.phone and rec.group_id == retail_customer_group:
+                raise ValidationError(_("Phone number is required for group %s") % retail_customer_group.name)
+
+    @api.constrains('mobile')
     def _check_mobile(self):
         for rec in self:
-            if rec.create_uid and rec.create_uid.id != 1 and rec.mobile and not is_valid_phone_number(rec.mobile):
+            if rec.mobile and not is_valid_phone_number(rec.mobile):
                 raise ValidationError(_('Invalid mobile number - %s') % rec.mobile)
 
     @api.depends('group_id')

@@ -25,13 +25,14 @@
         'data/res_partner.xml',
         'data/ir_fields.xml',
         'data/res_partner_retail.xml',
+        'data/hr_data.xml',
         'wizard/create_warehouse_partner_views.xml',
         'views/res_partner_group_views.xml',
         'views/res_partner_job_views.xml',
         'views/res_partner_views.xml',
         'views/res_partner_retail_views.xml',
         'views/stock_warehouse_views.xml',
-
+        'views/hr_employee_views.xml',
     ],
 
     'demo': [
@@ -45,6 +46,5 @@
             'forlife_pos_app_member/static/src/js/**/*.js',
             'forlife_pos_app_member/static/src/xml/**/*.xml',
         ]
-    },
-    'post_init_hook': '_update_required_attribute_for_fields',
+    }
 }
