@@ -5,4 +5,4 @@ from odoo import api, fields, models, _
 class PosConfig(models.Model):
     _inherit = 'pos.config'
 
-    store_id = fields.Many2one('store', string='Store', required=True)
+    store_id = fields.Many2one('store', string='Store', required=True, domain="[('company_id', '=', company_id)]")
