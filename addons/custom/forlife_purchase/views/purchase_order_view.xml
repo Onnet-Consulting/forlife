@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="inherit_purchase_order_form_view" model="ir.ui.view">
+            <field name="name">purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="replace">
+                    <group>
+                        <group class="oe_subtotal_footer oe_right">
+                            <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="total_discount" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            <div class="oe_subtotal_footer_separator oe_inline">
+                                <label for="amount_total"/>
+                            </div>
+                            <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
+                </xpath>
+
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="prod_filter" invisible="1"/>
+                    <field name="purchase_type"/>
+                    <field name="purchase_code"/>
+                </xpath>
+                <xpath expr="//field[@name='currency_id']" position="after">
+                    <field name="active_manual_currency_rate" invisible="1" />
+					<field name="apply_manual_currency_exchange"
+                           attrs="{'invisible': [('active_manual_currency_rate', '=', False)]}" />
+					<field name="manual_currency_exchange_rate"
+                           attrs="{'invisible': ['|',('apply_manual_currency_exchange', '=', False),
+                           ('active_manual_currency_rate', '=', False)],'required':[('apply_manual_currency_exchange', '=', True)]}" />
+                </xpath>
+                <xpath expr="//field[@name='date_order']" position="before">
+<!--                    <field name="purchase_description"/>-->
+                    <field name="has_contract"/>
+                    <field name="has_invoice"/>
+                    <field name="date_order"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']//form//field[@name='product_id']" position="attributes">
+                    <attribute name="context">{'supplier_id': parent.partner_id, 'prod_filter': parent.prod_filter}</attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']//form//field[@name='product_id']" position="after">
+                    <field name="asset_code"/>
+                    <field name="free_good"/>
+                    <field name="secondary_quantity"/>
+                    <field name="discount_percent"/>
+                    <field name="discount"/>
+                    <field name="warehouses_id"/>
+                    <field name="production_id"/>
+                    <field name="cost_center_id" />
+                    <field name="event_id" />
+                    <field name="request_line_id"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']//tree//field[@name='product_id']" position="after">
+                    <field name="asset_code"/>
+                    <field name="free_good"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="before">
+                    <field name="secondary_quantity"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree//field[@name='price_unit']" position="after">
+                    <field name="discount_percent"/>
+                    <field name="discount"/>
+                    <field name="warehouses_id" optional="hide"/>
+                    <field name="production_id" optional="hide"/>
+                    <field name="cost_center_id" optional="hide"/>
+                    <field name="event_id" optional="hide"/>
+                    <field name="request_line_id" optional="hide"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']//tree//field[@name='price_subtotal']" position="replace">
+                    <field name="price_subtotal" string="Discounted Subtotal" widget="monetary" sum="discounted subtotal"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
