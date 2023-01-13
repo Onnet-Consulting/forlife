@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class PointsPromotion(models.Model):
@@ -30,6 +30,12 @@ class PointsPromotion(models.Model):
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
+    
+    def unlink(self):
+        for promotion in self:
+            if promotion.state != "new" or promotion.event_ids:
+                raise UserError(_("You can only delete the new points program and no event!"))
+        return super().unlink()
 
     def btn_apply(self):
         self.ensure_one()

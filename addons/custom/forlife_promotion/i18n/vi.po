@@ -711,7 +711,8 @@ msgstr "Chủ nhật"
 
 #. module: forlife_promotion
 #: model:ir.model.constraint,message:forlife_promotion.constraint_points_product_data_uniq
-msgid "The combination of Point Addition, From Date and To Date must be unique !"
+msgid ""
+"The combination of Point Addition, From Date and To Date must be unique !"
 msgstr "Tổ hợp của Điểm cộng, Từ ngày, Đến ngày phải là duy nhất !"
 
 #. module: forlife_promotion
@@ -727,10 +728,11 @@ msgstr "Thời hạn của sự kiện phải nằm trong thời hạn của ch�
 #: code:addons/forlife_promotion/models/points_product.py:0
 #, python-format
 msgid ""
-"The duration of the point product must be within the duration of the program "
-"\"%s\""
+"The duration of the point product must be within the duration of the program"
+" \"%s\""
 msgstr ""
-"Thời hạn của sản phẩm tích điểm phải nằm trong thời hạn của chương trình \"%s\""
+"Thời hạn của sản phẩm tích điểm phải nằm trong thời hạn của chương trình "
+"\"%s\""
 
 #. module: forlife_promotion
 #. odoo-python
@@ -766,6 +768,13 @@ msgstr "Giá trị quy đổi"
 #: model:dayofweek.data,name:forlife_promotion.dayofweek2
 msgid "Wednesday"
 msgstr "Thứ 4"
+
+#. module: forlife_promotion
+#. odoo-python
+#: code:addons/forlife_promotion/models/points_promotion.py:0
+#, python-format
+msgid "You can only delete the new points program and no event!"
+msgstr "Bạn chỉ có thể xóa chương trình tích điểm mới và không có sự kiện!"
 
 #. module: forlife_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.event_view_form
