@@ -25,11 +25,13 @@
         'data/res_partner.xml',
         'data/ir_fields.xml',
         'data/res_partner_retail.xml',
+        'wizard/create_warehouse_partner_views.xml',
         'views/res_partner_group_views.xml',
         'views/res_partner_job_views.xml',
         'views/res_partner_views.xml',
         'views/res_partner_retail_views.xml',
         'views/stock_warehouse_views.xml',
+
     ],
 
     'demo': [

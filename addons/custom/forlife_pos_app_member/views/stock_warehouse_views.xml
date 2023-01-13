@@ -7,9 +7,13 @@
         <field name="arch" type="xml">
             <xpath expr="//sheet" position="before">
                 <header>
-                    <button name="create_partner" type="object" string="Create partner"/>
+                    <button name="%(forlife_pos_app_member.create_warehouse_partner_action)d" type="action"
+                            string="Create partner" class="oe_highlight" attrs="{'invisible': ['|', ('partner_id', '!=', False), ('id', '=', False)]}"/>
                 </header>
             </xpath>
+            <field name="code" position="attributes">
+                <attribute name="attrs">{'readonly': [('partner_id', '!=', False)]}</attribute>
+            </field>
         </field>
     </record>
 </odoo>
