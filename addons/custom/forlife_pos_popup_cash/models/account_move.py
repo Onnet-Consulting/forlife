@@ -67,7 +67,7 @@ class AccountMove(models.Model):
         self.pos_trans_diff_move_id = move.id
         return move
 
-    def _post(self, soft):
+    def _post(self, soft=True):
         posted = super(AccountMove, self)._post(soft=soft)
         for move in posted:
             if move.pos_transfer_cash_2office and move.pos_orig_amount:
