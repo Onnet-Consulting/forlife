@@ -34,10 +34,6 @@
         'views/stock_warehouse_views.xml',
         'views/hr_employee_views.xml',
     ],
-
-    'demo': [
-        'demo/demo.xml',
-    ],
     'external_dependencies': {
         'python': ['phonenumbers'],
     },
