@@ -6,7 +6,7 @@
             <field name="name">points_product_view_tree</field>
             <field name="model">points.product</field>
             <field name="arch" type="xml">
-                <tree string="points_product_tree">
+                <tree string="points_product_tree" create="0">
                     <field name="product_ids" invisible="1"/>
                     <field name="name"/>
                     <field name="from_date"/>

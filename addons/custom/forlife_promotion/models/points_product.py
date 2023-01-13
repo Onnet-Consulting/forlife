@@ -25,6 +25,12 @@ class PointsProduct(models.Model):
         for line in self:
             line.name = _('%s products') % len(line.product_ids)
 
+    def unlink(self):
+        for event in self:
+            if event.state != "new":
+                raise ValidationError(_("You can only delete the new Points Product!"))
+        return super().unlink()
+
     @api.onchange('points_promotion_id')
     def onchange_points_promotion(self):
         for line in self:
@@ -36,7 +42,7 @@ class PointsProduct(models.Model):
     def _constrains_date(self):
         for record in self:
             if record.points_promotion_id.from_date > record.from_date or record.points_promotion_id.to_date < record.to_date:
-                raise ValidationError(_('The duration of the point product must be within the duration of the program "%s"' % record.points_promotion_id.name))
+                raise ValidationError(_("The duration of the point product must be within the duration of the program '%s'" % record.points_promotion_id.name))
 
     def btn_effective(self):
         self.state = 'effective'
