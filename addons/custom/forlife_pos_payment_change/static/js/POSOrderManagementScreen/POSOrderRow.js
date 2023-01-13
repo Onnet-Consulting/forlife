@@ -22,7 +22,7 @@ odoo.define('forlife_pos_payment_change.POSOrderRow', function (require) {
         // Column getters //
 
         get name() {
-            return this.order.name;
+            return this.order.pos_reference;
         }
         get date() {
             return moment(this.order.date_order).format('YYYY-MM-DD hh:mm A');
@@ -58,7 +58,7 @@ odoo.define('forlife_pos_payment_change.POSOrderRow', function (require) {
             return state_mapping[this.order.state];
         }
         get salesman() {
-            const salesman = this.order.user_id;
+            const salesman = this.order.employee_id;
             return salesman ? salesman[1] : null;
         }
     }

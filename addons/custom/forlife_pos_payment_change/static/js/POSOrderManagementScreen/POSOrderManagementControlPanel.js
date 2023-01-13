@@ -17,7 +17,7 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementControlPanel', functio
         name: 'name',
         order: 'name',
     };
-    const SEARCH_FIELDS = ['name', 'partner_id.display_name', 'date_order'];
+    const SEARCH_FIELDS = ['name', 'partner_id.display_name', 'date_order', 'pos_reference'];
 
     /**
      * @emits close-screen
@@ -36,13 +36,14 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementControlPanel', functio
             if (currentPartner) {
                 this.orderManagementContext.searchString = currentPartner.name;
             }
-//            POSOrderFetcher.setSearchDomain(this._computeDomain());
+            POSOrderFetcher.setSearchDomain(this._computeDomain());
         }
-//        onInputKeydown(event) {
-//            if (event.key === 'Enter') {
-//                this.trigger('search', this._computeDomain());
-//            }
-//        }
+        onInputKeydown(event) {
+            if (event.key === 'Enter') {
+                this.trigger('search', this._computeDomain());
+            }
+        }
+
         get showPageControls() {
             return POSOrderFetcher.lastPage > 1;
         }
@@ -51,38 +52,39 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementControlPanel', functio
             const lastPage = POSOrderFetcher.lastPage;
             return isNaN(lastPage) ? '' : `(${currentPage}/${lastPage})`;
         }
-//        get validSearchTags() {
-//            return VALID_SEARCH_TAGS;
-//        }
-//        get fieldMap() {
-//            return FIELD_MAP;
-//        }
-//        get searchFields() {
-//            return SEARCH_FIELDS;
-//        }
+        get validSearchTags() {
+            return VALID_SEARCH_TAGS;
+        }
+        get fieldMap() {
+            return FIELD_MAP;
+        }
+        get searchFields() {
+            return SEARCH_FIELDS;
+        }
 
-//        _computeDomain() {
-//            let domain = [['state', '!=', 'cancel'],['invoice_status', '!=', 'invoiced']];
-//            const input = this.orderManagementContext.searchString.trim();
-//            if (!input) return domain;
-//
-//            const searchConditions = this.orderManagementContext.searchString.split(/[,&]\s*/);
-//            if (searchConditions.length === 1) {
-//                let cond = searchConditions[0].split(/:\s*/);
-//                if (cond.length === 1) {
-//                  domain = domain.concat(Array(this.searchFields.length - 1).fill('|'));
-//                  domain = domain.concat(this.searchFields.map((field) => [field, 'ilike', `%${cond[0]}%`]));
-//                  return domain;
-//                }
-//            }
-//
-//            for (let cond of searchConditions) {
-//                let [tag, value] = cond.split(/:\s*/);
-//                if (!this.validSearchTags.has(tag)) continue;
-//                domain.push([this.fieldMap[tag], 'ilike', `%${value}%`]);
-//            }
-//            return domain;
-//        }
+        _computeDomain() {
+            let domain = [];
+            const input = this.orderManagementContext.searchString.trim();
+
+            if (!input) return domain;
+            const searchConditions = this.orderManagementContext.searchString.split(/[,&]\s*/);
+
+            if (searchConditions.length === 1) {
+                let cond = searchConditions[0].split(/:\s*/);
+                if (cond.length === 1) {
+                  domain = domain.concat(Array(this.searchFields.length - 1).fill('|'));
+                  domain = domain.concat(this.searchFields.map((field) => [field, 'ilike', `%${cond[0]}%`]));
+
+                  return domain;
+                }
+            }
+            for (let cond of searchConditions) {
+                let [tag, value] = cond.split(/:\s*/);
+                if (!this.validSearchTags.has(tag)) continue;
+                domain.push([this.fieldMap[tag], 'ilike', `%${value}%`]);
+            }
+            return domain;
+        }
         _onClearSearch() {
             this.orderManagementContext.searchString = '';
             this.onInputKeydown({ key: 'Enter' });

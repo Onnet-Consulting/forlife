@@ -38,7 +38,6 @@ class PosPaymentChangeWizard(models.TransientModel):
             'amount': line.amount,
             }
             for line in self.line_ids]
-        print('=============-=-=-=-=-============')
         order.change_payment(order.id, new_payments)
 
         # Note. Because of the poor design of the closing session process

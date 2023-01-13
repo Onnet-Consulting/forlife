@@ -5,13 +5,13 @@
         <div class="order-row"
         t-att-class="{ highlight: highlighted }"
         t-on-click="() => this.trigger('click-sale-order', props.order)">
-            <div class="col name">
-                <div t-if="env.isMobile">Order</div>
-                <div><t t-esc="name"/></div>
-            </div>
             <div class="col date">
                 <div t-if="env.isMobile">Date</div>
                 <div><t t-esc="date"/></div>
+            </div>
+            <div class="col name">
+                <div t-if="env.isMobile">Order Reference</div>
+                <div><t t-esc="name"/></div>
             </div>
             <div class="col partner">
                 <div t-if="env.isMobile">Customer</div>

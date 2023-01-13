@@ -4,8 +4,8 @@
     <t t-name="POSOrderList" owl="1">
         <div class="orders">
             <div class="header-row" t-att-class="{ oe_hidden: env.isMobile }">
-                <div class="col name">Order</div>
                 <div class="col date">Date</div>
+                <div class="col name">Order Reference</div>
                 <div class="col customer">Customer</div>
                 <div class="col salesman">Salesperson</div>
                 <div class="col end total">Total</div>

@@ -21,11 +21,11 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementScreen', function (req
             useListener('click-sale-order', this._onClickPOSOrder);
             useListener('next-page', this._onNextPage);
             useListener('prev-page', this._onPrevPage);
-//            useListener('search', this._onSearch);
+            useListener('search', this._onSearch);
 
             POSOrderFetcher.setComponent(this);
             this.orderManagementContext = useState(contexts.orderManagement);
-//
+
             onMounted(this.onMounted);
             onWillUnmount(this.onWillUnmount);
         }
@@ -51,17 +51,17 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementScreen', function (req
             POSOrderFetcher.off('update', this);
         }
 
-        async _getPayments(id) {
+        async _getPayments(order_id) {
             let payments = await this.rpc({
                 model: 'pos.payment',
                 method: 'search_read',
-                args: [[['pos_order_id', '=', id]], ['id', 'payment_method_id', 'payment_name', 'amount']],
+                args: [[['pos_order_id', '=', order_id]], ['id', 'payment_method_id', 'payment_name', 'amount']],
                 context: this.env.session.user_context,
             });
             let valid_methods = await this.rpc({
                 model: 'pos.order',
                 method: 'get_valid_methods',
-                args: [id],
+                args: [order_id],
                 context: this.env.session.user_context,
             });
 
@@ -72,7 +72,7 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementScreen', function (req
             const { confirmed, payload: selectedOption } = await this.showPopup('SelectionPopup',
             {
                 title: this.env._t('What do you want to do?'),
-                list: [{id:"0", label: this.env._t("Change Method Payment!"), item: true}],
+                list: [{id:"0", label: this.env._t("Change Method Payment"), item: true}],
             });
             let clickedOrder = event.detail
 
@@ -85,28 +85,39 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementScreen', function (req
                         methods: payment_values.valid_methods
                     });
                 if (payload) {
-                    await this.rpc({
-                        model: 'pos.order',
-                        method: 'change_payment',
-                        args: [clickedOrder.id, payload],
-                        context: this.env.session.user_context,
-                    });
+                    try {
+                        await this.rpc({
+                            model: 'pos.order',
+                            method: 'change_payment',
+                            args: [clickedOrder.id, payload],
+                            context: this.env.session.user_context,
+                        });
+                        this.showNotification(
+                            _.str.sprintf(this.env._t('Successfully change the payment method on order!')),
+                            4000
+                        );
+                    }
+                    catch (err) {
+                        var title = this.env._t('ERROR');
+                        var body = this.env._t('Fail change the payment method on the order');
+                        await this.showPopup('ErrorPopup', { title, body });
+                    }
                 }
             }
         }
 
         _onNextPage() {
-            SaleOrderFetcher.nextPage();
+            POSOrderFetcher.nextPage();
         }
 
         _onPrevPage() {
-            SaleOrderFetcher.prevPage();
+            POSOrderFetcher.prevPage();
         }
 
         _onSearch({ detail: domain }) {
-            SaleOrderFetcher.setSearchDomain(domain);
-            SaleOrderFetcher.setPage(1);
-            SaleOrderFetcher.fetch();
+            POSOrderFetcher.setSearchDomain(domain);
+            POSOrderFetcher.setPage(1);
+            POSOrderFetcher.fetch();
         }
 
         get orders() {

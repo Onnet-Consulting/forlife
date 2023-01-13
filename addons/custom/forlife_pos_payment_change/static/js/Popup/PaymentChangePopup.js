@@ -28,15 +28,14 @@ odoo.define('forlife_pos_payment_change.PaymentChangePopup', function(require) {
                 if (payment_id && payment_method_id) {
                     this.state.payload.push({
                         'payment_id': parseInt(payment_id),
-                        'amount': parseInt(amount),
+                        'amount': parseFloat(amount),
                         'payment_method_id': parseInt(payment_method_id)
                     })
                 }
             })
         }
+
         getPayload() {
-        console.log('---------------' + this.state.payload)
-        console.dir(this.state.payload)
             return this.state.payload
         }
 

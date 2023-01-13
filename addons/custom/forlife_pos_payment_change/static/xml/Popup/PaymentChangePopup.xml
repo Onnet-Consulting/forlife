@@ -28,9 +28,9 @@
                 <header class="title drag-handle">
                     <t t-esc="props.title" />
                 </header>
-                <table tyle="width:100%;" class="payment-list">
-                    <thead style="width:100%;" >
-                        <tr>
+                <table style="width:100%;" class="payment-list">
+                    <thead>
+                        <tr height="50px">
                             <th style="width:40%">Previous</th>
                             <th style="width:20%">Amount</th>
                             <th style="width:40%">New Method</th>
@@ -38,11 +38,11 @@
                     </thead>
                     <tbody>
                         <t t-foreach="props.payments" t-as="payment" t-key="payment.id">
-                            <tr class="payment-item">
-                                <td class="o_payment_id" t-att-value="payment.id" t-esc="payment.payment_name"/>
-                                <td class="o_payment_amount" t-esc="payment.amount" t-att-value="payment.amount"/>
-                                <td class="o_payment_method_id">
-                                    <select t-on-click="selectLine">
+                            <tr height="50px" class="payment-item">
+                                <td style="font-weight:normal" class="o_payment_id" t-att-value="payment.id" t-esc="payment.payment_name"/>
+                                <td style="font-weight:normal" class="o_payment_amount" t-esc="this.env.pos.format_currency(payment.amount)" t-att-value="payment.amount"/>
+                                <td style="font-weight:normal" class="o_payment_method_id">
+                                    <select style="border: 1px solid grey"  t-on-click="selectLine">
                                         <option t-att-value="false">Chọn</option>
                                         <t t-foreach="props.methods" t-as="method" t-key="method.id">
                                             <option t-att-value="method.id">
@@ -57,7 +57,7 @@
                 </table>
                 <footer class="footer">
                     <div class="button confirm highlight" t-on-click="confirm">
-                        Ok
+                        Confirm
                     </div>
                     <div class="button cancel" t-on-click="cancel">
                         <t t-esc="props.cancelText" />

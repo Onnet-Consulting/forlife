@@ -9,7 +9,6 @@ class PosPaymentChangeWizardOldLine(models.TransientModel):
     def domain_new_payment_method_id(self):
         PosOrder = self.env['pos.order']
         order = PosOrder.browse(self.env.context.get('active_id'))
-        print(order)
         return [('id', 'in', order.mapped('session_id.payment_method_ids').ids)]
 
     wizard_id = fields.Many2one("pos.payment.change.wizard", required=True)

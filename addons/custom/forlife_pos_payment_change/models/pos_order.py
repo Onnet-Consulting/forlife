@@ -23,8 +23,6 @@ class PosOrder(models.Model):
 
     @api.model
     def change_payment(self, order_id, payment_lines):
-        print(order_id)
-        print(payment_lines)
         pos_order = self.browse(int(order_id))
         allow_update = not pos_order.filtered(lambda x: x.session_id.state == "closed")
         if allow_update:
@@ -81,7 +79,7 @@ class PosOrder(models.Model):
         return True
 
     def _prepare_payment_change_account_move(self, previous_method, new_method, amount):
-        desc = 'Order %s (%s): Payment change %s to %s' % (
+        desc = _('Order %s (%s): Payment change %s to %s') % (
             self.name, self.session_id.name, previous_method.name, new_method.name)
 
         def _move_line(account_id, balance):

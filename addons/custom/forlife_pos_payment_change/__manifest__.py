@@ -37,8 +37,7 @@
             'forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderFetcher.js',
             'forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderList.js',
             'forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderRow.js',
-            'forlife_pos_payment_change/static/js/POSOrderManagementScreen/PaymentChangePopup.js',
-            'forlife_pos_payment_change/static/js/POSOrderManagementScreen/PaymentChangePopupLine.js',
+            'forlife_pos_payment_change/static/js/Popup/PaymentChangePopup.js',
 
             'forlife_pos_payment_change/static/xml/POSOrderButton.xml',
             'forlife_pos_payment_change/static/xml/POSOrderManagementScreen/POSOrderManagementScreen.xml',

@@ -7,15 +7,17 @@
                 <i class="fa fa-angle-double-left"></i>
                 <span t-if="!env.isMobile"> Back</span>
             </div>
-<!--            <div class="item search-box">-->
-<!--                <span class="icon">-->
-<!--                    <i class="fa fa-search" />-->
-<!--                </span>-->
-<!--                <input type="text" t-ref="autofocus" t-model="orderManagementContext.searchString" t-on-keydown="onInputKeydown" placeholder="E.g. customer: Steward, date: 2020-05-09" />-->
-<!--                <span class="clear" t-on-click="() => this.trigger('clear-search')">-->
-<!--                    <i class="fa fa-remove" />-->
-<!--                </span>-->
-<!--            </div>-->
+
+            <div class="item search-box">
+                <span class="icon">
+                    <i class="fa fa-search" />
+                </span>
+                <input type="text" t-ref="autofocus" t-model="orderManagementContext.searchString" t-on-keydown="onInputKeydown" placeholder="E.g. customer: Steward, date: 2020-05-09" />
+                <span class="clear" t-on-click="() => this.trigger('clear-search')">
+                    <i class="fa fa-remove" />
+                </span>
+            </div>
+
             <div t-if="showPageControls" class="item">
                 <div class="page-controls">
                     <div class="previous" t-on-click="() => this.trigger('prev-page')">
