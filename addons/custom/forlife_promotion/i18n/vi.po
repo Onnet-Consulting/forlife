@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-06 11:53+0000\n"
-"PO-Revision-Date: 2023-01-06 11:53+0000\n"
+"POT-Creation-Date: 2023-01-13 09:07+0000\n"
+"PO-Revision-Date: 2023-01-13 09:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -771,15 +771,19 @@ msgstr "Thời hạn của sự kiện phải nằm trong thời hạn của ch�
 #: code:addons/forlife_promotion/models/points_product.py:0
 #, python-format
 msgid ""
-"The duration of the point product must be within the duration of the program '%s'"
-msgstr "Thời hạn của sản phẩm tích điểm phải nằm trong thời hạn của chương trình '%s'"
+"The duration of the point product must be within the duration of the program"
+" '%s'"
+msgstr ""
+"Thời hạn của sản phẩm tích điểm phải nằm trong thời hạn của chương trình "
+"'%s'"
 
 #. module: forlife_promotion
 #. odoo-python
 #: code:addons/forlife_promotion/models/points_promotion.py:0
 #, python-format
 msgid "The program cannot be executed because the program '%s' is in progress"
-msgstr "Không thể áp dụng chương trình vì chương trình '%s' đang được thực hiện"
+msgstr ""
+"Không thể áp dụng chương trình vì chương trình '%s' đang được thực hiện"
 
 #. module: forlife_promotion
 #: model:dayofweek.data,name:forlife_promotion.dayofweek3
