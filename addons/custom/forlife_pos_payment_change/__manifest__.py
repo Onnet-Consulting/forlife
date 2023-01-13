@@ -31,10 +31,22 @@
     ],
     'assets': {
         'point_of_sale.assets': [
-            # 'forlife_point_of_sale/static/src/js/*.js',
-            # 'forlife_point_of_sale/static/src/xml/*.xml',
-            # 'forlife_point_of_sale/static/src/js/popups/*.js',
-            # 'forlife_point_of_sale/static/src/xml/popups/*.xml',
+            'forlife_pos_payment_change/static/js/SetPOSOrderButton.js',
+            'forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderManagementScreen.js',
+            'forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderManagementControlPanel.js',
+            'forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderFetcher.js',
+            'forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderList.js',
+            'forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderRow.js',
+            'forlife_pos_payment_change/static/js/POSOrderManagementScreen/PaymentChangePopup.js',
+            'forlife_pos_payment_change/static/js/POSOrderManagementScreen/PaymentChangePopupLine.js',
+
+            'forlife_pos_payment_change/static/xml/POSOrderButton.xml',
+            'forlife_pos_payment_change/static/xml/POSOrderManagementScreen/POSOrderManagementScreen.xml',
+            'forlife_pos_payment_change/static/xml/POSOrderManagementScreen/POSOrderManagementControlPanel.xml',
+            'forlife_pos_payment_change/static/xml/POSOrderManagementScreen/POSOrderList.xml',
+            'forlife_pos_payment_change/static/xml/POSOrderManagementScreen/POSOrderRow.xml',
+            'forlife_pos_payment_change/static/xml/Popup/PaymentChangePopup.xml',
+
         ],
     }
 }

@@ -16,7 +16,15 @@ class PosOrder(models.Model):
             order.payment_move_count = len(order.change_payment_move_ids)
 
     @api.model
+    def get_valid_methods(self, order_id):
+        order = self.browse(order_id)
+        methods = order.config_id.payment_method_ids  # FIXME: Only get methods not included voucher
+        return [{'id': method.id, 'name': method.name} for method in methods]
+
+    @api.model
     def change_payment(self, order_id, payment_lines):
+        print(order_id)
+        print(payment_lines)
         pos_order = self.browse(int(order_id))
         allow_update = not pos_order.filtered(lambda x: x.session_id.state == "closed")
         if allow_update:
