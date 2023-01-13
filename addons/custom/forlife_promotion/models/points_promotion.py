@@ -43,8 +43,8 @@ class PointsPromotion(models.Model):
 
     def unlink(self):
         for promotion in self:
-            if promotion.state != "new" or promotion.event_ids:
-                raise ValidationError(_("You can only delete the new points program and no event!"))
+            if promotion.state != "new" or promotion.event_ids or promotion.points_product_ids.filtered(lambda s: s.state == 'effective'):
+                raise ValidationError(_("You can only delete the new points program, no events and points product have not effective!"))
         return super().unlink()
 
     def btn_apply(self):

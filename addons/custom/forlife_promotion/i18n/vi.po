@@ -831,8 +831,8 @@ msgstr "Bạn chỉ được xóa Điểm sản phẩm mới!"
 #. odoo-python
 #: code:addons/forlife_promotion/models/points_promotion.py:0
 #, python-format
-msgid "You can only delete the new points program and no event!"
-msgstr "Bạn chỉ có thể xóa chương trình tích điểm mới và không có sự kiện!"
+msgid "You can only delete the new points program, no events and points product have not effective!"
+msgstr "Bạn chỉ có thể xóa chương trình tích điểm mới, không có sự kiện và điểm sản phẩm chưa có hiệu lực!"
 
 #. module: forlife_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.event_view_form
