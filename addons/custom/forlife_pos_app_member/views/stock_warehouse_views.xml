@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_warehouse_inherit" model="ir.ui.view">
+        <field name="name">name</field>
+        <field name="model">stock.warehouse</field>
+        <field name="inherit_id" ref="stock.view_warehouse"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="%(forlife_pos_app_member.create_warehouse_partner_action)d" type="action"
+                            string="Create partner" class="oe_highlight" attrs="{'invisible': ['|', ('partner_id', '!=', False), ('id', '=', False)]}"/>
+                </header>
+            </xpath>
+            <field name="code" position="attributes">
+                <attribute name="attrs">{'readonly': [('partner_id', '!=', False)]}</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

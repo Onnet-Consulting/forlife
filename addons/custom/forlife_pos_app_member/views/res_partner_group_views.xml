@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="res_partner_group_form" model="ir.ui.view">
+            <field name="name">res.partner.group.form</field>
+            <field name="model">res.partner.group</field>
+            <field name="arch" type="xml">
+                <form string="Partner Group">
+                    <sheet>
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="partner_type"/>
+                                <field name="code"/>
+                                <field name="auto_generate"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="res_partner_group_tree" model="ir.ui.view">
+            <field name="name">Partner Groups</field>
+            <field name="model">res.partner.group</field>
+            <field name="arch" type="xml">
+                <tree string="Partner Groups">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="auto_generate"/>
+                    <field name="partner_type"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="res_partner_group_action" model="ir.actions.act_window">
+            <field name="name">Partner Groups</field>
+            <field name="res_model">res.partner.group</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="res_partner_group_menu"
+                  action="res_partner_group_action"
+                  parent="contacts.res_partner_menu_config"
+                  sequence="3"
+        />
+    </data>
+</odoo>

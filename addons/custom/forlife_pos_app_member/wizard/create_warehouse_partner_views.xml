@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="create_warehouse_partner_form" model="ir.ui.view">
+        <field name="name">name</field>
+        <field name="model">create.warehouse.partner</field>
+        <field name="arch" type="xml">
+            <form string="Create partner">
+                <group>
+                    <group>
+                        <field name="phone"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="create_partner" type="object" string="Create Partner" class="btn-primary"/>
+                    <button special="cancel" string="Cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="create_warehouse_partner_action" model="ir.actions.act_window">
+        <field name="name">Create warehouse partner</field>
+        <field name="res_model">create.warehouse.partner</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="create_warehouse_partner_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>
