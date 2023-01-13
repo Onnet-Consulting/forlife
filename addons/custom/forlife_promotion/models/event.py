@@ -42,7 +42,7 @@ class Event(models.Model):
     def _constrains_date(self):
         for record in self:
             if record.points_promotion_id.from_date > record.from_date or record.points_promotion_id.to_date < record.to_date:
-                raise ValidationError(_('The duration of the events must be within the duration of the program "%s"' % record.points_promotion_id.name))
+                raise ValidationError(_('The duration of the events must be within the duration of the program "%s"') % record.points_promotion_id.name)
 
     def unlink(self):
         for event in self:

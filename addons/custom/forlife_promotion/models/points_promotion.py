@@ -51,7 +51,7 @@ class PointsPromotion(models.Model):
         self.ensure_one()
         res = self.search([('brand_id', '=', self.brand_id.id), ('state', '=', 'in_progress')])
         if res:
-            raise ValidationError(_("The program cannot be executed because the program '%s' is in progress" % res.name))
+            raise ValidationError(_("The program cannot be executed because the program '%s' is in progress") % res.name)
         self.state = 'in_progress'
 
     def btn_finish(self):
