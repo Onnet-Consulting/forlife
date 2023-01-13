@@ -32,7 +32,7 @@
                             <group>
                                 <field name="company_id" force_save="1" options="{'no_open': True}"/>
                                 <field name="code" readonly="1" force_save="1"/>
-                                <field name="warehouse_id" domain="[('company_id', '=', company_id)]"/>
+                                <field name="warehouse_id" options="{'no_create': True}" domain="[('company_id', '=', company_id)]"/>
                                 <field name="brand_id" options="{'no_create': True}"/>
                                 <field name="contact_id" options="{'no_create': True}"/>
                                 <field name="stock_location_id" options="{'no_create': True}" domain="[('usage', '=', 'internal'), ('warehouse_id', '=', warehouse_id)]"/>

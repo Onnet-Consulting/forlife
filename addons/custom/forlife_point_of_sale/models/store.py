@@ -18,6 +18,10 @@ class Store(models.Model):
     pos_config_ids = fields.One2many('pos.config', 'store_id', string='POS Config', readonly=True)
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method', required=True)
 
+    @api.onchange('warehouse_id')
+    def onchange_warehouse(self):
+        self.stock_location_id = False
+
     @api.model
     def get_pos_opened(self, *args, **kwargs):
         query = '''SELECT (SELECT name FROM pos_config WHERE id = ps.config_id) FROM pos_session ps WHERE ps.state = 'opened' AND ps.config_id = %s'''
