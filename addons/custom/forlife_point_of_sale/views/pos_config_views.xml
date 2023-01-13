@@ -10,6 +10,7 @@
                 <xpath expr="//div[@id='other_devices']" position="before">
                     <div class="col-12 col-lg-6 o_setting_box" id="store">
                         <group>
+                            <field name="company_id" invisible="1"/>
                             <field name="store_id" options="{'no_create': True}"/>
                         </group>
                     </div>
