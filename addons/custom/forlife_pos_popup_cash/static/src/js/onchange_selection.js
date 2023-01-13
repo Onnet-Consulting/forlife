@@ -26,14 +26,12 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
             if($("#type").val() == 2){
                 $('#shop').css('display', 'block')
                 $('#shop_label').css('display', 'block')
-                $('#type_store').css('margin-right', '0px');
-                $('#type_store').css('margin-left', '19px');
+                $('#type_store').css('margin-right', '14px');
             }
             else {
                 $('#shop').css('display', 'none');
                 $('#shop_label').css('display', 'none');
-                $('#type_store').css('margin-right', '50px');
-                $('#type_store').css('margin-left', '0px');
+                $('#type_store').css('margin-right', '149px');
             }
         }
         getPayload() {
