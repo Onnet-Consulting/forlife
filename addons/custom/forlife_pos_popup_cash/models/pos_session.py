@@ -95,13 +95,16 @@ class PosSession(models.Model):
         ])
         if 'reference' in extras and extras['reference']:
             statement_line = self.env['account.bank.statement.line'].sudo().search([('id', '=', extras['reference'])])
-            account_bank_st_line.write({
-                'ref': 'From {}'.format(statement_line.move_id.name),
-                'from_store_tranfer': statement_line.pos_session_id.config_id.id
-            })
-            statement_line.write({
-                'is_reference': True
-            })
+            if not statement_line.is_reference:
+                account_bank_st_line.write({
+                    'ref': 'From {}'.format(statement_line.move_id.name),
+                    'from_store_tranfer': statement_line.pos_session_id.config_id.id
+                })
+                statement_line.write({
+                    'is_reference': True
+                })
+            else:
+                raise UserError(_('Mã phiếu này đã được sử dụng!'))
         message_content = [f"Cash {extras['translatedType']}", f'- Amount: {extras["formattedAmount"]}']
         if reason:
             message_content.append(f'- Reason: {reason}')
