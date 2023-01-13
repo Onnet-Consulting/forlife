@@ -15,4 +15,16 @@
             </field>
         </field>
     </record>
+
+    <record id="action_create_home_address_from_list" model="ir.actions.server">
+        <field name="name">Create partner</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                records.create_home_address()
+        </field>
+    </record>
 </odoo>

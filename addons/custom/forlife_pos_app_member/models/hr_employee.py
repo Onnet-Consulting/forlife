@@ -7,7 +7,7 @@ from odoo.exceptions import ValidationError
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
-    address_home_id = fields.Many2one(readonly=True)
+    address_home_id = fields.Many2one(readonly=True, copy=False)
 
     def prepare_address_home_value(self):
         self.ensure_one()
@@ -20,8 +20,9 @@ class HrEmployee(models.Model):
         }
 
     def create_home_address(self):
-        if self.address_home_id:
-            raise ValidationError(_("Address home of employee %s already exist") % self.name)
-        address_home = self.env['res.partner'].create(self.prepare_address_home_value())
-        self.write({'address_home_id': address_home.id})
+        for employee in self:
+            if employee.address_home_id:
+                continue
+            address_home = self.env['res.partner'].create(employee.prepare_address_home_value())
+            employee.write({'address_home_id': address_home.id})
         return True
