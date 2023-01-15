@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <field name="is_refunded" position="after">
                 <field name="payment_move_count" invisible="1"/>
+                <field name="has_payment_change" invisible="1"/>
             </field>
             <button name="refund" position="before">
                 <button
@@ -24,6 +25,10 @@
                     <field name="payment_move_count" widget="statinfo" string="Adjust" />
                 </button>
             </xpath>
+            <field name="fiscal_position_id" position="after">
+                <field name="payment_change_note" widget="text"
+                       attrs="{'invisible': [('has_payment_change', '=', False)]}"/>
+            </field>
         </field>
     </record>
 </odoo>

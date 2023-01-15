@@ -19,12 +19,12 @@ odoo.define('forlife_pos_payment_change.PaymentChangePopup', function(require) {
         }
 
         selectLine() {
-            var line_nodes = $('.payment-item')
-            var payload = []
+            var line_nodes = $('.payment-item');
+            var payload = [];
             line_nodes.each((index, el) => {
-                var payment_id = $(el).find('.o_payment_id').attr("value")
-                var amount = $(el).find('.o_payment_amount').attr("value")
-                var payment_method_id = $(el).find('.o_payment_method_id').find(':selected').attr("value")
+                var payment_id = $(el).find('.o_payment_id').attr("value");
+                var amount = $(el).find('.o_payment_amount').attr("value");
+                var payment_method_id = $(el).find('.o_payment_method_id').find(':selected').attr("value");
                 if (payment_id && payment_method_id) {
                     this.state.payload.push({
                         'payment_id': parseInt(payment_id),

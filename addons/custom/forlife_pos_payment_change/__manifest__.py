@@ -19,15 +19,8 @@
     'data': [
         "security/ir.model.access.csv",
         "wizards/view_pos_payment_change_wizard.xml",
-        # "views/view_pos_config.xml",
         "views/view_pos_order.xml",
-        # 'security/forlife_point_of_sale_security.xml',
-        # 'security/ir.model.access.csv',
-        # 'data/brand_data.xml',
-        #
-        # 'views/brand_views.xml',
-        # 'views/store_views.xml',
-        # 'views/pos_config_views.xml',
+        'views/res_config_settings_views.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

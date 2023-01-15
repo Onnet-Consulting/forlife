@@ -31,7 +31,7 @@
                 <table style="width:100%;" class="payment-list">
                     <thead>
                         <tr height="50px">
-                            <th style="width:40%">Previous</th>
+                            <th style="width:40%">Previous Method</th>
                             <th style="width:20%">Amount</th>
                             <th style="width:40%">New Method</th>
                         </tr>

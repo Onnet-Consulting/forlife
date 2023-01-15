@@ -74,13 +74,13 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementScreen', function (req
                 title: this.env._t('What do you want to do?'),
                 list: [{id:"0", label: this.env._t("Change Method Payment"), item: true}],
             });
-            let clickedOrder = event.detail
+            let clickedOrder = event.detail;
 
             let payment_values = await this._getPayments(clickedOrder.id);
             if (payment_values.payments) {
                 const {confirmed, payload} = await this.showPopup('PaymentChangePopup',
                     {
-                        title: this.env._t('Change payment method'),
+                        title: this.env._t('Payment Change: ') + clickedOrder.pos_reference,
                         payments: payment_values.payments,
                         methods: payment_values.valid_methods
                     });
@@ -93,7 +93,7 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementScreen', function (req
                             context: this.env.session.user_context,
                         });
                         this.showNotification(
-                            _.str.sprintf(this.env._t('Successfully change the payment method on order!')),
+                            _.str.sprintf(this.env._t('Successfully change the payment method on the pos order!')),
                             4000
                         );
                     }
