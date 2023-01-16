@@ -23,7 +23,7 @@ odoo.define('forlife_pos_payment_change.SetPOSOrderButton', function(require) {
             });
             const screen = 'POSOrderManagementScreen';
             Gui.showScreen(screen);
-        } catch (e) {
+        } catch (error) {
             if (isConnectionError(error)) {
               this.showPopup('ErrorPopup', {
                   title: this.env._t('Network Error'),
