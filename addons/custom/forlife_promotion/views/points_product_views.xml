@@ -6,7 +6,7 @@
             <field name="name">points_product_view_tree</field>
             <field name="model">points.product</field>
             <field name="arch" type="xml">
-                <tree string="points_product_tree" create="0">
+                <tree string="points_product_tree">
                     <field name="product_ids" invisible="1"/>
                     <field name="name"/>
                     <field name="from_date"/>
@@ -14,6 +14,8 @@
                     <field name="point_addition"/>
                     <field name="state"/>
                     <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object"/>
+                    <button name="btn_edit" string="Edit" icon="fa-pencil" class="oe_highlight" states="new" type="object"/>
+                    <button name="unlink" string="Delete" icon="fa-trash" class="oe_highlight" states="new" type="object"/>
                 </tree>
             </field>
         </record>
@@ -38,7 +40,7 @@
                             </group>
                         </group>
                         <group>
-                            <field name="product_ids" attrs="{'readonly': [('state', '!=', 'new')]}">
+                            <field name="product_ids" attrs="{'readonly': [('state', '!=', 'new')]}" context="{'product_exist_list': product_existed}">
                                 <tree edit="0">
                                     <field name="default_code"/>
                                     <field name="name"/>
@@ -46,6 +48,7 @@
                             </field>
                         </group>
                     </sheet>
+                    <field name="product_existed" invisible="1"/>
                     <field name="points_promotion_id" invisible="1"/>
                 </form>
             </field>

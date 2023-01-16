@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+import json
 
 
 class PointsProduct(models.Model):
@@ -15,6 +16,7 @@ class PointsProduct(models.Model):
     from_date = fields.Datetime('From Date', required=True)
     to_date = fields.Datetime('To Date', required=True)
     state = fields.Selection([('new', _('New')), ('effective', _('Effective'))], string='State', default='new')
+    product_existed = fields.Text(string='Product Existed', compute='compute_product_existed')
 
     _sql_constraints = [
         ('data_uniq', 'unique (points_promotion_id, point_addition, from_date, to_date)', 'The combination of Point Addition, From Date and To Date must be unique !'),
@@ -25,11 +27,28 @@ class PointsProduct(models.Model):
         for line in self:
             line.name = _('%s products') % len(line.product_ids)
 
+    def compute_product_existed(self):
+        for line in self:
+            line.product_existed = json.dumps(line.points_promotion_id.points_product_ids.filtered(lambda f: f.id != line.id).mapped('product_ids.id'))
+
     def unlink(self):
         for event in self:
             if event.state != "new":
                 raise ValidationError(_("You can only delete the new Points Product!"))
         return super().unlink()
+
+    def btn_edit(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Edit Points Product'),
+            'res_model': 'points.product',
+            'target': 'new',
+            'view_mode': 'form',
+            'res_id': self.id,
+            'views': [[self.env.ref('forlife_promotion.points_product_view_form').id, 'form']],
+            'context': dict(self._context),
+        }
 
     @api.onchange('points_promotion_id')
     def onchange_points_promotion(self):

@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+import json
 
 
 class PointsPromotion(models.Model):
@@ -13,17 +14,17 @@ class PointsPromotion(models.Model):
     store_ids = fields.Many2many('store', string='Stores', required=True)
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
-    first_order = fields.Integer('First Order')
+    first_order = fields.Integer('First Order', default=0)
     payment_method_ids = fields.Many2many('pos.payment.method', string='Payment Method', required=True)
-    point_expiration = fields.Integer('Point Expiration')
+    point_expiration = fields.Integer('Point Expiration', default=0)
     point_customer_id = fields.Many2one('res.partner', string='Point Customer', required=True)
     acc_accumulate_points_id = fields.Many2one('account.account', string='Account Accumulate Points', required=True)
     acc_reduce_accumulated_points_id = fields.Many2one('account.account', string='Account Reduce Accumulate Points', required=True)
     acc_tax_reduce_accumulated_points_id = fields.Many2one('account.account', string='Account Tax Reduce Accumulate Points', required=True)
     account_journal_id = fields.Many2one('account.journal', string='Account Journal', required=True)
     state = fields.Selection([('new', _('New')), ('in_progress', _('In Progress')), ('finish', _('Finish'))], string='State', default='new')
-    value_conversion = fields.Integer('Value Conversion', required=True)
-    point_addition = fields.Integer('Point Addition', required=True)
+    value_conversion = fields.Integer('Value Conversion', required=True, default=0)
+    point_addition = fields.Integer('Point Addition', required=True, default=0)
     points_product_ids = fields.One2many('points.product', inverse_name='points_promotion_id', string='Points Product')
     event_ids = fields.One2many('event', inverse_name='points_promotion_id', string='Events')
 
@@ -69,6 +70,7 @@ class PointsPromotion(models.Model):
         ctx = dict(self._context)
         ctx.update({
             'default_points_promotion_id': self.id,
+            'default_product_existed': json.dumps(self.points_product_ids.mapped('product_ids.id')),
         })
         return {
             'type': 'ir.actions.act_window',
