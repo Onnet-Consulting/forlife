@@ -15,9 +15,6 @@ class PosOrder(models.Model):
     def _process_order(self, order, draft, existing_order):
         pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
         pos_order = self.env['pos.order'].browse(pos_id)
-        # point_events = pos_order.program_store_point_id.event_ids.filtered(lambda x: x.from_date <= pos_order.date_order <= x.to_date)
-        # print(point_events)
-        # print(point_event[0])
         return pos_id
 
     def _compute_point_order(self, pos_order):
@@ -33,23 +30,39 @@ class PosOrder(models.Model):
         for pro in pos_order.lines:
             if pro.id in valid_product_ids:
                 valid_money_product += pro.price_subtotal_incl
+
         money_value = valid_money_payment_method - valid_money_product  # Z
-        point_order = money_value/(pos_order.program_store_point_id.value_conversion * pos_order.program_store_point_id.point_addition)
-        point_event_order = money_value/(pos_order.program_store_point_id.value_conversion * pos_order.program_store_point_id.point_addition)
+        point_order = money_value / pos_order.program_store_point_id.value_conversion * pos_order.program_store_point_id.point_addition  # a
+        event_valid = self.get_event_match(pos_order=pos_order)
+        if event_valid:
+            point_event_order = money_value / event_valid.value_conversion * event_valid.point_addition  # b
+
+
+
 
     def get_event_match(self, pos_order):
         point_events = pos_order.program_store_point_id.event_ids.filtered(lambda x: x.from_date <= pos_order.date_order <= x.to_date)
         event_valid = point_events[0]
-        month_of_order = pos_order.date_order.month
-        day_of_order = pos_order.date_order.day
-        day_of_week_order = pos_order.date_order.month
-        hour_of_order = pos_order.date_order.hour
+        time = pos_order.date_order
+        time = time.strftime("%Y-%m-%d %H:%M:%S")
+        create_Date = self._format_time_zone(time)
+        month_of_order = create_Date.month
+        day_of_order = create_Date.day
+        day_of_week_order = create_Date.weekday()
+        hour_of_order = create_Date.hour
+        months_of_event = event_valid.month_ids
+        days_of_event = event_valid.dayofmonth_ids
+        day_of_weeks_event = event_valid.dayofweek_ids
+        hours_of_event = event_valid.hour_ids
+        if month_of_order in [x.code for x in months_of_event] and day_of_order in [x.code for x in days_of_event] and \
+                day_of_week_order in [x.code for x in day_of_weeks_event] and hour_of_order in [x.code for x in hours_of_event]:
+            return event_valid
+        else:
+            return False
 
     @api.model
     def _order_fields(self, ui_order):
         data = super(PosOrder, self)._order_fields(ui_order)
-        # print(create_Date)
-        # print(self.session_id.config_id.store_id)
         program_promotion = self._get_program_promotion(data)
         if program_promotion:
             data['program_store_point_id'] = program_promotion.id
@@ -61,7 +74,7 @@ class PosOrder(models.Model):
         store = session.config_id.store_id
         program_promotion = self.env['points.promotion'].sudo().search(
             [('store_ids', 'in', store.id), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date), ('to_date', '>=', create_Date),
-             ('x_brand_id', '=', store.x_brand_id.id)], limit=1)
+             ('brand_id', '=', store.brand_id.id)], limit=1)
         return program_promotion
 
     def _format_time_zone(self, time):
