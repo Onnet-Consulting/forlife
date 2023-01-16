@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="PaymentChangePopupLine" owl="1">
+        <tr style="height: 100%" t-attf-class="payment-line" t-att-data-id="props.payment.id">
+            <td >
+                <div>
+                    <t t-esc="props.payment.payment_name or ''" />
+                </div>
+            </td>
+            <td t-esc="props.payment.amount"/>
+            <td>
+                <select>
+                    <option>Chọn</option>
+                    <option
+                        t-foreach="props.methods"
+                        t-as="method">
+                        <t t-esc="method.id"/>
+                    </option>
+                </select>
+            </td>
+        </tr>
+    </t>
+
+    <t t-name="PaymentChangePopup" owl="1">
+        <Draggable>
+            <div class="popup popup-selection">
+                <header class="title drag-handle">
+                    <t t-esc="props.title" />
+                </header>
+                <table style="width:100%;" class="payment-list">
+                    <thead>
+                        <tr height="50px">
+                            <th style="width:40%">Previous Method</th>
+                            <th style="width:20%">Amount</th>
+                            <th style="width:40%">New Method</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="props.payments" t-as="payment" t-key="payment.id">
+                            <tr height="50px" class="payment-item">
+                                <td style="font-weight:normal" class="o_payment_id" t-att-value="payment.id" t-esc="payment.payment_name"/>
+                                <td style="font-weight:normal" class="o_payment_amount" t-esc="this.env.pos.format_currency(payment.amount)" t-att-value="payment.amount"/>
+                                <td style="font-weight:normal" class="o_payment_method_id">
+                                    <select style="border: 1px solid grey"  t-on-click="selectLine">
+                                        <option t-att-value="false">Chọn</option>
+                                        <t t-foreach="props.methods" t-as="method" t-key="method.id">
+                                            <option t-att-value="method.id">
+                                                <t t-esc="method.name"/>
+                                            </option>
+                                        </t>
+                                    </select>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+                <footer class="footer">
+                    <div class="button confirm highlight" t-on-click="confirm">
+                        Confirm
+                    </div>
+                    <div class="button cancel" t-on-click="cancel">
+                        <t t-esc="props.cancelText" />
+                    </div>
+                </footer>
+            </div>
+        </Draggable>
+    </t>
+
+</templates>

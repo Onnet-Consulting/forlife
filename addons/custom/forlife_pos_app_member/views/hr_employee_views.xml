@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="hr_employee_form_inherit" model="ir.ui.view">
+        <field name="name">name</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="create_home_address" type="object" string="Create partner" class="oe_highlight"
+                        attrs="{'invisible': ['|', ('address_home_id', '!=', False), ('id', '=', False)]}"
+                        groups="hr.group_hr_user"/>
+            </xpath>
+            <field name="coach_id" position="after">
+                <field name="code"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="action_create_home_address_from_list" model="ir.actions.server">
+        <field name="name">Create partner</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_model_id" ref="hr.model_hr_employee"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                records.create_home_address()
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="res_partner_job_tree" model="ir.ui.view">
+            <field name="name">Jobs</field>
+            <field name="model">res.partner.job</field>
+            <field name="arch" type="xml">
+                <tree string="Jobs" editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="res_partner_job_action" model="ir.actions.act_window">
+            <field name="name">Jobs</field>
+            <field name="res_model">res.partner.job</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <menuitem id="res_partner_job_menu"
+                  action="res_partner_job_action"
+                  parent="contacts.res_partner_menu_config"
+                  sequence="3"
+        />
+    </data>
+</odoo>
