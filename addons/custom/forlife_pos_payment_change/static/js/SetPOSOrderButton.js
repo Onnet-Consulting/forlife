@@ -16,7 +16,7 @@ odoo.define('forlife_pos_payment_change.SetPOSOrderButton', function(require) {
         async onClick() {
         try {
             await this.env.services.rpc({
-                  model: 'sale.order',
+                  model: 'pos.order',
                   method: 'browse',
                   args: [[]],
                   kwargs: { context: this.env.session.user_context },
