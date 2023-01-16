@@ -310,7 +310,7 @@ msgstr "Tạo sự kiện"
 #: code:addons/forlife_promotion/models/points_promotion.py:0
 #, python-format
 msgid "Create Points Product"
-msgstr "Tạo sản phẩm điểm"
+msgstr "Tạo điểm sản phẩm"
 
 #. module: forlife_promotion
 #: model:ir.model.fields,field_description:forlife_promotion.field_dayofmonth_data__create_uid
@@ -662,7 +662,7 @@ msgstr "Đối tượng điểm"
 #. module: forlife_promotion
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__point_expiration
 msgid "Point Expiration"
-msgstr "Thời hạn điểm"
+msgstr "Thời hạn dùng điểm"
 
 #. module: forlife_promotion
 #: model:ir.model,name:forlife_promotion.model_points_product

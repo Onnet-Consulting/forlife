@@ -59,7 +59,7 @@
                         <notebook>
                             <page name="product_point" string="Product Point">
                                 <button name="action_create_points_product" string="Add Product Point" icon="fa-plus" class="oe_stat_button" type="object" attrs="{'invisible': [('state', '=', 'finish')]}"/>
-                                <field name="points_product_ids" attrs="{'readonly': [('state', '=', 'finish')]}"/>
+                                <field name="points_product_ids" readonly="1"/>
                             </page>
                             <page name="event" string="Events">
                                 <button name="action_create_events" string="Add Event" icon="fa-plus" class="oe_stat_button" type="object" attrs="{'invisible': [('state', '=', 'finish')]}"/>
