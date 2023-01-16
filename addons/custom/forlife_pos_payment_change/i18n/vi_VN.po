@@ -219,3 +219,52 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_pos_payment_change.field_pos_payment_change_wizard_line__wizard_id
 msgid "Wizard"
 msgstr ""
+
+#. module: forlife_pos_payment_change
+#. odoo-javascript
+#: code:addons/forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderManagementScreen.js:0
+#, python-format
+msgid "What do you want to do?"
+msgstr "Bạn muốn làm gì?"
+
+#. module: forlife_pos_payment_change
+#. odoo-javascript
+#: code:addons/forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderManagementScreen.js:0
+#, python-format
+msgid "Change Method Payment"
+msgstr "Điều chỉnh phương thức thanh toán"
+
+#. module: forlife_pos_payment_change
+#. odoo-javascript
+#: code:addons/forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderManagementScreen.js:0
+#, python-format
+msgid "Successfully change the payment method on the pos order!"
+msgstr "Điều chỉnh phương thức thanh toán thanh công cho đơn hàng này!"
+
+#. module: forlife_pos_payment_change
+#. odoo-javascript
+#: code:addons/forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderManagementScreen.js:0
+#, python-format
+msgid "Successfully change the payment method on the pos order!"
+msgstr "Điều chỉnh phương thức thanh toán thanh công cho đơn hàng này!"
+
+#. module: forlife_pos_payment_change
+#. odoo-javascript
+#: code:addons/forlife_pos_payment_change/static/xml/Popup/PaymentChangePopup.xml:0
+#, python-format
+msgid "Previous Method"
+msgstr "Phương thức trước"
+
+#. module: forlife_pos_payment_change
+#. odoo-javascript
+#: code:addons/forlife_pos_payment_change/static/xml/Popup/PaymentChangePopup.xml:0
+#, python-format
+msgid "Amount"
+msgstr "Số tiền"
+
+#. module: forlife_pos_payment_change
+#. odoo-javascript
+#: code:addons/forlife_pos_payment_change/static/xml/Popup/PaymentChangePopup.xml:0
+#, python-format
+msgid "New Method"
+msgstr "Phương thức mới"

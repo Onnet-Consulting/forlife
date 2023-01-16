@@ -247,3 +247,10 @@ msgstr ""
 #, python-format
 msgid "The ticket already in use!"
 msgstr "Mã phiếu đã được sử dụng"
+
+#. module: forlife_pos_popup_cash
+#. odoo-javascript
+#: code:addons/forlife_pos_popup_cash/static/src/js/onchange_selection.js:0
+#, python-format
+msgid "Please choose a store before confirming!"
+msgstr "Vui lòng chọn một cửa hàng trước khi xác nhận!"
