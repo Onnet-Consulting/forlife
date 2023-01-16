@@ -39,6 +39,8 @@
             'forlife_pos_payment_change/static/xml/POSOrderManagementScreen/POSOrderRow.xml',
             'forlife_pos_payment_change/static/xml/Popup/PaymentChangePopup.xml',
 
+            'forlife_pos_payment_change/static/css/pos_payment_change.css',
+
         ],
     }
 }
