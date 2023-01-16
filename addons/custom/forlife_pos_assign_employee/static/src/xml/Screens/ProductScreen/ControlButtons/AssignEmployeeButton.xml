@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="forlife_pos_assign_employee.AssignEmployeeButton" owl="1">
+        <div class="control-button">
+            <i class="fa fa-male" role="img" aria-label="Employee" title="Employee"/>
+            Employee
+        </div>
+    </t>
+</templates>

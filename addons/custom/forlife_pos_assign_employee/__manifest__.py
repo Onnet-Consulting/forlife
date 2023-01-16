@@ -1,0 +1,29 @@
+# -*- coding: utf-8 -*-
+{
+    'name': "forlife_pos_assign_employee",
+
+    'summary': """""",
+
+    'description': """
+    """,
+
+    'author': "ForLife",
+    'website': "",
+
+    'category': 'Sales/Point Of Sale',
+    'version': '1.0',
+
+    'depends': [
+        'contacts',
+        'forlife_point_of_sale',
+    ],
+
+    'data': [
+    ],
+    'assets': {
+        'point_of_sale.assets': [
+            'forlife_pos_assign_employee/static/src/js/**/*.js',
+            'forlife_pos_assign_employee/static/src/xml/**/*.xml',
+        ]
+    }
+}
