@@ -1,0 +1,140 @@
+# -*- coding: utf-8 -*-
+
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
+from odoo.osv import expression
+from odoo.addons.forlife_pos_app_member.models.res_utility import get_valid_phone_number, is_valid_phone_number
+
+import uuid
+import random
+
+
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    group_id = fields.Many2one('res.partner.group', string='Group', copy=False,
+                               default=lambda self: self.env.ref('forlife_pos_app_member.partner_group_3', raise_if_not_found=False))
+    job_ids = fields.Many2many('res.partner.job', string='Jobs')
+    retail_type_ids = fields.Many2many('res.partner.retail', string='Retail types', copy=False)
+    show_customer_type = fields.Boolean(compute='_compute_show_retail_types')
+    birthday = fields.Date(string='Birthday')
+    gender = fields.Selection([
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other')
+    ], string='Gender')
+    ref = fields.Char(readonly=True)
+    barcode = fields.Char(readonly=True, company_dependent=False)  # a partner has only one barcode
+    phone = fields.Char(copy=False)
+    parsed_phone = fields.Char(compute="_compute_parsed_phone", string='Parsed phone')
+    parsed_mobile = fields.Char(compute="_compute_parsed_mobile", string='Parsed mobile')
+
+    _sql_constraints = [
+        ('unique_barcode', 'UNIQUE(barcode)', 'Only one barcode occurrence by partner'),
+        ('phone_number_group_uniq', 'unique(phone, group_id)', 'The phone number must be unique in each Partner Group !'),
+    ]
+
+    @api.depends('phone', 'create_uid')
+    def _compute_parsed_phone(self):
+        for rec in self:
+            rec.parsed_phone = get_valid_phone_number(rec.phone) if rec.phone else False
+
+    @api.depends('mobile')
+    def _compute_parsed_mobile(self):
+        for rec in self:
+            rec.parsed_mobile = get_valid_phone_number(rec.mobile) if rec.mobile else False
+
+    @api.constrains('phone')
+    def _check_phone(self):
+        for rec in self:
+            if rec.phone and not is_valid_phone_number(rec.phone):
+                raise ValidationError(_('Invalid phone number - %s') % rec.phone)
+
+    @api.constrains('group_id', 'phone')
+    def _check_required_phone_in_group(self):
+        retail_customer_group = self.env.ref('forlife_pos_app_member.partner_group_c')
+        for rec in self:
+            if not rec.phone and rec.group_id == retail_customer_group:
+                raise ValidationError(_("Phone number is required for group %s") % retail_customer_group.name)
+
+    @api.constrains('mobile')
+    def _check_mobile(self):
+        for rec in self:
+            if rec.mobile and not is_valid_phone_number(rec.mobile):
+                raise ValidationError(_('Invalid mobile number - %s') % rec.mobile)
+
+    @api.depends('group_id')
+    def _compute_show_retail_types(self):
+        for record in self:
+            record.show_customer_type = record.group_id == self.env.ref('forlife_pos_app_member.partner_group_c')
+
+    @api.model
+    def generate_partner_barcode(self):
+        while True:
+            random_str = str(uuid.uuid4().int)
+            barcode = ''.join(random.sample(random_str, k=16))  # pick 16 random digits
+            self._cr.execute("SELECT 1 FROM res_partner WHERE barcode = %s", [barcode])
+            if not self._cr.fetchall():
+                return barcode
+
+    @api.model
+    def get_app_retail_type(self):
+        env_context = self.env.context
+        app_brand_code = env_context.get('is_app_customer') and env_context.get('brand_code')
+        if app_brand_code:
+            app_retail_type_id = self.env['res.partner.retail'].search([('brand_id.code', '=', app_brand_code), ('retail_type', '=', 'app')], limit=1).id
+        else:
+            app_retail_type_id = False
+        return app_retail_type_id
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        env_context = self.env.context
+        app_retail_type_id = self.get_app_retail_type()
+
+        for value in vals_list:
+            group_id = value.get('group_id')
+            # add retail type for App customer
+            if app_retail_type_id:
+                value.update({
+                    'retail_type_ids': [(4, app_retail_type_id)],
+                    'barcode': self.generate_partner_barcode()
+                })
+                group_id = self.env.ref('forlife_pos_app_member.partner_group_c').id
+
+            # generate ref
+            if env_context.get('from_create_company'):
+                group_id = self.env.ref('forlife_pos_app_member.partner_group_3').id
+            if group_id:
+                partner_group = self.env['res.partner.group'].browse(group_id)
+                if partner_group.sequence_id:
+                    value['ref'] = partner_group.sequence_id.next_by_id()
+                else:
+                    value['ref'] = partner_group.code + (value['ref'] or '')
+                value['group_id'] = group_id
+
+        res = super().create(vals_list)
+        return res
+
+    def write(self, values):
+        app_retail_type_id = self.get_app_retail_type()
+        if app_retail_type_id:
+            if len(self) > 1:
+                raise ValueError("Expected singleton: %s" % self)
+            if not self.barcode:
+                values.update({
+                    'barcode': self.generate_partner_barcode(),
+                    'retail_type_ids': [(4, app_retail_type_id)]
+                })
+
+        return super().write(values)
+
+    @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
+        env_context = self.env.context
+        if env_context.get('is_app_customer'):
+            return super(ResPartner, self).search(
+                expression.AND([[('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_c').id)], args]),
+                offset=offset, limit=limit, order=order, count=count
+            )
+        return super(ResPartner, self).search(args, offset=offset, limit=limit, order=order, count=count)

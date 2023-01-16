@@ -5,8 +5,8 @@
         <div>
             <div>
                 <span style="float: left; font-size:14px;margin-top:5px;">Mã phiếu</span>
-                <span style="font-size:14px;margin-right: 50px;" id="type_store">Loại</span>
-                <span style="float: right;display:none;font-size:14px;margin-top: 3px;" id="shop_label">Cửa hàng</span>
+                <span style="font-size:14px;margin-right: 149px;" id="type_store">Loại</span>
+                <span style="float: right;display:none;font-size:14px;margin-top: 3px;margin-right: 80px;" id="shop_label">Cửa hàng</span>
             </div>
             <div>
                 <div style="margin-top:10px;font-size:14px;">

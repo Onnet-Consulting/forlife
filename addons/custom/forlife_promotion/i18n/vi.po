@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-06 11:53+0000\n"
-"PO-Revision-Date: 2023-01-06 11:53+0000\n"
+"POT-Creation-Date: 2023-01-13 09:07+0000\n"
+"PO-Revision-Date: 2023-01-13 09:07+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -246,6 +246,16 @@ msgstr "Kích hoạt"
 
 #. module: forlife_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.points_promotion_view_form
+msgid "Add Event"
+msgstr "Thêm sự kiện"
+
+#. module: forlife_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_promotion.points_promotion_view_form
+msgid "Add Product Point"
+msgstr "Thêm điểm sản phẩm"
+
+#. module: forlife_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_promotion.points_promotion_view_form
 msgid "Apply"
 msgstr "Áp dụng"
 
@@ -287,6 +297,20 @@ msgstr "Mã"
 #: model:ir.model.constraint,message:forlife_promotion.constraint_month_data_code_uniq
 msgid "Code already exists !"
 msgstr "Mã đã tồn tại !"
+
+#. module: forlife_promotion
+#. odoo-python
+#: code:addons/forlife_promotion/models/points_promotion.py:0
+#, python-format
+msgid "Create Event"
+msgstr "Tạo sự kiện"
+
+#. module: forlife_promotion
+#. odoo-python
+#: code:addons/forlife_promotion/models/points_promotion.py:0
+#, python-format
+msgid "Create Points Product"
+msgstr "Tạo sản phẩm điểm"
 
 #. module: forlife_promotion
 #: model:ir.model.fields,field_description:forlife_promotion.field_dayofmonth_data__create_uid
@@ -450,6 +474,24 @@ msgid "In Progress"
 msgstr "Đang thực hiện"
 
 #. module: forlife_promotion
+#. odoo-python
+#: code:addons/forlife_promotion/models/points_promotion.py:0
+#, python-format
+msgid "Invalid program runtime. Please check time on events tab !"
+msgstr ""
+"Thời gian chạy chương trình không hợp lệ. Vui lòng kiểm tra thời gian trên "
+"tab sự kiện !"
+
+#. module: forlife_promotion
+#. odoo-python
+#: code:addons/forlife_promotion/models/points_promotion.py:0
+#, python-format
+msgid "Invalid program runtime. Please check time on points product tab !"
+msgstr ""
+"Thời gian chạy chương trình không hợp lệ. Vui lòng kiểm tra thời gian trên "
+"tab điểm sản phẩm !"
+
+#. module: forlife_promotion
 #: model:month.data,name:forlife_promotion.month1
 msgid "January"
 msgstr "Tháng 1"
@@ -508,6 +550,7 @@ msgstr "Tải tất cả"
 #. module: forlife_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.event_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.event_view_tree
+#: model_terms:ir.ui.view,arch_db:forlife_promotion.points_promotion_view_form
 msgid "Load Program"
 msgstr "Tải chương trình tích điểm"
 
@@ -711,7 +754,8 @@ msgstr "Chủ nhật"
 
 #. module: forlife_promotion
 #: model:ir.model.constraint,message:forlife_promotion.constraint_points_product_data_uniq
-msgid "The combination of Point Addition, From Date and To Date must be unique !"
+msgid ""
+"The combination of Point Addition, From Date and To Date must be unique !"
 msgstr "Tổ hợp của Điểm cộng, Từ ngày, Đến ngày phải là duy nhất !"
 
 #. module: forlife_promotion
@@ -727,17 +771,19 @@ msgstr "Thời hạn của sự kiện phải nằm trong thời hạn của ch�
 #: code:addons/forlife_promotion/models/points_product.py:0
 #, python-format
 msgid ""
-"The duration of the point product must be within the duration of the program "
-"\"%s\""
+"The duration of the point product must be within the duration of the program"
+" '%s'"
 msgstr ""
-"Thời hạn của sản phẩm tích điểm phải nằm trong thời hạn của chương trình \"%s\""
+"Thời hạn của sản phẩm tích điểm phải nằm trong thời hạn của chương trình "
+"'%s'"
 
 #. module: forlife_promotion
 #. odoo-python
 #: code:addons/forlife_promotion/models/points_promotion.py:0
 #, python-format
-msgid "The program cannot be executed because the program \"%s\" is in progress"
-msgstr "Không thể áp dụng chương trình vì chương trình \"%s\" đang được thực hiện"
+msgid "The program cannot be executed because the program '%s' is in progress"
+msgstr ""
+"Không thể áp dụng chương trình vì chương trình '%s' đang được thực hiện"
 
 #. module: forlife_promotion
 #: model:dayofweek.data,name:forlife_promotion.dayofweek3
@@ -766,6 +812,27 @@ msgstr "Giá trị quy đổi"
 #: model:dayofweek.data,name:forlife_promotion.dayofweek2
 msgid "Wednesday"
 msgstr "Thứ 4"
+
+#. module: forlife_promotion
+#. odoo-python
+#: code:addons/forlife_promotion/models/event.py:0
+#, python-format
+msgid "You can only delete the new Event!"
+msgstr "Bạn chỉ có thể xóa Sự kiện mới!"
+
+#. module: forlife_promotion
+#. odoo-python
+#: code:addons/forlife_promotion/models/points_product.py:0
+#, python-format
+msgid "You can only delete the new Points Product!"
+msgstr "Bạn chỉ được xóa Điểm sản phẩm mới!"
+
+#. module: forlife_promotion
+#. odoo-python
+#: code:addons/forlife_promotion/models/points_promotion.py:0
+#, python-format
+msgid "You can only delete the new points program, no events and points product have not effective!"
+msgstr "Bạn chỉ có thể xóa chương trình tích điểm mới, không có sự kiện và điểm sản phẩm chưa có hiệu lực!"
 
 #. module: forlife_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.event_view_form

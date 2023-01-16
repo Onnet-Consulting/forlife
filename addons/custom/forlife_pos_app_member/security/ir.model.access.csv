@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+base_group_user_res_partner_group,base.group.user_res.partner.group,model_res_partner_group,base.group_user,1,0,0,0
+base_group_system_res_partner_group,base.group.system_res_partner_group,model_res_partner_group,base.group_system,1,1,1,1
+base_group_user_res_partner_job,base.group.user_res.partner.job,model_res_partner_job,base.group_user,1,0,0,0
+base_group_system_res_partner_job,base.group.user_res.partner.job,model_res_partner_job,base.group_system,1,1,1,1
+base_group_user_res_partner_retail,base.group.user_res.partner.retail,model_res_partner_retail,base.group_user,1,0,0,0
+base_group_system_res_partner_retail,base.group.system_res.partner.retail,model_res_partner_retail,base.group_system,1,1,1,1
+res_utility,res.utility,model_res_utility,base.group_user,1,1,1,1
+create_warehouse_partner,create_warehouse_partner,model_create_warehouse_partner,base.group_user,1,1,1,0

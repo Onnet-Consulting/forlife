@@ -36,12 +36,19 @@ class Event(models.Model):
                 line.to_date = line.points_promotion_id.to_date
                 line.value_conversion = line.points_promotion_id.value_conversion
                 line.point_addition = line.points_promotion_id.point_addition
+                line.store_ids = line.points_promotion_id.store_ids
 
     @api.constrains('points_promotion_id', 'from_date', 'to_date')
     def _constrains_date(self):
         for record in self:
             if record.points_promotion_id.from_date > record.from_date or record.points_promotion_id.to_date < record.to_date:
-                raise ValidationError(_('The duration of the events must be within the duration of the program "%s"' % record.points_promotion_id.name))
+                raise ValidationError(_('The duration of the events must be within the duration of the program "%s"') % record.points_promotion_id.name)
+
+    def unlink(self):
+        for event in self:
+            if event.state != "new":
+                raise ValidationError(_("You can only delete the new Event!"))
+        return super().unlink()
 
     def btn_effective(self):
         self.state = 'effective'

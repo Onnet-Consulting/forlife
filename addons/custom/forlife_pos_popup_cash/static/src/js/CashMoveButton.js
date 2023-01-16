@@ -1,6 +1,6 @@
 odoo.define('forlife_pos_popup_cash.CashMoveButton2', function (require) {
     'use strict';
-
+    const Chrome = require('point_of_sale.Chrome');
     const CashMoveButton = require('point_of_sale.CashMoveButton');
     const Registries = require('point_of_sale.Registries');
     const { _t } = require('web.core');
@@ -49,6 +49,7 @@ odoo.define('forlife_pos_popup_cash.CashMoveButton2', function (require) {
                 3000
                 );
             }
+            location.reload();
         }
     }
     Registries.Component.extend(CashMoveButton, CashMoveButton2);
