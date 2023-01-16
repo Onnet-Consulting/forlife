@@ -49,7 +49,6 @@ odoo.define('forlife_pos_popup_cash.CashMoveButton2', function (require) {
                 3000
                 );
             }
-            location.reload();
         }
     }
     Registries.Component.extend(CashMoveButton, CashMoveButton2);

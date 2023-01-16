@@ -22,6 +22,17 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
             });
             this.inputAmountRef = useRef('input-amount-ref');
         }
+
+        confirm() {
+            if (parse.float(this.state.type_tranfer) == 2 && parse.float(this.state.shop) ==0 ) {
+                this.state.inputHasError = true;
+                this.errorMessage = this.env._t('Please choose a store before confirming!');
+                return;
+            }
+            return super.confirm();
+        }
+
+
          checked_shop() {
             if($("#type").val() == 2){
                 $('#shop').css('display', 'block')
