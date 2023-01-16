@@ -33,14 +33,19 @@ msgstr "Hủy"
 #. module: forlife_pos_payment_change
 #: model:ir.model.fields,field_description:forlife_pos_payment_change.field_pos_order__change_payment_move_ids
 msgid "Change Payment Move"
-msgstr "Bút toán điều chỉnh phương thức"
+msgstr "Bút toán điều chỉnh thanh toán"
 
 #. module: forlife_pos_payment_change
 #: model:ir.actions.act_window,name:forlife_pos_payment_change.action_pos_payment_change_wizard
 #: model_terms:ir.ui.view,arch_db:forlife_pos_payment_change.view_pos_order_form
 #: model_terms:ir.ui.view,arch_db:forlife_pos_payment_change.view_pos_payment_change_wizard_form
 msgid "Change Payments"
-msgstr "Điều chỉnh phương thức"
+msgstr "Điều chỉnh thanh toán"
+
+#. module: forlife_pos_payment_change
+#: model_terms:ir.ui.view,arch_db:forlife_pos_payment_change.view_pos_payment_change_wizard_form
+msgid "Cancel Entry"
+msgstr "Hủy bút toán"
 
 #. module: forlife_pos_payment_change
 #: model:ir.model,name:forlife_pos_payment_change.model_res_company
@@ -85,7 +90,7 @@ msgstr ""
 #. module: forlife_pos_payment_change
 #: model:ir.model.fields,field_description:forlife_pos_payment_change.field_pos_order__has_payment_change
 msgid "Has payment change"
-msgstr "Có điều chỉnh phương thức"
+msgstr "Có điều chỉnh thanh toán"
 
 #. module: forlife_pos_payment_change
 #: model:ir.model.fields,field_description:forlife_pos_payment_change.field_pos_payment_change_wizard__id
@@ -268,3 +273,10 @@ msgstr "Số tiền"
 #, python-format
 msgid "New Method"
 msgstr "Phương thức mới"
+
+#. module: forlife_pos_payment_change
+#. odoo-javascript
+#: code:addons/forlife_pos_payment_change/static/xml/POSOrderManagementScreen/POSOrderList.xml:0
+#, python-format
+msgid "Order Reference"
+msgstr "Mã đơn hàng"

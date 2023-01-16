@@ -9,6 +9,8 @@ class PosPaymentChangeWizard(models.TransientModel):
     order_id = fields.Many2one(comodel_name='pos.order', string='Order', readonly=True)
     line_ids = fields.One2many('pos.payment.change.wizard.line', 'wizard_id', 'Payment Lines', readonly=False)
     amount_total = fields.Float(string='Total', readonly=True)
+    move_ids = fields.Many2many('account.move', related='order_id.change_payment_move_ids', readonly=False)
+    payment_move_count = fields.Integer(related='order_id.payment_move_count')
 
     @api.model
     def default_get(self, fields):
@@ -47,4 +49,10 @@ class PosPaymentChangeWizard(models.TransientModel):
             order.session_id._check_pos_session_balance()
 
         return True
-        # return {'type': 'ir.actions.act_window_close'}
+
+    def button_cancel_entry(self):
+        if not self.move_ids:
+            return
+        self.move_ids.button_draft()
+        self.move_ids.button_cancel()
+        return True

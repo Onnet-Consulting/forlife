@@ -56,20 +56,31 @@ class PosOrder(models.Model):
 
     def change_payment_closed_session(self, payment_lines):
         payment_change_values = self._prepare_payment_line(payment_lines)
-        moves = self.env['account.move']
+        move_line_vals = []
         for payment, new_payment_val in payment_change_values.items():
             payment_id = self.env['pos.payment'].browse(payment)
             previous_method = payment_id.payment_method_id
-
             new_method = self.env['pos.payment.method'].browse(new_payment_val['payment_method_id'])
 
-            move_val = self._prepare_payment_change_account_move(previous_method, new_method, new_payment_val['amount'])
-            moves |= self.env['account.move'].create(move_val)
-        if moves:
+            move_line_vals += self._prepare_payment_change_account_move_lines(
+                previous_method, new_method, new_payment_val['amount'])
+
+        default_journal = self._get_default_payment_change_journal()
+        move_val = {
+            'ref': _('Order %s (%s): Payment change') % (self.name, self.session_id.name),
+            'currency_id': self.currency_id.id,
+            'journal_id': default_journal.id,
+            'move_type': 'entry',
+            'company_id': self.company_id.id,
+            'line_ids': move_line_vals
+        }
+        move = self.env['account.move'].create(move_val)._post()
+        if move:
+            note = (self.payment_change_note or '') + (self._get_log_payment_change(payment_change_values) or '')
             self.write({
-                'change_payment_move_ids': [[4, move.id] for move in moves],
+                'change_payment_move_ids': [[4, move.id] for move in move],
                 'has_payment_change': True,
-                'payment_change_note': self.payment_change_note + self._get_log_payment_change(payment_change_values) or ''
+                'payment_change_note': note
             })
         return True
 
@@ -77,7 +88,7 @@ class PosOrder(models.Model):
         self.ensure_one()
         payment_change_values = self._prepare_payment_line(payment_lines)
         if payment_change_values:
-            payment_change_note = (self.payment_change_note or '') + (self._get_log_payment_change(payment_change_values) or '')
+            note = (self.payment_change_note or '') + (self._get_log_payment_change(payment_change_values) or '')
             self.env['pos.payment'].browse(payment_change_values.keys()).unlink()
             for line in payment_change_values.values():
                 self.add_payment(line)
@@ -88,7 +99,7 @@ class PosOrder(models.Model):
             self.write({
                 'note': '%s\n%s' % (self.note or '', comment),
                 'has_payment_change': True,
-                'payment_change_note': payment_change_note
+                'payment_change_note': note
             })
         return True
 
@@ -96,7 +107,7 @@ class PosOrder(models.Model):
         return self.company_id.pos_payment_change_journal_id or self.env['account.journal'].search(
             [('company_id', '=', self.company_id.id), ('type', 'in', ['general'])], limit=1)
 
-    def _prepare_payment_change_account_move(self, previous_method, new_method, amount):
+    def _prepare_payment_change_account_move_lines(self, previous_method, new_method, amount):
         desc = _('Order %s (%s): Payment change %s to %s') % (
             self.name, self.session_id.name, previous_method.name, new_method.name)
 
@@ -110,22 +121,10 @@ class PosOrder(models.Model):
 
         debit_account_id = new_method.journal_id.default_account_id.id
         credit_account_id = previous_method.journal_id.default_account_id.id
-        liquidity_account_id = self.company_id.transfer_account_id.id
         move_line_vals = [_move_line(*el)
                           for el in [(debit_account_id, amount),
-                                     (liquidity_account_id, -amount),
-                                     (liquidity_account_id, amount),
                                      (credit_account_id, -amount)]]
-        default_journal = self._get_default_payment_change_journal()
-        return {
-            'ref': desc,
-            'currency_id': self.currency_id.id,
-            'journal_id': default_journal.id,
-            'move_type': 'entry',
-            'narration': desc,
-            'company_id': self.company_id.id,
-            'line_ids': move_line_vals
-        }
+        return move_line_vals
 
     def _strftime_with_user_tz(self, time):
         local_tz = pytz.timezone(self.env.user.tz or 'Asia/Ho_Chi_Minh')

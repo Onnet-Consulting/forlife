@@ -76,7 +76,10 @@ odoo.define('forlife_pos_payment_change.POSOrderFetcher', function (require) {
             return sale_orders;
         }
         async _getOrderIdsForCurrentPage(limit, offset) {
-            let domain = [['session_id.state', 'in', ['opening_control', 'opened', 'closing_control']]].concat(this.searchDomain || []);;
+            let domain = [
+                ['session_id.state', 'in', ['opening_control', 'opened', 'closing_control']],
+                ['session_id.config_id', '=', this.comp.env.pos.config.id],
+            ].concat(this.searchDomain || []);;
             return await this.rpc({
                 model: 'pos.order',
                 method: 'search_read',

@@ -6,10 +6,11 @@
             <form>
                 <sheet>
                     <div>
-                        <label for="order_id"/>
-                        <field name="order_id"/>
+                        <label for="order_id" class="oe_inline"/>
+                        <field name="order_id" no_label="1"/>
                     </div>
                     <field name="amount_total" invisible="1" />
+                    <field name="payment_move_count" invisible="1" />
                     <hr/>
                     <div>
                         <label for="line_ids"/>
@@ -24,6 +25,12 @@
                         </field>
                     </div>
                     <footer>
+                        <button
+                            name="button_cancel_entry"
+                            string="Cancel Entry"
+                            type="object"
+                            attrs="{'invisible': [('payment_move_count', '=', 0)]}"
+                        />
                         <button
                             name="button_change_payment"
                             string="Change Payments"
