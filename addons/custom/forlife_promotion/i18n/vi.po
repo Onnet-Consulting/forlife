@@ -359,6 +359,11 @@ msgid "December"
 msgstr "Tháng 12"
 
 #. module: forlife_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_promotion.points_product_view_tree
+msgid "Delete"
+msgstr "Xóa"
+
+#. module: forlife_promotion
 #: model:ir.model.fields,field_description:forlife_promotion.field_dayofmonth_data__display_name
 #: model:ir.model.fields,field_description:forlife_promotion.field_dayofweek_data__display_name
 #: model:ir.model.fields,field_description:forlife_promotion.field_event__display_name
@@ -369,6 +374,18 @@ msgstr "Tháng 12"
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_promotion__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
+
+#. module: forlife_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_promotion.points_product_view_tree
+msgid "Edit"
+msgstr "Sửa"
+
+#. module: forlife_promotion
+#. odoo-python
+#: code:addons/forlife_promotion/models/points_product.py:0
+#, python-format
+msgid "Edit Points Product"
+msgstr "Sửa Điểm sản phẩm"
 
 #. module: forlife_promotion
 #. odoo-python
@@ -691,10 +708,20 @@ msgid "Points Promotion"
 msgstr "Chương trình tích điểm"
 
 #. module: forlife_promotion
+#: model:ir.model.fields,field_description:forlife_promotion.field_points_product__product_existed
+msgid "Product Existed"
+msgstr "Sản phẩm đã tồn tại"
+
+#. module: forlife_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.event_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.points_promotion_view_form
 msgid "Product Point"
 msgstr "Điểm sản phẩm"
+
+#. module: forlife_promotion
+#: model:ir.model,name:forlife_promotion.model_product_product
+msgid "Product Variant"
+msgstr "Biến thể sản phẩm"
 
 #. module: forlife_promotion
 #: model:ir.model.fields,field_description:forlife_promotion.field_points_product__product_ids
@@ -831,8 +858,12 @@ msgstr "Bạn chỉ được xóa Điểm sản phẩm mới!"
 #. odoo-python
 #: code:addons/forlife_promotion/models/points_promotion.py:0
 #, python-format
-msgid "You can only delete the new points program, no events and points product have not effective!"
-msgstr "Bạn chỉ có thể xóa chương trình tích điểm mới, không có sự kiện và điểm sản phẩm chưa có hiệu lực!"
+msgid ""
+"You can only delete the new points program, no events and points product "
+"have not effective!"
+msgstr ""
+"Bạn chỉ có thể xóa chương trình tích điểm mới, không có sự kiện và điểm sản "
+"phẩm chưa có hiệu lực!"
 
 #. module: forlife_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_promotion.event_view_form
