@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="AssignEmployeePopup" owl="1">
+        <div class="popup assign-employee-popup">
+            <main class="body">
+
+            </main>
+            <footer class="footer">
+                <div class="button cancel" t-on-click="cancel">
+                    Cancel
+                </div>
+                <div class="button confirm highlight" t-on-click="assign">
+                    Assign
+                </div>
+                <div class="button confirm-all highlight" t-on-click="assign_all">
+                    Assign All
+                </div>
+            </footer>
+        </div>
+    </t>
+</templates>

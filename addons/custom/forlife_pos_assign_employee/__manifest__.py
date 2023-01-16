@@ -22,9 +22,9 @@
     ],
     'assets': {
         'point_of_sale.assets': [
+            'forlife_pos_assign_employee/static/src/scss/pos.scss',
             'forlife_pos_assign_employee/static/src/js/**/*.js',
             'forlife_pos_assign_employee/static/src/xml/**/*.xml',
-            'forlife_pos_assign_employee/static/src/scss/pos.scss',
         ]
     }
 }

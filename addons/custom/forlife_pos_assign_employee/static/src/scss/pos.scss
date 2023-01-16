@@ -1,11 +1,11 @@
-.pos .leftpane .control-buttons .control-button.refund-button {
-    flex: 1 1 15%;
+.pos .leftpane .control-buttons .control-button:has(i.fa-undo) {
+  flex: 1 1 15%;
 }
 
-.pos .leftpane .control-buttons .control-button.product-info-button {
-    flex: 1 1 10%;
+.pos .leftpane .control-buttons .control-button:has(i.fa-info-circle) {
+  flex: 1 1 10%;
 }
 
-.pos .leftpane .control-buttons .control-button.assign-employee-button {
-    flex: 1 1 20%;
+.pos .leftpane .control-buttons .control-button:has(i.fa-male) {
+  flex: 1 1 20%;
 }

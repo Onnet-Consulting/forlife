@@ -1,20 +1,21 @@
-odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function(require){
+odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function (require) {
     "use strict";
 
 
     const PosComponent = require('point_of_sale.PosComponent');
     const ProductScreen = require('point_of_sale.ProductScreen');
     const Registries = require('point_of_sale.Registries');
-    const { useListener } = require("@web/core/utils/hooks");
+    const {useListener} = require("@web/core/utils/hooks");
 
     class AssignEmployeeButton extends PosComponent {
-        setup(){
+        setup() {
             super.setup();
             useListener('click', this._onClick);
         }
 
         _onClick() {
             console.log('clicked assign employee')
+            // this.showPopup('AssignEmployeePopup');
         }
     }
 
@@ -22,7 +23,7 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function(require
 
     ProductScreen.addControlButton({
         component: AssignEmployeeButton,
-        condition: function() {
+        condition: function () {
             return true;
         },
     })
