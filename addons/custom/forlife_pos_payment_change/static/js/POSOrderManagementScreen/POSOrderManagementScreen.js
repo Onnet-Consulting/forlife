@@ -84,32 +84,34 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementScreen', function (req
                         payments: payment_values.payments,
                         methods: payment_values.valid_methods
                     });
-                var data = Object.values(payload)
-                if (data.length > 0) {
-                    try {
-                        await this.rpc({
-                            model: 'pos.order',
-                            method: 'change_payment',
-                            args: [clickedOrder.id, data],
-                            context: this.env.session.user_context,
-                        });
+                if (confirmed) {
+                    var data = Object.values(payload)
+                    if (data.length > 0) {
+                        try {
+                            await this.rpc({
+                                model: 'pos.order',
+                                method: 'change_payment',
+                                args: [clickedOrder.id, data],
+                                context: this.env.session.user_context,
+                            });
+                            this.showNotification(
+                                _.str.sprintf(this.env._t('Successfully change the payment method on the pos order!')),
+                                4000
+                            );
+                        }
+                        catch (err) {
+                            var title = this.env._t('ERROR');
+                            var body = this.env._t('Fail change the payment method on the order');
+                            await this.showPopup('ErrorPopup', { title, body });
+                        }
+                    } else {
                         this.showNotification(
-                            _.str.sprintf(this.env._t('Successfully change the payment method on the pos order!')),
+                            _.str.sprintf(this.env._t('Change the payment method is ignored!')),
                             4000
                         );
                     }
-                    catch (err) {
-                        var title = this.env._t('ERROR');
-                        var body = this.env._t('Fail change the payment method on the order');
-                        await this.showPopup('ErrorPopup', { title, body });
-                    }
-                } else {
-                    this.showNotification(
-                        _.str.sprintf(this.env._t('Change the payment method is ignored!')),
-                        4000
-                    );
-                }
-            }
+                };
+            };
         }
 
         _onNextPage() {
