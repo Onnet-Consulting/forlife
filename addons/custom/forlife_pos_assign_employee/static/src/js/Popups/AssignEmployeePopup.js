@@ -4,12 +4,19 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeePopup', function (require
     let core = require('web.core');
     let _t = core._t;
 
+    const AbstractAwaitablePopup = require('point_of_sale.AbstractAwaitablePopup');
     const PosComponent = require('point_of_sale.PosComponent');
     const Registries = require('point_of_sale.Registries');
+    const {onMounted, useRef, useState} = owl;
+    const {useBus} = require('@web/core/utils/hooks');
 
-    class AssignEmployeePopup extends PosComponent {
+
+    class AssignEmployeePopup extends AbstractAwaitablePopup {
         setup() {
             super.setup();
+            this.state = useState({
+                employeeID: this.props.startingValue
+            })
         }
 
         get employees() {
@@ -21,11 +28,44 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeePopup', function (require
             });
         }
 
+        get selectedLine() {
+            return this.env.pos.get_order().get_selected_orderline();
+        }
+
         cancel() {
             this.env.posbus.trigger('close-popup', {
                 popupId: this.props.id,
-                response: { confirmed: false, payload: null },
+                response: {confirmed: false, payload: null},
             });
+        }
+
+
+        confirm() {
+            this.env.posbus.trigger('close-popup', {
+                popupId: this.props.id,
+                response: {confirmed: true, payload: this.getSingleLinePayload()},
+            });
+        }
+
+        confirm_all() {
+            this.env.posbus.trigger('close-popup', {
+                popupId: this.props.id,
+                response: {confirmed: true, payload: this.getMultipleLinesPayload()},
+            });
+        }
+
+        getMultipleLinesPayload() {
+            return {
+                employee_id: this.state.employeeID,
+                multiple: true
+            }
+        }
+
+        getSingleLinePayload() {
+            return {
+                employee_id: this.state.employeeID,
+                multiple: false
+            }
         }
     }
 

@@ -7,14 +7,39 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function (requir
     const Registries = require('point_of_sale.Registries');
     const {useListener} = require("@web/core/utils/hooks");
 
+
     class AssignEmployeeButton extends PosComponent {
         setup() {
             super.setup();
-            useListener('click', this._onClick);
+            useListener('click', this.onClick);
         }
 
-        _onClick() {
-            this.showPopup('AssignEmployeePopup');
+        get selectedOrderline() {
+            return this.env.pos.get_order().get_selected_orderline();
+        }
+
+        get order_lines(){
+            return this.env.pos.get_order().get_orderlines();
+        }
+
+        async onClick() {
+            const selectedOrderLine = this.selectedOrderline;
+            if (!selectedOrderLine) return;
+            const {confirmed, payload: data} = await this.showPopup('AssignEmployeePopup', {
+                startingValue: this.selectedOrderline.get_employee()
+            });
+            if (confirmed) {
+                let employee_id = data.employee_id;
+                if (data.multiple) {
+                    let order_lines = this.order_lines;
+                    for (let line of order_lines){
+                        line.set_employee(employee_id);
+                    }
+                } else {
+                    this.selectedOrderline.set_employee(employee_id);
+                }
+
+            }
         }
     }
 

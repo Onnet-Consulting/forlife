@@ -6,7 +6,7 @@
                 <t t-esc="props.title"/>
             </header>
             <main class="body">
-                <select id="employee">
+                <select t-model="state.employeeID" class="configurator_select">
                     <t t-foreach="employees" t-as="employee" t-key="employee.id">
                         <option t-att-value="employee.id"><t t-esc="employee.name"/></option>
                     </t>
@@ -16,10 +16,10 @@
                 <div class="button cancel" t-on-click="cancel">
                         Cancel
                     </div>
-                <div class="button confirm highlight" t-on-click="assign">
+                <div class="button confirm highlight" t-on-click="confirm">
                     Assign
                 </div>
-                <div class="button confirm-all highlight" t-on-click="assign_all">
+                <div class="button confirm highlight" t-on-click="confirm_all">
                     Assign All
                 </div>
             </footer>

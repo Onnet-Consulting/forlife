@@ -46,6 +46,14 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
                 json.employee_id = this.employee_id;
                 return json;
             }
+
+            set_employee(employee_id) {
+                this.employee_id = employee_id ? parseInt(employee_id) : null;
+            }
+
+            get_employee() {
+                return this.employee_id;
+            }
         }
 
     Registries.Model.extend(Orderline, EmployeeOrderLine);
