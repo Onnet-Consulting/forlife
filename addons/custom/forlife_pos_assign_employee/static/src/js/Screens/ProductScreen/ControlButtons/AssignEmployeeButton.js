@@ -14,8 +14,7 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function (requir
         }
 
         _onClick() {
-            console.log('clicked assign employee')
-            // this.showPopup('AssignEmployeePopup');
+            this.showPopup('AssignEmployeePopup');
         }
     }
 
@@ -24,7 +23,7 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function (requir
     ProductScreen.addControlButton({
         component: AssignEmployeeButton,
         condition: function () {
-            return true;
+            return this.env.pos;
         },
     })
 

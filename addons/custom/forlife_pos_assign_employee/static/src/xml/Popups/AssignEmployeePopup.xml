@@ -2,13 +2,20 @@
 <templates id="template" xml:space="preserve">
     <t t-name="AssignEmployeePopup" owl="1">
         <div class="popup assign-employee-popup">
+            <header class="title">
+                <t t-esc="props.title"/>
+            </header>
             <main class="body">
-
+                <select id="employee">
+                    <t t-foreach="employees" t-as="employee" t-key="employee.id">
+                        <option t-att-value="employee.id"><t t-esc="employee.name"/></option>
+                    </t>
+                </select>
             </main>
             <footer class="footer">
                 <div class="button cancel" t-on-click="cancel">
-                    Cancel
-                </div>
+                        Cancel
+                    </div>
                 <div class="button confirm highlight" t-on-click="assign">
                     Assign
                 </div>
