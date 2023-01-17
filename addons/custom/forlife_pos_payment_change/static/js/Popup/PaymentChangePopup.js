@@ -15,28 +15,28 @@ odoo.define('forlife_pos_payment_change.PaymentChangePopup', function(require) {
     class PaymentChangePopup extends AbstractAwaitablePopup {
         setup() {
             super.setup();
-            this.state = useState({payload: [] })
+            this.state = useState({payload: {}});
         }
 
         selectLine() {
             var line_nodes = $('.payment-item');
-            var payload = [];
+            this.state.payload = {};
             line_nodes.each((index, el) => {
                 var payment_id = $(el).find('.o_payment_id').attr("value");
                 var amount = $(el).find('.o_payment_amount').attr("value");
                 var payment_method_id = $(el).find('.o_payment_method_id').find(':selected').attr("value");
-                if (payment_id && payment_method_id) {
-                    this.state.payload.push({
+                if (payment_id && payment_method_id != undefined && payment_method_id != false) {
+                    this.state.payload[payment_id] = {
                         'payment_id': parseInt(payment_id),
                         'amount': parseFloat(amount),
                         'payment_method_id': parseInt(payment_method_id)
-                    })
-                }
-            })
+                    };
+                };
+            });
         }
 
         getPayload() {
-            return this.state.payload
+            return this.state.payload;
         }
 
     }
@@ -46,7 +46,7 @@ odoo.define('forlife_pos_payment_change.PaymentChangePopup', function(require) {
     PaymentChangePopup.defaultProps = {
         cancelText: _lt('Cancel'),
         title: _lt('Change Payment'),
-        payload: [],
+        payload: {},
         payments: [],
         methods: [],
         confirmKey: false,

@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
 
-    <t t-name="PaymentChangePopupLine" owl="1">
-        <tr style="height: 100%" t-attf-class="payment-line" t-att-data-id="props.payment.id">
-            <td >
-                <div>
-                    <t t-esc="props.payment.payment_name or ''" />
-                </div>
-            </td>
-            <td t-esc="props.payment.amount"/>
-            <td>
-                <select>
-                    <option>Chọn</option>
-                    <option
-                        t-foreach="props.methods"
-                        t-as="method">
-                        <t t-esc="method.id"/>
-                    </option>
-                </select>
-            </td>
-        </tr>
-    </t>
+<!--    <t t-name="PaymentChangePopupLine" owl="1">-->
+<!--        <tr style="height: 100%" t-attf-class="payment-line" t-att-data-id="props.payment.id">-->
+<!--            <td >-->
+<!--                <div>-->
+<!--                    <t t-esc="props.payment.payment_name or ''" />-->
+<!--                </div>-->
+<!--            </td>-->
+<!--            <td t-esc="props.payment.amount"/>-->
+<!--            <td>-->
+<!--&lt;!&ndash;                t-attf-style="background-image: url('#{getUrl(props.previewImage or props.name)}');"&ndash;&gt;-->
+<!--                <select t-attf-style="display: {'block' or 'none'};">-->
+<!--                    <option>Chọn</option>-->
+<!--                    <option-->
+<!--                        t-foreach="props.methods"-->
+<!--                        t-as="method">-->
+<!--                        <t t-esc="method.id"/>-->
+<!--                    </option>-->
+<!--                </select>-->
+<!--            </td>-->
+<!--        </tr>-->
+<!--    </t>-->
 
     <t t-name="PaymentChangePopup" owl="1">
         <Draggable>
@@ -42,7 +43,11 @@
                                 <td style="font-weight:normal" class="o_payment_id" t-att-value="payment.id" t-esc="payment.payment_name"/>
                                 <td style="font-weight:normal" class="o_payment_amount" t-esc="this.env.pos.format_currency(payment.amount)" t-att-value="payment.amount"/>
                                 <td style="font-weight:normal" class="o_payment_method_id">
-                                    <select style="border: 1px solid grey"  t-on-click="selectLine">
+                                    <t t-if="payment.is_voucher">
+                                        <i class="fa fa-times"/>
+                                    </t>
+                                    <t t-else="">
+                                    <select style="border: 1px solid grey" t-on-click="selectLine">
                                         <option t-att-value="false">Chọn</option>
                                         <t t-foreach="props.methods" t-as="method" t-key="method.id">
                                             <option t-att-value="method.id">
@@ -50,6 +55,7 @@
                                             </option>
                                         </t>
                                     </select>
+                                    </t>
                                 </td>
                             </tr>
                         </t>

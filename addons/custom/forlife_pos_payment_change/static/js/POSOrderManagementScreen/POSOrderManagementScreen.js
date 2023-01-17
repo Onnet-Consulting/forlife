@@ -55,7 +55,7 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementScreen', function (req
             let payments = await this.rpc({
                 model: 'pos.payment',
                 method: 'search_read',
-                args: [[['pos_order_id', '=', order_id]], ['id', 'payment_method_id', 'payment_name', 'amount']],
+                args: [[['pos_order_id', '=', order_id]], ['id', 'payment_method_id', 'payment_name', 'amount', 'is_voucher']],
                 context: this.env.session.user_context,
             });
             let valid_methods = await this.rpc({
@@ -77,19 +77,20 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementScreen', function (req
             let clickedOrder = event.detail;
 
             let payment_values = await this._getPayments(clickedOrder.id);
-            if (payment_values.payments) {
+            if (payment_values.payments && confirmed) {
                 const {confirmed, payload} = await this.showPopup('PaymentChangePopup',
                     {
                         title: this.env._t('Payment Change: ') + clickedOrder.pos_reference,
                         payments: payment_values.payments,
                         methods: payment_values.valid_methods
                     });
-                if (payload) {
+                var data = Object.values(payload)
+                if (data.length > 0) {
                     try {
                         await this.rpc({
                             model: 'pos.order',
                             method: 'change_payment',
-                            args: [clickedOrder.id, payload],
+                            args: [clickedOrder.id, data],
                             context: this.env.session.user_context,
                         });
                         this.showNotification(
@@ -102,6 +103,11 @@ odoo.define('forlife_pos_payment_change.POSOrderManagementScreen', function (req
                         var body = this.env._t('Fail change the payment method on the order');
                         await this.showPopup('ErrorPopup', { title, body });
                     }
+                } else {
+                    this.showNotification(
+                        _.str.sprintf(this.env._t('Change the payment method is ignored!')),
+                        4000
+                    );
                 }
             }
         }
