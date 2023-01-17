@@ -9,12 +9,14 @@ class PosPaymentChangeWizardOldLine(models.TransientModel):
     def domain_new_payment_method_id(self):
         PosOrder = self.env['pos.order']
         order = PosOrder.browse(self.env.context.get('active_id'))
-        return [('id', 'in', order.mapped('session_id.payment_method_ids').ids)]
+        return [('id', 'in', order.mapped('session_id.payment_method_ids').ids),
+                ('is_voucher', '=', False)]
 
     wizard_id = fields.Many2one("pos.payment.change.wizard", required=True)
     payment_id = fields.Many2one("pos.payment", required=True, readonly=True, string="Payment")
     old_payment_method_id = fields.Many2one(
         "pos.payment.method", string="Payment Method", required=True, readonly=True)
+    is_voucher = fields.Boolean(related='old_payment_method_id.is_voucher')
     currency_id = fields.Many2one(
         "res.currency", store=True, string="Currency", readonly=True, help="Utility field to express amount currency")
     amount = fields.Monetary(
