@@ -8,15 +8,13 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeePopup', function (require
     const PosComponent = require('point_of_sale.PosComponent');
     const Registries = require('point_of_sale.Registries');
 
-    const {useState} = owl;
-
     class AssignEmployeePopup extends PosComponent {
         setup() {
             super.setup();
         }
 
         get employees() {
-            return this.env.pos.employees.map(function (employee) {
+            return this.env.pos.assignable_employees.map(function (employee) {
                 return {
                     name: employee.name,
                     id: employee.id
