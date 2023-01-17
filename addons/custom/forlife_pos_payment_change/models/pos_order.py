@@ -138,7 +138,7 @@ class PosOrder(models.Model):
             payment_id = self.env['pos.payment'].browse(payment)
             previous_method = payment_id.payment_method_id
             new_method = self.env['pos.payment.method'].browse(new_payment_val['payment_method_id'])
-            formated_amount = tools.format_decimalized_amount(new_payment_val['amount'], payment_id.pos_order_id.currency_id)
+            formated_amount = tools.format_amount(self.env, new_payment_val['amount'], payment_id.pos_order_id.currency_id)
             logs += '- %s -> %s : %s \n' % (previous_method.name, new_method.name, formated_amount)
         return (logs and _('Payment Change Details (%s):\n') % self._strftime_with_user_tz(datetime.now()) + logs) or ''
 
