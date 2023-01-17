@@ -155,6 +155,7 @@ msgstr "Phiên POS"
 
 #. module: forlife_pos_popup_cash
 #: model:ir.model,name:forlife_pos_popup_cash.model_store
+#: model:ir.model.fields.selection,name:forlife_pos_popup_cash.selection__account_bank_statement_line__pos_transfer_type__2
 msgid "Store"
 msgstr "Cửa hàng"
 
@@ -210,3 +211,18 @@ msgstr "thu"
 #, python-format
 msgid "out"
 msgstr "chi"
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields.selection,name:forlife_pos_popup_cash.selection__account_bank_statement_line__pos_transfer_type__1
+msgid "Office"
+msgstr "Văn phòng"
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields.selection,name:forlife_pos_popup_cash.selection__account_bank_statement_line__pos_transfer_type__3
+msgid "Other Difference"
+msgstr "Chênh lệch khác"
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_transfer_type
+msgid "POS Transfer Type"
+msgstr "Loại chuyển tiền POS"

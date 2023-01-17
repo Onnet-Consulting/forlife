@@ -89,7 +89,8 @@ class PosSession(models.Model):
                 'date': fields.Date.context_today(self),
                 'payment_ref': '-'.join([session.name, extras['translatedType'], reason]),
                 'to_store_tranfer': extras['shop'] if 'shop' in extras and extras['shop'] and extras['type_tranfer'] == 2 else False,
-                'is_reference': True if 'reference' in extras and extras['reference'] else False
+                'is_reference': True if 'reference' in extras and extras['reference'] else False,
+                'pos_transfer_type': str(extras.get('type_tranfer', ''))
             }
             for session in sessions
         ])
@@ -109,6 +110,8 @@ class PosSession(models.Model):
         if reason:
             message_content.append(f'- Reason: {reason}')
         self.message_post(body='<br/>\n'.join(message_content))
+
+        # Loại: chuyển tiền về văn phòng
         if extras['type_tranfer'] == 1:
             if _type == 'in':
                 raise UserError(_('Amount transferred to company must be a negative number and transfer type \'out\''))
