@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="res_partner_forlife_inherit">
+            <field name="name">res.partner.forlife.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='accounting']" position="after">
+                    <page name="history_point_forlife" string="For Life">
+                        <group>
+                            <group>
+                                <field name="reset_day_of_point_forlife"/>
+                            </group>
+                            <group>
+                                <field name="total_points_available_forlife"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="history_points_forlife_ids" string="ForLife">
+                                <tree editable="bottom">
+                                    <field name="create_date"/>
+                                    <field name="date_order"/>
+                                    <field name="points_fl_order"/>
+                                    <field name="point_order_type"/>
+                                    <field name="points_used"/>
+                                    <field name="points_back"/>
+                                    <field name="points_store"/>
+                                    <field name="reason"/>
+                                </tree>
+                        </field>
+                        </group>
+                    </page>
+                    <page name="history_point_format" string="Format">
+                        <group>
+                            <group>
+                                <field name="reset_day_of_point_format"/>
+                            </group>
+                            <group>
+                                <field name="total_points_available_format"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="history_points_format_ids" string="Format">
+                                <tree editable="bottom">
+                                    <field name="create_date"/>
+                                    <field name="date_order"/>
+                                    <field name="points_fl_order"/>
+                                    <field name="point_order_type"/>
+                                    <field name="points_used"/>
+                                    <field name="points_back"/>
+                                    <field name="points_store"/>
+                                    <field name="reason"/>
+                                </tree>
+                        </field>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
