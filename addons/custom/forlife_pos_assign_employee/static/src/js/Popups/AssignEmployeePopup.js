@@ -4,7 +4,6 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeePopup', function (require
     let core = require('web.core');
     let _t = core._t;
 
-    const AbstractAwaitablePopup = require('point_of_sale.AbstractAwaitablePopup');
     const PosComponent = require('point_of_sale.PosComponent');
     const Registries = require('point_of_sale.Registries');
 

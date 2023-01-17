@@ -20,3 +20,8 @@ class PosSession(models.Model):
     def _get_assignable_employees(self):
         """Get assignable employees for PoS order line"""
         return self.env['hr.employee'].search_read([('id', 'in', self.config_id.store_id.employee_ids.ids)], ['name'])
+
+    def _loader_params_res_users(self):
+        params = super(PosSession, self)._loader_params_res_users()
+        params['search_params']['fields'].append('employee_id')
+        return params

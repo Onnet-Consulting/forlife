@@ -16,9 +16,11 @@
     'depends': [
         'contacts',
         'forlife_point_of_sale',
+        'pos_hr',
     ],
 
     'data': [
+        'views/pos_order_views.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

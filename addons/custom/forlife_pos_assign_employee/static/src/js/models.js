@@ -1,7 +1,7 @@
 odoo.define('forlife_pos_assign_employee.models', function (require) {
     "use strict";
 
-    var {PosGlobalState} = require('point_of_sale.models');
+    var {PosGlobalState, Orderline} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
 
 
@@ -13,4 +13,33 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
     }
     Registries.Model.extend(PosGlobalState, PosCustomPosGlobalState);
 
+    const EmployeeOrderLine = (Orderline) =>
+        class extends Orderline {
+            constructor(obj, options) {
+                super(...arguments);
+                if (!options.json) {
+                    if (this.pos.config.module_pos_hr) {
+                        this.employee_id = this.pos.get_cashier().id;
+                    } else {
+                        let user = this.pos.user;
+                        if (user.employee_id) {
+                            this.employee_id = user.employee_id[0];
+                        }
+                    }
+                }
+            }
+
+            init_from_JSON(json) {
+                super.init_from_JSON(...arguments);
+                this.employee_id = json.employee_id;
+            }
+
+            export_as_JSON() {
+                const json = super.export_as_JSON(...arguments);
+                json.employee_id = this.employee_id;
+                return json;
+            }
+        }
+
+    Registries.Model.extend(Orderline, EmployeeOrderLine);
 });
