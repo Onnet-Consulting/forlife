@@ -9,6 +9,7 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
         async _processData(loadedData) {
             await super._processData(...arguments);
             this.assignable_employees = loadedData['assignable_employees'];
+            this.assignable_employee_by_id = loadedData['assignable_employee_by_id'];
         }
     }
     Registries.Model.extend(PosGlobalState, PosCustomPosGlobalState);
@@ -32,6 +33,12 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
             init_from_JSON(json) {
                 super.init_from_JSON(...arguments);
                 this.employee_id = json.employee_id;
+            }
+
+            clone() {
+                let orderline = super.clone(...arguments);
+                orderline.employee_id = this.employee_id;
+                return orderline;
             }
 
             export_as_JSON() {

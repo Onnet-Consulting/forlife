@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models
+from odoo.osv import expression
 
 
 class PosSession(models.Model):
@@ -15,11 +16,15 @@ class PosSession(models.Model):
 
     def _pos_data_process(self, loaded_data):
         super(PosSession, self)._pos_data_process(loaded_data)
-        loaded_data['assignable_employees'] = self._get_assignable_employees()
+        assignable_employees = self._get_assignable_employees()
+        loaded_data['assignable_employees'] = assignable_employees
+        loaded_data['assignable_employee_by_id'] = {employee['id']: employee['name'] for employee in assignable_employees}
 
     def _get_assignable_employees(self):
         """Get assignable employees for PoS order line"""
-        return self.env['hr.employee'].search_read([('id', 'in', self.config_id.store_id.employee_ids.ids)], ['name'])
+        employee_domain = self._loader_params_hr_employee()['search_params']['domain']
+        employee_domain = expression.OR([employee_domain, [('id', 'in', self.config_id.store_id.employee_ids.ids)]])
+        return self.env['hr.employee'].search_read(employee_domain, ['name'])
 
     def _loader_params_res_users(self):
         params = super(PosSession, self)._loader_params_res_users()

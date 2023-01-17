@@ -6,7 +6,7 @@ odoo.define('forlife_pos_assign_employee.ProductScreen', function (require) {
 
     const EmployeeProductScreen = ProductScreen => class extends ProductScreen {
         async _onClickPay() {
-            if (!this.currentOrder().get_orderlines().length === 0) {
+            if (!this.currentOrder.get_orderlines().length === 0) {
                 this.showPopup('ErrorPopup', {
                     title: this.env._t('Empty Order'),
                     body: this.env._t(
@@ -15,7 +15,7 @@ odoo.define('forlife_pos_assign_employee.ProductScreen', function (require) {
                 });
                 return false;
             }
-            if (this.currentOrder().get_orderlines.some(line => !line.employee_id)) {
+            if (this.currentOrder.get_orderlines().some(line => !line.employee_id)) {
                 this.showPopup('ErrorPopup', {
                     title: this.env._t('Missing employee'),
                     body: this.env._t(
