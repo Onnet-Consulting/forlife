@@ -18,6 +18,7 @@
     'depends': [
         'point_of_sale',
         'forlife_point_of_sale',
+        'forlife_pos_app_member',
         'forlife_promotion',
         'base'
     ],

@@ -17,30 +17,31 @@ class PosOrder(models.Model):
         HistoryPoint = self.env['partner.history.point']
         if not existing_order:
             pos = self.env['pos.order'].browse(pos_id)
-            if pos.program_store_point_id:
-                if pos.program_store_point_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id:
-                    store = 'format'
-                elif pos.program_store_point_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id:
-                    store = 'forlife'
-                else:
-                    return super(PosOrder, self)._process_order(order, draft, existing_order)
-                if store is not None:
-                    HistoryPoint.sudo().create({
-                        'partner_id': pos.partner_id.id,
-                        'store': store,
-                        'date_order': pos.date_order,
-                        'points_fl_order': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
-                            [x.point_addition_event for x in pos.lines]),
-                        'point_order_type': 'new',
-                        'reason': pos.name,
-                        'points_used': 5,  # go back to edit
-                        'points_back': 5,  # go back to edit
-                        'points_store': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
-                            [x.point_addition_event for x in pos.lines]) - 5 - 5
+            if pos.partner_id.is_member_app_format or pos.partner_id.is_member_app_forlife:
+                if pos.program_store_point_id:
+                    if pos.program_store_point_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id:
+                        store = 'format'
+                    elif pos.program_store_point_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id:
+                        store = 'forlife'
+                    else:
+                        return super(PosOrder, self)._process_order(order, draft, existing_order)
+                    if store is not None:
+                        HistoryPoint.sudo().create({
+                            'partner_id': pos.partner_id.id,
+                            'store': store,
+                            'date_order': pos.date_order,
+                            'points_fl_order': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
+                                [x.point_addition_event for x in pos.lines]),
+                            'point_order_type': 'new',
+                            'reason': pos.name,
+                            'points_used': 5,  # go back to edit
+                            'points_back': 5,  # go back to edit
+                            'points_store': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
+                                [x.point_addition_event for x in pos.lines]) - 5 - 5
 
-                    })
-                    pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
-                    pos.action_point_addition()
+                        })
+                        pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
+                        pos.action_point_addition()
         return pos_id
 
     @api.depends('program_store_point_id')
