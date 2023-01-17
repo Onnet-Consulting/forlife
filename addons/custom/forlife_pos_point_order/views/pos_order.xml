@@ -15,7 +15,10 @@
                 </xpath>
                 <xpath expr="//field[@name='lines']//tree//field[@name='full_product_name']" position="after">
                     <field name="point_addition"/>
-                    <field name="point_event"/>
+                    <field name="point_addition_event"/>
+                </xpath>
+                <xpath expr="//button[@name='refund']" position="after">
+                    <button name="action_point_addition" type="object" string="Addition Point" class="oe_highlight"/>
                 </xpath>
             </field>
         </record>
