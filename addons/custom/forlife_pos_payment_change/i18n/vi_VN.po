@@ -244,14 +244,14 @@ msgstr "Điều chỉnh phương thức thanh toán"
 #: code:addons/forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderManagementScreen.js:0
 #, python-format
 msgid "Successfully change the payment method on the pos order!"
-msgstr "Điều chỉnh phương thức thanh toán thanh công cho đơn hàng này!"
+msgstr "Điều chỉnh phương thức thanh toán thành công cho đơn hàng này!"
 
 #. module: forlife_pos_payment_change
 #. odoo-javascript
 #: code:addons/forlife_pos_payment_change/static/js/POSOrderManagementScreen/POSOrderManagementScreen.js:0
 #, python-format
-msgid "Successfully change the payment method on the pos order!"
-msgstr "Điều chỉnh phương thức thanh toán thanh công cho đơn hàng này!"
+msgid "Change the payment method is ignored!"
+msgstr "Điều chỉnh phương thức thanh toán đã bỏ qua cho đơn hàng này!"
 
 #. module: forlife_pos_payment_change
 #. odoo-javascript
@@ -280,3 +280,8 @@ msgstr "Phương thức mới"
 #, python-format
 msgid "Order Reference"
 msgstr "Mã đơn hàng"
+
+#. module: point_of_sale
+#: model:ir.model.fields,field_description:point_of_sale.field_pos_payment_method__split_transactions
+msgid "Identify Customer"
+msgstr "Tách giao dịch"

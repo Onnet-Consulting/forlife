@@ -22,7 +22,7 @@ class PosOrder(models.Model):
     @api.model
     def get_valid_methods(self, order_id):
         order = self.browse(order_id)
-        methods = order.config_id.payment_method_ids  # FIXME: Only get methods not included voucher
+        methods = order.config_id.payment_method_ids.filtered(lambda m: not m.is_voucher)
         return [{'id': method.id, 'name': method.name} for method in methods]
 
     @api.model

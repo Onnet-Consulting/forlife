@@ -21,6 +21,7 @@
         "wizards/view_pos_payment_change_wizard.xml",
         "views/view_pos_order.xml",
         'views/res_config_settings_views.xml',
+        'views/pos_payment_method_views.xml',
     ],
     'assets': {
         'point_of_sale.assets': [
