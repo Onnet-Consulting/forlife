@@ -9,3 +9,16 @@
 .pos .leftpane .control-buttons .control-button:has(i.fa-male) {
   flex: 1 1 20%;
 }
+
+select.assign-employee {
+  padding: 4px;
+  border-radius: 3px;
+  border: solid 1px #cecbcb;
+  background: white;
+  font-family: "Lato", "Lucida Grande", Helvetica, Verdana, Arial, serif;
+  color: #4A4F59;
+  width: 80%;
+  font-size: 20px;
+  box-sizing: border-box;
+  margin: auto;
+}

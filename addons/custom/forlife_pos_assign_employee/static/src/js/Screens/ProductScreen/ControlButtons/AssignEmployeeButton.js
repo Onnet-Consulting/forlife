@@ -26,7 +26,11 @@ odoo.define('forlife_pos_assign_employee.AssignEmployeeButton', function (requir
             const selectedOrderLine = this.selectedOrderline;
             if (!selectedOrderLine) return;
             const {confirmed, payload: data} = await this.showPopup('AssignEmployeePopup', {
-                startingValue: this.selectedOrderline.get_employee()
+                startingValue: this.selectedOrderline.get_employee(),
+                title: this.env._t('Assign Employee'),
+                assignTitle: this.env._t('Assign employee'),
+                assignAllTitle: this.env._t('Assign All'),
+                cancelTitle: this.env._t('Cancel')
             });
             if (confirmed) {
                 let employee_id = data.employee_id;
