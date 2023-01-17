@@ -6,8 +6,8 @@ class Contact(models.Model):
     _inherit = 'res.partner'
 
     is_purchased = fields.Boolean('Is Purchased', compute='_compute_is_purchased', store=True)
-    is_member_app_forlife = fields.Boolean('Is Member App?', compute='_compute_member_pos')
-    is_member_app_format = fields.Boolean('Is Member App?', compute='_compute_member_pos')
+    is_member_app_forlife = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
+    is_member_app_format = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife')
     reset_day_of_point_format = fields.Datetime('Day Reset Format')
     total_points_available_forlife = fields.Integer('Total Points Availible', compute='compute_point_total')
@@ -30,6 +30,7 @@ class Contact(models.Model):
             else:
                 rec.is_purchased = False
 
+    @api.depends('group_id','retail_type_ids')
     def _compute_member_pos(self):
         for rec in self:
             if rec.group_id and rec.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_c', raise_if_not_found=False).id:
