@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="perserve">
+    <t t-name="forlife_pos_app_member.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension" owl="1">
+        <xpath expr="//ul[hasclass('info-list')]" position="inside">
+            <t t-if="props.line.employee_id">
+
+            </t>
+        </xpath>
+    </t>
+</templates>

@@ -12,7 +12,7 @@ class Store(models.Model):
     code = fields.Char('Store Code', related='warehouse_id.code', store=True)
     contact_id = fields.Many2one('res.partner', string='Contact', required=True)
     cashier_ids = fields.Many2many('res.users', string='Cashiers', required=True)
-    employee_ids = fields.Many2many('hr.employee', string='Employees')
+    employee_ids = fields.Many2many('hr.employee', string='Employees', required=True)
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     stock_location_id = fields.Many2one('stock.location', string='Location', required=True)
     pos_config_ids = fields.One2many('pos.config', 'store_id', string='POS Config', readonly=True)

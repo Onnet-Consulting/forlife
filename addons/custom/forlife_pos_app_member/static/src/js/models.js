@@ -1,4 +1,4 @@
-odoo.define('pos_iot.models', function (require) {
+odoo.define('forlife_pos_app_member.models', function (require) {
     "use strict";
 
     var {PosGlobalState, register_payment_method} = require('point_of_sale.models');

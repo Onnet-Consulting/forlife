@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="assign_employee_form_wizard" model="ir.ui.view">
+        <field name="name">name</field>
+        <field name="model">assign.employee.order.line.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Assign employee">
+                <sheet>
+                    <group>
+                        <field name="order_id" invisible="1"/>
+                        <field name="assignable_employees" invisible="1"/>
+                        <field name="order_lines" options="{'no_create': True}">
+                            <tree editable="top">
+                                <field name="product_id" options="{'no_open': True}" readonly="True"/>
+                                <field name="employee_id" options="{'no_create': True, 'no_open': True}" domain="[('id', 'in', parent.assignable_employees)]"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <group>
+                                        <field name="product_id" options="{'no_open': True}" readonly="True"/>
+                                        <field name="employee_id" options="{'no_create': True, 'no_open': True}" domain="[('id', 'in', parent.assignable_employees)]"/>
+                                    </group>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
