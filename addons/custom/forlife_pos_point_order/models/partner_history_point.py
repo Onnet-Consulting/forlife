@@ -16,3 +16,4 @@ class PartnerHistoryPointForLife(models.Model):
     points_store = fields.Integer('Points Store',readonly=True)
     reason = fields.Text('Reason',readonly=True)
     store = fields.Selection([('forlife', 'For Life'), ('format', 'Format')], readonly=True)
+    pos_order_id = fields.Many2one('pos.order', readonly=True, string='POS Order')

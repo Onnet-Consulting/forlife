@@ -43,10 +43,15 @@ class Contact(models.Model):
                 rec.is_member_app_format = False
 
     def _compute_reset_day(self, date_order, day_expiration, branch):
+        timedelta_in_days = datetime.timedelta(days=day_expiration)
         if branch == 'forlife':
-            self.reset_day_of_point_forlife = date_order + datetime.timedelta(days=day_expiration)
+            if (self.reset_day_of_point_forlife and date_order + timedelta_in_days > self.reset_day_of_point_forlife) \
+                    or not self.reset_day_of_point_forlife:
+                self.reset_day_of_point_forlife = date_order + timedelta_in_days
         if branch == 'format':
-            self.reset_day_of_point_format = date_order + datetime.timedelta(days=day_expiration)
+            if (self.reset_day_of_point_format and date_order + timedelta_in_days > self.self.reset_day_of_point_format)\
+                    or not self.reset_day_of_point_format:
+                self.reset_day_of_point_format = date_order + timedelta_in_days
         return True
 
 
