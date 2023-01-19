@@ -1,7 +1,8 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from datetime import datetime
 import pytz
 
+from odoo.exceptions import UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
@@ -15,7 +16,9 @@ class PosOrder(models.Model):
         'Item Point Total', readonly=True, compute='_compute_item_total_point', store=True,
         help='Includes the total of product point and product event point')
     program_store_point_id = fields.Many2one('points.promotion', 'Program Store Point')
-    allow_compensate_point = fields.Boolean(compute='_allow_compensate_point', store=True)
+    allow_compensate_point = fields.Boolean(compute='_allow_compensate_point')
+    point_addition_move_ids = fields.Many2many(
+        'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
 
     @api.depends('lines', 'lines.point_addition', 'lines.point_addition_event')
     def _compute_item_total_point(self):
@@ -30,7 +33,7 @@ class PosOrder(models.Model):
     @api.depends('program_store_point_id', 'total_point')
     def _allow_compensate_point(self):
         for order in self:
-            order.allow_compensate_point = order.program_store_point_id and order.total_point > 0
+            order.allow_compensate_point = not bool(order.program_store_point_id and order.total_point > 0)
 
     @api.model
     def _process_order(self, order, draft, existing_order):
@@ -47,6 +50,29 @@ class PosOrder(models.Model):
                         pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
                         pos.action_point_addition()
         return pos_id
+
+    def btn_compensate_points_all(self):
+        for order in self.filtered(lambda x: x.allow_compensate_point):
+            order.btn_compensate_points()
+
+    def btn_compensate_points(self):
+        pos_order = self
+        if not pos_order.partner_id.is_member_app_format and not pos_order.partner_id.is_member_app_forlife:
+            return
+        if not pos_order.program_store_point_id:
+            program = self._get_program_promotion({
+                'date_order': datetime.strftime(pos_order.date_order, DEFAULT_SERVER_DATETIME_FORMAT),
+                'session_id': pos_order.session_id.id
+            })
+            if not program:
+                return
+            pos_order.program_store_point_id = program.id
+        store = pos_order._get_store_brand_from_program()
+        if store:
+            history_values = pos_order._prepare_history_point_value(store)
+            self.env['partner.history.point'].sudo().create(history_values)
+            pos_order.partner_id._compute_reset_day(pos_order.date_order, pos_order.program_store_point_id.point_expiration, store)
+            pos_order.action_point_addition()
 
     def _prepare_history_point_value(self, store: str, points_used=0, points_back=0):
         self.ensure_one()
@@ -152,6 +178,8 @@ class PosOrder(models.Model):
         return create_Date
 
     def action_point_addition(self):
+        if self.point_addition_move_ids.filtered(lambda m: m.state == 'posted'):
+            raise UserError(_('Order had already point addition journal entry posted!'))
         move_vals = {
             'ref': self.name,
             'move_type': 'entry',
@@ -178,5 +206,6 @@ class PosOrder(models.Model):
             ]
 
         }
-        self.env['account.move'].create(move_vals)
+        move = self.env['account.move'].create(move_vals)
+        self.point_addition_move_ids |= move
         return True
