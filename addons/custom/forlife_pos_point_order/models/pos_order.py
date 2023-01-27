@@ -1,6 +1,9 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from datetime import datetime
 import pytz
+
+from odoo.exceptions import UserError
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
 class PosOrder(models.Model):
@@ -8,8 +11,29 @@ class PosOrder(models.Model):
 
     point_order = fields.Integer('Point Order', compute='_compute_point_order', store=True)
     point_event_order = fields.Integer('Point event Order', compute='_compute_point_order', store=True)
-    total_point = fields.Integer('Total Point', readonly=True)
+    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True)
+    item_total_point = fields.Integer(
+        'Item Point Total', readonly=True, compute='_compute_item_total_point', store=True,
+        help='Includes the total of product point and product event point')
     program_store_point_id = fields.Many2one('points.promotion', 'Program Store Point')
+    allow_compensate_point = fields.Boolean(compute='_allow_compensate_point')
+    point_addition_move_ids = fields.Many2many(
+        'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
+
+    @api.depends('lines', 'lines.point_addition', 'lines.point_addition_event')
+    def _compute_item_total_point(self):
+        for order in self:
+            order.item_total_point = sum(order.mapped('lines.point_addition')) + sum(order.mapped('lines.point_addition_event'))
+
+    @api.depends('item_total_point', 'point_order', 'point_event_order')
+    def _compute_total_point(self):
+        for order in self:
+            order.total_point = order.point_order + order.point_event_order + order.item_total_point
+
+    @api.depends('program_store_point_id', 'total_point')
+    def _allow_compensate_point(self):
+        for order in self:
+            order.allow_compensate_point = not bool(order.program_store_point_id and order.total_point > 0)
 
     @api.model
     def _process_order(self, order, draft, existing_order):
@@ -19,30 +43,63 @@ class PosOrder(models.Model):
             pos = self.env['pos.order'].browse(pos_id)
             if pos.partner_id.is_member_app_format or pos.partner_id.is_member_app_forlife:
                 if pos.program_store_point_id:
-                    if pos.program_store_point_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id:
-                        store = 'format'
-                    elif pos.program_store_point_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id:
-                        store = 'forlife'
-                    else:
-                        return super(PosOrder, self)._process_order(order, draft, existing_order)
+                    store = pos._get_store_brand_from_program()
                     if store is not None:
-                        HistoryPoint.sudo().create({
-                            'partner_id': pos.partner_id.id,
-                            'store': store,
-                            'date_order': pos.date_order,
-                            'points_fl_order': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
-                                [x.point_addition_event for x in pos.lines]),
-                            'point_order_type': 'new',
-                            'reason': pos.name,
-                            'points_used': 5,  # go back to edit
-                            'points_back': 5,  # go back to edit
-                            'points_store': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
-                                [x.point_addition_event for x in pos.lines]) - 5 - 5
-
-                        })
+                        history_values = pos._prepare_history_point_value(store)
+                        HistoryPoint.sudo().create(history_values)
                         pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
                         pos.action_point_addition()
         return pos_id
+
+    def btn_compensate_points_all(self):
+        for order in self.filtered(lambda x: x.allow_compensate_point):
+            order.btn_compensate_points()
+
+    def btn_compensate_points(self):
+        pos_order = self
+        if not pos_order.partner_id.is_member_app_format and not pos_order.partner_id.is_member_app_forlife:
+            return
+        if not pos_order.program_store_point_id:
+            program = self._get_program_promotion({
+                'date_order': datetime.strftime(pos_order.date_order, DEFAULT_SERVER_DATETIME_FORMAT),
+                'session_id': pos_order.session_id.id
+            })
+            if not program:
+                return
+            pos_order.program_store_point_id = program.id
+        store = pos_order._get_store_brand_from_program()
+        if store:
+            history_values = pos_order._prepare_history_point_value(store)
+            self.env['partner.history.point'].sudo().create(history_values)
+            pos_order.partner_id._compute_reset_day(pos_order.date_order, pos_order.program_store_point_id.point_expiration, store)
+            pos_order.action_point_addition()
+
+    def _prepare_history_point_value(self, store: str, points_used=0, points_back=0):
+        self.ensure_one()
+        pos = self
+        return {
+            'partner_id': pos.partner_id.id,
+            'store': store,
+            'pos_order_id': pos.id,
+            'date_order': pos.date_order,
+            'points_fl_order': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
+                [x.point_addition_event for x in pos.lines]),
+            'point_order_type': 'new',
+            'reason': pos.name,
+            'points_used': 5,  # go back to edit
+            'points_back': 5,  # go back to edit
+            'points_store': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
+                [x.point_addition_event for x in pos.lines]) - 5 - 5
+        }
+
+    def _get_store_brand_from_program(self):
+        self.ensure_one()
+        if self.program_store_point_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id:
+            return 'format'
+        elif self.program_store_point_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id:
+            return 'forlife'
+        else:
+            return None
 
     @api.depends('program_store_point_id')
     def _compute_point_order(self):
@@ -121,6 +178,8 @@ class PosOrder(models.Model):
         return create_Date
 
     def action_point_addition(self):
+        if self.point_addition_move_ids.filtered(lambda m: m.state == 'posted'):
+            raise UserError(_('Order had already point addition journal entry posted!'))
         move_vals = {
             'ref': self.name,
             'move_type': 'entry',
@@ -147,5 +206,6 @@ class PosOrder(models.Model):
             ]
 
         }
-        self.env['account.move'].create(move_vals)
+        move = self.env['account.move'].create(move_vals)
+        self.point_addition_move_ids |= move
         return True
