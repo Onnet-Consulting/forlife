@@ -24,11 +24,11 @@ class Contact(models.Model):
 
     def _compute_is_purchased(self):
         for rec in self:
-            partner_exits = self.env['pos.order'].sudo().search([('partner_id', '=', rec.id)], limit=1)
-            if partner_exits:
-                rec.is_purchased = True
-            else:
+            partner_exits = self.env['pos.order'].sudo().search([('partner_id', '=', rec.id)], limit=2)
+            if len(partner_exits) == 1:
                 rec.is_purchased = False
+            else:
+                rec.is_purchased = True
 
     @api.depends('group_id','retail_type_ids')
     def _compute_member_pos(self):
