@@ -9,9 +9,9 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
-    point_order = fields.Integer('Point Order', compute='_compute_point_order', store=False)
-    point_event_order = fields.Integer('Point event Order', compute='_compute_point_order', store=False)
-    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=False)
+    point_order = fields.Integer('Point Order', compute='_compute_point_order', store=True)
+    point_event_order = fields.Integer('Point event Order', compute='_compute_point_order', store=True)
+    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True)
     item_total_point = fields.Integer(
         'Item Point Total', readonly=True, compute='_compute_item_total_point', store=True,
         help='Includes the total of product point and product event point')
