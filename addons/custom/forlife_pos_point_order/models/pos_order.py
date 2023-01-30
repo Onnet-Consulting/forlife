@@ -113,7 +113,7 @@ class PosOrder(models.Model):
                     valid_money_payment_method += pay.amount
 
             for pro in rec.lines:
-                if pro.id in valid_product_ids:
+                if pro.product_id.id in valid_product_ids:
                     valid_money_product += pro.price_subtotal_incl
 
             money_value = valid_money_payment_method - valid_money_product  # Z
@@ -131,24 +131,22 @@ class PosOrder(models.Model):
 
     def get_event_match(self, pos_order):
         point_events = pos_order.program_store_point_id.event_ids.filtered(lambda x: x.from_date <= pos_order.date_order <= x.to_date)
+        time = pos_order.date_order
+        time = time.strftime("%Y-%m-%d %H:%M:%S")
+        create_Date = self._format_time_zone(time)
+        month_of_order = create_Date.month
+        day_of_order = create_Date.day
+        day_of_week_order = create_Date.weekday()
+        hour_of_order = create_Date.hour
         if point_events:
-            event_valid = point_events[0]
-            time = pos_order.date_order
-            time = time.strftime("%Y-%m-%d %H:%M:%S")
-            create_Date = self._format_time_zone(time)
-            month_of_order = create_Date.month
-            day_of_order = create_Date.day
-            day_of_week_order = create_Date.weekday()
-            hour_of_order = create_Date.hour
-            months_of_event = event_valid.month_ids
-            days_of_event = event_valid.dayofmonth_ids
-            day_of_weeks_event = event_valid.dayofweek_ids
-            hours_of_event = event_valid.hour_ids
-            if month_of_order in [x.code for x in months_of_event] and day_of_order in [x.code for x in days_of_event] and \
-                    day_of_week_order in [x.code for x in day_of_weeks_event] and hour_of_order in [x.code for x in hours_of_event]:
-                return event_valid
-            else:
-                return False
+            for event_valid in point_events:
+                months_of_event = event_valid.month_ids
+                days_of_event = event_valid.dayofmonth_ids
+                day_of_weeks_event = event_valid.dayofweek_ids
+                hours_of_event = event_valid.hour_ids
+                if month_of_order in [x.code for x in months_of_event] and day_of_order in [x.code for x in days_of_event] and \
+                        day_of_week_order in [x.code for x in day_of_weeks_event] and hour_of_order in [x.code for x in hours_of_event]:
+                    return event_valid
         return False
 
     @api.model

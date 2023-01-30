@@ -17,9 +17,9 @@ class PosOrderLine(models.Model):
                 for key, val in dict_products_points.items():
                     if rec.product_id in key:
                         if rec.order_id.partner_id.is_purchased:
-                            rec.point_addition = int(dict_products_points[key])
+                            rec.point_addition = int(dict_products_points[key])*rec.qty
                         else:
-                            rec.point_addition = int(dict_products_points[key])*rec.order_id.program_store_point_id.first_order
+                            rec.point_addition = int(dict_products_points[key])*rec.order_id.program_store_point_id.first_order*rec.qty
                         break
                     else:
                         rec.point_addition = 0
@@ -29,7 +29,7 @@ class PosOrderLine(models.Model):
             if product_ids_valid_event:
                 for key, val in product_ids_valid_event.items():
                     if rec.product_id in key:
-                        rec.point_addition_event = int(product_ids_valid_event[key])
+                        rec.point_addition_event = int(product_ids_valid_event[key])*rec.qty
                         break
                     else:
                         rec.point_addition_event = 0
