@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<t t-inherit="point_of_sale.OrderDetails" t-inherit-mode="extension">
+<!--    <xpath expr="//div[hasclass('order-container')]" position="inside">-->
+<!--        <div>Điểm: x</div>-->
+<!--    </xpath>-->
+</t>

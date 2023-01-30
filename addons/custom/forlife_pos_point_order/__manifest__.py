@@ -30,6 +30,9 @@
     ],
     'installable': True,
     'application': True,
-    # 'assets': {
-    # }
+    'assets': {
+        'point_of_sale.assets': [
+            'forlife_pos_point_order/static/src/xml/OrderDetails.xml',
+        ]
+    }
 }
