@@ -4,6 +4,7 @@ import re
 import requests
 from odoo import api, fields, models, _
 from odoo.exceptions import AccessDenied, MissingError
+from odoo.http import request
 
 
 class ResUsers(models.Model):
@@ -45,11 +46,20 @@ class ResUsers(models.Model):
         self._auth_signin_1office_user(username)
         return self.env.cr.dbname, username, 'dummy-password'  # don't need a valid password here
 
+    @classmethod
+    def authenticate(cls, db, login, password, user_agent_env):
+        full_path = request.httprequest.full_path
+        if '/web/login/1office' in full_path:
+            user_agent_env.update({'auth_1office': True})
+        uid = super(ResUsers, cls).authenticate(db, login, password, user_agent_env)
+        return uid
+
     def _check_credentials(self, password, env):
         try:
             return super(ResUsers, self)._check_credentials(password, env)
         except AccessDenied:
             user = self.env.user
             auth_1office_provider = self.env.ref('forlife_1office_oauth.provider_1office')
-            if user.active and user.oauth_uid == user.login and user.oauth_provider_id == auth_1office_provider:
+            if env.get('auth_1office') and user.active and user.oauth_uid == user.login and user.oauth_provider_id == auth_1office_provider:
                 return
+            raise
