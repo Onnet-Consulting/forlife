@@ -26,13 +26,15 @@
     'data': [
         'views/pos_order.xml',
         'views/res_partner_view.xml',
-        'security/ir.model.access.csv'
+        'security/ir.model.access.csv',
+        'views/promotion_inherit_view.xml'
     ],
     'installable': True,
     'application': True,
     'assets': {
         'point_of_sale.assets': [
             'forlife_pos_point_order/static/src/xml/OrderDetails.xml',
+            'forlife_pos_point_order/static/src/xml/ProductInfo.xml',
         ]
     }
 }

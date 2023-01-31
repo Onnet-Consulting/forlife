@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="points_promotion_view_form_extend">
+            <field name="name">points.promotion.view.form.extend</field>
+            <field name="model">points.promotion</field>
+            <field name="inherit_id" ref="forlife_promotion.points_promotion_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='event']" position="after">
+                    <page name="consumption_point" string="Consumption Point">
+                        <group>
+                            <group>
+                                <field name="approve_consumption_point"/>
+                                <field name="apply_all"/>
+                            </group>
+                            <group>
+                                <field name="point_consumption_ids" string="Consumption Products Points">
+                                    <tree editable="bottom">
+                                        <field name="product_id"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

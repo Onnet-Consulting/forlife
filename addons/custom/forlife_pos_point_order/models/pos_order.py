@@ -89,7 +89,7 @@ class PosOrder(models.Model):
             'points_used': 5,  # go back to edit
             'points_back': 5,  # go back to edit
             'points_store': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
-                [x.point_addition_event for x in pos.lines]) - 5 - 5
+                [x.point_addition_event for x in pos.lines])  # - 5 - 5
         }
 
     def _get_store_brand_from_program(self):
@@ -192,7 +192,7 @@ class PosOrder(models.Model):
                     'account_id': self.program_store_point_id.acc_accumulate_points_id.id,
                     'partner_id': self.program_store_point_id.point_customer_id.id,
                     'debit': self.point_order + self.point_event_order + sum([x.point_addition for x in self.lines]) + sum(
-                        [x.point_addition_event for x in self.lines])*1000,
+                        [x.point_addition_event for x in self.lines]) * 1000,
                     'credit': 0.0,
                 }),
                 # credit line
@@ -201,7 +201,7 @@ class PosOrder(models.Model):
                     'partner_id': self.program_store_point_id.point_customer_id.id,
                     'debit': 0.0,
                     'credit': self.point_order + self.point_event_order + sum([x.point_addition for x in self.lines]) + sum(
-                        [x.point_addition_event for x in self.lines])*1000,
+                        [x.point_addition_event for x in self.lines]) * 1000,
                 }),
             ]
 

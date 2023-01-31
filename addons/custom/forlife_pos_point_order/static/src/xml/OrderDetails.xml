@@ -4,7 +4,18 @@
         <div>
             <span>
                 <t t-if="props.order.partner">
-                    <t t-esc="props.order.partner.email" />
+                    <span>
+                        Điểm :
+                        <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">
+                            <t t-if="branch.name == 'TokyoLife'">
+                                <t t-esc="props.order.partner.total_points_available_forlife"/>
+                            </t>
+                            <t t-if="branch.name == 'Format'">
+                                <t t-esc="props.order.partner.total_points_available_format"/>
+                            </t>
+                        </t>
+                    </span>
+
                 </t>
             </span>
         </div>

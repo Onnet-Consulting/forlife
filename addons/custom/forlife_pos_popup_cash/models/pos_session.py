@@ -9,14 +9,18 @@ class PosSession(models.Model):
     def load_pos_data(self):
         loaded_data = super(PosSession, self).load_pos_data()
         all_pos = self.env['pos.config'].search([('store_id', '=', self.config_id.store_id.id), ('id', '!=', self.config_id.id)])
-        vals = []
-        for r in all_pos:
-            vals.append({
-                'id': r.id,
-                'name': r.name
-            })
+        branchs = self.config_id.store_id.brand_id
+        pos = [{
+            'id': r.id,
+            'name': r.name
+        } for r in all_pos]
+        branch = [{
+            'id': r.id,
+            'name': r.name
+        } for r in branchs]
         loaded_data.update({
-            'pos.customize': vals
+            'pos.customize': pos,
+            'pos.branch': branch
         })
         return loaded_data
 
