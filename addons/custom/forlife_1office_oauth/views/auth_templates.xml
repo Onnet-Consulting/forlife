@@ -3,7 +3,7 @@
     <template id="forlife_1office_oauth.login_1office_layout" name="1Office Oauth">
         <t t-call="web.login_layout">
             <t t-set="disable_footer">1</t>
-            <form class="oe_login_form" role="form" t-attf-action="/web/1office/login" method="post" onsubmit="this.action = '/web/1office/login' + location.hash">
+            <form class="oe_login_form" role="form" t-attf-action="/web/login/1office" method="post" onsubmit="this.action = '/web/login/1office' + location.hash">
                 <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
 
                 <div class="mb-3" t-if="databases and len(databases) &gt; 1">

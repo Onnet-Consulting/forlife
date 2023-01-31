@@ -17,6 +17,7 @@
     'depends': ['base', 'auth_oauth'],
 
     'data': [
+        'data/auth_oauth_data.xml',
         'views/auth_templates.xml',
     ],
 }

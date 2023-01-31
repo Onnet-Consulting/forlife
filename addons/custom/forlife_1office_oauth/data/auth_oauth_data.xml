@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="provider_1office" model="auth.oauth.provider">
+            <field name="name">1Office</field>
+            <field name="client_id">1office</field>
+            <field name="auth_endpoint">https://forlife.1office.vn/login</field>
+            <field name="scope">userinfo</field>
+            <field name="validation_endpoint">https://forlife.1office.vn/login</field>
+            <field name="css_class">fa fa-fw o_custom_icon</field>
+            <field name="body">1Office</field>
+            <field name="enabled" eval="False"/>
+        </record>
+    </data>
+</odoo>
