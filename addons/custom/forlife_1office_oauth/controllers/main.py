@@ -52,3 +52,9 @@ class Oauth1Office(Home):
         response.headers['X-Frame-Options'] = 'SAMEORIGIN'
         response.headers['Content-Security-Policy'] = "frame-ancestors 'self'"
         return response
+
+    @http.route()
+    def web_client(self, s_action=None, **kw):
+        if not request.session.uid:
+            return request.redirect('/web/login/1office', 303)
+        return super().web_client(s_action, **kw)
