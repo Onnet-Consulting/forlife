@@ -47,12 +47,13 @@ class ResUsers(models.Model):
         return self.env.cr.dbname, username, 'dummy-password'  # don't need a valid password here
 
     @classmethod
-    def authenticate(cls, db, login, password, user_agent_env):
-        full_path = request.httprequest.full_path
-        if '/web/login/1office' in full_path:
-            user_agent_env.update({'auth_1office': True})
-        uid = super(ResUsers, cls).authenticate(db, login, password, user_agent_env)
-        return uid
+    def _login(cls, db, login, password, user_agent_env):
+        try:
+            if '/web/login/1office' in request.httprequest.full_path:
+                user_agent_env.update({'auth_1office': True})
+        except Exception:
+            pass
+        return super(ResUsers, cls)._login(db, login, password, user_agent_env=user_agent_env)
 
     def _check_credentials(self, password, env):
         try:
@@ -60,6 +61,8 @@ class ResUsers(models.Model):
         except AccessDenied:
             user = self.env.user
             auth_1office_provider = self.env.ref('forlife_1office_oauth.provider_1office')
-            if env.get('auth_1office') and user.active and user.oauth_uid == user.login and user.oauth_provider_id == auth_1office_provider:
+            auth_1office = env.pop('auth_1office', False)
+            if auth_1office and user.active and \
+                    user.oauth_uid == user.login and user.oauth_provider_id == auth_1office_provider:
                 return
             raise
