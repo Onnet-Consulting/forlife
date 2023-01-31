@@ -117,6 +117,8 @@ class PosOrder(models.Model):
                     valid_money_product += pro.price_subtotal_incl
 
             money_value = valid_money_payment_method - valid_money_product  # Z
+            if money_value < 0:
+                money_value = 0
             if rec.partner_id.is_purchased:
                 rec.point_order = int(
                     money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) if rec.program_store_point_id.value_conversion > 0 else 0  # a
