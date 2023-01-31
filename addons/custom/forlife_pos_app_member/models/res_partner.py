@@ -13,7 +13,8 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     group_id = fields.Many2one('res.partner.group', string='Group', copy=False,
-                               default=lambda self: self.env.ref('forlife_pos_app_member.partner_group_3', raise_if_not_found=False))
+                               default=lambda self: self.env.ref('forlife_pos_app_member.partner_group_3',
+                                                                 raise_if_not_found=False))
     job_ids = fields.Many2many('res.partner.job', string='Jobs')
     retail_type_ids = fields.Many2many('res.partner.retail', string='Retail types', copy=False)
     show_customer_type = fields.Boolean(compute='_compute_show_retail_types')
@@ -31,7 +32,8 @@ class ResPartner(models.Model):
 
     _sql_constraints = [
         ('unique_barcode', 'UNIQUE(barcode)', 'Only one barcode occurrence by partner'),
-        ('phone_number_group_uniq', 'unique(phone, group_id)', 'The phone number must be unique in each Partner Group !'),
+        ('phone_number_group_uniq', 'unique(phone, group_id)',
+         'The phone number must be unique in each Partner Group !'),
     ]
 
     @api.depends('phone', 'create_uid')
@@ -82,7 +84,8 @@ class ResPartner(models.Model):
         env_context = self.env.context
         app_brand_code = env_context.get('is_app_customer') and env_context.get('brand_code')
         if app_brand_code:
-            app_retail_type_id = self.env['res.partner.retail'].search([('brand_id.code', '=', app_brand_code), ('retail_type', '=', 'app')], limit=1).id
+            app_retail_type_id = self.env['res.partner.retail'].search(
+                [('brand_id.code', '=', app_brand_code), ('retail_type', '=', 'app')], limit=1).id
         else:
             app_retail_type_id = False
         return app_retail_type_id
@@ -121,10 +124,10 @@ class ResPartner(models.Model):
         if app_retail_type_id:
             if len(self) > 1:
                 raise ValueError("Expected singleton: %s" % self)
+            values.update({'retail_type_ids': [(4, app_retail_type_id)]})
             if not self.barcode:
                 values.update({
                     'barcode': self.generate_partner_barcode(),
-                    'retail_type_ids': [(4, app_retail_type_id)]
                 })
 
         return super().write(values)
