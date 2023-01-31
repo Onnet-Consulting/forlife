@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="user_sign_in" inherit_id="portal.placeholder_user_sign_in">
+        <xpath expr="//li[@groups='base.group_public']/a" position="attributes">
+            <attribute name="t-attf-href">/web/login/1office</attribute>
+        </xpath>
+    </template>
+</odoo>
