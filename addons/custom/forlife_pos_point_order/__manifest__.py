@@ -34,7 +34,10 @@
     'assets': {
         'point_of_sale.assets': [
             'forlife_pos_point_order/static/src/xml/OrderDetails.xml',
-            'forlife_pos_point_order/static/src/xml/ProductInfo.xml',
+            'forlife_pos_point_order/static/src/xml/PointsConsumption.xml',
+            'forlife_pos_point_order/static/src/xml/PointsConsumptionPopup.xml',
+            'forlife_pos_point_order/static/src/js/Button/PointsConsumption.js',
+            'forlife_pos_point_order/static/src/js/Popup/PointsConsumptionPopup.js'
         ]
     }
 }

@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 
+
 class PointsConsumptionLine(models.Model):
     _name = 'points.consumption.line'
 

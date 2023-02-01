@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="PointsConsumptionPopup" owl="1">
+        <div class="popup assign-employee-popup">
+            <header class="title">
+                <span>Tiêu điểm</span>
+            </header>
+            <main class="body">
+                Body tiêu điểm
+            </main>
+            <footer class="footer">
+                footer tiêu điểm
+            </footer>
+        </div>
+    </t>
+</templates>

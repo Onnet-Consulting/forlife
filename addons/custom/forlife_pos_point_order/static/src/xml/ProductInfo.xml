@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<t t-inherit="point_of_sale.ProductInfoButton" t-inherit-mode="extension">
-    <xpath expr="//div[hasclass('control-button')]" position="after">
-        <div class="control-button">
-            <i class="fa fa-ticket" role="img" aria-label="Info" title="Info"/>
-            Tiêu điểm
-        </div>
-    </xpath>
-</t>
