@@ -103,6 +103,8 @@ class PosOrder(models.Model):
 
     @api.depends('program_store_point_id')
     def _compute_point_order(self):
+        brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
+        brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
         valid_money_payment_method = 0  # X
         valid_money_product = 0  # Y
         for rec in self:
@@ -119,7 +121,10 @@ class PosOrder(models.Model):
             money_value = valid_money_payment_method - valid_money_product  # Z
             if money_value < 0:
                 money_value = 0
-            if rec.partner_id.is_purchased:
+            if rec.partner_id.is_purchased_of_forlife and rec.program_store_point_id.brand_id.id == brand_tokyolife:
+                rec.point_order = int(
+                    money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) if rec.program_store_point_id.value_conversion > 0 else 0  # a
+            elif rec.partner_id.is_purchased_of_format and rec.program_store_point_id.brand_id.id == brand_format:
                 rec.point_order = int(
                     money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) if rec.program_store_point_id.value_conversion > 0 else 0  # a
             else:

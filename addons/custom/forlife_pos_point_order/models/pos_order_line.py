@@ -9,6 +9,8 @@ class PosOrderLine(models.Model):
 
     @api.depends('order_id.program_store_point_id')
     def _compute_value_follow_program_event(self):
+        brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
+        brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
         dict_products_points = self._prepare_dict_point_product_program()
         product_ids_valid_event = self._prepare_dict_point_product_event()
         for rec in self:
@@ -16,7 +18,9 @@ class PosOrderLine(models.Model):
             if dict_products_points:
                 for key, val in dict_products_points.items():
                     if rec.product_id in key:
-                        if rec.order_id.partner_id.is_purchased:
+                        if rec.order_id.partner_id.is_purchased_of_forlife and rec.order_id.program_store_point_id.brand_id.id == brand_tokyolife:
+                            rec.point_addition = int(dict_products_points[key])*rec.qty
+                        elif rec.order_id.partner_id.is_purchased_of_format and rec.order_id.program_store_point_id.brand_id.id == brand_format:
                             rec.point_addition = int(dict_products_points[key])*rec.qty
                         else:
                             rec.point_addition = int(dict_products_points[key])*rec.order_id.program_store_point_id.first_order*rec.qty
