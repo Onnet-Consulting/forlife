@@ -11,9 +11,9 @@ class PosOrderLine(models.Model):
     def _compute_value_follow_program_event(self):
         brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
         brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
-        dict_products_points = self._prepare_dict_point_product_program()
-        product_ids_valid_event = self._prepare_dict_point_product_event()
         for rec in self:
+            dict_products_points = rec._prepare_dict_point_product_program()
+            product_ids_valid_event = rec._prepare_dict_point_product_event()
             #compute c
             if dict_products_points:
                 for key, val in dict_products_points.items():
