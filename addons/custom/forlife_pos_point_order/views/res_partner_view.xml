@@ -11,10 +11,11 @@
                     <field name="is_member_app_format" invisible="1"/>
                 </xpath>
                 <xpath expr="//page[@name='accounting']" position="after">
-                    <page name="history_point_forlife" string="For Life" attrs="{'invisible': [('is_member_app_forlife','=',False)]}">
+                    <page name="history_point_forlife" string="TokyoLife" attrs="{'invisible': [('is_member_app_forlife','=',False)]}">
                         <group>
                             <group>
                                 <field name="reset_day_of_point_forlife"/>
+                                <field name="is_purchased_of_forlife"/>
                             </group>
                             <group>
                                 <field name="total_points_available_forlife"/>
@@ -39,6 +40,7 @@
                         <group>
                             <group>
                                 <field name="reset_day_of_point_format"/>
+                                <field name="is_purchased_of_format"/>
                             </group>
                             <group>
                                 <field name="total_points_available_format"/>
