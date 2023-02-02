@@ -2,9 +2,11 @@
 
 
 from odoo.addons.web.controllers.home import ensure_db, Home, SIGN_UP_REQUEST_PARAMS
-from odoo import http
+from odoo import http, api, SUPERUSER_ID
 from odoo.exceptions import AccessDenied, MissingError
 from odoo.http import request
+from odoo import registry as registry_get
+from werkzeug.exceptions import BadRequest
 
 
 class Oauth1Office(Home):
@@ -35,15 +37,23 @@ class Oauth1Office(Home):
         if request.httprequest.method == 'POST':
             username = values.get('login')
             password = values.get('password')
-            try:
-                db, login, key = request.env['res.users'].sudo().auth_1office(username, password)
-                uid = request.session.authenticate(db, login, key)
-                request.params['login_success'] = True
-                return request.redirect(self._login_redirect(uid, redirect=redirect))
-            except AccessDenied as access_denied_message:
-                values['error'] = str(access_denied_message)
-            except MissingError as missing_message:
-                values['error'] = str(missing_message)
+            dbname = request.session.db
+            context = {}
+            if not http.db_filter([dbname]):
+                return BadRequest()
+            registry = registry_get(dbname)
+            with registry.cursor() as cr:
+                try:
+                    env = api.Environment(cr, SUPERUSER_ID, context)
+                    db, login, key = env['res.users'].sudo().auth_1office(username, password)
+                    cr.commit()
+                    uid = request.session.authenticate(db, login, key)
+                    request.params['login_success'] = True
+                    return request.redirect(self._login_redirect(uid, redirect=redirect))
+                except AccessDenied as access_denied_message:
+                    values['error'] = str(access_denied_message)
+                except MissingError as missing_message:
+                    values['error'] = str(missing_message)
 
         if 'login' not in values and request.session.get('auth_login'):
             values['login'] = request.session.get('auth_login')
