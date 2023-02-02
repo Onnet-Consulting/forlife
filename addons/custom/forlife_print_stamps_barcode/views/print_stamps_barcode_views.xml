@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_print_stamps_barcode_form" model="ir.ui.view">
+            <field name="name">print.stamps.barcode.form</field>
+            <field name="model">print.stamps.barcode</field>
+            <field name="arch" type="xml">
+                <form string="Print Barcode Form">
+                    <header>
+                        <button name="btn_approve" string="Approve" class="oe_highlight" states="draft" type="object"/>
+                        <button name="%(print_stamps_barcode_report)d" string="Print" class="oe_highlight" type="action"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="approve_uid" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                                <field name="start_print" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                            </group>
+                            <group>
+                                <field name="create_date" readonly="1" force_save="1"/>
+                                <field name="create_uid" readonly="1" force_save="1"/>
+                            </group>
+                        </group>
+                        <field name="line_ids" attrs="{'readonly': [('state', '=', 'approved')]}">
+                            <tree editable="bottom">
+                                <field name="product_id" options="{'no_create_edit': True, 'no_create': True}"/>
+                                <field name="barcode"/>
+                                <field name="qty" sum="Total"/>
+                            </tree>
+                        </field>
+                        <field name="view" nolabel="1"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_print_stamps_barcode_tree" model="ir.ui.view">
+            <field name="name">print.stamps.barcode.tree</field>
+            <field name="model">print.stamps.barcode</field>
+            <field name="arch" type="xml">
+                <tree string="Print Barcode Tree">
+                    <field name="create_date"/>
+                    <field name="create_uid"/>
+                    <field name="approve_uid"/>
+                    <field name="state"/>
+                    <field name="start_print"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_print_stamps_barcode_filter" model="ir.ui.view">
+            <field name="name">print.stamps.barcode.filter</field>
+            <field name="model">print.stamps.barcode</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="create_date"/>
+                    <field name="create_uid"/>
+                    <field name="approve_uid"/>
+                    <field name="state"/>
+                    <field name="start_print"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_print_stamps_barcode" model="ir.actions.act_window">
+            <field name="name">Print Stamps Barcode</field>
+            <field name="res_model">print.stamps.barcode</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_print_stamps_barcode" name="Print Barcode" parent="point_of_sale.menu_point_of_sale" action="action_print_stamps_barcode" sequence="100"/>
+
+    </data>
+</odoo>
