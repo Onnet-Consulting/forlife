@@ -6,10 +6,32 @@
                 <span>Tiêu điểm</span>
             </header>
             <main class="body">
-                Body tiêu điểm
+                <table style="width:100%; border:1px solid black;">
+                    <tr style="width:100%; border:1px solid black;">
+                        <th style="border:1px solid black;">Sản phẩm</th>
+                        <th style="border:1px solid black;">Giá</th>
+                        <th style="border:1px solid black;">Điểm sử dụng</th>
+                    </tr>
+                    <tr style="width:100%; border:1px solid black;">
+                        <td style="border:1px solid black;">sp1</td>
+                        <td style="border:1px solid black;">100đ</td>
+                        <td style="border:1px solid black;">10</td>
+                    </tr>
+                </table>
             </main>
             <footer class="footer">
-                footer tiêu điểm
+                <div style="width:100%">
+                    <div class="button cancel" t-on-click="cancel">
+                        <span>Xóa</span>
+                    </div>
+                    <div class="button confirm highlight">
+                        <span>Chia điểm</span>
+                    </div>
+                    <div class="button confirm highlight" t-on-click="confirm">
+                        <span>Xác nhận</span>
+                    </div>
+                </div>
+
             </footer>
         </div>
     </t>

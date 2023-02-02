@@ -16,6 +16,20 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
             super.setup();
         }
 
+        cancel() {
+            this.env.posbus.trigger('close-popup', {
+                popupId: this.props.id,
+                response: {confirmed: false, payload: null},
+            });
+        }
+
+        confirm() {
+            this.env.posbus.trigger('close-popup', {
+                popupId: this.props.id,
+                response: {confirmed: false, payload: null},
+            });
+        }
+
     }
 
     PointsConsumptionPopup.template = "PointsConsumptionPopup";
