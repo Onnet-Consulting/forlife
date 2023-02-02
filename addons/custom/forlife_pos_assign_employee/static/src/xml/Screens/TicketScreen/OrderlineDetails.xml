@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="forlife_pos_assign_employee.OrderlineDetails" t-inherit="point_of_sale.OrderlineDetails"
+       t-inherit-mode="extension" owl="1">
+        <xpath expr="//ul[hasclass('info-list')]" position="inside">
+            <t t-if="getAssignedEmployeeName()">
+                <li class="info orderline-note">
+                    <i class="fa fa-male" role="img" aria-label="Employee" title="Employee"/>
+                    <t t-esc="getAssignedEmployeeName()"/>
+                </li>
+            </t>
+        </xpath>
+    </t>
+</templates>
