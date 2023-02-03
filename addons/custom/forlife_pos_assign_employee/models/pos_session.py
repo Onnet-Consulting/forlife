@@ -22,9 +22,10 @@ class PosSession(models.Model):
 
     def _get_assignable_employees(self):
         """Get assignable employees for PoS order line"""
-        employee_domain = self._loader_params_hr_employee()['search_params']['domain']
-        employee_domain = expression.OR([employee_domain, [('id', 'in', self.config_id.store_id.employee_ids.ids)]])
-        return self.env['hr.employee'].search_read(employee_domain, ['name'])
+        return self.env['hr.employee'].search_read(self._get_assignable_employees_domain(), ['name'])
+
+    def _get_assignable_employees_domain(self):
+        return [('id', 'in', self.config_id.store_id.employee_ids.ids)]
 
     def _loader_params_res_users(self):
         params = super(PosSession, self)._loader_params_res_users()
