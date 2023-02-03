@@ -12,10 +12,10 @@
                     <field name="from_date"/>
                     <field name="to_date"/>
                     <field name="point_addition"/>
-                    <field name="state"/>
-                    <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object"/>
-                    <button name="btn_edit" string="Edit" icon="fa-pencil" class="oe_highlight" states="new" type="object"/>
-                    <button name="unlink" string="Delete" icon="fa-trash" class="oe_highlight" states="new" type="object"/>
+                    <field name="state" widget="badge" decoration-success="state == 'effective'" decoration-info="state == 'new'"/>
+                    <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
+                    <button name="btn_edit" string="Edit" icon="fa-pencil" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
+                    <button name="unlink" string="Delete" icon="fa-trash" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
                 </tree>
             </field>
         </record>
@@ -26,7 +26,7 @@
             <field name="arch" type="xml">
                 <form string="points_product_form">
                     <header>
-                        <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object"/>
+                        <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
