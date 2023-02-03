@@ -5,7 +5,8 @@ import datetime
 class Contact(models.Model):
     _inherit = 'res.partner'
 
-    is_purchased = fields.Boolean('Is Purchased', compute='_compute_is_purchased', store=False)
+    is_purchased_of_forlife = fields.Boolean('Is Purchased Forlife', compute='_comnpute_is_purchased')
+    is_purchased_of_format = fields.Boolean('Is Purchased Forlife', compute='_comnpute_is_purchased')
     is_member_app_forlife = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     is_member_app_format = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife')
@@ -15,20 +16,38 @@ class Contact(models.Model):
     history_points_format_ids = fields.One2many('partner.history.point', 'partner_id', string='History Point Store', domain=[('store', '=','format')], readonly=True)
     history_points_forlife_ids = fields.One2many('partner.history.point', 'partner_id', string='History Point Store', domain=[('store', '=','forlife')], readonly=True)
 
+    @api.depends('history_points_format_ids','history_points_forlife_ids')
+    def _comnpute_is_purchased(self):
+        for rec in self:
+            if len(rec.history_points_forlife_ids) >= 1:
+                rec.is_purchased_of_forlife = True
+            else:
+                rec.is_purchased_of_forlife = False
+            if len(rec.history_points_format_ids) >= 1:
+                rec.is_purchased_of_format = True
+            else:
+                rec.is_purchased_of_format = False
+
     @api.depends('history_points_format_ids', 'history_points_forlife_ids')
     def compute_point_total(self):
         for rec in self:
             rec.total_points_available_forlife = sum([x.points_store for x in rec.history_points_forlife_ids])
             rec.total_points_available_format = sum([x.points_store for x in rec.history_points_format_ids])
 
-
-    def _compute_is_purchased(self):
-        for rec in self:
-            partner_exits = self.env['pos.order'].sudo().search([('partner_id', '=', rec.id)], limit=2)
-            if len(partner_exits) == 1:
-                rec.is_purchased = False
-            else:
-                rec.is_purchased = True
+    # def _check_is_purchased(self):
+    #     brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
+    #     brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
+    #     pos_partner_tokyo_exits = self.env['pos.order'].sudo().search([('partner_id', '=', self.id), ('program_store_point_id.brand_id.id','=',brand_tokyolife)], limit=2)
+    #     pos_partner_format_exits = self.env['pos.order'].sudo().search([('partner_id', '=', self.id), ('program_store_point_id.brand_id.id','=',brand_format)], limit=2)
+    #     if len(pos_partner_tokyo_exits) == 1:
+    #         is_purchased_of_forlife = False
+    #     else:
+    #         is_purchased_of_forlife = True
+    #     if len(pos_partner_format_exits) == 1:
+    #         is_purchased_of_format = False
+    #     else:
+    #         is_purchased_of_format = True
+    #     return is_purchased_of_format, is_purchased_of_forlife
 
     @api.depends('group_id','retail_type_ids')
     def _compute_member_pos(self):
