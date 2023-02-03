@@ -13,7 +13,7 @@
                     <field name="to_date"/>
                     <field name="value_conversion"/>
                     <field name="point_addition"/>
-                    <field name="state"/>
+                    <field name="state" widget="badge" decoration-success="state == 'in_progress'" decoration-info="state == 'new'" decoration-warning="state == 'finish'"/>
                 </tree>
             </field>
         </record>
@@ -24,8 +24,8 @@
             <field name="arch" type="xml">
                 <form string="points_promotion_form">
                     <header>
-                        <button name="btn_apply" string="Apply" class="oe_highlight" states="new" type="object"/>
-                        <button name="btn_finish" string="Finish" class="oe_highlight" states="in_progress" type="object"/>
+                        <button name="btn_apply" string="Apply" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
+                        <button name="btn_finish" string="Finish" class="oe_highlight" states="in_progress" type="object" groups="forlife_promotion.promotion_manager" confirm="Are you sure you want Finish program ?"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -58,23 +58,13 @@
                         </group>
                         <notebook>
                             <page name="product_point" string="Product Point">
-                                <button name="action_create_points_product" string="Add Product Point" icon="fa-plus" class="oe_stat_button" type="object" attrs="{'invisible': [('state', '=', 'finish')]}"/>
+                                <button name="action_create_points_product" string="Add Product Point" icon="fa-plus" class="oe_highlight" type="object" attrs="{'invisible': [('state', '=', 'finish')]}" groups="forlife_promotion.promotion_manager"/>
                                 <field name="points_product_ids" readonly="1"/>
                             </page>
                             <page name="event" string="Events">
-                                <button name="action_create_events" string="Add Event" icon="fa-plus" class="oe_stat_button" type="object" attrs="{'invisible': [('state', '=', 'finish')]}"/>
-                                <button name="btn_load_all_points_promotion" string="Load All" class="oe_highlight" type="object" attrs="{'invisible': [('state', '=', 'finish')]}"/>
-                                <field name="event_ids" context="{'default_is_lock_change_points_promotion': True}" attrs="{'readonly': [('state', '=', 'finish')]}">
-                                    <tree create="0">
-                                        <field name="name"/>
-                                        <field name="from_date"/>
-                                        <field name="to_date"/>
-                                        <field name="value_conversion"/>
-                                        <field name="point_addition"/>
-                                        <field name="state"/>
-                                        <button name="btn_load_points_promotion" string="Load Program" class="oe_highlight" states="new" type="object"/>
-                                    </tree>
-                                </field>
+                                <button name="action_create_events" string="Add Event" icon="fa-plus" type="object" attrs="{'invisible': [('state', '=', 'finish')]}" groups="forlife_promotion.promotion_manager"/>
+                                <button name="btn_load_all_points_promotion" string="Load All" class="oe_highlight" type="object" attrs="{'invisible': [('state', '=', 'finish')]}" groups="forlife_promotion.promotion_manager"/>
+                                <field name="event_ids" context="{'default_is_lock_change_points_promotion': True}" readonly="1"/>
                             </page>
                         </notebook>
                     </sheet>
