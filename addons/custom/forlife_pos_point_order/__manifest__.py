@@ -26,7 +26,8 @@
     'data': [
         'views/pos_order.xml',
         'views/res_partner_view.xml',
-        'security/ir.model.access.csv'
+        'security/ir.model.access.csv',
+        'views/account_move.xml'
     ],
     'installable': True,
     'application': True,
