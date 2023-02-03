@@ -70,7 +70,7 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <menuitem id="menu_print_stamps_barcode" name="Print Barcode" parent="point_of_sale.menu_point_of_sale" action="action_print_stamps_barcode" sequence="100"/>
+        <menuitem id="menu_print_stamps_barcode" name="Print Barcode" parent="point_of_sale.pos_config_menu_catalog" action="action_print_stamps_barcode" sequence="100"/>
 
     </data>
 </odoo>

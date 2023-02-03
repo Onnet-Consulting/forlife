@@ -69,7 +69,7 @@ class PrintStampsBarcodeLine(models.Model):
     _order = 'print_barcode_id, product_id'
 
     print_barcode_id = fields.Many2one("print.stamps.barcode", string="Print Stamps Barcode", ondelete='cascade')
-    product_id = fields.Many2one("product.product", string="Product", required=True)
+    product_id = fields.Many2one("product.product", string="Product", required=True, domain="[('barcode', 'not in', ('', False))]")
     barcode = fields.Char("Barcode", related='product_id.barcode', store=True)
     qty = fields.Integer("Qty", required=True, default=1)
 
