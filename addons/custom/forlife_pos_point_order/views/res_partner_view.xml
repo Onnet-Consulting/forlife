@@ -22,7 +22,7 @@
                             </group>
                         </group>
                         <group>
-                            <field name="history_points_forlife_ids" string="ForLife">
+                            <field name="history_points_forlife_ids" string="TokyoLife">
                                 <tree editable="bottom">
                                     <field name="create_date"/>
                                     <field name="date_order"/>
