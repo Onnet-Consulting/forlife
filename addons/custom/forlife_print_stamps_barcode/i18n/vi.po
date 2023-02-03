@@ -1,0 +1,230 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_print_stamps_barcode
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-03 08:00+0000\n"
+"PO-Revision-Date: 2023-02-03 15:13+0700\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: vi\n"
+"X-Generator: Poedit 2.3\n"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.actions.report,print_report_name:forlife_print_stamps_barcode.print_stamps_barcode_report
+msgid "'Print Barcode'"
+msgstr "In mã vạch"
+
+#. module: forlife_print_stamps_barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.view_print_stamps_barcode_form
+msgid "Approve"
+msgstr "Phê duyệt"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__approve_uid
+msgid "Approve By"
+msgstr "Phê duyệt bởi"
+
+#. module: forlife_print_stamps_barcode
+#. odoo-python
+#: code:addons/forlife_print_stamps_barcode/models/print_stamps_barcode.py:0
+#: model:ir.model.fields.selection,name:forlife_print_stamps_barcode.selection__print_stamps_barcode__state__approved
+#, python-format
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line__barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.print_stamps_barcode
+msgid "Barcode"
+msgstr "Mã vạch"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__create_uid
+msgid "Create By"
+msgstr "Được tảo bởi"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__create_date
+msgid "Create Date"
+msgstr "Ngày tạo"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line__create_uid
+msgid "Created by"
+msgstr "Được tạo bởi"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line__create_date
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__display_name
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: forlife_print_stamps_barcode
+#. odoo-python
+#: code:addons/forlife_print_stamps_barcode/models/print_stamps_barcode.py:0
+#: model:ir.model.fields.selection,name:forlife_print_stamps_barcode.selection__print_stamps_barcode__state__draft
+#, python-format
+msgid "Draft"
+msgstr "Nháp"
+
+#. module: forlife_print_stamps_barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.print_stamps_barcode
+msgid "Giá:"
+msgstr ""
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__id
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line__id
+msgid "ID"
+msgstr ""
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,help:forlife_print_stamps_barcode.field_print_stamps_barcode_line__barcode
+msgid "International Article Number used for product identification."
+msgstr ""
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode____last_update
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__write_uid
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__write_date
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__line_ids
+msgid "Lines"
+msgstr "Dòng"
+
+#. module: forlife_print_stamps_barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.print_stamps_barcode
+msgid "Màu:"
+msgstr ""
+
+#. module: forlife_print_stamps_barcode
+#. odoo-python
+#: code:addons/forlife_print_stamps_barcode/models/print_stamps_barcode.py:0
+#, python-format
+msgid "Only %s codes can be printed if starting from %s position"
+msgstr "Chỉ có thể in %s mã nếu bắt đầu từ vị trí %s"
+
+#. module: forlife_print_stamps_barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.view_print_stamps_barcode_form
+msgid "Print"
+msgstr "In"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.ui.menu,name:forlife_print_stamps_barcode.menu_print_stamps_barcode
+msgid "Print Barcode"
+msgstr "In mã vạch"
+
+#. module: forlife_print_stamps_barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.view_print_stamps_barcode_form
+msgid "Print Barcode Form"
+msgstr "Phom in mã vạch"
+
+#. module: forlife_print_stamps_barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.view_print_stamps_barcode_tree
+msgid "Print Barcode Tree"
+msgstr "Danh sách in mã vạch"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.actions.act_window,name:forlife_print_stamps_barcode.action_print_stamps_barcode
+#: model:ir.actions.report,name:forlife_print_stamps_barcode.print_stamps_barcode_report
+#: model:ir.model,name:forlife_print_stamps_barcode.model_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line__print_barcode_id
+msgid "Print Stamps Barcode"
+msgstr "In tem sản phẩm"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model,name:forlife_print_stamps_barcode.model_print_stamps_barcode_line
+msgid "Print Stamps Barcode Line"
+msgstr "Chi tiết sản phẩm in"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line__product_id
+msgid "Product"
+msgstr "Sản phẩm"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode_line__qty
+msgid "Qty"
+msgstr "Số lượng"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.constraint,message:forlife_print_stamps_barcode.constraint_print_stamps_barcode_line_check_qty
+msgid "Quantity must be greater than 1."
+msgstr "Số lượng phải lớn hơn 1."
+
+#. module: forlife_print_stamps_barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.view_print_stamps_barcode_filter
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#. module: forlife_print_stamps_barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.print_stamps_barcode
+msgid "Size:"
+msgstr ""
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__start_print
+msgid "Start Print"
+msgstr "Vị trí in từ"
+
+#. module: forlife_print_stamps_barcode
+#. odoo-python
+#: code:addons/forlife_print_stamps_barcode/models/print_stamps_barcode.py:0
+#: model:ir.model.constraint,message:forlife_print_stamps_barcode.constraint_print_stamps_barcode_check_start_print
+#, python-format
+msgid "Start Print must be between 1 and 40"
+msgstr "Vị trí in phải nằm trong khoảng từ 1 đến 40"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: forlife_print_stamps_barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.view_print_stamps_barcode_form
+msgid "Total"
+msgstr "Tổng"
+
+#. module: forlife_print_stamps_barcode
+#: model:ir.model.fields,field_description:forlife_print_stamps_barcode.field_print_stamps_barcode__view
+msgid "View"
+msgstr "Xem"
+
+#. module: forlife_print_stamps_barcode
+#: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.print_stamps_barcode
+msgid "Xuất xứ:"
+msgstr ""
+
+#. module: forlife_print_stamps_barcode
+#. odoo-python
+#: code:addons/forlife_print_stamps_barcode/models/print_stamps_barcode.py:0
+#, python-format
+msgid "You do not have permission to make approvals."
+msgstr "Bạn không có quyền phê duyệt."
