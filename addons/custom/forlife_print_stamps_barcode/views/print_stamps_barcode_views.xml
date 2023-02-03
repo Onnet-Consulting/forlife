@@ -9,7 +9,7 @@
                 <form string="Print Barcode Form">
                     <header>
                         <button name="btn_approve" string="Approve" class="oe_highlight" states="draft" type="object"/>
-                        <button name="%(print_stamps_barcode_report)d" string="Print" class="oe_highlight" type="action"/>
+                        <button name="%(print_stamps_barcode_report)d" string="Print" class="oe_highlight" type="action" states="approved"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
