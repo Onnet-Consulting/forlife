@@ -6,16 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-03 01:52+0000\n"
-"PO-Revision-Date: 2023-02-03 09:01+0700\n"
+"POT-Creation-Date: 2023-02-03 04:41+0000\n"
+"PO-Revision-Date: 2023-02-03 04:41+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"X-Generator: Poedit 3.2.2\n"
 
 #. module: forlife_pos_app_member
 #: model:ir.model.fields,field_description:forlife_pos_app_member.field_hr_employee__address_home_id
@@ -26,7 +24,7 @@ msgstr "Địa chỉ"
 #. module: forlife_pos_app_member
 #: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner_retail__retail_type__app
 msgid "App"
-msgstr "App"
+msgstr ""
 
 #. module: forlife_pos_app_member
 #: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__auto_generate
@@ -36,7 +34,7 @@ msgstr "Tự động sinh"
 #. module: forlife_pos_app_member
 #: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__barcode
 msgid "Barcode"
-msgstr "Barcode"
+msgstr ""
 
 #. module: forlife_pos_app_member
 #: model:ir.model,name:forlife_pos_app_member.model_base
@@ -83,7 +81,7 @@ msgstr "Công ty"
 #. module: forlife_pos_app_member
 #: model:ir.model,name:forlife_pos_app_member.model_res_partner
 msgid "Contact"
-msgstr "Liên hệ"
+msgstr "Danh bạ"
 
 #. module: forlife_pos_app_member
 #: model_terms:ir.ui.view,arch_db:forlife_pos_app_member.create_warehouse_partner_form
@@ -150,8 +148,8 @@ msgid ""
 "Enter here the private address of the employee, not the one linked to your "
 "company."
 msgstr ""
-"Nhập địa chỉ liên hệ riêng tư cho nhân viên tại đây, không phải địa chỉ "
-"của công ty."
+"Nhập địa chỉ liên hệ riêng tư cho nhân viên tại đây, không phải địa chỉ của "
+"công ty."
 
 #. module: forlife_pos_app_member
 #. odoo-javascript
@@ -189,7 +187,7 @@ msgstr "Mã nhóm đã tồn tại"
 #: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_job__id
 #: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__id
 msgid "ID"
-msgstr "ID"
+msgstr ""
 
 #. module: forlife_pos_app_member
 #: model:ir.model.fields,help:forlife_pos_app_member.field_res_partner_group__auto_generate
@@ -197,8 +195,7 @@ msgid ""
 "If true, we'll generate partner's reference by group's sequence field.\n"
 " Otherwise, use group's code to add prefix to partner's reference"
 msgstr ""
-"Nếu đúng, sử dụng sequence của nhóm khách hàng để sinh mã tham chiếu cho "
-"liên hệ.\n"
+"Nếu đúng, sử dụng sequence của nhóm khách hàng để sinh mã tham chiếu cho liên hệ.\n"
 "Nếu không, thêm mã của nhóm vào đầu mã của liên hệ"
 
 #. module: forlife_pos_app_member
@@ -354,10 +351,20 @@ msgstr "Liên hệ của kho hàng %s đã tồn tại"
 
 #. module: forlife_pos_app_member
 #: model:ir.model.fields,field_description:forlife_pos_app_member.field_create_warehouse_partner__phone
-#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__phone
-#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__phone
 msgid "Phone"
 msgstr "Số điện thoại"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__phone
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__phone
+msgid "Phone #1"
+msgstr "Số điện thoại 1"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__mobile
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__mobile
+msgid "Phone #2"
+msgstr "Số điện thoại 2"
 
 #. module: forlife_pos_app_member
 #. odoo-python
@@ -439,21 +446,10 @@ msgstr "Kho"
 msgid "You must call this action from warehouse form view!"
 msgstr "Bạn phải gọi hành động này từ giao diện kho hàng!"
 
-
-#. module: base
-#: model:ir.model.fields,field_description:base.field_base_language_export__state
-#: model:ir.model.fields,field_description:base.field_base_partner_merge_automatic_wizard__state
-#: model:ir.model.fields,field_description:base.field_res_partner__state_id
-#: model:ir.model.fields,field_description:base.field_res_users__state_id
-#: model:ir.model.fields,field_description:base.field_res_users_deletion__state
-#: model_terms:ir.ui.view,arch_db:base.res_partner_view_form_private
-#: model_terms:ir.ui.view,arch_db:base.view_company_form
-#: model_terms:ir.ui.view,arch_db:base.view_country_state_form
-#: model_terms:ir.ui.view,arch_db:base.view_country_state_tree
-#: model_terms:ir.ui.view,arch_db:base.view_module_filter
-#: model_terms:ir.ui.view,arch_db:base.view_partner_address_form
-#: model_terms:ir.ui.view,arch_db:base.view_partner_form
-#: model_terms:ir.ui.view,arch_db:base.view_res_bank_form
+#. module: forlife_pos_app_member
+#. odoo-javascript
+#: code:addons/forlife_pos_app_member/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#, python-format
 msgid "State"
 msgstr "Tỉnh/TP"
 
@@ -461,5 +457,12 @@ msgstr "Tỉnh/TP"
 #. odoo-javascript
 #: code:addons/point_of_sale/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
 #, python-format
-msgid "State"
-msgstr "Tỉnh/TP"
+msgid "Phone"
+msgstr "Số điện thoại 1"
+
+#. module: point_of_sale
+#. odoo-javascript
+#: code:addons/point_of_sale/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#, python-format
+msgid "Mobile"
+msgstr "Số điện thoại 2"

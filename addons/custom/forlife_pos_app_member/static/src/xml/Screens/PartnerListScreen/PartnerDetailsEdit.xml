@@ -13,9 +13,12 @@
                 <t t-set="customer_gender" t-value="props.partner.gender"/>
                 <select class="detail" name="gender" t-on-change="captureChange">
                     <option value="">None</option>
-                    <option value="male" t-att-selected="customer_gender ? ((customer_gender === 'male') ? true : undefined) : undefined">Male</option>
-                    <option value="female" t-att-selected="customer_gender ? ((customer_gender === 'female') ? true : undefined) : undefined">Female</option>
-                    <option value="other" t-att-selected="customer_gender ? ((customer_gender === 'other') ? true : undefined) : undefined">Other</option>
+                    <option value="male"
+                            t-att-selected="customer_gender ? ((customer_gender === 'male') ? true : undefined) : undefined">Male</option>
+                    <option value="female"
+                            t-att-selected="customer_gender ? ((customer_gender === 'female') ? true : undefined) : undefined">Female</option>
+                    <option value="other"
+                            t-att-selected="customer_gender ? ((customer_gender === 'other') ? true : undefined) : undefined">Other</option>
                 </select>
             </div>
             <div class="partner-detail">
@@ -26,7 +29,12 @@
                         </option>
                 </select>
             </div>
-
+        </xpath>
+        <xpath expr="//input[@name='barcode']" position="attributes">
+            <attribute name="readonly">readonly</attribute>
+        </xpath>
+        <xpath expr="//select[@name='state_id']/../span" position="replace">
+            <span class="label">State</span>
         </xpath>
     </t>
 </templates>
