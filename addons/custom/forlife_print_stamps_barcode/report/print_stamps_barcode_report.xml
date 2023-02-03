@@ -58,11 +58,9 @@
                                                         <div>
                                                             <t t-esc="p[0].product_tmpl_id.name"/>
                                                         </div>
-                                                        <div align="center" style="padding-top: 5px;">
-                                                            <p>
-                                                                <img t-att-src="'/report/barcode/Code128/'+p[0].barcode" style="width:100%;height:12%;" alt="Barcode"/>
-                                                            </p>
-                                                        </div>
+                                                        <p align="center" style="padding-top: 5px;">
+                                                            <img t-att-src="'/report/barcode/Code128/'+p[0].barcode" style="width:100%;height:12%;" alt="Barcode"/>
+                                                        </p>
                                                         <div class="view-center" style="padding-top: -15px;">
                                                             <t t-esc="p[0].barcode"/>
                                                         </div>
