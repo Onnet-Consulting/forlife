@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_pos_compensate_point" model="ir.ui.view">
+        <field name="name">POS Compensate Point</field>
+        <field name="model">pos.compensate.point</field>
+        <field name="arch" type="xml">
+            <form string="Compensate Point">
+                <p class="oe_grey">
+                    Only orders that were not set the Point Program or had zero points will be applied!
+                </p>
+                <group>
+                    <field name="order_ids" invisible="1"/>
+                    <field name="reason" widget="text"/>
+                </group>
+                <footer>
+                    <button name="apply" type="object"
+                        string="Apply"
+                        class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_view_pos_compensate_point" model="ir.actions.act_window">
+        <field name="name">Compensate Point</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pos.compensate.point</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_view_types">list</field>
+    </record>
+
+</odoo>

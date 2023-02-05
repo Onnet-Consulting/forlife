@@ -22,9 +22,10 @@
                     <button name="action_point_addition" type="object" string="Addition Point" class="oe_highlight"/>
                 </xpath>
                 <xpath expr="//button[@name='refund']" position="after">
-                    <button name="btn_compensate_points" type="object" string="Compensate Point" class="oe_highlight"
-                    groups="forlife_promotion.promotion_manager"
-                    attrs="{'invisible': [('allow_compensate_point', '=', False)]}"/>
+                    <button name="%(action_view_pos_compensate_point)d"
+                            type="action" string="Compensate Point" class="oe_highlight"
+                            groups="forlife_promotion.promotion_manager"
+                            attrs="{'invisible': [('allow_compensate_point', '=', False)]}"/>
                 </xpath>
             </field>
         </record>
@@ -40,13 +41,5 @@
 <!--                </field>-->
 <!--            </field>-->
 <!--        </record>-->
-        <record id="action_compensate_point_all" model="ir.actions.server">
-            <field name="name">Compensate Points</field>
-            <field name="model_id" ref="point_of_sale.model_pos_order"/>
-            <field name="groups_id" eval="[(4, ref('forlife_promotion.promotion_manager'))]"/>
-            <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
-            <field name="state">code</field>
-            <field name="code">action = records.btn_compensate_points_all()</field>
-        </record>
     </data>
 </odoo>
