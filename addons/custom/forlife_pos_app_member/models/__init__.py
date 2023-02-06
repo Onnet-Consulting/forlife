@@ -10,4 +10,3 @@ from . import pos_config
 from . import models
 from . import stock_warehouse
 from . import hr_employee_base
-from . import hr_employee
