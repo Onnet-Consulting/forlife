@@ -1,10 +1,11 @@
-/** @odoo-module **/
+odoo.define('forlife_pos_app_member.CustomPartnerDetailsEdit', function (require) {
+    const PartnerDetailsEdit = require('point_of_sale.PartnerDetailsEdit');
+    const Registries = require('point_of_sale.Registries');
+    const {useState, useRef} = owl;
+    const {useListener} = require("@web/core/utils/hooks");
 
-import PartnerDetailsEdit from 'point_of_sale.PartnerDetailsEdit';
-import Registries from 'point_of_sale.Registries';
 
-export const CustomPartnerDetailsEdit = (PartnerDetailsEdit) =>
-    class extends PartnerDetailsEdit {
+    const CustomPartnerDetailsEdit = PartnerDetailsEdit => class extends PartnerDetailsEdit {
         setup() {
             super.setup();
             this.changes['group_id'] = this.env.pos.default_partner_group.id;
@@ -14,5 +15,10 @@ export const CustomPartnerDetailsEdit = (PartnerDetailsEdit) =>
         saveChanges() {
             super.saveChanges();
         }
-    };
-Registries.Component.extend(PartnerDetailsEdit, CustomPartnerDetailsEdit);
+
+    }
+
+    Registries.Component.extend(PartnerDetailsEdit, CustomPartnerDetailsEdit);
+
+    return CustomPartnerDetailsEdit;
+})
