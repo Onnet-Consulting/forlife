@@ -32,6 +32,7 @@
                                     <field name="points_used"/>
                                     <field name="points_back"/>
                                     <field name="points_store"/>
+                                    <field name="pos_order_id"/>
                                     <field name="reason"/>
                                 </tree>
                             </field>
@@ -58,6 +59,7 @@
                                     <field name="points_used"/>
                                     <field name="points_back"/>
                                     <field name="points_store"/>
+                                    <field name="pos_order_id"/>
                                     <field name="reason"/>
                                 </tree>
                             </field>
