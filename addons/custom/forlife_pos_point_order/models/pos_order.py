@@ -15,7 +15,7 @@ class PosOrder(models.Model):
     item_total_point = fields.Integer(
         'Item Point Total', readonly=True, compute='_compute_item_total_point', store=True,
         help='Includes the total of product point and product event point')
-    program_store_point_id = fields.Many2one('points.promotion', 'Program Store Point')
+    program_store_point_id = fields.Many2one('points.promotion', 'Program Store Point', readonly=True)
     allow_compensate_point = fields.Boolean(compute='_allow_compensate_point')
     point_addition_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
@@ -113,7 +113,7 @@ class PosOrder(models.Model):
                 rec.point_event_order = 0
             else:
                 valid_method_ids = rec.program_store_point_id.payment_method_ids.ids
-                valid_product_ids = rec.program_store_point_id.points_product_ids.product_ids.ids
+                valid_product_ids = rec.program_store_point_id.points_product_ids.filtered(lambda x: x.state == 'effective' and x.from_date <rec.date_order< x.to_date).product_ids.ids
                 for pay in rec.payment_ids:
                     if pay.payment_method_id.id in valid_method_ids:
                         valid_money_payment_method += pay.amount
@@ -178,9 +178,10 @@ class PosOrder(models.Model):
     @api.model
     def _order_fields(self, ui_order):
         data = super(PosOrder, self)._order_fields(ui_order)
-        program_promotion = self._get_program_promotion(data)
-        if program_promotion:
-            data['program_store_point_id'] = program_promotion.id
+        if data['partner_id']:
+            program_promotion = self._get_program_promotion(data)
+            if program_promotion:
+                data['program_store_point_id'] = program_promotion.id
         return data
 
     def _get_program_promotion(self, data):
