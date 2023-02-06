@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
 
@@ -26,3 +26,10 @@ class HrEmployee(models.Model):
             address_home = self.env['res.partner'].create(employee.prepare_address_home_value())
             employee.write({'address_home_id': address_home.id})
         return True
+
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Import Template for Employees'),
+            'template': '/forlife_pos_app_member/static/xls/hr_employee.xls'
+        }]

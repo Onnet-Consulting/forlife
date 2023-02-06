@@ -64,4 +64,7 @@ class PointsProduct(models.Model):
                 raise ValidationError(_("The duration of the point product must be within the duration of the program '%s'") % record.points_promotion_id.name)
 
     def btn_effective(self):
+        for line in self:
+            if not line.product_ids:
+                raise ValidationError(_("Can't activate because product is empty !"))
         self.state = 'effective'

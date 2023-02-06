@@ -43,11 +43,6 @@ msgid "Change Payments"
 msgstr "Điều chỉnh thanh toán"
 
 #. module: forlife_pos_payment_change
-#: model_terms:ir.ui.view,arch_db:forlife_pos_payment_change.view_pos_payment_change_wizard_form
-msgid "Cancel Entry"
-msgstr "Hủy bút toán"
-
-#. module: forlife_pos_payment_change
 #: model:ir.model,name:forlife_pos_payment_change.model_res_company
 msgid "Companies"
 msgstr "Công ty"
@@ -199,10 +194,30 @@ msgstr "Thanh toán Điểm bán hàng"
 
 #. module: forlife_pos_payment_change
 #. odoo-python
+#: code:addons/forlife_pos_payment_change/models/pos_payment_change_wizard.py:0
+#, python-format
+msgid "Reversal of: %s"
+msgstr "Đảo ngược của: %s"
+
+#. module: forlife_pos_payment_change
+#: model_terms:ir.ui.view,arch_db:forlife_pos_payment_change.view_pos_payment_change_wizard_form
+msgid "Reverse Entry"
+msgstr "Bút toán đảo"
+
+
+#. module: forlife_pos_payment_change
+#. odoo-python
 #: code:addons/forlife_pos_payment_change/models/pos_order.py:0
 #, python-format
 msgid "The payments of the Order %s (Ref: %s) have been changed by %s on %s"
 msgstr "Thanh toán của đơn %s (Ref: %s) được thay đổi bởi %s vào %s"
+
+#. module: forlife_pos_payment_change
+#. odoo-python
+#: code:addons/forlife_pos_payment_change/models/pos_payment_change_wizard.py:0
+#, python-format
+msgid "There are no journal entry to reverse or cancel!"
+msgstr "Không có bút toán nào cần đảo ngược!"
 
 #. module: forlife_pos_payment_change
 #: model:ir.model.fields,field_description:forlife_pos_payment_change.field_pos_payment_change_wizard__amount_total

@@ -51,11 +51,11 @@ class PosOrder(models.Model):
                         pos.action_point_addition()
         return pos_id
 
-    def btn_compensate_points_all(self):
+    def btn_compensate_points_all(self, reason):
         for order in self.filtered(lambda x: x.allow_compensate_point):
-            order.btn_compensate_points()
+            order._compensate_points(reason)
 
-    def btn_compensate_points(self):
+    def _compensate_points(self, reason):
         pos_order = self
         if not pos_order.partner_id.is_member_app_format and not pos_order.partner_id.is_member_app_forlife:
             return
@@ -69,12 +69,12 @@ class PosOrder(models.Model):
             pos_order.program_store_point_id = program.id
         store = pos_order._get_store_brand_from_program()
         if store:
-            history_values = pos_order._prepare_history_point_value(store)
+            history_values = pos_order._prepare_history_point_value(store, point_type='point compensate', reason=reason)
             self.env['partner.history.point'].sudo().create(history_values)
             pos_order.partner_id._compute_reset_day(pos_order.date_order, pos_order.program_store_point_id.point_expiration, store)
             pos_order.action_point_addition()
 
-    def _prepare_history_point_value(self, store: str, points_used=0, points_back=0):
+    def _prepare_history_point_value(self, store: str, point_type='new', reason='', points_used=0, points_back=0):
         self.ensure_one()
         pos = self
         return {
@@ -84,8 +84,8 @@ class PosOrder(models.Model):
             'date_order': pos.date_order,
             'points_fl_order': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
                 [x.point_addition_event for x in pos.lines]),
-            'point_order_type': 'new',
-            'reason': pos.name,
+            'point_order_type': point_type,
+            'reason': reason or pos.name or '',
             'points_used': 0,  # go back to edit
             'points_back': 0,  # go back to edit
             'points_store': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(

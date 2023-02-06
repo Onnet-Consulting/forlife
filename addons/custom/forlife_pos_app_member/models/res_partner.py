@@ -12,11 +12,15 @@ import random
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    group_id = fields.Many2one('res.partner.group', string='Group', copy=False,
-                               default=lambda self: self.env.ref('forlife_pos_app_member.partner_group_3',
-                                                                 raise_if_not_found=False))
+    group_id = fields.Many2one(
+        'res.partner.group',
+        string='Group', ondelete='restrict',
+        default=lambda self: self.env.ref('forlife_pos_app_member.partner_group_3', raise_if_not_found=False),
+        domain=lambda self: [('id', 'not in', [self.env.ref('forlife_pos_app_member.partner_group_4').id,
+                                               self.env.ref('forlife_pos_app_member.partner_group_5').id])]
+    )
     job_ids = fields.Many2many('res.partner.job', string='Jobs')
-    retail_type_ids = fields.Many2many('res.partner.retail', string='Retail types', copy=False)
+    retail_type_ids = fields.Many2many('res.partner.retail', string='Retail types', copy=False, ondelete='restrict')
     show_customer_type = fields.Boolean(compute='_compute_show_retail_types')
     birthday = fields.Date(string='Birthday')
     gender = fields.Selection([
@@ -24,9 +28,10 @@ class ResPartner(models.Model):
         ('female', 'Female'),
         ('other', 'Other')
     ], string='Gender')
-    ref = fields.Char(readonly=True)
+    ref = fields.Char(readonly=True, copy=False)
     barcode = fields.Char(readonly=True, company_dependent=False)  # a partner has only one barcode
-    phone = fields.Char(copy=False)
+    phone = fields.Char(copy=False, string='Phone #1')
+    mobile = fields.Char(string='Phone #2')
     parsed_phone = fields.Char(compute="_compute_parsed_phone", string='Parsed phone')
     parsed_mobile = fields.Char(compute="_compute_parsed_mobile", string='Parsed mobile')
 
@@ -113,11 +118,10 @@ class ResPartner(models.Model):
                 if partner_group.sequence_id:
                     value['ref'] = partner_group.sequence_id.next_by_id()
                 else:
-                    value['ref'] = partner_group.code + (value['ref'] or '')
+                    value['ref'] = partner_group.code + (value.get('ref') or '')
                 value['group_id'] = group_id
 
-        res = super().create(vals_list)
-        return res
+        return super().create(vals_list)
 
     def write(self, values):
         app_retail_type_id = self.get_app_retail_type()
