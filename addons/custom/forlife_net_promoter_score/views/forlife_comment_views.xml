@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="forlife_comment_view_tree" model="ir.ui.view">
+            <field name="name">forlife_comment_view_tree</field>
+            <field name="model">forlife.comment</field>
+            <field name="arch" type="xml">
+                <tree string="forlife_comment_tree">
+                    <field name="question_id"/>
+                    <field name="customer_code"/>
+                    <field name="branch"/>
+                    <field name="point"/>
+                    <field name="employee"/>
+                    <field name="brand"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="forlife_comment_view_form" model="ir.ui.view">
+            <field name="name">forlife_comment_view_form</field>
+            <field name="model">forlife.comment</field>
+            <field name="arch" type="xml">
+                <form string="forlife_comment_form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="question_id"/>
+                                <field name="customer_code"/>
+                                <field name="brand"/>
+                                <field name="branch"/>
+                                <field name="invoice_number"/>
+                                <field name="invoice_date"/>
+                                <field name="comment_date"/>
+                            </group>
+                            <group>
+                                <field name="status"/>
+                                <field name="point"/>
+                                <field name="comment"/>
+                                <field name="description"/>
+                                <field name="is_desc"/>
+                                <field name="employee"/>
+                                <field name="type"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="forlife_comment_view_filter" model="ir.ui.view">
+            <field name="name">forlife_comment_view_filter</field>
+            <field name="model">forlife.comment</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="question_id"/>
+                    <field name="customer_code"/>
+                    <field name="branch"/>
+                    <field name="brand"/>
+                    <field name="employee"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="forlife_comment_action" model="ir.actions.act_window">
+            <field name="name">Comment</field>
+            <field name="res_model">forlife.comment</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="forlife_comment_menu" name="Comment" parent="point_of_sale.menu_point_of_sale" action="forlife_comment_action" sequence="100"/>
+
+    </data>
+</odoo>
