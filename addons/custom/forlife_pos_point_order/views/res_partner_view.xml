@@ -12,6 +12,7 @@
                 </xpath>
                 <xpath expr="//page[@name='accounting']" position="after">
                     <page name="history_point_forlife" string="TokyoLife" attrs="{'invisible': [('is_member_app_forlife','=',False)]}">
+                        <button name="%(action_compensate_forlife_point_wizard)d" type="action" class="oe_highlight" string="Compensate"/>
                         <group>
                             <group>
                                 <field name="reset_day_of_point_forlife"/>
@@ -34,10 +35,11 @@
                                     <field name="pos_order_id"/>
                                     <field name="reason"/>
                                 </tree>
-                        </field>
+                            </field>
                         </group>
                     </page>
                     <page name="history_point_format" string="Format" attrs="{'invisible': [('is_member_app_format','=',False)]}">
+                        <button name="%(action_compensate_format_point_wizard)d" type="action" class="oe_highlight" string="Compensate"/>
                         <group>
                             <group>
                                 <field name="reset_day_of_point_format"/>
@@ -60,7 +62,7 @@
                                     <field name="pos_order_id"/>
                                     <field name="reason"/>
                                 </tree>
-                        </field>
+                            </field>
                         </group>
                     </page>
                 </xpath>

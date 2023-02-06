@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
-from odoo.fields import Command
-from odoo.tools import float_is_zero
 
 
 class POSCompensatePoint(models.TransientModel):
-    _name = 'pos.compensate.point'
+    _name = 'pos.compensate.point.order'
     _description = "Compensate Point Wizard"
 
     order_ids = fields.Many2many(

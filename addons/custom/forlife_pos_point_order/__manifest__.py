@@ -24,14 +24,14 @@
     ],
 
     'data': [
-        'views/res_partner_view.xml',
         'security/ir.model.access.csv',
         'views/account_move.xml',
-        'wizards/pos_compensate_point_views.xml',
+        'wizards/pos_compensate_point_order_views.xml',
+        'wizards/compensate_point_wizard_view.xml',
+        'data/cron_job_data.xml',
         'views/pos_order.xml',
+        'views/res_partner_view.xml',
     ],
     'installable': True,
     'application': True,
-    # 'assets': {
-    # }
 }

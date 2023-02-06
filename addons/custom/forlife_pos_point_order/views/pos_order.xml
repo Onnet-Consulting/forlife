@@ -22,7 +22,7 @@
                     <button name="action_point_addition" type="object" string="Addition Point" class="oe_highlight"/>
                 </xpath>
                 <xpath expr="//button[@name='refund']" position="after">
-                    <button name="%(action_view_pos_compensate_point)d"
+                    <button name="%(action_view_pos_compensate_point_order)d"
                             type="action" string="Compensate Point" class="oe_highlight"
                             groups="forlife_promotion.promotion_manager"
                             attrs="{'invisible': [('allow_compensate_point', '=', False)]}"/>

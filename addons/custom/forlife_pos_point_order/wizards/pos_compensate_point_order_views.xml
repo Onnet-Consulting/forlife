@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_pos_compensate_point" model="ir.ui.view">
+    <record id="view_pos_compensate_point_order" model="ir.ui.view">
         <field name="name">POS Compensate Point</field>
-        <field name="model">pos.compensate.point</field>
+        <field name="model">pos.compensate.point.order</field>
         <field name="arch" type="xml">
             <form string="Compensate Point">
                 <p class="oe_grey">
@@ -23,10 +23,10 @@
         </field>
     </record>
 
-    <record id="action_view_pos_compensate_point" model="ir.actions.act_window">
+    <record id="action_view_pos_compensate_point_order" model="ir.actions.act_window">
         <field name="name">Compensate Point</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">pos.compensate.point</field>
+        <field name="res_model">pos.compensate.point.order</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
         <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>

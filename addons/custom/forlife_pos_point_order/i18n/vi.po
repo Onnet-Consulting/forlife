@@ -44,7 +44,7 @@ msgstr "Hủy"
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.onnet_inherit_view_pos
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_pos_compensate_point
 msgid "Compensate Point"
-msgstr "Tích bù điểm"
+msgstr "Tích điểm bù"
 
 #. module: forlife_pos_point_order
 #: model:ir.model,name:forlife_pos_point_order.model_pos_compensate_point
@@ -176,7 +176,7 @@ msgid ""
 "Only orders that were not set the Point Program or had zero points will be "
 "applied!"
 msgstr ""
-"Chỉ những đơn hàng chưa gán chương trình hoặc điểm tích lũy hiện tại bằng 0 mới được phép tích bù !"
+"Tích điểm bù chỉ áp dụng cho những đơn hàng chưa gán chương trình tích điểm hoặc điểm tích lũy hiện tại bằng 0 !"
 ""
 
 #. module: forlife_pos_point_order
@@ -219,7 +219,7 @@ msgstr ""
 #. module: forlife_pos_point_order
 #: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__partner_history_point__point_order_type__point_compensate
 msgid "Point Compensate"
-msgstr "Tích bù điểm"
+msgstr "Tích điểm bù"
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__point_order
@@ -321,3 +321,38 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__point_order_type
 msgid "Type"
 msgstr "Loại"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__point_forlife_reseted
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__point_forlife_reseted
+msgid "Forlife was reseted"
+msgstr "Đã reset điểm Forlife"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__point_format_reseted
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__point_format_reseted
+msgid "Format was reseted"
+msgstr "Đã reset điểm Format"
+
+#. module: forlife_pos_point_order
+#. odoo-python
+#: code:addons/forlife_pos_point_order/models/contact.py:0
+#: code:addons/forlife_pos_point_order/models/contact.py:0
+#, python-format
+msgid "Automatic running system"
+msgstr "Hệ thống chạy tự động"
+
+#. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.res_partner_forlife_inherit
+msgid "Compensate"
+msgstr "Bù điểm"
+
+#. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_compensate_point_wizard_form
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_compensate_point_wizard_form
+msgid "Cancel"
+msgstr "Huỷ"
