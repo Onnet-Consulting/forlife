@@ -12,6 +12,7 @@ class AccountBank(models.Model):
         ('2', 'Store'),
         ('3', 'Other Difference'),
     ], string='POS Transfer Type', default=False, readonly=True)
+    pos_config_id = fields.Many2one(related='pos_session_id.config_id')
 
     def _prepare_move_line_default_vals(self, counterpart_account_id=None):
         if self.pos_transfer_type == '3' and self.pos_session_id:
