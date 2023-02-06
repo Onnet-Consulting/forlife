@@ -24,9 +24,11 @@
     ],
 
     'data': [
+        'security/ir.model.access.csv',
+        'data/cron_job_data.xml',
+        'wizards/compensate_point_wizard_view.xml',
         'views/pos_order.xml',
         'views/res_partner_view.xml',
-        'security/ir.model.access.csv',
         'views/account_move.xml'
     ],
     'installable': True,
