@@ -33,6 +33,7 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
             init_from_JSON(json) {
                 super.init_from_JSON(...arguments);
                 this.employee_id = json.employee_id;
+                this.assigned_employee = json.assigned_employee;
             }
 
             clone() {
@@ -44,6 +45,7 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
             export_as_JSON() {
                 const json = super.export_as_JSON(...arguments);
                 json.employee_id = this.employee_id;
+                json.assigned_employee = this.assigned_employee;
                 return json;
             }
 

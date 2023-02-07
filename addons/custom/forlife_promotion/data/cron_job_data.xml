@@ -2,15 +2,15 @@
 <odoo>
     <data noupdate="1">
 
-        <record id="ir_cron_check_finish_points_promotion" model="ir.cron">
-            <field name="name">Check Finish Points Promotion</field>
-            <field name="interval_number">1</field>
-            <field name="interval_type">days</field>
+        <record id="ir_cron_check_finish_points_promotion_and_event" model="ir.cron">
+            <field name="name">Check Finish Points Promotion and Event</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
             <field name="numbercall">-1</field>
             <field ref="model_points_promotion" name="model_id"/>
-            <field name="nextcall" eval="DateTime.now().strftime('%Y-%m-%d 17:00:00')"/>
+            <field name="nextcall" eval="DateTime.now()"/>
             <field name="state">code</field>
-            <field name="code">model.check_finish_points_promotion()</field>
+            <field name="code">model.check_finish_points_promotion_and_event()</field>
         </record>
 
     </data>

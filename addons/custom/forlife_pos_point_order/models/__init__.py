@@ -5,3 +5,4 @@ from . import partner_history_point
 from . import pos_session
 from . import points_promotion
 from . import points_consumption_line
+from . import account_move

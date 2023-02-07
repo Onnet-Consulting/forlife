@@ -12,8 +12,11 @@
                     <field name="to_date"/>
                     <field name="value_conversion"/>
                     <field name="point_addition"/>
-                    <field name="state"/>
-                    <button name="btn_load_points_promotion" string="Load Program" class="oe_highlight" states="new" type="object"/>
+                    <field name="state" widget="badge" decoration-success="state == 'effective'" decoration-info="state == 'new'" decoration-warning="state == 'finish'"/>
+                    <button name="btn_load_points_promotion" string="Load Program" class="oe_highlight" states="new,effective" type="object" groups="forlife_promotion.promotion_manager"/>
+                    <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
+                    <button name="btn_edit" string="Edit" icon="fa-pencil" class="oe_highlight" states="new,effective" type="object" groups="forlife_promotion.promotion_manager"/>
+                    <button name="unlink" string="Delete" icon="fa-trash" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
                 </tree>
             </field>
         </record>
@@ -24,8 +27,9 @@
             <field name="arch" type="xml">
                 <form string="event_form">
                     <header>
-                        <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object"/>
-                        <button name="btn_load_points_promotion" string="Load Program" class="oe_highlight" states="new" type="object"/>
+                        <button name="btn_load_points_promotion" string="Load Program" class="oe_highlight" states="new,effective" type="object" groups="forlife_promotion.promotion_manager"/>
+                        <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
+                        <button name="btn_finish" string="Finish" class="oe_highlight" states="effective" type="object" groups="forlife_promotion.promotion_manager" confirm="Are you sure you want Finish event ?"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -37,7 +41,7 @@
                                 <field name="from_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="to_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="store_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}" options="{'no_create': True}"/>
-                                <field name="customer_conditions" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="customer_conditions" attrs="{'readonly': [('state', '!=', 'new')]}" widget="domain" options="{'model': 'res.partner'}"/>
                                 <field name="is_lock_change_points_promotion" invisible="1"/>
                             </group>
                             <group>
@@ -57,7 +61,7 @@
                         </group>
                         <notebook>
                             <page name="product_point" string="Product Point">
-                                <field name="points_product_ids" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="points_product_ids" readonly="1"/>
                             </page>
                         </notebook>
                     </sheet>

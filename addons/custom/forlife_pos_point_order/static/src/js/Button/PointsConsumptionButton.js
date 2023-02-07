@@ -14,12 +14,18 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
             useListener('click', this.onClick);
         }
 
+        get order_lines(){
+            return this.env.pos.get_order().get_orderlines();
+        }
+
         async onClick() {
+            var order_lines = this.order_lines;
             const {confirmed, payload: data} = await this.showPopup('PointsConsumptionPopup', {
-                title: this.env._t('Assign Employee'),
-                assignTitle: this.env._t('Assign employee'),
-                assignAllTitle: this.env._t('Assign All'),
-                cancelTitle: this.env._t('Cancel')
+                startingValue: this.order_lines,
+                title: this.env._t('Tiêu điểm'),
+                confirmTitle: this.env._t('Xác nhận '),
+                divisionpoint: this.env._t('Chia điểm'),
+                cancelTitle: this.env._t('Xóa')
             });
         }
 

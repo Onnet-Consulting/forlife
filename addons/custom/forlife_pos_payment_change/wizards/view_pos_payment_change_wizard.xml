@@ -30,8 +30,8 @@
                     </div>
                     <footer>
                         <button
-                            name="button_cancel_entry"
-                            string="Cancel Entry"
+                            name="button_reverse_entry"
+                            string="Reverse Entry"
                             type="object"
                             attrs="{'invisible': [('payment_move_count', '=', 0)]}"
                         />

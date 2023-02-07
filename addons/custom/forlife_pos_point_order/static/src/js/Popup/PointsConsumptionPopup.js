@@ -14,6 +14,9 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
     class PointsConsumptionPopup extends AbstractAwaitablePopup {
         setup() {
             super.setup();
+            this.state = useState({
+                productID: this.props.startingValue
+            })
         }
 
         cancel() {

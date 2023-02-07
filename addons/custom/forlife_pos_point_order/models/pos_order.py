@@ -15,7 +15,7 @@ class PosOrder(models.Model):
     item_total_point = fields.Integer(
         'Item Point Total', readonly=True, compute='_compute_item_total_point', store=True,
         help='Includes the total of product point and product event point')
-    program_store_point_id = fields.Many2one('points.promotion', 'Program Store Point')
+    program_store_point_id = fields.Many2one('points.promotion', 'Program Store Point', readonly=True)
     allow_compensate_point = fields.Boolean(compute='_allow_compensate_point')
     point_addition_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
@@ -51,11 +51,11 @@ class PosOrder(models.Model):
                         pos.action_point_addition()
         return pos_id
 
-    def btn_compensate_points_all(self):
+    def btn_compensate_points_all(self, reason):
         for order in self.filtered(lambda x: x.allow_compensate_point):
-            order.btn_compensate_points()
+            order._compensate_points(reason)
 
-    def btn_compensate_points(self):
+    def _compensate_points(self, reason):
         pos_order = self
         if not pos_order.partner_id.is_member_app_format and not pos_order.partner_id.is_member_app_forlife:
             return
@@ -69,12 +69,12 @@ class PosOrder(models.Model):
             pos_order.program_store_point_id = program.id
         store = pos_order._get_store_brand_from_program()
         if store:
-            history_values = pos_order._prepare_history_point_value(store)
+            history_values = pos_order._prepare_history_point_value(store, point_type='point compensate', reason=reason)
             self.env['partner.history.point'].sudo().create(history_values)
             pos_order.partner_id._compute_reset_day(pos_order.date_order, pos_order.program_store_point_id.point_expiration, store)
             pos_order.action_point_addition()
 
-    def _prepare_history_point_value(self, store: str, points_used=0, points_back=0):
+    def _prepare_history_point_value(self, store: str, point_type='new', reason='', points_used=0, points_back=0):
         self.ensure_one()
         pos = self
         return {
@@ -84,12 +84,12 @@ class PosOrder(models.Model):
             'date_order': pos.date_order,
             'points_fl_order': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
                 [x.point_addition_event for x in pos.lines]),
-            'point_order_type': 'new',
-            'reason': pos.name,
-            'points_used': 5,  # go back to edit
-            'points_back': 5,  # go back to edit
+            'point_order_type': point_type,
+            'reason': reason or pos.name or '',
+            'points_used': 0,  # go back to edit
+            'points_back': 0,  # go back to edit
             'points_store': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
-                [x.point_addition_event for x in pos.lines])  # - 5 - 5
+                [x.point_addition_event for x in pos.lines]) - 0 - 0
         }
 
     def _get_store_brand_from_program(self):
@@ -108,36 +108,42 @@ class PosOrder(models.Model):
         valid_money_payment_method = 0  # X
         valid_money_product = 0  # Y
         for rec in self:
-            valid_method_ids = rec.program_store_point_id.payment_method_ids.ids
-            valid_product_ids = rec.program_store_point_id.points_product_ids.product_ids.ids
-            for pay in rec.payment_ids:
-                if pay.payment_method_id.id in valid_method_ids:
-                    valid_money_payment_method += pay.amount
-
-            for pro in rec.lines:
-                if pro.product_id.id in valid_product_ids:
-                    valid_money_product += pro.price_subtotal_incl
-
-            money_value = valid_money_payment_method - valid_money_product  # Z
-            if money_value < 0:
-                money_value = 0
-            if rec.partner_id.is_purchased_of_forlife and rec.program_store_point_id.brand_id.id == brand_tokyolife:
-                rec.point_order = int(
-                    money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) if rec.program_store_point_id.value_conversion > 0 else 0  # a
-            elif rec.partner_id.is_purchased_of_format and rec.program_store_point_id.brand_id.id == brand_format:
-                rec.point_order = int(
-                    money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) if rec.program_store_point_id.value_conversion > 0 else 0  # a
-            else:
-                rec.point_order = int(
-                    money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) * rec.program_store_point_id.first_order if rec.program_store_point_id.value_conversion > 0 else 0  # a
-            event_valid = self.get_event_match(pos_order=rec)
-            if event_valid:
-                rec.point_event_order = int(money_value / event_valid.value_conversion * event_valid.point_addition)  # b
-            else:
+            if not rec.partner_id:
+                rec.point_order = 0
                 rec.point_event_order = 0
+            else:
+                valid_method_ids = rec.program_store_point_id.payment_method_ids.ids
+                valid_product_ids = rec.program_store_point_id.points_product_ids.filtered(lambda x: x.state == 'effective' and x.from_date <rec.date_order< x.to_date).product_ids.ids
+                for pay in rec.payment_ids:
+                    if pay.payment_method_id.id in valid_method_ids:
+                        valid_money_payment_method += pay.amount
+
+                for pro in rec.lines:
+                    if pro.product_id.id in valid_product_ids:
+                        valid_money_product += pro.price_subtotal_incl
+
+                money_value = valid_money_payment_method - valid_money_product  # Z
+                if money_value < 0:
+                    money_value = 0
+                # is_purchased_of_format, is_purchased_of_forlife = rec.partner_id._check_is_purchased()
+                branch_id = rec.program_store_point_id.brand_id.id
+                if rec.partner_id.is_purchased_of_forlife and branch_id == brand_tokyolife:
+                    rec.point_order = int(
+                        money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) if rec.program_store_point_id.value_conversion > 0 else 0  # a
+                elif rec.partner_id.is_purchased_of_format and branch_id == brand_format:
+                    rec.point_order = int(
+                        money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) if rec.program_store_point_id.value_conversion > 0 else 0  # a
+                else:
+                    rec.point_order = int(
+                        money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) * rec.program_store_point_id.first_order if rec.program_store_point_id.value_conversion > 0 else 0  # a
+                event_valid = self.get_event_match(pos_order=rec)
+                if event_valid:
+                    rec.point_event_order = int(money_value / event_valid.value_conversion * event_valid.point_addition)  # b
+                else:
+                    rec.point_event_order = 0
 
     def get_event_match(self, pos_order):
-        point_events = pos_order.program_store_point_id.event_ids.filtered(lambda x: x.from_date <= pos_order.date_order <= x.to_date)
+        point_events = pos_order.program_store_point_id.event_ids.filtered(lambda x: x.from_date <= pos_order.date_order <= x.to_date and x.state == 'effective')
         time = pos_order.date_order
         time = time.strftime("%Y-%m-%d %H:%M:%S")
         create_Date = self._format_time_zone(time)
@@ -151,17 +157,31 @@ class PosOrder(models.Model):
                 days_of_event = event_valid.dayofmonth_ids
                 day_of_weeks_event = event_valid.dayofweek_ids
                 hours_of_event = event_valid.hour_ids
-                if month_of_order in [x.code for x in months_of_event] and day_of_order in [x.code for x in days_of_event] and \
-                        day_of_week_order in [x.code for x in day_of_weeks_event] and hour_of_order in [x.code for x in hours_of_event]:
-                    return event_valid
+                if all([months_of_event, days_of_event, day_of_weeks_event, hours_of_event]):
+                    if month_of_order in [x.code for x in months_of_event] and day_of_order in [x.code for x in days_of_event] and \
+                            day_of_week_order in [x.code for x in day_of_weeks_event] and hour_of_order in [x.code for x in hours_of_event]:
+                        return event_valid
+                else:
+                    if not months_of_event and not days_of_event and not day_of_weeks_event and not hours_of_event:
+                        return event_valid
+                    if not all([months_of_event, days_of_event, day_of_weeks_event, hours_of_event]):
+                        if month_of_order in [x.code for x in months_of_event]:
+                            return event_valid
+                        if day_of_order in [x.code for x in days_of_event]:
+                            return event_valid
+                        if day_of_week_order in [x.code for x in day_of_weeks_event]:
+                            return event_valid
+                        if hour_of_order in [x.code for x in hours_of_event]:
+                            return event_valid
         return False
 
     @api.model
     def _order_fields(self, ui_order):
         data = super(PosOrder, self)._order_fields(ui_order)
-        program_promotion = self._get_program_promotion(data)
-        if program_promotion:
-            data['program_store_point_id'] = program_promotion.id
+        if data['partner_id']:
+            program_promotion = self._get_program_promotion(data)
+            if program_promotion:
+                data['program_store_point_id'] = program_promotion.id
         return data
 
     def _get_program_promotion(self, data):
@@ -187,6 +207,7 @@ class PosOrder(models.Model):
             raise UserError(_('Order had already point addition journal entry posted!'))
         move_vals = {
             'ref': self.name,
+            'pos_order_ids': [(6, 0, self.ids)],
             'move_type': 'entry',
             'date': self.date_order,
             'journal_id': self.program_store_point_id.account_journal_id.id,
@@ -196,8 +217,8 @@ class PosOrder(models.Model):
                 (0, 0, {
                     'account_id': self.program_store_point_id.acc_accumulate_points_id.id,
                     'partner_id': self.program_store_point_id.point_customer_id.id,
-                    'debit': self.point_order + self.point_event_order + sum([x.point_addition for x in self.lines]) + sum(
-                        [x.point_addition_event for x in self.lines]) * 1000,
+                    'debit': (self.point_order + self.point_event_order + sum([x.point_addition for x in self.lines]) + sum(
+                        [x.point_addition_event for x in self.lines])) * 1000,
                     'credit': 0.0,
                 }),
                 # credit line
@@ -205,8 +226,8 @@ class PosOrder(models.Model):
                     'account_id': self.program_store_point_id.point_customer_id.property_account_receivable_id.id,
                     'partner_id': self.program_store_point_id.point_customer_id.id,
                     'debit': 0.0,
-                    'credit': self.point_order + self.point_event_order + sum([x.point_addition for x in self.lines]) + sum(
-                        [x.point_addition_event for x in self.lines]) * 1000,
+                    'credit': (self.point_order + self.point_event_order + sum([x.point_addition for x in self.lines]) + sum(
+                        [x.point_addition_event for x in self.lines])) * 1000,
                 }),
             ]
 
