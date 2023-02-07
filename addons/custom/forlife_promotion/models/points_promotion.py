@@ -8,6 +8,7 @@ import json
 class PointsPromotion(models.Model):
     _name = 'points.promotion'
     _description = 'Points Promotion'
+    _order = 'state desc, to_date desc'
 
     name = fields.Char('Program Name', required=True)
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
