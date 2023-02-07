@@ -18,7 +18,7 @@ class Event(models.Model):
     dayofweek_ids = fields.Many2many('dayofweek.data', string='DayOfWeek')
     hour_ids = fields.Many2many('hour.data', string='Hours')
     store_ids = fields.Many2many('store', string='Stores', required=True)
-    customer_conditions = fields.Char(string='Customer Conditions', required=True)
+    customer_conditions = fields.Char(string='Customer Conditions')
     value_conversion = fields.Integer('Value Conversion', required=True)
     point_addition = fields.Integer('Point Addition', required=True)
     state = fields.Selection([('new', _('New')), ('effective', _('Effective')), ('finish', _('Finish'))], string='State', default='new')
@@ -106,4 +106,4 @@ class Event(models.Model):
                 'product_ids': [(6, 0, rec.product_ids.ids)],
             })
         if points_products:
-            self.write({'points_product_existed': json.dumps(points_products.ids)})
+            self.write({'points_product_existed': json.dumps(points_products.ids + points_product_existed)})

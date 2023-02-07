@@ -12,6 +12,13 @@ odoo.define('forlife_pos_popup_cash.CashMoveButton2', function (require) {
     };
     const CashMoveButton2 = (CashMoveButton) => class extends CashMoveButton {
         async onClick() {
+            // Get new bank statements before clicking button 'CASH MOVE'
+            var new_bank_statements = await this.env.services.rpc({
+                model: 'pos.session',
+                method: 'load_new_bank_statements',
+                args: [[odoo.pos_session_id]],
+            });
+            this.env.pos.bank_statement = new_bank_statements
             const { confirmed, payload } = await this.showPopup('CashMovePopup');
             if (!confirmed) return;
             const { type, amount, reason, reference, type_tranfer, shop} = payload;

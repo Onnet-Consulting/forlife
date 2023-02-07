@@ -45,6 +45,34 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
                 $('#type_store').css('margin-right', '149px');
             }
         }
+
+        onchangeRef(event) {
+            var inputType = this.state.inputType;
+            var statementLineID = parseInt($('#ref').val());
+            if (statementLineID != '0') {
+                var statementLine = this.env.pos.bank_statement.find((statement) => statement.id === statementLineID)
+                if (statementLine && inputType == 'in') {
+                    var amount = statementLine.amount;
+                    var posID = statementLine.pos_config_id[0];
+                    var validPos = this.env.pos.pos_customizes.find((pos_cus) => pos_cus.id == posID) || '0';
+                    if (amount < 0 && posID) {
+                        this.state.inputAmount = `${-amount}`;
+                        this.state.type_tranfer = '2';
+                        $('#type').val('2');
+                        this.checked_shop();
+                        this.state.shop = `${validPos.id}`;
+                        $('#shop').val(`${validPos.id}`);
+//                        this.state.inputReason = `Nhận tiền chuyển từ ${statementLine.pos_config_id[1]}`
+                    };
+                };
+            } else {
+                $('#type').val('0');
+                $('#shop').val('0');
+//                this.state.inputReason = ''
+                this.checked_shop();
+            };
+        }
+
         getPayload() {
             var res = super.getPayload()
             res.reference = this.state.reference,
