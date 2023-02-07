@@ -60,9 +60,13 @@ class PosOrderLine(models.Model):
         event_valid = self.order_id.get_event_match(self.order_id)
         dict_product_poit_add = {}
         if event_valid:
-            for r in event_valid.points_product_ids.filtered(lambda x: x.state == 'effective'):
-                dict_product_poit_add[r.points_product_id.product_ids] = r.point_addition
-            return dict_product_poit_add
+            partner_condition = self.env['res.partner'].search(event_valid.customer_conditions)
+            if self.order_id.partner_id.id in partner_condition.ids:
+                for r in event_valid.points_product_ids.filtered(lambda x: x.state == 'effective'):
+                    dict_product_poit_add[r.points_product_id.product_ids] = r.point_addition
+                return dict_product_poit_add
+            else:
+                return False
         else:
             return False
 
