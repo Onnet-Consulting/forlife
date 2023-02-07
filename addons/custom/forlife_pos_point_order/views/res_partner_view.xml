@@ -22,21 +22,21 @@
                                 <field name="total_points_available_forlife"/>
                             </group>
                         </group>
-                        <group string="TokyoLife">
+                        <div>
+                            <label for="history_points_forlife_ids"/>
                             <field name="history_points_forlife_ids" nolabel="1" colspan="2">
                                 <tree editable="bottom">
                                     <field name="create_date"/>
+                                    <field name="point_order_type"/>
                                     <field name="date_order"/>
                                     <field name="points_fl_order"/>
-                                    <field name="point_order_type"/>
                                     <field name="points_used"/>
                                     <field name="points_back"/>
                                     <field name="points_store"/>
-                                    <field name="pos_order_id"/>
                                     <field name="reason"/>
                                 </tree>
                             </field>
-                        </group>
+                        </div>
                     </page>
                     <page name="history_point_format" string="Format" attrs="{'invisible': [('is_member_app_format','=',False)]}">
                         <button name="%(action_compensate_format_point_wizard)d" type="action" class="oe_highlight" string="Compensate"/>
@@ -49,21 +49,21 @@
                                 <field name="total_points_available_format"/>
                             </group>
                         </group>
-                        <group string="format">
+                        <div>
+                            <label for="history_points_format_ids"/>
                             <field name="history_points_format_ids" nolabel="1" colspan="2">
                                 <tree editable="bottom">
                                     <field name="create_date"/>
+                                    <field name="point_order_type"/>
                                     <field name="date_order"/>
                                     <field name="points_fl_order"/>
-                                    <field name="point_order_type"/>
                                     <field name="points_used"/>
                                     <field name="points_back"/>
                                     <field name="points_store"/>
-                                    <field name="pos_order_id"/>
                                     <field name="reason"/>
                                 </tree>
                             </field>
-                        </group>
+                        </div>
                     </page>
                 </xpath>
             </field>
