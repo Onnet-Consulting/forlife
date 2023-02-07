@@ -9,6 +9,25 @@ class HrEmployeeBase(models.AbstractModel):
     # FIXME: after install database, we need update this module again to set 'code' column to not null in DB
     code = fields.Char(string='Code', required=True, copy=False)
 
+    def _inverse_work_contact_details(self):
+        for employee in self:
+            if not employee.work_contact_id:
+                employee.work_contact_id = self.env['res.partner'].sudo().create({
+                    "company_type": "person",
+                    "group_id": self.env.ref('forlife_pos_app_member.partner_group_4').id,
+                    "ref": self.code,
+                    'phone': employee.mobile_phone,
+                    'email': employee.work_email,
+                    'name': employee.name,
+                    'image_1920': employee.image_1920,
+                    'company_id': employee.company_id.id
+                })
+            else:
+                employee.work_contact_id.sudo().write({
+                    'email': employee.work_email,
+                    'phone': employee.mobile_phone,
+                })
+
     _sql_constraints = [
         ('unique_code', 'UNIQUE(code)', 'Only one Code   occurrence by employee')
     ]

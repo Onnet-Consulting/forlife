@@ -16,6 +16,7 @@ class PointsProductLine(models.Model):
     point_addition = fields.Integer('Point Additions', required=True)
     state = fields.Selection([('new', _('New')), ('effective', _('Effective'))], string='State', default='new')
     product_existed = fields.Text(string='Product Existed', compute='compute_product_existed')
+    state_related = fields.Selection('State Related', related='event_id.state', store=True)
 
     def _compute_name(self):
         for line in self:

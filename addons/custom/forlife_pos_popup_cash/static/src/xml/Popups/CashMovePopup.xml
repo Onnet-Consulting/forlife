@@ -10,11 +10,13 @@
             </div>
             <div>
                 <div style="margin-top:10px;font-size:14px;">
-                    <select name="reference" t-model="state.reference" id="ref" style="float:left;border: 1px solid black;width:141px;" class="details">
+                    <select name="reference" t-model="state.reference" id="ref"
+                            t-on-click="onchangeRef"
+                            style="float:left;border: 1px solid black;width:141px;" class="details">
                         <option t-att-value="0">--Chọn mã phiếu--</option>
                         <t t-foreach="env.pos.bank_statement" t-as="bank" t-key="bank.id">
                             <option t-att-value="bank.id">
-                                <t t-esc="bank.name"/>
+                                <t t-esc="bank.name"/> <br/>(<span t-esc="bank.amount"/> <span class="currency" t-esc="env.pos.currency.symbol" />)
                             </option>
                         </t>
                     </select>
