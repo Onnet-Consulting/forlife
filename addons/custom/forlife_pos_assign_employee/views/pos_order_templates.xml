@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="message_head">
-        <strong>Employee on order lines has been updated: </strong>
     </template>
     <template id="message_body">
         <ul>
-            <li>Product: <t t-esc="value['product']"/></li>
+            <li>Product : <t t-esc="value['product']"/></li>
             <li>Employee : <t t-esc="value['from_employee']"/> -&gt; <t t-esc="value['to_employee']"/> </li>
         </ul>
     </template>
