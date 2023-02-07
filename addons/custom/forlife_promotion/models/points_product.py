@@ -17,6 +17,7 @@ class PointsProduct(models.Model):
     to_date = fields.Datetime('To Date', required=True)
     state = fields.Selection([('new', _('New')), ('effective', _('Effective'))], string='State', default='new')
     product_existed = fields.Text(string='Product Existed', compute='compute_product_existed')
+    state_related = fields.Selection('State Related', related='points_promotion_id.state', store=True)
 
     _sql_constraints = [
         ('data_uniq', 'unique (points_promotion_id, point_addition, from_date, to_date)', 'The combination of Point Addition, From Date and To Date must be unique !'),
@@ -64,4 +65,7 @@ class PointsProduct(models.Model):
                 raise ValidationError(_("The duration of the point product must be within the duration of the program '%s'") % record.points_promotion_id.name)
 
     def btn_effective(self):
+        for line in self:
+            if not line.product_ids:
+                raise ValidationError(_("Can't activate because product is empty !"))
         self.state = 'effective'

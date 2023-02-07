@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e\n"
+"Project-Id-Version: Odoo Server 16.0+e-20221202\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-31 04:31+0000\n"
-"PO-Revision-Date: 2023-01-31 04:31+0000\n"
+"POT-Creation-Date: 2023-02-06 03:19+0000\n"
+"PO-Revision-Date: 2023-02-06 03:19+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 #. module: forlife_pos_point_order
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.onnet_inherit_view_pos
 msgid "Addition Point"
-msgstr ""
+msgstr "Bút toán tích điểm"
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__allow_compensate_point
@@ -26,19 +26,61 @@ msgid "Allow Compensate Point"
 msgstr ""
 
 #. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_pos_compensate_point_order
+msgid "Apply"
+msgstr "Áp dụng"
+
+#. module: forlife_pos_point_order
+#. odoo-python
+#: code:addons/forlife_pos_point_order/models/contact.py:0
+#: code:addons/forlife_pos_point_order/models/contact.py:0
+#, python-format
+msgid "Automatic running system"
+msgstr "Hệ thống chạy tự động"
+
+#. module: forlife_pos_point_order
 #: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__partner_history_point__point_order_type__back_order
 msgid "Back Order"
 msgstr ""
 
 #. module: forlife_pos_point_order
-#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.onnet_inherit_view_pos
-msgid "Compensate Point"
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_compensate_point_wizard_form
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_pos_compensate_point_order
+msgid "Cancel"
+msgstr "Huỷ"
+
+#. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.res_partner_forlife_inherit
+msgid "Compensate"
+msgstr "Bù điểm"
+
+#. module: forlife_pos_point_order
+#: model:ir.actions.act_window,name:forlife_pos_point_order.action_compensate_forlife_point_wizard
+msgid "Compensate Forlife Point"
 msgstr ""
 
 #. module: forlife_pos_point_order
-#: model:ir.actions.server,name:forlife_pos_point_order.action_compensate_point_all
-msgid "Compensate Points"
+#: model:ir.actions.act_window,name:forlife_pos_point_order.action_compensate_format_point_wizard
+msgid "Compensate Format Point"
 msgstr ""
+
+#. module: forlife_pos_point_order
+#: model:ir.actions.act_window,name:forlife_pos_point_order.action_view_pos_compensate_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.onnet_inherit_view_pos
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_pos_compensate_point_order
+msgid "Compensate Point"
+msgstr "Tích điểm bù"
+
+#. module: forlife_pos_point_order
+#: model:ir.model,name:forlife_pos_point_order.model_compensate_point_wizard
+#: model:ir.model,name:forlife_pos_point_order.model_pos_compensate_point_order
+msgid "Compensate Point Wizard"
+msgstr ""
+
+#. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_compensate_point_wizard_form
+msgid "Confirm"
+msgstr "Xác nhận"
 
 #. module: forlife_pos_point_order
 #: model:ir.model,name:forlife_pos_point_order.model_res_partner
@@ -46,16 +88,21 @@ msgid "Contact"
 msgstr "Danh bạ"
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__create_uid
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__create_uid
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_compensate_point_order__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__create_date
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__create_date
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_compensate_point_order__create_date
 msgid "Created on"
 msgstr "Ngày tạo"
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__date_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__date_order
 msgid "Date Order"
 msgstr "Ngày mua hàng"
@@ -73,26 +120,40 @@ msgid "Day Reset Format"
 msgstr "Ngày Reset"
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__display_name
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__display_name
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_compensate_point_order__display_name
 msgid "Display Name"
 msgstr ""
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__partner_history_point__store__forlife
-#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.res_partner_forlife_inherit
 msgid "For Life"
 msgstr ""
 
 #. module: forlife_pos_point_order
-#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.res_partner_forlife_inherit
-msgid "ForLife"
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__compensate_point_wizard__type__forlife
+msgid "Forlife"
 msgstr ""
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__point_forlife_reseted
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__point_forlife_reseted
+msgid "Forlife was reseted"
+msgstr "Đã reset điểm Forlife"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__compensate_point_wizard__type__format
 #: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__partner_history_point__store__format
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.res_partner_forlife_inherit
 msgid "Format"
 msgstr ""
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__point_format_reseted
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__point_format_reseted
+msgid "Format was reseted"
+msgstr "Đã reset điểm Format"
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__history_points_forlife_ids
@@ -108,7 +169,9 @@ msgid "History of Customer purchase POS"
 msgstr ""
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__id
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__id
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_compensate_point_order__id
 msgid "ID"
 msgstr ""
 
@@ -126,52 +189,80 @@ msgid "Is Member App?"
 msgstr ""
 
 #. module: forlife_pos_point_order
-#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__is_purchased
-#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__is_purchased
-msgid "Is Purchased"
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__is_purchased_of_forlife
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__is_purchased_of_format
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__is_purchased_of_forlife
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__is_purchased_of_format
+msgid "Is Purchased Forlife"
 msgstr ""
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__item_total_point
 msgid "Item Point Total"
-msgstr ""
+msgstr "Tổng điểm sản phẩm"
 
 #. module: forlife_pos_point_order
+#: model:ir.model,name:forlife_pos_point_order.model_account_move
+msgid "Journal Entry"
+msgstr "Bút toán "
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard____last_update
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point____last_update
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_compensate_point_order____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__write_uid
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__write_uid
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_compensate_point_order__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__write_date
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__write_date
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_compensate_point_order__write_date
 msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_pos_compensate_point_order
+msgid ""
+"Only orders that were not set the Point Program or had zero points will be "
+"applied!"
+msgstr ""
+"Tích điểm bù chỉ áp dụng cho những đơn hàng chưa gán chương trình tích điểm hoặc điểm tích lũy hiện tại bằng 0 !"
+""
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_compensate_point_order__order_ids
+msgid "Order"
 msgstr ""
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__partner_history_point__point_order_type__new
 msgid "Order New"
-msgstr ""
+msgstr "Đơn mới"
 
 #. module: forlife_pos_point_order
 #. odoo-python
 #: code:addons/forlife_pos_point_order/models/pos_order.py:0
 #, python-format
 msgid "Order had already point addition journal entry posted!"
-msgstr ""
+msgstr "Đơn hàng đã có bút toán tích điểm vào sổ !"
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__pos_order_id
 msgid "POS Order"
-msgstr ""
+msgstr "Đơn hàng"
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__partner_id
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__partner_id
 msgid "Partner"
-msgstr ""
+msgstr "Khách hàng"
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line__point_addition_event
@@ -186,7 +277,7 @@ msgstr ""
 #. module: forlife_pos_point_order
 #: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__partner_history_point__point_order_type__point_compensate
 msgid "Point Compensate"
-msgstr ""
+msgstr "Tích điểm bù"
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__point_order
@@ -219,6 +310,7 @@ msgid "Points Back"
 msgstr "Điểm trả"
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__points_fl_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__points_fl_order
 msgid "Points Order"
 msgstr "Điểm theo đơn"
@@ -234,14 +326,35 @@ msgid "Points Used"
 msgstr "Điểm đã dùng"
 
 #. module: forlife_pos_point_order
-#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__program_store_point_id
-msgid "Program Store Point"
-msgstr "Chương trình tích điểm"
+#. odoo-python
+#: code:addons/forlife_pos_point_order/models/account_move.py:0
+#, python-format
+msgid "Pos Order"
+msgstr "Đơn hàng"
 
 #. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.account_move_forlife_inherit
+msgid "Pos order"
+msgstr ""
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__program_store_point_id
+msgid "Program Store Point"
+msgstr "Chương trình điểm"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__reason
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__reason
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_compensate_point_order__reason
 msgid "Reason"
 msgstr "Lí do"
+
+#. module: forlife_pos_point_order
+#: model:ir.actions.server,name:forlife_pos_point_order.ir_cron_reset_partner_point_ir_actions_server
+#: model:ir.cron,cron_name:forlife_pos_point_order.ir_cron_reset_partner_point
+#: model:ir.cron,name:forlife_pos_point_order.ir_cron_reset_partner_point
+msgid "Reset Partner Point"
+msgstr ""
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__partner_history_point__point_order_type__reset_order
@@ -251,6 +364,11 @@ msgstr "Reset điểm"
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__store
 msgid "Store"
+msgstr "Cửa hàng"
+
+#. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.res_partner_forlife_inherit
+msgid "TokyoLife"
 msgstr ""
 
 #. module: forlife_pos_point_order
@@ -267,6 +385,7 @@ msgid "Total Points Availible"
 msgstr "Tổng điểm khả dụng"
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__type
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__point_order_type
 msgid "Type"
 msgstr "Loại"

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Point of Sale Forlife",
+    'name': "Point of Sale Forlife Point Order",
 
-    'summary': """Point of Sale Forlife
+    'summary': """Point of Sale Forlife Point Order
         """,
 
     'description': """
@@ -24,12 +24,14 @@
     ],
 
     'data': [
+        'security/ir.model.access.csv',
+        'views/account_move.xml',
+        'wizards/pos_compensate_point_order_views.xml',
+        'wizards/compensate_point_wizard_view.xml',
+        'data/cron_job_data.xml',
         'views/pos_order.xml',
         'views/res_partner_view.xml',
-        'security/ir.model.access.csv'
     ],
     'installable': True,
     'application': True,
-    # 'assets': {
-    # }
 }

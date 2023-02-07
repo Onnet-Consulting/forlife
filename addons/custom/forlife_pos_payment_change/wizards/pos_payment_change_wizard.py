@@ -1,3 +1,5 @@
+import datetime
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
@@ -50,9 +52,30 @@ class PosPaymentChangeWizard(models.TransientModel):
 
         return True
 
-    def button_cancel_entry(self):
-        if not self.move_ids:
-            return
-        self.move_ids.button_draft()
-        self.move_ids.button_cancel()
+    def _prepare_default_reversal(self, move):
+        reverse_date = datetime.date.today()
+        default_journal_id = self.order_id._get_default_payment_change_journal()
+        return {
+            'ref': _('Reversal of: %s', move.name),
+            'date': reverse_date,
+            'invoice_date_due': reverse_date,
+            'invoice_date': move.is_invoice(include_receipts=True) and reverse_date or False,
+            'journal_id': default_journal_id.id,
+            'invoice_payment_term_id': None,
+            'invoice_user_id': move.invoice_user_id.id,
+            'auto_post': 'at_date' if reverse_date > fields.Date.context_today(self) else 'no',
+        }
+
+    def button_reverse_entry(self):
+        reversed_moves = self.move_ids.filtered(lambda m: m.state == 'posted').mapped('reversed_entry_id')
+        to_do_moves = self.move_ids.filtered(lambda m: m.state == 'posted' and not m.reversed_entry_id) - reversed_moves
+        if not to_do_moves:
+            raise UserError(_('There are no journal entry to reverse or cancel!'))
+        # Create default values.
+        default_values_list = []
+        for move in to_do_moves:
+            default_values_list.append(self._prepare_default_reversal(move))
+
+        reverse_moves = to_do_moves._reverse_moves(default_values_list, cancel=True)
+        self.order_id.change_payment_move_ids |= reverse_moves
         return True

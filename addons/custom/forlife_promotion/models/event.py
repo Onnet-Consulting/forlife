@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+import json
 
 
 class Event(models.Model):
@@ -17,12 +18,13 @@ class Event(models.Model):
     dayofweek_ids = fields.Many2many('dayofweek.data', string='DayOfWeek')
     hour_ids = fields.Many2many('hour.data', string='Hours')
     store_ids = fields.Many2many('store', string='Stores', required=True)
-    customer_conditions = fields.Char(string='Customer Conditions', required=True)  # fixme (many2many) cần phân tích thêm từ phía master data
+    customer_conditions = fields.Char(string='Customer Conditions')
     value_conversion = fields.Integer('Value Conversion', required=True)
     point_addition = fields.Integer('Point Addition', required=True)
-    state = fields.Selection([('new', _('New')), ('effective', _('Effective'))], string='State', default='new')
+    state = fields.Selection([('new', _('New')), ('effective', _('Effective')), ('finish', _('Finish'))], string='State', default='new')
     points_product_ids = fields.One2many('points.product.line', 'event_id', string='Points Product')
     is_lock_change_points_promotion = fields.Boolean('Lock Change Points Promotion', default=False)
+    points_product_existed = fields.Text(string='Points Product Existed', default='[]')
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -46,28 +48,62 @@ class Event(models.Model):
 
     def unlink(self):
         for event in self:
-            if event.state != "new":
-                raise ValidationError(_("You can only delete the new Event!"))
+            if event.state != "new" or event.points_product_ids.filtered(lambda s: s.state == 'effective'):
+                raise ValidationError(_("You can only delete the new Event and points product have not effective!"))
         return super().unlink()
+
+    def btn_edit(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Edit Event'),
+            'res_model': 'event',
+            'target': 'current',
+            'view_mode': 'form',
+            'res_id': self.id,
+            'views': [[self.env.ref('forlife_promotion.event_view_form').id, 'form']],
+            'context': dict(self._context),
+        }
 
     def btn_effective(self):
         self.state = 'effective'
 
+    def btn_finish(self):
+        self.state = 'finish'
+
     def btn_load_points_promotion(self):
-        for line in self.filtered(lambda s: s.state == 'new'):
-            record = line.points_promotion_id.points_product_ids.filtered(lambda f: f.from_date <= line.from_date and f.to_date >= line.to_date)
-            _id = []
-            for rec in record:
-                res = line.points_product_ids.filtered(lambda x: x.points_product_id == rec)
-                if res:
-                    _id.append(res.id)
-                else:
-                    new_line = self.env['points.product.line'].create({
-                        'points_product_id': rec.id,
-                        'event_id': line.id,
-                        'point_addition': rec.point_addition,
-                    })
-                    _id.append(new_line.id)
-            _remove = line.points_product_ids.filtered(lambda xx: xx.id not in _id)
-            if _remove:
-                _remove.unlink()
+        for line in self.filtered(lambda s: s.state in ('new', 'effective')):
+            if line.state == 'new':
+                line.load_by_state_new()
+            else:
+                line.load_by_state_effective()
+
+    def load_by_state_new(self):
+        points_products = self.points_promotion_id.points_product_ids.filtered(lambda f: f.from_date <= self.from_date and f.to_date >= self.to_date)
+        for rec in points_products:
+            res = self.points_product_ids.filtered(lambda x: x.points_product_id == rec)
+            if res:
+                if res.state == 'new':
+                    res.product_ids = rec.product_ids
+            else:
+                self.env['points.product.line'].create({
+                    'points_product_id': rec.id,
+                    'event_id': self.id,
+                    'point_addition': rec.point_addition,
+                    'product_ids': [(6, 0, rec.product_ids.ids)],
+                })
+        if points_products:
+            self.write({'points_product_existed': json.dumps(points_products.ids)})
+
+    def load_by_state_effective(self):
+        points_product_existed = list(set((json.loads(self.points_product_existed) or []) + self.points_product_ids.mapped('points_product_id').ids))
+        points_products = self.points_promotion_id.points_product_ids.filtered(lambda f: f.from_date <= self.from_date and f.to_date >= self.to_date and f.id not in points_product_existed)
+        for rec in points_products:
+            self.env['points.product.line'].create({
+                'points_product_id': rec.id,
+                'event_id': self.id,
+                'point_addition': rec.point_addition,
+                'product_ids': [(6, 0, rec.product_ids.ids)],
+            })
+        if points_products:
+            self.write({'points_product_existed': json.dumps(points_products.ids + points_product_existed)})

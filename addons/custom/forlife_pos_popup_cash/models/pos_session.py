@@ -8,7 +8,8 @@ class PosSession(models.Model):
 
     def load_pos_data(self):
         loaded_data = super(PosSession, self).load_pos_data()
-        all_pos = self.env['pos.config'].search([('store_id', '=', self.config_id.store_id.id), ('id', '!=', self.config_id.id)])
+        all_pos = self.env['pos.config'].search(
+            [('store_id', '=', self.config_id.store_id.id), ('id', '!=', self.config_id.id)])
         vals = []
         for r in all_pos:
             vals.append({
@@ -34,10 +35,22 @@ class PosSession(models.Model):
                                                 """.format(self.config_id.store_id.id, self.id)
         self.env.cr.execute(query)
         statement_lines_pos = self.env.cr.fetchall()
-        return {'search_params': {'domain': [('id', 'in', statement_lines_pos)], 'fields': ['name', 'move_id']}}
+        return {'search_params': {
+            'domain': [('id', 'in', statement_lines_pos)],
+            'fields': ['name', 'move_id', 'amount', 'pos_config_id']}
+        }
 
     def _get_pos_ui_account_bank_statement_line(self, params):
         return self.env['account.bank.statement.line'].search_read(**params['search_params'])
+
+    def load_new_bank_statements(self):
+        model_name = 'account_bank_statement_line'
+        loader = getattr(self, '_get_pos_ui_%s' % model_name, None)
+        params = getattr(self, '_loader_params_%s' % model_name, None)
+        if loader and params:
+            return loader(params())
+        else:
+            raise NotImplementedError(_("The function to load %s has not been implemented.", model_name))
 
     def create_pos_transfer_journal_entry(self, _type, amount, reason, extras):
         self.ensure_one()
@@ -88,7 +101,8 @@ class PosSession(models.Model):
                 'amount': sign * amount,
                 'date': fields.Date.context_today(self),
                 'payment_ref': '-'.join([session.name, extras['translatedType'], reason]),
-                'to_store_tranfer': extras['shop'] if 'shop' in extras and extras['shop'] and extras['type_tranfer'] == 2 else False,
+                'to_store_tranfer': extras['shop']
+                if 'shop' in extras and _type == 'out' and extras['shop'] and extras['type_tranfer'] == 2 else False,
                 'is_reference': True if 'reference' in extras and extras['reference'] else False,
                 'pos_transfer_type': str(extras.get('type_tranfer', ''))
             }

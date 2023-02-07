@@ -57,11 +57,15 @@ class PointsPromotion(models.Model):
 
     def btn_finish(self):
         self.state = 'finish'
+        self.mapped('event_ids').filtered(lambda f: f.state in ('new', 'effective')).btn_finish()
 
-    def check_finish_points_promotion(self):
-        res = self.search([('to_date', '<', fields.Datetime.now()), ('state', 'in', ('new', 'in_progress'))])
-        if res:
-            res.btn_finish()
+    def check_finish_points_promotion_and_event(self):
+        promotion = self.search([('to_date', '<', fields.Datetime.now()), ('state', 'in', ('new', 'in_progress'))])
+        if promotion:
+            promotion.btn_finish()
+        event = self.env['event'].search([('to_date', '<', fields.Datetime.now()), ('state', 'in', ('new', 'effective'))])
+        if event:
+            event.btn_finish()
 
     def btn_load_all_points_promotion(self):
         self.event_ids.btn_load_points_promotion()
@@ -92,7 +96,7 @@ class PointsPromotion(models.Model):
             'type': 'ir.actions.act_window',
             'name': _('Create Event'),
             'res_model': 'event',
-            'target': 'new',
+            'target': 'current',
             'view_mode': 'form',
             'views': [[self.env.ref('forlife_promotion.event_view_form').id, 'form']],
             'context': ctx,
