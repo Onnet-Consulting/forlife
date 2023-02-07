@@ -22,8 +22,8 @@
                                 <field name="total_points_available_forlife"/>
                             </group>
                         </group>
-                        <group>
-                            <field name="history_points_forlife_ids" string="TokyoLife">
+                        <group string="TokyoLife">
+                            <field name="history_points_forlife_ids" nolabel="1" colspan="2">
                                 <tree editable="bottom">
                                     <field name="create_date"/>
                                     <field name="date_order"/>
@@ -49,8 +49,8 @@
                                 <field name="total_points_available_format"/>
                             </group>
                         </group>
-                        <group>
-                            <field name="history_points_format_ids" string="Format">
+                        <group string="format">
+                            <field name="history_points_format_ids" nolabel="1" colspan="2">
                                 <tree editable="bottom">
                                     <field name="create_date"/>
                                     <field name="date_order"/>
