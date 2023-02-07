@@ -26,7 +26,7 @@ class ForlifeQuestion(models.Model):
     create_date = fields.Datetime("Create On", default=fields.Datetime.now())
     banner = fields.Char('Banner')
     icon = fields.Char('Icon')
-    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company)
+    company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company, copy=False)
 
     _sql_constraints = [
         ('check_dates', 'CHECK (start_date <= finish_date)', 'Finish date may not be before the starting date.'),
@@ -35,7 +35,8 @@ class ForlifeQuestion(models.Model):
     @api.constrains("start_date", "finish_date")
     def validate_time(self):
         for record in self:
-            res = self.search(['&', ('brand_id', '=', record.brand_id.id), '&', ('id', '!=', record.id), '|', '&', ('start_date', '<=', record.start_date),
-                               ('finish_date', '>=', record.start_date), '&', ('start_date', '<=', record.finish_date), ('finish_date', '>=', record.finish_date)])
+            res = self.search(['&', ('company_id', '=', self.env.company.id), '&', ('brand_id', '=', record.brand_id.id), '&', ('id', '!=', record.id),
+                               '|', '&', ('start_date', '<=', record.start_date), ('finish_date', '>=', record.start_date),
+                               '&', ('start_date', '<=', record.finish_date), ('finish_date', '>=', record.finish_date)])
             if res:
                 raise ValidationError(_("Time is overlapping."))

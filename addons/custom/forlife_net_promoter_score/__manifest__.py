@@ -26,7 +26,7 @@
     'data': [
         'security/nps_security.xml',
         'security/ir.model.access.csv',
-        # 'data/cron_job_data.xml',
+        'data/cron_job_data.xml',
 
         'views/forlife_question_views.xml',
         'views/forlife_comment_views.xml',

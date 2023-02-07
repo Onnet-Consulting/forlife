@@ -8,11 +8,12 @@
             <field name="arch" type="xml">
                 <tree string="forlife_comment_tree">
                     <field name="question_id"/>
+                    <field name="customer_name"/>
                     <field name="customer_code"/>
                     <field name="branch"/>
-                    <field name="point"/>
-                    <field name="employee"/>
                     <field name="brand"/>
+                    <field name="point"/>
+                    <field name="status"/>
                 </tree>
             </field>
         </record>
@@ -26,6 +27,7 @@
                         <group>
                             <group>
                                 <field name="question_id"/>
+                                <field name="customer_name"/>
                                 <field name="customer_code"/>
                                 <field name="brand"/>
                                 <field name="branch"/>
@@ -38,8 +40,8 @@
                                 <field name="point"/>
                                 <field name="comment"/>
                                 <field name="description"/>
-                                <field name="is_desc"/>
                                 <field name="employee"/>
+                                <field name="is_desc"/>
                                 <field name="type"/>
                             </group>
                         </group>
