@@ -23,4 +23,3 @@ class PosOrder(models.Model):
             'target': 'new'
         }
 
-
