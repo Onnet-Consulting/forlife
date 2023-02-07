@@ -15,7 +15,7 @@ class PosOrder(models.Model):
     item_total_point = fields.Integer(
         'Item Point Total', readonly=True, compute='_compute_item_total_point', store=True,
         help='Includes the total of product point and product event point')
-    program_store_point_id = fields.Many2one('points.promotion', 'Program Store Point', readonly=True)
+    program_store_point_id = fields.Many2one('points.promotion', 'Program Store Point')
     allow_compensate_point = fields.Boolean(compute='_allow_compensate_point')
     point_addition_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
@@ -135,7 +135,7 @@ class PosOrder(models.Model):
                         money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) if rec.program_store_point_id.value_conversion > 0 else 0  # a
                 else:
                     rec.point_order = int(
-                        money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) * rec.program_store_point_id.first_order if rec.program_store_point_id.value_conversion > 0 else 0  # a
+                        money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition * rec.program_store_point_id.first_order) if rec.program_store_point_id.value_conversion > 0 else 0  # a
                 event_valid = self.get_event_match(pos_order=rec)
                 if event_valid:
                     rec.point_event_order = int(money_value / event_valid.value_conversion * event_valid.point_addition)  # b
