@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="track_order_line_employee_changed">
+        <div>
+            <t t-call="forlife_pos_assign_employee.message_head"/>
+            <t t-call="forlife_pos_assign_employee.message_body"/>
+        </div>
+    </template>
+</odoo>

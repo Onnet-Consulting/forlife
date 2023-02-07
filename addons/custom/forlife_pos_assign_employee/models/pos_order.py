@@ -4,7 +4,9 @@ from odoo import api, fields, models, _
 
 
 class PosOrder(models.Model):
-    _inherit = 'pos.order'
+    _name = 'pos.order'
+    _inherit = ['pos.order', 'portal.mixin', 'mail.thread', 'mail.activity.mixin']
+
 
     def reassign_employee(self):
         return {
@@ -20,3 +22,5 @@ class PosOrder(models.Model):
             ),
             'target': 'new'
         }
+
+

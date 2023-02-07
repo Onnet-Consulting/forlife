@@ -21,8 +21,10 @@
 
     'data': [
         'security/ir.model.access.csv',
+        'data/mail_templates.xml',
         'views/pos_order_views.xml',
         'wizard/assign_employee_order_line_wizard_views.xml',
+        'views/pos_order_templates.xml',
     ],
     'assets': {
         'point_of_sale.assets': [
