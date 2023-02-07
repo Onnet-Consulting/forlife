@@ -25,7 +25,7 @@ class PosSession(models.Model):
         return self.env['hr.employee'].search_read(self._get_assignable_employees_domain(), ['name'])
 
     def _get_assignable_employees_domain(self):
-        return [('id', 'in', self.config_id.store_id.employee_ids.ids)]
+        return ['|', ('id', 'in', self.config_id.store_id.employee_ids.ids), ('id', '=', self.env.user.employee_id.id)]
 
     def _loader_params_res_users(self):
         params = super(PosSession, self)._loader_params_res_users()
