@@ -13,9 +13,10 @@
                     <field name="to_date"/>
                     <field name="point_addition"/>
                     <field name="state" widget="badge" decoration-success="state == 'effective'" decoration-info="state == 'new'"/>
-                    <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
-                    <button name="btn_edit" string="Edit" icon="fa-pencil" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
-                    <button name="unlink" string="Delete" icon="fa-trash" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
+                    <field name="state_related" invisible="1"/>
+                    <button name="btn_effective" string="Active" class="oe_highlight" type="object" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('state_related', '=', 'finish')]}" groups="forlife_promotion.promotion_manager"/>
+                    <button name="btn_edit" string="Edit" icon="fa-pencil" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('state_related', '=', 'finish')]}" type="object" groups="forlife_promotion.promotion_manager"/>
+                    <button name="unlink" string="Delete" icon="fa-trash" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('state_related', '=', 'finish')]}" type="object" groups="forlife_promotion.promotion_manager"/>
                 </tree>
             </field>
         </record>
@@ -26,7 +27,7 @@
             <field name="arch" type="xml">
                 <form string="points_product_form">
                     <header>
-                        <button name="btn_effective" string="Active" class="oe_highlight" states="new" type="object" groups="forlife_promotion.promotion_manager"/>
+                        <button name="btn_effective" string="Active" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('state_related', '=', 'finish')]}" type="object" groups="forlife_promotion.promotion_manager"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -50,6 +51,7 @@
                     </sheet>
                     <field name="product_existed" invisible="1"/>
                     <field name="points_promotion_id" invisible="1"/>
+                    <field name="state_related" invisible="1"/>
                 </form>
             </field>
         </record>

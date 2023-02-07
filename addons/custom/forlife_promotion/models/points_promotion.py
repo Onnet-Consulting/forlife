@@ -57,13 +57,13 @@ class PointsPromotion(models.Model):
 
     def btn_finish(self):
         self.state = 'finish'
+        self.mapped('event_ids').filtered(lambda f: f.state in ('new', 'effective')).btn_finish()
 
     def check_finish_points_promotion_and_event(self):
         promotion = self.search([('to_date', '<', fields.Datetime.now()), ('state', 'in', ('new', 'in_progress'))])
         if promotion:
             promotion.btn_finish()
-            promotion.mapped('event_ids').filtered(lambda f: f.state in ('new', 'effective')).btn_finish()
-        event = self.search([('to_date', '<', fields.Datetime.now()), ('state', 'in', ('new', 'effective'))])
+        event = self.env['event'].search([('to_date', '<', fields.Datetime.now()), ('state', 'in', ('new', 'effective'))])
         if event:
             event.btn_finish()
 
