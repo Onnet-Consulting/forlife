@@ -60,7 +60,7 @@ class PosOrder(models.Model):
         if not pos_order.partner_id.is_member_app_format and not pos_order.partner_id.is_member_app_forlife:
             return
         if not pos_order.program_store_point_id:
-            program = self._get_program_promotion({
+            program = self.get_program_promotion({
                 'date_order': datetime.strftime(pos_order.date_order, DEFAULT_SERVER_DATETIME_FORMAT),
                 'session_id': pos_order.session_id.id
             })
@@ -183,18 +183,22 @@ class PosOrder(models.Model):
     def _order_fields(self, ui_order):
         data = super(PosOrder, self)._order_fields(ui_order)
         if data['partner_id']:
-            program_promotion = self._get_program_promotion(data)
+            program_promotion = self.get_program_promotion(data)
             if program_promotion:
                 data['program_store_point_id'] = program_promotion.id
         return data
 
-    def _get_program_promotion(self, data):
+    @api.model
+    def get_program_promotion(self, data):
+        # if self._context.get('from_PointsConsumption'):
+        #     data = data[0]
         create_Date = self._format_time_zone(data['date_order'])
         session = self.env['pos.session'].sudo().search([('id', '=', data['session_id'])], limit=1)
         store = session.config_id.store_id
         program_promotion = self.env['points.promotion'].sudo().search(
             [('store_ids', 'in', store.id), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date), ('to_date', '>=', create_Date),
              ('brand_id', '=', store.brand_id.id)], limit=1)
+        print(program_promotion)
         return program_promotion
 
     def _format_time_zone(self, time):
