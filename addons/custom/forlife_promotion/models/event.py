@@ -107,3 +107,7 @@ class Event(models.Model):
             })
         if points_products:
             self.write({'points_product_existed': json.dumps(points_products.ids + points_product_existed)})
+
+    def write(self, vals):
+        print(self.customer_conditions)
+        return super(Event, self).write(vals)
