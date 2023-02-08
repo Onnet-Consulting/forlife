@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 
 
 class HrEmployeeBase(models.AbstractModel):
@@ -10,7 +10,7 @@ class HrEmployeeBase(models.AbstractModel):
     code = fields.Char(string='Code', required=True, copy=False)
     related_contact_ids = fields.Many2many(context={'active_test': False})
     work_contact_id = fields.Many2one(context={'active_test': False})
-
+    user_id = fields.Many2one(readonly=True)
 
     _sql_constraints = [
         ('unique_code', 'UNIQUE(code)', 'Only one Code   occurrence by employee')
