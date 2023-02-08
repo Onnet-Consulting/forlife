@@ -10,8 +10,8 @@
 }
 
 .pos .rightpane th {
-    padding: 18px;
-    text-align: center;
+    padding: 18px 5px;
+    text-align: left;
     position: sticky;
     top: 0;
     background-color: #714B67;
@@ -31,7 +31,7 @@
     color: #4A4F59;
     font-size: 14px;
     padding: 5px;
-    text-align: center;
+    text-align: left;
 }
 
 .pos .rightpane table .product {
