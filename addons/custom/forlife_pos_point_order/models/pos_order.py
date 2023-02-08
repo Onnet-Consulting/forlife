@@ -1,7 +1,7 @@
 from odoo import api, fields, models, _
 from datetime import datetime
 import pytz
-
+from ast import literal_eval
 from odoo.exceptions import UserError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
@@ -138,7 +138,8 @@ class PosOrder(models.Model):
                         money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition * rec.program_store_point_id.first_order) if rec.program_store_point_id.value_conversion > 0 else 0  # a
                 event_valid = self.get_event_match(pos_order=rec)
                 if event_valid:
-                    partner_condition = self.env['res.partner'].search(event_valid.customer_conditions)
+                    domain = literal_eval(event_valid.customer_conditions)
+                    partner_condition = self.env['res.partner'].search(domain)
                     if rec.partner_id.id in partner_condition.ids:
                         rec.point_event_order = int(money_value / event_valid.value_conversion * event_valid.point_addition)  # b
                     else:
