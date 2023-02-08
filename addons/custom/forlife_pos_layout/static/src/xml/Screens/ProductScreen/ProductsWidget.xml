@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="custom_ProductsWidget" owl="1" t-inherit="point_of_sale.ProductsWidget" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('product-list-container')]" position="replace">
+            <div class="product-list-container">
+                <div t-if="productsToDisplay.length != 0" class="product-list">
+                    <table class="table-list-product">
+                        <thead>
+                            <tr>
+                                <th>MÃ SẢN PHẨM</th>
+                                <th>TÊN SẢN PHẨM</th>
+                                <th>ĐƠN GIÁ</th>
+                                <th>ĐƠN VỊ TÍNH</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="productsToDisplay" t-as="product" t-key="product.id">
+                                <CustomProductItem product="product" />
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+                <div t-else="" class="product-list-empty no-results-message">
+                    <p t-if="searchWord">
+                        No product found for <b>"<t t-esc="searchWord"/>"</b> in this category.
+                    </p>
+                    <p t-else="">
+                        There are no products in this category.
+                    </p>
+                </div>
+                <div class="portal search-database-button no-results-message" t-att-class="{ oe_hidden:  !shouldShowButton }"></div>
+            </div>
+        </xpath>
+    </t>
+
+</templates>
