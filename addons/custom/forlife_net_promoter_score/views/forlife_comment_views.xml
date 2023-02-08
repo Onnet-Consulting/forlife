@@ -10,11 +10,11 @@
                     <field name="question_id"/>
                     <field name="customer_name"/>
                     <field name="customer_code"/>
-                    <field name="branch"/>
+                    <field name="store_name"/>
+                    <field name="area"/>
                     <field name="brand"/>
                     <field name="point"/>
                     <field name="status"/>
-                    <button name="push_noti" type="object" string="Test"/>
                 </tree>
             </field>
         </record>
@@ -30,7 +30,8 @@
                                 <field name="customer_name"/>
                                 <field name="customer_code"/>
                                 <field name="brand"/>
-                                <field name="branch"/>
+                                <field name="store_name"/>
+                                <field name="area"/>
                                 <field name="invoice_number"/>
                                 <field name="invoice_date"/>
                                 <field name="question_id"/>
@@ -58,7 +59,8 @@
                 <search string="Search">
                     <field name="question_id"/>
                     <field name="customer_code"/>
-                    <field name="branch"/>
+                    <field name="store_name"/>
+                    <field name="area"/>
                     <field name="brand"/>
                     <field name="employee"/>
                 </search>

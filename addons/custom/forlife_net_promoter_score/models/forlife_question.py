@@ -7,10 +7,9 @@ from odoo.exceptions import ValidationError
 class ForlifeQuestion(models.Model):
     _name = 'forlife.question'
     _description = 'Question'
-    _rec_name = 'name'
+    _rec_name = 'header'
     _order = 'finish_date desc'
 
-    name = fields.Char('Name', required=True)
     header = fields.Text('Header', required=True)
     question1 = fields.Text("Question 1", required=True)
     sub_quest1 = fields.Char('Sub Question 1', required=True)

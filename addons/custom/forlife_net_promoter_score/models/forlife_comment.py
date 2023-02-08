@@ -15,6 +15,23 @@ BOT_TELEGRAM_TOKEN = {
     'FMT': '933947687:AAFFd44GFB_RmevYiSGwYbSXrfdutrZmMyE',
 }
 
+TELEGRAM_GROUP_ID_BY_BRAND = {
+    'FMT': '-1001214315278',
+    'TKL': '-1001475374775',
+}
+
+TELEGRAM_GROUP_ID_CSKH = {
+    'TKL-CSKH': '-404120229',
+}
+
+TELEGRAM_GROUP_ID_BY_AREA = {
+    'S1': '-377239261',
+    'S2': '-365465110',
+    'S3': '-371562648',
+    'S4': '-366286628',
+    'S5': '-658354190',
+}
+
 
 class ForlifeComment(models.Model):
     _name = 'forlife.comment'
@@ -25,7 +42,8 @@ class ForlifeComment(models.Model):
     question_id = fields.Integer('Question ID')
     customer_code = fields.Char('Customer Code', required=True)
     customer_name = fields.Char('Customer Name', required=True)
-    branch = fields.Char('Branch')
+    store_name = fields.Char('Store Name')
+    areas = fields.Char('Areas')
     invoice_number = fields.Char('Invoice Number', required=True)
     invoice_date = fields.Datetime('Invoice Date', required=True)
     comment_date = fields.Datetime('Comment Date')
@@ -37,7 +55,6 @@ class ForlifeComment(models.Model):
     employee = fields.Char('Employee')
     type = fields.Integer('Type')
     brand = fields.Char('Brand', required=True)
-    question_detail = fields.Json('Question Detail')
 
     def push_noti(self):
         self.status = 0
@@ -58,5 +75,10 @@ class ForlifeComment(models.Model):
     def write(self, vals):
         res = super(ForlifeComment, self).write(vals)
         if self._context.get('update_comment', False):
-            pass
+            self.send_message_to_telegram()
         return res
+
+    def send_message_to_telegram(self):
+        for comment in self:
+            token = BOT_TELEGRAM_TOKEN.get(comment.brand)
+
