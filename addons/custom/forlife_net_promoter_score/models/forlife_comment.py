@@ -4,32 +4,27 @@ from odoo import api, fields, models, _
 import requests
 import json
 from datetime import timedelta
+import pytz
 
-APP_API_LINK = {
-    'TKL': 'http://app.tokyolife.vn/Api/Notification/Notification.ashx?type=pushNotification',
-    'FMT': 'http://app.format.vn/Api/Notification/Notification.ashx?type=pushNotification',
-}
-
-BOT_TELEGRAM_TOKEN = {
-    'TKL': '687907641:AAFTlEWiFv3dYOaHyUXPbEGF-RgeeW80Ldc',
-    'FMT': '933947687:AAFFd44GFB_RmevYiSGwYbSXrfdutrZmMyE',
-}
-
-TELEGRAM_GROUP_ID_BY_BRAND = {
-    'FMT': '-1001214315278',
-    'TKL': '-1001475374775',
-}
-
-TELEGRAM_GROUP_ID_CSKH = {
-    'TKL-CSKH': '-404120229',
-}
-
-TELEGRAM_GROUP_ID_BY_AREA = {
-    'S1': '-377239261',
-    'S2': '-365465110',
-    'S3': '-371562648',
-    'S4': '-366286628',
-    'S5': '-658354190',
+DATA_INFO = {
+    'TKL': {
+        'APP_API_LINK': 'http://app.tokyolife.vn/Api/Notification/Notification.ashx?type=pushNotification',
+        'TELEGRAM_BOT_TOKEN': '687907641:AAFTlEWiFv3dYOaHyUXPbEGF-RgeeW80Ldc',
+        'TELEGRAM_GROUP_ID_BY_BRAND': '-1001475374775',
+        'TELEGRAM_GROUP_ID_CSKH': '-404120229',
+        'TELEGRAM_GROUP_ID_BY_AREA': {
+            'S1': '-377239261',
+            'S2': '-365465110',
+            'S3': '-371562648',
+            'S4': '-366286628',
+            'S5': '-658354190',
+        }
+    },
+    'FMT': {
+        'APP_API_LINK': 'http://app.format.vn/Api/Notification/Notification.ashx?type=pushNotification',
+        'TELEGRAM_BOT_TOKEN': '933947687:AAFFd44GFB_RmevYiSGwYbSXrfdutrZmMyE',
+        'TELEGRAM_GROUP_ID_BY_BRAND': '-1001214315278',
+    },
 }
 
 
@@ -60,12 +55,14 @@ class ForlifeComment(models.Model):
         self.status = 0
 
     def push_notification_to_app(self, phone, brand):
-        url = APP_API_LINK.get(brand, False)
+        url = DATA_INFO.get(brand, {}).get('APP_API_LINK')
         if url:
             url += '&username=%s&notiId=9999' % phone
             result = requests.get(url)
             res = json.loads(result.text)
             self.sudo().push_noti() if res.get('Result', 0) else self.sudo().unlink()
+        else:
+            raise ValueError(_('App API link not found.'))
 
     def remove_forlife_comment(self):
         res = self.search([('status', '=', 0), ('write_date', '<=', fields.Datetime.now() - timedelta(hours=24))])
@@ -75,10 +72,23 @@ class ForlifeComment(models.Model):
     def write(self, vals):
         res = super(ForlifeComment, self).write(vals)
         if self._context.get('update_comment', False):
-            self.send_message_to_telegram()
+            self.with_delay().send_message_to_telegram()
         return res
 
     def send_message_to_telegram(self):
-        for comment in self:
-            token = BOT_TELEGRAM_TOKEN.get(comment.brand)
+        for cmt in self.filtered(lambda f: f.status == 1):
+            _data = DATA_INFO.get(cmt.brand, {})
+            token = _data.get('TELEGRAM_BOT_TOKEN')
+            message = 'Mã khách: %s\nTên khách: %s\nMã hóa đơn: %s\nNgày giờ: %s\nChi nhánh: %s\nMức độ(%%): %s' % (
+                cmt.customer_code, cmt.customer_name, cmt.invoice_number, pytz.timezone(self.env.user.tz).localize(cmt.comment_date).strftime('%d-%m-%Y %H:%M:%S'), cmt.store_name, cmt.point
+            )
+            if cmt.comment:
+                message += '\nBình luận: %s' % cmt.comment
 
+            self.env['integration.telegram'].with_delay().send_message(token, _data.get('TELEGRAM_GROUP_ID_BY_BRAND'), message)
+
+            if _data.get('TELEGRAM_GROUP_ID_CSKH') and cmt.comment:
+                self.env['integration.telegram'].with_delay().send_message(token, _data.get('TELEGRAM_GROUP_ID_CSKH'), message)
+
+            if _data.get('TELEGRAM_GROUP_ID_BY_AREA'):
+                self.env['integration.telegram'].with_delay().send_message(token, _data.get('TELEGRAM_GROUP_ID_BY_AREA').get(cmt.areas), message)

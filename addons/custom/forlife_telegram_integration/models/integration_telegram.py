@@ -12,7 +12,7 @@ class IntegrationTelegram(models.AbstractModel):
     _name = 'integration.telegram'
     _description = 'Integration with Telegram'
 
-    # self.env['integration.telegram'].send_message(token='', chat_id='', message='')
+    # self.env['integration.telegram'].with_delay().send_message(token='', chat_id='', message='')
     def send_message(self, token, chat_id, message):
         if not token:
             _logger.error('========= Telegram Bot Token not found =========')
