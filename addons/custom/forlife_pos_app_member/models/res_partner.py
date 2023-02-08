@@ -4,20 +4,31 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 from odoo.addons.forlife_pos_app_member.models.res_utility import get_valid_phone_number, is_valid_phone_number
+from odoo.tools.safe_eval import safe_eval
 
+import json
 import uuid
 import random
+
+from lxml import etree
 
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
+    def _get_default_group_id(self):
+        return self.env.ref('forlife_pos_app_member.partner_group_3', raise_if_not_found=False)
+
     group_id = fields.Many2one(
         'res.partner.group',
         string='Group', ondelete='restrict',
         default=lambda self: self.env.ref('forlife_pos_app_member.partner_group_3', raise_if_not_found=False),
-        domain=lambda self: [('id', 'not in', [self.env.ref('forlife_pos_app_member.partner_group_4').id,
-                                               self.env.ref('forlife_pos_app_member.partner_group_5').id])]
+        domain=lambda self:
+        [('id', 'not in', [
+            self.env.ref('forlife_pos_app_member.partner_group_3').id,
+            self.env.ref('forlife_pos_app_member.partner_group_4').id,
+            self.env.ref('forlife_pos_app_member.partner_group_5').id,
+        ])]
     )
     job_ids = fields.Many2many('res.partner.job', string='Jobs')
     retail_type_ids = fields.Many2many('res.partner.retail', string='Retail types', copy=False, ondelete='restrict')
@@ -145,3 +156,20 @@ class ResPartner(models.Model):
                 offset=offset, limit=limit, order=order, count=count
             )
         return super(ResPartner, self).search(args, offset=offset, limit=limit, order=order, count=count)
+
+    def default_get(self, fields):
+        res = super(ResPartner, self).default_get(fields)
+        # remove default group_id value on views, keep on other source (api, controller ...)
+        if self._context.get('partner_action'):
+            res.pop('group_id', False)
+        return res
+
+    @api.model
+    def _add_partner_action_context(self):
+        partner_actions = self.env['ir.actions.act_window'].search([('res_model', '=', 'res.partner')])
+        additional_context = {'partner_action': True}
+        for action in partner_actions:
+            context = safe_eval(action.context)
+            context.update(additional_context)
+            action.context = context
+        return True

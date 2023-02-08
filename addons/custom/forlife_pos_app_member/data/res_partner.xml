@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-<!--    <fucntion-->
+    <function model="res.partner" name="_add_partner_action_context"/>
 </odoo>
