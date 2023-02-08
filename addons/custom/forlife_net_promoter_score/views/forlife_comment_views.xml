@@ -14,6 +14,7 @@
                     <field name="brand"/>
                     <field name="point"/>
                     <field name="status"/>
+                    <button name="push_noti" type="object" string="Test"/>
                 </tree>
             </field>
         </record>
@@ -26,19 +27,19 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="question_id"/>
                                 <field name="customer_name"/>
                                 <field name="customer_code"/>
                                 <field name="brand"/>
                                 <field name="branch"/>
                                 <field name="invoice_number"/>
                                 <field name="invoice_date"/>
-                                <field name="comment_date"/>
+                                <field name="question_id"/>
+                                <field name="status"/>
                             </group>
                             <group>
-                                <field name="status"/>
                                 <field name="point"/>
                                 <field name="comment"/>
+                                <field name="comment_date"/>
                                 <field name="description"/>
                                 <field name="employee"/>
                                 <field name="is_desc"/>

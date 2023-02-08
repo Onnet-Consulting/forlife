@@ -10,6 +10,11 @@ APP_API_LINK = {
     'FMT': 'http://app.format.vn/Api/Notification/Notification.ashx?type=pushNotification',
 }
 
+BOT_TELEGRAM_TOKEN = {
+    'TKL': '687907641:AAFTlEWiFv3dYOaHyUXPbEGF-RgeeW80Ldc',
+    'FMT': '933947687:AAFFd44GFB_RmevYiSGwYbSXrfdutrZmMyE',
+}
+
 
 class ForlifeComment(models.Model):
     _name = 'forlife.comment'
@@ -17,7 +22,7 @@ class ForlifeComment(models.Model):
     _order = 'status desc, id desc'
     _rec_name = 'customer_code'
 
-    question_id = fields.Many2one('forlife.question', string='Question', required=True)
+    question_id = fields.Integer('Question ID')
     customer_code = fields.Char('Customer Code', required=True)
     customer_name = fields.Char('Customer Name', required=True)
     branch = fields.Char('Branch')
@@ -32,6 +37,7 @@ class ForlifeComment(models.Model):
     employee = fields.Char('Employee')
     type = fields.Integer('Type')
     brand = fields.Char('Brand', required=True)
+    question_detail = fields.Json('Question Detail')
 
     def push_noti(self):
         self.status = 0
@@ -48,3 +54,9 @@ class ForlifeComment(models.Model):
         res = self.search([('status', '=', 0), ('write_date', '<=', fields.Datetime.now() - timedelta(hours=24))])
         if res:
             res.sudo().unlink()
+
+    def write(self, vals):
+        res = super(ForlifeComment, self).write(vals)
+        if self._context.get('update_comment', False):
+            pass
+        return res
