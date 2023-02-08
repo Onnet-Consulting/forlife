@@ -123,7 +123,8 @@ class Contact(models.Model):
                 move_vals = {
                     'date': now.date(),
                     'journal_id': point_promotion_forlife_id.account_journal_id.id,
-                    'line_ids': move_line_vals
+                    'line_ids': move_line_vals,
+                    'point_order_type': 'reset_order'
                 }
                 account_move_obj.create(move_vals)
 
@@ -163,7 +164,8 @@ class Contact(models.Model):
                 move_vals = {
                     'date': now.date(),
                     'journal_id': point_promotion_format_id.account_journal_id.id,
-                    'line_ids': move_line_vals
+                    'line_ids': move_line_vals,
+                    'point_order_type': 'reset_order'
                 }
                 account_move_obj.create(move_vals)
 
