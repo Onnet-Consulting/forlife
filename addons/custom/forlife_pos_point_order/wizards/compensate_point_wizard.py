@@ -40,7 +40,7 @@ class CompensatePointWizard(models.TransientModel):
             move_line_vals = [(0, 0, {
                 'account_id': self.partner_id.property_account_receivable_id.id,
                 'partner_id': point_promotion_id.point_customer_id.id,
-                'name': self.partner_id.name + self.type,
+                'name': self.partner_id.name,
                 'credit': self.points_fl_order * 1000,
                 'debit': 0
             })]
@@ -52,6 +52,7 @@ class CompensatePointWizard(models.TransientModel):
             move_vals = {
                 'date': self.date_order.date(),
                 'journal_id': point_promotion_id.account_journal_id.id,
-                'line_ids': move_line_vals
+                'line_ids': move_line_vals,
+                'point_order_type': 'point compensate'
             }
             account_move_obj.create(move_vals)
