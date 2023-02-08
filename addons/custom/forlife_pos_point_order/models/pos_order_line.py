@@ -1,5 +1,5 @@
 from odoo import api, fields, models
-
+from ast import literal_eval
 
 class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'
@@ -60,7 +60,8 @@ class PosOrderLine(models.Model):
         event_valid = self.order_id.get_event_match(self.order_id)
         dict_product_poit_add = {}
         if event_valid:
-            partner_condition = self.env['res.partner'].search(event_valid.customer_conditions)
+            domain = literal_eval(event_valid.customer_conditions) if event_valid.customer_conditions else []
+            partner_condition = self.env['res.partner'].search(domain)
             if self.order_id.partner_id.id in partner_condition.ids:
                 for r in event_valid.points_product_ids.filtered(lambda x: x.state == 'effective'):
                     dict_product_poit_add[r.points_product_id.product_ids] = r.point_addition
