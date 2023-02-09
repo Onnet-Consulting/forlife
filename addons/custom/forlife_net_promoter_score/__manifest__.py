@@ -30,5 +30,6 @@
 
         'views/forlife_question_views.xml',
         'views/forlife_comment_views.xml',
+        'wizard/net_promoter_score_report_views.xml',
     ]
 }

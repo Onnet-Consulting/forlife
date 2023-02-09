@@ -3,7 +3,7 @@
 from odoo import api, fields, models, _
 import requests
 import json
-from datetime import timedelta, timezone
+from datetime import timedelta
 import pytz
 
 DATA_INFO = {
