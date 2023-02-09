@@ -53,9 +53,12 @@ class RedisAction(models.AbstractModel):
 
     key_ids = fields.Many2many('redis.action.key', string='Action Key')
 
-    @property
-    def conn(self):
-        rds_host = self.env['redis.action.key'].search([('key', '=', self.action_key)]).host_id
+    def redis_conn(self, action_key):
+        rds_host = self.key_ids.filtered(lambda x: x == action_key)
+        if not rds_host:
+            # FIXME: should we raise error when no redis host found
+            return False
+        rds_host = rds_host
         return redis.Redis(host=rds_host.host, port=rds_host.port,
                            db=rds_host.db, password=rds_host.password, username=rds_host.username)
 
