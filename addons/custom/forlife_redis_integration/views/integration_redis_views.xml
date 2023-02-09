@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="integration_redis_form" model="ir.ui.view">
+        <field name="name">integration.redis</field>
+        <field name="model">integration.redis</field>
+        <field name="arch" type="xml">
+            <form string="Redis Instance">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="host"/>
+                            <field name="username"/>
+                            <field name="password" password="True"/>
+                            <field name="port"/>
+                            <field name="db"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="integration_redis_tree" model="ir.ui.view">
+        <field name="name">Redis Instances</field>
+        <field name="model">integration.redis</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="host"/>
+                <field name="username"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="integration_redis_action" model="ir.actions.act_window">
+        <field name="name">Redis Instances</field>
+        <field name="res_model">integration.redis</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="integration_system_menu"
+              parent="base.menu_custom"
+              sequence="1"/>
+
+    <menuitem id="integration_redis_menu"
+              action="integration_redis_action"
+              parent="integration_system_menu"
+              sequence="1"/>
+</odoo>
