@@ -19,17 +19,15 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
             var self = this;
             let data = {
                 'session_id': self.env.pos.pos_session.id,
-                'date_order': self.env.pos.orders[0].creation_date,
+                'date_order': self.env.pos.selectedOrder.creation_date,
             }
             return rpc.query({
                 model: 'pos.order',
                 method: 'get_program_promotion',
                 args: [data],
                 context: {
-                     from_PointsConsumption :true
+                     from_PointsConsumptionPos :true
                 }
-            }).then(function (test) {
-                    console.log(test)
             });
         }
 
@@ -38,18 +36,51 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
         }
 
         async onClick() {
+            if(!this.env.pos.selectedOrder.partner){
+                console.log('Chưa chọn khách hàng cho đơn này');
+                return;
+            }
+            if (this.env.pos.pos_branch) {
+                console.log(true);
+            } else {
+                console.log('Chưa thiết lập chi nhánh cho POS này');
+                return;
+            }
+            var points_of_customer = null;
+            for (let index = 0; index < this.env.pos.pos_branch.length; index++) {
+                if(this.env.pos.pos_branch[index].name == "Format"){
+                    points_of_customer = this.env.pos.selectedOrder.partner.total_points_available_format
+                }else {
+                    points_of_customer = this.env.pos.selectedOrder.partner.total_points_available_forlife
+                }
+            }
             var order_lines = this.order_lines;
             var promotion = await this.promotion;
-            if(!this.env.pos.orders[0].partner){
-                return
-            }
+            var product_valid = []
+//                các sản phẩm hợp lệ được cấu hình
+            for (let i=0; i< order_lines.length;i++){
+                    for(let j=0;j<promotion.point_consumption_ids.length;j++){
+                        if(order_lines[i].product.id == promotion.point_consumption_ids[j].id){
+                            product_valid.push(order_lines[i]);
+                        }
+                    }
+                }
+
             const {confirmed, payload: data} = await this.showPopup('PointsConsumptionPopup', {
                 startingValue: this.order_lines,
+                orderlines:this.env.pos.selectedOrder.orderlines,
+                points_of_customer: points_of_customer,
+                program_promotion: promotion,
+                product_valid: product_valid,
                 title: this.env._t('Tiêu điểm'),
                 confirmTitle: this.env._t('Xác nhận '),
                 divisionpoint: this.env._t('Chia điểm'),
                 cancelTitle: this.env._t('Xóa')
             });
+
+            if(confirmed){
+                console.log('333')
+            }
         }
 
     }

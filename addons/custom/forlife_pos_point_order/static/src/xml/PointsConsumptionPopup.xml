@@ -1,33 +1,54 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <templates id="template" xml:space="preserve">
     <t t-name="PointsConsumptionPopup" owl="1">
-        <div class="popup assign-employee-popup">
+        <div class="popup product-info-popup">
             <header class="title">
                 <t t-esc="props.title"/>
             </header>
             <main class="body">
-                <table style="width:100%; border:1px solid black;">
-                    <tr style="width:100%; border:1px solid black;">
-                        <th style="border:1px solid black;">Sản phẩm</th>
-                        <th style="border:1px solid black;">Giá</th>
-                        <th style="border:1px solid black;">Điểm sử dụng</th>
-                    </tr>
-                    <t t-foreach="env.pos.selectedOrder.orderlines" t-as="line" t-key="line.id">
-                        <tr style="width:100%; border:1px solid black;">
-                            <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
-                            <td style="border:1px solid black;"><t t-esc="env.pos.format_currency(line.get_price_with_tax())"/></td>
-                            <td style="border:1px solid black;">10</td>
-                        </tr>
+                <t t-if="props.program_promotion.approve_consumption_point == true">
+<!--                <t t-esc="props.program_promotion.approve_consumption_point"/>-->
+                    <!--                <t t-esc="props.program_promotion.point_consumption_ids"/>-->
+                    <t t-if="props.program_promotion.apply_all == true">
+                        <table style="width:100%; border:1px solid black;">
+                            <tr style="width:100%; border:1px solid black;">
+                                <th style="border:1px solid black;">Sản phẩm</th>
+                                <th style="border:1px solid black;">Giá</th>
+                                <th style="border:1px solid black;">Điểm sử dụng</th>
+                            </tr>
+                            <t t-foreach="props.orderlines" t-as="line" t-key="line.id">
+                                <tr style="width:100%; border:1px solid black;">
+                                    <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
+                                    <td style="border:1px solid black;width:130px;text-align: right;"><t t-esc="env.pos.format_currency(line.get_price_with_tax())"/></td>
+                                    <td style="border:1px solid black;width:85px;"><input id="line.id" type="text" class="o_input" t-att-value="line.point"/></td>
+                                </tr>
+                            </t>
+                        </table>
                     </t>
-
-                </table>
+                    <t t-else="">
+                        <table style="width:100%; border:1px solid black;">
+                            <tr style="width:100%; border:1px solid black;">
+                                <th style="border:1px solid black;">Sản phẩm</th>
+                                <th style="border:1px solid black;">Giá</th>
+                                <th style="border:1px solid black;">Điểm sử dụng</th>
+                            </tr>
+                            <t t-foreach="props.product_valid" t-as="line" t-key="line.id">
+                                <tr style="width:100%; border:1px solid black;">
+                                    <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
+                                    <td style="border:1px solid black;width:130px;text-align: right;"><t t-esc="env.pos.format_currency(line.get_price_with_tax())"/></td>
+                                    <td style="border:1px solid black;width:85px;"><input t-att-id="line.id" type="text" class="o_input" t-att-value="line.point" /></td>
+                                </tr>
+                            </t>
+                        </table>
+                    </t>
+                </t>
             </main>
             <footer class="footer">
                 <div style="width:100%">
                     <div class="button cancel" t-on-click="cancel">
                         <t t-esc="props.cancelTitle"/>
                     </div>
-                    <div class="button confirm highlight">
+                    <div class="button confirm highlight" t-on-click="division">
                         <t t-esc="props.divisionpoint"/>
                     </div>
                     <div class="button confirm highlight" t-on-click="confirm">

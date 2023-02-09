@@ -193,13 +193,31 @@ class PosOrder(models.Model):
     def get_program_promotion(self, data):
         # if self._context.get('from_PointsConsumption'):
         #     data = data[0]
-        create_Date = self._format_time_zone(data['date_order'])
+        if self._context.get('from_PointsConsumptionPos'):
+            create_Date = self._format_time_zone(data['date_order'].replace('T', ' ')[:19])
+        else:
+            create_Date = self._format_time_zone(data['date_order'])
         session = self.env['pos.session'].sudo().search([('id', '=', data['session_id'])], limit=1)
         store = session.config_id.store_id
         program_promotion = self.env['points.promotion'].sudo().search(
             [('store_ids', 'in', store.id), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date), ('to_date', '>=', create_Date),
              ('brand_id', '=', store.brand_id.id)], limit=1)
         print(program_promotion)
+        if self._context.get('from_PointsConsumptionPos'):
+            dict_point_consumption_ids = []
+            for r in program_promotion.point_consumption_ids:
+                # dict_point_consumption_ids['id'] = r.product_id.id
+                # dict_point_consumption_ids['name'] = r.product_id.name
+                dict_point_consumption_ids.append({
+                    'id': r.product_id.id,
+                    'name': r.product_id.name,
+                    'price': r.product_id.lst_price
+                })
+            return {
+                'approve_consumption_point': program_promotion.approve_consumption_point,
+                'apply_all': program_promotion.apply_all,
+                'point_consumption_ids':dict_point_consumption_ids
+            }
         return program_promotion
 
     def _format_time_zone(self, time):
