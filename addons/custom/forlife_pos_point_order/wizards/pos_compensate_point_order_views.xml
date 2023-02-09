@@ -11,7 +11,7 @@
                 </p>
                 <group>
                     <field name="order_ids" invisible="1"/>
-                    <field name="reason" widget="text"/>
+                    <field name="reason" widget="text" required="1"/>
                 </group>
                 <footer>
                     <button name="apply" type="object"
