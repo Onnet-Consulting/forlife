@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="net_promoter_score_xlsx" model="ir.actions.report">
-        <field name="name">NPS Report</field>
+        <field name="name">NPS Report XLSX</field>
         <field name="model">net.promoter.score.report</field>
         <field name="binding_model_id" ref="model_net_promoter_score_report"/>
         <field name="report_type">xlsx</field>
