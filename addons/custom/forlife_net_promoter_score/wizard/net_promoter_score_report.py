@@ -43,9 +43,6 @@ class NetPromoterScoreReport(models.TransientModel):
         self.view_report = f'<table class="table table-bordered"><tr style="text-align: center; background: #031d74c7; color: #ffffff;">' \
                            f'<th>{"</th><th>".join(header)}</th></tr>{data}</table>'
 
-    def btn_export_xlsx(self):
-        pass
-
     @api.constrains("start_date", "finish_date")
     def validate_point(self):
         for record in self:
