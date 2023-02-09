@@ -12,5 +12,15 @@
             <field name="code">model.remove_forlife_comment()</field>
         </record>
 
+        <record id="ir_cron_action_push_notification" model="ir.cron">
+            <field name="name">Push Notification To App</field>
+            <field name="interval_number">5</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field ref="model_forlife_comment" name="model_id"/>
+            <field name="state">code</field>
+            <field name="code">model.action_push_notification()</field>
+        </record>
+
     </data>
 </odoo>

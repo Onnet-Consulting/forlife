@@ -3,7 +3,7 @@
 from odoo import api, fields, models, _
 import requests
 import json
-from datetime import timedelta
+from datetime import timedelta, timezone
 import pytz
 
 DATA_INFO = {
@@ -18,7 +18,7 @@ DATA_INFO = {
             'S3': '-371562648',
             'S4': '-366286628',
             'S5': '-658354190',
-        }
+        },
     },
     'FMT': {
         'APP_API_LINK': 'http://app.format.vn/Api/Notification/Notification.ashx?type=pushNotification',
@@ -31,7 +31,7 @@ DATA_INFO = {
 class ForlifeComment(models.Model):
     _name = 'forlife.comment'
     _description = 'Comment'
-    _order = 'status desc, id desc'
+    _order = 'invoice_date desc, id desc'
     _rec_name = 'customer_code'
 
     question_id = fields.Integer('Question ID')
@@ -51,21 +51,26 @@ class ForlifeComment(models.Model):
     type = fields.Integer('Type')
     brand = fields.Char('Brand', required=True)
 
-    def push_noti(self):
-        self.status = 0
+    def action_push_notification(self):
+        res = self.search([('status', '=', -1), ('invoice_date', '<=', fields.Datetime.now() - timedelta(minutes=30))])
+        for line in res:
+            line.with_delay().push_notification_to_app(line.customer_code, line.brand)
 
     def push_notification_to_app(self, phone, brand):
+        self.ensure_one()
+        if self.status != -1:
+            raise ValueError('Status = %s' % self.status)
         url = DATA_INFO.get(brand, {}).get('APP_API_LINK')
         if url:
             url += '&username=%s&notiId=9999' % phone
             result = requests.get(url)
             res = json.loads(result.text)
-            self.sudo().push_noti() if res.get('Result', 0) else self.sudo().unlink()
+            self.sudo().write({'status': 0}) if res.get('Result', 0) else self.sudo().unlink()
         else:
             raise ValueError(_('App API link not found.'))
 
     def remove_forlife_comment(self):
-        res = self.search([('status', '=', 0), ('write_date', '<=', fields.Datetime.now() - timedelta(hours=24))])
+        res = self.search([('status', '=', 0), ('invoice_date', '<=', fields.Datetime.now() - timedelta(hours=24))])
         if res:
             res.sudo().unlink()
 
@@ -79,8 +84,8 @@ class ForlifeComment(models.Model):
         for cmt in self.filtered(lambda f: f.status == 1):
             _data = DATA_INFO.get(cmt.brand, {})
             token = _data.get('TELEGRAM_BOT_TOKEN')
-            message = 'Mã khách: %s\nTên khách: %s\nMã hóa đơn: %s\nNgày giờ: %s\nChi nhánh: %s\nMức độ(%%): %s' % (
-                cmt.customer_code, cmt.customer_name, cmt.invoice_number, pytz.timezone(self.env.user.tz).localize(cmt.comment_date).strftime('%d-%m-%Y %H:%M:%S'), cmt.store_name, cmt.point
+            message = 'Mã khách: %s\nTên khách: %s\nMã hóa đơn: %s\nNgày giờ: %s\nChi nhánh: %s (%s)\nMức độ(%%): %s' % (
+                cmt.customer_code, cmt.customer_name, cmt.invoice_number, cmt.comment_date.astimezone(pytz.timezone(self.env.user.tz)).strftime('%d-%m-%Y %H:%M:%S'), cmt.store_name, cmt.areas, cmt.point
             )
             if cmt.comment:
                 message += '\nBình luận: %s' % cmt.comment

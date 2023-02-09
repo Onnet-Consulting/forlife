@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
-import json
 
 
 class PosOrder(models.Model):
@@ -13,9 +12,7 @@ class PosOrder(models.Model):
         return res
 
     def create_forlife_comment(self):
-        fl_comment = self.env['forlife.comment'].sudo().create(self.prepare_comment_data())
-        if fl_comment:
-            fl_comment.with_delay().push_notification_to_app(self.partner_id.phone, self.config_id.store_id.brand_id.code)
+        self.env['forlife.comment'].sudo().create(self.prepare_comment_data())
 
     def prepare_comment_data(self):
         current_date = fields.Datetime.now()
@@ -29,6 +26,7 @@ class PosOrder(models.Model):
             'customer_name': self.partner_id.name,
             'brand': brand_id.code,
             'store_name': self.config_id.store_id.name,
+            'areas': 'S1', # fixme areas from warehouse self.config_id.store_id.warehouse_id.areas
             'invoice_number': self.pos_reference,
             'invoice_date': self.date_order,
             'status': -1,

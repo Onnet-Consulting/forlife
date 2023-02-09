@@ -7,11 +7,11 @@
             <field name="model">forlife.comment</field>
             <field name="arch" type="xml">
                 <tree string="forlife_comment_tree">
-                    <field name="question_id"/>
+                    <field name="invoice_date"/>
                     <field name="customer_name"/>
                     <field name="customer_code"/>
                     <field name="store_name"/>
-                    <field name="area"/>
+                    <field name="areas"/>
                     <field name="brand"/>
                     <field name="point"/>
                     <field name="status"/>
@@ -31,7 +31,7 @@
                                 <field name="customer_code"/>
                                 <field name="brand"/>
                                 <field name="store_name"/>
-                                <field name="area"/>
+                                <field name="areas"/>
                                 <field name="invoice_number"/>
                                 <field name="invoice_date"/>
                                 <field name="question_id"/>
@@ -60,7 +60,7 @@
                     <field name="question_id"/>
                     <field name="customer_code"/>
                     <field name="store_name"/>
-                    <field name="area"/>
+                    <field name="areas"/>
                     <field name="brand"/>
                     <field name="employee"/>
                 </search>
