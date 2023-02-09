@@ -19,7 +19,7 @@
 
     'data': [
         'security/ir.model.access.csv',
-        'data/integration_redis_views.xml',
+        'views/integration_redis_views.xml',
     ],
     'external_dependencies': {
         'python': ['redis'],

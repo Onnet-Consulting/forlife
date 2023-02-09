@@ -1,3 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-base_group_user_integration_redis,base.group.user_integration_redis,model_integration_redis,1,0,0,0
-base_group_system_integration_redis,base.group.system_integration_redis,model_integration_redis,1,1,1,1
+base_group_user_integration_redis,base.group.user_integration_redis,model_redis_host,base.group_user,1,0,0,0
+base_group_system_integration_redis,base.group.system_integration_redis,model_redis_host,base.group_system,1,1,1,1
