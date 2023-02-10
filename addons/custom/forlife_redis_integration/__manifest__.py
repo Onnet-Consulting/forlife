@@ -11,10 +11,10 @@
     'website': "",
     "license": "LGPL-3",
 
-    'category': 'Generic Modules',
+    'category': 'Tools',
     'version': '16.0.1.0.0',
 
-    'depends': ['base', 'product'],
+    'depends': ['base', 'queue_job'],
     'auto_install': True,
 
     'data': [

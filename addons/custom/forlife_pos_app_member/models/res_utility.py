@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
-from odoo import models
+from odoo import models, _
+from odoo.exceptions import ValidationError
 from phonenumbers import parse as parse_phone_number, format_number, is_valid_number
 from phonenumbers import PhoneNumberFormat
 from phonenumbers.phonenumberutil import NumberParseException
