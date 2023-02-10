@@ -67,6 +67,7 @@ msgstr ""
 #. module: forlife_pos_point_order
 #: model:ir.actions.act_window,name:forlife_pos_point_order.action_view_pos_compensate_point_order
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.onnet_inherit_view_pos
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_account_move_filter_inherit
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_pos_compensate_point_order
 msgid "Compensate Point"
 msgstr "Tích điểm bù"
@@ -357,7 +358,9 @@ msgid "Reset Partner Point"
 msgstr ""
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__account_move__point_order_type__reset_order
 #: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__partner_history_point__point_order_type__reset_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_account_move_filter_inherit
 msgid "Reset Point"
 msgstr "Reset điểm"
 

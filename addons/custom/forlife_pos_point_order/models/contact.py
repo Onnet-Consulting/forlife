@@ -138,7 +138,7 @@ class Contact(models.Model):
                     'date_order': now,
                     'points_fl_order': -partner.total_points_available_forlife,
                     'points_store': -partner.total_points_available_forlife,
-                    'reason': _("Automatic running system")
+                    'reason': _("Hệ thống chạy tự động")
                 })
 
             # Update reset flag
@@ -179,7 +179,7 @@ class Contact(models.Model):
                     'date_order': now,
                     'points_fl_order': -partner.total_points_available_format,
                     'points_store': -partner.total_points_available_format,
-                    'reason': _("Automatic running system")
+                    'reason': _("Hệ thống chạy tự động")
                 })
 
             # Update reset flag
