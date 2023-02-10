@@ -57,13 +57,13 @@
     position: fixed;
     z-index: 26;
     top: 0;
-    left: calc(50% - 170px);
+    left: calc(50% - 80px);
 }
 
 .pos .search-bar-container.sb-product{
     width:100%;
-    min-width: 340px;
-    max-width: 340px;
+    min-width: 250px;
+    max-width: 250px;
 }
 .pos .rightpane .products-widget .products-widget-control .categories-header {
     display: none !important;
