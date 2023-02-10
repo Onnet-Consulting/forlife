@@ -18,9 +18,10 @@
                     <field name="point_addition"/>
                     <field name="point_addition_event"/>
                 </xpath>
-                <xpath expr="//button[@name='refund']" position="after">
-                    <button name="action_point_addition" type="object" string="Addition Point" class="oe_highlight"/>
-                </xpath>
+<!--                Hide button-->
+<!--                <xpath expr="//button[@name='refund']" position="after">-->
+<!--                    <button name="action_point_addition" type="object" string="Addition Point" class="oe_highlight"/>-->
+<!--                </xpath>-->
                 <xpath expr="//button[@name='refund']" position="after">
                     <button name="%(action_view_pos_compensate_point_order)d"
                             type="action" string="Compensate Point" class="oe_highlight"
