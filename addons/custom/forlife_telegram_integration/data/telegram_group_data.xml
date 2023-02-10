@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
+
+        <record id="telegram_group_nps_tokyolife_test" model="telegram.group">
+            <field name="name">TEST-TELE-TKL</field>
+            <field name="value">-825683135</field>
+        </record>
+
+        <record id="telegram_group_nps_format_test" model="telegram.group">
+            <field name="name">TEST-TELE-FM</field>
+            <field name="value">-888492312</field>
+        </record>
 
         <record id="telegram_group_nps_tokyolife" model="telegram.group">
             <field name="name">NPS TokyoLife</field>
