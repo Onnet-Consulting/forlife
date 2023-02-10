@@ -53,6 +53,22 @@
 
 .pos .rightpane tr:hover {background-color: rgba(1, 126, 132, 0.2);}
 
+.pos .rightpane .products-widget .products-widget-control {
+    position: fixed;
+    z-index: 26;
+    top: 0;
+    left: calc(50% - 170px);
+}
+
+.pos .search-bar-container.sb-product{
+    width:100%;
+    min-width: 340px;
+    max-width: 340px;
+}
+.pos .rightpane .products-widget .products-widget-control .categories-header {
+    display: none !important;
+}
+
 @media (min-width: 768px){
     .pos .product-screen .leftpane,
     .pos .product-screen .rightpane{
