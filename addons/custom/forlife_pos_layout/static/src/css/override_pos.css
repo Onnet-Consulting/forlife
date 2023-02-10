@@ -71,9 +71,6 @@
     min-width: 250px;
     max-width: 250px;
 }
-.pos .rightpane .products-widget .products-widget-control .categories-header {
-    display: none !important;
-}
 
 @media (min-width: 768px){
     .pos .product-screen .leftpane,
