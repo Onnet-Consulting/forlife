@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="telegram_group_nps_tokyolife" model="telegram.group">
+            <field name="name">NPS TokyoLife</field>
+            <field name="value">-1001475374775</field>
+        </record>
+
+        <record id="telegram_group_nps_format" model="telegram.group">
+            <field name="name">NPS Format</field>
+            <field name="value">-1001214315278</field>
+        </record>
+
+        <record id="telegram_group_nps_cskh" model="telegram.group">
+            <field name="name">NPS CSKH</field>
+            <field name="value">-404120229</field>
+        </record>
+
+        <record id="telegram_group_tkl_nps_s1" model="telegram.group">
+            <field name="name">TKL-NPS-S1</field>
+            <field name="value">-377239261</field>
+        </record>
+
+        <record id="telegram_group_tkl_nps_s2" model="telegram.group">
+            <field name="name">TKL-NPS-S2</field>
+            <field name="value">-365465110</field>
+        </record>
+
+        <record id="telegram_group_tkl_nps_s3" model="telegram.group">
+            <field name="name">TKL-NPS-S3</field>
+            <field name="value">-371562648</field>
+        </record>
+
+        <record id="telegram_group_tkl_nps_s4" model="telegram.group">
+            <field name="name">TKL-NPS-S4</field>
+            <field name="value">-366286628</field>
+        </record>
+
+        <record id="telegram_group_tkl_nps_s5" model="telegram.group">
+            <field name="name">TKL-NPS-S5</field>
+            <field name="value">-658354190</field>
+        </record>
+
+    </data>
+</odoo>

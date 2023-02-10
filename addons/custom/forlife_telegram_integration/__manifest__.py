@@ -18,5 +18,13 @@
     'auto_install': True,
 
     'data': [
+        'security/ir.model.access.csv',
+        'data/telegram_bot_data.xml',
+        'data/telegram_group_data.xml',
+        'data/integration_telegram_data.xml',
+
+        'views/integration_telegram_views.xml',
+        'views/telegram_bot_views.xml',
+        'views/telegram_group_views.xml',
     ],
 }
