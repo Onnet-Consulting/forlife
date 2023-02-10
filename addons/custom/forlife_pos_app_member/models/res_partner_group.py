@@ -8,7 +8,7 @@ class ResPartnerGroup(models.Model):
     _description = 'Partner Group'
 
     name = fields.Char(string='Name', required=True)
-    code = fields.Char(string='Code', required=True)
+    code = fields.Char(string='Code')
     partner_type = fields.Selection([('customer', 'Customer'), ('vendor', 'Vendor'), ('internal', 'Internal')],
                                     string='Type', default='customer', required=True)
     auto_generate = fields.Boolean(string='Auto Generate Code', default=True,
