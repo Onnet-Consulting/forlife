@@ -79,3 +79,35 @@ class ForlifeComment(models.Model):
             if cmt.comment:
                 self.with_delay().action_send_message('NPS-%s-CSKH' % cmt.brand, message)
             self.with_delay().action_send_message('%s-NPS-%s' % (cmt.brand, cmt.areas), message)
+
+    def btn_send_comment_from_app(self):
+        ctx = dict(self._context)
+        ctx.update({
+            'default_comment_id': self.id,
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Comment'),
+            'res_model': 'form.update.comment',
+            'target': 'new',
+            'view_mode': 'form',
+            'views': [[self.env.ref('forlife_net_promoter_score.form_update_comment_view_form').id, 'form']],
+            'context': ctx,
+        }
+
+
+class FormUpdateComment(models.TransientModel):
+    _name = 'form.update.comment'
+    _description = 'Form Update Comment'
+
+    comment_id = fields.Many2one('forlife.comment', string='Comment')
+    point = fields.Integer('Point', default=100)
+    comment = fields.Text('Comment')
+
+    def btn_ok(self):
+        self.comment_id.write({
+            'point': self.point,
+            'comment': self.comment,
+            'comment_date': fields.Datetime.now(),
+            'status': 1,
+        })
