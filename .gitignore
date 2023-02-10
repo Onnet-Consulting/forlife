@@ -45,3 +45,4 @@ MANIFEST
 /.local/
 odoo_storage/*
 pg_data/*
+.DS_Store
