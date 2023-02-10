@@ -1,5 +1,4 @@
 from . import redis_host
 from . import redis_action
 from . import redis_action_key
-from . import api
 from . import stock_picking

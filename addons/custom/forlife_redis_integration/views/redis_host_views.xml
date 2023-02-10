@@ -10,7 +10,7 @@
                         <group>
                             <field name="host"/>
                             <field name="username"/>
-                            <field name="password"/>
+                            <field name="password" password="True"/>
                             <field name="port"/>
                             <field name="db"/>
                         </group>
@@ -28,7 +28,7 @@
         <field name="model">redis.host</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="host"/>
+                <field name="display_name" string="Host"/>
                 <field name="username"/>
             </tree>
         </field>
