@@ -60,7 +60,7 @@
     left: calc(50% - 80px);
 }
 
-@media (min-width: 768px){
+@media (min-width: 1270px){
     .pos .rightpane .products-widget .products-widget-control {
         left: calc(50% - 120px);
     }
