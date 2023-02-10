@@ -2,8 +2,10 @@
 
 from odoo import api, fields, models, _
 import pytz
+import copy
 
-REPORT_HEADER = ['STT', 'Chi nhánh', 'Mã KH', 'Tên KH', 'Mã HĐ', 'Ngày mua hàng', 'Ngày đánh giá', 'Đánh giá', 'Bình luận', 'Trạng thái']
+REPORT_HEADER = ['STT', 'Chi nhánh', 'Mã chi nhánh', 'Khu vực', 'Mã KH', 'Tên KH', 'Mã HĐ', 'Ngày mua hàng', 'Ngày đánh giá', 'Đánh giá', 'Bình luận', 'Trạng thái']
+POP_INDEX_IN_FORM_REPORT = (3, 2)  # xóa cột khu vực và mã chi nhánh trên phom báo cáo
 
 
 class NetPromoterScoreReport(models.TransientModel):
@@ -15,16 +17,20 @@ class NetPromoterScoreReport(models.TransientModel):
         return result[0] + result[1]
 
     name = fields.Char('Name', default='.')
-    from_date = fields.Datetime('Date')
-    to_date = fields.Datetime('To Date')
+    from_date = fields.Datetime('Date', required=True)
+    to_date = fields.Datetime('To Date', required=True)
     customer_code = fields.Text('Customer Code')
     invoice_number = fields.Text('Invoice Number')
     min_point = fields.Integer('Level', default=0)
     max_point = fields.Integer('Max Point', default=100)
     view_report = fields.Html('View Report', default=_default_header)
+    brand_ids = fields.Many2many('res.brand', string='Brands', required=True)
 
     def get_view_header(self):
-        return [f'<table class="table table-bordered"><tr style="text-align: center; background: #031d74c7; color: #ffffff;"><th>{"</th><th>".join(REPORT_HEADER)}</th></tr>', '</table>']
+        header = copy.copy(REPORT_HEADER)
+        for index in POP_INDEX_IN_FORM_REPORT:
+            header.pop(index)
+        return [f'<table class="table table-bordered"><tr style="text-align: center; background: #031d74c7; color: #ffffff;"><th>{"</th><th>".join(header)}</th></tr>', '</table>']
 
     def btn_search(self):
         result = self.filter_data()
@@ -45,13 +51,19 @@ class NetPromoterScoreReport(models.TransientModel):
             domain += [('customer_code', 'in', [i.strip() for i in self.customer_code.split(',')])]
         if self.invoice_number:
             domain += [('invoice_number', 'in', [i.strip() for i in self.invoice_number.split(',')])]
+        if self.brand_ids:
+            domain += [('brand', 'in', self.brand_ids.mapped('code'))]
         result = self.env['forlife.comment'].search(domain)
         data = [REPORT_HEADER]
         row = 1
         for line in result:
-            data.append([str(row), line.store_name, line.customer_code, line.customer_name, line.invoice_number,
-                         line.invoice_date.astimezone(pytz.timezone(self.env.user.tz)).strftime('%d-%m-%Y'),
-                         line.comment_date.astimezone(pytz.timezone(self.env.user.tz)).strftime('%d-%m-%Y') if line.comment_date else '',
-                         str(line.point), line.comment or '', str(line.status)])
+            val = [str(row), line.store_name, line.store_code, line.areas, line.customer_code, line.customer_name, line.invoice_number,
+                   line.invoice_date.astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y'),
+                   line.comment_date.astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y') if line.comment_date else '',
+                   str(line.point), line.comment or '', str(line.status)]
+            if self._context.get('pop_colum', False):
+                for index in POP_INDEX_IN_FORM_REPORT:
+                    val.pop(index)
+            data.append(val)
             row += 1
         return data

@@ -23,6 +23,10 @@ class NPSReportXlsx(models.AbstractModel):
         })
         _format_center = workbook.add_format({
             'align': 'center',
+            'text_wrap': True,
+        })
+        _format_normal = workbook.add_format({
+            'text_wrap': True,
         })
         sheet.set_row(0, 25)
         sheet.set_column(1, len(result[0]) - 1, 20)
@@ -33,8 +37,8 @@ class NPSReportXlsx(models.AbstractModel):
                     sheet.write(row, i, val, _format_header)
             else:
                 for i, val in enumerate(value):
-                    if i in (0, 5, 6, 7, 9):
+                    if i in (0, 7, 8, 9, 11):
                         sheet.write(row, i, val, _format_center)
                     else:
-                        sheet.write(row, i, val)
+                        sheet.write(row, i, val, _format_normal)
             row += 1

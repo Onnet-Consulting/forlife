@@ -137,7 +137,7 @@ msgstr ""
 #. module: forlife_telegram_integration
 #: model:ir.model.fields,field_description:forlife_telegram_integration.field_integration_telegram__bot_token_id
 msgid "Telegram Bot Token"
-msgstr ""
+msgstr "Telegram Bot"
 
 #. module: forlife_telegram_integration
 #: model:ir.actions.act_window,name:forlife_telegram_integration.telegram_group_action
@@ -149,7 +149,7 @@ msgstr "Nhóm Telegram"
 #. module: forlife_telegram_integration
 #: model:ir.model.fields,field_description:forlife_telegram_integration.field_integration_telegram__group_chat_id
 msgid "Telegram Group ID"
-msgstr "Id nhóm Telegram"
+msgstr "Nhóm Telegram"
 
 #. module: forlife_telegram_integration
 #: model:ir.model.fields,field_description:forlife_telegram_integration.field_telegram_bot__value

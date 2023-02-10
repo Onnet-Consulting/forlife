@@ -26,6 +26,7 @@ class PosOrder(models.Model):
             'customer_name': self.partner_id.name,
             'brand': brand_id.code,
             'store_name': self.config_id.store_id.name,
+            'store_code': self.config_id.store_id.code,
             'areas': 'S1', # fixme areas from warehouse self.config_id.store_id.warehouse_id.areas
             'invoice_number': self.pos_reference,
             'invoice_date': self.date_order,
