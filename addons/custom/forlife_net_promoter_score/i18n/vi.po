@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-10 09:16+0000\n"
-"PO-Revision-Date: 2023-02-10 09:16+0000\n"
+"POT-Creation-Date: 2023-02-10 11:16+0000\n"
+"PO-Revision-Date: 2023-02-10 11:16+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -56,10 +56,19 @@ msgid "Can't find App API link with key '%s'"
 msgstr "Không tìm thấy đường dẫn đẩy thông báo lên App bằng từ khóa '%s'"
 
 #. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.form_update_comment_view_form
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: forlife_net_promoter_score
+#. odoo-python
+#: code:addons/forlife_net_promoter_score/models/forlife_comment.py:0
 #: model:ir.actions.act_window,name:forlife_net_promoter_score.forlife_comment_action
 #: model:ir.model,name:forlife_net_promoter_score.model_forlife_comment
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__comment
 #: model:ir.ui.menu,name:forlife_net_promoter_score.forlife_comment_menu
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_tree
+#, python-format
 msgid "Comment"
 msgstr "Đánh giá NPS"
 
@@ -67,6 +76,16 @@ msgstr "Đánh giá NPS"
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__comment_date
 msgid "Comment Date"
 msgstr "Ngày đánh giá"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__comment
+msgid "Comment NPS"
+msgstr "Ghi chú"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__comment_id
+msgid "Comments"
+msgstr ""
 
 #. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__company_id
@@ -77,6 +96,7 @@ msgstr "Công ty"
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__create_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__create_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__create_uid
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__create_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__create_uid
 msgid "Created by"
 msgstr "Được tạo bởi"
@@ -85,6 +105,7 @@ msgstr "Được tạo bởi"
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__create_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__create_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__create_date
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__create_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__create_date
 msgid "Created on"
 msgstr "Được tạo vào"
@@ -114,6 +135,7 @@ msgstr "Diễn giải"
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__display_name
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__display_name
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__display_name
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__display_name
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
@@ -134,6 +156,11 @@ msgid "Finish date may not be before the starting date."
 msgstr "Ngày kết thúc không được trước ngày bắt đầu."
 
 #. module: forlife_net_promoter_score
+#: model:ir.model,name:forlife_net_promoter_score.model_form_update_comment
+msgid "Form Update Comment"
+msgstr "phom đánh giá NPS"
+
+#. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__header
 msgid "Header"
 msgstr "Tiêu đề"
@@ -142,6 +169,7 @@ msgstr "Tiêu đề"
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__id
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__id
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__id
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__id
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__id
 msgid "ID"
 msgstr ""
@@ -181,6 +209,7 @@ msgstr "Từ khóa phải là duy nhất"
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link____last_update
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment____last_update
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question____last_update
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment____last_update
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report____last_update
 msgid "Last Modified on"
 msgstr ""
@@ -189,6 +218,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__write_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__write_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__write_uid
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__write_uid
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__write_uid
 msgid "Last Updated by"
 msgstr ""
@@ -197,6 +227,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__write_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__write_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__write_date
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__write_date
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__write_date
 msgid "Last Updated on"
 msgstr ""
@@ -217,9 +248,12 @@ msgid "NPS Manager"
 msgstr "Quản lý đánh giá NPS"
 
 #. module: forlife_net_promoter_score
+#. odoo-python
+#: code:addons/forlife_net_promoter_score/wizard/net_promoter_score_report.py:0
 #: model:ir.actions.act_window,name:forlife_net_promoter_score.net_promoter_score_report_action
 #: model:ir.model,name:forlife_net_promoter_score.model_report_forlife_net_promoter_score_net_promoter_score_xlsx
 #: model:ir.ui.menu,name:forlife_net_promoter_score.net_promoter_score_report_menu
+#, python-format
 msgid "NPS Report"
 msgstr "Báo cáo NPS"
 
@@ -247,7 +281,13 @@ msgid "Net Promoter Score Report"
 msgstr "Báo cáo đánh giá NPS"
 
 #. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.form_update_comment_view_form
+msgid "OK"
+msgstr ""
+
+#. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__point
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__point
 msgid "Point"
 msgstr "Đánh giá"
 
@@ -405,6 +445,11 @@ msgstr "phom câu hỏi"
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_question_view_tree
 msgid "forlife_question_tree"
 msgstr "danh sách câu hỏi"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.form_update_comment_view_form
+msgid "form_update_comment_form"
+msgstr ""
 
 #. module: forlife_net_promoter_score
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form

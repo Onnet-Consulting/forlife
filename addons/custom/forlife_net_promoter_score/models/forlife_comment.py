@@ -100,9 +100,9 @@ class FormUpdateComment(models.TransientModel):
     _name = 'form.update.comment'
     _description = 'Form Update Comment'
 
-    comment_id = fields.Many2one('forlife.comment', string='Comment')
+    comment_id = fields.Many2one('forlife.comment', string='Comments')
     point = fields.Integer('Point', default=100)
-    comment = fields.Text('Comment')
+    comment = fields.Text('Comment NPS')
 
     def btn_ok(self):
         self.comment_id.write({

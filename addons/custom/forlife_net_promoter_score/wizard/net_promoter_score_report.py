@@ -16,7 +16,7 @@ class NetPromoterScoreReport(models.TransientModel):
         result = self.get_view_header()
         return result[0] + result[1]
 
-    name = fields.Char('Name', default='.')
+    name = fields.Char('Name', default='Báo cáo NPS')
     from_date = fields.Datetime('Date', required=True)
     to_date = fields.Datetime('To Date', required=True)
     customer_code = fields.Text('Customer Code')
