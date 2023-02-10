@@ -60,6 +60,12 @@
     left: calc(50% - 80px);
 }
 
+@media (min-width: 768px){
+    .pos .rightpane .products-widget .products-widget-control {
+        left: calc(50% - 120px);
+    }
+}
+
 .pos .search-bar-container.sb-product{
     width:100%;
     min-width: 250px;
