@@ -36,7 +36,7 @@ class ForlifeComment(models.Model):
     brand = fields.Char('Brand', required=True)
 
     def action_push_notification(self):
-        res = self.search([('status', '=', -1), ('invoice_date', '<=', fields.Datetime.now() - timedelta(minutes=0))])
+        res = self.search([('status', '=', -1), ('invoice_date', '<=', fields.Datetime.now() - timedelta(minutes=30))])
         for line in res:
             line.with_delay().push_notification_to_app(line.customer_code, line.brand)
 
