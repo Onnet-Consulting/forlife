@@ -4,14 +4,4 @@
         <field name="key">send_order_tkl</field>
         <field name="description">Send POS order of TokyoLife to Redis</field>
     </record>
-
-    <record id="redis_action_key_show1" model="redis.action.key">
-        <field name="key">show1</field>
-        <field name="description">Send POS order of TokyoLife to Redis</field>
-    </record>
-
-    <record id="redis_action_key_show2" model="redis.action.key">
-        <field name="key">show2</field>
-        <field name="description">Send POS order of TokyoLife to Redis</field>
-    </record>
 </odoo>

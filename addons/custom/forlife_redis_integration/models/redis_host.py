@@ -1,8 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from odoo import api, fields, models
-
-import redis
+from odoo import fields, models
 
 
 class RedisHost(models.Model):
@@ -14,54 +12,4 @@ class RedisHost(models.Model):
     password = fields.Char(string='Password', default=False)
     port = fields.Integer(string='Port', default=6379, required=True)
     db = fields.Char(string='Database', default=0, required=True)
-    key_ids = fields.One2many('redis.action.key', 'host_id')
-
-    @property
-    def _conn(self):
-        return redis.Redis(host=self.host, port=self.port, db=self.db, password=self.password, username=self.username)
-
-    def get_connection(self):
-        self.ensure_one()
-        conn = redis.Redis(host=self.host, port=self.port, db=self.db, password=self.password, username=self.username)
-        return conn
-
-    def set_value(self, key, value, **kwargs):
-        conn = self.get_connection()
-        conn.set(key, value)
-
-    def get_value(self, key, **kwargs):
-        conn = self.get_connection()
-        return conn.get(key)
-
-    # def execute_command(self, *args, **kwargs):
-    #     command_name = args[0]
-
-
-class RedisActionKey(models.Model):
-    _name = 'redis.action.key'
-    _description = 'Redis Action Key'
-    _rec_name = 'key'
-
-    # FIXME: add constraint to key to be unique
-    key = fields.Char(string='Key', required=True,
-                      help='A key identify a specific Odoo action need to send data to Redis', )
-    description = fields.Text(string='Description')
-    host_id = fields.Many2one('redis.host', string='Host', ondelete="restrict")
-
-
-class RedisAction(models.AbstractModel):
-    _name = 'redis.action'
-    _description = 'If a model needs to send data to Redis, it need to have a redis.action instance'
-
-    key_ids = fields.Many2many('redis.action.key', string='Action Key')
-
-    def redis_conn(self, action_key):
-        action_key_instance = self.key_ids.filtered(lambda x: x.key == action_key)
-        if not action_key_instance:
-            # FIXME: should we raise error when no redis host found
-            return False
-        rds_host = action_key_instance.host_id
-        return redis.Redis(host=rds_host.host, port=rds_host.port,
-                           db=rds_host.db, password=rds_host.password, username=rds_host.username)
-
-
+    key_ids = fields.One2many('redis.action.key', 'host_id', string='Action Keys')
