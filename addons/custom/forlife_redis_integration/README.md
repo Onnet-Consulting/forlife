@@ -13,8 +13,8 @@
 
 + On Redis Host form
   ![](example/img/attach_host_key.png)
-  =========
-+ OR<br/>
-  =========
+  ****************
++ OR <br/>
+  ****************
 + On Redis Action Key form
   ![](example/img/attach_key_host.png)

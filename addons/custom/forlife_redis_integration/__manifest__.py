@@ -20,6 +20,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/redis_action_key_data.xml',
+        'data/queue_job_data.xml',
         'views/redis_host_views.xml',
         'views/redis_action_key_views.xml',
     ],
