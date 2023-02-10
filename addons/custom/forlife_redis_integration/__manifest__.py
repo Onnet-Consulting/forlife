@@ -14,12 +14,14 @@
     'category': 'Generic Modules',
     'version': '16.0.1.0.0',
 
-    'depends': ['base'],
+    'depends': ['base', 'product'],
     'auto_install': True,
 
     'data': [
         'security/ir.model.access.csv',
-        'views/integration_redis_views.xml',
+        'data/redis_action_key_data.xml',
+        'views/redis_host_views.xml',
+        'views/redis_action_key_views.xml',
     ],
     'external_dependencies': {
         'python': ['redis'],

@@ -1,17 +1,17 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models
-import redis
 
-import functools
+import redis
 
 
 class RedisHost(models.Model):
     _name = 'redis.host'
+    _description = 'Redis Host'
 
     host = fields.Char(string='Host', default='localhost', required=True)
-    username = fields.Char(string='Username', default='default', required=True)
-    password = fields.Char(string='Password', default=False, required=True)
+    username = fields.Char(string='Username', default='default')
+    password = fields.Char(string='Password', default=False)
     port = fields.Integer(string='Port', default=6379, required=True)
     db = fields.Char(string='Database', default=0, required=True)
     key_ids = fields.One2many('redis.action.key', 'host_id')
@@ -39,12 +39,14 @@ class RedisHost(models.Model):
 
 class RedisActionKey(models.Model):
     _name = 'redis.action.key'
+    _description = 'Redis Action Key'
     _rec_name = 'key'
 
     # FIXME: add constraint to key to be unique
-    key = fields.Char(help='A key identify a specific Odoo action need to send data to Redis', )
-    description = fields.Text()
-    host_id = fields.Many2one('redis.host')
+    key = fields.Char(string='Key', required=True,
+                      help='A key identify a specific Odoo action need to send data to Redis', )
+    description = fields.Text(string='Description')
+    host_id = fields.Many2one('redis.host', string='Host', ondelete="restrict")
 
 
 class RedisAction(models.AbstractModel):
@@ -54,27 +56,12 @@ class RedisAction(models.AbstractModel):
     key_ids = fields.Many2many('redis.action.key', string='Action Key')
 
     def redis_conn(self, action_key):
-        rds_host = self.key_ids.filtered(lambda x: x == action_key)
-        if not rds_host:
+        action_key_instance = self.key_ids.filtered(lambda x: x.key == action_key)
+        if not action_key_instance:
             # FIXME: should we raise error when no redis host found
             return False
-        rds_host = rds_host
+        rds_host = action_key_instance.host_id
         return redis.Redis(host=rds_host.host, port=rds_host.port,
                            db=rds_host.db, password=rds_host.password, username=rds_host.username)
 
-    def set_redis_value(self, key, value, **kwargs):
-        conn = self.conn
-        conn.set(key, value)
 
-
-def declare_redis_action_key(action_keys):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            self = args[0]
-            self.key_ids = self.env['redis.action.key'].search([('key', 'in', action_keys)])
-            return func(*args, **kwargs)
-
-        return wrapper
-
-    return decorator

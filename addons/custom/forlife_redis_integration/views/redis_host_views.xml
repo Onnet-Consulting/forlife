@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="integration_redis_form" model="ir.ui.view">
+    <record id="redis_host_form" model="ir.ui.view">
         <field name="name">redis.host</field>
         <field name="model">redis.host</field>
         <field name="arch" type="xml">
@@ -10,9 +10,12 @@
                         <group>
                             <field name="host"/>
                             <field name="username"/>
-                            <field name="password" password="True"/>
+                            <field name="password"/>
                             <field name="port"/>
                             <field name="db"/>
+                        </group>
+                        <group>
+                            <field name="key_ids" widget="many2many_tags"/>
                         </group>
                     </group>
                 </sheet>
@@ -20,7 +23,7 @@
         </field>
     </record>
 
-    <record id="integration_redis_tree" model="ir.ui.view">
+    <record id="redis_host_tree" model="ir.ui.view">
         <field name="name">Redis Instances</field>
         <field name="model">redis.host</field>
         <field name="arch" type="xml">
@@ -31,18 +34,20 @@
         </field>
     </record>
 
-    <record id="integration_redis_action" model="ir.actions.act_window">
+    <record id="redis_host_action" model="ir.actions.act_window">
         <field name="name">Redis Hosts</field>
         <field name="res_model">redis.host</field>
         <field name="view_mode">tree,form</field>
     </record>
 
-    <menuitem id="integration_system_menu"
+    <menuitem id="integration_redis_menu"
               parent="base.menu_custom"
+              name="Redis Integration"
               sequence="1"/>
 
-    <menuitem id="integration_redis_menu"
-              action="integration_redis_action"
-              parent="integration_system_menu"
+    <menuitem id="redis_host_menu"
+              action="redis_host_action"
+              parent="integration_redis_menu"
+              name="Redis Hosts"
               sequence="1"/>
 </odoo>
