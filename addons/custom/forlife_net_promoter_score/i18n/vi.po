@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-10 08:49+0000\n"
-"PO-Revision-Date: 2023-02-10 08:49+0000\n"
+"POT-Creation-Date: 2023-02-10 09:16+0000\n"
+"PO-Revision-Date: 2023-02-10 09:16+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -93,7 +93,7 @@ msgstr "Được tạo vào"
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__customer_code
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__customer_code
 msgid "Customer Code"
-msgstr "Mã khách hàng"
+msgstr "Mã KH"
 
 #. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__customer_name
@@ -377,6 +377,11 @@ msgid "View Report"
 msgstr ""
 
 #. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "customer1,customer2...."
+msgstr "maKH1,maKH2..."
+
+#. module: forlife_net_promoter_score
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_app_api_link_view_tree
 msgid "forlife_app_api_link_tree"
 msgstr ""
@@ -410,6 +415,11 @@ msgstr "từ"
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
 msgid "from (%)"
 msgstr "từ (%)"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "invoice1,invoice2...."
+msgstr "hoadon1,hoadon2..."
 
 #. module: forlife_net_promoter_score
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form

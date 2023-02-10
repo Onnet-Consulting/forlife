@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
 
         <record id="forlife_app_api_link_tokyolife" model="forlife.app.api.link">
             <field name="name">TokyoLife</field>

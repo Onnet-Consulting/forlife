@@ -20,12 +20,12 @@
                         </div>
                         <div class="col-2">
                             <group>
-                                <field name="customer_code"/>
+                                <field name="customer_code" placeholder="customer1,customer2...."/>
                             </group>
                         </div>
                         <div class="col-2">
                             <group>
-                                <field name="invoice_number"/>
+                                <field name="invoice_number" placeholder="invoice1,invoice2...."/>
                             </group>
                         </div>
                         <div class="col-3">
