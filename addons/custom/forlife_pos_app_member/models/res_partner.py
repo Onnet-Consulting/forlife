@@ -22,12 +22,13 @@ class ResPartner(models.Model):
     group_id = fields.Many2one(
         'res.partner.group',
         string='Group', ondelete='restrict',
-        default=lambda self: self.env.ref('forlife_pos_app_member.partner_group_3', raise_if_not_found=False),
+        default=lambda self: self.env.ref('forlife_pos_app_member.partner_group_system', raise_if_not_found=False),
         domain=lambda self:
         [('id', 'not in', [
             self.env.ref('forlife_pos_app_member.partner_group_3').id,
             self.env.ref('forlife_pos_app_member.partner_group_4').id,
             self.env.ref('forlife_pos_app_member.partner_group_5').id,
+            self.env.ref('forlife_pos_app_member.partner_group_system').id,
         ])]
     )
     job_ids = fields.Many2many('res.partner.job', string='Jobs')
@@ -129,7 +130,7 @@ class ResPartner(models.Model):
                 if partner_group.sequence_id:
                     value['ref'] = partner_group.sequence_id.next_by_id()
                 else:
-                    value['ref'] = partner_group.code + (value.get('ref') or '')
+                    value['ref'] = (partner_group.code or '') + (value.get('ref') or '')
                 value['group_id'] = group_id
 
         return super().create(vals_list)
