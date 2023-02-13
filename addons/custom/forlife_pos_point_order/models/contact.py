@@ -121,6 +121,7 @@ class Contact(models.Model):
                     'credit': sum(reset_forlife_partners.mapped('total_points_available_forlife')) * 1000
                 })]
                 move_vals = {
+                    'ref': 'Forlife',
                     'date': now.date(),
                     'journal_id': point_promotion_forlife_id.account_journal_id.id,
                     'line_ids': move_line_vals,
@@ -162,6 +163,7 @@ class Contact(models.Model):
                     'credit': sum(reset_format_partners.mapped('total_points_available_format')) * 1000
                 })]
                 move_vals = {
+                    'ref': 'Format',
                     'date': now.date(),
                     'journal_id': point_promotion_format_id.account_journal_id.id,
                     'line_ids': move_line_vals,
