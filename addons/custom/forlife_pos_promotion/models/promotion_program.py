@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import itertools
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -121,14 +122,24 @@ class PromotionProgram(models.Model):
     disc_fixed_price = fields.Float('Fixed Price')
     disc_max_amount = fields.Float('Max Discount Amount')
 
-    @api.depends('company_id')
-    def _compute_currency_id(self):
+    @api.constrains('combo_line_ids')
+    def _check_duplicate_product_in_combo(self):
         for program in self:
-            program.currency_id = program.company_id.currency_id or program.currency_id
+            if program.promotion_type == 'combo' and program.combo_line_ids:
+                list_of_set = [set(line.mapped('valid_product_ids.id')) for line in program.combo_line_ids]
+                combine_couple_of_set = itertools.combinations(list_of_set, 2)
+                for couple in combine_couple_of_set:
+                    if couple[0] & couple[1]:
+                        raise UserError(_('Products duplication occurs in the combo formula!'))
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
+
+    @api.depends('company_id')
+    def _compute_currency_id(self):
+        for program in self:
+            program.currency_id = program.company_id.currency_id or program.currency_id
 
     @api.onchange('from_date', 'to_date')
     def onchange_program_date(self):
@@ -208,7 +219,5 @@ class PromotionProgram(models.Model):
             'program_type': self.promotion_type,
             'program_item_name': _('Promotion Code'),
             'default_program_id': self.id,
-            # For the wizard
-            # 'default_mode': self.program_type == 'ewallet' and 'selected' or 'anonymous',
         }
         return action

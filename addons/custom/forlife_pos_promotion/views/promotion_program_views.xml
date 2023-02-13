@@ -160,6 +160,7 @@
             <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
+                <field name="state"/>
                 <field name="promotion_type"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </tree>

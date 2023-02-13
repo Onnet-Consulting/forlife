@@ -45,7 +45,6 @@ class PosSession(models.Model):
         }
 
     def _loader_params_promotion_program(self):
-        print(self.config_id._get_promotion_program_ids().ids)
         return {
             'search_params': {
                 'domain': [('id', 'in', self.config_id._get_promotion_program_ids().ids)],
@@ -82,7 +81,7 @@ class PosSession(models.Model):
     def _loader_params_promotion_combo_line(self,):
         return {
             'search_params': {
-                'domain': [('id', 'in', self.config_id._get_promotion_program_ids().ids)],
+                'domain': [('program_id', 'in', self.config_id._get_promotion_program_ids().ids)],
                 'fields': ['program_id', 'valid_product_ids', 'quantity']
             }
         }
@@ -90,7 +89,7 @@ class PosSession(models.Model):
     def _loader_params_promotion_reward_line(self,):
         return {
             'search_params': {
-                'domain': [('id', 'in', self.config_id._get_promotion_program_ids().ids)],
+                'domain': [('program_id', 'in', self.config_id._get_promotion_program_ids().ids)],
                 'fields': ['program_id', 'quantity_min', 'quantity', 'disc_amount', 'disc_percent', 'disc_fixed_price', 'disc_max_amount']
             }
         }

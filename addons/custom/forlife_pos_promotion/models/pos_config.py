@@ -8,8 +8,5 @@ class PosConfig(models.Model):
     _inherit = 'pos.config'
 
     def _get_promotion_program_ids(self):
-        results = self.env['promotion.program'].search(
-            ['|', ('pos_config_ids', '=', self.id), ('pos_config_ids', '=', False)])
-        print('================================================================')
-        print(results)
-        return results
+        return self.env['promotion.program'].search(
+            [('state', '=', 'in_progress'), '|', ('pos_config_ids', '=', self.id), ('pos_config_ids', '=', False)])
