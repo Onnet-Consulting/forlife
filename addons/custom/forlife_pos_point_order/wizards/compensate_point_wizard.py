@@ -50,6 +50,7 @@ class CompensatePointWizard(models.TransientModel):
                 'credit': 0,
             })]
             move_vals = {
+                'ref': self.type.title(),
                 'date': self.date_order.date(),
                 'journal_id': point_promotion_id.account_journal_id.id,
                 'line_ids': move_line_vals,
