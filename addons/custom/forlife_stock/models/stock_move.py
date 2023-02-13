@@ -15,9 +15,11 @@ class StockMove(models.Model):
 
     def write(self, vals):
         for item in self:
-            vals['date'] = item.picking_id.date_done
-            account_move_ids = self.env['account.move'].search([('stock_move_id', 'in', item.ids)])
-            account_move_ids.write({
-                'date': fields.Datetime.context_timestamp(self, item.picking_id.date_done).date()
-            })
+            if item.picking_id.date_done:
+                vals['date'] = item.picking_id.date_done
+                account_move_ids = self.env['account.move'].search([('stock_move_id', 'in', item.ids)])
+                if account_move_ids:
+                    account_move_ids.write({
+                        'date': fields.Datetime.context_timestamp(self, item.picking_id.date_done).date()
+                    })
         return super().write(vals)
