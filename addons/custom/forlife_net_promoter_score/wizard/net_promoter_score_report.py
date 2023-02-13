@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 import pytz
 import copy
+from datetime import timedelta
 
 REPORT_HEADER = ['STT', 'Chi nhánh', 'Mã chi nhánh', 'Khu vực', 'Mã KH', 'Tên KH', 'Mã HĐ', 'Ngày mua hàng', 'Ngày đánh giá', 'Đánh giá', 'Bình luận', 'Trạng thái']
 POP_INDEX_IN_FORM_REPORT = (3, 2)  # xóa cột khu vực và mã chi nhánh trên phom báo cáo
@@ -46,7 +47,7 @@ class NetPromoterScoreReport(models.TransientModel):
         if self.from_date:
             domain += [('invoice_date', '>=', self.from_date)]
         if self.to_date:
-            domain += [('invoice_date', '<=', self.to_date)]
+            domain += [('invoice_date', '<', self.to_date + timedelta(days=1))]
         if self.customer_code:
             domain += [('customer_code', 'in', [i.strip() for i in self.customer_code.split(',')])]
         if self.invoice_number:
