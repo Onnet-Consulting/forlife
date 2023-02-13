@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="net_promoter_score_report_view_form" model="ir.ui.view">
+            <field name="name">net_promoter_score_report_view_form</field>
+            <field name="model">net.promoter.score.report</field>
+            <field name="arch" type="xml">
+                <form string="net_promoter_score_report_form" create="0" delete="0">
+                    <div class="row">
+                        <div class="col-3">
+                            <group>
+                                <label for="from_date"/>
+                                <span>from
+                                    <field name="from_date" widget="date" class="oe_inline"/>
+                                    to
+                                    <field name="to_date" widget="date" class="oe_inline"/>
+                                </span>
+                            </group>
+                        </div>
+                        <div class="col-2">
+                            <group>
+                                <field name="customer_code" placeholder="customer1,customer2...."/>
+                            </group>
+                        </div>
+                        <div class="col-2">
+                            <group>
+                                <field name="invoice_number" placeholder="invoice1,invoice2...."/>
+                            </group>
+                        </div>
+                        <div class="col-3">
+                            <group>
+                                <label for="min_point"/>
+                                <span>from (%)
+                                    <field name="min_point" class="oe_inline" nolabel="1"/>
+                                    to (%)
+                                    <field name="max_point" class="oe_inline" nolabel="1"/>
+                                </span>
+                            </group>
+                        </div>
+                        <div class="col-2">
+                            <field name="brand_ids" widget="many2many_checkboxes"/>
+                            <button name="btn_search" string=" Search" icon="fa-search-plus" class="oe_highlight oe_right" type="object" context="{'pop_colum': True}"/>
+                        </div>
+                    </div>
+                    <field name="view_report" readonly="1" force_save="1"/>
+                </form>
+            </field>
+        </record>
+
+        <record id="net_promoter_score_report_action" model="ir.actions.act_window">
+            <field name="name">NPS Report</field>
+            <field name="res_model">net.promoter.score.report</field>
+            <field name="view_mode">form</field>
+            <field name="target">current</field>
+        </record>
+
+        <menuitem id="net_promoter_score_report_menu" name="NPS Report" parent="point_of_sale.menu_point_rep" action="net_promoter_score_report_action" sequence="100"/>
+
+    </data>
+</odoo>

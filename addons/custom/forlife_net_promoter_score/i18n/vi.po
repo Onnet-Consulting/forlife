@@ -1,0 +1,484 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_net_promoter_score
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-13 02:40+0000\n"
+"PO-Revision-Date: 2023-02-13 02:40+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_net_promoter_score
+#: model:ir.actions.report,print_report_name:forlife_net_promoter_score.net_promoter_score_xlsx
+msgid "'NPS Report'"
+msgstr "'Báo cáo NPS'"
+
+#. module: forlife_net_promoter_score
+#: model:ir.actions.act_window,name:forlife_net_promoter_score.forlife_app_api_link_action
+#: model:ir.model,name:forlife_net_promoter_score.model_forlife_app_api_link
+#: model:ir.ui.menu,name:forlife_net_promoter_score.forlife_app_api_link_menu
+msgid "App Api Link"
+msgstr "Đường dẫn đẩy thông báo lên App"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__areas
+msgid "Areas"
+msgstr "Khu vực"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__banner
+msgid "Banner"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__brand
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__brand_id
+msgid "Brand"
+msgstr "Thương hiệu"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__brand_ids
+msgid "Brands"
+msgstr "Thương hiệu"
+
+#. module: forlife_net_promoter_score
+#. odoo-python
+#: code:addons/forlife_net_promoter_score/models/forlife_comment.py:0
+#, python-format
+msgid "Can't find App API link with key '%s'"
+msgstr "Không tìm thấy đường dẫn đẩy thông báo lên App bằng từ khóa '%s'"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.form_update_comment_view_form
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: forlife_net_promoter_score
+#. odoo-python
+#: code:addons/forlife_net_promoter_score/models/forlife_comment.py:0
+#: model:ir.actions.act_window,name:forlife_net_promoter_score.forlife_comment_action
+#: model:ir.model,name:forlife_net_promoter_score.model_forlife_comment
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__comment
+#: model:ir.ui.menu,name:forlife_net_promoter_score.forlife_comment_menu
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_tree
+#, python-format
+msgid "Comment"
+msgstr "Đánh giá NPS"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__comment_date
+msgid "Comment Date"
+msgstr "Ngày đánh giá"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__comment
+msgid "Comment NPS"
+msgstr "Ghi chú"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__comment_id
+msgid "Comments"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__create_uid
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__create_uid
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__create_uid
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__create_uid
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__create_uid
+msgid "Created by"
+msgstr "Được tạo bởi"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__create_date
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__create_date
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__create_date
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__create_date
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__create_date
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__customer_code
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__customer_code
+msgid "Customer Code"
+msgstr "Mã KH"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__customer_name
+msgid "Customer Name"
+msgstr "Tên khách hàng"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__from_date
+msgid "Date"
+msgstr "Ngày"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__description
+msgid "Description"
+msgstr "Diễn giải"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__display_name
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__display_name
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__display_name
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__display_name
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__employee
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__finish_date
+msgid "Finish Date"
+msgstr "Ngày kết thúc"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.constraint,message:forlife_net_promoter_score.constraint_forlife_question_check_dates
+msgid "Finish date may not be before the starting date."
+msgstr "Ngày kết thúc không được trước ngày bắt đầu."
+
+#. module: forlife_net_promoter_score
+#: model:ir.model,name:forlife_net_promoter_score.model_form_update_comment
+msgid "Form Update Comment"
+msgstr "phom đánh giá NPS"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__header
+msgid "Header"
+msgstr "Tiêu đề"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__id
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__id
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__id
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__id
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__id
+msgid "ID"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__icon
+msgid "Icon"
+msgstr "Biểu tượng"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__invoice_date
+msgid "Invoice Date"
+msgstr "Ngày mua hàng"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__invoice_number
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__invoice_number
+msgid "Invoice Number"
+msgstr "Số hóa đơn"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__is_desc
+msgid "Is Desc"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__key
+msgid "Key"
+msgstr "Từ khóa"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.constraint,message:forlife_net_promoter_score.constraint_forlife_app_api_link_key_uniq
+msgid "Key must be unique"
+msgstr "Từ khóa phải là duy nhất"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link____last_update
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment____last_update
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question____last_update
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment____last_update
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__write_uid
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__write_uid
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__write_uid
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__write_uid
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__write_date
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__write_date
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__write_date
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__write_date
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__min_point
+msgid "Level"
+msgstr "Mức độ"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__max_point
+msgid "Max Point"
+msgstr "Đến (%)"
+
+#. module: forlife_net_promoter_score
+#: model:res.groups,name:forlife_net_promoter_score.net_promoter_score_manager
+msgid "NPS Manager"
+msgstr "Quản lý đánh giá NPS"
+
+#. module: forlife_net_promoter_score
+#: model:ir.actions.act_window,name:forlife_net_promoter_score.net_promoter_score_report_action
+#: model:ir.model,name:forlife_net_promoter_score.model_report_forlife_net_promoter_score_net_promoter_score_xlsx
+#: model:ir.ui.menu,name:forlife_net_promoter_score.net_promoter_score_report_menu
+msgid "NPS Report"
+msgstr "Báo cáo NPS"
+
+#. module: forlife_net_promoter_score
+#: model:ir.actions.report,name:forlife_net_promoter_score.net_promoter_score_xlsx
+msgid "NPS Report XLSX"
+msgstr "Xuất Excel"
+
+#. module: forlife_net_promoter_score
+#. odoo-python
+#: code:addons/forlife_net_promoter_score/report/net_promoter_score_xlsx_report.py:0
+#, python-format
+msgid "NPS Report values not found."
+msgstr "Không tìm thấy giá trị báo cáo NPS"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__name
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model,name:forlife_net_promoter_score.model_net_promoter_score_report
+msgid "Net Promoter Score Report"
+msgstr "Báo cáo đánh giá NPS"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.form_update_comment_view_form
+msgid "OK"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__point
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_form_update_comment__point
+msgid "Point"
+msgstr "Đánh giá"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model,name:forlife_net_promoter_score.model_pos_order
+msgid "Point of Sale Orders"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model:ir.actions.server,name:forlife_net_promoter_score.ir_cron_action_push_notification_ir_actions_server
+#: model:ir.cron,cron_name:forlife_net_promoter_score.ir_cron_action_push_notification
+msgid "Push Notification To App"
+msgstr "Đẩy thông báo NPS đến App"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_tree
+msgid "Push Notify"
+msgstr "Gửi thông báo"
+
+#. module: forlife_net_promoter_score
+#: model:ir.actions.act_window,name:forlife_net_promoter_score.forlife_question_action
+#: model:ir.model,name:forlife_net_promoter_score.model_forlife_question
+#: model:ir.ui.menu,name:forlife_net_promoter_score.forlife_question_menu
+msgid "Question"
+msgstr "Câu hỏi"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__question1
+msgid "Question 1"
+msgstr "Câu hỏi 1"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__question2
+msgid "Question 2"
+msgstr "Câu hỏi 2"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__question_id
+msgid "Question ID"
+msgstr "ID câu hỏi"
+
+#. module: forlife_net_promoter_score
+#. odoo-python
+#: code:addons/forlife_net_promoter_score/models/pos_order.py:0
+#, python-format
+msgid "Question not found !"
+msgstr "Không tìm thấy câu hỏi !"
+
+#. module: forlife_net_promoter_score
+#: model:ir.actions.server,name:forlife_net_promoter_score.ir_cron_remove_forlife_comment_ir_actions_server
+#: model:ir.cron,cron_name:forlife_net_promoter_score.ir_cron_remove_forlife_comment
+msgid "Remove Forlife Comment"
+msgstr "Xóa phiếu đánh giá NPS quá 24h"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_filter
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_question_view_filter
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__start_date
+msgid "Start Date"
+msgstr "Ngày bắt đầu"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__status
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__store_code
+msgid "Store Code"
+msgstr "Mã cửa hàng"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__store_name
+msgid "Store Name"
+msgstr "Tên cửa hàng"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__sub_quest1
+msgid "Sub Question 1"
+msgstr "Câu hỏi phụ 1"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__sub_quest2
+msgid "Sub Question 2"
+msgstr "Câu hỏi phụ 2"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__success1
+msgid "Success 1"
+msgstr "Lời nhắn 1"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__success2
+msgid "Success 2"
+msgstr "Lời nhắn 2"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__success3
+msgid "Success 3"
+msgstr "Lời nhắn 3"
+
+#. module: forlife_net_promoter_score
+#. odoo-python
+#: code:addons/forlife_net_promoter_score/models/forlife_question.py:0
+#, python-format
+msgid "Time is overlapping."
+msgstr "Thời gian bị chồng chéo."
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__to_date
+msgid "To Date"
+msgstr "Đến ngày"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_comment__type
+msgid "Type"
+msgstr "Loại"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_app_api_link__value
+msgid "Value"
+msgstr "Đường dẫn"
+
+#. module: forlife_net_promoter_score
+#: model:ir.model.fields,field_description:forlife_net_promoter_score.field_net_promoter_score_report__view_report
+msgid "View Report"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "customer1,customer2...."
+msgstr "maKH1,maKH2..."
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_app_api_link_view_tree
+msgid "forlife_app_api_link_tree"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_form
+msgid "forlife_comment_form"
+msgstr "phom đánh giá"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_tree
+msgid "forlife_comment_tree"
+msgstr "danh sách đánh giá"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_question_view_form
+msgid "forlife_question_form"
+msgstr "phom câu hỏi"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_question_view_tree
+msgid "forlife_question_tree"
+msgstr "danh sách câu hỏi"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.form_update_comment_view_form
+msgid "form_update_comment_form"
+msgstr ""
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "from"
+msgstr "từ"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "from (%)"
+msgstr "từ (%)"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "invoice1,invoice2...."
+msgstr "hoadon1,hoadon2..."
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "net_promoter_score_report_form"
+msgstr "phom báo cáo nps"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "to"
+msgstr "đến"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "to (%)"
+msgstr "đến (%)"

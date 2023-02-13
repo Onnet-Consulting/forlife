@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="integration_telegram_1" model="integration.telegram">
+            <field name="key">NPS-TKL</field>
+            <field name="bot_token_id" ref="forlife_telegram_integration.telegram_bot_tokyolife"/>
+            <field name="group_chat_id" ref="forlife_telegram_integration.telegram_group_nps_tokyolife_test"/>
+        </record>
+
+        <record id="integration_telegram_2" model="integration.telegram">
+            <field name="key">NPS-FMT</field>
+            <field name="bot_token_id" ref="forlife_telegram_integration.telegram_bot_format"/>
+            <field name="group_chat_id" ref="forlife_telegram_integration.telegram_group_nps_format_test"/>
+        </record>
+
+        <record id="integration_telegram_3" model="integration.telegram">
+            <field name="key">NPS-TKL-CSKH</field>
+            <field name="bot_token_id" ref="forlife_telegram_integration.telegram_bot_tokyolife"/>
+            <field name="group_chat_id" ref="forlife_telegram_integration.telegram_group_nps_tokyolife_test"/>
+        </record>
+
+        <record id="integration_telegram_4" model="integration.telegram">
+            <field name="key">TKL-NPS-S1</field>
+            <field name="bot_token_id" ref="forlife_telegram_integration.telegram_bot_tokyolife"/>
+            <field name="group_chat_id" ref="forlife_telegram_integration.telegram_group_nps_tokyolife_test"/>
+        </record>
+
+        <record id="integration_telegram_5" model="integration.telegram">
+            <field name="key">TKL-NPS-S2</field>
+            <field name="bot_token_id" ref="forlife_telegram_integration.telegram_bot_tokyolife"/>
+            <field name="group_chat_id" ref="forlife_telegram_integration.telegram_group_nps_tokyolife_test"/>
+        </record>
+
+        <record id="integration_telegram_6" model="integration.telegram">
+            <field name="key">TKL-NPS-S3</field>
+            <field name="bot_token_id" ref="forlife_telegram_integration.telegram_bot_tokyolife"/>
+            <field name="group_chat_id" ref="forlife_telegram_integration.telegram_group_nps_tokyolife_test"/>
+        </record>
+
+        <record id="integration_telegram_7" model="integration.telegram">
+            <field name="key">TKL-NPS-S4</field>
+            <field name="bot_token_id" ref="forlife_telegram_integration.telegram_bot_tokyolife"/>
+            <field name="group_chat_id" ref="forlife_telegram_integration.telegram_group_nps_tokyolife_test"/>
+        </record>
+
+        <record id="integration_telegram_8" model="integration.telegram">
+            <field name="key">TKL-NPS-S5</field>
+            <field name="bot_token_id" ref="forlife_telegram_integration.telegram_bot_tokyolife"/>
+            <field name="group_chat_id" ref="forlife_telegram_integration.telegram_group_nps_tokyolife_test"/>
+        </record>
+
+    </data>
+</odoo>

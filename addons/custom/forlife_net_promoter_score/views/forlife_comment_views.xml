@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="forlife_comment_view_tree" model="ir.ui.view">
+            <field name="name">forlife_comment_view_tree</field>
+            <field name="model">forlife.comment</field>
+            <field name="arch" type="xml">
+                <tree string="forlife_comment_tree">
+                    <field name="invoice_date"/>
+                    <field name="customer_name"/>
+                    <field name="customer_code"/>
+                    <field name="store_name"/>
+                    <field name="areas"/>
+                    <field name="brand"/>
+                    <field name="point"/>
+                    <field name="status"/>
+                    <button name="action_push_notification_manual" type="object" string="Push Notify" class="oe_highlight" attrs="{'invisible': [('status', '!=', -1)]}"/>
+                    <button name="btn_send_comment_from_app" type="object" string="Comment" class="oe_highlight" attrs="{'invisible': [('status', '!=', 0)]}"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="forlife_comment_view_form" model="ir.ui.view">
+            <field name="name">forlife_comment_view_form</field>
+            <field name="model">forlife.comment</field>
+            <field name="arch" type="xml">
+                <form string="forlife_comment_form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="customer_name"/>
+                                <field name="customer_code"/>
+                                <field name="brand"/>
+                                <field name="store_name"/>
+                                <field name="areas"/>
+                                <field name="invoice_number"/>
+                                <field name="invoice_date"/>
+                                <field name="question_id"/>
+                                <field name="status"/>
+                            </group>
+                            <group>
+                                <field name="point"/>
+                                <field name="comment"/>
+                                <field name="comment_date"/>
+                                <field name="description"/>
+                                <field name="employee"/>
+                                <field name="is_desc"/>
+                                <field name="type"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="forlife_comment_view_filter" model="ir.ui.view">
+            <field name="name">forlife_comment_view_filter</field>
+            <field name="model">forlife.comment</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="question_id"/>
+                    <field name="customer_code"/>
+                    <field name="store_name"/>
+                    <field name="areas"/>
+                    <field name="brand"/>
+                    <field name="employee"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="forlife_comment_action" model="ir.actions.act_window">
+            <field name="name">Comment</field>
+            <field name="res_model">forlife.comment</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="forlife_comment_menu" name="Comment" parent="point_of_sale.menu_point_of_sale" action="forlife_comment_action" sequence="100"/>
+
+    </data>
+    <data>
+        <record id="form_update_comment_view_form" model="ir.ui.view">
+            <field name="name">form_update_comment_view_form</field>
+            <field name="model">form.update.comment</field>
+            <field name="arch" type="xml">
+                <form string="form_update_comment_form">
+                    <sheet>
+                        <group>
+                            <field name="point"/>
+                            <field name="comment"/>
+                            <field name="comment_id" invisible="1"/>
+                        </group>
+                        <footer>
+                            <button name="btn_ok" type="object" string="OK" class="btn-primary" context="{'update_comment': True}"/>
+                            <button special="cancel" string="Cancel" class="btn-secondary"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

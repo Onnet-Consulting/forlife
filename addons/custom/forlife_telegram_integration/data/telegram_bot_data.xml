@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="telegram_bot_tokyolife" model="telegram.bot">
+            <field name="name">TokyoLife</field>
+            <field name="value">687907641:AAFTlEWiFv3dYOaHyUXPbEGF-RgeeW80Ldc</field>
+        </record>
+
+        <record id="telegram_bot_format" model="telegram.bot">
+            <field name="name">Format</field>
+            <field name="value">933947687:AAFFd44GFB_RMevYiSGwYbSXrfdutrZmMyE</field>
+        </record>
+
+    </data>
+</odoo>
