@@ -15,6 +15,7 @@
                     <field name="brand"/>
                     <field name="point"/>
                     <field name="status"/>
+                    <button name="action_push_notification_manual" type="object" string="Push Notify" class="oe_highlight" attrs="{'invisible': [('status', '!=', -1)]}"/>
                     <button name="btn_send_comment_from_app" type="object" string="Comment" class="oe_highlight" attrs="{'invisible': [('status', '!=', 0)]}"/>
                 </tree>
             </field>

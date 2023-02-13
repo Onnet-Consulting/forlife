@@ -80,6 +80,7 @@ class ForlifeComment(models.Model):
                 self.with_delay().action_send_message('NPS-%s-CSKH' % cmt.brand, message)
             self.with_delay().action_send_message('%s-NPS-%s' % (cmt.brand, cmt.areas), message)
 
+    # fixme: xóa phần liên quan đến hàm btn_send_comment_from_app và action_push_notification_manual sau khi dựng xong API kết nối với App
     def btn_send_comment_from_app(self):
         ctx = dict(self._context)
         ctx.update({
@@ -94,6 +95,11 @@ class ForlifeComment(models.Model):
             'views': [[self.env.ref('forlife_net_promoter_score.form_update_comment_view_form').id, 'form']],
             'context': ctx,
         }
+
+    def action_push_notification_manual(self):
+        res = self.search([('status', '=', -1)])
+        for line in res:
+            line.push_notification_to_app(line.customer_code, line.brand)
 
 
 class FormUpdateComment(models.TransientModel):

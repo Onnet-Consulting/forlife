@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-10 11:16+0000\n"
-"PO-Revision-Date: 2023-02-10 11:16+0000\n"
+"POT-Creation-Date: 2023-02-13 02:40+0000\n"
+"PO-Revision-Date: 2023-02-13 02:40+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -248,12 +248,9 @@ msgid "NPS Manager"
 msgstr "Quản lý đánh giá NPS"
 
 #. module: forlife_net_promoter_score
-#. odoo-python
-#: code:addons/forlife_net_promoter_score/wizard/net_promoter_score_report.py:0
 #: model:ir.actions.act_window,name:forlife_net_promoter_score.net_promoter_score_report_action
 #: model:ir.model,name:forlife_net_promoter_score.model_report_forlife_net_promoter_score_net_promoter_score_xlsx
 #: model:ir.ui.menu,name:forlife_net_promoter_score.net_promoter_score_report_menu
-#, python-format
 msgid "NPS Report"
 msgstr "Báo cáo NPS"
 
@@ -301,6 +298,11 @@ msgstr ""
 #: model:ir.cron,cron_name:forlife_net_promoter_score.ir_cron_action_push_notification
 msgid "Push Notification To App"
 msgstr "Đẩy thông báo NPS đến App"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_tree
+msgid "Push Notify"
+msgstr "Gửi thông báo"
 
 #. module: forlife_net_promoter_score
 #: model:ir.actions.act_window,name:forlife_net_promoter_score.forlife_question_action
