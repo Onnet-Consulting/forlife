@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_promotion_program_user,access_promotion_program_user,model_promotion_program,base.group_user,1,1,1,1
+access_promotion_combo_line_user,access_promotion_combo_line,model_promotion_combo_line,base.group_user,1,1,1,1
+access_promotion_reward_line_user,access_promotion_reward_line_user,model_promotion_reward_line,base.group_user,1,1,1,1
+access_promotion_code_user,access_promotion_code_user,model_promotion_code,base.group_user,1,1,1,1
+access_promotion_voucher_user,access_promotion_voucher_user,model_promotion_voucher,base.group_user,1,1,1,1
+access_promotion_generate_code_user,access_promotion_generate_code_user,model_promotion_generate_code,base.group_user,1,1,1,1
