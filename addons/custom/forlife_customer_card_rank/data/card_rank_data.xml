@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="card_rank_member" model="card.rank">
+            <field name="name">Thành viên</field>
+        </record>
+
+        <record id="card_rank_vip" model="card.rank">
+            <field name="name">Cận VIP</field>
+        </record>
+
+        <record id="card_rank_silver" model="card.rank">
+            <field name="name">Bạc</field>
+        </record>
+
+        <record id="card_rank_gold" model="card.rank">
+            <field name="name">Vàng</field>
+        </record>
+
+        <record id="card_rank_diamond" model="card.rank">
+            <field name="name">Kim cương</field>
+        </record>
+
+        <record id="card_rank_hoang_kim" model="card.rank">
+            <field name="name">Hoàng Kim</field>
+        </record>
+
+    </data>
+</odoo>
