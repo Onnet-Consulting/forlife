@@ -43,17 +43,26 @@ class NetPromoterScoreReport(models.TransientModel):
         self.view_report = header[0] + data + header[1]
 
     def filter_data(self):
-        domain = [('status', '=', '1'), ('point', '>=', self.min_point), ('point', '<=', self.max_point)]
+        domain = ['&', '&', ('status', '=', '1'), ('point', '>=', self.min_point), ('point', '<=', self.max_point)]
         if self.from_date:
+            domain.insert(0, '&')
             domain += [('invoice_date', '>=', self.from_date)]
         if self.to_date:
+            domain.insert(0, '&')
             domain += [('invoice_date', '<', self.to_date + timedelta(days=1))]
-        if self.customer_code:
-            domain += [('customer_code', 'in', [i.strip() for i in self.customer_code.split(',')])]
-        if self.invoice_number:
-            domain += [('invoice_number', 'in', [i.strip() for i in self.invoice_number.split(',')])]
         if self.brand_ids:
+            domain.insert(0, '&')
             domain += [('brand', 'in', self.brand_ids.mapped('code'))]
+        if self.customer_code:
+            cus_code_domain = [('customer_code', 'like', i.strip()) for i in self.customer_code.split(',')]
+            domain.insert(0, '&')
+            domain += ['|'] * (len(cus_code_domain) - 1)
+            domain += cus_code_domain
+        if self.invoice_number:
+            inv_num_domain = [('invoice_number', 'like', i.strip()) for i in self.invoice_number.split(',')]
+            domain.insert(0, '&')
+            domain += ['|'] * (len(inv_num_domain) - 1)
+            domain += inv_num_domain
         result = self.env['forlife.comment'].search(domain)
         data = [REPORT_HEADER]
         row = 1
