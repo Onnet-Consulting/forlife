@@ -31,7 +31,7 @@
                         <div class="oe_title">
                             <label for="name"/>
                             <h1>
-                                <field name="name"/>
+                                <field name="name" required="1"/>
                             </h1>
                         </div>
                         <group col="1">
@@ -49,9 +49,9 @@
                             <group>
                                 <label for="from_date"/>
                                 <div>from
-                                    <field name="from_date" class="oe_inline"/>
+                                    <field name="from_date" class="oe_inline" required="1"/>
                                     to
-                                    <field name="to_date" class="oe_inline"/>
+                                    <field name="to_date" class="oe_inline" required="1"/>
                                 </div>
                             </group>
                             <div class="row">

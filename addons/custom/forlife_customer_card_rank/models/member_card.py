@@ -19,12 +19,12 @@ class MemberCard(models.Model):
     register_to_date = fields.Date('Register To Date')
     from_date = fields.Date('Time Apply', copy=False)
     to_date = fields.Date('To Date', copy=False)
-    is_all_store = fields.Boolean('Is All Store', default=True)
+    is_all_store = fields.Boolean('Is All Store', default=True, tracking=True)
     store_ids = fields.Many2many('store', string='Stores Apply')
     time_set_rank = fields.Integer('Time Set Rank', default=0)
     customer_group_ids = fields.Many2many('res.partner.group', string='Customer Group')
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method')
-    card_rank_id = fields.Many2one('card.rank', string='Rank', copy=False)
+    card_rank_id = fields.Many2one('card.rank', string='Rank', tracking=True)
     min_turnover = fields.Integer('Min Turnover')
     max_turnover = fields.Integer('Max Turnover')
     original_price = fields.Integer('Original Price')
@@ -37,14 +37,13 @@ class MemberCard(models.Model):
     active = fields.Boolean('Active', default=True, tracking=True)
 
     _sql_constraints = [
-        ("rank_brand_uniq", "unique(card_rank_id, brand_id)", "Card Rank of brand already exist !"),
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
 
     @api.constrains("from_date", "to_date", 'active')
     def validate_time(self):
         for record in self:
-            res = self.search(['&', ('brand_id', '=', record.brand_id.id), '&', ('id', '!=', record.id),
+            res = self.search(['&', '&', '&', ('brand_id', '=', record.brand_id.id), ('card_rank_id', '=', record.card_rank_id.id), ('id', '!=', record.id),
                                '|', '&', ('from_date', '<=', record.from_date), ('to_date', '>=', record.from_date),
                                '&', ('from_date', '<=', record.to_date), ('to_date', '>=', record.to_date)])
             if res:
@@ -73,6 +72,21 @@ class MemberCard(models.Model):
             res.sudo().write({
                 'active': False,
             })
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        for line in res:
+            if line.store_ids:
+                message = {
+                    'added': _('Store added: %s') % ', '.join(line.store_ids.mapped('name')),
+                    'time': fields.Datetime.now().astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y %H:%M:%S')
+                }
+                line.message_post_with_view(
+                    'forlife_customer_card_rank.message_update_stores',
+                    values=message
+                )
+        return res
 
 
 class FormUpdateStore(models.TransientModel):
