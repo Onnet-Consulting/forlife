@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+import pytz
 
 
 class MemberCard(models.Model):
@@ -33,7 +34,7 @@ class MemberCard(models.Model):
     apply_value_to_2 = fields.Integer('Apply Value To2')
     apply_value_from_3 = fields.Integer('Apply Value From3')
     apply_value_to_3 = fields.Integer('Apply Value To3')
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean('Active', default=True, tracking=True)
 
     _sql_constraints = [
         ("rank_brand_uniq", "unique(card_rank_id, brand_id)", "Card Rank of brand already exist !"),
@@ -66,6 +67,13 @@ class MemberCard(models.Model):
             'context': ctx,
         }
 
+    def action_inactive_member_card_program(self):
+        res = self.search([('active', '=', True), ('to_date', '<', fields.Date.today())])
+        if res:
+            res.sudo().write({
+                'active': False,
+            })
+
 
 class FormUpdateStore(models.TransientModel):
     _name = 'form.update.store'
@@ -73,8 +81,23 @@ class FormUpdateStore(models.TransientModel):
 
     member_card_id = fields.Many2one('member.card', string='Member Card')
     store_ids = fields.Many2many('store', string='Stores Apply')
+    store_add = fields.Text("Store Added")
+    store_del = fields.Text("Store Deleted")
 
     def btn_ok(self):
-        self.member_card_id.sudo().write({
-            'store_ids': [(6, 0, self.store_ids.ids)],
-        })
+        store_add = self.store_ids - self.member_card_id.store_ids
+        store_del = self.member_card_id.store_ids - self.store_ids
+        message = {}
+        if store_add:
+            message.update({'added': _('Store added: %s') % ', '.join(store_add.mapped('name'))})
+        if store_del:
+            message.update({'deleted': _('Store deleted: %s') % ', '.join(store_del.mapped('name'))})
+        if message:
+            message.update({'time': fields.Datetime.now().astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y %H:%M:%S')})
+            self.member_card_id.message_post_with_view(
+                'forlife_customer_card_rank.message_update_stores',
+                values=message
+            )
+            self.member_card_id.sudo().write({
+                'store_ids': [(6, 0, self.store_ids.ids)],
+            })

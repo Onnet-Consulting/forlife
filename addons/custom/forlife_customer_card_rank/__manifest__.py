@@ -26,6 +26,7 @@
         'security/customer_card_rank_security.xml',
         'security/ir.model.access.csv',
         'data/card_rank_data.xml',
+        'data/cron_job_data.xml',
 
         'views/card_rank_views.xml',
         'views/member_card_views.xml',
