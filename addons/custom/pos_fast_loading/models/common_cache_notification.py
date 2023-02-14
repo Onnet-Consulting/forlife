@@ -51,6 +51,8 @@ class CommonCacheNotification(models.Model):
 
     @api.model
     def get_common_changes(self):
+        ctx = self._context.copy()
+
         records = self.sudo().search([('state', '!=', 'done')])
         mongo_server_rec = self.env['mongo.server.config'].search(
             [('active_record', '=', True)], limit=1)
@@ -95,7 +97,7 @@ class CommonCacheNotification(models.Model):
                 self.sync_mongo_cache(
                     mongo_server_rec, records, partner_fields, product_fields, pricelist_fields)
             else:
-                self.sync_pos_cache(mongo_server_rec, records,
+                self.with_context(ctx).sync_pos_cache(mongo_server_rec, records,
                                     partner_fields, product_fields)
 
             updated_records = self.search(
@@ -136,7 +138,7 @@ class CommonCacheNotification(models.Model):
                             record.record_id)
                         product_data = {}
                         if product:
-                            pro_data = product.sudo().read(product_fields)
+                            pro_data = product.sudo().with_company(self.env['res.company'].browse(self._context.get('company_id'))).read(product_fields)
                             if len(pro_data):
                                 product_conv_data = pro_data[0]
                                 image_fields = ['image_1024', 'image_128', 'image_1920', 'image_256', 'image_512', 'image_variant_1024',

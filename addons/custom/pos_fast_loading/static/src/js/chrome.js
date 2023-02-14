@@ -53,7 +53,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
       var request = window.indexedDB.open("Product", 2);
       request.onupgradeneeded = function (event) {
           var db = event.target.result;
-          console.log("--------------Create store", request.result);
           var productsStore = db.createObjectStore('products', {
               keyPath: 'id'
           });
@@ -83,8 +82,7 @@ odoo.define("pos_fast_loading.chrome", function (require) {
             self.env.pos.db.mongo_config.pos_live_sync != "reload"
           )
             self.post_rechecking_process(res);
-          // self.render();
-          console.log(222222222222);
+          self.render();
         })
         .catch(function (error, event) {
           if (event && event.preventDefault) event.preventDefault();
@@ -103,6 +101,7 @@ odoo.define("pos_fast_loading.chrome", function (require) {
             }, 3000);
             return session
               .rpc("/cache/notify", {
+                company_id: self.env.pos.company.id,
                 mongo_cache_last_update_time:
                   self.env.pos.db.mongo_config.cache_last_update_time,
               })
@@ -151,14 +150,11 @@ odoo.define("pos_fast_loading.chrome", function (require) {
         var product_deleted_record_ids =
           res.product_deleted_record_ids || false;
         var pricelist_items = res.pricelist_items || false;
-        console.log('post_rechecking_process');
         if (!self.env.pos.config.enable_pos_longpolling) {
           // *********************Adding and Updating the Products*******************************
-          console.log('updatePosProducts');
           self.updatePosProducts(products, product_deleted_record_ids);
 
           // *********************Adding and Updating Pricelist Item to pos*********************
-          console.log('updatePricePos');
           self.updatePricePos(pricelist_items, price_deleted_record_ids);
 
           // *********************Adding and Updating Partner to pos*********************
@@ -170,15 +166,12 @@ odoo.define("pos_fast_loading.chrome", function (require) {
         // self.updatePartnerIDB(partners, partner_deleted_record_ids);
 
         // **********************Updating Time In IndexedDB************************************
-        console.log('updateCacheTimeIDB');
         self.updateCacheTimeIDB();
 
         // *********** Pricelist item Deleted and Updated from indexedDB**********************
-
         self.updatePriceIDB(pricelist_items, price_deleted_record_ids);
 
         // ***********Products deleted from indexedDB*****************************************
-
         self.updateProductsIDB(products, product_deleted_record_ids);
 
         // ***********************************************************************************
@@ -227,8 +220,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
 
     updatePosProducts(products, product_deleted_record_ids) {
       var self = this;
-      console.log('-----000000000000000000000000');
-      console.log(products);
       if (products && products.length) {
         var using_company_currency =
           self.env.pos.config.currency_id[0] ===
@@ -250,13 +241,27 @@ odoo.define("pos_fast_loading.chrome", function (require) {
           });
           console.log('check product');
           console.log(product);
-          var new_product = new models.Product({}, product);
+          var new_product = new models.Product(product);
           new_product.pos = self.env.pos;
+          new_product.applicablePricelistItems = {};
+          console.log(self.env.pos.db);
+          for (let pricelist of self.env.pos.pricelists) {
+            for (const pricelistItem of pricelist.items) {
+              if (pricelistItem.product_id) {
+                let product_id = pricelistItem.product_id[0];
+                let correspondingProduct = productMap[product_id];
+                if (correspondingProduct) {
+                  if (!(pricelist.id in correspondingProduct.applicablePricelistItems)) {
+                    correspondingProduct.applicablePricelistItems[pricelist.id] = [];
+                  }
+                  correspondingProduct.applicablePricelistItems[pricelist.id].push(pricelistItem);
+                }
+              }
+            }
+          }
           console.log(new_product);
           return new_product;
         });
-        console.log('-----111111111111');
-        console.log(new_products);
         var stored_categories = self.env.pos.db.product_by_category_id;
         for (var i = 0, len = new_products.length; i < len; i++) {
           var product = new_products[i];
@@ -265,7 +270,7 @@ odoo.define("pos_fast_loading.chrome", function (require) {
           if (
             product.available_in_pos &&
             !(product.id in self.env.pos.db.product_by_id)
-          ) {
+          ) {        
             var search_string = utils.unaccent(
               self.env.pos.db._product_search_string(product)
             );
@@ -308,8 +313,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
             self.env.pos.db.product_by_barcode[product.barcode] = product;
           }
         }
-        console.log('33333333333333');
-        console.log(stored_categories);
         //---------------------------------------------
         if (self.env.pos && self.env.pos.get_order()) {
           var order = self.env.pos.get_order();
@@ -323,8 +326,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
         }
         //-----
       }
-      console.log('product_deleted_record_ids');
-      console.log(product_deleted_record_ids);
       if (product_deleted_record_ids && product_deleted_record_ids.length) {
         _.each(product_deleted_record_ids, function (record) {
           var temp = self.env.pos.db.product_by_id;
@@ -355,7 +356,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
           self.env.pos.db.product_by_category_id = new_categ_list;
         });
       }
-      console.log('update product success');
     }
 
     updateCacheTimeIDB() {
@@ -557,8 +557,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
           order.get_screen_data().name == "ProductScreen" && self
         ) {
           setTimeout(function () {
-            console.log(1111111111);
-            console.log(self);
             // self.showScreen("ClientListScreen");
             self.showScreen("ProductScreen");
           }, 500);
@@ -570,6 +568,10 @@ odoo.define("pos_fast_loading.chrome", function (require) {
     updatePricePos(pricelist_items, price_deleted_record_ids) {
       var self = this;
       var delete_price_data = [];
+      console.log('pricelist_items');
+      console.log(pricelist_items);
+      console.log('price_deleted_record_ids.length');
+      console.log(price_deleted_record_ids.length);
       if (
         (pricelist_items && pricelist_items.length) ||
         (price_deleted_record_ids && price_deleted_record_ids.length)
@@ -595,6 +597,9 @@ odoo.define("pos_fast_loading.chrome", function (require) {
             );
             pricelist.items = pricelist_new_items;
           } else pricelist.items = new_pricelist_items;
+          new_pricelist_items
+          console.log('new_pricelist_items');
+          console.log(new_pricelist_items);
         });
       }
     }

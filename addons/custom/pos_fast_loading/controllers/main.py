@@ -17,7 +17,6 @@ class PosController(PosController):
 
     @http.route(['/cache/notify'], type='json', auth="none")
     def CacheNotifyPos(self, **kwargs):
-        _logger.info('------------QTH-----------------')
         try:
             pos_mongo_config = kwargs.get('mongo_cache_last_update_time')
             mongo_conf = request.env['mongo.server.config'].sudo().search(
@@ -31,7 +30,6 @@ class PosController(PosController):
             elif mongo_conf.pos_live_sync == 'realtime':
                 data = request.env['mongo.server.config'].sudo(
                 ).get_data_on_sync(kwargs)
-                _logger.info('------------QTH-----------------: %s', data)
                 return {'is_data_updated': False, 'data': data, 'sync_method': mongo_conf.pos_live_sync}
             else:
                 return {'is_data_updated': False, 'sync_method': mongo_conf.pos_live_sync}

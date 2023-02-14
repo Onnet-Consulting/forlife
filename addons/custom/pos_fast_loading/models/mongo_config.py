@@ -195,121 +195,125 @@ class MongoServerConfig(models.Model):
                 'product_deleted_record_ids': [],
                 'sync_method': mongo_server_rec.pos_live_sync
             }
-            # try:
-            self.env['common.cache.notification'].get_common_changes()
-            product_data = []
-            pricelist_item_data = []
-            new_cache_records = self.env['common.cache.notification'].search(
-                [('create_date', '>=', pos_mongo_config)])
-
-            if new_cache_records:
-                product_record_ids = []
-                price_record_ids = []
-                partner_record_ids = []
-                partner_deleted_record_ids = []
-                price_deleted_record_ids = []
-                product_deleted_record_ids = []
-                price_res = []
-                product_res = []
-                partner_res = []
-                for record in new_cache_records:
-                    if record.model_name == 'product.product':
-                        if record.operation == 'DELETE':
-                            product_deleted_record_ids.append(
-                                record.record_id)
-                        else:
-                            product_record_ids.append(record.record_id)
-                    # elif record.model_name == 'res.partner':
-                    #     if record.operation == 'DELETE':
-                    #         partner_deleted_record_ids.append(
-                    #             record.record_id)
-                    #     else:
-                    #         partner_record_ids.append(record.record_id)
-                    elif record.model_name == 'product.pricelist.item':
-                        if record.operation == 'DELETE':
-                            price_deleted_record_ids.append(
-                                record.record_id)
-                        elif record.operation == 'UPDATE':
-                            price_record_ids.append(record.record_id)
-                            price_deleted_record_ids.append(
-                                record.record_id)
-                        else:
-                            price_record_ids.append(record.record_id)
-
-                load_pos_data_type = mongo_server_rec.load_pos_data_from
-                if load_pos_data_type == 'mongo':
-                    client = mongo_server_rec.get_client()
-                    if client:
-                        database = self._cr.dbname
-                        if database in client.list_database_names():
-                            db = client[database]
-                            if len(price_record_ids):
-                                pricelist_items_col = db.pricelist_items
-                                pricelist_item_data = pricelist_items_col.find(
-                                    {'id': {'$in': price_record_ids}})
-                                for record in pricelist_item_data:
-                                    if record.get('id'):
-                                        if(record.get('_id')):
-                                            del record['_id']
-                                        price_res.append(record)
-                                pricelist_item_deleted_data = pricelist_items_col.find(
-                                    {'id': {'$in': price_deleted_record_ids}})
-                            if len(product_record_ids):
-                                products_col = db.products
-                                product_data = products_col.find(
-                                    {'id': {'$in': product_record_ids}})
-                                for record in product_data:
-                                    if record.get('id'):
-                                        if(record.get('_id')):
-                                            del record['_id']
-                                        product_res.append(record)
-                            if len(partner_record_ids):
-                                partners_col = db.partners
-                                partner_data = partners_col.find(
-                                    {'id': {'$in': partner_record_ids}})
-                                for record in partner_data:
-                                    if record.get('id'):
-                                        if(record.get('_id')):
-                                            del record['_id']
-                                        partner_res.append(record)
-                else:
-                    if len(price_record_ids):
-                        binary_data = mongo_server_rec.pos_pricelist_cache
-                        json_data = json.loads(
-                            base64.decodebytes(binary_data).decode('utf-8'))
-                        for obj in json_data:
-                            if int(obj) in price_record_ids:
-                                price_res.append(json_data.get(obj))
-
-                    if len(product_record_ids):
-                        binary_data = mongo_server_rec.pos_product_cache
-                        json_data = json.loads(
-                            base64.decodebytes(binary_data).decode('utf-8'))
-                        for obj in json_data:
-                            if int(obj) in product_record_ids:
-                                product_res.append(json_data.get(obj))
-
-                    # if len(partner_record_ids):
-                    #     binary_data = mongo_server_rec.pos_partner_cache
-                    #     json_data = json.loads(
-                    #         base64.decodebytes(binary_data).decode('utf-8'))
-                    #     for obj in json_data:
-                    #         if int(obj) in partner_record_ids:
-                    #             partner_res.append(json_data.get(obj))
-
-                data_dict.update({
-                    'products': product_res,
-                    'pricelist_items': price_res,
-                    # 'partners': partner_res,
-                    'mongo_config': mongo_server_rec.cache_last_update_time,
-                    'price_deleted_record_ids': price_deleted_record_ids,
-                    # 'partner_deleted_record_ids': partner_deleted_record_ids,
-                    'product_deleted_record_ids': product_deleted_record_ids
+            try:
+                ctx = self._context.copy()
+                ctx.update({
+                    'company_id': kwargs.get('company_id'),
                 })
-            return data_dict
-            # except Exception as e:
-            #     return data_dict
-            #     _logger.info("**********Exception*****************:%r", e)
+                self.env['common.cache.notification'].with_context(ctx).get_common_changes()
+                product_data = []
+                pricelist_item_data = []
+                new_cache_records = self.env['common.cache.notification'].search(
+                    [('create_date', '>=', pos_mongo_config)])
+
+                if new_cache_records:
+                    product_record_ids = []
+                    price_record_ids = []
+                    partner_record_ids = []
+                    partner_deleted_record_ids = []
+                    price_deleted_record_ids = []
+                    product_deleted_record_ids = []
+                    price_res = []
+                    product_res = []
+                    partner_res = []
+                    for record in new_cache_records:
+                        if record.model_name == 'product.product':
+                            if record.operation == 'DELETE':
+                                product_deleted_record_ids.append(
+                                    record.record_id)
+                            else:
+                                product_record_ids.append(record.record_id)
+                        # elif record.model_name == 'res.partner':
+                        #     if record.operation == 'DELETE':
+                        #         partner_deleted_record_ids.append(
+                        #             record.record_id)
+                        #     else:
+                        #         partner_record_ids.append(record.record_id)
+                        elif record.model_name == 'product.pricelist.item':
+                            if record.operation == 'DELETE':
+                                price_deleted_record_ids.append(
+                                    record.record_id)
+                            elif record.operation == 'UPDATE':
+                                price_record_ids.append(record.record_id)
+                                price_deleted_record_ids.append(
+                                    record.record_id)
+                            else:
+                                price_record_ids.append(record.record_id)
+
+                    load_pos_data_type = mongo_server_rec.load_pos_data_from
+                    if load_pos_data_type == 'mongo':
+                        client = mongo_server_rec.get_client()
+                        if client:
+                            database = self._cr.dbname
+                            if database in client.list_database_names():
+                                db = client[database]
+                                if len(price_record_ids):
+                                    pricelist_items_col = db.pricelist_items
+                                    pricelist_item_data = pricelist_items_col.find(
+                                        {'id': {'$in': price_record_ids}})
+                                    for record in pricelist_item_data:
+                                        if record.get('id'):
+                                            if(record.get('_id')):
+                                                del record['_id']
+                                            price_res.append(record)
+                                    pricelist_item_deleted_data = pricelist_items_col.find(
+                                        {'id': {'$in': price_deleted_record_ids}})
+                                if len(product_record_ids):
+                                    products_col = db.products
+                                    product_data = products_col.find(
+                                        {'id': {'$in': product_record_ids}})
+                                    for record in product_data:
+                                        if record.get('id'):
+                                            if(record.get('_id')):
+                                                del record['_id']
+                                            product_res.append(record)
+                                if len(partner_record_ids):
+                                    partners_col = db.partners
+                                    partner_data = partners_col.find(
+                                        {'id': {'$in': partner_record_ids}})
+                                    for record in partner_data:
+                                        if record.get('id'):
+                                            if(record.get('_id')):
+                                                del record['_id']
+                                            partner_res.append(record)
+                    else:
+                        if len(price_record_ids):
+                            binary_data = mongo_server_rec.pos_pricelist_cache
+                            json_data = json.loads(
+                                base64.decodebytes(binary_data).decode('utf-8'))
+                            for obj in json_data:
+                                if int(obj) in price_record_ids:
+                                    price_res.append(json_data.get(obj))
+
+                        if len(product_record_ids):
+                            binary_data = mongo_server_rec.pos_product_cache
+                            json_data = json.loads(
+                                base64.decodebytes(binary_data).decode('utf-8'))
+                            for obj in json_data:
+                                if int(obj) in product_record_ids:
+                                    product_res.append(json_data.get(obj))
+
+                        # if len(partner_record_ids):
+                        #     binary_data = mongo_server_rec.pos_partner_cache
+                        #     json_data = json.loads(
+                        #         base64.decodebytes(binary_data).decode('utf-8'))
+                        #     for obj in json_data:
+                        #         if int(obj) in partner_record_ids:
+                        #             partner_res.append(json_data.get(obj))
+
+                    data_dict.update({
+                        'products': product_res,
+                        'pricelist_items': price_res,
+                        # 'partners': partner_res,
+                        'mongo_config': mongo_server_rec.cache_last_update_time,
+                        'price_deleted_record_ids': price_deleted_record_ids,
+                        # 'partner_deleted_record_ids': partner_deleted_record_ids,
+                        'product_deleted_record_ids': product_deleted_record_ids
+                    })
+                return data_dict
+            except Exception as e:
+                return data_dict
+                _logger.info("**********Exception*****************:%r", e)
 
     def sync_partners(self):
         mongo_server_rec = self.search([('active_record', '=', True)], limit=1)

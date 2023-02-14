@@ -11,9 +11,10 @@ odoo.define('pos_fast_loading.models', function (require) {
 
     var product_model = Product;
     // var partner_model = null;
-    // var pricelist_item_model = null;
+    var pricelist_item_model = require('point_of_sale.ProductItem');
+    var ProductItem = require('point_of_sale.ProductItem');
     const ProductScreen = require('point_of_sale.ProductScreen').prototype
-
+    const { onRendered } = owl;
 
     // models.load_models({
     //     model: 'mongo.server.config',
@@ -43,8 +44,17 @@ odoo.define('pos_fast_loading.models', function (require) {
     }
     Registries.Model.extend(PosGlobalState, PosCustomPosGlobalState);
 
-
-
+    // const ProductItemCustom = (ProductItem) => class extends ProductItem {
+    //     setup() {
+    //         super.setup();
+    //         onRendered(() => {
+    //             if (this.env.isDebug()) {
+    //                 console.log('Rendered:', this);
+    //             }
+    //         });
+    //     }
+    // }
+    // Registries.Component.extend(ProductItem, ProductItemCustom);
     // for (var i = 0, len = model_list.length; i < len; i++) {
     //     if (model_list[i].model == "product.product") {
     //         product_model = model_list[i];
@@ -294,107 +304,107 @@ odoo.define('pos_fast_loading.models', function (require) {
     // }
 
 
-    // // ********************Updating PriceList Items Context***************************************
+    // ********************Updating PriceList Items Context***************************************
 
-    // var super_price_item_context = pricelist_item_model.context;
-    // if (super_price_item_context && typeof (super_price_item_context) == 'function') {
-    //     try {
-    //         var request = window.indexedDB.open('cacheDate', 1);
-    //         request.onsuccess = function (event) {
-    //             var db = event.target.result;
-    //             if (db.objectStoreNames.contains('last_update')) {
-    //                 getRecordsIndexedDB(db, 'last_update').then(function (res) {
-    //                     pricelist_item_model.context = function (self) {
-    //                         var data = super_price_item_context();
-    //                         if (typeof (data) == 'object') {
-    //                             data['sync_from_mongo'] = true;
-    //                             data['is_indexed_updated'] = res;
-    //                         }
-    //                         return data
-    //                     }
-    //                 });
-    //             }
-    //         }
-    //         request.onupgradeneeded = function (event) {
-    //             var db = event.target.result;
-    //             var itemsStore = db.createObjectStore('last_update', {
-    //                 keyPath: 'id'
-    //             });
-    //         }
-    //         pricelist_item_model.context = function (self) {
-    //             var data = super_price_item_context();
-    //             if (typeof (data) == 'object') {
-    //                 data['sync_from_mongo'] = true;
-    //             }
-    //             return data
-    //         }
-    //     } catch (err) {
-    //         pricelist_item_model.context = function (self) {
-    //             var data = super_price_item_context();
-    //             if (typeof (data) == 'object') {
-    //                 data['sync_from_mongo'] = true;
-    //             }
-    //             return data
-    //         }
-    //         console.log("***************Error*************", err);
-    //     }
-    // } else if (super_price_item_context && typeof (super_price_item_context) == 'object') {
-    //     try {
-    //         var request = window.indexedDB.open('cacheDate', 1);
-    //         request.onsuccess = function (event) {
-    //             var db = event.target.result;
-    //             if (db.objectStoreNames.contains('last_update')) {
-    //                 getRecordsIndexedDB(db, 'last_update').then(function (res) {
-    //                     pricelist_item_model.context['sync_from_mongo'] = true;
-    //                     pricelist_item_model.context['is_indexed_updated'] = res;
-    //                 })
-    //             }
+    var super_price_item_context = pricelist_item_model.context;
+    if (super_price_item_context && typeof (super_price_item_context) == 'function') {
+        try {
+            var request = window.indexedDB.open('cacheDate', 1);
+            request.onsuccess = function (event) {
+                var db = event.target.result;
+                if (db.objectStoreNames.contains('last_update')) {
+                    getRecordsIndexedDB(db, 'last_update').then(function (res) {
+                        pricelist_item_model.context = function (self) {
+                            var data = super_price_item_context();
+                            if (typeof (data) == 'object') {
+                                data['sync_from_mongo'] = true;
+                                data['is_indexed_updated'] = res;
+                            }
+                            return data
+                        }
+                    });
+                }
+            }
+            request.onupgradeneeded = function (event) {
+                var db = event.target.result;
+                var itemsStore = db.createObjectStore('last_update', {
+                    keyPath: 'id'
+                });
+            }
+            pricelist_item_model.context = function (self) {
+                var data = super_price_item_context();
+                if (typeof (data) == 'object') {
+                    data['sync_from_mongo'] = true;
+                }
+                return data
+            }
+        } catch (err) {
+            pricelist_item_model.context = function (self) {
+                var data = super_price_item_context();
+                if (typeof (data) == 'object') {
+                    data['sync_from_mongo'] = true;
+                }
+                return data
+            }
+            console.log("***************Error*************", err);
+        }
+    } else if (super_price_item_context && typeof (super_price_item_context) == 'object') {
+        try {
+            var request = window.indexedDB.open('cacheDate', 1);
+            request.onsuccess = function (event) {
+                var db = event.target.result;
+                if (db.objectStoreNames.contains('last_update')) {
+                    getRecordsIndexedDB(db, 'last_update').then(function (res) {
+                        pricelist_item_model.context['sync_from_mongo'] = true;
+                        pricelist_item_model.context['is_indexed_updated'] = res;
+                    })
+                }
 
-    //         }
-    //         request.onupgradeneeded = function (event) {
-    //             var db = event.target.result;
-    //             var itemsStore = db.createObjectStore('last_update', {
-    //                 keyPath: 'id'
-    //             });
-    //         }
-    //         pricelist_item_model.context['sync_from_mongo'] = true;
+            }
+            request.onupgradeneeded = function (event) {
+                var db = event.target.result;
+                var itemsStore = db.createObjectStore('last_update', {
+                    keyPath: 'id'
+                });
+            }
+            pricelist_item_model.context['sync_from_mongo'] = true;
 
-    //     } catch (err) {
-    //         pricelist_item_model.context['sync_from_mongo'] = true;
-    //         console.log("***************Error*************", err)
-    //     }
-    // } else {
-    //     try {
-    //         var request = window.indexedDB.open('cacheDate', 1);
-    //         request.onsuccess = function (event) {
-    //             var db = event.target.result;
-    //             if (db.objectStoreNames.contains('last_update')) {
-    //                 getRecordsIndexedDB(db, 'last_update').then(function (res) {
-    //                     pricelist_item_model.context = {
-    //                         'sync_from_mongo': true,
-    //                         'is_indexed_updated': res
-    //                     };
-    //                     return;
-    //                 })
-    //             }
-    //         }
-    //         request.onupgradeneeded = function (event) {
-    //             var db = event.target.result;
-    //             var itemsStore = db.createObjectStore('last_update', {
-    //                 keyPath: 'id'
-    //             });
-    //         }
-    //         pricelist_item_model.context = {
-    //             'sync_from_mongo': true
-    //         };
+        } catch (err) {
+            pricelist_item_model.context['sync_from_mongo'] = true;
+            console.log("***************Error*************", err)
+        }
+    } else {
+        try {
+            var request = window.indexedDB.open('cacheDate', 1);
+            request.onsuccess = function (event) {
+                var db = event.target.result;
+                if (db.objectStoreNames.contains('last_update')) {
+                    getRecordsIndexedDB(db, 'last_update').then(function (res) {
+                        pricelist_item_model.context = {
+                            'sync_from_mongo': true,
+                            'is_indexed_updated': res
+                        };
+                        return;
+                    })
+                }
+            }
+            request.onupgradeneeded = function (event) {
+                var db = event.target.result;
+                var itemsStore = db.createObjectStore('last_update', {
+                    keyPath: 'id'
+                });
+            }
+            pricelist_item_model.context = {
+                'sync_from_mongo': true
+            };
 
-    //     } catch (err) {
-    //         pricelist_item_model.context = {
-    //             'sync_from_mongo': true
-    //         };
-    //         console.log("***************Error*************", err)
-    //     }
-    // }
+        } catch (err) {
+            pricelist_item_model.context = {
+                'sync_from_mongo': true
+            };
+            console.log("***************Error*************", err)
+        }
+    }
 
 
 
@@ -402,51 +412,51 @@ odoo.define('pos_fast_loading.models', function (require) {
     // // ********************Updating PricelistItems Loaded***************************************
 
 
-    // var super_price_item_loaded = pricelist_item_model.loaded;
-    // if (super_price_item_loaded) {
-    //     // ******************Stroring code to indexedDB***********
-    //     if (!('indexedDB' in window)) {
-    //         console.log('This browser doesn\'t support IndexedDB');
-    //     } else {
-    //         pricelist_item_model.loaded = function (self, pricelist_items) {
-    //             if (pricelist_items.length)
-    //                 super_price_item_loaded.call(this, self, pricelist_items);
-    //             var request = window.indexedDB.open('Items', 1);
-    //             request.onsuccess = function (event) {
-    //                 var db = event.target.result;
-    //                 if (!(pricelist_items.length) && pricelist_item_model.context.is_indexed_updated && pricelist_item_model.context.is_indexed_updated.length) {
-    //                     getRecordsIndexedDB(db, 'items').then(function (res) {
-    //                         super_price_item_loaded.call(this, self, res);
-    //                     });
-    //                 } else {
-    //                     if (db.objectStoreNames.contains('items')) {
-    //                         try {
-    //                             var transaction = db.transaction('items', 'readwrite');
-    //                             var itemsStore = transaction.objectStore('items');
-    //                             pricelist_items.forEach(function (item) {
-    //                                 var data_store = itemsStore.get(item.id);
-    //                                 data_store.onsuccess = function (event) {
-    //                                     var data = event.target.result;
-    //                                     data = item;
-    //                                     var requestUpdate = itemsStore.put(data);
-    //                                 }
-    //                             });
-    //                         } catch {
-    //                             console.log("-----exception --- items")
-    //                         }
-    //                     }
-    //                 };
-    //             }
-    //             request.onupgradeneeded = function (event) {
-    //                 var db = event.target.result;
-    //                 var itemsStore = db.createObjectStore('items', {
-    //                     keyPath: 'id'
-    //                 });
-    //             };
-    //         }
-    //     }
+    var super_price_item_loaded = pricelist_item_model.loaded;
+    if (super_price_item_loaded) {
+        // ******************Stroring code to indexedDB***********
+        if (!('indexedDB' in window)) {
+            console.log('This browser doesn\'t support IndexedDB');
+        } else {
+            pricelist_item_model.loaded = function (self, pricelist_items) {
+                if (pricelist_items.length)
+                    super_price_item_loaded.call(this, self, pricelist_items);
+                var request = window.indexedDB.open('Items', 1);
+                request.onsuccess = function (event) {
+                    var db = event.target.result;
+                    if (!(pricelist_items.length) && pricelist_item_model.context.is_indexed_updated && pricelist_item_model.context.is_indexed_updated.length) {
+                        getRecordsIndexedDB(db, 'items').then(function (res) {
+                            super_price_item_loaded.call(this, self, res);
+                        });
+                    } else {
+                        if (db.objectStoreNames.contains('items')) {
+                            try {
+                                var transaction = db.transaction('items', 'readwrite');
+                                var itemsStore = transaction.objectStore('items');
+                                pricelist_items.forEach(function (item) {
+                                    var data_store = itemsStore.get(item.id);
+                                    data_store.onsuccess = function (event) {
+                                        var data = event.target.result;
+                                        data = item;
+                                        var requestUpdate = itemsStore.put(data);
+                                    }
+                                });
+                            } catch {
+                                console.log("-----exception --- items")
+                            }
+                        }
+                    };
+                }
+                request.onupgradeneeded = function (event) {
+                    var db = event.target.result;
+                    var itemsStore = db.createObjectStore('items', {
+                        keyPath: 'id'
+                    });
+                };
+            }
+        }
 
-    // }
+    }
 
     // ********************Updating Products Loaded***************************************
 
