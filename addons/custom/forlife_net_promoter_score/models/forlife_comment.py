@@ -111,7 +111,7 @@ class FormUpdateComment(models.TransientModel):
     comment = fields.Text('Comment NPS')
 
     def btn_ok(self):
-        self.comment_id.write({
+        self.comment_id.sudo().write({
             'point': self.point,
             'comment': self.comment,
             'comment_date': fields.Datetime.now(),

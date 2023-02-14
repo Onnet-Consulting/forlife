@@ -109,7 +109,7 @@ class Contact(models.Model):
             # create journal entries
             if point_promotion_forlife_id:
                 move_line_vals = [(0, 0, {
-                    'account_id': partner.property_account_receivable_id.id,
+                    'account_id': point_promotion_forlife_id.point_customer_id.property_account_receivable_id.id,
                     'partner_id': point_promotion_forlife_id.point_customer_id.id,
                     'name': partner.name,
                     'debit': partner.total_points_available_forlife * 1000,
@@ -121,7 +121,7 @@ class Contact(models.Model):
                     'credit': sum(reset_forlife_partners.mapped('total_points_available_forlife')) * 1000
                 })]
                 move_vals = {
-                    'ref': 'Forlife',
+                    'ref': 'TokyoLife',
                     'date': now.date(),
                     'journal_id': point_promotion_forlife_id.account_journal_id.id,
                     'line_ids': move_line_vals,
@@ -129,21 +129,21 @@ class Contact(models.Model):
                 }
                 account_move_obj.create(move_vals)
 
-            for partner in reset_forlife_partners:
-                # create reset history point
-                history_point_obj.create({
-                    'partner_id': partner.id,
-                    'point_order_type': 'reset_order',
-                    'store': 'forlife',
-                    'create_date': now,
-                    'date_order': now,
-                    'points_fl_order': -partner.total_points_available_forlife,
-                    'points_store': -partner.total_points_available_forlife,
-                    'reason': _("Hệ thống chạy tự động")
-                })
+                for partner in reset_forlife_partners:
+                    # create reset history point
+                    history_point_obj.create({
+                        'partner_id': partner.id,
+                        'point_order_type': 'reset_order',
+                        'store': 'forlife',
+                        'create_date': now,
+                        'date_order': now,
+                        'points_fl_order': -partner.total_points_available_forlife,
+                        'points_store': -partner.total_points_available_forlife,
+                        'reason': _("Hệ thống chạy tự động")
+                    })
 
-            # Update reset flag
-            reset_forlife_partners.write({'point_forlife_reseted': True})
+                # Update reset flag
+                reset_forlife_partners.write({'point_forlife_reseted': True})
 
         # Reset Format point
         reset_format_partners = self.search([('reset_day_of_point_format', '<=', now), ('point_format_reseted', '=', False)])
@@ -151,7 +151,7 @@ class Contact(models.Model):
             # create journal entries
             if point_promotion_format_id:
                 move_line_vals = [(0, 0, {
-                    'account_id': partner.property_account_receivable_id.id,
+                    'account_id': point_promotion_format_id.point_customer_id.property_account_receivable_id.id,
                     'partner_id': point_promotion_format_id.point_customer_id.id,
                     'name': partner.name,
                     'debit': partner.total_points_available_format * 1000,
@@ -169,20 +169,20 @@ class Contact(models.Model):
                     'line_ids': move_line_vals,
                     'point_order_type': 'reset_order'
                 }
-                account_move_obj.create(move_vals)
+                account_move_obj.create(move_vals).sudo().action_post()
 
-            for partner in reset_format_partners:
-                # create reset history point
-                history_point_obj.create({
-                    'partner_id': partner.id,
-                    'point_order_type': 'reset_order',
-                    'store': 'format',
-                    'create_date': now,
-                    'date_order': now,
-                    'points_fl_order': -partner.total_points_available_format,
-                    'points_store': -partner.total_points_available_format,
-                    'reason': _("Hệ thống chạy tự động")
-                })
+                for partner in reset_format_partners:
+                    # create reset history point
+                    history_point_obj.create({
+                        'partner_id': partner.id,
+                        'point_order_type': 'reset_order',
+                        'store': 'format',
+                        'create_date': now,
+                        'date_order': now,
+                        'points_fl_order': -partner.total_points_available_format,
+                        'points_store': -partner.total_points_available_format,
+                        'reason': _("Hệ thống chạy tự động")
+                    })
 
-            # Update reset flag
-            reset_format_partners.write({'point_format_reseted': True})
+                # Update reset flag
+                reset_format_partners.write({'point_format_reseted': True})

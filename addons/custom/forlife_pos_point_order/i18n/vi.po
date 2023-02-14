@@ -427,3 +427,14 @@ msgstr "Xác nhận"
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_compensate_point_wizard_form
 msgid "Cancel"
 msgstr "Huỷ"
+
+
+#. module: forlife_pos_point_order
+#: model:ir.actions.act_window,name:forlife_pos_point_order.action_compensate_forlife_point_wizard
+msgid "Compensate Forlife Point"
+msgstr "Bù điểm"
+
+#. module: forlife_pos_point_order
+#: model:ir.actions.act_window,name:forlife_pos_point_order.action_compensate_format_point_wizard
+msgid "Compensate Format Point"
+msgstr "Bù điểm"
