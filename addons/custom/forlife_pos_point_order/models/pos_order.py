@@ -237,6 +237,6 @@ class PosOrder(models.Model):
             ]
 
         }
-        move = self.env['account.move'].create(move_vals)
+        move = self.env['account.move'].create(move_vals)._post()
         self.point_addition_move_ids |= move
         return True
