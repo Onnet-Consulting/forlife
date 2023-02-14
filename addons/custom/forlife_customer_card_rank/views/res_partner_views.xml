@@ -2,20 +2,26 @@
 <odoo>
     <data>
 
-       <record id="res_partner_view_form_inherit" model="ir.ui.view">
-           <field name="name">res_partner_view_form_inherit</field>
-           <field name="model">res.partner</field>
-           <field name="inherit_id" ref="base.view_partner_form"/>
-           <field name="arch" type="xml">
+        <record id="res_partner_view_form_inherit" model="ir.ui.view">
+            <field name="name">res_partner_view_form_inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
 
-               <xpath expr=".//notebook" position="inside">
+                <xpath expr=".//notebook" position="inside">
                     <page string="Card Rank" name="card_rank">
                         <field name="card_rank_ids"/>
                     </page>
+                    <page string="Card Rank Format" name="card_rank_format">
+                        <field name="card_rank_format"/>
+                    </page>
+                    <page string="Card Rank TokyoLife" name="card_rank_tokyolife">
+                        <field name="card_rank_tokyolife"/>
+                    </page>
                 </xpath>
 
-           </field>
-       </record>
+            </field>
+        </record>
 
     </data>
 </odoo>
