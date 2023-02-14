@@ -156,21 +156,6 @@
             </field>
         </record>
 
-        <record id="form_update_store_view_form_message" model="ir.ui.view">
-            <field name="name">form_update_store_view_form_message</field>
-            <field name="model">form.update.store</field>
-            <field name="priority">100</field>
-            <field name="arch" type="xml">
-                <form string="form_update_store_form_message">
-                    <sheet>
-                        <group>
-                            <field name="store_add" attrs="{'invisible': [('store_add', '=', False)]}"/>
-                            <field name="store_del" attrs="{'invisible': [('store_del', '=', False)]}"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
         <template id="message_update_stores">
             <t t-out="time"/>
             <p t-if="added">

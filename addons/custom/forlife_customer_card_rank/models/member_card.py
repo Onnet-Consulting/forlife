@@ -17,8 +17,8 @@ class MemberCard(models.Model):
     is_register = fields.Boolean('Is Register', default=False)
     register_from_date = fields.Date('Register From Date')
     register_to_date = fields.Date('Register To Date')
-    from_date = fields.Date('Time Apply', copy=False)
-    to_date = fields.Date('To Date', copy=False)
+    from_date = fields.Date('Time Apply', copy=False, tracking=True)
+    to_date = fields.Date('To Date', copy=False, tracking=True)
     is_all_store = fields.Boolean('Is All Store', default=True, tracking=True)
     store_ids = fields.Many2many('store', string='Stores Apply')
     time_set_rank = fields.Integer('Time Set Rank', default=0)
@@ -95,8 +95,6 @@ class FormUpdateStore(models.TransientModel):
 
     member_card_id = fields.Many2one('member.card', string='Member Card')
     store_ids = fields.Many2many('store', string='Stores Apply')
-    store_add = fields.Text("Store Added")
-    store_del = fields.Text("Store Deleted")
 
     def btn_ok(self):
         store_add = self.store_ids - self.member_card_id.store_ids

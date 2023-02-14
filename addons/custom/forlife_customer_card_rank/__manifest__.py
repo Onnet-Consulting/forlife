@@ -30,6 +30,8 @@
 
         'views/card_rank_views.xml',
         'views/member_card_views.xml',
+        'views/partner_card_rank_views.xml',
+        'views/res_partner_views.xml',
         'views/menuitem.xml',
     ]
 }

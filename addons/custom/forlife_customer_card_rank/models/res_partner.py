@@ -7,8 +7,4 @@ from odoo.exceptions import ValidationError
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    def _get_name(self):
-        try:
-            return self.name + ' tgjgktygkejrh'
-        except:
-            return super(ResPartner, self)._get_name()
+    card_rank_ids = fields.One2many('partner.card.rank', inverse_name='customer_id', string='Card Rank')

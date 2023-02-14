@@ -7,7 +7,7 @@ class CardRank(models.Model):
     _name = 'card.rank'
     _description = 'Card Rank'
 
-    name = fields.Char('Program Name', required=True)
+    name = fields.Char('Name', required=True)
 
     _sql_constraints = [
         ("name_uniq", "unique(name)", "Rank name must be unique"),

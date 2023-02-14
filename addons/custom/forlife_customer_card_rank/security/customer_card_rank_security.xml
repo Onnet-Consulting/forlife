@@ -7,9 +7,14 @@
             <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
         </record>
 
+        <record id="update_card_rank" model="res.groups">
+            <field name="name">Update Card Rank</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
         <record id="base.group_system" model="res.groups">
-           <field name="implied_ids" eval="[(4, ref('forlife_customer_card_rank.member_card_manager'))]"/>
-       </record>
+            <field name="implied_ids" eval="[(4, ref('forlife_customer_card_rank.member_card_manager'))]"/>
+        </record>
 
     </data>
 </odoo>

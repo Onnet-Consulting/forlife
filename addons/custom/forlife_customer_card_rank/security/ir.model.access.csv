@@ -3,4 +3,6 @@ access_card_rank_manager,card.rank manager,model_card_rank,forlife_customer_card
 access_card_rank_user,card.rank user,model_card_rank,base.group_user,1,0,0,0
 access_member_card_manager,member.card manager,model_member_card,forlife_customer_card_rank.member_card_manager,1,1,1,1
 access_member_card_user,member.card user,model_member_card,base.group_user,1,0,0,0
+access_partner_card_rank,partner.card.rank,model_partner_card_rank,base.group_user,1,1,1,1
+access_partner_card_rank_line,partner.card.rank.line,model_partner_card_rank_line,base.group_user,1,1,1,1
 access_form_update_store,form.update.store,model_form_update_store,forlife_customer_card_rank.member_card_manager,1,1,1,1
