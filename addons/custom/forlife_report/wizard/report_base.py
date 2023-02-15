@@ -3,9 +3,9 @@
 from odoo import api, fields, models, _
 
 
-class ReportAbstract(models.TransientModel):
-    _name = 'report.abstract'
-    _description = 'Report Abstract'
+class ReportBase(models.AbstractModel):
+    _name = 'report.base'
+    _description = 'Report Base'
 
     def _get_query_params(self):
         return []
@@ -13,7 +13,7 @@ class ReportAbstract(models.TransientModel):
     def _get_query(self):
         return """select count(*) from res_partner"""
 
-    def get_report_data(self):
+    def get_data(self):
         query = self._get_query()
         query_params = self._get_query_params()
         data = self.env.cr.execute(query, query_params)

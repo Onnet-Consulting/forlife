@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportRevenueByProduct">
+        <h1>revenue here, can you see it</h1>
+    </t>
+</template>

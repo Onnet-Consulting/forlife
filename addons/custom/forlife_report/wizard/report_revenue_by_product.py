@@ -6,7 +6,7 @@ from odoo.exceptions import ValidationError
 
 class ReportRevenueByProduct(models.TransientModel):
     _name = 'report.revenue.by.product'
-    _inherit = 'report.abstract'
+    _inherit = 'report.base'
     _description = 'Report revenue by product'
 
     from_date = fields.Date(string='From date', required=True)
@@ -21,3 +21,7 @@ class ReportRevenueByProduct(models.TransientModel):
         for record in self:
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
+
+    def view_report(self):
+        action = self.env.ref('forlife_report.report_revenue_by_product_client_action').read()[0]
+        return action

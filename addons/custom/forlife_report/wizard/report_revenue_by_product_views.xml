@@ -34,7 +34,7 @@
         </field>
     </record>
 
-    <record id="report_revenue_by_product_action" model="ir.actions.act_window">
+    <record id="report_revenue_by_product_window_action" model="ir.actions.act_window">
         <field name="name">Report revenue by product</field>
         <field name="res_model">report.revenue.by.product</field>
         <field name="view_mode">form</field>
@@ -42,7 +42,7 @@
     </record>
 
     <menuitem id="report_revenue_by_product_menu"
-              action="report_revenue_by_product_action"
+              action="report_revenue_by_product_window_action"
               parent="report_menu_sale"
               sequence="1"/>
 </odoo>
