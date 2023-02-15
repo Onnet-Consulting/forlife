@@ -45,7 +45,6 @@
             <field name="arch" type="xml">
                 <tree string="partner_card_rank_line_tree">
                     <field name="partner_card_rank_id" invisible="1"/>
-                    <field name="date" invisible="1"/>
                     <field name="order_id"/>
                     <field name="order_date"/>
                     <field name="value_orders"/>
@@ -71,7 +70,6 @@
                             <field name="new_card_rank_id"/>
                         </group>
                         <field name="partner_card_rank_id" invisible="1"/>
-                        <field name="date" invisible="1"/>
                     </sheet>
                 </form>
             </field>
@@ -80,15 +78,20 @@
         <record id="partner_card_rank_line_view_form_update_manual" model="ir.ui.view">
             <field name="name">partner_card_rank_line_view_form_update_manual</field>
             <field name="model">partner.card.rank.line</field>
+            <field name="priority">1000</field>
             <field name="arch" type="xml">
                 <form string="partner_card_rank_line_form">
                     <sheet>
                         <group>
-                            <field name="old_card_rank_id"/>
-                            <field name="new_card_rank_id"/>
+                            <group>
+                                <field name="old_card_rank_id"/>
+                            </group>
+                            <group>
+                                <field name="new_card_rank_id"/>
+                            </group>
                         </group>
                         <field name="partner_card_rank_id" invisible="1"/>
-                        <field name="date" invisible="1"/>
+                        <field name="order_date" invisible="1"/>
                     </sheet>
                 </form>
             </field>
