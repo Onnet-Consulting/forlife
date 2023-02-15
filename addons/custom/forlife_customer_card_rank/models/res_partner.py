@@ -3,6 +3,8 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
+no_data = _('<h1 style="text-align: center; color: red;">Khách hàng chưa có thông tin hạng thẻ</h1>')
+
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
@@ -14,8 +16,8 @@ class ResPartner(models.Model):
     def _compute_card_rank(self):
         for line in self:
             data = line.card_rank_ids.generate_card_rank_data()
-            line.card_rank_format = data.get(f'{self.env.ref("forlife_point_of_sale.brand_format").code}-{str(line.id)}', 'No data')
-            line.card_rank_tokyolife = data.get(f'{self.env.ref("forlife_point_of_sale.brand_tokyolife").code}-{str(line.id)}', 'No data')
+            line.card_rank_format = data.get(f'{self.env.ref("forlife_point_of_sale.brand_format").code}-{str(line.id)}', no_data)
+            line.card_rank_tokyolife = data.get(f'{self.env.ref("forlife_point_of_sale.brand_tokyolife").code}-{str(line.id)}', no_data)
 
     def btn_change_card_rank(self):
         partner_card_rank = self.validate_brand_info()

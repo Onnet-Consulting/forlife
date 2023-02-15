@@ -6,14 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-14 09:51+0000\n"
-"PO-Revision-Date: 2023-02-14 09:51+0000\n"
+"POT-Creation-Date: 2023-02-15 03:18+0000\n"
+"PO-Revision-Date: 2023-02-15 10:25+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: \n"
+"Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
+"Language: vi\n"
+"X-Generator: Poedit 2.3\n"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__accumulated_sales
@@ -84,6 +86,20 @@ msgid "Brand Code"
 msgstr "Mã thương hiệu"
 
 #. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/res_partner.py:0
+#, python-format
+msgid "Brand XML ID not found"
+msgstr "Không tim thấy xml_id của thương hiệu"
+
+#. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/res_partner.py:0
+#, python-format
+msgid "Brand by XML ID '%s' not found"
+msgstr "Không tìm thấy thương hiệu bằng xml_id '%s'"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.constraint,message:forlife_customer_card_rank.constraint_partner_card_rank_data_uniq
 msgid "Brand on Customer must be unique !"
 msgstr "Thương hiệu trên Khách hàng là duy nhất !"
@@ -99,9 +115,29 @@ msgstr "Hủy"
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_ids
 #: model:ir.ui.menu,name:forlife_customer_card_rank.card_rank_menu
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
 msgid "Card Rank"
 msgstr "Hạng thẻ"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_format
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_format
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
+msgid "Card Rank Format"
+msgstr "Hạng thẻ Format"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_tokyolife
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_tokyolife
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
+msgid "Card Rank TokyoLife"
+msgstr "Hạng thẻ TokyoLife"
+
+#. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/res_partner.py:0
+#, python-format
+msgid "Card Rank for '%s' brand not found"
+msgstr "Không tim thấy hạng thẻ cho thương hiệu '%s'"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_res_partner
@@ -115,7 +151,7 @@ msgstr "Danh bạ"
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__create_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Được tạo bởi"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__create_date
@@ -124,7 +160,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__create_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Được tạo vào"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__customer_id
@@ -137,14 +173,14 @@ msgid "Customer Group"
 msgstr "Nhóm khách hàng"
 
 #. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__date
-msgid "Date"
-msgstr "Ngày"
-
-#. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_form
 msgid "Detail"
 msgstr "Chi tiết"
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
+msgid "Detail Card Rank"
+msgstr "Chi tiết hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__display_name
@@ -153,7 +189,7 @@ msgstr "Chi tiết"
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Tên hiển thị"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.constraint,message:forlife_customer_card_rank.constraint_member_card_check_dates
@@ -221,7 +257,7 @@ msgstr ""
 #: model:ir.actions.server,name:forlife_customer_card_rank.ir_cron_action_inactive_member_card_program_ir_actions_server
 #: model:ir.cron,cron_name:forlife_customer_card_rank.ir_cron_action_inactive_member_card_program
 msgid "Inactive Member Card Program"
-msgstr ""
+msgstr "Tắt chương trình hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__is_all_store
@@ -233,6 +269,11 @@ msgstr "Tất cả cửa hàng"
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_is_follower
 msgid "Is Follower"
 msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order__is_rank
+msgid "Is Rank"
+msgstr "Được xét hạng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__is_register
@@ -376,8 +417,11 @@ msgid "POS Payment Method"
 msgstr "Phương thức thanh toán"
 
 #. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/res_partner.py:0
 #: model:ir.model,name:forlife_customer_card_rank.model_partner_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__partner_card_rank_id
+#, python-format
 msgid "Partner Card Rank"
 msgstr "Hạng thẻ khách hàng"
 
@@ -385,6 +429,11 @@ msgstr "Hạng thẻ khách hàng"
 #: model:ir.model,name:forlife_customer_card_rank.model_partner_card_rank_line
 msgid "Partner Card Rank Line"
 msgstr "Chi tiết hạng thẻ"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_pos_order
+msgid "Point of Sale Orders"
+msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__order_id
@@ -430,7 +479,6 @@ msgstr "Tìm kiếm"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
-#: code:addons/forlife_customer_card_rank/models/member_card.py:0
 #: code:addons/forlife_customer_card_rank/models/member_card.py:0
 #, python-format
 msgid "Store added: %s"
@@ -478,7 +526,11 @@ msgid "TokyoLife"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/res_partner.py:0
 #: model:res.groups,name:forlife_customer_card_rank.update_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
+#, python-format
 msgid "Update Card Rank"
 msgstr "Cập nhật hạng thẻ"
 

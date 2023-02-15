@@ -22,14 +22,14 @@ class PosOrder(models.Model):
             self.create_partner_card_rank_detail(partner_card_rank)
 
     def create_partner_card_rank(self):
-        res = self.env['partner.card.rank'].create({
+        res = self.env['partner.card.rank'].sudo().create({
             'customer_id': self.partner_id.id,
             'brand_id': self.config_id.store_id.brand_id.id,
         })
         return res
 
     def create_partner_card_rank_detail(self, partner_card_rank):
-        self.env['partner.card.rank.line'].create({
+        self.env['partner.card.rank.line'].sudo().create({
             'partner_card_rank_id': partner_card_rank.id,
             'order_id': self.id,
             'order_date': self.date_order,

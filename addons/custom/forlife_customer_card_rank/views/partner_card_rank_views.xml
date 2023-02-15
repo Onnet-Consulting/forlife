@@ -22,14 +22,18 @@
                 <form string="partner_card_rank_form">
                     <sheet>
                         <group>
-                            <field name="brand_id"/>
-                            <field name="card_rank_id"/>
-                            <field name="accumulated_sales"/>
-                            <field name="last_order_date"/>
+                            <group>
+                                <field name="brand_id"/>
+                                <field name="card_rank_id"/>
+                            </group>
+                            <group>
+                                <field name="accumulated_sales"/>
+                                <field name="last_order_date"/>
+                            </group>
                         </group>
                         <notebook>
                             <page name="detail" string="Detail">
-                                <field name="line_ids"/>
+                                <field name="line_ids" readonly="1"/>
                             </page>
                         </notebook>
                     </sheet>
@@ -62,12 +66,16 @@
                 <form string="partner_card_rank_line_form">
                     <sheet>
                         <group>
-                            <field name="order_id"/>
-                            <field name="order_date"/>
-                            <field name="value_orders"/>
-                            <field name="value_to_upper"/>
-                            <field name="old_card_rank_id"/>
-                            <field name="new_card_rank_id"/>
+                            <group>
+                                <field name="order_id"/>
+                                <field name="order_date"/>
+                                <field name="value_orders"/>
+                            </group>
+                            <group>
+                                <field name="old_card_rank_id"/>
+                                <field name="new_card_rank_id"/>
+                                <field name="value_to_upper"/>
+                            </group>
                         </group>
                         <field name="partner_card_rank_id" invisible="1"/>
                     </sheet>
@@ -87,7 +95,7 @@
                                 <field name="old_card_rank_id"/>
                             </group>
                             <group>
-                                <field name="new_card_rank_id"/>
+                                <field name="new_card_rank_id" domain="[('id', '!=', old_card_rank_id)]"/>
                             </group>
                         </group>
                         <field name="partner_card_rank_id" invisible="1"/>
