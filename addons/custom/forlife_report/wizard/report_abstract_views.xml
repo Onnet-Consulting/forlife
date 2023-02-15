@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem id="report_menu"
+              name="Report"
+              sequence="1"
+              web_icon="forlife_report,static/description/icon.svg"
+    />
+
+    <menuitem id="report_menu_sale"
+              name="Sales"
+              parent="report_menu"
+              sequence="1"/>
+</odoo>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_revenue_by_product_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.revenue.by.product</field>
+        <field name="arch" type="xml">
+            <form string="Revenue by Product">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="from_date"/>
+                        </group>
+                        <group>
+                            <field name="to_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="all_products"/>
+                            <field name="product_ids" attrs="{'invisible': [('all_products', '=', True)]}" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="all_warehouses"/>
+                            <field name="warehouse_ids" attrs="{'invisible': [('all_warehouses', '=', True)]}" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="print_xlsx" type="object" string="Download Excel" class="btn-primary"/>
+                    <button name="view_report" type="object" string="View" class="btn-primary"/>
+                    <button special="cancel" string="Cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_revenue_by_product_action" model="ir.actions.act_window">
+        <field name="name">Report revenue by product</field>
+        <field name="res_model">report.revenue.by.product</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="report_revenue_by_product_menu"
+              action="report_revenue_by_product_action"
+              parent="report_menu_sale"
+              sequence="1"/>
+</odoo>
