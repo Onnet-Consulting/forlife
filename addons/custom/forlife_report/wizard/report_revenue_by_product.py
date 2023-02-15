@@ -25,3 +25,6 @@ class ReportRevenueByProduct(models.TransientModel):
     def view_report(self):
         action = self.env.ref('forlife_report.report_revenue_by_product_client_action').read()[0]
         return action
+
+    def get_data(self):
+        return [{"name": "abc defg lalala"}] * 200

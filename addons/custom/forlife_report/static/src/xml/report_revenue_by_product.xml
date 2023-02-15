@@ -1,6 +1,60 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template xml:space="preserve">
     <t t-name="ReportRevenueByProduct">
-        <h1>revenue here, can you see it</h1>
+        <div class="report_content">
+            <table class="content">
+            </table>
+        </div>
+    </t>
+    <t t-name="ReportRevenueByProductMain">
+        <thead>
+            <tr>
+                <th>STT</th>
+                <th>Từ ngày</th>
+                <th>Đến ngày</th>
+                <th>Chi nhánh</th>
+                <th>Mã SP</th>
+                <th>Tên SP</th>
+                <th>Size</th>
+                <th>Màu</th>
+                <th>Đơn vị</th>
+                <th>Giá niêm yết</th>
+                <th>Số lượng</th>
+                <th>Chiết khấu</th>
+                <th>Thành tiền</th>
+                <th>Nhóm hàng</th>
+                <th>Dòng hàng</th>
+                <th>Kết cấu</th>
+                <th>Mã loại SP</th>
+                <th>Kênh bán</th>
+            </tr>
+        </thead>
+        <tbody>
+                <t t-if="data">
+                    <t t-foreach="data" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                        <td><t t-esc="line.name"/></td>
+                    </tr>
+                </t>
+                </t>
+
+            </tbody>
     </t>
 </template>

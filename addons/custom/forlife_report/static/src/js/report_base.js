@@ -3,6 +3,8 @@ odoo.define('forlife_report.report_base', function (require) {
 
     const core = require('web.core');
     const AbstractAction = require('web.AbstractAction');
+    var QWeb = core.qweb;
+    var _t = core._t;
 
     let ReportBaseAction = AbstractAction.extend({
         init: function (parent, action) {
@@ -12,6 +14,11 @@ odoo.define('forlife_report.report_base', function (require) {
             return this._super.apply(this, arguments);
         },
 
+        start: async function(){
+            await this._super(...arguments);
+            this.render();
+        },
+
         willStart: async function () {
             let self = this;
             const reportPromise = this._rpc({
@@ -19,9 +26,25 @@ odoo.define('forlife_report.report_base', function (require) {
                 method: 'get_data',
                 args: [this.report_options],
                 context: this.odoo_context
-            }).then(res => self.data = res)
+            }).then(res => {
+                this.data = res;
+                console.log(res)
+            })
             const parentPromise = this._super(...arguments);
             return Promise.all([reportPromise, parentPromise]);
+        },
+
+        update_cp: function () {
+            let status = {
+                title: _t('Report withheld products'),
+            };
+            return this.updateControlPanel(status);
+        },
+
+        render: function () {
+            let self = this;
+            self.update_cp();
+            this.$('table.content').append(QWeb.render(this.contentMainTemplate, {"data": self.data}))
         },
     });
 
