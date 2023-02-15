@@ -9,11 +9,11 @@ class Contact(models.Model):
     _inherit = 'res.partner'
 
     is_purchased_of_forlife = fields.Boolean('Is Purchased Forlife', compute='_comnpute_is_purchased')
-    is_purchased_of_format = fields.Boolean('Is Purchased Forlife', compute='_comnpute_is_purchased')
+    is_purchased_of_format = fields.Boolean('Is Purchased Format', compute='_comnpute_is_purchased')
     is_member_app_forlife = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     is_member_app_format = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
-    reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife')
-    reset_day_of_point_format = fields.Datetime('Day Reset Format')
+    reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife', readonly=True)
+    reset_day_of_point_format = fields.Datetime('Day Reset Format', readonly=True)
     total_points_available_forlife = fields.Integer('Total Points Availible', compute='compute_point_total')
     total_points_available_format = fields.Integer('Total Points Availible', compute='compute_point_total')
     history_points_format_ids = fields.One2many('partner.history.point', 'partner_id', string='History Point Store', domain=[('store', '=', 'format')], readonly=True)
@@ -127,7 +127,7 @@ class Contact(models.Model):
                     'line_ids': move_line_vals,
                     'point_order_type': 'reset_order'
                 }
-                account_move_obj.create(move_vals)
+                account_move_obj.create(move_vals).sudo().action_post()
 
                 for partner in reset_forlife_partners:
                     # create reset history point

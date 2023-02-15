@@ -31,7 +31,23 @@
         'data/cron_job_data.xml',
         'views/pos_order.xml',
         'views/res_partner_view.xml',
+        'security/ir.model.access.csv',
+        'views/promotion_inherit_view.xml'
     ],
+    'installable': True,
+    'application': True,
+    'assets': {
+        'point_of_sale.assets': [
+            'forlife_pos_point_order/static/src/xml/OrderDetails.xml',
+            'forlife_pos_point_order/static/src/xml/OrderLineDetails.xml',
+            'forlife_pos_point_order/static/src/xml/PointsConsumption.xml',
+            'forlife_pos_point_order/static/src/xml/PointsConsumptionPopup.xml',
+            'forlife_pos_point_order/static/src/js/Button/PointsConsumptionButton.js',
+            'forlife_pos_point_order/static/src/js/Popup/PointsConsumptionPopup.js',
+            'forlife_pos_point_order/static/src/js/OrderDetails/OrderLinesDetails.js',
+            'forlife_pos_point_order/static/src/js/models.js'
+        ]
+    },
     'installable': True,
     'application': True,
 }
