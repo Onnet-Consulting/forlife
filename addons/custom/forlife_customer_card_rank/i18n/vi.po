@@ -90,7 +90,7 @@ msgstr "Mã thương hiệu"
 #: code:addons/forlife_customer_card_rank/models/res_partner.py:0
 #, python-format
 msgid "Brand XML ID not found"
-msgstr "Không tim thấy xml_id của thương hiệu"
+msgstr "Không tìm thấy xml_id của thương hiệu"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
