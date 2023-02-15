@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="forlife_pos_point_order.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension" owl="1">
+        <xpath expr="//span[hasclass('price')]" position="inside">
+                <li class="info orderline-point">
+                    <i class="fa fa-ticket" role="img" aria-label="Point" title="Point"/>
+                    <t t-if="props.line.point">
+                        <span><t t-esc="props.line.point"/> </span>
+                    </t>
+                </li>
+        </xpath>
+    </t>
+</templates>

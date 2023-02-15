@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="PointsConsumptionPopup" owl="1">
+        <div class="popup product-info-popup">
+            <header class="title">
+                <t t-esc="props.title"/>
+            </header>
+            <main class="body">
+                <t t-if="props.program_promotion.approve_consumption_point == true">
+<!--                <t t-esc="props.program_promotion.approve_consumption_point"/>-->
+                    <!--                <t t-esc="props.program_promotion.point_consumption_ids"/>-->
+                    <t t-if="props.program_promotion.apply_all == true">
+                        <table style="width:100%; border:1px solid black;">
+                            <tr style="width:100%; border:1px solid black;">
+                                <th style="border:1px solid black;text">Tên sản phẩm</th>
+                                <th style="border:1px solid black;">Giá</th>
+                                <th style="border:1px solid black;">Điểm sử dụng</th>
+                            </tr>
+                            <t t-foreach="props.product_valid_apply_all" t-as="line" t-key="line.id">
+                                <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
+                                    <tr style="width:100%; border:1px solid black;">
+                                        <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
+<!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
+                                        <td style="border:1px solid black;width:130px;text-align: right;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
+                                        <td style="border:1px solid black;width:85px;">
+                                            <t t-if="line_last and num_last">
+                                                <input t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                            </t>
+                                            <t t-else="">
+                                                <input t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+
+                            </t>
+                        </table>
+                        <span style="color:red;" t-if="state.error_popup_flag" class="error-message">
+                            <t t-esc="error" />
+                        </span>
+                        <span style="float:right; margin-right:34px;">
+                        Tổng điểm :
+                            <span id="total" >
+                            <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">
+                                <t t-if="branch.name == 'TokyoLife'">
+                                    <t t-esc="props.order.partner.total_points_available_forlife"/>
+                                </t>
+                                <t t-if="branch.name == 'Format'">
+                                    <t t-esc="props.order.partner.total_points_available_format"/>
+                                </t>
+                            </t>
+                            </span>
+                        </span>
+                    </t>
+                    <t t-else="">
+                        <table style="width:100%; border:1px solid black;">
+                            <tr style="width:100%; border:1px solid black;">
+                                <th style="border:1px solid black;">Sản phẩm</th>
+                                <th style="border:1px solid black;">Giá</th>
+                                <th style="border:1px solid black;">Điểm sử dụng</th>
+                            </tr>
+                            <t t-foreach="props.product_valid" t-as="line" t-key="line.id">
+                                <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
+                                    <tr style="width:100%; border:1px solid black;">
+                                        <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
+<!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
+                                        <td style="border:1px solid black;width:130px;text-align: right;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
+                                        <td style="border:1px solid black;width:85px;">
+                                            <t t-if="line_last and num_last">
+                                                <input t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                            </t>
+                                            <t t-else="">
+                                                <input t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                            </t>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+                        </table>
+                        <span style="color:red;" t-if="state.error_popup_flag" class="error-message">
+                            <t t-esc="error" />
+                        </span>
+                        <span style="float:right; margin-right:34px;">
+                        Tổng điểm :
+                            <span id="total">
+                            <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">
+                                <t t-if="branch.name == 'TokyoLife'">
+                                    <t t-esc="props.order.partner.total_points_available_forlife"/>
+                                </t>
+                                <t t-if="branch.name == 'Format'">
+                                    <t t-esc="props.order.partner.total_points_available_format"/>
+                                </t>
+                            </t>
+                            </span>
+                        </span>
+                    </t>
+                </t>
+            </main>
+            <footer class="footer">
+                <div style="width:100%">
+                    <div class="button cancel" t-on-click="cancel">
+                        <t t-esc="props.cancelTitle"/>
+                    </div>
+                    <div class="button confirm highlight" t-on-click="division">
+                        <t t-esc="props.divisionpoint"/>
+                    </div>
+                    <div class="button confirm highlight" t-on-click="confirm">
+                        <t t-esc="props.confirmTitle"/>
+                    </div>
+                </div>
+
+            </footer>
+        </div>
+    </t>
+</templates>
