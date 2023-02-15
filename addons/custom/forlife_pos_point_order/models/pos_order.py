@@ -86,10 +86,10 @@ class PosOrder(models.Model):
                 [x.point_addition_event for x in pos.lines]),
             'point_order_type': point_type,
             'reason': reason or pos.name or '',
-            'points_used': abs(sum([line.point/1000 for line in pos.lines])),  # go back to edit
+            'points_used': abs(sum([line.point / 1000 for line in pos.lines])),  # go back to edit
             'points_back': 0,  # go back to edit
             'points_store': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
-                [x.point_addition_event for x in pos.lines]) - abs(sum([line.point/1000 for line in pos.lines])) - 0
+                [x.point_addition_event for x in pos.lines]) - abs(sum([line.point / 1000 for line in pos.lines])) - 0
         }
 
     def _get_store_brand_from_program(self):
@@ -113,7 +113,8 @@ class PosOrder(models.Model):
                 rec.point_event_order = 0
             else:
                 valid_method_ids = rec.program_store_point_id.payment_method_ids.ids
-                valid_product_ids = rec.program_store_point_id.points_product_ids.filtered(lambda x: x.state == 'effective' and x.from_date <rec.date_order< x.to_date).product_ids.ids
+                valid_product_ids = rec.program_store_point_id.points_product_ids.filtered(
+                    lambda x: x.state == 'effective' and x.from_date < rec.date_order < x.to_date).product_ids.ids
                 for pay in rec.payment_ids:
                     if pay.payment_method_id.id in valid_method_ids:
                         valid_money_payment_method += pay.amount
@@ -199,6 +200,13 @@ class PosOrder(models.Model):
             create_Date = self._format_time_zone(data['date_order'])
         session = self.env['pos.session'].sudo().search([('id', '=', data['session_id'])], limit=1)
         store = session.config_id.store_id
+        # query = "select id from points_promotion where id in (select points_promotion_id from points_promotion_store_rel where store_id = {}) " \
+        #         "and state = 'in_progress' and from_date < '{}' and to_date > '{}' " \
+        #         "and brand_id ={} " \
+        #         "limit 1".format(store.id, create_Date, create_Date, store.brand_id.id)
+        # self._cr.execute(query)
+        # program_promotion = self.env.cr.fetchall()
+        # print(program_promotion)
         program_promotion = self.env['points.promotion'].sudo().search(
             [('store_ids', 'in', store.id), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date), ('to_date', '>=', create_Date),
              ('brand_id', '=', store.brand_id.id)], limit=1)
@@ -215,7 +223,7 @@ class PosOrder(models.Model):
             return {
                 'approve_consumption_point': program_promotion.approve_consumption_point,
                 'apply_all': program_promotion.apply_all,
-                'point_consumption_ids':dict_point_consumption_ids
+                'point_consumption_ids': dict_point_consumption_ids
             }
         return program_promotion
 

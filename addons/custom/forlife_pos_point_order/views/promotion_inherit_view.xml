@@ -9,14 +9,19 @@
                 <xpath expr="//page[@name='event']" position="after">
                     <page name="consumption_point" string="Consumption Point">
                         <group>
+                            <group>
                                 <field name="approve_consumption_point"/>
                                 <field name="apply_all"/>
-                            <field name="point_consumption_ids" string="Consumption Products Points">
-                                <tree edit="0">
-                                    <field name="default_code"/>
-                                    <field name="name"/>
-                                </tree>
-                            </field>
+                            </group>
+                            <group>
+                                <field name="point_consumption_ids" string="Consumption Products Points">
+                                    <tree edit="0">
+                                        <field name="default_code"/>
+                                        <field name="name"/>
+                                    </tree>
+                                </field>
+                            </group>
+
                         </group>
                     </page>
                 </xpath>
