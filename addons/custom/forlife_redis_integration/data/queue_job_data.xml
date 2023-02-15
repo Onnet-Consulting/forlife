@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="channel_redis" model="queue.job.channel">
+        <field name="name">Redis</field>
+        <field name="parent_id" ref="queue_job.channel_root"/>
+    </record>
+
+    <record id="stock_picking_send_internal_transfer_data_redis" model="queue.job.function">
+        <field name="model_id" ref="stock.model_stock_picking"/>
+        <field name="method">send_new_internal_transfer</field>
+        <field name="channel_id" ref="channel_redis"/>
+        <field name="retry_pattern" eval="{1: 10, 3: 60, 5: 300}"/>
+    </record>
+</odoo>

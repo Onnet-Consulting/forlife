@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="key_send_partner" model="redis.action.key">
+        <field name="key">send_partner</field>
+        <field name="description">Send partner data to Redis</field>
+    </record>
+</odoo>

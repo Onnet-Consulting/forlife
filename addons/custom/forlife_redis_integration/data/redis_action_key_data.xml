@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="key_send_internal_transfer" model="redis.action.key">
+        <field name="key">internal_transfer</field>
+        <field name="description">Send done internal transfer data to Redis</field>
+    </record>
+</odoo>
