@@ -191,11 +191,15 @@ msgstr ""
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__is_purchased_of_forlife
-#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__is_purchased_of_format
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__is_purchased_of_forlife
-#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__is_purchased_of_format
 msgid "Is Purchased Forlife"
-msgstr ""
+msgstr "Đã mua hàng"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__is_purchased_of_format
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__is_purchased_of_format
+msgid "Is Purchased Format"
+msgstr "Đã mua hàng"
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__item_total_point
