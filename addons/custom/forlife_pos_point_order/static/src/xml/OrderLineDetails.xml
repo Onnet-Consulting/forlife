@@ -4,7 +4,9 @@
         <xpath expr="//span[hasclass('price')]" position="inside">
                 <li class="info orderline-point">
                     <i class="fa fa-ticket" role="img" aria-label="Point" title="Point"/>
-                    <span><t t-esc="props.orderlines"/> </span>
+                    <t t-if="props.line.point">
+                        <span><t t-esc="props.line.point"/> </span>
+                    </t>
                 </li>
         </xpath>
     </t>

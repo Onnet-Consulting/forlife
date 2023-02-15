@@ -56,7 +56,8 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
             }
             var order_lines = this.order_lines;
             var promotion = await this.promotion;
-            var product_valid = []
+            var product_valid_apply_all = [];
+            var product_valid = [];
 //                các sản phẩm hợp lệ được cấu hình
             for (let i=0; i< order_lines.length;i++){
                     for(let j=0;j<promotion.point_consumption_ids.length;j++){
@@ -64,22 +65,48 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                             product_valid.push(order_lines[i]);
                         }
                     }
-                }
+            };
+
+            for (let i=0; i< order_lines.length;i++){
+                    product_valid_apply_all.push(order_lines[i])
+            };
 
             const {confirmed, payload: data} = await this.showPopup('PointsConsumptionPopup', {
                 startingValue: this.order_lines,
-                orderlines:this.env.pos.selectedOrder.orderlines,
-                points_of_customer: points_of_customer,
-                program_promotion: promotion,
+                product_valid_apply_all: product_valid_apply_all,
                 product_valid: product_valid,
+                points_of_customer: points_of_customer,
+                order: this.env.pos.get_order(),
+                program_promotion: promotion,
                 title: this.env._t('Tiêu điểm'),
                 confirmTitle: this.env._t('Xác nhận '),
                 divisionpoint: this.env._t('Chia điểm'),
                 cancelTitle: this.env._t('Xóa')
             });
-
-            if(confirmed){
-                console.log('333')
+            if (confirmed){
+                var tempResult = {}
+                for(let { id, point } of data){
+                        tempResult[id] = {
+                        id,
+                        point: tempResult[id] ? point + (tempResult[id].point) : point,
+                        // count: tempResult[id] ? tempResult[id].count + 1 : 1
+                    }
+                }
+                let result = Object.values(tempResult)
+                let order_lines = this.order_lines;
+                if (result.length < order_lines.length){
+                    for(let i = 0; i< order_lines.length; i++){
+                        for(let j = 0; j< result.length; j++){
+                            if (order_lines[i].id == result[j].id){
+                                order_lines[i].point = -result[j].point * 1000
+                            }
+                        }
+                    }
+                }else{
+                    for(let i = 0; i< result.length; i++){
+                        order_lines[i].point = - result[i].point * 1000
+                    }
+                };
             }
         }
 

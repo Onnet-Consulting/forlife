@@ -86,10 +86,10 @@ class PosOrder(models.Model):
                 [x.point_addition_event for x in pos.lines]),
             'point_order_type': point_type,
             'reason': reason or pos.name or '',
-            'points_used': 0,  # go back to edit
+            'points_used': abs(sum([line.point/1000 for line in pos.lines])),  # go back to edit
             'points_back': 0,  # go back to edit
             'points_store': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
-                [x.point_addition_event for x in pos.lines]) - 0 - 0
+                [x.point_addition_event for x in pos.lines]) - abs(sum([line.point/1000 for line in pos.lines])) - 0
         }
 
     def _get_store_brand_from_program(self):
@@ -209,9 +209,9 @@ class PosOrder(models.Model):
                 # dict_point_consumption_ids['id'] = r.product_id.id
                 # dict_point_consumption_ids['name'] = r.product_id.name
                 dict_point_consumption_ids.append({
-                    'id': r.product_id.id,
-                    'name': r.product_id.name,
-                    'price': r.product_id.lst_price
+                    'id': r.id,
+                    'name': r.name,
+                    'price': r.lst_price
                 })
             return {
                 'approve_consumption_point': program_promotion.approve_consumption_point,
@@ -260,5 +260,6 @@ class PosOrder(models.Model):
 
         }
         move = self.env['account.move'].create(move_vals)
+        move._post()
         self.point_addition_move_ids |= move
         return True

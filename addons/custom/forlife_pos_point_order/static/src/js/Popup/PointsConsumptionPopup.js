@@ -1,15 +1,13 @@
 odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require) {
     "use strict";
 
-    let core = require('web.core');
-    let _t = core._t;
+    const { _t } = require('web.core');
 
     const AbstractAwaitablePopup = require('point_of_sale.AbstractAwaitablePopup');
     const PosComponent = require('point_of_sale.PosComponent');
     const Registries = require('point_of_sale.Registries');
     const {onMounted, useRef, useState} = owl;
     const {useBus} = require('@web/core/utils/hooks');
-
 
     class PointsConsumptionPopup extends AbstractAwaitablePopup {
         setup() {
@@ -18,13 +16,16 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
                 startingValue: this.props.startingValue,
                 program_promotion: this.props.program_promotion,
                 points_of_customer: this.props.points_of_customer,
-                product_valid:this.props.product_valid,
-                orderlines: this.props.orderlines,
+                product_valid: this.props.product_valid,
+                product_valid_apply_all: this.props.product_valid_apply_all,
+                val_division_apply_all: this.props.val_division_apply_all,
+                point_last_remainder_apply_all: this.props.point_last_remainder_apply_all,
+                error_popup_flag: false,
+                order: this.props.order,
             })
         }
 
         cancel() {
-            this.delete_value()
             console.log($('.o_input'))
             $('.o_input').val('')
             this.env.posbus.trigger('', {
@@ -40,42 +41,96 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
         push_value(){
             var promotion = this.props.program_promotion;
             var product_valid = this.props.product_valid;
+            var product_valid_apply_all = this.props.product_valid_apply_all;
             var points_of_customer = this.props.points_of_customer;
-            var val_division_apply_all = Math.floor(points_of_customer/this.env.pos.selectedOrder.orderlines.length);
-            var val_division_product_valid = Math.floor(points_of_customer/product_valid.length);
+            var quantity_product_apply_all = 0;
+            var quantity_product_valid = 0;
+            for (let index = 0; index < this.env.pos.selectedOrder.orderlines.length; index++) {
+                quantity_product_apply_all += this.env.pos.selectedOrder.orderlines[index].quantity
+            }
+            for (let index = 0; index < product_valid.length; index++) {
+                quantity_product_valid += product_valid[index].quantity
+            }
+            var value = $('.o_input')
             if (promotion.approve_consumption_point){
                 if(promotion.apply_all){
-                    for(let i=0; i< this.env.pos.selectedOrder.orderlines.length-1;i++){
-                        this.env.pos.selectedOrder.orderlines[i].point=val_division_apply_all;
-                    }
-                    this.env.pos.selectedOrder.orderlines[this.env.pos.selectedOrder.orderlines.length-1].point= val_division_apply_all+(points_of_customer % this.env.pos.selectedOrder.orderlines.length);
-                }else{
-                    for (let index = 0; index < product_valid.length-1; index++) {
-                        product_valid[index].point= val_division_product_valid;
-                    }
-                    product_valid[product_valid.length-1].point = val_division_product_valid + (points_of_customer % product_valid.length);
+                    //  apply all
+                    var val_division_apply_all = 0
+                    val_division_apply_all = Math.floor(points_of_customer/quantity_product_apply_all);
+                    var point_last_remainder_apply_all = 0
+                    point_last_remainder_apply_all = val_division_apply_all+(points_of_customer % quantity_product_apply_all);
+                    value.each(function( index ) {
+                      if(index!==(value.length-1)){
+                          $(this).val(val_division_apply_all)
+                      }
+                      if(index === (value.length-1)){
+                          $(this).val(point_last_remainder_apply_all)
+                      }
+                    });
+                }else {
+                    //  apply product valid
+                    var val_division_product_valid = 0
+                    val_division_product_valid = Math.floor(points_of_customer/quantity_product_valid);
+                    var point_last_remainder_product_valid = 0
+                    point_last_remainder_product_valid = val_division_product_valid+(points_of_customer % quantity_product_valid);
+                    value.each(function( index ) {
+                      if(index!==(value.length-1)){
+                          $(this).val(val_division_product_valid)
+                      }
+                      if(index === (value.length-1)){
+                          $(this).val(point_last_remainder_product_valid)
+                      }
+                    });
                 }
             }
-            this.state.product_valid = product_valid
-            this.state.orderlines = this.env.pos.selectedOrder.orderlines
-        }
 
-        delete_value(){
-            var product_valid = this.props.product_valid;
-            for(let i=0; i< this.env.pos.selectedOrder.orderlines.length;i++){
-                this.env.pos.selectedOrder.orderlines[i].point='';
-            }
-            for (let index = 0; index < product_valid.length-1; index++) {
-                product_valid[index].point= '';
-            }
-            this.state.product_valid = product_valid
-            this.state.orderlines = this.env.pos.selectedOrder.orderlines
-        }
+    }
 
         confirm() {
+            var total_points = parseInt($('#total').text())
+            var values = $('.o_input');
+            var obj=[];
+            var self = this;
+            self.state.error_popup_flag = false;
+            self.error = self.env._t('')
+            values.each(function( index ) {
+               $(this).css('color', 'black')
+            });
+            values.each(function( index ) {
+              if(parseInt($(this).attr('data-value_id'))/1000 < parseInt($(this).val())){
+                    self.state.error_popup_flag = true;
+                    self.error = self.env._t('Giá trị không hợp lệ!')
+                    $(this).css('color', 'red')
+              };
+            });
+            var total = 0;
+            values.each(function( index ) {
+               if ($(this).val()){
+                  total += parseInt($(this).val());
+               }
+            });
+            if (this.env.pos.pos_branch[0].name == "Format"){
+               if (total > this.props.order.partner.total_points_available_format){
+                    self.state.error_popup_flag = true;
+                    self.error = self.env._t('Tổng điểm sử dụng lớn hơn điểm đang có!')
+               }
+            }
+            if (this.env.pos.pos_branch[0].name == "TokyoLife"){
+               if (total > this.props.order.partner.total_points_available_forlife){
+                    self.state.error_popup_flag = true;
+                    self.error = self.env._t('Tổng điểm sử dụng lớn hơn điểm đang có!')
+               }
+            }
+            values.each(function( index ) {
+              obj.push({
+                  id: parseInt($(this).attr('id')),
+                  point: parseInt($(this).val())
+              })
+            });
+            if(self.state.error_popup_flag) return;
             this.env.posbus.trigger('close-popup', {
                 popupId: this.props.id,
-                response: {confirmed: true, payload: {key: 3}},
+                response: {confirmed: true, payload: obj},
             });
         }
 
@@ -84,7 +139,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
     PointsConsumptionPopup.template = "PointsConsumptionPopup";
     PointsConsumptionPopup.defaultProps = {
         cancelText: _t("Cancel"),
-        title: _t("Employee")
+        title: _t("Point")
     };
     Registries.Component.add(PointsConsumptionPopup);
 
