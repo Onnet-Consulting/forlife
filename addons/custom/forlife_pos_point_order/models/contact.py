@@ -127,7 +127,7 @@ class Contact(models.Model):
                     'line_ids': move_line_vals,
                     'point_order_type': 'reset_order'
                 }
-                account_move_obj.create(move_vals)
+                account_move_obj.create(move_vals).sudo().action_post()
 
                 for partner in reset_forlife_partners:
                     # create reset history point
