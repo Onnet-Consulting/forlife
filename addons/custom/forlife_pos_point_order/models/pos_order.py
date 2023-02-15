@@ -202,7 +202,6 @@ class PosOrder(models.Model):
         program_promotion = self.env['points.promotion'].sudo().search(
             [('store_ids', 'in', store.id), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date), ('to_date', '>=', create_Date),
              ('brand_id', '=', store.brand_id.id)], limit=1)
-        print(program_promotion)
         if self._context.get('from_PointsConsumptionPos'):
             dict_point_consumption_ids = []
             for r in program_promotion.point_consumption_ids:

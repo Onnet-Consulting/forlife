@@ -9,7 +9,7 @@ class Contact(models.Model):
     _inherit = 'res.partner'
 
     is_purchased_of_forlife = fields.Boolean('Is Purchased Forlife', compute='_comnpute_is_purchased')
-    is_purchased_of_format = fields.Boolean('Is Purchased Forlife', compute='_comnpute_is_purchased')
+    is_purchased_of_format = fields.Boolean('Is Purchased Format', compute='_comnpute_is_purchased')
     is_member_app_forlife = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     is_member_app_format = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife', readonly=True)
