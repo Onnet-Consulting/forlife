@@ -33,6 +33,7 @@
         'views/res_partner_retail_views.xml',
         'views/stock_warehouse_views.xml',
         'views/hr_employee_views.xml',
+        'views/res_users_views.xml',
     ],
     'external_dependencies': {
         'python': ['phonenumbers'],

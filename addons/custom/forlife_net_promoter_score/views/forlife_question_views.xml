@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="forlife_question_view_tree" model="ir.ui.view">
+            <field name="name">forlife_question_view_tree</field>
+            <field name="model">forlife.question</field>
+            <field name="arch" type="xml">
+                <tree string="forlife_question_tree">
+                    <field name="header"/>
+                    <field name="brand_id"/>
+                    <field name="start_date"/>
+                    <field name="finish_date"/>
+                    <field name="create_uid"/>
+                    <field name="create_date"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="forlife_question_view_form" model="ir.ui.view">
+            <field name="name">forlife_question_view_form</field>
+            <field name="model">forlife.question</field>
+            <field name="arch" type="xml">
+                <form string="forlife_question_form">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="header" />
+                            <h1>
+                                <field name="header"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="brand_id"/>
+                                <field name="start_date"/>
+                                <field name="finish_date"/>
+                                <field name="company_id" readonly="1" force_save="1"/>
+                                <field name="create_uid" readonly="1" force_save="1"/>
+                                <field name="create_date" readonly="1" force_save="1"/>
+                                <field name="banner"/>
+                                <field name="icon"/>
+                            </group>
+                            <group>
+                                <field name="question1"/>
+                                <field name="sub_quest1"/>
+                                <field name="sub_quest2"/>
+                                <field name="question2"/>
+                                <field name="success1"/>
+                                <field name="success2"/>
+                                <field name="success3"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="forlife_question_view_filter" model="ir.ui.view">
+            <field name="name">forlife_question_view_filter</field>
+            <field name="model">forlife.question</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="brand_id"/>
+                    <field name="header"/>
+                    <field name="question1"/>
+                    <field name="question2"/>
+                    <field name="company_id"/>
+                    <field name="start_date"/>
+                    <field name="finish_date"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="forlife_question_action" model="ir.actions.act_window">
+            <field name="name">Question</field>
+            <field name="res_model">forlife.question</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="forlife_question_menu" name="Question" parent="point_of_sale.menu_point_config_product" action="forlife_question_action" sequence="100"/>
+
+    </data>
+</odoo>

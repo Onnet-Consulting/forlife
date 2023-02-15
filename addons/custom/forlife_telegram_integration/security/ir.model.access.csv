@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_telegram_bot_manager,telegram.bot manager,model_telegram_bot,base.group_system,1,1,1,1
+access_telegram_bot_user,telegram.bot user,model_telegram_bot,base.group_user,1,0,0,0
+access_telegram_group_manager,telegram.group manager,model_telegram_group,base.group_system,1,1,1,1
+access_telegram_group_user,telegram.group user,model_telegram_group,base.group_user,1,0,0,0
+access_integration_telegram_manager,integration.telegram manager,model_integration_telegram,base.group_system,1,1,1,1
+access_integration_telegram_user,integration.telegram user,model_integration_telegram,base.group_user,1,0,0,0
