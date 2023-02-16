@@ -1,0 +1,38 @@
+.switch_report_buttons {
+    padding: 20px 16px;
+}
+
+.report_content {
+    background-color: white;
+    color: #666666;
+    padding: 24px 16px 125px;
+}
+
+.report_content table {
+    width: 100%;
+}
+
+.report_content table > thead > tr.center {
+    text-align: center;
+}
+
+.right {
+    text-align: right;
+}
+
+.index-report {
+    text-align: center;
+}
+
+.report_content table .custom_link {
+    color: #008784;
+    cursor: pointer;
+}
+
+.report_content table > tbody > tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+.report_hidden {
+    display: none !important;
+}

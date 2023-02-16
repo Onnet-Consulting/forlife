@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template xml:space="preserve">
     <t t-name="ReportRevenueByProduct">
-        <div class="report_content">
-            <table class="content">
-            </table>
-        </div>
+        <t t-call="ReportBase"/>
     </t>
     <t t-name="ReportRevenueByProductMain">
         <thead>
@@ -30,8 +27,8 @@
             </tr>
         </thead>
         <tbody>
-                <t t-if="data">
-                    <t t-foreach="data" t-as="line">
+            <t t-if="data">
+                <t t-foreach="data" t-as="line">
                     <tr>
                         <td><t t-esc="line.name"/></td>
                         <td><t t-esc="line.name"/></td>
@@ -53,8 +50,7 @@
                         <td><t t-esc="line.name"/></td>
                     </tr>
                 </t>
-                </t>
-
-            </tbody>
+            </t>
+        </tbody>
     </t>
 </template>

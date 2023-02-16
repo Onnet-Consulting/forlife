@@ -28,6 +28,7 @@
     'assets': {
         'web.assets_backend': [
             'forlife_report/static/src/xml/**/*',
+            'forlife_report/static/src/css/**/*',
             'forlife_report/static/src/js/**/*',
         ]
     }
