@@ -17,6 +17,7 @@
                 <xpath expr="//field[@name='lines']//tree//field[@name='full_product_name']" position="after">
                     <field name="point_addition"/>
                     <field name="point_addition_event"/>
+                    <field name="money_is_reduced"/>
                 </xpath>
 <!--                Hide button-->
 <!--                <xpath expr="//button[@name='refund']" position="after">-->
@@ -27,6 +28,18 @@
                             type="action" string="Compensate Point" class="oe_highlight"
                             groups="forlife_promotion.promotion_manager"
                             attrs="{'invisible': [('allow_compensate_point', '=', False)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='lines']//form//field[@name='notice']" position="after">
+                    <field name="discount_details_lines">
+                                      <tree>
+                                        <field name="type"/>
+                                        <field name="program_name"/>
+                                        <field name="listed_price"/>
+                                        <field name="recipe"/>
+                                        <field name="money_reduced"/>
+                                        <field name="currency_id" invisible="1"/>
+                                      </tree>
+                    </field>
                 </xpath>
             </field>
         </record>
