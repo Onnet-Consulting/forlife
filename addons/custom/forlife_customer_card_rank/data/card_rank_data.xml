@@ -4,26 +4,32 @@
 
         <record id="card_rank_member" model="card.rank">
             <field name="name">Thành viên</field>
+            <field name="priority">10</field>
         </record>
 
         <record id="card_rank_vip" model="card.rank">
             <field name="name">Cận VIP</field>
+            <field name="priority">20</field>
         </record>
 
         <record id="card_rank_silver" model="card.rank">
             <field name="name">Bạc</field>
+            <field name="priority">30</field>
         </record>
 
         <record id="card_rank_gold" model="card.rank">
             <field name="name">Vàng</field>
+            <field name="priority">40</field>
         </record>
 
         <record id="card_rank_diamond" model="card.rank">
             <field name="name">Kim cương</field>
+            <field name="priority">50</field>
         </record>
 
         <record id="card_rank_hoang_kim" model="card.rank">
             <field name="name">Hoàng Kim</field>
+            <field name="priority">60</field>
         </record>
 
     </data>

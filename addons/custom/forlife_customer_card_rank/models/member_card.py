@@ -3,13 +3,14 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 import pytz
+import copy
 
 
 class MemberCard(models.Model):
     _name = 'member.card'
     _description = 'Member Card'
     _inherit = ['mail.thread']
-    _order = 'to_date desc, max_turnover desc, min_turnover desc'
+    _order = 'to_date desc, min_turnover desc, min_turnover desc'
 
     brand_id = fields.Many2one("res.brand", string="Brand", required=True, default=lambda s: s.env['res.brand'].search([('code', '=', s._context.get('default_brand_code', ''))], limit=1))
     brand_code = fields.Char('Brand Code', required=True)
@@ -21,12 +22,11 @@ class MemberCard(models.Model):
     to_date = fields.Date('To Date', copy=False, tracking=True)
     is_all_store = fields.Boolean('Is All Store', default=True, tracking=True)
     store_ids = fields.Many2many('store', string='Stores Apply')
-    time_set_rank = fields.Integer('Time Set Rank', default=0)
+    time_set_rank = fields.Integer('Time Set Rank', default=180, tracking=True)
     customer_group_ids = fields.Many2many('res.partner.group', string='Customer Group')
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method')
     card_rank_id = fields.Many2one('card.rank', string='Rank', tracking=True)
-    min_turnover = fields.Integer('Turnover')
-    max_turnover = fields.Integer('Max Turnover')
+    min_turnover = fields.Integer('Turnover', tracking=True)
     original_price = fields.Integer('Original Price')
     apply_value_from_1 = fields.Integer('Apply Value From1')
     apply_value_to_1 = fields.Integer('Apply Value To1')
@@ -40,14 +40,46 @@ class MemberCard(models.Model):
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
 
-    @api.constrains("from_date", "to_date", 'active')
+    @api.constrains("from_date", "to_date", 'active', 'min_turnover', 'card_rank_id')
     def validate_time(self):
         for record in self:
-            res = self.search(['&', '&', '&', ('brand_id', '=', record.brand_id.id), ('card_rank_id', '=', record.card_rank_id.id), ('id', '!=', record.id),
-                               '|', '&', ('from_date', '<=', record.from_date), ('to_date', '>=', record.from_date),
-                               '&', ('from_date', '<=', record.to_date), ('to_date', '>=', record.to_date)])
-            if res:
-                raise ValidationError(_("Time is overlapping."))
+            domain_master = record.get_master_domain()
+            check_time_dm = copy.copy(domain_master)
+            check_time_dm.insert(3, ('card_rank_id', '=', record.card_rank_id.id))
+            check_time_dm.insert(0, '&')
+            check_time_exist = self.search(check_time_dm)
+            if check_time_exist:
+                raise ValidationError(_("Time of '%s' rank is overlapping.") % record.card_rank_id.name)
+
+            previous_rank_id, next_rank_id = self.env['card.rank'].get_ranking_around(record.card_rank_id.priority)
+            if next_rank_id:
+                for rank_id in next_rank_id:
+                    next_rank_dm = copy.copy(domain_master)
+                    next_rank_dm.insert(3, ('min_turnover', '<=', record.min_turnover))
+                    next_rank_dm.insert(4, ('card_rank_id', '=', rank_id))
+                    next_rank_dm.insert(0, '&')
+                    next_rank_dm.insert(0, '&')
+                    check_next_exist = self.search(next_rank_dm, order='min_turnover asc', limit=1)
+                    if check_next_exist:
+                        raise ValidationError(_("Turnover of '%s' rank must be less than Turnover of '%s' rank '%s'"
+                                                ) % (record.card_rank_id.name, check_next_exist.card_rank_id.name, '{:,.0f}'.format(check_next_exist.min_turnover)))
+            if previous_rank_id:
+                for rank_id in previous_rank_id:
+                    previous_rank_dm = copy.copy(domain_master)
+                    previous_rank_dm.insert(3, ('min_turnover', '>=', record.min_turnover))
+                    previous_rank_dm.insert(4, ('card_rank_id', '=', rank_id))
+                    previous_rank_dm.insert(0, '&')
+                    previous_rank_dm.insert(0, '&')
+                    check_previous_exist = self.search(previous_rank_dm, order='min_turnover desc', limit=1)
+                    if check_previous_exist:
+                        raise ValidationError(_("Turnover of '%s' rank must be greater than Turnover of '%s' rank '%s'"
+                                                ) % (record.card_rank_id.name, check_previous_exist.card_rank_id.name, '{:,.0f}'.format(check_previous_exist.min_turnover)))
+
+    def get_master_domain(self):
+        self.ensure_one()
+        return ['&', '&', ('brand_id', '=', self.brand_id.id), ('id', '!=', self.id),
+                '|', '&', ('from_date', '<=', self.from_date), ('to_date', '>=', self.from_date),
+                '&', ('from_date', '<=', self.to_date), ('to_date', '>=', self.to_date)]
 
     def btn_add_stores(self):
         ctx = dict(self._context)

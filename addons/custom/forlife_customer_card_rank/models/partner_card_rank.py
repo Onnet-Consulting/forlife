@@ -39,15 +39,15 @@ class PartnerCardRank(models.Model):
                 _detail += f"<tr style=\"text-align: center;\">" \
                            f"<td>{detail.order_id and detail.order_id.name or ''}</td>" \
                            f"<td>{detail.order_date and detail.order_date.astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y') or ''}</td>" \
-                           f"<td style=\"text-align: right !important;\">{'{:20,.0f}'.format(detail.value_orders or 0)}</td>" \
-                           f"<td style=\"text-align: right !important;\">{'{:20,.0f}'.format(detail.value_to_upper or 0)}</td>" \
+                           f"<td style=\"text-align: right !important;\">{'{:,.0f}'.format(detail.value_orders or 0)}</td>" \
+                           f"<td style=\"text-align: right !important;\">{'{:,.0f}'.format(detail.value_to_upper or 0)}</td>" \
                            f"<td>{detail.old_card_rank_id.name}</td>" \
                            f"<td>{detail.new_card_rank_id.name}</td></tr>"
             value = f"<br/><div class=\"row\">" \
-                    f"<div class=\"col-2\"><b>Hạng:</b></div><div class=\"col-10\">{line.card_rank_id.name}</div>" \
-                    f"<div class=\"col-2\"><b>Doanh số tích lũy:</b></div><div class=\"col-10\">{'{:20,.0f}'.format(line.accumulated_sales or 0)}</div>" \
-                    f"<div class=\"col-2\"><b>Ngày mua gần nhất:</b></div>" \
-                    f"<div class=\"col-10\">{line.last_order_date and line.last_order_date.astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y') or ''}</div></div>" \
+                    f"<div class=\"col-3\"><b>Hạng:</b></div><div class=\"col-9\">{line.card_rank_id.name}</div>" \
+                    f"<div class=\"col-3\"><b>Doanh số xét hạng hiện tại:</b></div><div class=\"col-9\">{'{:,.0f}'.format(line.accumulated_sales or 0)}</div>" \
+                    f"<div class=\"col-3\"><b>Ngày mua gần nhất:</b></div>" \
+                    f"<div class=\"col-9\">{line.last_order_date and line.last_order_date.astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y') or ''}</div></div>" \
                     f"<br/><table class=\"table table-bordered\">" \
                     f"<tr style=\"text-align: center; background: #031d74c7; color: #ffffff;\"><th colspan=\"6\">Lịch sử nâng hạng</th></tr>" \
                     f"<tr style=\"text-align: center; background: #031d74c7; color: #ffffff;\">" \

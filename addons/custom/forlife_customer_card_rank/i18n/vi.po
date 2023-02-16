@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-16 01:12+0000\n"
-"PO-Revision-Date: 2023-02-16 08:31+0700\n"
+"POT-Creation-Date: 2023-02-16 11:22+0000\n"
+"PO-Revision-Date: 2023-02-16 18:23+0700\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -281,6 +281,17 @@ msgid "Is Register"
 msgstr "Đăng ký nhà nước"
 
 #. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/card_rank.py:0
+#, python-format
+msgid ""
+"It is not possible to change the priority of the Rank '%s' due to the ongoing "
+"programs"
+msgstr ""
+"Không thể thay đổi thứ hạng của hạng '%s' do các chương trình đang "
+"diễn ra"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card____last_update
@@ -324,11 +335,6 @@ msgid "Main Attachment"
 msgstr ""
 
 #. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__max_turnover
-msgid "Max Turnover"
-msgstr "Doanh số đến"
-
-#. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_member_card
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__member_card_id
 #: model:ir.ui.menu,name:forlife_customer_card_rank.member_card_categ_menu
@@ -351,11 +357,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_ids
 msgid "Messages"
 msgstr ""
-
-#. module: forlife_customer_card_rank
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_tree
-msgid "Min Turnover"
-msgstr "Doanh số từ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__name
@@ -441,6 +442,18 @@ msgid "Pos Order"
 msgstr "Đơn hàng"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__priority
+msgid "Priority"
+msgstr "Thứ hạng"
+
+#. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/card_rank.py:0
+#, python-format
+msgid "Priority must be unique '%s'"
+msgstr ""
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__name
 msgid "Program Name"
 msgstr "Tên chương trình"
@@ -455,6 +468,11 @@ msgstr "Hạng"
 #: model:ir.model.constraint,message:forlife_customer_card_rank.constraint_card_rank_name_uniq
 msgid "Rank name must be unique"
 msgstr "Tên hạng phải là duy nhất"
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
+msgid "Recognition % value apply from"
+msgstr "Ghi nhận % áp dụng giá trị từ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__register_from_date
@@ -511,8 +529,8 @@ msgstr "Thời gian xét hạng"
 #. odoo-python
 #: code:addons/forlife_customer_card_rank/models/member_card.py:0
 #, python-format
-msgid "Time is overlapping."
-msgstr "Thời gian bị chồng chéo."
+msgid "Time of '%s' rank is overlapping."
+msgstr "Thời gian của hạng '%s' bị chồng chéo."
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__to_date
@@ -528,7 +546,21 @@ msgstr ""
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__min_turnover
 msgid "Turnover"
-msgstr "Doanh số"
+msgstr "Doanh số từ"
+
+#. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/member_card.py:0
+#, python-format
+msgid "Turnover of '%s' rank must be greater than Turnover of '%s' rank '%s'"
+msgstr "Doanh số của hạng '%s' phải lớn hơn doanh số của hạng '%s' là '%s'"
+
+#. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/member_card.py:0
+#, python-format
+msgid "Turnover of '%s' rank must be less than Turnover of '%s' rank '%s'"
+msgstr "Doanh số của hạng '%s' phải nhỏ hơn doanh số của hạng '%s' là '%s'"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
@@ -555,7 +587,7 @@ msgstr "Giá trị đơn hàng"
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__value_to_upper
 msgid "Value to upper"
-msgstr "Giá trị xét hạng"
+msgstr "Giá trị xét hạng theo CT"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__website_message_ids
