@@ -9,8 +9,8 @@ class ReportRevenueByProduct(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report revenue by product'
 
-    from_date = fields.Date(string='From date', required=True)
-    to_date = fields.Date(string='To date', required=True)
+    from_date = fields.Date(string='From date', required=True, default="2022-01-01")
+    to_date = fields.Date(string='To date', required=True,default="2022-12-12")
     all_products = fields.Boolean(string='All products', default=False)
     all_warehouses = fields.Boolean(string='All warehouses', default=False)
     product_ids = fields.Many2many('product.product', string='Products')

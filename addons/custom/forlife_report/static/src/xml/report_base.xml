@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <t t-name="ReportPager">
+        <div>
+            <span class="o_pager_counter">
+                <span class="o_pager_value">
+                    <t t-esc="options.page_num"/>
+                </span>
+                /
+                <span class="o_pager_limit">
+                    <t t-esc="options.total_records"/>
+                </span>
+            </span>
+            <button type="button" class="fa fa-chevron-left btn btn-secondary o_pager_previous" t-att="att_prev"
+                    aria-label="Previous" title="Previous" tabindex="-1"/>
+            <button type="button" class="fa fa-chevron-right btn btn-secondary o_pager_next" t-att="att_next"
+                    aria-label="Next" title="Next" tabindex="-1"/>
+        </div>
+    </t>
+
     <t t-name="ReportBase">
-        <div class="report_content">
-            <table class="content">
-            </table>
+        <div id="main">
+            <t t-call="ReportPager"/>
         </div>
     </t>
 </odoo>
