@@ -8,14 +8,14 @@
             <field name="arch" type="xml">
                 <tree string="member_card_tree" decoration-muted="(not active)">
                     <field name="name"/>
+                    <field name="card_rank_id"/>
                     <field name="from_date" string="From Date"/>
                     <field name="to_date"/>
-                    <field name="card_rank_id"/>
+                    <field name="min_turnover" string="Min Turnover"/>
+                    <field name="max_turnover"/>
                     <field name="is_register"/>
                     <field name="is_all_store"/>
                     <field name="time_set_rank"/>
-                    <field name="customer_group_ids" widget="many2many_tags"/>
-                    <field name="payment_method_ids" widget="many2many_tags"/>
                     <field name="active"/>
                 </tree>
             </field>

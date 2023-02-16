@@ -3,7 +3,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
-no_data = _('<h1 style="text-align: center; color: red;">Khách hàng chưa có thông tin hạng thẻ</h1>')
+no_data = '<h1 style="text-align: center; color: red;">Khách hàng chưa có thông tin hạng thẻ</h1>'
 
 
 class ResPartner(models.Model):

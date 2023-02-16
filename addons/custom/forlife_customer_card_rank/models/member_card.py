@@ -9,7 +9,7 @@ class MemberCard(models.Model):
     _name = 'member.card'
     _description = 'Member Card'
     _inherit = ['mail.thread']
-    _order = 'active desc, to_date desc'
+    _order = 'to_date desc, max_turnover desc, min_turnover desc'
 
     brand_id = fields.Many2one("res.brand", string="Brand", required=True, default=lambda s: s.env['res.brand'].search([('code', '=', s._context.get('default_brand_code', ''))], limit=1))
     brand_code = fields.Char('Brand Code', required=True)
@@ -25,7 +25,7 @@ class MemberCard(models.Model):
     customer_group_ids = fields.Many2many('res.partner.group', string='Customer Group')
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method')
     card_rank_id = fields.Many2one('card.rank', string='Rank', tracking=True)
-    min_turnover = fields.Integer('Min Turnover')
+    min_turnover = fields.Integer('Turnover')
     max_turnover = fields.Integer('Max Turnover')
     original_price = fields.Integer('Original Price')
     apply_value_from_1 = fields.Integer('Apply Value From1')
