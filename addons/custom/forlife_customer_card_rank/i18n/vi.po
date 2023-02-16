@@ -20,7 +20,7 @@ msgstr ""
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__accumulated_sales
 msgid "Accumulated Sales"
-msgstr "Doanh số tích lũy"
+msgstr "Doanh số xét hạng hiện tại"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_needaction

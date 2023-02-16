@@ -120,6 +120,8 @@ class MemberCard(models.Model):
                 )
         return res
 
+    def get_member_card_by_date(self, date, brand_id):
+        return self.search([('brand_id', '=', brand_id), ('from_date', '<=', date), ('to_date', '>=', date)])
 
 class FormUpdateStore(models.TransientModel):
     _name = 'form.update.store'
