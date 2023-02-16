@@ -77,6 +77,8 @@ class PromotionProgram(models.Model):
         'pos.config', readonly=False, string="Point of Sales", help="Restrict publishing to those shops.")
 
     customer_domain = fields.Char('Customer Domain', default='[]')
+    total_order_count = fields.Integer("Total Order Count", compute="_compute_total_order_count")
+
 
     # Combo
     combo_line_ids = fields.One2many(
@@ -204,6 +206,9 @@ class PromotionProgram(models.Model):
             else:
                 line.valid_product_ids = self.env['product.product']
             line.product_count = len(line.valid_product_ids)
+
+    def _compute_total_order_count(self):
+        self.total_order_count = 0
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")

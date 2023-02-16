@@ -17,6 +17,7 @@ class PosSession(models.Model):
                 'month.data',
                 'dayofmonth.data',
                 'dayofweek.data',
+                'hour.data',
             ]
         return result
 
@@ -37,6 +38,14 @@ class PosSession(models.Model):
         }
 
     def _loader_params_dayofweek_data(self):
+        return {
+            'search_params': {
+                'domain': [],
+                'fields': ['id', 'code']
+            }
+        }
+
+    def _loader_params_hour_data(self):
         return {
             'search_params': {
                 'domain': [],
@@ -111,3 +120,6 @@ class PosSession(models.Model):
 
     def _get_pos_ui_dayofweek_data(self, params):
         return self.env['dayofweek.data'].search_read(**params['search_params'])
+
+    def _get_pos_ui_hour_data(self, params):
+        return self.env['hour.data'].search_read(**params['search_params'])

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+from uuid import uuid4
 
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class PromotionCode(models.Model):
@@ -8,8 +9,15 @@ class PromotionCode(models.Model):
     _description = 'Promotion Code'
     _rec_name = 'name'
 
+    @api.model
+    def _generate_code(self):
+        """
+        Barcode identifiable codes.
+        """
+        return '044' + str(uuid4())[7:-18]
+
     program_id = fields.Many2one('promotion.program')
-    name = fields.Char()
+    name = fields.Char(default=lambda self: self._generate_code(), required=True)
     partner_id = fields.Many2one('res.partner')
     used_partner_ids = fields.Many2many('res.partner', 'promotion_code_used_res_partner_rel')
     # Nếu được gán Partner thì dùng 1 lần duy nhất
@@ -25,3 +33,4 @@ class PromotionCode(models.Model):
     pos_order_ids = fields.Many2many('pos.order')
     reward_for_referring = fields.Boolean(related='program_id.reward_for_referring')
     referred_partner_id = fields.Many2one('res.partner')
+    expiration_date = fields.Date()

@@ -51,6 +51,7 @@ class PromotionGenerateCode(models.Model):
             'program_id': self.program_id.id,
             'amount': amount,
             'partner_id': partner.id if self.mode == 'selected' else False,
+            'expiration_date': self.valid_until,
         }
 
     def generate_codes(self):

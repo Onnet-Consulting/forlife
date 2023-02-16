@@ -18,11 +18,18 @@
     'depends': [
         'point_of_sale',
         'forlife_point_of_sale',
-        'forlife_promotion'
+        'forlife_promotion',
     ],
     'assets': {
         'web.assets_backend': [
-            'forlife_pos_promotion/static/src/js/**/*',
+            'forlife_pos_promotion/static/src/js/Promotion.js',
+            'forlife_pos_promotion/static/src/js/ControlButtons/PromotionButton.js',
+            'forlife_pos_promotion/static/src/js/ControlButtons/EnterCodeButton.js',
+            'forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js',
+
+            'forlife_pos_promotion/static/src/xml/ControlButtons/PromotionButton.xml',
+            'forlife_pos_promotion/static/src/xml/ControlButtons/EnterCodeButton.xml',
+            'forlife_pos_promotion/static/src/xml/Popup/ProgramSelectionPopup.xml',
         ],
     },
 

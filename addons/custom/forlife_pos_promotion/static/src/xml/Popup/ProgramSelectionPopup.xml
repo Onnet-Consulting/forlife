@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ProgramSelectionPopup" owl="1">
+        <div class="popup popup-text popup-med product-configurator-popup">
+            <header class="title">
+                <t t-esc="'Chọn chương trình khuyến mãi'" />
+            </header>
+            <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
+                <ul>
+                    <t t-foreach="props.programs" t-as="program" t-key="program.id">
+                        <li>
+                            <input type="checkbox" name="programs"
+                                   t-att-id="program.id"
+                                   t-att-value="program.id"
+                                   t-att-checked="'checked' ? program.isSelected : ''"/>
+                            <label t-att-for="program.id">
+                            <t t-esc="program.label"/>(X&nbsp;	<span t-esc="program.forecastedNumber"/> &nbsp;	Combo)
+                            </label>
+                        </li>
+                    </t>
+                </ul>
+            </main>
+            <footer class="footer">
+                <div class="button highlight confirm" t-on-click="confirm">
+                    Apply
+                </div>
+                <div class="button cancel" t-on-click="cancel">
+                    Cancel
+                </div>
+            </footer>
+        </div>
+    </t>
+
+</templates>
