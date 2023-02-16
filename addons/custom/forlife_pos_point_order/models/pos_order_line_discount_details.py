@@ -5,7 +5,7 @@ class PosOlDiscountDetails(models.Model):
     _name = 'pos.order.line.discount.details'
 
     pos_order_line_id = fields.Many2one('pos.order.line')
-    type = fields.Selection([('ctkm', 'CTKM'), ('point', 'Point'), ('make_price', 'Make Price'), ('card', 'Card')])
+    type = fields.Selection([('ctkm', 'CTKM'), ('point', 'Point'), ('make_price', 'Make Price'), ('card', 'Card')], string='Type')
     program_name = fields.Many2one('points.promotion', related='pos_order_line_id.order_id.program_store_point_id')
     listed_price = fields.Monetary('Listed price')
     recipe = fields.Float('Recipe')
