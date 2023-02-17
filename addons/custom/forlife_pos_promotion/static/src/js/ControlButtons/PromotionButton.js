@@ -94,7 +94,7 @@ export class PromotionButton extends PosComponent {
 
     async onClick() {
         const order = this.env.pos.get_order();
-        const potentialPrograms = order.getPotentialPrograms()
+        const potentialPrograms = order.getPotentialProgramsToSelect()
         if (potentialPrograms.size === 0) {
             await this.showPopup('ErrorPopup', {
                 title: this.env._t('No program available.'),
@@ -106,12 +106,16 @@ export class PromotionButton extends PosComponent {
                 id: pro.program.id,
                 label: pro.program.name,
                 isSelected: false,
-                forecastedNumber: pro.number
+                forecastedNumber: pro.number,
+                order_apply: -1,
+                apply_multi_program: pro.program.apply_multi_program,
+                discounted_amount: 0.0,
+                forecasted_discounted_amount: 0.0,
             }));
-            console.log('programsList', programsList);
             const { confirmed, payload: selectedReward } = await this.showPopup('ProgramSelectionPopup', {
                 title: this.env._t('Please select some program'),
                 programs: programsList,
+                discount_total: 0
             });
 //            if (confirmed) {
 //                return this._applyReward(selectedReward.reward, selectedReward.coupon_id, selectedReward.potentialQty);

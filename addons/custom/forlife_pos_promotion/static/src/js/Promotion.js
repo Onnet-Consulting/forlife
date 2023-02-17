@@ -1,4 +1,6 @@
 /** @odoo-module **/
+//odoo.define('forlife_pos_promotion.modelsPromotion ', function (require) {
+//    "use strict";
 
 import { Order, Orderline, PosGlobalState} from 'point_of_sale.models';
 import Registries from 'point_of_sale.Registries';
@@ -143,12 +145,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
     export_as_JSON() {
         const json = super.export_as_JSON(...arguments);
-        json.activatedComboPrograms = this.activatedComboPrograms;
-        json.activatedCodePrograms = this.activatedCodePrograms;
+        let activatedCombo = new Set(this.activatedComboPrograms);
+        let activatedCode = new Set(this.activatedCodePrograms);
+        json.activatedComboPrograms = [...activatedCombo];
+        json.activatedCodePrograms = [...activatedCode];
         json.activatedInputCodes = this.activatedInputCodes;
         return json;
     }
     init_from_JSON(json) {
+        console.log('init from_Json', json);
         super.init_from_JSON(...arguments);
         this.activatedComboPrograms = new Set(json.activatedComboPrograms);
         this.activatedCodePrograms = new Set(json.activatedCodePrograms);
@@ -169,7 +174,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
         if (!program.promotion_type == 'combo') {return false;};
         if (program.with_code) {
-            if (!this.activatedInputCodes.map(code => code.program_id).includes(program.id)) {return false;};
+            if (this.activatedInputCodes) {
+                if (!this.activatedInputCodes.map(code => code.program_id).includes(program.id)) {return false;};
+            } else {return false;};
         };
         var day = this.creation_date.getDay();
         var date = this.creation_date.getDate();
@@ -178,7 +185,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         var hasDate = program.applied_days.has(this.creation_date.getDate());
         var hasMonth = program.applied_months.has(this.creation_date.getMonth() + 1);
         var hasHour = program.applied_hours.has(this.creation_date.getHours());
-        if (!hasDate || !hasMonth || !hasHour) {return false};
+        if (!hasDate || !hasMonth || !hasHour) {;return false};
         return true;
     }
 
@@ -203,18 +210,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     async _updateActivatedPromotionPrograms() {
-        let activatedCodes = this.activatedInputCodes;
-        if (Array.isArray(this.activatedInputCodes)) {
-            for (let code of activatedCodes) {
-                let program = this.pos.promotion_program_by_id[code.program_id];
-                if (program && program.promotion_type == 'combo') {
-                    this.activatedComboPrograms.add(code.program_id);
-                }
-                else if (program && program.promotion_type == 'code') {
-                    this.activatedCodePrograms.add(code.program_id);
-                };
-            };
-            for (let proID of Object.keys(this.verifyComboProgramOnOrder(this.pos.promotionPrograms))) {
+        console.log("this.pos.promotionPrograms", this.pos.promotionPrograms);
+        for (let proID of Object.keys(this.verifyComboProgramOnOrder(this.pos.promotionPrograms))) {
+            if (this.pos.promotion_program_by_id[proID].promotion_type === 'combo') {
+                this.activatedComboPrograms.add(parseInt(proID));
+            } else if (this.pos.promotion_program_by_id[proID].promotion_type === 'code') {
                 this.activatedComboPrograms.add(parseInt(proID));
             };
         };
@@ -266,22 +266,25 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 comboProgramToCheck.add(program);
             };
         };
-        console.log('comboProgramToCheck', comboProgramToCheck)
         for (const program of comboProgramToCheck) {
-            var to_check_order_lines = this._get_regular_order_lines().map(obj => ({...obj}));
+//        var to_check_order_lines = this._get_clone_order_lines();
+            var to_check_order_lines = this.get_orderlines().map(obj => ({...obj}));
             let NumberOfCombo = this._checkNumberOfCombo(program, to_check_order_lines, [] , 0)[2];
             if (NumberOfCombo >= 1) {
                 comboProgramIsVerified[program.id] = NumberOfCombo;
             };
         };
-        console.log('comboProgramIsVerified', comboProgramIsVerified)
         return comboProgramIsVerified;
     }
 
-    getPotentialPrograms() {
+    getActivatedComboPrograms() {
+        return Array.from(this.activatedComboPrograms).map(proID => this.pos.promotion_program_by_id[proID])
+    }
+
+    getPotentialProgramsToSelect() {
         var numberOfProgramsValues = this.verifyComboProgramOnOrder(this.pos.promotionPrograms);
         return Object.entries(numberOfProgramsValues)
-                    .reduce((tmp, p) => { console.log(p); tmp.push({
+                    .reduce((tmp, p) => {tmp.push({
                         program : this.pos.promotionPrograms.find((pro)=> pro.id == p[0]),
                         number: p[1],
                         id: p[0] }); return tmp;
@@ -289,27 +292,37 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     testFunction() {
-        let promotionProgramsList = this.getPotentialPrograms().map((pro) => pro['program']);
-        console.log('================= testFunction')
-        let order_lines = this._get_regular_order_lines().map(obj => ({...obj}));
-        this.computeForListOfCombo(order_lines, promotionProgramsList);
+//        let promotionProgramsList = this.getPotentialProgramsToSelect().map((pro) => pro['program']);
+        console.log('================= testFunction');
+        let ActivatedComboPrograms = this.getActivatedComboPrograms()
+        let order_lines = this.get_orderlines().map(obj => ({...obj}));
+        let groupOfComboPrograms = ActivatedComboPrograms.map(pro => new Array(pro));
+//        console.log('groupOfComboPrograms', groupOfComboPrograms);
+        for (let group of groupOfComboPrograms) {
+            console.log('group', group);
+            let [newLines, remainingOrderLines, combo_count] = this.computeForListOfCombo(order_lines, group);
+            console.log('newLines', newLines);
+            console.log('remainingOrderLines', remainingOrderLines);
+        };
+
+
     }
 
-    computeNewPriceForComboProgram(disc_total, base_total, prePrice, quantity) {
+    _computeNewPriceForComboProgram(disc_total, base_total, prePrice, quantity) {
         let subTotalLine = prePrice * quantity;
         let discAmount = base_total > 0.0 ? subTotalLine / base_total * disc_total : 0.0;
         let newPrice = (subTotalLine - discAmount) / quantity;
         return [newPrice, discAmount]
     }
 
-    applyAProgramToLineVales(program, comboLineList) {
+    applyAProgramToLineVales(program, comboLineList, number_of_combo) {
         // Combo: Mua Combo, giảm tiền
         if (program.reward_type == 'combo_amount' && program.promotion_type == 'combo') {
             let disc_total_amount = program.disc_amount;
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
             for (let comboLine of comboLineList) {
                 let originalPrice = comboLine.price;
-                let [newPrice, discAmountInLine] = this.computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
                 comboLine.price = newPrice;
                 comboLine['promotion_usage_ids'] = [];
                 comboLine.promotion_usage_ids.push(new PromotionUsageLine(program, null, originalPrice, newPrice, discAmountInLine));
@@ -324,7 +337,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
             for (let comboLine of comboLineList) {
                 let originalPrice = comboLine.price;
-                let [newPrice, discAmountInLine] = this.computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
                 comboLine.price = newPrice;
                 comboLine['promotion_usage_ids'] = [];
                 comboLine.promotion_usage_ids.push(new PromotionUsageLine(program, null, originalPrice, newPrice, discAmountInLine));
@@ -338,7 +351,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (disc_total_amount > 0) {
                 for (let comboLine of comboLineList) {
                     let originalPrice = comboLine.price;
-                    let [newPrice, discAmountInLine] = this.computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                    let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
                     comboLine.price = newPrice;
                     comboLine['promotion_usage_ids'] = [];
                     comboLine.promotion_usage_ids.push(new PromotionUsageLine(program, null, originalPrice, newPrice, discAmountInLine));
@@ -347,25 +360,32 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         }
         return comboLineList;
     }
-
+    // todo: Fix trường hợp tiền giảm lớn hơn tổng giá trị của Combo
     computeForListOfCombo(orderLines, listOfComboProgram) {
         let lines_to_check = orderLines;
         let to_apply_lines = {};
+        let combo_count = {};
+//        console.log('listOfComboProgram', listOfComboProgram)
         for (const program of listOfComboProgram) {
             var [remainingOrderLines, to_discount_line_vals, numberOfCombo] = this._checkNumberOfCombo(program, orderLines, [], 0);
             lines_to_check = remainingOrderLines;
             // ---------------------------------------------------------------- //
+
+            combo_count[program.id] = numberOfCombo;
+
             for (let i = 0; i < to_discount_line_vals.length; i++) {
-                let result = this.applyAProgramToLineVales(program, to_discount_line_vals[i]);
-                if (to_apply_lines.hasOwnProperty(program.id)) {
+                let result = this.applyAProgramToLineVales(program, to_discount_line_vals[i], 0);
+                if (to_apply_lines.hasOwnProperty(program.id) && combo_count.hasOwnProperty(program.id)) {
                     to_apply_lines[program.id].push(...result);
                 }
                 else {
                     to_apply_lines[program.id] = result;
                 };
+
             };
         };
-        return [to_apply_lines, orderLines];
+        let total_discount_per_program = {}
+        return [to_apply_lines, orderLines, combo_count];
     }
 
     async _activatePromotionCode(code) {
@@ -411,6 +431,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
 }
 Registries.Model.extend(Order, PosPromotionOrder);
+//})
 //
 //function getAllCombinations(inputArray) {
 //  var resultArray = [];

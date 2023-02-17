@@ -8,18 +8,110 @@
             </header>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
                 <ul>
-                    <t t-foreach="props.programs" t-as="program" t-key="program.id">
-                        <li>
+                    <t t-foreach="props.programs.filter(p => p.apply_multi_program)" t-as="program" t-key="program.id">
+                        <li class="program-item">
                             <input type="checkbox" name="programs"
                                    t-att-id="program.id"
                                    t-att-value="program.id"
+                                   t-on-click="() => this.selectItem(program.id)"
                                    t-att-checked="'checked' ? program.isSelected : ''"/>
                             <label t-att-for="program.id">
-                            <t t-esc="program.label"/>(X&nbsp;	<span t-esc="program.forecastedNumber"/> &nbsp;	Combo)
+                                [<t t-esc="program.id"/>]&nbsp;&nbsp;<t t-esc="program.label"/>
                             </label>
+                            <p>
+                                <div t-if="!program.isSelected" class="number-combo">Còn&nbsp;
+                                    <strong t-esc="program.forecastedNumber"/> &nbsp;Combo
+                                </div>
+                                <div t-if="program.isSelected" class="number-combo">Đã áp dụng&nbsp;
+                                    <strong t-esc="program.numberCombo or 0"/> &nbsp;Combo
+                                </div>
+                                <t t-if="program.isSelected and program.order_apply >= 0">
+                                    <div style="display: inline-block" class="badge rounded-pill text-bg-success">
+                                    Thứ tự áp dụng: <span style="padding-right: 20px; font-weight: 700" t-esc="program.index"/>
+                                    </div>
+                                </t>
+                                <t t-if="program.isSelected and program.discounted_amount > 0">
+                                    <div style="display: inline-block" >
+                                    Số tiền đã giảm: <strong t-esc="this.env.pos.format_currency(program.discounted_amount)"/>
+                                    </div>
+                                </t>
+                                <t t-if="!program.isSelected and program.forecasted_discounted_amount > 0">
+                                    <div style="display: inline-block" >
+                                    Dự kiến giảm: <strong t-esc="this.env.pos.format_currency(program.forecasted_discounted_amount)"/>
+                                    </div>
+                                </t>
+                            </p>
                         </li>
                     </t>
                 </ul>
+                <!-- =========================== -->
+                <hr/>
+                <ul>
+                    <t t-foreach="props.programs.filter(p => !p.apply_multi_program)" t-as="program" t-key="program.id">
+                        <li class="program-item">
+                            <input type="checkbox" name="programs"
+                                   t-att-id="program.id"
+                                   t-att-value="program.id"
+                                   t-on-click="() => this.selectItem(program.id)"
+                                   t-att-checked="'checked' ? program.isSelected : ''"/>
+                            <label t-att-for="program.id">
+                                [<t t-esc="program.id"/>]&nbsp;&nbsp;<t t-esc="program.label"/>
+                            </label>
+                            <p>
+                                <div t-if="!program.isSelected" class="number-combo">Còn&nbsp;
+                                    <strong t-esc="program.forecastedNumber"/> &nbsp;Combo
+                                </div>
+                                <div t-if="program.isSelected" class="number-combo">Đã áp dụng&nbsp;
+                                    <strong t-esc="program.numberCombo or 0"/> &nbsp;Combo
+                                </div>
+                                <t t-if="program.isSelected and program.order_apply >= 0">
+                                    <div style="display: inline-block" class="badge rounded-pill text-bg-success">
+                                    Thứ tự áp dụng: <span style="padding-right: 20px; font-weight: 700" t-esc="program.index"/>
+                                    </div>
+                                </t>
+                                <t t-if="program.isSelected and program.discounted_amount > 0">
+                                    <div style="display: inline-block" >
+                                    Số tiền đã giảm: <strong t-esc="this.env.pos.format_currency(program.discounted_amount)"/>
+                                    </div>
+                                </t>
+                                <t t-if="!program.isSelected and program.forecasted_discounted_amount > 0">
+                                    <div style="display: inline-block" >
+                                    Dự kiến giảm: <strong t-esc="this.env.pos.format_currency(program.forecasted_discounted_amount)"/>
+                                    </div>
+                                </t>
+                            </p>
+                        </li>
+                    </t>
+                </ul>
+                <hr/>
+                <p style="margin: 0 0 0 40px"><strong>Tổng giảm trên đơn: &nbsp;</strong><strong t-esc="this.env.pos.format_currency(state.discount_amount_order)"/></p>
+            <style>
+                .program-item:hover {
+                    background: rgba(0, 0, 0, 0.055);
+                    cursor: pointer;
+                }
+                li:before {
+                    content: None !important;
+                }
+                div .badge {
+                    min-width: 2.7ch;
+                }
+                div .rounded-pill {
+                    border-radius: 50rem !important;
+                }
+                div .text-bg-success {
+                    text-align: center;
+                    color: #FFF !important;
+                    background-color: RGBA(40, 167, 69, var(--bg-opacity, 1)) !important;
+                }
+                div .number-combo {
+                    display: inline-block;
+                    margin-right: 10px;
+                }
+                label {
+                    padding: 0px 100px 40px 0;
+                }
+            </style>
             </main>
             <footer class="footer">
                 <div class="button highlight confirm" t-on-click="confirm">

@@ -7,17 +7,93 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 
     const { useState } = owl;
 
-    // formerly SelectionPopupWidget
     class ProgramSelectionPopup extends AbstractAwaitablePopup {
 
         setup() {
             super.setup();
-            this.state = useState({ programs: [] });
-//            this.state = useState({ selectedId: this.props.list.find((item) => item.isSelected) });
+            this.state = useState({
+                programs: this.props.programs || [],
+                discount_total: this.props.discount_total || 0.0,
+                maxIndex: this.props.maxIndex || 0,
+                discount_amount_order: this.props.discount_amount_order || 0,
+            });
         }
         selectItem(itemId) {
-            this.state.selectedId = itemId;
-//            this.confirm();
+            console.log('======================== pos', this.env.pos)
+            let current_program = this.state.programs.find((p) => p.id == itemId);
+            current_program.isSelected = !current_program.isSelected;
+            let program_by_id = this.env.pos.promotion_program_by_id
+            if (!program_by_id[current_program.id].apply_multi_program && current_program.isSelected) {
+                this.state.programs.filter(p => p.id !== current_program.id).forEach(p => p.isSelected = false);
+            } else if (current_program.isSelected && program_by_id[current_program.id].apply_multi_program ) {
+                this.state.programs.filter(p => !program_by_id[p.id].apply_multi_program).forEach(p => p.isSelected = false);
+            };
+
+            // Increase order_apply number every selected item
+            let max_order = Math.max(...this.state.programs.map(p => p.order_apply))
+            if (current_program.isSelected) {
+                current_program.order_apply = max_order + 1;
+            };
+            this.state.maxIndex = Math.max(...this.state.programs.map(p => p.order_apply));
+
+            // Make sure index is start with Number '1'
+            let clonePrograms = [...this.state.programs].filter(p => p.isSelected).sort((a, b) => a.order_apply - b.order_apply);
+            let index = 1;
+            let cloneProgramsDict = {};
+            clonePrograms.forEach(p => {cloneProgramsDict[p.id] = index; index ++});
+            this.state.programs.filter(p => p.isSelected).forEach(p => {p.index = cloneProgramsDict[p.id]});
+            let clone_order_lines = [...this.env.pos.get_order()._get_clone_order_lines()]
+
+
+            let selectedPrograms = this.state.programs.filter(p => p.isSelected)
+                                    .sort((x, y) => x.index - y.index)
+                                    .map(pro => program_by_id[pro.id]);
+
+            // Reset discounted_amount = 0.0 for programs not selected
+            let not_selected_programs = this.state.programs.filter(p => !p.isSelected)
+            not_selected_programs.forEach(p => p.discounted_amount = 0.0)
+
+            let [newLinesToApply, remainingLines, combo_count] = this.env.pos.get_order().computeForListOfCombo(clone_order_lines, selectedPrograms);
+
+            // todo: chương trình không có giảm giá thì kiểm tra promotion_usage_ids có undefined không?
+            // Tính số tiền đã giảm cho mỗi chương trình đã áp dụng, và cấp số lượng combo đã áp dụng
+            for (let [program_id, lines] of Object.entries(newLinesToApply)) {
+                let total_amount_disc = lines.reduce((acc, line) => {
+                    let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount;}, 0.0);
+                    return acc + amountPerLine
+                }, 0.0);
+                this.state.programs.find(p => p.id == program_id).discounted_amount = total_amount_disc;
+            };
+            this.state.programs.forEach(p => {
+                if (combo_count.hasOwnProperty(p.id)) {
+                    p.numberCombo = combo_count[p.id];
+                };
+            });
+
+            // Tính tổng số tiền đã giảm trên đơn hàng
+            this.state.discount_amount_order = this.state.programs.reduce((acc, p) => acc + p.discounted_amount, 0.0)
+
+            // Tính số tiền và combo còn có thế áp dụng cho những chương trình chưa áp dụng
+            let notSelectPrograms = not_selected_programs.map(p => program_by_id[p.id]);
+            for (let notSelectProgram of notSelectPrograms) {
+                let remainingLinesCopy = JSON.parse(JSON.stringify(remainingLines));
+
+                let remaining_clone_order_lines = [...remainingLinesCopy]
+                let [newLinesToApplyNoSelected, ol, combo_count] = this.env.pos.get_order()
+                        .computeForListOfCombo(remaining_clone_order_lines, [notSelectProgram]);
+                this.state.programs.forEach(p => {
+                    if (combo_count.hasOwnProperty(p.id)) {
+                        p.forecastedNumber = combo_count[p.id];
+                    };
+                });
+                for (let [program_id, lines] of Object.entries(newLinesToApplyNoSelected)) {
+                    let forecasted_discounted_amount = lines.reduce((acc, line) => {
+                        let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount;}, 0.0);
+                        return acc + amountPerLine
+                    }, 0.0);
+                    this.state.programs.find(p => p.id == program_id).forecasted_discounted_amount = forecasted_discounted_amount;
+                };
+            };
         }
         /**
          * We send as payload of the response the selected item.
@@ -30,12 +106,13 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
         }
     }
     ProgramSelectionPopup.template = 'ProgramSelectionPopup';
+
     ProgramSelectionPopup.defaultProps = {
         cancelText: _lt('Cancel'),
         title: _lt('Select'),
-        body: '',
         programs: [],
         confirmKey: false,
+        discount_total: 0,
     };
 
     Registries.Component.add(ProgramSelectionPopup);
