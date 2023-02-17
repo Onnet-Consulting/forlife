@@ -33,6 +33,14 @@ class PointsPromotion(models.Model):
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
 
+    @api.onchange('brand_id')
+    def onchange_brand(self):
+        for line in self:
+            if line.brand_id:
+                line.store_ids = line.store_ids.filtered(lambda f: f.brand_id == line.brand_id)
+            else:
+                line.store_ids = False
+
     @api.constrains('from_date', 'to_date')
     def _constrains_date(self):
         for record in self:

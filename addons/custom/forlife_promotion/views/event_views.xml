@@ -40,7 +40,7 @@
                                 <field name="name" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="from_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="to_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                <field name="store_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}" options="{'no_create': True}"/>
+                                <field name="store_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}" options="{'no_create': True}" domain="[('brand_id', '=', brand_id)]"/>
                                 <field name="customer_conditions" attrs="{'readonly': [('state', '!=', 'new')]}" widget="domain" options="{'model': 'res.partner'}"/>
                                 <field name="is_lock_change_points_promotion" invisible="1"/>
                             </group>
@@ -64,6 +64,7 @@
                                 <field name="points_product_ids" readonly="1"/>
                             </page>
                         </notebook>
+                        <field name="brand_id" invisible="1"/>
                     </sheet>
                 </form>
             </field>
