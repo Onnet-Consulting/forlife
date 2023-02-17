@@ -10,7 +10,7 @@ class ForlifeQuestion(models.Model):
     _rec_name = 'header'
     _order = 'finish_date desc'
 
-    header = fields.Text('Header', required=True)
+    header = fields.Char('Header', required=True)
     question1 = fields.Text("Question 1", required=True)
     sub_quest1 = fields.Char('Sub Question 1', required=True)
     sub_quest2 = fields.Char('Sub Question 2')
@@ -23,8 +23,10 @@ class ForlifeQuestion(models.Model):
     finish_date = fields.Datetime('Finish Date', required=True)
     create_uid = fields.Many2one("res.users", string="Created by", default=lambda s: s.env.user)
     create_date = fields.Datetime("Created on", default=fields.Datetime.now())
-    banner = fields.Char('Banner')
+    banner_question = fields.Char('Banner Question', required=True)
+    banner_success = fields.Char('Banner Success', required=True)
     icon = fields.Char('Icon')
+    rate = fields.Char('Rate', default='0,30,50,80,100')
     company_id = fields.Many2one('res.company', string='Company', required=True, default=lambda self: self.env.company, copy=False)
 
     _sql_constraints = [
