@@ -65,7 +65,11 @@ odoo.define('forlife_report.report_base', function (require) {
         },
 
         previous_page: function () {
-
+            let current_page = this.$('.o_current_page_num').text();
+            let previous_page = parseInt(current_page) - 1;
+            if (previous_page <= 0) previous_page = this.total_page;
+            this.options = this.build_options(previous_page);
+            this.render();
         },
 
         render: function () {
