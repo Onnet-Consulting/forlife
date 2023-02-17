@@ -10,46 +10,28 @@
             <thead>
                 <tr>
                     <th>STT</th>
-                    <th>Từ ngày</th>
-                    <th>Đến ngày</th>
-                    <th>Chi nhánh</th>
                     <th>Mã SP</th>
                     <th>Tên SP</th>
-                    <th>Size</th>
-                    <th>Màu</th>
                     <th>Đơn vị</th>
-                    <th>Giá niêm yết</th>
+                    <th>Giá</th>
                     <th>Số lượng</th>
                     <th>Chiết khấu</th>
                     <th>Thành tiền</th>
-                    <th>Nhóm hàng</th>
-                    <th>Dòng hàng</th>
-                    <th>Kết cấu</th>
-                    <th>Mã loại SP</th>
-                    <th>Kênh bán</th>
+                    <th>Thành tiền có thuế</th>
                 </tr>
             </thead>
             <tbody>
                     <t t-foreach="options.data" t-as="line">
                         <tr>
-                            <td>xxxx</td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
-                            <td><t t-esc="line.name"/></td>
+                            <td><t t-esc="line.num"/></td>
+                            <td><t t-esc="line.product_barcode"/></td>
+                            <td><t t-esc="line.product_name"/></td>
+                            <td><t t-esc="line.uom_name"/></td>
+                            <td><t t-esc="line.price_unit"/></td>
+                            <td><t t-esc="line.qty"/></td>
+                            <td><t t-esc="line.discount_percent"/></td>
+                            <td><t t-esc="line.amount_without_tax"/></td>
+                            <td><t t-esc="line.amount_with_tax"/></td>
                         </tr>
                 </t>
             </tbody>

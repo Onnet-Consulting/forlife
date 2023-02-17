@@ -62,7 +62,7 @@
 #report-template #main-content {
     border: 1px solid #C9CCD2;
     padding: 10px;
-    overflow: auto;
+    overflow-x: auto;
     font-size: 1.11rem;
 }
 

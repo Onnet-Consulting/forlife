@@ -14,11 +14,13 @@ odoo.define('forlife_report.report_base', function (require) {
         reportTemplate: 'ReportBase',
         reportTitle: _t("Revenue by product"),
         record_per_page: 80,
+        readDataTimeout: 300,
 
         init: function (parent, action) {
             this.actionManager = parent;
             this.odoo_context = action.context;
-            this.report_model = this.odoo_context.report_model;
+            this.report_model = this.odoo_context.report_model || this.odoo_context.active_model;
+            this.report_id = this.odoo_context.active_id
             return this._super.apply(this, arguments);
         },
 
@@ -26,8 +28,13 @@ odoo.define('forlife_report.report_base', function (require) {
             const reportPromise = this._rpc({
                 model: this.report_model,
                 method: 'get_data',
-                args: [this.report_options],
+                args: [this.report_id],
                 context: this.odoo_context
+            }, {
+                // default timeout is 3 seconds
+                // but some report need to handle large data,
+                // so wait 'readDataTimeout' seconds  before concluding Odoo is unreachable.
+                timeout: this.readDataTimeout,
             }).then(res => this.parse_data(res))
             const parentPromise = this._super(...arguments);
             return Promise.all([reportPromise, parentPromise]);

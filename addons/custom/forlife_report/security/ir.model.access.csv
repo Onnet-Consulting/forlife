@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-base_group_user_model_report_revenue_by_product,base.group.user_report_revenue_by_product,model_report_revenue_by_product,base.group_user,1,1,1,
+base_group_user_model_report_revenue_by_product,base.group.user_report_revenue_by_product,model_report_revenue_by_product,base.group_user,1,1,1,1
