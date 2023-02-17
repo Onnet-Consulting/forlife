@@ -48,9 +48,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                 });
                 return;
             }
-            if (this.env.pos.pos_branch) {
-                console.log(true);
-            } else {
+            if (!this.env.pos.pos_branch) {
                 this.showPopup('ErrorPopup', {
                     title: this.env._t("Warning"),
                     body: _.str.sprintf(
