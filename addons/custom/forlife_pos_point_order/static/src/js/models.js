@@ -1,7 +1,7 @@
 odoo.define('forlife_pos_point_order.models', function (require) {
     "use strict";
 
-    var {PosGlobalState, Orderline} = require('point_of_sale.models');
+    var {PosGlobalState, Orderline, Order} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
 
     const PointsOrderLine = (Orderline) =>
@@ -35,32 +35,37 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 return this.point;
             }
         };
-//    const PointsOrder = (Order) =>
-//        class extends Order {
-//            constructor(obj, options) {
-//                super(...arguments);
-//            }
-//
-//            init_from_JSON(json) {
-//                super.init_from_JSON(...arguments);
-//                this.point_format = json.point_format;
-//                this.point_forlive = json.point_forlive;
-//            }
-//
-//            clone() {
-//                let order = super.clone(...arguments);
-//                order.point_format = this.point_format;
-//                order.point_forlive = this.point_forlive;
-//                return order;
-//            }
-//
-//            export_as_JSON() {
-//                const json = super.export_as_JSON(...arguments);
-//                json.point_format = this.point_format;
-//                json.point_forlive = this.point_forlive;
-//                return json;
-//            }
-//        }
+    const PointsOrder = (Order) =>
+        class extends Order {
+            constructor(obj, options) {
+                super(...arguments);
+            }
 
+            init_from_JSON(json) {
+                super.init_from_JSON(...arguments);
+            }
+
+            clone() {
+                let order = super.clone(...arguments);
+                return order;
+            }
+
+            export_as_JSON() {
+                const json = super.export_as_JSON(...arguments);
+                return json;
+            }
+            get_total_with_tax() {
+                var total = super.get_total_with_tax()
+                var vals = 0
+                for(let i =0; i<this.orderlines.length; i++){
+                    if (this.orderlines[i].point){
+                        vals += parseInt(this.orderlines[i].point)
+                    }
+                }
+                return total + vals;
+            }
+
+    }
     Registries.Model.extend(Orderline, PointsOrderLine);
+    Registries.Model.extend(Order, PointsOrder);
 });
