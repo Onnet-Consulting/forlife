@@ -46,6 +46,9 @@
 #report-template .header {
     display: flex;
     justify-content: space-between;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
 }
 
 #report-template .header .title {
@@ -74,14 +77,13 @@
     background-color: rgba(0, 0, 0, 0.01);
 }
 
-#report-template #main-content thead > tr > th ~ th{
+#report-template #main-content thead > tr > th ~ th {
     padding-left: 8px;
     padding-right: 8px;
 }
 
 
-
-#report-template #main-content tbody > tr > td ~ td{
+#report-template #main-content tbody > tr > td ~ td {
     padding-left: 8px;
     padding-right: 8px;
 }
