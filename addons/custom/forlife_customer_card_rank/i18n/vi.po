@@ -6,16 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-16 11:22+0000\n"
-"PO-Revision-Date: 2023-02-16 18:23+0700\n"
+"POT-Creation-Date: 2023-02-17 01:31+0000\n"
+"PO-Revision-Date: 2023-02-17 01:31+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: vi\n"
-"X-Generator: Poedit 2.3\n"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__accumulated_sales
@@ -285,11 +283,10 @@ msgstr "Đăng ký nhà nước"
 #: code:addons/forlife_customer_card_rank/models/card_rank.py:0
 #, python-format
 msgid ""
-"It is not possible to change the priority of the Rank '%s' due to the ongoing "
-"programs"
+"It is not possible to change the priority of the Rank '%s' due to the "
+"ongoing programs"
 msgstr ""
-"Không thể thay đổi thứ hạng của hạng '%s' do các chương trình đang "
-"diễn ra"
+"Không thể thay đổi thứ hạng của hạng '%s' do các chương trình đang diễn ra"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank____last_update
@@ -443,6 +440,7 @@ msgstr "Đơn hàng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__priority
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__priority
 msgid "Priority"
 msgstr "Thứ hạng"
 
@@ -497,6 +495,7 @@ msgstr "Tìm kiếm"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
+#: code:addons/forlife_customer_card_rank/models/member_card.py:0
 #: code:addons/forlife_customer_card_rank/models/member_card.py:0
 #, python-format
 msgid "Store added: %s"
@@ -587,7 +586,7 @@ msgstr "Giá trị đơn hàng"
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__value_to_upper
 msgid "Value to upper"
-msgstr "Giá trị xét hạng theo CT"
+msgstr "Giá trị được xét hạng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__website_message_ids

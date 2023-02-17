@@ -25,8 +25,8 @@ class PartnerCardRank(models.Model):
     @api.depends('line_ids')
     def compute_value(self):
         for line in self:
-            line.card_rank_id = line.line_ids and line.line_ids[-1].new_card_rank_id.id or self.env['card.rank'].search([], order='priority asc', limit=1).id
-            order = line.line_ids.filtered(lambda f: f.order_id)
+            line.card_rank_id = line.line_ids and line.line_ids.sorted()[0].new_card_rank_id.id or self.env['card.rank'].search([], order='priority asc', limit=1).id
+            order = line.line_ids.sorted().filtered(lambda f: f.order_id)
             line.last_order_date = order and order[0].order_date or False
 
     def generate_card_rank_data(self):
@@ -47,9 +47,9 @@ class PartnerCardRank(models.Model):
                     f"<div class=\"col-3\"><b>Ngày mua gần nhất:</b></div>" \
                     f"<div class=\"col-9\">{line.last_order_date and line.last_order_date.astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y') or ''}</div></div>" \
                     f"<br/><table class=\"table table-bordered\">" \
-                    f"<tr style=\"text-align: center; background: #031d74c7; color: #ffffff;\"><th colspan=\"6\">Lịch sử nâng hạng</th></tr>" \
+                    f"<tr style=\"text-align: center; background: #031d74c7; color: #ffffff;\"><th colspan=\"6\">LỊCH SỬ XÉT HẠNG</th></tr>" \
                     f"<tr style=\"text-align: center; background: #031d74c7; color: #ffffff;\">" \
-                    f"<th>Đơn hàng</th><th>Ngày mua hàng</th><th>Giá trị đơn hàng</th><th>Giá trị xét hạng</th><th>Hạng hiện tại</th><th>Hạng mới</th></tr>" \
+                    f"<th>Đơn hàng</th><th>Ngày mua hàng</th><th>Giá trị đơn hàng</th><th>Giá trị được xét hạng</th><th>Hạng hiện tại</th><th>Hạng mới</th></tr>" \
                     f"{_detail}</table>"
             res.update({
                 f'{line.brand_id.code}-{str(line.customer_id.id)}': value,
