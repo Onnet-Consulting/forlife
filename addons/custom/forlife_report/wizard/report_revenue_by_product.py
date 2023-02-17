@@ -28,7 +28,13 @@ class ReportRevenueByProduct(models.TransientModel):
 
     def _get_query(self):
         query = """
-        
+select *
+from pos_order_line pol
+         left join product_product pp on pol.product_id = pp.id
+         left join product_template pt on pp.product_tmpl_id = pt.id
+         left join uom_uom uom on pt.uom_id = uom.id
+         left join pos_order on pol.order_id = pos_order.id
+
         """
 
     def get_data(self):

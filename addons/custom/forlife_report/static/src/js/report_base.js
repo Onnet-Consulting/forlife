@@ -4,6 +4,7 @@ odoo.define('forlife_report.report_base', function (require) {
     const core = require('web.core');
     const AbstractAction = require('web.AbstractAction');
     const QWeb = core.qweb;
+    const _t = core._t;
 
     let ReportBaseAction = AbstractAction.extend({
         events: {
@@ -11,6 +12,7 @@ odoo.define('forlife_report.report_base', function (require) {
             'click button.o_pager_previous': 'previous_page',
         },
         reportTemplate: 'ReportBase',
+        reportTitle: _t("Revenue by product"),
         record_per_page: 80,
 
         init: function (parent, action) {
@@ -75,7 +77,7 @@ odoo.define('forlife_report.report_base', function (require) {
         render: function () {
             let self = this;
             this.$('.o_content').html(QWeb.render(this.reportTemplate, {
-                "data": self.data,
+                "widget": this,
                 "options": self.options
             }))
         },

@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <t t-name="ReportHeader">
+        <div class="header">
+            <div class="title">
+                <t t-esc="widget.reportTitle"/>
+            </div>
+            <t t-call="ReportPager"/>
+        </div>
+    </t>
+
     <t t-name="ReportPager">
-        <div>
-            <span class="o_current_page_num"><t t-esc="options.page_num"/></span>
+        <div class="pagination">
+            <span class="o_current_page_num report_hidden">
+                <t t-esc="options.page_num"/>
+            </span>
             <span class="o_pager_counter">
                 <span class="o_pager_value">
                     <t t-esc="options.start_record"/>-
@@ -21,8 +32,10 @@
     </t>
 
     <t t-name="ReportBase">
-        <div id="main">
-            <t t-call="ReportPager"/>
+        <div id="report-template">
+            <t t-call="ReportHeader"/>
+            <div id="main-content">
+            </div>
         </div>
     </t>
 </odoo>

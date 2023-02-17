@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template xml:space="preserve">
     <t t-name="ReportRevenueByProduct" t-inherit="ReportBase" t-inherit-mode="primary">
-        <xpath expr="//div[@id='main']" position="inside">
+        <xpath expr="//div[@id='main-content']" position="inside">
             <t t-call="ReportRevenueByProductMain"/>
         </xpath>
     </t>
