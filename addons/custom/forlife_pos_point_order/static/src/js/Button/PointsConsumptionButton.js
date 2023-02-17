@@ -37,13 +37,27 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
 
         async onClick() {
             if(!this.env.pos.selectedOrder.partner){
-                console.log('Chưa chọn khách hàng cho đơn này');
+                this.showPopup('ErrorPopup', {
+                    title: this.env._t("Warning"),
+                    body: _.str.sprintf(
+                        this.env._t(
+                            "Vui lòng chọn 1 khách hàng trước!"
+                        ),
+                        ''
+                    ),
+                });
                 return;
             }
-            if (this.env.pos.pos_branch) {
-                console.log(true);
-            } else {
-                console.log('Chưa thiết lập chi nhánh cho POS này');
+            if (!this.env.pos.pos_branch) {
+                this.showPopup('ErrorPopup', {
+                    title: this.env._t("Warning"),
+                    body: _.str.sprintf(
+                        this.env._t(
+                            "Chưa thiết lập chi nhánh cho POS này!"
+                        ),
+                        ''
+                    ),
+                });
                 return;
             }
             var points_of_customer = null;
