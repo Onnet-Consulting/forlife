@@ -26,6 +26,7 @@
             <field name="arch" type="xml">
                 <form string="member_card_form">
                     <sheet>
+                        <button name="btn_duplicate_member_card" icon="fa-clone" class="oe_highlight oe_right" type="object" string=" Duplicate"/>
                         <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                         <div class="oe_title">
                             <label for="name"/>
