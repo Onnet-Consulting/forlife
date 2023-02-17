@@ -7,6 +7,7 @@ from datetime import timedelta
 
 REPORT_HEADER = ['STT', 'Chi nhánh', 'Mã chi nhánh', 'Khu vực', 'Mã KH', 'Tên KH', 'Mã HĐ', 'Ngày mua hàng', 'Ngày đánh giá', 'Đánh giá', 'Bình luận', 'Trạng thái']
 POP_INDEX_IN_FORM_REPORT = (3, 2)  # xóa cột khu vực và mã chi nhánh trên phom báo cáo
+DATA_NOT_FOUND = f'<tr style="text-align: center; color: #000000;"><td colspan="{len(REPORT_HEADER) - len(POP_INDEX_IN_FORM_REPORT)}"><h3>Không tìm thấy bản ghi nào !</h3></td></tr>'
 
 
 class NetPromoterScoreReport(models.TransientModel):
@@ -31,7 +32,7 @@ class NetPromoterScoreReport(models.TransientModel):
         header = copy.copy(REPORT_HEADER)
         for index in POP_INDEX_IN_FORM_REPORT:
             header.pop(index)
-        return [f'<table class="table table-bordered"><tr style="text-align: center; background: #031d74c7; color: #ffffff;"><th>{"</th><th>".join(header)}</th></tr>', '</table>']
+        return [f'<table class="table table-bordered"><tr style="text-align: center; background: #017e84; color: #ffffff;"><th>{"</th><th>".join(header)}</th></tr>', '</table>']
 
     def btn_search(self):
         result = self.filter_data()
@@ -40,7 +41,18 @@ class NetPromoterScoreReport(models.TransientModel):
             style = ' style="background: #0a0a0a3d;"' if int(line[0]) % 2 == 0 else ''
             data += f'<tr{style}><td style="text-align: center;">{"</td><td>".join(line)}</td></tr>'
         header = self.get_view_header()
-        self.view_report = header[0] + data + header[1]
+        self.view_report = header[0] + (data or DATA_NOT_FOUND) + header[1]
+
+    def btn_reset_searching(self):
+        header = self.get_view_header()
+        self.sudo().write({
+            'customer_code': False,
+            'invoice_number': False,
+            'min_point': 0,
+            'max_point': 100,
+            'brand_ids': False,
+            'view_report': header[0] + header[1]
+        })
 
     def filter_data(self):
         domain = ['&', '&', ('status', '=', '1'), ('point', '>=', self.min_point), ('point', '<=', self.max_point)]
