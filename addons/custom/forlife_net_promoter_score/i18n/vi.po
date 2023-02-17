@@ -4,18 +4,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e-20230109\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-16 03:30+0000\n"
-"PO-Revision-Date: 2023-02-16 10:33+0700\n"
+"POT-Creation-Date: 2023-02-17 03:47+0000\n"
+"PO-Revision-Date: 2023-02-17 03:47+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: vi\n"
-"X-Generator: Poedit 2.3\n"
 
 #. module: forlife_net_promoter_score
 #: model:ir.actions.report,print_report_name:forlife_net_promoter_score.net_promoter_score_xlsx
@@ -298,7 +296,7 @@ msgstr "Đánh giá"
 #. module: forlife_net_promoter_score
 #: model:ir.model,name:forlife_net_promoter_score.model_pos_order
 msgid "Point of Sale Orders"
-msgstr "Đơn bán lẻ"
+msgstr ""
 
 #. module: forlife_net_promoter_score
 #: model:ir.actions.server,name:forlife_net_promoter_score.ir_cron_action_push_notification_ir_actions_server
@@ -351,6 +349,11 @@ msgstr "Mức độ đánh giá"
 #: model:ir.cron,cron_name:forlife_net_promoter_score.ir_cron_remove_forlife_comment
 msgid "Remove Forlife Comment"
 msgstr "Xóa phiếu đánh giá NPS quá 24h"
+
+#. module: forlife_net_promoter_score
+#: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.net_promoter_score_report_view_form
+msgid "Reset"
+msgstr "Xóa bộ lọc"
 
 #. module: forlife_net_promoter_score
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_comment_view_filter
