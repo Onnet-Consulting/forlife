@@ -11,12 +11,12 @@ odoo.define('forlife_report.report_base', function (require) {
             'click button.o_pager_previous': 'previous_page',
         },
         reportTemplate: 'ReportBase',
+        record_per_page: 80,
 
         init: function (parent, action) {
             this.actionManager = parent;
             this.odoo_context = action.context;
             this.report_model = this.odoo_context.report_model;
-            this.RECORD_PER_PAGE = 80;
             return this._super.apply(this, arguments);
         },
 
@@ -36,26 +36,36 @@ odoo.define('forlife_report.report_base', function (require) {
             this.render();
         },
 
-        parse_data: function (data) {
-            this.data = data;
-            this.total_records = data.length;
-            this.total_page = Math.floor(this.total_records / this.RECORD_PER_PAGE);
-            this.options = {
-                total_records: data.length,
-                total_page: Math.floor(this.total_records / this.RECORD_PER_PAGE),
-                page_num: 1,
-                data: data
+        build_options: function (page_num) {
+            let start_record = (page_num - 1) * this.record_per_page + 1;
+            let end_record = Math.min(page_num * this.record_per_page, this.total_records);
+            let start_index = start_record - 1;
+            return {
+                page_num,
+                start_record,
+                end_record,
+                total_records: this.total_records,
+                data: this.data.slice(start_index, start_index + this.record_per_page)
             }
         },
 
+        parse_data: function (data) {
+            this.data = data;
+            this.total_records = data.length;
+            this.total_page = Math.ceil(this.total_records / this.record_per_page);
+            this.options = this.build_options(1);
+        },
+
         next_page: function () {
-            console.log('next bro')
-            console.log(this.report_data)
+            let current_page = this.$('.o_current_page_num').text();
+            let next_page = parseInt(current_page) + 1;
+            if (next_page > this.total_page) next_page = 1;
+            this.options = this.build_options(next_page);
+            this.render();
         },
 
         previous_page: function () {
-            console.log('previous dude')
-            console.log(this.report_data)
+
         },
 
         render: function () {

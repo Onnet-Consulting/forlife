@@ -2,9 +2,11 @@
 <odoo>
     <t t-name="ReportPager">
         <div>
+            <span class="o_current_page_num"><t t-esc="options.page_num"/></span>
             <span class="o_pager_counter">
                 <span class="o_pager_value">
-                    <t t-esc="options.page_num"/>
+                    <t t-esc="options.start_record"/>-
+                    <t t-esc="options.end_record"/>
                 </span>
                 /
                 <span class="o_pager_limit">

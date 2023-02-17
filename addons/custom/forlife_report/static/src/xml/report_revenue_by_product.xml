@@ -2,8 +2,6 @@
 <template xml:space="preserve">
     <t t-name="ReportRevenueByProduct" t-inherit="ReportBase" t-inherit-mode="primary">
         <xpath expr="//div[@id='main']" position="inside">
-            <h2>á đù con gà dù </h2>
-            <t t-esc="data"/>
             <t t-call="ReportRevenueByProductMain"/>
         </xpath>
     </t>
@@ -32,9 +30,9 @@
                 </tr>
             </thead>
             <tbody>
-                    <t t-foreach="data" t-as="line">
+                    <t t-foreach="options.data" t-as="line">
                         <tr>
-                            <td><t t-esc="line.name"/></td>
+                            <td>xxxx</td>
                             <td><t t-esc="line.name"/></td>
                             <td><t t-esc="line.name"/></td>
                             <td><t t-esc="line.name"/></td>

@@ -26,5 +26,12 @@ class ReportRevenueByProduct(models.TransientModel):
         action = self.env.ref('forlife_report.report_revenue_by_product_client_action').read()[0]
         return action
 
+    def _get_query(self):
+        query = """
+        
+        """
+
     def get_data(self):
-        return [{"name": "abc defg lalala"}] * 200
+        self._cr.execute('select name from res_partner')
+        data = self._cr.dictfetchall()
+        return data
