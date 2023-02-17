@@ -127,6 +127,11 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
                   point: parseInt($(this).val())
               })
             });
+            for(let i=0; i< obj.length; i++){
+                    if(!obj[i].point){
+                        obj[i].point=0
+                    }
+            }
             if(self.state.error_popup_flag) return;
             this.env.posbus.trigger('close-popup', {
                 popupId: this.props.id,
