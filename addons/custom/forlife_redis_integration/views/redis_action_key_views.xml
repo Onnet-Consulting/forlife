@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="redis_action_key_form" model="ir.ui.view">
+        <field name="name">redis.action.key.form</field>
+        <field name="model">redis.action.key</field>
+        <field name="arch" type="xml">
+            <form string="Redis Host">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="key"/>
+                            <field name="description"/>
+                            <field name="host_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="redis_action_key_tree" model="ir.ui.view">
+        <field name="name">redis.action.key.tree</field>
+        <field name="model">redis.action.key</field>
+        <field name="arch" type="xml">
+            <tree string="Redis Hosts">
+                <field name="key"/>
+                <field name="description"/>
+                <field name="host_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="redis_action_key_action" model="ir.actions.act_window">
+        <field name="name">Redis Action Keys</field>
+        <field name="res_model">redis.action.key</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="redis_action_key_menu"
+              action="redis_action_key_action"
+              parent="integration_redis_menu"
+              sequence="2"/>
+</odoo>
