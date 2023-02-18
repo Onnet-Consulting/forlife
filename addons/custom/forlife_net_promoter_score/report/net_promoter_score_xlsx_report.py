@@ -12,7 +12,7 @@ class NPSReportXlsx(models.AbstractModel):
     def generate_xlsx_report(self, workbook, data, record):
         if not record:
             raise ValidationError(_('NPS Report values not found.'))
-        result = record[0].filter_data()
+        result = record[0].filter_data([])
         sheet = workbook.add_worksheet("NPS Report")
         _format_header = workbook.add_format({
             'bold': True,
