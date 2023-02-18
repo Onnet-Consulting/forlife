@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 #
 from odoo import api, fields, models, _
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class PosSession(models.Model):
@@ -25,3 +27,7 @@ class PosSession(models.Model):
     # def _pos_data_process(self, loaded_data):
     #     super()._pos_data_process(loaded_data)
     #     loaded_data['mongo_config'] = loaded_data['mongo.server.config']
+
+    def load_pos_data(self):
+        _logger.info('-------------- load_pos_data -----: %s', self._context)
+        return super(PosSession, self).load_pos_data()

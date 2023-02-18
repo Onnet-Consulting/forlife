@@ -15,60 +15,11 @@ odoo.define('pos_fast_loading.models', function (require) {
     var ProductItem = require('point_of_sale.ProductItem');
     const ProductScreen = require('point_of_sale.ProductScreen').prototype
     const { onRendered } = owl;
-
-    // models.load_models({
-    //     model: 'mongo.server.config',
-    //     fields: ['cache_last_update_time', 'pos_live_sync', 'active_record'],
-    //     loaded: function (self, mongo) {
-    //         self.db.mongo_config = {};
-    //         if (mongo && mongo.filter(a=> a.active_record)) {
-    //             self.db.mongo_config = mongo.filter(a=> a.active_record);
-    //         }
-    //     }
-    // }, {
-    //     'before': 'res.partner'
-    // });
-
     var { PosGlobalState } = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
 
 
-    const PosCustomPosGlobalState = (PosGlobalState) => class extends PosGlobalState {
-        async _processData(loadedData) {
-            await super._processData(...arguments);
-            if (loadedData['mongo.server.config']){
-                this.db.mongo_config = loadedData['mongo.server.config'][0];
-            }
-            
-        }
-    }
-    Registries.Model.extend(PosGlobalState, PosCustomPosGlobalState);
-
-    // const ProductItemCustom = (ProductItem) => class extends ProductItem {
-    //     setup() {
-    //         super.setup();
-    //         onRendered(() => {
-    //             if (this.env.isDebug()) {
-    //                 console.log('Rendered:', this);
-    //             }
-    //         });
-    //     }
-    // }
-    // Registries.Component.extend(ProductItem, ProductItemCustom);
-    // for (var i = 0, len = model_list.length; i < len; i++) {
-    //     if (model_list[i].model == "product.product") {
-    //         product_model = model_list[i];
-
-    //     } else if (model_list[i].model == "res.partner") {
-    //         partner_model = model_list[i]
-
-    //     } else if (model_list[i].model == "product.pricelist.item") {
-    //         pricelist_item_model = model_list[i]
-    //     }
-    // }
-
     // ********************Function for getting data from indexedDB***************************************
-
 
     function getRecordsIndexedDB(db, store) {
         return new Promise((resolve, reject) => {
@@ -91,11 +42,132 @@ odoo.define('pos_fast_loading.models', function (require) {
         });
     }
 
+    const PosCustomPosGlobalState = (PosGlobalState) => class extends PosGlobalState {
+        async _processData(loadedData) {
+            await super._processData(...arguments);
+            if (loadedData['mongo.server.config']){
+                this.db.mongo_config = loadedData['mongo.server.config'][0];
+            }
+            
+        }
+        // TODO: inject context at here
+        async load_server_data(){
+            let self = this;
+            const loadedData = await this.env.services.rpc({
+                model: 'pos.session',
+                method: 'load_pos_data',
+                args: [[odoo.pos_session_id]]
+            });
+            await this._processData(loadedData);
+            return this.after_load_server_data();
+        }
+
+        // This is old function, using to load product to pos of base
+        _loadProductToPOS(products) {
+            const productMap = {};
+            const productTemplateMap = {};
+
+            const modelProducts = products.map(product => {
+                product.pos = this;
+                product.applicablePricelistItems = {};
+                productMap[product.id] = product;
+                productTemplateMap[product.product_tmpl_id[0]] = (productTemplateMap[product.product_tmpl_id[0]] || []).concat(product);
+                return Product.create(product);
+            });
+
+            for (let pricelist of this.pricelists) {
+                for (const pricelistItem of pricelist.items) {
+                    if (pricelistItem.product_id) {
+                        let product_id = pricelistItem.product_id[0];
+                        let correspondingProduct = productMap[product_id];
+                        if (correspondingProduct) {
+                            this._assignApplicableItems(pricelist, correspondingProduct, pricelistItem);
+                        }
+                    }
+                    else if (pricelistItem.product_tmpl_id) {
+                        let product_tmpl_id = pricelistItem.product_tmpl_id[0];
+                        let correspondingProducts = productTemplateMap[product_tmpl_id];
+                        for (let correspondingProduct of (correspondingProducts || [])) {
+                            this._assignApplicableItems(pricelist, correspondingProduct, pricelistItem);
+                        }
+                    }
+                    else {
+                        for (const correspondingProduct of products) {
+                            this._assignApplicableItems(pricelist, correspondingProduct, pricelistItem);
+                        }
+                    }
+                }
+            }
+            this.db.add_products(modelProducts)
+            this.db.product_loaded = true;
+        }
+
+        // Override by QTH
+        _loadProductProduct(products) {
+            let self = this;
+            self.db.product_loaded = false;
+            if (!('indexedDB' in window)) {
+                console.log('This browser doesn\'t support IndexedDB');
+            } else {
+                console.log('-----------------------');
+                console.log(products.length);
+                if (products.length) {
+                    self._loadProductToPOS(products);
+                };
+
+                let request = window.indexedDB.open('Product', 1);
+                request.onsuccess = function (event) {
+                    let db = event.target.result;
+                    if (!(products.length)) {
+                        getRecordsIndexedDB(db, 'products').then(function (res) {
+                            $.blockUI({
+                                message: '<h1 style="color:rgb(220, 236, 243);"><i class="fa fa-spin fa-spinner"></i> Product Loading...</h1>'
+                            });
+                            self._loadProductToPOS(res)
+                            console.log("product loaded through indexdb...........");
+                            $.unblockUI();
+                        });
+                    } else {
+                        if (db.objectStoreNames.contains('products')) {
+                            try {
+                                var product_transaction = db.transaction('products', 'readwrite');
+                                var productsStore = product_transaction.objectStore('products');
+                                /*************************************/
+                                products.forEach(function (product) {
+                                    var data_store = productsStore.get(product.id);
+                                    data_store.onsuccess = function (event) {
+                                        var data = event.target.result;
+                                        data = product;
+                                        // data.active = true;
+                                        // data.available_in_pos = true;
+                                        delete data['pos']
+                                        productsStore.put(data);
+                                    }
+                                });
+                            } catch {
+                                console.log("----exception---- products")
+                            }
+                        }
+                    }
+                };
+                request.onupgradeneeded = function (event) {
+                    var db = event.target.result;
+                    var productsStore = db.createObjectStore('products', {
+                        keyPath: 'id'
+                    });
+                };
+
+            }
+
+        }
+    }
+    Registries.Model.extend(PosGlobalState, PosCustomPosGlobalState);
+
 
     // ********************Updating Products Context***************************************
 
 
-
+    // TODO: upgrade to v16
     var super_product_context = product_model.context;
     if (super_product_context && typeof (super_product_context) == 'function') {
         try {
@@ -305,7 +377,7 @@ odoo.define('pos_fast_loading.models', function (require) {
 
 
     // ********************Updating PriceList Items Context***************************************
-
+    // TODO: upgrade to v16
     var super_price_item_context = pricelist_item_model.context;
     if (super_price_item_context && typeof (super_price_item_context) == 'function') {
         try {
@@ -411,7 +483,7 @@ odoo.define('pos_fast_loading.models', function (require) {
 
     // // ********************Updating PricelistItems Loaded***************************************
 
-
+    // TODO: upgrade to v16
     var super_price_item_loaded = pricelist_item_model.loaded;
     if (super_price_item_loaded) {
         // ******************Stroring code to indexedDB***********
@@ -459,8 +531,10 @@ odoo.define('pos_fast_loading.models', function (require) {
     }
 
     // ********************Updating Products Loaded***************************************
-
-
+    // TODO: upgrade to v16
+    // _loadProductProduct :PosGlobalState
+    // load_pos_data remove load product if db.product_loaded = true
+    // 
     var product_loaded = product_model.loaded;
     if (!('indexedDB' in window)) {
         console.log('This browser doesn\'t support IndexedDB');
@@ -476,7 +550,7 @@ odoo.define('pos_fast_loading.models', function (require) {
                 product_loaded.call(this, self, products);
                 console.log("product loaded through default...........");
             }
-
+            
             var request = window.indexedDB.open('Product', 1);
             request.onsuccess = function (event) {
                 var db = event.target.result;
