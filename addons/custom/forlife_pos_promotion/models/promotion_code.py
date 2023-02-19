@@ -34,3 +34,10 @@ class PromotionCode(models.Model):
     reward_for_referring = fields.Boolean(related='program_id.reward_for_referring')
     referred_partner_id = fields.Many2one('res.partner')
     expiration_date = fields.Date()
+    use_count = fields.Integer(compute='_compute_use_count')
+
+    def _compute_use_count(self):
+        self.use_count = 0
+        for code in self:
+            self.use_count = self.env['promotion.usage.line'].search(
+                ['code_id', '=', code.id]).mapped('order_line_id.order_id')

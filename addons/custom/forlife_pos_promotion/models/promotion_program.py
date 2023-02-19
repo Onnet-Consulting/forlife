@@ -209,6 +209,8 @@ class PromotionProgram(models.Model):
 
     def _compute_total_order_count(self):
         self.total_order_count = 0
+        for program in self:
+            program.total_order_count = sum(program.code_ids.mapped('use_count'))
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")

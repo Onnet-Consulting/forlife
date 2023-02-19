@@ -32,8 +32,7 @@ EnterCodeButton.template = 'EnterCodeButton';
 ProductScreen.addControlButton({
     component: EnterCodeButton,
     condition: function () {
-        return this.env.pos.promotionPrograms.some(
-        p => p.promotion_type == 'code' || p.with_code == true);
+        return [...this.env.pos.promotionPrograms].filter(p => p.promotion_type == 'code' || p.with_code == true).length > 0;
     }
 });
 

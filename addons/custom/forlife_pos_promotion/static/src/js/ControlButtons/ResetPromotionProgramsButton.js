@@ -5,24 +5,24 @@ import ProductScreen from 'point_of_sale.ProductScreen';
 import Registries from 'point_of_sale.Registries';
 import { useListener } from "@web/core/utils/hooks";
 
-export class ResetProgramsButton extends PosComponent {
+export class ResetPromotionProgramsButton extends PosComponent {
     setup() {
         super.setup();
         useListener('click', this.onClick);
     }
 
     async onClick() {
-        this.env.pos.get_order()._resetPrograms();
+        this.env.pos.get_order()._resetPromotionPrograms();
     }
 }
 
-ResetProgramsButton.template = 'ResetProgramsButton';
+ResetPromotionProgramsButton.template = 'ResetPromotionProgramsButton';
 
 ProductScreen.addControlButton({
-    component: ResetProgramsButton,
+    component: ResetPromotionProgramsButton,
     condition: function () {
-        return this.env.pos.programs.some(p => ['coupons', 'promotion'].includes(p.program_type));
+        return this.env.pos.promotionPrograms.length > 0;
     }
 });
 
-Registries.Component.add(ResetProgramsButton);
+Registries.Component.add(ResetPromotionProgramsButton);

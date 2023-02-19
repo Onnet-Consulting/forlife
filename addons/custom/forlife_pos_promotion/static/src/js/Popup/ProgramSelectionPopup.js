@@ -19,7 +19,6 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             });
         }
         selectItem(itemId) {
-            console.log('======================== pos', this.env.pos)
             let current_program = this.state.programs.find((p) => p.id == itemId);
             current_program.isSelected = !current_program.isSelected;
             let program_by_id = this.env.pos.promotion_program_by_id
@@ -42,7 +41,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             let cloneProgramsDict = {};
             clonePrograms.forEach(p => {cloneProgramsDict[p.id] = index; index ++});
             this.state.programs.filter(p => p.isSelected).forEach(p => {p.index = cloneProgramsDict[p.id]});
-            let clone_order_lines = [...this.env.pos.get_order()._get_clone_order_lines()]
+            let clone_order_lines = this.env.pos.get_order().get_orderlines_to_check().map(obj => ({...obj}))
 
 
             let selectedPrograms = this.state.programs.filter(p => p.isSelected)
@@ -71,12 +70,14 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             });
 
             // Tính tổng số tiền đã giảm trên đơn hàng
-            this.state.discount_amount_order = this.state.programs.reduce((acc, p) => acc + p.discounted_amount, 0.0)
+            this.state.discount_amount_order = this.state.programs.reduce((acc, p) => acc + p.discounted_amount, 0.0);
 
             // Tính số tiền và combo còn có thế áp dụng cho những chương trình chưa áp dụng
+            const remainingLinesClone = this.env.pos.get_order()._get_clone_order_lines(remainingLines);
+
             let notSelectPrograms = not_selected_programs.map(p => program_by_id[p.id]);
             for (let notSelectProgram of notSelectPrograms) {
-                let remainingLinesCopy = JSON.parse(JSON.stringify(remainingLines));
+                let remainingLinesCopy = JSON.parse(JSON.stringify(remainingLinesClone));
 
                 let remaining_clone_order_lines = [...remainingLinesCopy]
                 let [newLinesToApplyNoSelected, ol, combo_count] = this.env.pos.get_order()
@@ -84,6 +85,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 this.state.programs.forEach(p => {
                     if (combo_count.hasOwnProperty(p.id)) {
                         p.forecastedNumber = combo_count[p.id];
+                        p.forecasted_discounted_amount = 0.0;
                     };
                 });
                 for (let [program_id, lines] of Object.entries(newLinesToApplyNoSelected)) {
@@ -101,8 +103,9 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
          * @override
          */
         getPayload() {
-//            const selected = this.props.programs.find((item) => this.state.selectedId === item.id);
-//            return selected && selected.item;
+            return this.state.programs.filter(p => p.isSelected)
+                                        .sort((p1, p2) => p1.index - p2.index)
+                                        .map(p => this.env.pos.promotion_program_by_id[p.id])
         }
     }
     ProgramSelectionPopup.template = 'ProgramSelectionPopup';

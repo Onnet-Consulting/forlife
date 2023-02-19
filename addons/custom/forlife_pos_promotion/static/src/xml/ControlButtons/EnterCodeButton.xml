@@ -2,9 +2,8 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="EnterCodeButton" owl="1">
-        <span class="control-button">
+        <span class="control-button" id="enter-code-button">
             <i class="fa fa-barcode"></i>
-            <span> </span>
             <span>Nhập Mã KM</span>
         </span>
     </t>
