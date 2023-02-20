@@ -44,8 +44,7 @@
                         </div>
                         <div class="col-3">
                             <field name="brand_ids" widget="many2many_checkboxes"/>
-                            <button name="btn_reset_searching" string=" Reset" icon="fa-refresh" class="oe_right" type="object" context="{'pop_colum': True}"/>
-                            <button name="btn_search" string=" Search" icon="fa-search-plus" class="oe_highlight oe_right" type="object" context="{'pop_colum': True}"/>
+                            <button name="btn_reset_searching" string=" Reset" icon="fa-refresh" class="oe_highlight oe_right" type="object" context="{'pop_colum': True}"/>
                         </div>
                     </div>
                     <div class="row">

@@ -75,7 +75,7 @@ class NetPromoterScoreReport(models.TransientModel):
             'min_point': 0,
             'max_point': 100,
             'brand_ids': False,
-            'view_report': header[0] + header[1],
+            'view_report': header[0] + DATA_NOT_FOUND + header[1],
             'number_of_page': 1,
             'current_page': 0,
             'number_of_record': False,
