@@ -98,12 +98,11 @@
                                 <field name="old_card_rank_id" readonly="1" force_save="1"/>
                             </group>
                             <group>
-                                <field name="new_card_rank_id" domain="[('id', '!=', old_card_rank_id), ('priority', '>', priority)]"/>
+                                <field name="new_card_rank_id" domain="[('id', '!=', old_card_rank_id)]"/>
                             </group>
                         </group>
                         <field name="partner_card_rank_id" invisible="1"/>
                         <field name="order_date" invisible="1"/>
-                        <field name="priority" invisible="1"/>
                     </sheet>
                 </form>
             </field>

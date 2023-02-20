@@ -6,16 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-17 02:38+0000\n"
-"PO-Revision-Date: 2023-02-17 09:40+0700\n"
+"POT-Creation-Date: 2023-02-20 03:35+0000\n"
+"PO-Revision-Date: 2023-02-20 03:35+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
-"Language: vi\n"
-"X-Generator: Poedit 2.3\n"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__accumulated_sales
@@ -450,7 +448,6 @@ msgstr "Đơn hàng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__priority
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__priority
 msgid "Priority"
 msgstr "Thứ hạng"
 
@@ -476,6 +473,11 @@ msgstr "Hạng"
 #: model:ir.model.constraint,message:forlife_customer_card_rank.constraint_card_rank_name_uniq
 msgid "Rank name must be unique"
 msgstr "Tên hạng phải là duy nhất"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__real_date
+msgid "Real Date"
+msgstr "Thời gian thực tế"
 
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
@@ -505,6 +507,7 @@ msgstr "Tìm kiếm"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
+#: code:addons/forlife_customer_card_rank/models/member_card.py:0
 #: code:addons/forlife_customer_card_rank/models/member_card.py:0
 #, python-format
 msgid "Store added: %s"
