@@ -62,10 +62,10 @@ class CompensatePointWizard(models.TransientModel):
             account_move_obj.create(move_vals).sudo().action_post()
 
             # Update reset date
-            new_reset_date = self.date_order + relativedelta(days=point_promotion_id.point_expiration)
-            if self.type == 'forlife':
-                reset_vals = {'reset_day_of_point_forlife': new_reset_date}
-            else:
-                reset_vals = {'reset_day_of_point_format': new_reset_date}
+            # new_reset_date = self.date_order + relativedelta(days=point_promotion_id.point_expiration)
+            # if self.type == 'forlife':
+            #     reset_vals = {'reset_day_of_point_forlife': new_reset_date}
+            # else:
+            #     reset_vals = {'reset_day_of_point_format': new_reset_date}
 
-            self.partner_id.write(reset_vals)
+            # self.partner_id.write(reset_vals)

@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from dateutil.relativedelta import relativedelta
 import datetime
 import logging
 
@@ -106,6 +107,8 @@ class Contact(models.Model):
         # Reset Forlife point
         reset_forlife_partners = self.search([('reset_day_of_point_forlife', '<=', now), ('point_forlife_reseted', '=', False)])
         if reset_forlife_partners:
+            # vals = {'point_forlife_reseted': True}
+            vals = {}
             # create journal entries
             if point_promotion_forlife_id:
                 move_line_vals = [(0, 0, {
@@ -142,12 +145,20 @@ class Contact(models.Model):
                         'reason': _("Hệ thống chạy tự động")
                     })
 
-                # Update reset flag
-                reset_forlife_partners.write({'point_forlife_reseted': True})
+                # Update reset date
+                new_reset_date = now + relativedelta(days=point_promotion_forlife_id.point_expiration)
+                vals.update({
+                    'reset_day_of_point_forlife': new_reset_date,
+                    'point_forlife_reseted': False
+                })
+
+            reset_forlife_partners.write(vals)
 
         # Reset Format point
         reset_format_partners = self.search([('reset_day_of_point_format', '<=', now), ('point_format_reseted', '=', False)])
         if reset_format_partners:
+            # vals = {'point_format_reseted': True}
+            vals = {}
             # create journal entries
             if point_promotion_format_id:
                 move_line_vals = [(0, 0, {
@@ -184,5 +195,11 @@ class Contact(models.Model):
                         'reason': _("Hệ thống chạy tự động")
                     })
 
-                # Update reset flag
-                reset_format_partners.write({'point_format_reseted': True})
+                # Update reset date
+                new_reset_date = now + relativedelta(days=point_promotion_format_id.point_expiration)
+                vals.update({
+                    'reset_day_of_point_format': new_reset_date,
+                    'point_format_reseted': False
+                })
+
+            reset_format_partners.write(vals)
