@@ -39,12 +39,22 @@ class NetPromoterScoreReport(models.TransientModel):
     def onchange_record_per_page(self):
         if self.from_date and self.to_date and self.brand_ids:
             values = self.with_context(pop_colum=True, onchange=True).btn_search()
-            self.view_report = values.get('view_report')
-            self.record_per_page = values.get('record_per_page', self.record_per_page)
-            self.number_of_page = values.get('number_of_page')
-            self.current_page = values.get('current_page')
-            self.number_of_record = values.get('number_of_record')
-            self.record_by_page = values.get('record_by_page')
+        else:
+            header = self.get_view_header()
+            values = {
+                'view_report': header[0] + DATA_NOT_FOUND + header[1],
+                'number_of_page': 1,
+                'current_page': 0,
+                'number_of_record': False,
+                'record_by_page': False,
+                'record_per_page': min(max(self.record_per_page, MIN_RECORD_PER_PAGE), MAX_RECORD_PER_PAGE),
+            }
+        self.view_report = values.get('view_report')
+        self.record_per_page = values.get('record_per_page', self.record_per_page)
+        self.number_of_page = values.get('number_of_page')
+        self.current_page = values.get('current_page')
+        self.number_of_record = values.get('number_of_record')
+        self.record_by_page = values.get('record_by_page')
 
     def get_view_header(self):
         header = copy.copy(REPORT_HEADER)
@@ -92,7 +102,7 @@ class NetPromoterScoreReport(models.TransientModel):
 
     def filter_data(self, domain, values):
         if not self._context.get('paging', False):
-            domain = ['&', '&', '&', ('status', '=', '1'), ('point', '>=', self.min_point), ('point', '<=', self.max_point),('brand', 'in', self.brand_ids.mapped('code'))]
+            domain = ['&', '&', '&', ('status', '=', '1'), ('point', '>=', self.min_point), ('point', '<=', self.max_point), ('brand', 'in', self.brand_ids.mapped('code'))]
             if self.from_date:
                 domain.insert(0, '&')
                 domain += [('invoice_date', '>=', self.from_date)]
