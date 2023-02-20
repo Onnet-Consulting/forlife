@@ -10,21 +10,20 @@
                     <button name="%(promotion_generate_code_action)d" string="Generate Codes"
                             class="btn-primary" type="action"
                             attrs="{'invisible': [('with_code', '=', False), ('promotion_type', '!=', '')]}"/>
-                    <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
+                    <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="action_open_promotion_codes" icon="fa-tags"
-                                attrs="{'invisible': [('with_code', '=', False), ('promotion_type', '!=', '')]}"
+                                attrs="{'invisible': [('with_code', '=', False), ('promotion_type', '!=', 'code')]}"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value">
                                     <field name="code_count"/>
                                 </span>
                                 <span class="o_stat_text" >
-<!--                                      attrs="{'invisible': [('program_type', '!=', 'loyalty')]}"-->
-                                Promotion Cards</span>
+                                Promotion Codes</span>
                             </div>
                         </button>
                     </div>
@@ -61,12 +60,12 @@
                             <field name="pos_config_ids"
                                    placeholder="All POS"
                                    widget="many2many_tags"/>
-                            <field name="from_date"/>
-                            <field name="to_date"/>
-                            <field name="month_ids" widget="many2many_tags"/>
-                            <field name="dayofmonth_ids" widget="many2many_tags"/>
-                            <field name="dayofweek_ids"  widget="many2many_tags"/>
-                            <field name="hour_ids"  widget="many2many_tags"/>
+<!--                            <field name="from_date"/>-->
+<!--                            <field name="to_date"/>-->
+<!--                            <field name="month_ids" widget="many2many_tags"/>-->
+<!--                            <field name="dayofmonth_ids" widget="many2many_tags"/>-->
+<!--                            <field name="dayofweek_ids"  widget="many2many_tags"/>-->
+<!--                            <field name="hour_ids"  widget="many2many_tags"/>-->
                         </group>
                     </group>
                     <group string="Combo" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">
@@ -83,7 +82,7 @@
                             <field name="combo_name" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
                         </group>
                     </group>
-                    <group string="Conditions">
+                    <group string="Conditions" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
                         <field name="product_ids" widget="many2many_tags"
                                attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
                         <field name="product_categ_ids" widget="many2many_tags"
@@ -162,6 +161,7 @@
                 <field name="name"/>
                 <field name="state"/>
                 <field name="promotion_type"/>
+                <field name="active"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </tree>
         </field>
@@ -191,19 +191,5 @@
             </div>
         </field>
     </record>
-
-<!--    <record id="action_loyalty_program_tree_discount_loyalty" model="ir.actions.act_window.view">-->
-<!--        <field name="view_mode">tree</field>-->
-<!--        <field name="sequence">1</field>-->
-<!--        <field name="view_id" ref="loyalty_program_view_tree"/>-->
-<!--        <field name="act_window_id" ref="loyalty_program_discount_loyalty_action"/>-->
-<!--    </record>-->
-
-<!--    <record id="action_loyalty_program_form_discount_loyalty" model="ir.actions.act_window.view">-->
-<!--        <field name="view_mode">form</field>-->
-<!--        <field name="sequence">2</field>-->
-<!--        <field name="view_id" ref="loyalty_program_view_form"/>-->
-<!--        <field name="act_window_id" ref="loyalty_program_discount_loyalty_action"/>-->
-<!--    </record>-->
 
 </odoo>

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from . import promotion_campaign
 from . import promotion_program
 from . import promotion_combo_line
 from . import promotion_reward_line

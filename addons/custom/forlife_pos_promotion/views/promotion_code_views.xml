@@ -13,10 +13,10 @@
                     <field name="limit_usage"/>
                     <field name="max_usage"/>
                     <field name="num_of_usage"/>
-                    <field name="amount"/>
-                    <field name="consumed_amount"/>
-                    <field name="remaining_amount"/>
-                    <field name="reward_for_referring"/>
+<!--                    <field name="amount"/>-->
+<!--                    <field name="consumed_amount"/>-->
+<!--                    <field name="remaining_amount"/>-->
+<!--                    <field name="reward_for_referring"/>-->
                 </group>
             </form>
         </field>
@@ -33,10 +33,10 @@
                     <field name="limit_usage"/>
                     <field name="max_usage"/>
                     <field name="num_of_usage"/>
-                    <field name="amount"/>
-                    <field name="consumed_amount"/>
-                    <field name="remaining_amount"/>
-                    <field name="reward_for_referring"/>
+<!--                    <field name="amount"/>-->
+<!--                    <field name="consumed_amount"/>-->
+<!--                    <field name="remaining_amount"/>-->
+<!--                    <field name="reward_for_referring"/>-->
             </tree>
         </field>
     </record>

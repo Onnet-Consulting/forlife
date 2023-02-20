@@ -33,7 +33,7 @@ class PromotionCode(models.Model):
     pos_order_ids = fields.Many2many('pos.order')
     reward_for_referring = fields.Boolean(related='program_id.reward_for_referring')
     referred_partner_id = fields.Many2one('res.partner')
-    expiration_date = fields.Date()
+    expiration_date = fields.Datetime()
     use_count = fields.Integer(compute='_compute_use_count')
 
     def _compute_use_count(self):

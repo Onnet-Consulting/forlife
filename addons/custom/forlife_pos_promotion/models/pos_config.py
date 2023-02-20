@@ -13,8 +13,6 @@ class PosConfig(models.Model):
 
     def use_promotion_code(self, code, creation_date, partner_id):
         self.ensure_one()
-        # Ordering by partner id to use the first assigned to the partner in case multiple coupons have the same code
-        #  it could happen with loyalty programs using a code
         code_id = self.env['promotion.code'].search(
             [('program_id', 'in', self._get_promotion_program_ids().ids), ('partner_id', 'in', (False, partner_id)), ('name', '=', code)],
             order='partner_id', limit=1)
@@ -26,9 +24,9 @@ class PosConfig(models.Model):
                     'error_message': _('This coupon is invalid (%s).', code),
                 },
             }
-        check_date = fields.Date.from_string(creation_date[:11])
+        check_date = fields.Datetime.from_string(creation_date.replace('T', ' ')[:19])
         if (code_id.expiration_date and code_id.expiration_date < check_date) or\
-            (code_id.program_id.to_date and code_id.program_id.to_date < fields.Datetime.now()) or\
+            (code_id.program_id.to_date and code_id.program_id.to_date < check_date) or\
             (code_id.program_id.limit_usage and code_id.program_id.total_order_count >= code_id.program_id.max_usage):
             return {
                 'successful': False,

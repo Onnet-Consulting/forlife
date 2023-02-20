@@ -27,9 +27,11 @@ REWARD_TYPE = [
 class PromotionProgram(models.Model):
     _name = 'promotion.program'
     _description = 'Promotion Program'
+    _inherit = 'promotion.configuration'
+    _order = 'promotion_type, sequence'
 
-    active = fields.Boolean(default=True)
-    sequence = fields.Integer(default=10)
+    campaign_id = fields.Many2one('promotion.campaign', name='Campaign')
+
     name = fields.Char('Program Name', required=True)
     code = fields.Char('Code')
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
@@ -38,14 +40,14 @@ class PromotionProgram(models.Model):
         precompute=True)
     currency_symbol = fields.Char(related='currency_id.symbol')
 
-    brand_id = fields.Many2one('res.brand', string='Brand', required=True)
-    store_ids = fields.Many2many('store', string='Stores', required=True)
-    from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
-    to_date = fields.Datetime('To Date', required=True)
-    month_ids = fields.Many2many('month.data', string='Months')
-    dayofmonth_ids = fields.Many2many('dayofmonth.data', string='DayOfMonth')
-    dayofweek_ids = fields.Many2many('dayofweek.data', string='DayOfWeek')
-    hour_ids = fields.Many2many('hour.data', string='Hours')
+    brand_id = fields.Many2one(related='campaign_id.brand_id', string='Brand')
+    store_ids = fields.Many2many(related='campaign_id.store_ids', string='Stores')
+    from_date = fields.Datetime(related='campaign_id.from_date', string='From Date', default=fields.Datetime.now)
+    to_date = fields.Datetime(related='campaign_id.to_date', string='To Date')
+    month_ids = fields.Many2many(related='campaign_id.month_ids', string='Months')
+    dayofmonth_ids = fields.Many2many(related='campaign_id.dayofmonth_ids', string='DayOfMonth')
+    dayofweek_ids = fields.Many2many(related='campaign_id.dayofweek_ids', string='DayOfWeek')
+    hour_ids = fields.Many2many(related='campaign_id.hour_ids', string='Hours')
 
     applicability = fields.Selection([
         ('current', 'Current order'),
@@ -60,11 +62,7 @@ class PromotionProgram(models.Model):
     limit_usage = fields.Boolean(string='Limit Usage')
     max_usage = fields.Integer()
 
-    state = fields.Selection([
-        ('new', _('New')),
-        ('in_progress', _('In Progress')),
-        ('finished', _('Finished')),
-        ('canceled', _('Canceled'))], string='State', default='new')
+    state = fields.Selection(related='campaign_id.state', store=True, readonly=True)
 
     promotion_type = fields.Selection([
         ('combo', 'Combo'),
@@ -76,9 +74,10 @@ class PromotionProgram(models.Model):
     pos_config_ids = fields.Many2many(
         'pos.config', readonly=False, string="Point of Sales", help="Restrict publishing to those shops.")
 
-    customer_domain = fields.Char('Customer Domain', default='[]')
-    total_order_count = fields.Integer("Total Order Count", compute="_compute_total_order_count")
+    customer_domain = fields.Char(related='campaign_id.customer_domain')
+    valid_customer_ids = fields.Many2many(related='campaign_id.valid_customer_ids')
 
+    total_order_count = fields.Integer("Total Order Count", compute="_compute_total_order_count")
 
     # Combo
     combo_line_ids = fields.One2many(
@@ -143,41 +142,6 @@ class PromotionProgram(models.Model):
         for program in self:
             program.currency_id = program.company_id.currency_id or program.currency_id
 
-    @api.onchange('from_date', 'to_date')
-    def onchange_program_date(self):
-        def next_month(m):
-            return m < 12 and m + 1 or 1
-
-        def next_day(d):
-            return d < 31 and d + 1 or 1
-        self.month_ids = False
-        self.dayofmonth_ids = False
-        if self.from_date and self.to_date:
-            if not self.from_date <= self.to_date:
-                raise UserError('End date may not be before the starting date.')
-            current_month = self.from_date.month
-            months = {current_month, self.to_date.month}
-            number_of_months = int((self.to_date - self.from_date).days/30)
-            if number_of_months >= 1:
-                for i in range(number_of_months):
-                    months.add(next_month(current_month))
-                    current_month += 1
-                    if i > 12: break
-
-            current_day = self.from_date.day
-            days = {current_day, self.to_date.day}
-            number_of_days = int((self.to_date - self.from_date).days)
-            if number_of_days >= 1:
-                for i in range(number_of_days):
-                    days.add(next_day(current_day))
-                    current_day += 1
-                    if i > 31: break
-
-            self.month_ids = self.env['month.data'].browse(
-                [self.env.ref('forlife_promotion.month%s' % m).id for m in months])
-            self.dayofmonth_ids = self.env['dayofmonth.data'].browse(
-                [self.env.ref('forlife_promotion.dayofmonth%s' % d).id for d in days])
-
     def _get_valid_product_domain(self):
         self.ensure_one()
         domain = []
@@ -210,7 +174,8 @@ class PromotionProgram(models.Model):
     def _compute_total_order_count(self):
         self.total_order_count = 0
         for program in self:
-            program.total_order_count = sum(program.code_ids.mapped('use_count'))
+            usages = self.env['promotion.usage.line'].search([('program_id', '=', program.id)])
+            program.total_order_count = len(usages.mapped('order_id'))
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")

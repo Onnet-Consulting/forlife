@@ -48,6 +48,7 @@
         'views/promotion_combo_line_views.xml',
         'views/promotion_code_views.xml',
         'views/pos_order_views.xml',
+        'views/promotion_campaign_views.xml',
         # Menu
         'menu/menu_views.xml',
     ]
