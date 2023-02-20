@@ -72,7 +72,8 @@ class PromotionProgram(models.Model):
     ], string='Program Type')
 
     pos_config_ids = fields.Many2many(
-        'pos.config', readonly=False, string="Point of Sales", help="Restrict publishing to those shops.")
+        related='campaign_id.pos_config_ids', string="Point of Sales", help="Restrict publishing to those shops.",
+        readonly=True)
 
     customer_domain = fields.Char(related='campaign_id.customer_domain')
     valid_customer_ids = fields.Many2many(related='campaign_id.valid_customer_ids')

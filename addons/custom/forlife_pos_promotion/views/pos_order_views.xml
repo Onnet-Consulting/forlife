@@ -5,18 +5,20 @@
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
         <field name="arch" type="xml">
-<!--            <xpath expr="//field[@name='lines']/form/group/field[@name='notice']" position="after">-->
-<!--                <div name="promotion_usage_ids">-->
-<!--                    <label for="promotion_usage_ids"/>-->
-<!--                    <field name="promotion_usage_ids">-->
-<!--                        <field name="program_id"/>-->
-<!--                        <field name="code_id"/>-->
-<!--                        <field name="original_price"/>-->
-<!--                        <field name="new_price"/>-->
-<!--                        <field name="discount_amount"/>-->
-<!--                    </field>-->
-<!--                </div>-->
-<!--            </xpath>-->
+            <xpath expr="//field[@name='lines']/form/group" position="after">
+                <div name="promotion_usage_ids">
+                    <label for="promotion_usage_ids"/>
+                    <field name="promotion_usage_ids">
+                        <tree>
+                            <field name="program_id"/>
+                            <field name="code_id"/>
+                            <field name="original_price"/>
+                            <field name="new_price"/>
+                            <field name="discount_amount"/>
+                        </tree>
+                    </field>
+                </div>
+            </xpath>
             <xpath expr="//field[@name='lines']/tree/field[@name='full_product_name']" position="after">
                 <field name="promotion_usage_ids" widget="many2many_tags"/>
             </xpath>
