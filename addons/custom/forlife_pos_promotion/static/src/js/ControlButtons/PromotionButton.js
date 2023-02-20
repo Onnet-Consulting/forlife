@@ -57,7 +57,6 @@ export class PromotionButton extends PosComponent {
                 discount_total: 0
             });
             if (confirmed) {
-                console.log('getPayload', payload);
                 return this._applyPromotionProgram(payload);
             }
         }

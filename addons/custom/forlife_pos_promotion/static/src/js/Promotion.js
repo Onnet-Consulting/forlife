@@ -165,7 +165,7 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
     }
 
     get_original_price() {
-        return this.get_lst_price();
+        return this.product.get_display_price(this.order.pricelist, 1)
     }
 
     get_total_discounted() {
@@ -242,9 +242,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         var date = this.creation_date.getDate();
         var month = this.creation_date.getMonth();
         var hour = this.creation_date.getHours();
-        var hasDate = program.applied_days.has(this.creation_date.getDate());
-        var hasMonth = program.applied_months.has(this.creation_date.getMonth() + 1);
-        var hasHour = program.applied_hours.has(this.creation_date.getHours());
+        var hasDate = program.applied_days.has(this.creation_date.getDate()) || program.applied_days.size == 0;
+        var hasMonth = program.applied_months.has(this.creation_date.getMonth() + 1) || program.applied_months.size == 0;
+        var hasHour = program.applied_hours.has(this.creation_date.getHours()) || program.applied_hours.size == 0;
         if (!hasDate || !hasMonth || !hasHour) {;return false};
         return true;
     }

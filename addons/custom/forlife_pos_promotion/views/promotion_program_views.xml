@@ -41,46 +41,42 @@
                             <div>
                                 <field name="promotion_type" widget="filterable_selection"/>
                             </div>
-                            <field name="currency_id"/>
+                            <field name="currency_id" invisible="1"/>
                             <field name="currency_symbol" invisible="1"/>
 <!--                            <field name="applicability" string="Use points on" groups="base.group_no_one" widget="radio" force_save="1"/>-->
-                            <field name="customer_domain" widget="domain"
-                                   options="{'model': 'res.partner', 'in_dialog': true}"/>
-                            <label for="limit_usage"/>
-                            <span>
+<!--                            <field name="customer_domain" widget="domain"-->
+<!--                                   options="{'model': 'res.partner', 'in_dialog': true}"/>-->
+                            <label for="limit_usage"
+                                   attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}"/>
+                            <span attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}">
                                 <field name="limit_usage" class="oe_inline"/>
                                 <span attrs="{'invisible': [('limit_usage', '=', False)]}"> to <field name="max_usage" class="oe_inline"/> usages</span>
                             </span>
                             <field name="company_id" invisible="1"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+
                         </group>
                         <group>
-                            <field name="brand_id"/>
-                            <field name="store_ids" widget="many2many_tags"/>
+                            <field name="brand_id" invisible="1"/>
+                            <field name="store_ids" widget="many2many_tags" invisible="1"/>
                             <field name="pos_config_ids"
                                    placeholder="All POS"
-                                   widget="many2many_tags"/>
+                                   widget="many2many_tags" invisible="1"/>
 <!--                            <field name="from_date"/>-->
 <!--                            <field name="to_date"/>-->
 <!--                            <field name="month_ids" widget="many2many_tags"/>-->
 <!--                            <field name="dayofmonth_ids" widget="many2many_tags"/>-->
 <!--                            <field name="dayofweek_ids"  widget="many2many_tags"/>-->
 <!--                            <field name="hour_ids"  widget="many2many_tags"/>-->
+                            <field name="combo_code" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
                         </group>
                     </group>
                     <group string="Combo" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">
-                        <group>
+                            <field name="with_code" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
+                            <field name="apply_multi_program" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
                             <label for="combo_line_ids"/>
                             <field name="combo_line_ids" colspan="2" mode="tree" nolabel="1"
                                    add-label="Add a product"
-                                   class="o_loyalty_kanban_inline" widget="promotion_one2many"/>
-                        </group>
-                        <group>
-                            <field name="with_code" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
-                            <field name="apply_multi_program" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
-                            <field name="combo_code" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
-                            <field name="combo_name" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
-                        </group>
+                                   class="o_loyalty_kanban_inline"/>
                     </group>
                     <group string="Conditions" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
                         <field name="product_ids" widget="many2many_tags"
