@@ -17,6 +17,13 @@ class ReportBase(models.AbstractModel):
                           help='Timezone used for selecting datetime data from DB', required=True)
     tz_offset = fields.Integer(compute='_compute_timezone_offset', string="Timezone offset",
                                help='Timezone offset in hours')
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True)
+
+    def print_xlsx(self):
+        ...
+
+    def view_report(self):
+        ...
 
     @api.depends('tz')
     def _compute_timezone_offset(self):
@@ -34,20 +41,3 @@ class ReportBase(models.AbstractModel):
             return (datetime_value + timedelta(hours=self.tz_offset)).stftime(DTF)
         # datetime type don't need to convert to utc
         return datetime_value.strftime(DF)
-
-    @api.model
-    def format_num(self, num, blank_if_zero=False, digits=0):
-        if num is None:
-            return ''
-        if not num and blank_if_zero:
-            return ''
-        return formatLang(self.env, num, digits=digits)
-
-    def format_data(self, data, **options):
-        number_options = options.get('numbers') or {}
-        blank_if_zero = number_options.get('blank_if_zero', False)
-        digits = number_options.get('digits', 0)
-        data_keys= {}
-        if not data:
-            return data
-        data_keys = list(data[0].keys())

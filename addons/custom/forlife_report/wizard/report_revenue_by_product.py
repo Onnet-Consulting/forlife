@@ -25,7 +25,6 @@ class ReportRevenueByProduct(models.TransientModel):
     def view_report(self):
         self.ensure_one()
         action = self.env.ref('forlife_report.report_revenue_by_product_client_action').read()[0]
-        # action['context'].update({'report_id': self.id})
         return action
 
     def print_xlsx(self):
@@ -51,7 +50,8 @@ from pos_order_line pol
          left join product_template pt on pp.product_tmpl_id = pt.id
          left join uom_uom uom on pt.uom_id = uom.id
          left join pos_order po on pol.order_id = po.id
-where po.state in ('paid', 'done', 'invoiced')
+where po.company_id = %s
+  and po.state in ('paid', 'done', 'invoiced')
   and po.date_order + interval '{tz_offset} hours' >= %s
   and po.date_order + interval '{tz_offset} hours' <= %s
         """
@@ -61,7 +61,7 @@ where po.state in ('paid', 'done', 'invoiced')
         self.ensure_one()
         from_date = self.convert_datetime_to_utc(self.from_date)
         to_date = self.convert_datetime_to_utc(self.to_date)
-        params = [from_date, to_date]
+        params = [self.company_id.id, from_date, to_date]
         return params
 
     def get_data(self):

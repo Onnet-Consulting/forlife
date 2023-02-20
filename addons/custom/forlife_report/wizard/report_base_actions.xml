@@ -5,4 +5,10 @@
         <field name="tag">report_revenue_by_product</field>
         <field name="context" eval="{'report_model': 'report.revenue.by.product'}"/>
     </record>
+    <record id="report_stock_price_by_warehouse_client_action" model="ir.actions.client">
+        <field name="name">Stock with sale price</field>
+        <field name="tag">report_stock_sale_price</field>
+        <field name="context" eval="{'report_model': 'report.stock.sale.price.by.warehouse'}"/>
+    </record>
+
 </odoo>

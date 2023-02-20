@@ -32,8 +32,11 @@
     </t>
 
     <t t-name="ReportBase">
+        <!-- Set variables here for later use -->
+        <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
         <div id="report-template">
             <t t-call="ReportHeader"/>
+            <t t-esc="format_kaka"/>
             <div id="main-content">
             </div>
         </div>

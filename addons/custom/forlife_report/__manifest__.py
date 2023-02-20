@@ -23,6 +23,7 @@
         'security/ir.model.access.csv',
         'wizard/report_base_views.xml',
         'wizard/report_revenue_by_product_views.xml',
+        'wizard/report_stock_sale_price_by_warehouse_views.xml',
         'wizard/report_base_actions.xml',
     ],
     'assets': {
