@@ -33,7 +33,7 @@ class ForlifeQuestion(models.Model):
         ('check_dates', 'CHECK (start_date <= finish_date)', 'Finish date may not be before the starting date.'),
     ]
 
-    @api.constrains("start_date", "finish_date")
+    @api.constrains("start_date", "finish_date", "brand_id")
     def validate_time(self):
         for record in self:
             res = self.search(['&', ('company_id', '=', self.env.company.id), '&', ('brand_id', '=', record.brand_id.id), '&', ('id', '!=', record.id),
