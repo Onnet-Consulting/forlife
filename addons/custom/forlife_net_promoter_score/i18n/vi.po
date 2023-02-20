@@ -340,7 +340,7 @@ msgstr "Gửi thông báo"
 #: model:ir.ui.menu,name:forlife_net_promoter_score.forlife_question_menu
 #: model_terms:ir.ui.view,arch_db:forlife_net_promoter_score.forlife_question_view_form
 msgid "Question"
-msgstr "Câu hỏi"
+msgstr "Câu hỏi NPS"
 
 #. module: forlife_net_promoter_score
 #: model:ir.model.fields,field_description:forlife_net_promoter_score.field_forlife_question__question1

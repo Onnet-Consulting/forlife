@@ -63,7 +63,9 @@
                         </div>
                     </div>
                     <field name="view_report" readonly="1" force_save="1"/>
-                    <field name="number_of_page" invisible="1"/>
+                    <field name="number_of_page" invisible="1" force_save="1"/>
+                    <field name="current_page" invisible="1" force_save="1"/>
+                    <field name="record_by_page" invisible="1" force_save="1"/>
                 </form>
             </field>
         </record>
