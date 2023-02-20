@@ -7,10 +7,10 @@ RETURNS TABLE
             opening_value            FLOAT,
             incoming_quantity        NUMERIC,
             incoming_value           FLOAT,
+            odoo_outgoing_quantity   NUMERIC,
+            real_outgoing_value      FLOAT,
             closing_quantity         NUMERIC,
-            closing_value            FLOAT,
-            real_outgoing_price_unit FLOAT,
-            real_outgoing_value      FLOAT
+            closing_value            FLOAT
         )
     LANGUAGE plpgsql
 AS
@@ -68,19 +68,20 @@ BEGIN
 
         SELECT data.*,
                 (case when data.opening_quantity + data.incoming_quantity = 0 then 0
-                    else (data.opening_value + data.incoming_value) / (data.opening_quantity + data.incoming_quantity)
-                end) as real_outgoing_price_unit,
-                (case when data.opening_quantity + data.incoming_quantity = 0 then 0
                     else (data.opening_value + data.incoming_value) / (data.opening_quantity + data.incoming_quantity) * data.odoo_outgoing_quantity
-                end) as real_outgoing_value
+                end) as real_outgoing_value,
+                (data.opening_quantity + data.incoming_quantity - data.odoo_outgoing_quantity) as closing_quantity,
+                (data.opening_value + data.incoming_value - (case when data.opening_quantity + data.incoming_quantity = 0 then 0
+                                                            else (data.opening_value + data.incoming_value) / (data.opening_quantity + data.incoming_quantity) * data.odoo_outgoing_quantity
+                                                            end)
+                ) as closing_value
         FROM
             (SELECT pp.id as product_id,
                     coalesce(opening.quantity, 0) as opening_quantity,
                     coalesce(opening.total_value, 0) as opening_value,
                     coalesce(incoming.quantity, 0) as incoming_quantity,
                     coalesce(incoming.total_value, 0) as incoming_value,
-                    coalesce(outgoing.quantity, 0) as odoo_outgoing_quantity,
-                    coalesce(outgoing.total_value, 0) as odoo_outgoing_value
+                    coalesce(outgoing.quantity, 0) as odoo_outgoing_quantity
             FROM product_product pp
             LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
             LEFT JOIN opening ON opening.product_id = pp.id
