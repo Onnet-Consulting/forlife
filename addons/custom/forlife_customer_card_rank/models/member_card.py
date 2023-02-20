@@ -123,6 +123,44 @@ class MemberCard(models.Model):
     def get_member_card_by_date(self, date, brand_id):
         return self.search([('brand_id', '=', brand_id), ('from_date', '<=', date), ('to_date', '>=', date)])
 
+    def btn_duplicate_member_card(self):
+        self.ensure_one()
+        ctx = dict(self._context)
+        ctx.update({
+            'default_brand_id': self.brand_id.id,
+            'default_brand_code': self.brand_code,
+            'default_name': self.name,
+            'default_is_register': self.is_register,
+            'default_register_from_date': self.register_from_date,
+            'default_register_to_date': self.register_to_date,
+            'default_from_date': self.from_date,
+            'default_to_date': self.to_date,
+            'default_is_all_store': self.is_all_store,
+            'default_store_ids': self.store_ids.ids,
+            'default_time_set_rank': self.time_set_rank,
+            'default_customer_group_ids': self.customer_group_ids.ids,
+            'default_payment_method_ids': self.payment_method_ids.ids,
+            'default_card_rank_id': self.card_rank_id.id,
+            'default_min_turnover': self.min_turnover,
+            'default_original_price': self.original_price,
+            'default_apply_value_from_1': self.apply_value_from_1,
+            'default_apply_value_from_2': self.apply_value_from_2,
+            'default_apply_value_from_3': self.apply_value_from_3,
+            'default_apply_value_to_1': self.apply_value_to_1,
+            'default_apply_value_to_2': self.apply_value_to_2,
+            'default_apply_value_to_3': self.apply_value_to_3,
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Member Card'),
+            'res_model': 'member.card',
+            'target': 'current',
+            'view_mode': 'form',
+            'views': [[self.env.ref('forlife_customer_card_rank.member_card_view_form').id, 'form']],
+            'context': ctx,
+        }
+
+
 class FormUpdateStore(models.TransientModel):
     _name = 'form.update.store'
     _description = 'Form Update Store'
