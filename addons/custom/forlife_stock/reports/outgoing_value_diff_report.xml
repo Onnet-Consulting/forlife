@@ -34,8 +34,9 @@
                                     <field name="incoming_value" sum="Total Incoming Value"/>
                                     <field name="odoo_outgoing_quantity" sum="Total Outgoing Quantity"/>
                                     <field name="odoo_outgoing_value" sum="Total Outgoing Value"/>
-                                    <field name="real_outgoing_price_unit" sum="Total Real Outgoing Price Unit"/>
+                                    <field name="real_outgoing_price_unit"/>
                                     <field name="real_outgoing_value" sum="Total Real Outgoing Value"/>
+                                    <field name="diff_outgoing_value" sum="Total Different Outgoing Value"/>
                                 </tree>
                             </field>
                         </page>
