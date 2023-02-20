@@ -36,24 +36,24 @@ class ReportRevenueByProduct(models.TransientModel):
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
         query = f"""
-select row_number() over (order by pt.name)                         as num,
-       pol.product_id,
-       pp.barcode                                                   as product_barcode,
-       coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
-       uom.name                                                     as uom_name,
-       pol.price_unit                                               as price_unit,
-       pol.qty                                                      as qty,
-       pol.discount                                                 as discount_percent,
-       pol.price_subtotal                                           as amount_without_tax,
-       pol.price_subtotal_incl                                      as amount_with_tax
+select row_number() over (order by pt.name)                                      as num,
+       pol.product_id                                                            as product_id,
+       pp.barcode                                                                as product_barcode,
+       coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
+       coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as uom_name,
+       pol.price_unit                                                            as price_unit,
+       pol.qty                                                                   as qty,
+       pol.discount                                                              as discount_percent,
+       pol.price_subtotal                                                        as amount_without_tax,
+       pol.price_subtotal_incl                                                   as amount_with_tax
 from pos_order_line pol
          left join product_product pp on pol.product_id = pp.id
          left join product_template pt on pp.product_tmpl_id = pt.id
          left join uom_uom uom on pt.uom_id = uom.id
          left join pos_order po on pol.order_id = po.id
 where po.state in ('paid', 'done', 'invoiced')
-and po.date_order + interval '{tz_offset} hours' >= %s
-and po.date_order + interval '{tz_offset} hours' <= %s
+  and po.date_order + interval '{tz_offset} hours' >= %s
+  and po.date_order + interval '{tz_offset} hours' <= %s
         """
         return query
 

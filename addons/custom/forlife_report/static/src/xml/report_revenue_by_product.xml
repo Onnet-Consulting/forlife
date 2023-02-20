@@ -6,6 +6,7 @@
         </xpath>
     </t>
     <t t-name="ReportRevenueByProductMain">
+        <t t-set="format_decimal" t-value="widget.format_decimal"/>
         <table>
             <thead>
                 <tr>
@@ -21,18 +22,18 @@
                 </tr>
             </thead>
             <tbody>
-                    <t t-foreach="options.data" t-as="line">
-                        <tr>
-                            <td><t t-esc="line.num"/></td>
-                            <td><t t-esc="line.product_barcode"/></td>
-                            <td><t t-esc="line.product_name"/></td>
-                            <td><t t-esc="line.uom_name"/></td>
-                            <td><t t-esc="line.price_unit"/></td>
-                            <td><t t-esc="line.qty"/></td>
-                            <td><t t-esc="line.discount_percent"/></td>
-                            <td><t t-esc="line.amount_without_tax"/></td>
-                            <td><t t-esc="line.amount_with_tax"/></td>
-                        </tr>
+                <t t-foreach="options.data" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.num"/></td>
+                        <td><t t-esc="line.product_barcode"/></td>
+                        <td><t t-esc="line.product_name"/></td>
+                        <td><t t-esc="line.uom_name"/></td>
+                        <td><t t-esc="format_decimal(line.price_unit, 2)"/></td>
+                        <td><t t-esc="format_decimal(line.qty)"/></td>
+                        <td><t t-esc="format_decimal(line.discount_percent, 2)"/></td>
+                        <td><t t-esc="format_decimal(line.amount_without_tax, 2)"/></td>
+                        <td><t t-esc="format_decimal(line.amount_with_tax, 2)"/></td>
+                    </tr>
                 </t>
             </tbody>
         </table>
