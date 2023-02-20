@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="outgoing_value_diff_report_view_form" model="ir.ui.view">
+        <field name="name">outgoing_value_diff_report_view_form</field>
+        <field name="model">stock.value.report</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1 class="text-center" >
+                        Outgoing Value Different Report
+                    </h1>
+                    <separator/>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group></group>
+                    </group>
+
+                    <notebook>
+                        <page id="detail_report" string="Detail">
+                            <button name="action_get_outgoing_value_diff_report" string="Get Report" type="object" class="btn-primary"/>
+                            <button name="action_export_outgoing_value_diff_report" string="Export Report" type="object" class="btn-primary"/>
+                            <field name="detail_ids" readonly="1">
+                                <tree limit="1000">
+                                    <field name="report_id" invisible="1"/>
+                                    <field name="product_code"/>
+                                    <field name="product_id"/>
+                                    <field name="opening_quantity" sum="Total Opening Quantity"/>
+                                    <field name="opening_value" sum="Total Opening Value"/>
+                                    <field name="incoming_quantity" sum="Total Incoming Quantity"/>
+                                    <field name="incoming_value" sum="Total Incoming Value"/>
+                                    <field name="odoo_outgoing_quantity" sum="Total Outgoing Quantity"/>
+                                    <field name="odoo_outgoing_value" sum="Total Outgoing Value"/>
+                                    <field name="real_outgoing_price_unit" sum="Total Real Outgoing Price Unit"/>
+                                    <field name="real_outgoing_value" sum="Total Real Outgoing Value"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="outgoing_value_diff_report_action" model="ir.actions.act_window">
+        <field name="name">Outgoing Value Different Report</field>
+        <field name="res_model">stock.value.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.outgoing_value_diff_report_view_form')})]"/>
+    </record>
+
+    <menuitem id="outgoing_value_diff_report_menu" name="Outgoing Value Different Report"
+              parent="stock.menu_warehouse_report" action="outgoing_value_diff_report_action" sequence="305"/>
+
+</odoo>
