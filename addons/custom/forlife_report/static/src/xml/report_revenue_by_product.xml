@@ -6,7 +6,7 @@
         </xpath>
     </t>
     <t t-name="ReportRevenueByProductMain">
-        <t t-set="format_decimal" t-value="widget.format_decimal"/>
+        <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
         <table>
             <thead>
                 <tr>

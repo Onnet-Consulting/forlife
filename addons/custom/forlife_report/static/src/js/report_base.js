@@ -8,8 +8,7 @@ odoo.define('forlife_report.report_base', function (require) {
     const QWeb = core.qweb;
     const _t = core._t;
 
-    function format_decimal(amount, precision=0)
-    {
+    function format_decimal(amount, precision = 0) {
         if (typeof amount === 'number') {
             amount = round_di(amount, precision).toFixed(precision);
             amount = field_utils.format.float(round_di(amount, precision), {
@@ -35,7 +34,9 @@ odoo.define('forlife_report.report_base', function (require) {
             this.odoo_context = action.context;
             this.report_model = this.odoo_context.report_model || this.odoo_context.active_model;
             this.report_id = this.odoo_context.active_id;
-            this.format_decimal = format_decimal;
+            this.func = {
+                format_decimal
+            };
             return this._super.apply(this, arguments);
         },
 
