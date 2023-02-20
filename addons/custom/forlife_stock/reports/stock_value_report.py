@@ -102,7 +102,7 @@ class StockValueReport(models.TransientModel):
             utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00")
             utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59")
             self._cr.execute("""
-                        SELECT pt.default_code,
+                        SELECT pp.default_code,
                                 pt.name,
                                 report.opening_quantity,
                                 report.opening_value,
@@ -303,4 +303,162 @@ class StockValueReport(models.TransientModel):
               self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id))
 
     def action_export_stock_incoming_outgoing_report(self):
-        pass
+        # define function
+        def get_data():
+            # must be utc time
+            current_tz = pytz.timezone(self.env.context.get('tz'))
+            utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00")
+            utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59")
+            self._cr.execute("""
+                                SELECT pp.default_code,
+                                        pt.name,
+                                        report.opening_quantity,
+                                        report.opening_value,
+                                        report.incoming_quantity,
+                                        report.incoming_value,
+                                        report.odoo_outgoing_quantity,
+                                        report.real_outgoing_value,
+                                        report.closing_quantity,
+                                        report.closing_value
+                                FROM stock_incoming_outgoing_report(%s, %s, %s) as report
+                                LEFT JOIN product_product pp ON pp.id = report.product_id
+                                LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id""",
+                             (utc_datetime_from, utc_datetime_to, self.env.company.id))
+            return self._cr.dictfetchall()
+
+        def write_header(wssheet):
+            # --------------------------------------Title---------------------------------------------------
+            wssheet.merge_range("A1:L1", _('Stock Incoming Outgoing Report'), style_excel['style_title'])
+            wssheet.write("D3", 'Kỳ báo cáo', style_excel['style_header_bold'])
+            wssheet.write("E3", f'Từ ngày: {self.date_from.strftime("%d/%m/%Y")}',
+                          style_excel['style_left_data_string'])
+            wssheet.write("F3", f'Đến ngày: {self.date_to.strftime("%d/%m/%Y")}',
+                          style_excel['style_left_data_string'])
+            # --------------------------------------Header---------------------------------------------------
+
+            wssheet.write("E4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
+            wssheet.write("F4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
+
+            # --------------------------------------Header Table----------------------------------------------
+            wssheet.merge_range("A7:A8", 'STT', style_excel['style_header_bold_border'])
+            wssheet.merge_range("B7:B8", 'Mã sản phẩm', style_excel['style_header_bold_border'])
+            wssheet.merge_range("C7:C8", 'Tên sản phẩm', style_excel['style_header_bold_border'])
+            wssheet.merge_range("D7:E7", 'Tồn đầu kỳ', style_excel['style_header_bold_border'])
+            wssheet.merge_range("F7:G7", 'Nhập kho', style_excel['style_header_bold_border'])
+            wssheet.merge_range("H7:I7", 'Xuất kho', style_excel['style_header_bold_border'])
+            wssheet.merge_range("J7:K7", 'Tồn cuối kỳ',
+                                style_excel['style_header_bold_border'])
+            wssheet.merge_range("L7:L8", 'Ghi chú', style_excel['style_header_bold_border'])
+            wssheet.write("D8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.write("E8", 'Giá trị', style_excel['style_header_bold_border'])
+            wssheet.write("F8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.write("G8", 'Giá trị', style_excel['style_header_bold_border'])
+            wssheet.write("H8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.write("I8", 'Giá trị', style_excel['style_header_bold_border'])
+            wssheet.write("J8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.write("K8", 'Số lượng', style_excel['style_header_bold_border'])
+
+        def write_detail_table(wssheet, result):
+            def get_number_data(result_dict, name):
+                return result_dict.get(name, 0) if int(item.get(name, 0)) != 0 else ''
+
+            row = 8
+            total_opening_quantity = 0
+            total_opening_value = 0
+            total_incoming_quantity = 0
+            total_incoming_value = 0
+            total_odoo_outgoing_quantity = 0
+            total_real_outgoing_value = 0
+            total_closing_quantity = 0
+            total_closing_value = 0
+            for index, item in enumerate(result):
+                opening_quantity = item.get('opening_quantity', 0)
+                opening_value = item.get('opening_value', 0)
+                incoming_value = item.get('incoming_value', 0)
+                incoming_quantity = item.get('incoming_quantity', 0)
+                odoo_outgoing_quantity = item.get('odoo_outgoing_quantity', 0)
+                real_outgoing_value = item.get('real_outgoing_value', 0)
+                closing_quantity = item.get('closing_quantity', 0)
+                closing_value = item.get('closing_value', 0)
+                wssheet.write(row, 0, index + 1, style_excel['style_right_data_int'])
+                wssheet.write(row, 1, item.get('default_code', ''), style_excel['style_left_data_string_border'])
+                wssheet.write(row, 2,
+                              item.get('name', {}).get(self.env.context.get('lang')) if item.get('name', {}).get(
+                                  self.env.context.get('lang')) else item.get('name', {}).get('en_US'),
+                              style_excel['style_left_data_string_border'])
+                wssheet.write(row, 3, opening_quantity, style_excel['style_right_data_float'])
+                wssheet.write(row, 4, opening_value, style_excel['style_right_data_float'])
+                wssheet.write(row, 5, incoming_quantity, style_excel['style_right_data_float'])
+                wssheet.write(row, 6, incoming_value, style_excel['style_right_data_float'])
+                wssheet.write(row, 7, odoo_outgoing_quantity, style_excel['style_right_data_float'])
+                wssheet.write(row, 8, real_outgoing_value, style_excel['style_right_data_float'])
+                wssheet.write(row, 9, closing_quantity, style_excel['style_right_data_float'])
+                wssheet.write(row, 10, closing_value, style_excel['style_right_data_float'])
+                wssheet.write(row, 11, '', style_excel['style_right_data_float'])
+
+                total_opening_quantity += opening_quantity
+                total_opening_value += opening_value
+                total_incoming_quantity += incoming_quantity
+                total_incoming_value += incoming_value
+                total_odoo_outgoing_quantity += odoo_outgoing_quantity
+                total_real_outgoing_value += real_outgoing_value
+                total_closing_quantity += closing_quantity
+                total_closing_value += closing_value
+
+                row += 1
+            # Sum
+            wssheet.merge_range(row, 0, row, 2, "Tổng cộng", style_excel['style_header_bold_border'])
+            wssheet.write(row, 3, total_opening_quantity if total_opening_quantity != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 4, total_opening_value if total_opening_value != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 5, total_incoming_quantity if total_incoming_quantity != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 6, total_incoming_quantity if total_incoming_quantity != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 7, total_odoo_outgoing_quantity if total_odoo_outgoing_quantity != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 8, total_real_outgoing_value if total_real_outgoing_value != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 9, total_closing_quantity if total_closing_quantity != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 10, total_closing_value if total_closing_value != 0 else '',
+                          style_excel['style_right_data_float'])
+
+            return row
+
+        def write_footer(wssheet, last_row):
+            # --------------------------------------Footer---------------------------------------------------
+            wssheet.merge_range(last_row + 2, 7, last_row + 2, 11, 'Ngày.....tháng.....năm.....',
+                                style_excel['style_header_unbold'])
+            wssheet.merge_range(last_row + 3, 7, last_row + 3, 11, 'Người lập phiếu',
+                                style_excel['style_header_bold'])
+            wssheet.merge_range(last_row + 4, 7, last_row + 4, 11, '(Kí ghi rõ họ tên)',
+                                style_excel['style_header_unbold'])
+
+            wssheet.merge_range(last_row + 3, 0, last_row + 3, 3, 'Thủ kho',
+                                style_excel['style_header_bold'])
+            wssheet.merge_range(last_row + 4, 0, last_row + 4, 3, '(Kí ghi rõ họ tên)',
+                                style_excel['style_header_unbold'])
+
+        # true action
+        result = get_data()
+
+        # write data to excel
+        buf = BytesIO()
+        wb = Workbook(buf)
+        style_excel = get_style(wb)
+        wssheet = wb.add_worksheet('Report')
+
+        # --------------------------------------Header----------------------------------------------------
+        write_header(wssheet)
+        # --------------------------------------Detail Table----------------------------------------------
+        last_row = write_detail_table(wssheet, result)
+        # --------------------------------------Footer----------------------------------------------
+        write_footer(wssheet, last_row)
+
+        wb.close()
+        buf.seek(0)
+        xlsx_data = buf.getvalue()
+
+        return self.action_download_excel(base64.encodebytes(xlsx_data), _('Stock Incoming Outgoing Report'))

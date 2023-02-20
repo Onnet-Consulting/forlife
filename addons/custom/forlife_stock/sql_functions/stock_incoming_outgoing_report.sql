@@ -88,7 +88,7 @@ BEGIN
             LEFT JOIN incoming ON incoming.product_id = pp.id
             LEFT JOIN outgoing ON outgoing.product_id = pp.id
             WHERE pt.detailed_type = 'product'
-            ORDER BY pt.default_code) as data
+            ORDER BY pp.default_code) as data
         WHERE data.opening_quantity <> 0
             OR data.incoming_quantity <> 0
             OR data.odoo_outgoing_quantity <> 0

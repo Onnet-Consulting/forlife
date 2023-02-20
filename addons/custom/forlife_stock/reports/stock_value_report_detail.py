@@ -10,7 +10,7 @@ class StockValueReportDetail(models.TransientModel):
     report_id = fields.Many2one('stock.value.report', 'Report')
     currency_id = fields.Many2one('res.currency')
     product_id = fields.Many2one('product.product', 'Product')
-    product_code = fields.Char('Product Code', related="product_id.default_code")
+    product_code = fields.Char('Product Code', compute="_compute_product_code")
     opening_quantity = fields.Integer('Opening Quantity')
     opening_value = fields.Monetary('Opening Value')
     incoming_quantity = fields.Integer('Incoming Quantity')
@@ -26,3 +26,7 @@ class StockValueReportDetail(models.TransientModel):
     def _compute_diff_outgoing_value(self):
         for item in self:
             item.diff_outgoing_value = item.odoo_outgoing_value - item.real_outgoing_value
+
+    def _compute_product_code(self):
+        for item in self:
+            item.default_code = item.product_id.default_code or item.product_id.product_tmpl_id.default_code
