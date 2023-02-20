@@ -106,6 +106,7 @@ class NetPromoterScoreReport(models.TransientModel):
 
     def _check_paging(self, records):
         total_records = len(records)
+        self.current_page = 0
         if total_records > self.record_per_page:
             _return = records[:self.record_per_page]
             number_of_page = 0
