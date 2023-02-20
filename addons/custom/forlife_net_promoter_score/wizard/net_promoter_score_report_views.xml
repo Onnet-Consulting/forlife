@@ -49,17 +49,17 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-8"/>
+                        <div class="col-7"/>
+                        <div class="col-3">
+                            <span class="oe_right">
+                                <field name="record_per_page" class="oe_inline"/>
+                                records per page
+                            </span>
+                        </div>
                         <div class="col-2">
-                            <field name="record_per_page" class="oe_inline"/>
-                            records per page
-                        </div>
-                        <div class="col-1">
-                            <field name="number_of_record" class="oe_right" readonly="1"/>
-                        </div>
-                        <div class="col-1">
                             <button name="btn_next_page" attrs="{'invisible': [('number_of_page', '=', 1)]}" icon="fa-chevron-right" class="oe_right" type="object" context="{'pop_colum': True, 'paging': True}" aria-label="Next" title="Next"/>
                             <button name="btn_previous_page" attrs="{'invisible': [('number_of_page', '=', 1)]}" icon="fa-chevron-left" class="oe_right" type="object" context="{'pop_colum': True, 'paging': True}" aria-label="Previous" title="Previous"/>
+                            <field name="number_of_record" class="oe_right" readonly="1"/>
                         </div>
                     </div>
                     <field name="view_report" readonly="1" force_save="1"/>
