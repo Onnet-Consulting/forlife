@@ -118,12 +118,14 @@ class StockValueReport(models.TransientModel):
                              (utc_datetime_from, utc_datetime_to, self.env.company.id))
             return self._cr.dictfetchall()
 
-        def write_header(wssheet):
+        def write_header(wssheet, report):
             # --------------------------------------Title---------------------------------------------------
             wssheet.merge_range("A1:L1", _('Outgoing Value Different Report'), style_excel['style_title'])
             wssheet.write("D3", 'Kỳ báo cáo', style_excel['style_header_bold'])
-            wssheet.write("E3", 'Từ ngày: ', style_excel['style_header_unbold'])
-            wssheet.write("F3", 'Đến ngày: ', style_excel['style_header_unbold'])
+            wssheet.write("E3", f'Từ ngày: {report.date_from.strftime("%d/%m/%Y")}',
+                          style_excel['style_left_data_string'])
+            wssheet.write("F3", f'Đến ngày: {report.date_to.strftime("%d/%m/%Y")}',
+                          style_excel['style_left_data_string'])
             # --------------------------------------Header---------------------------------------------------
 
             wssheet.write("E4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
@@ -171,9 +173,11 @@ class StockValueReport(models.TransientModel):
                 real_outgoing_price_unit = item.get('real_outgoing_price_unit', 0)
                 real_outgoing_value = item.get('real_outgoing_value', 0)
                 wssheet.write(row, 0, index + 1, style_excel['style_right_data_int'])
-                wssheet.write(row, 1, item.get('default_code', ''), style_excel['style_left_data_string'])
-                wssheet.write(row, 2, item.get('name', {}).get(self.env.context.get('lang')) if item.get('name', {}).get(self.env.context.get('lang')) else item.get('name', {}).get('en_US'),
-                              style_excel['style_left_data_string'])
+                wssheet.write(row, 1, item.get('default_code', ''), style_excel['style_left_data_string_border'])
+                wssheet.write(row, 2,
+                              item.get('name', {}).get(self.env.context.get('lang')) if item.get('name', {}).get(
+                                  self.env.context.get('lang')) else item.get('name', {}).get('en_US'),
+                              style_excel['style_left_data_string_border'])
                 wssheet.write(row, 3, opening_quantity, style_excel['style_right_data_float'])
                 wssheet.write(row, 4, opening_value, style_excel['style_right_data_float'])
                 wssheet.write(row, 5, incoming_quantity, style_excel['style_right_data_float'])
@@ -195,16 +199,40 @@ class StockValueReport(models.TransientModel):
 
                 row += 1
             # Sum
-            wssheet.write(row, 2, "Tổng cộng", style_excel['style_header_bold'])
-            wssheet.write(row, 3, total_opening_quantity if total_opening_quantity != 0 else '', style_excel['style_right_data_float'])
-            wssheet.write(row, 4, total_opening_value if total_opening_value != 0 else '', style_excel['style_right_data_float'])
-            wssheet.write(row, 5, total_incoming_quantity if total_incoming_quantity != 0 else '', style_excel['style_right_data_float'])
-            wssheet.write(row, 6, total_incoming_quantity if total_incoming_quantity != 0 else '', style_excel['style_right_data_float'])
-            wssheet.write(row, 7, total_odoo_outgoing_quantity if total_odoo_outgoing_quantity != 0 else '', style_excel['style_right_data_float'])
-            wssheet.write(row, 8, total_odoo_outgoing_value if total_odoo_outgoing_value != 0 else '', style_excel['style_right_data_float'])
+            wssheet.merge_range(row, 0, row, 2, "Tổng cộng", style_excel['style_header_bold_border'])
+            wssheet.write(row, 3, total_opening_quantity if total_opening_quantity != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 4, total_opening_value if total_opening_value != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 5, total_incoming_quantity if total_incoming_quantity != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 6, total_incoming_quantity if total_incoming_quantity != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 7, total_odoo_outgoing_quantity if total_odoo_outgoing_quantity != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 8, total_odoo_outgoing_value if total_odoo_outgoing_value != 0 else '',
+                          style_excel['style_right_data_float'])
             wssheet.write(row, 9, '', style_excel['style_right_data_float'])
-            wssheet.write(row, 10, total_real_outgoing_value if total_real_outgoing_value != 0 else '', style_excel['style_right_data_float'])
-            wssheet.write(row, 11, total_diff_outgoing_value if total_diff_outgoing_value != 0 else '', style_excel['style_right_data_float'])
+            wssheet.write(row, 10, total_real_outgoing_value if total_real_outgoing_value != 0 else '',
+                          style_excel['style_right_data_float'])
+            wssheet.write(row, 11, total_diff_outgoing_value if total_diff_outgoing_value != 0 else '',
+                          style_excel['style_right_data_float'])
+
+            return row
+
+        def write_footer(wssheet, last_row):
+            # --------------------------------------Footer---------------------------------------------------
+            wssheet.merge_range(last_row + 2, 7, last_row + 2, 11, 'Ngày.....tháng.....năm.....',
+                                style_excel['style_header_unbold'])
+            wssheet.merge_range(last_row + 3, 7, last_row + 3, 11, 'Người lập phiếu',
+                                style_excel['style_header_bold'])
+            wssheet.merge_range(last_row + 4, 7, last_row + 4, 11, '(Kí ghi rõ họ tên)',
+                                style_excel['style_header_unbold'])
+
+            wssheet.merge_range(last_row + 3, 0, last_row + 3, 3, 'Thủ kho',
+                                style_excel['style_header_bold'])
+            wssheet.merge_range(last_row + 4, 0, last_row + 4, 3, '(Kí ghi rõ họ tên)',
+                                style_excel['style_header_unbold'])
 
         # true action
         result = get_data()
@@ -216,9 +244,11 @@ class StockValueReport(models.TransientModel):
         wssheet = wb.add_worksheet('Report')
 
         # --------------------------------------Header----------------------------------------------------
-        write_header(wssheet)
+        write_header(wssheet, self)
         # --------------------------------------Detail Table----------------------------------------------
-        write_detail_table(wssheet, result)
+        last_row = write_detail_table(wssheet, result)
+        # --------------------------------------Footer----------------------------------------------
+        write_footer(wssheet, last_row)
 
         wb.close()
         buf.seek(0)

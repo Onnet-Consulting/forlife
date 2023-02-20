@@ -21,9 +21,11 @@ def get_style(wb):
     style_right_data_int = wb.add_format(
         {'font_size': '12', 'font_name': 'Times New Roman', 'align': 'right', 'valign': 'vcenter',
          'num_format': '#,##0', 'border': True})
-    style_left_data_string = wb.add_format(
+    style_left_data_string_border = wb.add_format(
         {'font_size': '12', 'font_name': 'Times New Roman', 'align': 'left', 'valign': 'vcenter', 'border': True})
 
+    style_left_data_string = wb.add_format(
+        {'font_size': '12', 'font_name': 'Times New Roman', 'align': 'left', 'valign': 'vcenter'})
     return {
         'style_title': style_title,
         'style_header_unbold': style_header_unbold,
@@ -32,4 +34,5 @@ def get_style(wb):
         'style_right_data_float': style_right_data_float,
         'style_right_data_int': style_right_data_int,
         'style_left_data_string': style_left_data_string,
+        'style_left_data_string_border': style_left_data_string_border,
     }
