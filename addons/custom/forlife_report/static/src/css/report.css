@@ -90,3 +90,17 @@
     padding-left: 8px;
     padding-right: 8px;
 }
+
+#report-template #main-content.report_stock_price_main_table {
+    display: flex;
+    gap: 50px;
+}
+
+#report-template #main-content.report_stock_price_main_table > table {
+    width: 70%;
+}
+
+#report-template #main-content.report_stock_price_main_table .product-detail {
+    width: 28%;
+}
+

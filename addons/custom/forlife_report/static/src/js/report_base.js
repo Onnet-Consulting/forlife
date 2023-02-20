@@ -25,7 +25,7 @@ odoo.define('forlife_report.report_base', function (require) {
             'click button.o_pager_previous': 'previous_page',
         },
         reportTemplate: 'ReportBase',
-        reportTitle: _t("Revenue by product"),
+        reportTitle: _t("Base Report"),
         record_per_page: 80,
         readDataTimeout: 300,
 

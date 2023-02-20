@@ -78,19 +78,23 @@ from stock_product stp
         self._cr.execute(query, params)
         data = self._cr.dictfetchall()
         data_by_product_id = {}
-        data_by_warehouse_id = {}
+        detail_data_by_product_id = {}
         for line in data:
             product_id = line.get('product_id')
             if product_id not in data_by_product_id:
                 data_by_product_id[product_id] = line
             else:
                 data_by_product_id[product_id]['quantity'] += line['quantity']
-            warehouse_id = line.get('warehouse_id')
-            if warehouse_id not in data_by_warehouse_id:
-                data_by_warehouse_id[warehouse_id] = [line]
+
+            detail_data = {
+                "warehouse_name": line.get('warehouse_name'),
+                "quantity": line.get("quantity")
+            }
+            if product_id not in detail_data_by_product_id:
+                detail_data_by_product_id[product_id] = [detail_data]
             else:
-                data_by_warehouse_id[warehouse_id].append(line)
+                detail_data_by_product_id[product_id].append(detail_data)
         return {
             "product_data": list(data_by_product_id.values()),
-            "data_by_warehouse_id": data_by_warehouse_id
+            "detail_data_by_product_id": detail_data_by_product_id
         }

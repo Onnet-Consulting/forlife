@@ -4,9 +4,12 @@
         <xpath expr="//div[@id='main-content']" position="inside">
             <t t-call="ReportStockPriceByWarehouseMain"/>
         </xpath>
+        <xpath expr="//div[@id='main-content']" position="attributes">
+            <attribute name="class" add="report_stock_price_main_table" separator=" "/>
+        </xpath>
     </t>
     <t t-name="ReportStockPriceByWarehouseMain">
-        <table style="">
+        <table style="width:65%">
             <thead>
                 <tr>
                     <th>Mã SP</th>
@@ -16,10 +19,33 @@
             </thead>
             <tbody>
                 <t t-foreach="options.data" t-as="line">
-                    <tr>
-                        <span class="product_id report_hidden"><t t-esc="line.product_id"/></span>
+                    <tr class="line_stock_detail" t-att-id="line.product_id">
                         <td><t t-esc="line.product_barcode"/></td>
-                        <td><t t-esc="line.product_name"/></td>
+                        <td class="product_name"><t t-esc="line.product_name"/></td>
+                        <td><t t-esc="line.quantity"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+        <div id="product-detail">
+        </div>
+    </t>
+
+    <t t-name="ReportStockPriceByWarehouseDetail">
+        <div>
+            <h2><t t-esc="detail.product_name"/></h2>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kho</th>
+                    <th>Tồn</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="detail.lines" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.warehouse_name"/></td>
                         <td><t t-esc="line.quantity"/></td>
                     </tr>
                 </t>
