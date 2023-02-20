@@ -118,13 +118,13 @@ class StockValueReport(models.TransientModel):
                              (utc_datetime_from, utc_datetime_to, self.env.company.id))
             return self._cr.dictfetchall()
 
-        def write_header(wssheet, report):
+        def write_header(wssheet):
             # --------------------------------------Title---------------------------------------------------
             wssheet.merge_range("A1:L1", _('Outgoing Value Different Report'), style_excel['style_title'])
             wssheet.write("D3", 'Kỳ báo cáo', style_excel['style_header_bold'])
-            wssheet.write("E3", f'Từ ngày: {report.date_from.strftime("%d/%m/%Y")}',
+            wssheet.write("E3", f'Từ ngày: {self.date_from.strftime("%d/%m/%Y")}',
                           style_excel['style_left_data_string'])
-            wssheet.write("F3", f'Đến ngày: {report.date_to.strftime("%d/%m/%Y")}',
+            wssheet.write("F3", f'Đến ngày: {self.date_to.strftime("%d/%m/%Y")}',
                           style_excel['style_left_data_string'])
             # --------------------------------------Header---------------------------------------------------
 
@@ -244,7 +244,7 @@ class StockValueReport(models.TransientModel):
         wssheet = wb.add_worksheet('Report')
 
         # --------------------------------------Header----------------------------------------------------
-        write_header(wssheet, self)
+        write_header(wssheet)
         # --------------------------------------Detail Table----------------------------------------------
         last_row = write_detail_table(wssheet, result)
         # --------------------------------------Footer----------------------------------------------

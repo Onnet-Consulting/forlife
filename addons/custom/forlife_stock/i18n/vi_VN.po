@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-20 03:17+0000\n"
-"PO-Revision-Date: 2023-02-20 03:17+0000\n"
+"POT-Creation-Date: 2023-02-20 19:11+0000\n"
+"PO-Revision-Date: 2023-02-20 19:11+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -68,6 +68,11 @@ msgstr "Ngày Hoạch toán"
 #: model_terms:ir.ui.view,arch_db:forlife_stock.stock_incoming_outgoing_report_view_form
 msgid "Detail"
 msgstr "Chi tiết"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_value_report_detail__diff_outgoing_value
+msgid "Different Outgoing Value"
+msgstr "Giá trị chênh lệch"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_value_report__display_name
@@ -148,9 +153,13 @@ msgid "Outgoing Value"
 msgstr "Giá trị Xuất (Odoo)"
 
 #. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/reports/stock_value_report.py:0
+#: code:addons/forlife_stock/reports/stock_value_report.py:0
 #: model:ir.actions.act_window,name:forlife_stock.outgoing_value_diff_report_action
 #: model:ir.ui.menu,name:forlife_stock.outgoing_value_diff_report_menu
 #: model_terms:ir.ui.view,arch_db:forlife_stock.outgoing_value_diff_report_view_form
+#, python-format
 msgid "Outgoing Value Different Report"
 msgstr "BẢNG KÊ CHÊNH LỆCH GIÁ TRỊ XUẤT KHO THEO ITEM"
 
@@ -224,6 +233,21 @@ msgid "To Date"
 msgstr "Đến ngày"
 
 #. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_incoming_outgoing_report_view_form
+msgid "Total Closing Quantity"
+msgstr "Tổng tồn cuối kỳ"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_incoming_outgoing_report_view_form
+msgid "Total Closing Value"
+msgstr "Tổng giá trị cuối kỳ"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.outgoing_value_diff_report_view_form
+msgid "Total Different Outgoing Value"
+msgstr "Tổng chênh lệch"
+
+#. module: forlife_stock
 #: model_terms:ir.ui.view,arch_db:forlife_stock.outgoing_value_diff_report_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_stock.stock_incoming_outgoing_report_view_form
 msgid "Total Incoming Quantity"
@@ -261,13 +285,6 @@ msgstr "Tổng Giá trị Xuất"
 
 #. module: forlife_stock
 #: model_terms:ir.ui.view,arch_db:forlife_stock.outgoing_value_diff_report_view_form
-#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_incoming_outgoing_report_view_form
-msgid "Total Real Outgoing Price Unit"
-msgstr "Tổng Đơn giá Xuất"
-
-#. module: forlife_stock
-#: model_terms:ir.ui.view,arch_db:forlife_stock.outgoing_value_diff_report_view_form
-#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_incoming_outgoing_report_view_form
 msgid "Total Real Outgoing Value"
 msgstr "Tổng Giá trị Xuất"
 
