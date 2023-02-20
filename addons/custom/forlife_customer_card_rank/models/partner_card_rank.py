@@ -70,4 +70,3 @@ class PartnerCardRankLine(models.Model):
     value_to_upper = fields.Integer('Value to upper')
     old_card_rank_id = fields.Many2one('card.rank', string='Old Rank', required=True, default=lambda self: self.env['card.rank'].search([], order='priority asc', limit=1))
     new_card_rank_id = fields.Many2one('card.rank', string='New Rank', required=True)
-    priority = fields.Integer('Priority', related='old_card_rank_id.priority')

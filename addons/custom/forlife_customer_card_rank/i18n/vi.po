@@ -448,7 +448,6 @@ msgstr "Đơn hàng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__priority
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__priority
 msgid "Priority"
 msgstr "Thứ hạng"
 
