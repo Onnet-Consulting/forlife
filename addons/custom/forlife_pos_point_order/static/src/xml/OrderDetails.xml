@@ -8,10 +8,10 @@
                         Điểm :
                         <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">
                             <t t-if="branch.name == 'TokyoLife'">
-                                <t t-esc="props.order.partner.total_points_available_forlife"/>
+                                <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_forlife)"/>
                             </t>
                             <t t-if="branch.name == 'Format'">
-                                <t t-esc="props.order.partner.total_points_available_format"/>
+                                <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_format)"/>
                             </t>
                         </t>
                     </span>
