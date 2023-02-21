@@ -37,6 +37,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="active" widget="boolean_toggle"/>
                             <label for="promotion_type"/>
                             <div>
                                 <field name="promotion_type" widget="filterable_selection"/>
@@ -58,9 +59,6 @@
                         <group>
                             <field name="brand_id" invisible="1"/>
                             <field name="store_ids" widget="many2many_tags" invisible="1"/>
-                            <field name="pos_config_ids"
-                                   placeholder="All POS"
-                                   widget="many2many_tags" invisible="1"/>
 <!--                            <field name="from_date"/>-->
 <!--                            <field name="to_date"/>-->
 <!--                            <field name="month_ids" widget="many2many_tags"/>-->
@@ -157,7 +155,9 @@
                 <field name="name"/>
                 <field name="state"/>
                 <field name="promotion_type"/>
-                <field name="active"/>
+                <field name="reward_type"/>
+                <field name="with_code"/>
+                <field name="active" widget="boolean_toggle"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </tree>
         </field>
