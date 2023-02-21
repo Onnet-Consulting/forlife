@@ -27,7 +27,7 @@ class PromotionGenerateCode(models.Model):
         self.ensure_one()
         if self.mode != 'selected':
             return self.env['res.partner']
-        domain = safe_eval(self.customer_domain)
+        domain = safe_eval(self.customer_domain or "[('id', '=', 0)]")
         return self.env['res.partner'].search(domain)
 
     @api.depends('customer_domain', 'mode')
