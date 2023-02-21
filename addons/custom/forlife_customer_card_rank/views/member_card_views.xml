@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="member_card_view_tree" model="ir.ui.view">
+            <field name="name">member_card_view_tree</field>
+            <field name="model">member.card</field>
+            <field name="arch" type="xml">
+                <tree string="member_card_tree" decoration-muted="(not active)">
+                    <field name="name"/>
+                    <field name="card_rank_id"/>
+                    <field name="from_date" string="From Date"/>
+                    <field name="to_date"/>
+                    <field name="min_turnover"/>
+                    <field name="is_register"/>
+                    <field name="is_all_store"/>
+                    <field name="time_set_rank"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="member_card_view_form" model="ir.ui.view">
+            <field name="name">member_card_view_form</field>
+            <field name="model">member.card</field>
+            <field name="arch" type="xml">
+                <form string="member_card_form">
+                    <sheet>
+                        <button name="btn_duplicate_member_card" icon="fa-clone" class="oe_highlight oe_right" type="object" string=" Duplicate" groups="forlife_customer_card_rank.member_card_manager"/>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name" required="1"/>
+                            </h1>
+                        </div>
+                        <group col="1">
+                            <group>
+                                <field name="is_register"/>
+                            </group>
+                            <group attrs="{'invisible': [('is_register', '=', False)]}">
+                                <label for="register_from_date"/>
+                                <div>from
+                                    <field name="register_from_date" class="oe_inline"/>
+                                    to
+                                    <field name="register_to_date" class="oe_inline"/>
+                                </div>
+                            </group>
+                            <group>
+                                <label for="from_date"/>
+                                <div>from
+                                    <field name="from_date" class="oe_inline" required="1"/>
+                                    to
+                                    <field name="to_date" class="oe_inline" required="1"/>
+                                </div>
+                            </group>
+                            <div class="row">
+                                <div class="col-6">
+                                    <group>
+                                        <field name="is_all_store"/>
+                                    </group>
+                                </div>
+                                <div class="col-6">
+                                    <button name="btn_add_stores" type="object" string="Update Store" class="oe_highlight" attrs="{'invisible': [('is_all_store', '=', True)]}" groups="forlife_customer_card_rank.member_card_manager"/>
+                                </div>
+                            </div>
+                            <group>
+                                <field name="store_ids" widget="many2many_tags" attrs="{'invisible': [('is_all_store', '=', True)]}" readonly="1" force_save="1"/>
+                                <field name="time_set_rank"/>
+                                <field name="customer_group_ids" widget="many2many_tags"/>
+                                <field name="payment_method_ids" widget="many2many_tags"/>
+                                <field name="card_rank_id" class="oe_inline" required="1"/>
+                                <field name="min_turnover" class="oe_inline"/>
+                                <field name="original_price" class="oe_inline"/>
+                            </group>
+                            <div>Recognition % value apply from
+                                <field name="apply_value_from_1" class="oe_inline"/>
+                                to
+                                <field name="apply_value_to_1" class="oe_inline"/>
+                            </div>
+                            <div>Recognition % value apply from
+                                <field name="apply_value_from_2" class="oe_inline"/>
+                                to
+                                <field name="apply_value_to_2" class="oe_inline"/>
+                            </div>
+                            <div>Recognition % value apply from
+                                <field name="apply_value_from_3" class="oe_inline"/>
+                                to
+                                <field name="apply_value_to_3" class="oe_inline"/>
+                            </div>
+                        </group>
+                        <field name="active" invisible="1"/>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="member_card_view_filter" model="ir.ui.view">
+            <field name="name">member_card_view_filter</field>
+            <field name="model">member.card</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="name"/>
+                    <field name="card_rank_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="member_card_format_action" model="ir.actions.act_window">
+            <field name="name">Format</field>
+            <field name="res_model">member.card</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'default_brand_code': 'FMT'}</field>
+            <field name="domain">['&amp;', ('brand_code', '=', 'FMT'), '|', ('active', '=', False), ('active', '=', True)]</field>
+        </record>
+
+        <record id="member_card_tokyolife_action" model="ir.actions.act_window">
+            <field name="name">TokyoLife</field>
+            <field name="res_model">member.card</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'default_brand_code': 'TKL'}</field>
+            <field name="domain">['&amp;', ('brand_code', '=', 'TKL'), '|', ('active', '=', False), ('active', '=', True)]</field>
+        </record>
+
+    </data>
+
+    <data>
+        <record id="form_update_store_view_form" model="ir.ui.view">
+            <field name="name">form_update_store_view_form</field>
+            <field name="model">form.update.store</field>
+            <field name="arch" type="xml">
+                <form string="form_update_store_form">
+                    <sheet>
+                        <group>
+                            <field name="store_ids" domain="[('brand_id', '=', context.get('brand_id'))]"/>
+                            <field name="member_card_id" invisible="1"/>
+                        </group>
+                        <footer>
+                            <button name="btn_ok" type="object" string="OK" class="btn-primary" context="{'update_comment': True}"/>
+                            <button special="cancel" string="Cancel" class="btn-secondary"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <template id="message_update_stores">
+            <t t-out="time"/>
+            <p t-if="added">
+                <t t-out="added"/>
+            </p>
+            <p t-if="deleted">
+                <t t-out="deleted"/>
+            </p>
+        </template>
+    </data>
+</odoo>

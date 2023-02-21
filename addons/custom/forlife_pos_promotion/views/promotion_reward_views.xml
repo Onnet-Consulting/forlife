@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promotion_reward_tree_view" model="ir.ui.view">
+        <field name="name">promotion_reward.view.tree</field>
+        <field name="model">promotion_reward</field>
+        <field name="arch" type="xml">
+            <tree >
+                <field name="product_ids"/>
+                <field name="quantity"/>
+                <field name="discount_product_ids" widget="many2many_tags"/>
+                <field name="reward_product_ids" widget="many2many_tags"/>
+                <field name="quantity_min"/>
+                <field name="quantity"/>
+                <field name="amount"/>
+                <field name="disc_max_amount"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="forlife_pos_promotion.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension" owl="1">
+        <xpath expr="//ul[hasclass('info-list')]//li[hasclass('info')][1]" position="replace">
+                <li class="info">
+                    <em>
+                        <t t-esc="props.line.get_quantity_str()" />
+                    </em>
+                    <span> </span><t t-esc="props.line.get_unit().name" />
+                    at
+                    <t t-if="props.line.display_discount_policy() == 'without_discount' and
+                        env.pos.round_decimals_currency(props.line.get_unit_display_price()) &lt; env.pos.round_decimals_currency(props.line.get_taxed_lst_unit_price())">
+                        <s>
+                            <t t-esc="env.pos.format_currency(props.line.get_taxed_lst_unit_price(),'Product Price')" />
+                        </s>
+                        <t t-esc="env.pos.format_currency(props.line.get_unit_display_price(),'Product Price')" />
+                    </t>
+                    <t t-else="">
+                        <t t-esc="env.pos.format_currency(props.line.get_unit_display_price(),'Product Price')" />
+                    </t>
+                    <t t-if="props.line.get_total_discounted()">
+                        <span style="text-decoration: line-through;" t-esc="env.pos.format_currency(props.line.get_original_price(), 'Product Price')" />
+                    </t>
+                    /
+                    <t t-esc="props.line.get_unit().name" />
+                </li>
+        </xpath>
+        <xpath expr="//ul[hasclass('info-list')]" position="inside">
+            <t t-if="props.line.get_applied_promotion_str() or []">
+                <ul >
+                    <t t-foreach="props.line.get_applied_promotion_str()" t-as="promotion" t-key="promotion.id">
+                        <li style="font-weight: italic !important; list-style-type: square !important;">
+                            <t t-esc="promotion.str"/>
+                        </li>
+                    </t>
+                </ul>
+            </t>
+        </xpath>
+    </t>
+</templates>
