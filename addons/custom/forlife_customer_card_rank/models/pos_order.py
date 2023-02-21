@@ -57,6 +57,7 @@ class PosOrder(models.Model):
             'partner_card_rank_id': partner_card_rank_id,
             'order_id': self.id,
             'order_date': self.date_order,
+            'real_date': self.create_date,
             'value_orders': self.amount_total,
             'value_to_upper': value_to_upper,
             'old_card_rank_id': old_rank_id,

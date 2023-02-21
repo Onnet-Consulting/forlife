@@ -17,6 +17,7 @@
                             <group>
                                 <field name="reset_day_of_point_forlife"/>
                                 <field name="is_purchased_of_forlife"/>
+                                <field name="point_forlife_reseted" invisible="1"/>
                             </group>
                             <group>
                                 <field name="total_points_available_forlife"/>
@@ -44,6 +45,7 @@
                             <group>
                                 <field name="reset_day_of_point_format"/>
                                 <field name="is_purchased_of_format"/>
+                                <field name="point_format_reseted" invisible="1"/>
                             </group>
                             <group>
                                 <field name="total_points_available_format"/>

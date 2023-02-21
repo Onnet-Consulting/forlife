@@ -60,13 +60,13 @@ class PartnerCardRank(models.Model):
 class PartnerCardRankLine(models.Model):
     _name = 'partner.card.rank.line'
     _description = 'Partner Card Rank Line'
-    _order = 'order_date desc, id desc'
+    _order = 'real_date desc, id desc'
 
     partner_card_rank_id = fields.Many2one("partner.card.rank", string="Partner Card Rank", required=True, ondelete='restrict')
     order_id = fields.Many2one('pos.order', string="Pos Order", ondelete='restrict')
     order_date = fields.Datetime('Order Date', default=fields.Datetime.now())
+    real_date = fields.Datetime('Real Date', default=fields.Datetime.now())
     value_orders = fields.Integer('Value Orders')
     value_to_upper = fields.Integer('Value to upper')
     old_card_rank_id = fields.Many2one('card.rank', string='Old Rank', required=True, default=lambda self: self.env['card.rank'].search([], order='priority asc', limit=1))
     new_card_rank_id = fields.Many2one('card.rank', string='New Rank', required=True)
-    priority = fields.Integer('Priority', related='old_card_rank_id.priority')
