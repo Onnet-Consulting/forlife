@@ -39,6 +39,9 @@ odoo.define('forlife_pos_point_order.ProductScreen', function (require) {
                 var partner_rpc = await this.get_partner_point(id)
                 newPartner.total_points_available_format = partner_rpc.total_points_available_format
                 newPartner.total_points_available_forlife = partner_rpc.total_points_available_forlife
+                for(var i =0; i< this.currentOrder.orderlines.length; i++){
+                    this.currentOrder.orderlines[i].point = 0
+                }
             }
             if (confirmed) {
                 this.currentOrder.set_partner(newPartner);
