@@ -10,7 +10,7 @@ class MemberCard(models.Model):
     _name = 'member.card'
     _description = 'Member Card'
     _inherit = ['mail.thread']
-    _order = 'to_date desc, min_turnover desc, min_turnover desc'
+    _order = 'to_date desc, min_turnover desc'
 
     brand_id = fields.Many2one("res.brand", string="Brand", required=True, default=lambda s: s.env['res.brand'].search([('code', '=', s._context.get('default_brand_code', ''))], limit=1))
     brand_code = fields.Char('Brand Code', required=True)
@@ -30,10 +30,13 @@ class MemberCard(models.Model):
     original_price = fields.Integer('Original Price')
     apply_value_from_1 = fields.Integer('Apply Value From1')
     apply_value_to_1 = fields.Integer('Apply Value To1')
+    value1 = fields.Integer('Value 1')
     apply_value_from_2 = fields.Integer('Apply Value From2')
     apply_value_to_2 = fields.Integer('Apply Value To2')
+    value2 = fields.Integer('Value 2')
     apply_value_from_3 = fields.Integer('Apply Value From3')
     apply_value_to_3 = fields.Integer('Apply Value To3')
+    value3 = fields.Integer('Value 3')
     active = fields.Boolean('Active', default=True, tracking=True)
 
     _sql_constraints = [

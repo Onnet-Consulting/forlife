@@ -73,20 +73,26 @@
                                 <field name="min_turnover" class="oe_inline"/>
                                 <field name="original_price" class="oe_inline"/>
                             </group>
-                            <div>Recognition % value apply from
+                            <div>From
                                 <field name="apply_value_from_1" class="oe_inline"/>
                                 to
                                 <field name="apply_value_to_1" class="oe_inline"/>
+                                discount (%)
+                                <field name="value1" class="oe_inline"/>
                             </div>
-                            <div>Recognition % value apply from
+                            <div>From
                                 <field name="apply_value_from_2" class="oe_inline"/>
                                 to
                                 <field name="apply_value_to_2" class="oe_inline"/>
+                                discount (%)
+                                <field name="value2" class="oe_inline"/>
                             </div>
-                            <div>Recognition % value apply from
+                            <div>From
                                 <field name="apply_value_from_3" class="oe_inline"/>
                                 to
                                 <field name="apply_value_to_3" class="oe_inline"/>
+                                discount (%)
+                                <field name="value3" class="oe_inline"/>
                             </div>
                         </group>
                         <field name="active" invisible="1"/>
