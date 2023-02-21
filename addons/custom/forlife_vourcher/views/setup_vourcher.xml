@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="set_vourcher_tree_view">
+            <field name="name">set.vourcher.tree.view</field>
+            <field name="model">setup.vourcher</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="purpose_vourcher"/>
+                    <field name="applicable_object"/>
+                    <field name="ref"/>
+                </tree>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>
