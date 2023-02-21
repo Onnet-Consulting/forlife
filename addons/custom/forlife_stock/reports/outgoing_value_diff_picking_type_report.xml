@@ -19,12 +19,12 @@
                         <group></group>
                     </group>
                 </sheet>
+                <footer>
+                    <button name="action_export_outgoing_value_diff_picking_type_report" string="Export Report"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
             </form>
-            <footer>
-                <button name="action_export_outgoing_value_diff_picking_type_report" string="Export Report"
-                        type="object" class="btn-primary"/>
-                <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
-            </footer>
         </field>
     </record>
 

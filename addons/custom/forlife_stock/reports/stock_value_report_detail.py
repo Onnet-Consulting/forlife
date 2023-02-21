@@ -29,4 +29,4 @@ class StockValueReportDetail(models.TransientModel):
 
     def _compute_product_code(self):
         for item in self:
-            item.default_code = item.product_id.default_code or item.product_id.product_tmpl_id.default_code
+            item.product_code = item.product_id.default_code or item.product_id.product_tmpl_id.default_code

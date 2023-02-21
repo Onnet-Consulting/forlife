@@ -10,7 +10,7 @@
                             <tr>
                                 <th>MÃ SẢN PHẨM</th>
                                 <th>TÊN SẢN PHẨM</th>
-                                <th>ĐƠN GIÁ</th>
+                                <th class="price">ĐƠN GIÁ</th>
                                 <th>ĐƠN VỊ TÍNH</th>
                             </tr>
                         </thead>

@@ -20,6 +20,10 @@
     overflow: hidden;
 }
 
+.pos .rightpane th.price{
+    text-align: right;
+}
+
 .pos .rightpane .product-list {
     display: flex;
     grid-template-columns: repeat(auto-fill, minmax(122px, 1fr));
@@ -32,6 +36,10 @@
     font-size: 14px;
     padding: 5px;
     text-align: left;
+}
+
+.pos .rightpane td.product-price {
+    text-align: right;
 }
 
 .pos .rightpane table .product {
