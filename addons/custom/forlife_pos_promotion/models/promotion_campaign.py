@@ -38,7 +38,7 @@ class PromotionConfiguration(models.AbstractModel):
         for record in self:
             record.valid_customer_ids = record._get_partners()
 
-    @api.onchange('from_date', 'to_date')
+    # @api.onchange('from_date', 'to_date')
     def onchange_program_date(self):
         def next_month(m):
             return m < 12 and m + 1 or 1

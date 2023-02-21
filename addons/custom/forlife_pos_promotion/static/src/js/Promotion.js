@@ -444,32 +444,40 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let code = null;
         let activatedCodeObj = this.activatedInputCodes.find(c => c.program_id === program.id)
         if (activatedCodeObj) {code = activatedCodeObj.id};
+
+        comboLineList.forEach(line => {line['promotion_usage_ids'] = [];});
         // Combo: Mua Combo, giảm tiền
         if (program.reward_type == 'combo_amount' && program.promotion_type == 'combo') {
-            let disc_total_amount = program.disc_amount;
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
-            for (let comboLine of comboLineList) {
-                let originalPrice = comboLine.price;
-                let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
-                comboLine.price = newPrice;
-                comboLine['promotion_usage_ids'] = [];
-                comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, originalPrice, newPrice, discAmountInLine));
-            }
+            let disc_total_amount = program.disc_amount;
+            if (disc_total_amount > 0) {
+                for (let comboLine of comboLineList) {
+                    let originalPrice = comboLine.price;
+                    let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                    comboLine.price = newPrice;
+                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, originalPrice, newPrice, discAmountInLine));
+                };
+            } else {
+                Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
+            };
         }
         // Mua combo giảm phần trăm
         else if (program.reward_type == 'combo_percent' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
             let disc_total_amount = base_total_amount * program.disc_percent / 100;
-            if (program.disc_max_amount) {
+            if (program.disc_max_amount > 0) {
                 disc_total_amount = disc_total_amount < program.disc_max_amount ? disc_total_amount : program.disc_max_amount;
-            }
-            for (let comboLine of comboLineList) {
-                let originalPrice = comboLine.price;
-                let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
-                comboLine.price = newPrice;
-                comboLine['promotion_usage_ids'] = [];
-                comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, originalPrice, newPrice, discAmountInLine));
-            }
+            };
+            if (disc_total_amount > 0) {
+                for (let comboLine of comboLineList) {
+                    let originalPrice = comboLine.price;
+                    let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                    comboLine.price = newPrice;
+                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, originalPrice, newPrice, discAmountInLine));
+                };
+            } else {
+                Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
+            };
         }
         // Mua 1 combo với giá cố định
         else if (program.reward_type == 'combo_fixed_price' && program.promotion_type == 'combo') {
@@ -481,10 +489,59 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     let originalPrice = comboLine.price;
                     let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
                     comboLine.price = newPrice;
-                    comboLine['promotion_usage_ids'] = [];
                     comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, originalPrice, newPrice, discAmountInLine));
-                }
+                };
+            } else {
+                Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
+            };
+        }
+        // Mua Comboo càng nhiều càng giảm, theo tỷ lệ %
+        else if (program.reward_type == 'combo_percent_by_qty' && program.promotion_type == 'combo') {
+            let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
+            let rewardLines = program.rewards.sort((l1, l2) => l2.disc_percent > l1.disc_percent);
+            let applyRewardLine;
+            for (let i = 0; i < rewardLines.length; i++) {
+                if (number_of_combo >= rewardLines[i].quantity_min) {
+                    applyRewardLine = rewardLines[i];
+                };
+            };
+            let disc_total_amount = base_total_amount * applyRewardLine.disc_percent / 100;
+            if (applyRewardLine.disc_max_amount > 0) {
+                disc_total_amount = disc_total_amount < applyRewardLine.disc_max_amount ? disc_total_amount : applyRewardLine.disc_max_amount;
             }
+            if (disc_total_amount > 0) {
+                for (let comboLine of comboLineList) {
+                    let originalPrice = comboLine.price;
+                    let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                    comboLine.price = newPrice;
+                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, originalPrice, newPrice, discAmountInLine));
+                };
+            } else {
+                Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
+            };
+        }
+        // Mua Comboo càng nhiều càng giảm, theo đơn giá cố đinh
+        else if (program.reward_type == 'combo_fixed_price_by_qty' && program.promotion_type == 'combo') {
+            let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
+            let rewardLines = program.rewards.sort((l1, l2) => l2.disc_percent > l1.disc_percent);
+            let applyRewardLine;
+            for (let i = 0; i < rewardLines.length; i++) {
+                if (number_of_combo >= rewardLines[i].quantity_min) {
+                    applyRewardLine = rewardLines[i];
+                };
+            };
+            let disc_total_amount = base_total_amount - applyRewardLine.disc_fixed_price;
+            disc_total_amount = disc_total_amount > 0 ? disc_total_amount : 0.0;
+            if (disc_total_amount > 0) {
+                for (let comboLine of comboLineList) {
+                    let originalPrice = comboLine.price;
+                    let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                    comboLine.price = newPrice;
+                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, originalPrice, newPrice, discAmountInLine));
+                };
+            } else {
+                Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
+            };
         }
         return comboLineList;
     }
@@ -501,7 +558,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             combo_count[program.id] = numberOfCombo;
 
             for (let i = 0; i < to_discount_line_vals.length; i++) {
-                let result = this.applyAProgramToLineVales(program, to_discount_line_vals[i], 0);
+                let result = this.applyAProgramToLineVales(program, to_discount_line_vals[i], numberOfCombo);
                 if (to_apply_lines.hasOwnProperty(program.id) && combo_count.hasOwnProperty(program.id)) {
                     to_apply_lines[program.id].push(...result);
                 }
