@@ -10,7 +10,7 @@ class MemberCard(models.Model):
     _name = 'member.card'
     _description = 'Member Card'
     _inherit = ['mail.thread']
-    _order = 'to_date desc, min_turnover desc'
+    _order = 'to_date desc, min_turnover desc, min_turnover desc'
 
     brand_id = fields.Many2one("res.brand", string="Brand", required=True, default=lambda s: s.env['res.brand'].search([('code', '=', s._context.get('default_brand_code', ''))], limit=1))
     brand_code = fields.Char('Brand Code', required=True)
