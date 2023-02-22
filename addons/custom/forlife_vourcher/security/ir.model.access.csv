@@ -1,5 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_program_vourcher,access_program_vourcher,forlife_vourcher.model_program_vourcher,base.group_user,1,1,1,1
-access_vourcher,access_vourcher,forlife_vourcher.model_vourcher_vourcher,base.group_user,1,1,1,1
-access_program_vourcher_line,access_program_vourcher_line,forlife_vourcher.model_program_vourcher_line,base.group_user,1,1,1,1
-access_setup_vourcher,access_setup_vourcher,forlife_vourcher.model_setup_vourcher,base.group_user,1,1,1,1

@@ -8,12 +8,12 @@
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='options']" position="inside">
                     <span class="d-inline-block">
-                            <field name="vourcher"/>
-                            <label for="vourcher"/>
+                            <field name="voucher"/>
+                            <label for="voucher"/>
                         </span>
                 </xpath>
                 <xpath expr="//page[@name='general_information']//field[@name='company_id']" position="after">
-                    <field name="program_vourcher_id" attrs="{'invisible': [('vourcher', '=', False)]}"/>
+                    <field name="program_voucher_id" attrs="{'invisible': [('voucher', '=', False)]}"/>
                 </xpath>
             </field>
         </record>

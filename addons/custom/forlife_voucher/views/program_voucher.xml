@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
-        <record model="ir.ui.view" id="vourcher_tree_view">
-            <field name="name">vourcher.tree.view</field>
-            <field name="model">program.vourcher</field>
+        <record model="ir.ui.view" id="voucher_tree_view">
+            <field name="name">voucher.tree.view</field>
+            <field name="model">program.voucher</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
                     <field name="type"/>
-                    <field name="program_vourcher_code"/>
+                    <field name="program_voucher_code"/>
                     <field name="purpose_id"/>
                     <field name="derpartment_id"/>
                     <field name="apply_many_times"/>
@@ -21,25 +21,26 @@
                 </tree>
             </field>
         </record>
-        <record model="ir.ui.view" id="vourcher_form_view">
-            <field name="name">vourcher.form.view</field>
-            <field name="model">program.vourcher</field>
+        <record model="ir.ui.view" id="voucher_form_view">
+            <field name="name">voucher.form.view</field>
+            <field name="model">program.voucher</field>
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="create_vourcher" string="Create Vourcher" class="oe_highlight"
+                        <button name="create_voucher" string="Create Voucher" class="oe_highlight"
                                 type="object"/>
 
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button class="oe_stat_button" icon="fa-area-chart">
+                            <button name="action_view_voucher_relation" type="object" class="oe_stat_button" icon="fa-ticket">
+                                <field name="voucher_count" widget="statinfo" string="Voucher"/>
                             </button>
                         </div>
                         <group>
                             <field name="name"/>
                             <field name="type"/>
-                            <field name="program_vourcher_code"/>
+                            <field name="program_voucher_code"/>
                             <field name="purpose_id"/>
                             <field name="derpartment_id"/>
                             <field name="apply_many_times"/>
@@ -51,8 +52,8 @@
                             <field name="product_id"/>
                         </group>
                         <notebook>
-                            <page name="vourcher" string="Vourcher">
-                                <field name="program_vourcher_line_ids">
+                            <page name="voucher" string="Voucher">
+                                <field name="program_voucher_line_ids">
                                     <tree editable="bottom">
                                         <field name="price"/>
                                         <field name="partner_ids" widget="many2many_tags"/>

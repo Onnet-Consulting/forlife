@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Vourcher",
+    'name': "Voucher",
 
     'summary': """
         """,
@@ -13,7 +13,7 @@
     "license": "LGPL-3",
     'version': '16.0.1.0,0',
 
-    'category': 'Vourcher/Point of Sale',
+    'category': 'Voucher/Point of Sale',
 
     'depends': [
         'base',
@@ -27,10 +27,12 @@
 
     'data': [
         'security/ir.model.access.csv',
-        'views/program_vourcher.xml',
-        'views/setup_vourcher.xml',
-        'views/vourcher_view.xml',
+        'views/program_voucher.xml',
+        'views/setup_voucher.xml',
+        'views/voucher_view.xml',
         'views/menu_views.xml',
-        'views/product_template.xml'
+        'views/product_template.xml',
+        'data/ir_sequence.xml',
+        'data/ir_cron.xml'
     ]
 }

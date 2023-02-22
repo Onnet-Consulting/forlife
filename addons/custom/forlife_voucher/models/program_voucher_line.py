@@ -1,11 +1,11 @@
 from odoo import api, fields, models
 
 
-class Vourcher(models.Model):
-    _name = 'program.vourcher.line'
-    _description = 'Info of Program Vourcher'
+class Voucher(models.Model):
+    _name = 'program.voucher.line'
+    _description = 'Info of Program Voucher'
 
-    program_vourcher_id = fields.Many2one('program.vourcher')
+    program_voucher_id = fields.Many2one('program.voucher')
 
     price = fields.Monetary('Price')
 
