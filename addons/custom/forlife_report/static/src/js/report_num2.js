@@ -7,8 +7,8 @@ odoo.define('forlife_report.stock_price_by_warehouse', function (require) {
     const QWeb = core.qweb;
 
 
-    let StockPriceByWarehouse = ReportBaseAction.extend({
-        reportTemplate: 'ReportStockPriceByWarehouse',
+    let ReportNum2Action = ReportBaseAction.extend({
+        reportTemplate: 'ReportNum2Template',
         reportTitle: _t("Stock with sale price"),
 
         events: {
@@ -27,7 +27,7 @@ odoo.define('forlife_report.stock_price_by_warehouse', function (require) {
             let product_id = e.currentTarget.id;
             let product_data = this.detail_data_by_product_id[product_id];
             let product_name = e.currentTarget.querySelector('.product_name').textContent;
-            this.$('#product-detail').html(QWeb.render("ReportStockPriceByWarehouseDetail", {
+            this.$('#product-detail').html(QWeb.render("ReportNum2DetailTemplate", {
                 "detail": {
                     product_name,
                     "lines": product_data
@@ -36,8 +36,8 @@ odoo.define('forlife_report.stock_price_by_warehouse', function (require) {
         },
     })
 
-    core.action_registry.add('report_stock_sale_price', StockPriceByWarehouse)
+    core.action_registry.add('report_num2_action', ReportNum2Action)
 
-    return StockPriceByWarehouse;
+    return ReportNum2Action;
 
 })

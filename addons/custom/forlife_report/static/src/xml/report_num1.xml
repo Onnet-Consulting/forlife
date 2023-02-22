@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template xml:space="preserve">
-    <t t-name="ReportRevenueByProduct" t-inherit="ReportBase" t-inherit-mode="primary">
+    <t t-name="ReportNum1Template" t-inherit="ReportBase" t-inherit-mode="primary">
         <xpath expr="//div[@id='main-content']" position="inside">
-            <t t-call="ReportRevenueByProductMain"/>
+            <t t-call="ReportNum1MainTemplate"/>
         </xpath>
     </t>
-    <t t-name="ReportRevenueByProductMain">
+    <t t-name="ReportNum1MainTemplate">
         <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
         <table>
             <thead>

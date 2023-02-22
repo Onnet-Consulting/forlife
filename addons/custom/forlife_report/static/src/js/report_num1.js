@@ -6,13 +6,13 @@ odoo.define('forlife_report.revenue_by_product', function (require) {
     const ReportBaseAction = require('forlife_report.report_base');
 
 
-    let RevenueByProduct = ReportBaseAction.extend({
-        reportTemplate: 'ReportRevenueByProduct',
+    let ReportNum1Action = ReportBaseAction.extend({
+        reportTemplate: 'ReportNum1Template',
         reportTitle: _t("Revenue by product"),
     })
 
-    core.action_registry.add('report_revenue_by_product', RevenueByProduct)
+    core.action_registry.add('report_num1_action', ReportNum1Action)
 
-    return RevenueByProduct;
+    return ReportNum1Action;
 
 })

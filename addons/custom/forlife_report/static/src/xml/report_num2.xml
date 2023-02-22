@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template xml:space="preserve">
-    <t t-name="ReportStockPriceByWarehouse" t-inherit="ReportBase" t-inherit-mode="primary">
+    <t t-name="ReportNum2Template" t-inherit="ReportBase" t-inherit-mode="primary">
         <xpath expr="//div[@id='main-content']" position="inside">
-            <t t-call="ReportStockPriceByWarehouseMain"/>
+            <t t-call="ReportNum2MainTemplate"/>
         </xpath>
         <xpath expr="//div[@id='main-content']" position="attributes">
             <attribute name="class" add="report_stock_price_main_table" separator=" "/>
         </xpath>
     </t>
-    <t t-name="ReportStockPriceByWarehouseMain">
+    <t t-name="ReportNum2MainTemplate">
         <table style="width:65%">
             <thead>
                 <tr>
@@ -31,7 +31,7 @@
         </div>
     </t>
 
-    <t t-name="ReportStockPriceByWarehouseDetail">
+    <t t-name="ReportNum2DetailTemplate">
         <div>
             <h2><t t-esc="detail.product_name"/></h2>
         </div>
