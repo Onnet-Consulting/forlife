@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-22 03:37+0000\n"
-"PO-Revision-Date: 2023-02-22 03:37+0000\n"
+"POT-Creation-Date: 2023-02-22 07:10+0000\n"
+"PO-Revision-Date: 2023-02-22 07:10+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -430,7 +430,7 @@ msgid "Old Rank"
 msgstr "Hạng hiện tại"
 
 #. module: forlife_customer_card_rank
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__qty_order
 msgid "Order"
 msgstr "Đơn hàng"
 
@@ -551,6 +551,7 @@ msgstr "Cửa hàng đã xóa: %s"
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__store_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__store_ids
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.form_update_store_view_form
 msgid "Stores Apply"
 msgstr "Cửa hàng áp dụng"
 
@@ -615,7 +616,7 @@ msgstr "Doanh số của hạng '%s' phải nhỏ hơn doanh số của hạng '
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
 #, python-format
 msgid "Update Card Rank"
-msgstr "Cập nhật hạng thẻ"
+msgstr "Điều chỉnh hạng"
 
 #. module: forlife_customer_card_rank
 #. odoo-python

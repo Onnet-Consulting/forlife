@@ -39,10 +39,15 @@ class MemberCard(models.Model):
     value3 = fields.Integer('Value 3')
     active = fields.Boolean('Active', default=True, tracking=True)
     order_ids = fields.Many2many('pos.order', string='Orders')
+    qty_order = fields.Integer('Order', compute='_compute_qty_order')
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
+
+    def _compute_qty_order(self):
+        for line in self:
+            line.qty_order = len(line.order_ids)
 
     @api.onchange('is_all_store')
     def onchange_is_all_store(self):
