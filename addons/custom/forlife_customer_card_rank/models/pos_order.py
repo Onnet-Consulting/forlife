@@ -43,11 +43,13 @@ class PosOrder(models.Model):
                 if new_rank.priority >= program.card_rank_id.priority:
                     self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id)
                     partner_card_rank.sudo().write({'accumulated_sales': total_value_to_up})
+                    self.save_order_to_program(program)
                     break
                 else:
                     if total_value_to_up >= program.min_turnover:
                         self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id)
                         partner_card_rank.sudo().write({'accumulated_sales': total_value_to_up})
+                        self.save_order_to_program(program)
                         break
         if is_rank:
             self.sudo().write({'is_rank': True})
@@ -62,4 +64,9 @@ class PosOrder(models.Model):
             'value_to_upper': value_to_upper,
             'old_card_rank_id': old_rank_id,
             'new_card_rank_id': new_rank_id,
+        })
+
+    def save_order_to_program(self, program):
+        program.sudo().write({
+            'order_ids': [(4, self.id)]
         })

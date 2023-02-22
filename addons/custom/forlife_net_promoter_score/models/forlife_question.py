@@ -22,7 +22,7 @@ class ForlifeQuestion(models.Model):
     start_date = fields.Datetime('Start Date', required=True)
     finish_date = fields.Datetime('Finish Date', required=True)
     create_uid = fields.Many2one("res.users", string="Created by", default=lambda s: s.env.user)
-    create_date = fields.Datetime("Created on", default=fields.Datetime.now())
+    create_date = fields.Datetime("Created on", default=fields.Datetime.now)
     banner_question = fields.Char('Banner Question', required=True)
     banner_success = fields.Char('Banner Success', required=True)
     icon = fields.Char('Icon')
