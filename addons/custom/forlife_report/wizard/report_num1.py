@@ -59,8 +59,8 @@ where po.company_id = %s
 
     def _get_query_params(self):
         self.ensure_one()
-        from_date = self.convert_datetime_to_utc(self.from_date)
-        to_date = self.convert_datetime_to_utc(self.to_date)
+        from_date = self.from_date
+        to_date = self.to_date
         params = [self.company_id.id, from_date, to_date]
         return params
 
