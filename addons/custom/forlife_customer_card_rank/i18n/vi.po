@@ -592,7 +592,7 @@ msgstr ""
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__min_turnover
 msgid "Turnover"
-msgstr "Doanh số từ"
+msgstr "Giá trị xét hạng từ"
 
 #. module: forlife_customer_card_rank
 #. odoo-python

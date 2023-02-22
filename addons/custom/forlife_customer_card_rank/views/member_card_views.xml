@@ -24,7 +24,7 @@
             <field name="name">member_card_view_form</field>
             <field name="model">member.card</field>
             <field name="arch" type="xml">
-                <form string="member_card_form">
+                <form string="member_card_form" duplicate="0">
                     <sheet>
                         <button name="btn_duplicate_member_card" icon="fa-clone" class="oe_right" type="object" string=" Duplicate" groups="forlife_customer_card_rank.member_card_manager"/>
                         <button name="action_view_pos_order" icon="fa-list" class="oe_highlight oe_right" type="object" string=" Order" groups="forlife_customer_card_rank.member_card_manager"/>
