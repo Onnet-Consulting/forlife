@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-20 03:35+0000\n"
-"PO-Revision-Date: 2023-02-20 03:35+0000\n"
+"POT-Creation-Date: 2023-02-22 03:37+0000\n"
+"PO-Revision-Date: 2023-02-22 03:37+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,6 +21,7 @@ msgid "Accumulated Sales"
 msgstr "Doanh số xét hạng hiện tại"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_needaction
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_needaction
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_needaction
 msgid "Action Needed"
@@ -62,11 +63,13 @@ msgid "Apply Value To3"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_filter
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
 msgid "Archived"
-msgstr "Lưu trữ"
+msgstr "Đã lưu"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_attachment_count
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_attachment_count
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_attachment_count
 msgid "Attachment Count"
@@ -200,12 +203,14 @@ msgid "End date may not be before the starting date."
 msgstr "Ngày kết thúc không được trước ngày bắt đầu."
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_follower_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_follower_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_follower_ids
 msgid "Followers"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_partner_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_partner_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_partner_ids
 msgid "Followers (Partners)"
@@ -223,11 +228,17 @@ msgid "Format"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
+msgid "From"
+msgstr "Từ"
+
+#. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_tree
 msgid "From Date"
 msgstr "Từ ngày"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__has_message
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__has_message
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__has_message
 msgid "Has Message"
@@ -243,12 +254,15 @@ msgid "ID"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,help:forlife_customer_card_rank.field_card_rank__message_needaction
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_member_card__message_needaction
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_partner_card_rank__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,help:forlife_customer_card_rank.field_card_rank__message_has_error
+#: model:ir.model.fields,help:forlife_customer_card_rank.field_card_rank__message_has_sms_error
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_member_card__message_has_error
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_member_card__message_has_sms_error
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_partner_card_rank__message_has_error
@@ -268,6 +282,7 @@ msgid "Is All Store"
 msgstr "Tất cả cửa hàng"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_is_follower
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_is_follower
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_is_follower
 msgid "Is Follower"
@@ -331,6 +346,7 @@ msgid "Lines"
 msgstr "Chi tiết"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_main_attachment_id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_main_attachment_id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_main_attachment_id
 msgid "Main Attachment"
@@ -352,12 +368,14 @@ msgid "Member Card Manager"
 msgstr "Quản lý thẻ thành viên"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_has_error
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_has_error
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_has_error
 msgid "Message Delivery error"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_ids
 msgid "Messages"
@@ -374,24 +392,28 @@ msgid "New Rank"
 msgstr "Hạng mới"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_needaction_counter
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_needaction_counter
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_needaction_counter
 msgid "Number of Actions"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_has_error_counter
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_has_error_counter
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_has_error_counter
 msgid "Number of errors"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,help:forlife_customer_card_rank.field_card_rank__message_needaction_counter
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_member_card__message_needaction_counter
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_partner_card_rank__message_needaction_counter
 msgid "Number of messages which requires an action"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,help:forlife_customer_card_rank.field_card_rank__message_has_error_counter
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_member_card__message_has_error_counter
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_partner_card_rank__message_has_error_counter
 msgid "Number of messages with delivery error"
@@ -408,9 +430,19 @@ msgid "Old Rank"
 msgstr "Hạng hiện tại"
 
 #. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
+msgid "Order"
+msgstr "Đơn hàng"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__order_date
 msgid "Order Date"
 msgstr "Ngày mua hàng"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__order_ids
+msgid "Orders"
+msgstr "Đơn hàng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__original_price
@@ -480,11 +512,6 @@ msgid "Real Date"
 msgstr "Thời gian thực tế"
 
 #. module: forlife_customer_card_rank
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
-msgid "Recognition % value apply from"
-msgstr "Ghi nhận % áp dụng giá trị từ"
-
-#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__register_from_date
 msgid "Register From Date"
 msgstr "Ngày đăng ký"
@@ -495,6 +522,7 @@ msgid "Register To Date"
 msgstr "Hạn ngày đăng ký"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_has_sms_error
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_has_sms_error
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_has_sms_error
 msgid "SMS Delivery error"
@@ -527,6 +555,13 @@ msgid "Stores Apply"
 msgstr "Cửa hàng áp dụng"
 
 #. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/member_card.py:0
+#, python-format
+msgid "Stores Apply is required !"
+msgstr "Trường cửa hàng áp dụng không được để trống !"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__from_date
 msgid "Time Apply"
 msgstr "Thời gian áp dụng"
@@ -557,7 +592,7 @@ msgstr ""
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__min_turnover
 msgid "Turnover"
-msgstr "Doanh số từ"
+msgstr "Giá trị xét hạng từ"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
@@ -591,6 +626,21 @@ msgid "Update Store"
 msgstr "Cập nhật cửa hàng áp dụng"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value1
+msgid "Value 1"
+msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value2
+msgid "Value 2"
+msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value3
+msgid "Value 3"
+msgstr ""
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__value_orders
 msgid "Value Orders"
 msgstr "Giá trị đơn hàng"
@@ -601,21 +651,47 @@ msgid "Value to upper"
 msgstr "Giá trị được xét hạng"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__website_message_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__website_message_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__website_message_ids
 msgid "Website Messages"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,help:forlife_customer_card_rank.field_card_rank__website_message_ids
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_member_card__website_message_ids
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_partner_card_rank__website_message_ids
 msgid "Website communication history"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/member_card.py:0
+#, python-format
+msgid "You can't delete the card rank program that delivered the order"
+msgstr "Bạn không thể xóa chương trình hạng thẻ đã phát sinh đơn hàng"
+
+#. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/models/card_rank.py:0
+#, python-format
+msgid "You cannot delete a card rank that has already been used !"
+msgstr "Bạn không thể xóa hạng thẻ đã được sử dụng !"
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.card_rank_view_form
+msgid "card_rank_form"
+msgstr "phom hạng thẻ"
+
+#. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.card_rank_view_tree
 msgid "card_rank_tree"
 msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
+msgid "discount (%)"
+msgstr "chiết khấu (%)"
 
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.form_update_store_view_form

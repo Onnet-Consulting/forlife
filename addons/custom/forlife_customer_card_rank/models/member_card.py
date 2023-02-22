@@ -10,7 +10,7 @@ class MemberCard(models.Model):
     _name = 'member.card'
     _description = 'Member Card'
     _inherit = ['mail.thread']
-    _order = 'to_date desc, min_turnover desc, min_turnover desc'
+    _order = 'to_date desc, min_turnover desc'
 
     brand_id = fields.Many2one("res.brand", string="Brand", required=True, default=lambda s: s.env['res.brand'].search([('code', '=', s._context.get('default_brand_code', ''))], limit=1))
     brand_code = fields.Char('Brand Code', required=True)
@@ -30,15 +30,25 @@ class MemberCard(models.Model):
     original_price = fields.Integer('Original Price')
     apply_value_from_1 = fields.Integer('Apply Value From1')
     apply_value_to_1 = fields.Integer('Apply Value To1')
+    value1 = fields.Integer('Value 1')
     apply_value_from_2 = fields.Integer('Apply Value From2')
     apply_value_to_2 = fields.Integer('Apply Value To2')
+    value2 = fields.Integer('Value 2')
     apply_value_from_3 = fields.Integer('Apply Value From3')
     apply_value_to_3 = fields.Integer('Apply Value To3')
+    value3 = fields.Integer('Value 3')
     active = fields.Boolean('Active', default=True, tracking=True)
+    order_ids = fields.Many2many('pos.order', string='Orders')
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
+
+    @api.onchange('is_all_store')
+    def onchange_is_all_store(self):
+        for line in self:
+            if not line.is_all_store and not line.store_ids:
+                line.store_ids = self.env['store'].search([('brand_id', '=', line.brand_id.id)], limit=1)
 
     @api.constrains("from_date", "to_date", 'active', 'min_turnover', 'card_rank_id')
     def validate_time(self):
@@ -160,6 +170,17 @@ class MemberCard(models.Model):
             'context': ctx,
         }
 
+    def action_view_pos_order(self):
+        action = self.env['ir.actions.act_window']._for_xml_id('point_of_sale.action_pos_pos_form')
+        action['domain'] = [('id', 'in', self.order_ids.ids)]
+        return action
+
+    def unlink(self):
+        for line in self:
+            if line.order_ids:
+                raise ValidationError(_("You can't delete the card rank program that delivered the order"))
+        return super().unlink()
+
 
 class FormUpdateStore(models.TransientModel):
     _name = 'form.update.store'
@@ -169,6 +190,8 @@ class FormUpdateStore(models.TransientModel):
     store_ids = fields.Many2many('store', string='Stores Apply')
 
     def btn_ok(self):
+        if not self.store_ids:
+            raise ValidationError(_('Stores Apply is required !'))
         store_add = self.store_ids - self.member_card_id.store_ids
         store_del = self.member_card_id.store_ids - self.store_ids
         message = {}

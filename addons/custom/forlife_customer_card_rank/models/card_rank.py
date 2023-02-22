@@ -8,9 +8,10 @@ class CardRank(models.Model):
     _name = 'card.rank'
     _description = 'Card Rank'
     _order = 'priority desc'
+    _inherit = ['mail.thread']
 
-    name = fields.Char('Name', required=True)
-    priority = fields.Integer('Priority', required=True)
+    name = fields.Char('Name', required=True, tracking=True)
+    priority = fields.Integer('Priority', required=True, tracking=True)
 
     _sql_constraints = [
         ("name_uniq", "unique(name)", "Rank name must be unique"),
@@ -48,3 +49,11 @@ class CardRank(models.Model):
         next_rank = self.search([('priority', '>', priority)], order='priority asc').ids
         previous_rank = self.search([('priority', '<', priority)]).ids
         return previous_rank, next_rank
+
+    def unlink(self):
+        for line in self:
+            if self.env['member.card'].search([('card_rank_id', '=', line.id), ('active', 'in', (True, False))])\
+                    or self.env['partner.card.rank'].search([('card_rank_id', '=', line.id)])\
+                    or self.env['partner.card.rank.line'].search(['|', ('old_card_rank_id', '=', line.id), ('new_card_rank_id', '=', line.id)]):
+                raise ValidationError(_("You cannot delete a card rank that has already been used !"))
+        return super().unlink()
