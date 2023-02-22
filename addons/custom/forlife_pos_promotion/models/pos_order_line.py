@@ -15,6 +15,7 @@ class PosPromotionLine(models.Model):
     code_id = fields.Many2one('promotion.code', readonly=True, ondelete='restrict')
     original_price = fields.Float('Original Price', readonly=True)
     new_price = fields.Float('New Price', readonly=True)
+    qty = fields.Float('Quantity', related='order_line_id.qty', digits='Product Unit of Measure')
 
     def name_get(self):
         res = []
