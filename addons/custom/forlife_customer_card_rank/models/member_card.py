@@ -44,6 +44,12 @@ class MemberCard(models.Model):
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
 
+    @api.onchange('is_all_store')
+    def onchange_is_all_store(self):
+        for line in self:
+            if not line.is_all_store and not line.store_ids:
+                line.store_ids = self.env['store'].search([('brand_id', '=', line.brand_id.id)], limit=1)
+
     @api.constrains("from_date", "to_date", 'active', 'min_turnover', 'card_rank_id')
     def validate_time(self):
         for record in self:
@@ -169,6 +175,12 @@ class MemberCard(models.Model):
         action['domain'] = [('id', 'in', self.order_ids.ids)]
         return action
 
+    def unlink(self):
+        for line in self:
+            if line.order_ids:
+                raise ValidationError(_("You can't delete the card rank program that delivered the order"))
+        return super().unlink()
+
 
 class FormUpdateStore(models.TransientModel):
     _name = 'form.update.store'
@@ -178,6 +190,8 @@ class FormUpdateStore(models.TransientModel):
     store_ids = fields.Many2many('store', string='Stores Apply')
 
     def btn_ok(self):
+        if not self.store_ids:
+            raise ValidationError(_('Stores Apply is required !'))
         store_add = self.store_ids - self.member_card_id.store_ids
         store_del = self.member_card_id.store_ids - self.store_ids
         message = {}
