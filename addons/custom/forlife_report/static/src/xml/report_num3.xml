@@ -2,11 +2,36 @@
 <template xml:space="preserve">
     <t t-name="ReportNum3Template" t-inherit="ReportBase" t-inherit-mode="primary">
         <xpath expr="//div[@id='main-content']" position="inside">
-            <t t-call="ReportNum3Main"/>
+            <t t-call="ReportNum3MainTemplate"/>
         </xpath>
     </t>
 
-    <t t-name="ReportNum3Main">
-
+    <t t-name="ReportNum3MainTemplate">
+        <table>
+            <thead>
+                <tr>
+                    <th>Mã SP</th>
+                    <th>Tên SP</th>
+                    <th>Đơn vị</th>
+                    <th>Tổng tồn</th>
+                    <t t-foreach="widget.warehouse_names" t-as="wh_name">
+                        <th><t t-esc="wh_name"/></th>
+                    </t>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="options.data" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.product_barcode"/></td>
+                        <td><t t-esc="line.product_name"/></td>
+                        <td><t t-esc="line.uom_name"/></td>
+                        <td><t t-esc="line.total_qty"/></td>
+                        <t t-foreach="widget.warehouse_ids" t-as="wh_id">
+                            <td><t t-esc="line.product_qty_by_warehouse[wh_id] or ''"/></td>
+                        </t>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
     </t>
 </template>
