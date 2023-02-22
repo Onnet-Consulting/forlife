@@ -30,7 +30,7 @@ class PromotionProgram(models.Model):
     _inherit = 'promotion.configuration'
     _order = 'promotion_type, sequence'
 
-    campaign_id = fields.Many2one('promotion.campaign', name='Campaign')
+    campaign_id = fields.Many2one('promotion.campaign', name='Campaign', ondelete='restrict')
 
     name = fields.Char('Program Name', required=True)
     code = fields.Char('Code')
@@ -177,6 +177,32 @@ class PromotionProgram(models.Model):
         for program in self:
             usages = self.env['promotion.usage.line'].search([('program_id', '=', program.id)])
             program.total_order_count = len(usages.mapped('order_id'))
+
+    @api.onchange('promotion_type')
+    def onchange_promotion_type(self):
+        if not self.promotion_type:
+            self.reward_type = False
+        elif self.promotion_type == 'combo':
+            self.with_code = False
+            if self.reward_type and not self.reward_type.startswith('combo'):
+                self.reward_type = 'combo_amount'
+        elif self.promotion_type == 'code':
+            self.with_code = True
+            self.combo_line_ids = False
+            if self.reward_type and not self.reward_type.startswith('code'):
+                self.reward_type = 'code_amount'
+        elif self.promotion_type == 'cart':
+            self.with_code = False
+            self.combo_line_ids = False
+            if self.reward_type and not self.reward_type.startswith('cart'):
+                self.reward_type = 'cart_discount_percent'
+        else:
+            self.reward_type = False
+
+    @api.onchange('reward_type')
+    def onchange_reward_type_change(self):
+        if self.reward_type not in ('combo_percent_by_qty', 'combo_fixed_price_by_qty'):
+            self.reward_ids = False
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")

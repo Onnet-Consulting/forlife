@@ -99,7 +99,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
             values.each(function( index ) {
               if(parseInt($(this).attr('data-value_id'))/1000 < parseInt($(this).val())){
                     self.state.error_popup_flag = true;
-                    self.error = self.env._t('Giá trị không hợp lệ!')
+                    self.error = self.env._t('Điểm sử dụng không được lớn hơn số điểm quy đổi của sản phẩm!')
                     $(this).css('color', 'red')
               };
             });
