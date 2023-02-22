@@ -38,6 +38,7 @@ class MemberCard(models.Model):
     apply_value_to_3 = fields.Integer('Apply Value To3')
     value3 = fields.Integer('Value 3')
     active = fields.Boolean('Active', default=True, tracking=True)
+    order_ids = fields.Many2many('pos.order', string='Orders')
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -162,6 +163,11 @@ class MemberCard(models.Model):
             'views': [[self.env.ref('forlife_customer_card_rank.member_card_view_form').id, 'form']],
             'context': ctx,
         }
+
+    def action_view_pos_order(self):
+        action = self.env['ir.actions.act_window']._for_xml_id('point_of_sale.action_pos_pos_form')
+        action['domain'] = [('id', 'in', self.order_ids.ids)]
+        return action
 
 
 class FormUpdateStore(models.TransientModel):

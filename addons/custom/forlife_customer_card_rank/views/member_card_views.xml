@@ -26,7 +26,8 @@
             <field name="arch" type="xml">
                 <form string="member_card_form">
                     <sheet>
-                        <button name="btn_duplicate_member_card" icon="fa-clone" class="oe_highlight oe_right" type="object" string=" Duplicate" groups="forlife_customer_card_rank.member_card_manager"/>
+                        <button name="btn_duplicate_member_card" icon="fa-clone" class="oe_right" type="object" string=" Duplicate" groups="forlife_customer_card_rank.member_card_manager"/>
+                        <button name="action_view_pos_order" icon="fa-list" class="oe_highlight oe_right" type="object" string=" Order" groups="forlife_customer_card_rank.member_card_manager"/>
                         <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                         <div class="oe_title">
                             <label for="name"/>
