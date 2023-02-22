@@ -48,9 +48,9 @@
 <!--                            <field name="applicability" string="Use points on" groups="base.group_no_one" widget="radio" force_save="1"/>-->
 <!--                            <field name="customer_domain" widget="domain"-->
 <!--                                   options="{'model': 'res.partner', 'in_dialog': true}"/>-->
-                            <label for="limit_usage"
+                            <label for="limit_usage" invisible="1"
                                    attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}"/>
-                            <span attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}">
+                            <span invisible="1" attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}">
                                 <field name="limit_usage" class="oe_inline"/>
                                 <span attrs="{'invisible': [('limit_usage', '=', False)]}"> to <field name="max_usage" class="oe_inline"/> usages</span>
                             </span>
