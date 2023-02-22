@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum2Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum2MainTemplate"/>
+        </xpath>
+        <xpath expr="//div[@id='main-content']" position="attributes">
+            <attribute name="class" add="report_stock_price_main_table" separator=" "/>
+        </xpath>
+    </t>
+    <t t-name="ReportNum2MainTemplate">
+        <table style="width:65%">
+            <thead>
+                <tr>
+                    <th>Mã SP</th>
+                    <th>Tên SP</th>
+                    <th>Tồn</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="options.data" t-as="line">
+                    <tr class="line_stock_detail" t-att-id="line.product_id">
+                        <td><t t-esc="line.product_barcode"/></td>
+                        <td class="product_name"><t t-esc="line.product_name"/></td>
+                        <td><t t-esc="line.quantity"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+        <div id="product-detail">
+        </div>
+    </t>
+
+    <t t-name="ReportNum2DetailTemplate">
+        <div>
+            <h2><t t-esc="detail.product_name"/></h2>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kho</th>
+                    <th>Tồn</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-foreach="detail.lines" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.warehouse_name"/></td>
+                        <td><t t-esc="line.quantity"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>

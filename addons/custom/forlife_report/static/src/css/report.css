@@ -1,0 +1,112 @@
+.switch_report_buttons {
+    padding: 20px 16px;
+}
+
+.report_content {
+    background-color: white;
+    color: #666666;
+    padding: 24px 16px 125px;
+}
+
+.report_content table {
+    width: 100%;
+}
+
+.report_content table > thead > tr.center {
+    text-align: center;
+}
+
+.right {
+    text-align: right;
+}
+
+.index-report {
+    text-align: center;
+}
+
+.report_content table .custom_link {
+    color: #008784;
+    cursor: pointer;
+}
+
+.report_content table > tbody > tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+.report_hidden {
+    display: none !important;
+}
+
+#report-template {
+    border-bottom: 1px solid #C9CCD2;
+    padding: 0.5rem 16px;
+    background-color: white;
+}
+
+#report-template .header {
+    display: flex;
+    justify-content: space-between;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    overflow: hidden;
+    border-bottom: 1px solid #C9CCD2;
+    background-color: #fff;
+}
+
+#report-template .header .title {
+    font-size: 25px;
+}
+
+#report-template .header .pagination {
+    text-align: center;
+    font-size: 1.3rem;
+    align-items: center;
+    margin-top: 10px;
+}
+
+#report-template #main-content {
+    border: 1px solid #C9CCD2;
+    padding: 10px;
+    overflow-x: auto;
+    font-size: 1.11rem;
+}
+
+#report-template #main-content tr {
+    border-bottom: 1px solid #eee;
+}
+
+#report-template #main-content tbody > tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.01);
+}
+
+#report-template #main-content thead > tr > th ~ th {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+
+#report-template #main-content tbody > tr > td ~ td {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+#report-template #main-content.report_stock_price_main_table {
+    display: flex;
+    gap: 50px;
+}
+
+#report-template #main-content.report_stock_price_main_table > table {
+    width: 70%;
+}
+
+#report-template #main-content.report_stock_price_main_table .product-detail {
+    width: 28%;
+}
+
+table.available-report-list {
+    font-size: 1.3em;
+    border-spacing: 100px 0;
+    border-collapse: separate;
+    margin-top: 10px;
+}

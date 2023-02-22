@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <t t-name="ReportHeader">
+        <div class="header">
+            <div class="title">
+                <t t-esc="widget.reportTitle"/>
+            </div>
+            <t t-call="ReportPager"/>
+        </div>
+    </t>
+
+    <t t-name="ReportPager">
+        <div class="pagination">
+            <span class="o_current_page_num report_hidden">
+                <t t-esc="options.page_num"/>
+            </span>
+            <span class="o_pager_counter">
+                <span class="o_pager_value">
+                    <t t-esc="options.start_record"/>-
+                    <t t-esc="options.end_record"/>
+                </span>
+                /
+                <span class="o_pager_limit">
+                    <t t-esc="options.total_records"/>
+                </span>
+            </span>
+            <button type="button" class="fa fa-chevron-left btn btn-secondary o_pager_previous" t-att="att_prev"
+                    aria-label="Previous" title="Previous" tabindex="-1"/>
+            <button type="button" class="fa fa-chevron-right btn btn-secondary o_pager_next" t-att="att_next"
+                    aria-label="Next" title="Next" tabindex="-1"/>
+        </div>
+    </t>
+
+    <t t-name="ReportBase">
+        <!-- Set variables here for later use -->
+        <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+        <div id="report-template">
+            <t t-call="ReportHeader"/>
+            <t t-esc="format_kaka"/>
+            <div id="main-content">
+            </div>
+        </div>
+    </t>
+
+    <t t-name="AvailableReport">
+        <table class="available-report-list">
+            <thead>
+                <tr>
+                    <th>Module</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Sales</td>
+                    <td>Revenue by product</td>
+                </tr>
+                <tr>
+                    <td>Inventory</td>
+                    <td>Stock with sale price by warehouse</td>
+                </tr>
+                <tr>
+                    <td>Inventory</td>
+                    <td>Stock in time range by warehouse</td>
+                </tr>
+            </tbody>
+        </table>
+    </t>
+</odoo>

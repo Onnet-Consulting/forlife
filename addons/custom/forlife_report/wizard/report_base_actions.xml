@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="available_report_client_action" model="ir.actions.client">
+        <field name="name">Available Reports</field>
+        <field name="tag">available_report_action</field>
+    </record>
+    <record id="report_num_1_client_action" model="ir.actions.client">
+        <field name="name">Revenue by Products</field>
+        <field name="tag">report_num1_action</field>
+        <field name="context" eval="{'report_model': 'report.num1'}"/>
+    </record>
+    <record id="report_num_2_client_action" model="ir.actions.client">
+        <field name="name">Stock with sale price</field>
+        <field name="tag">report_num2_action</field>
+        <field name="context" eval="{'report_model': 'report.num2'}"/>
+    </record>
+    <record id="report_num_3_client_action" model="ir.actions.client">
+        <field name="name">Stock in time range</field>
+        <field name="tag">report_num3_action</field>
+        <field name="context" eval="{'report_model': 'report.num3'}"/>
+    </record>
+</odoo>
