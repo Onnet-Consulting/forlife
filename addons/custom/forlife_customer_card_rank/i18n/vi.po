@@ -616,7 +616,7 @@ msgstr "Doanh số của hạng '%s' phải nhỏ hơn doanh số của hạng '
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
 #, python-format
 msgid "Update Card Rank"
-msgstr "Cập nhật hạng thẻ"
+msgstr "Điều chỉnh hạng"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
