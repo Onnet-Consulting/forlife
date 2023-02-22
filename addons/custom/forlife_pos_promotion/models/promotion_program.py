@@ -124,6 +124,8 @@ class PromotionProgram(models.Model):
     disc_fixed_price = fields.Float('Fixed Price')
     disc_max_amount = fields.Float('Max Discount Amount')
 
+    show_gen_code = fields.Boolean('Show Gencode button', compute='_show_gen_code')
+
     @api.constrains('combo_line_ids')
     def _check_duplicate_product_in_combo(self):
         for program in self:
@@ -178,6 +180,15 @@ class PromotionProgram(models.Model):
             usages = self.env['promotion.usage.line'].search([('program_id', '=', program.id)])
             program.total_order_count = len(usages.mapped('order_id'))
 
+    def _show_gen_code(self):
+        for program in self:
+            if program.id == NewId:
+                program.show_gen_code = False
+            elif program.with_code or program.promotion_type == 'code':
+                program.show_gen_code = True
+            else:
+                program.show_gen_code = False
+
     @api.onchange('promotion_type')
     def onchange_promotion_type(self):
         if not self.promotion_type:
@@ -204,9 +215,23 @@ class PromotionProgram(models.Model):
         if self.reward_type not in ('combo_percent_by_qty', 'combo_fixed_price_by_qty'):
             self.reward_ids = False
 
+    def unlink(self):
+        for program in self:
+            if bool(self.env['promotion.usage.line'].search([('program_id', '=', program.id)])):
+                raise UserError(_('Can not unlink program which is already used!'))
+
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")
         action['domain'] = [('id', 'in', self.valid_product_ids.ids)]
+        return action
+
+    def view_program(self):
+        action = self.env["ir.actions.act_window"]._for_xml_id("forlife_pos_promotion.promotion_program_action")
+        form_view = [(self.env.ref('forlife_pos_promotion.promotion_program_view_form').id, 'form')]
+        action['view_mode'] = 'form'
+        action['res_id'] = self.id
+        action['views'] = form_view
+        action['domain'] = [('id', '=', self.id)]
         return action
 
     def action_open_promotion_codes(self):

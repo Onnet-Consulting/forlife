@@ -14,6 +14,7 @@
                             <field name="code_id"/>
                             <field name="original_price"/>
                             <field name="new_price"/>
+                            <field name="qty"/>
                             <field name="discount_amount"/>
                         </tree>
                     </field>

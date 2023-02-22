@@ -26,12 +26,9 @@ class PromotionConfiguration(models.AbstractModel):
     customer_domain = fields.Char('Customer Domain', default='[]')
     valid_customer_ids = fields.Many2many('res.partner', compute='_compute_valid_customer_ids')
 
-
     def _get_partners(self):
         self.ensure_one()
-        if self.mode != 'selected':
-            return self.env['res.partner']
-        domain = safe_eval(self.customer_domain)
+        domain = safe_eval(self.customer_domain or "[('id', '=', 0)]")
         return self.env['res.partner'].search(domain)
 
     def _compute_valid_customer_ids(self):
