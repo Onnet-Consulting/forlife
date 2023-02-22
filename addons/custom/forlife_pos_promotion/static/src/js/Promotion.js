@@ -164,9 +164,11 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
 
     set_quantity(quantity, keep_price) {
         let result = super.set_quantity(...arguments);
-        this.order._updateActivatedPromotionPrograms()
+        this.order._updateActivatedPromotionPrograms();
+        if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length) {
+            this.order._resetPromotionPrograms(false);
+        };
         return result;
-
     }
 
     get_original_price() {
@@ -284,10 +286,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         };
     }
 
-    _resetPromotionPrograms() {
-        this.activatedInputCodes = [];
-        this.activatedComboPrograms = new Set();
-        this.activatedCodePrograms = new Set();
+    _resetPromotionPrograms(resetActivatedPrograms=true) {
+        if (resetActivatedPrograms) {
+            this.activatedInputCodes = [];
+            this.activatedComboPrograms = new Set();
+            this.activatedCodePrograms = new Set();
+        }
         this.orderlines.remove(this._get_reward_lines());
         this.orderlines.filter(line => line._isDiscountedComboProgram()).forEach(line => line.reset_unit_price());
         this.orderlines.filter(line => line._isDiscountedComboProgram()).forEach(line => line.promotion_usage_ids = []);
