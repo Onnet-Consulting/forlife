@@ -15,7 +15,7 @@ class PromotionConfiguration(models.AbstractModel):
     sequence = fields.Integer(default=10)
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
-    store_ids = fields.Many2many('store', string='Stores', required=True)
+    store_ids = fields.Many2many('store', string='Stores', required=True, domain="[('brand_id','=',brand_id)]")
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
     month_ids = fields.Many2many('month.data', string='Months')
@@ -26,8 +26,6 @@ class PromotionConfiguration(models.AbstractModel):
     customer_domain = fields.Char('Customer Domain', default='[]')
     valid_customer_ids = fields.Many2many('res.partner', compute='_compute_valid_customer_ids')
 
-    pos_config_ids = fields.Many2many(
-        'pos.config', readonly=False, string="Point of Sales", help="Restrict publishing to those shops.")
 
     def _get_partners(self):
         self.ensure_one()
@@ -40,7 +38,7 @@ class PromotionConfiguration(models.AbstractModel):
         for record in self:
             record.valid_customer_ids = record._get_partners()
 
-    @api.onchange('from_date', 'to_date')
+    # @api.onchange('from_date', 'to_date')
     def onchange_program_date(self):
         def next_month(m):
             return m < 12 and m + 1 or 1
@@ -83,6 +81,9 @@ class PromotionCampaign(models.Model):
 
     name = fields.Char('Campaign')
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
+
+    pos_config_ids = fields.Many2many(
+        'pos.config', readonly=False, string="Point of Sales", help="Restrict publishing to those shops.")
 
     state = fields.Selection([
         ('new', _('New')),

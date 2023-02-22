@@ -9,7 +9,7 @@ class PosConfig(models.Model):
 
     def _get_promotion_program_ids(self):
         return self.env['promotion.program'].search(
-            [('state', '=', 'in_progress'), '|', ('pos_config_ids', '=', self.id), ('pos_config_ids', '=', False)])
+            [('state', '=', 'in_progress'), '|', ('campaign_id.store_ids', '=', False), ('campaign_id.store_ids', '=', self.store_id.id)])
 
     def use_promotion_code(self, code, creation_date, partner_id):
         self.ensure_one()
