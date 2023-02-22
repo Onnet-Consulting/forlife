@@ -1,4 +1,4 @@
-odoo.define('forlife_report.revenue_by_product', function (require) {
+odoo.define('forlife_report.report_num1', function (require) {
     'use strict';
 
     const core = require('web.core');

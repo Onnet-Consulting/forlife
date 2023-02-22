@@ -24,7 +24,7 @@ class ReportNum1(models.TransientModel):
 
     def view_report(self):
         self.ensure_one()
-        action = self.env.ref('forlife_report.report_revenue_by_product_client_action').read()[0]
+        action = self.env.ref('forlife_report.report_num_1_client_action').read()[0]
         return action
 
     def print_xlsx(self):

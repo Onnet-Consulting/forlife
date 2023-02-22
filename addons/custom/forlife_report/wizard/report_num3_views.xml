@@ -8,6 +8,14 @@
                 <sheet>
                     <group>
                         <group>
+                            <field name="from_date"/>
+                        </group>
+                        <group>
+                            <field name="to_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
                             <field name="all_products"/>
                             <field name="product_ids"
                                    attrs="{'invisible': [('all_products', '=', True)], 'required': [('all_products', '=', False)]}"

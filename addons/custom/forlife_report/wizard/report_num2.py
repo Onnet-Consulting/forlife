@@ -15,7 +15,7 @@ class ReportNum2(models.TransientModel):
 
     def view_report(self):
         self.ensure_one()
-        action = self.env.ref('forlife_report.report_stock_price_by_warehouse_client_action').read()[0]
+        action = self.env.ref('forlife_report.report_num_2_client_action').read()[0]
         return action
 
     def _get_query(self):

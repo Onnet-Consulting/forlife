@@ -106,5 +106,24 @@ odoo.define('forlife_report.report_base', function (require) {
         },
     });
 
+    const AvailableReportAction = AbstractAction.extend({
+        reportTemplate: 'AvailableReport',
+        start: async function () {
+            await this._super(...arguments);
+            this.render();
+        },
+
+        render: function () {
+            let self = this;
+            this.$('.o_content').html(QWeb.render(this.reportTemplate, {
+                "widget": this,
+                "options": self.options
+            }))
+        },
+    })
+
+    core.action_registry.add('available_report_action', AvailableReportAction)
+
+
     return ReportBaseAction;
 })

@@ -1,4 +1,4 @@
-odoo.define('forlife_report.stock_price_by_warehouse', function (require) {
+odoo.define('forlife_report.report_num2', function (require) {
     'use strict';
 
     const core = require('web.core');

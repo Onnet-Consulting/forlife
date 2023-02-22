@@ -41,4 +41,29 @@
             </div>
         </div>
     </t>
+
+    <t t-name="AvailableReport">
+        <table class="available-report-list">
+            <thead>
+                <tr>
+                    <th>Module</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Sales</td>
+                    <td>Revenue by product</td>
+                </tr>
+                <tr>
+                    <td>Inventory</td>
+                    <td>Stock with sale price by warehouse</td>
+                </tr>
+                <tr>
+                    <td>Inventory</td>
+                    <td>Stock in time range by warehouse</td>
+                </tr>
+            </tbody>
+        </table>
+    </t>
 </odoo>

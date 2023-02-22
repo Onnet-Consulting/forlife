@@ -104,3 +104,9 @@
     width: 28%;
 }
 
+table.available-report-list {
+    font-size: 1.3em;
+    border-spacing: 100px 0;
+    border-collapse: separate;
+    margin-top: 10px;
+}
