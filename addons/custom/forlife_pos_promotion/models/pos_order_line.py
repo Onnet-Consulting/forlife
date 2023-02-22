@@ -12,7 +12,7 @@ class PosPromotionLine(models.Model):
     order_id = fields.Many2one(related='order_line_id.order_id', store=True)
     program_id = fields.Many2one('promotion.program', readonly=True, ondelete='restrict')
     discount_amount = fields.Float('Discount Amount', readonly=True)
-    code_id = fields.Many2one('promotion.code', readonly=True)
+    code_id = fields.Many2one('promotion.code', readonly=True, ondelete='restrict')
     original_price = fields.Float('Original Price', readonly=True)
     new_price = fields.Float('New Price', readonly=True)
 

@@ -16,7 +16,7 @@ class PromotionCode(models.Model):
         """
         return '044' + str(uuid4())[7:-18]
 
-    program_id = fields.Many2one('promotion.program')
+    program_id = fields.Many2one('promotion.program', ondelete='cascade')
     name = fields.Char(default=lambda self: self._generate_code(), required=True)
     partner_id = fields.Many2one('res.partner')
     used_partner_ids = fields.Many2many('res.partner', 'promotion_code_used_res_partner_rel')

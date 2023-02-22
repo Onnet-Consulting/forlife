@@ -424,15 +424,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     }, []);
     }
 
-    testFunction() {
-        let ActivatedComboPrograms = this.getActivatedComboPrograms()
-        let order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
-        let groupOfComboPrograms = ActivatedComboPrograms.map(pro => new Array(pro));
-        for (let group of groupOfComboPrograms) {
-            let [newLines, remainingOrderLines, combo_count] = this.computeForListOfCombo(order_lines, group);
-        };
-    }
-
     _computeNewPriceForComboProgram(disc_total, base_total, prePrice, quantity) {
         let subTotalLine = prePrice * quantity;
         let discAmount = base_total > 0.0 ? subTotalLine / base_total * disc_total : 0.0;

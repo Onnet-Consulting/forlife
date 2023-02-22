@@ -7,9 +7,10 @@
             <form string="Promotion">
 
                 <header>
+                    <field name="show_gen_code" invisible="1"/>
                     <button name="%(promotion_generate_code_action)d" string="Generate Codes"
                             class="btn-primary" type="action"
-                            attrs="{'invisible': [('with_code', '=', False), ('promotion_type', '!=', '')]}"/>
+                            attrs="{'invisible': [('show_gen_code', '=', False)]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -185,7 +186,12 @@
                 <field name="reward_type"/>
                 <field name="with_code"/>
                 <field name="active" widget="boolean_toggle"/>
-<!--                <field name="company_id" groups="base.group_multi_company"/>-->
+                <field name="show_gen_code" invisible="1"/>
+                <button name="%(promotion_generate_code_action)d" string="Generate Codes"
+                        class="btn-primary" type="action"
+                        attrs="{'invisible': [('show_gen_code', '=', False)]}"/>
+                <button name="view_program" class="btn-secondary" type="object"
+                        icon="fa-share-square-o"/>
             </tree>
         </field>
     </record>

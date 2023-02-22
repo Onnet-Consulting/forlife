@@ -55,6 +55,7 @@ class PromotionGenerateCode(models.Model):
         }
 
     def generate_codes(self):
+        print(self.env.context)
         if any(not wizard.program_id for wizard in self):
             raise ValidationError(_("Can not generate code, no program is set."))
         if any(wizard.coupon_qty <= 0 for wizard in self):
