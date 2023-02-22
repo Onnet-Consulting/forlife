@@ -61,6 +61,11 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.reward_line_by_id = {};
         var self = this;
         for (const program of this.promotionPrograms) {
+            program.valid_product_ids = new Set(program.valid_product_ids);
+            program.valid_customer_ids = new Set(program.valid_customer_ids);
+            program.discount_product_ids = new Set(program.discount_product_ids);
+            program.reward_product_ids = new Set(program.reward_product_ids);
+
             this.promotion_program_by_id[program.id] = program;
 
             var months = program.month_ids.reduce(function (accumulator, m) {
@@ -238,10 +243,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 if (!this.activatedInputCodes.map(code => code.program_id).includes(program.id)) {return false;};
             } else {return false;};
         };
-        var day = this.creation_date.getDay();
-        var date = this.creation_date.getDate();
-        var month = this.creation_date.getMonth();
-        var hour = this.creation_date.getHours();
+        const customer = this.partner;
+        if (!program.valid_customer_ids.has(customer ? customer.id : 0)) {return false;};
+
         var hasDate = program.applied_days.has(this.creation_date.getDate()) || program.applied_days.size == 0;
         var hasMonth = program.applied_months.has(this.creation_date.getMonth() + 1) || program.applied_months.size == 0;
         var hasHour = program.applied_hours.has(this.creation_date.getHours()) || program.applied_hours.size == 0;

@@ -73,6 +73,7 @@ class PosSession(models.Model):
                     'apply_multi_program',
                     'discount_based_on',
                     'valid_product_ids',
+                    'valid_customer_ids',
                     'min_quantity',
                     'order_amount_min',
                     'reward_type',
