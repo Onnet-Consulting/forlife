@@ -6,15 +6,13 @@ class PosSession(models.Model):
 
     def _cron_noti_pos_not_closed(self):
         cron = self.env.ref('forlife_point_of_sale.noti_pos_not_closed')
-        domain = []
-        self.send_noti_pos_not_closed()
+        self.send_noti_pos_not_closed(cron.mail_template_id)
 
-    def send_noti_pos_not_closed(self):
+    def send_noti_pos_not_closed(self, template):
         try:
             query = '''SELECT ps.id FROM pos_session ps WHERE ps.state = 'opened' '''
             self.env.cr.execute(query, ())
             data = self.env.cr.fetchall()
-            template = self.env.ref('forlife_point_of_sale.mail_template_warning_opened_pos')
             for ps in data:
                 template.send_mail(
                     ps[0],
