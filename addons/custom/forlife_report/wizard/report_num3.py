@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 
 class ReportNum3(models.TransientModel):
@@ -9,9 +10,9 @@ class ReportNum3(models.TransientModel):
     _description = 'Report stock in time range by warehouse'
 
     from_date = fields.Date(string='From date')
-    to_date = fields.Date(string='To date', required=True)
+    to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     all_products = fields.Boolean(string='All products', default=False)
-    all_warehouses = fields.Boolean(string='All warehouses', default=False)
+    all_warehouses = fields.Boolean(string='All warehouses', default=True)
     product_ids = fields.Many2many('product.product', string='Products')
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
 
@@ -34,21 +35,22 @@ class ReportNum3(models.TransientModel):
         return params
 
     def _get_query(self):
+        # FIXME: something wrong - total quantity (stock) get from stock.move is not correct
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
 
-        where_query = "sm.company_id = %s"
+        where_query = "sm.company_id = %s and sm.state = 'done'\n"
         if not self.all_warehouses and self.warehouse_ids:
             warehouse_conditions = "(src_wh.id = any (%s) or des_wh.id = any (%s))"
-            where_query += f" and {warehouse_conditions} "
-        if not self.all_products and self.warehouse_ids:
+            where_query += f"and {warehouse_conditions}\n"
+        if not self.all_products and self.product_ids:
             product_conditions = "sm.product_id = any (%s)"
-            where_query += f" and {product_conditions} "
+            where_query += f"and {product_conditions}\n"
         if self.from_date:
-            where_query += f" and sm.date + interval '{tz_offset} hours' >= %s"
+            where_query += f"""and {format_date_query("sm.date", tz_offset)} >= %s\n"""
         if self.to_date:
-            where_query += f" and sm.date + interval '{tz_offset} hours' <= %s"
+            where_query += f"""and {format_date_query("sm.date", tz_offset)} <= %s\n"""
 
         query = f"""
 with stock as (select sm.product_id          as product_id,

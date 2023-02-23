@@ -22,14 +22,14 @@ class ReportNum2(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
 
-        where_query = "sqt.company_id = %s and sw.id is not null"
+        where_query = "sqt.company_id = %s and sw.id is not null\n"
         if not self.all_warehouses and self.warehouse_ids:
             location_conditions = ["sl.parent_path like %s"] * len(self.warehouse_ids)
             location_conditions = ' or '.join(location_conditions)
-            where_query += f" and ({location_conditions}) "
+            where_query += f" and ({location_conditions})\n"
         if not self.all_products and self.warehouse_ids:
             product_conditions = "sqt.product_id = any (%s)"
-            where_query += f" and {product_conditions} "
+            where_query += f" and {product_conditions}\n"
 
         query = f"""
 with stock_product as
