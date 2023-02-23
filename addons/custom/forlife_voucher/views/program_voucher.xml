@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="voucher_tree_view">
+            <field name="name">voucher.tree.view</field>
+            <field name="model">program.voucher</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="type"/>
+                    <field name="program_voucher_code"/>
+                    <field name="purpose_id"/>
+                    <field name="derpartment_id"/>
+                    <field name="apply_many_times"/>
+                    <field name="apply_contemp_time"/>
+                    <field name="brand_id"/>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="store_id"/>
+                    <field name="product_id"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="voucher_form_view">
+            <field name="name">voucher.form.view</field>
+            <field name="model">program.voucher</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="create_voucher" string="Create Voucher" class="oe_highlight"
+                                type="object"/>
+
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_voucher_relation" type="object" class="oe_stat_button" icon="fa-ticket">
+                                <field name="voucher_count" widget="statinfo" string="Voucher"/>
+                            </button>
+                        </div>
+                        <group>
+                            <field name="name"/>
+                            <field name="type"/>
+                            <field name="program_voucher_code"/>
+                            <field name="purpose_id"/>
+                            <field name="derpartment_id"/>
+                            <field name="apply_many_times"/>
+                            <field name="apply_contemp_time"/>
+                            <field name="brand_id"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="store_id"/>
+                            <field name="product_id"/>
+                        </group>
+                        <notebook>
+                            <page name="voucher" string="Voucher">
+                                <field name="program_voucher_line_ids">
+                                    <tree editable="bottom">
+                                        <field name="price"/>
+                                        <field name="partner_ids" widget="many2many_tags"/>
+                                        <field name="count"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>
