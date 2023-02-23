@@ -34,15 +34,16 @@ class ReportNum3(models.TransientModel):
         return params
 
     def _get_query(self):
+        # FIXME: something wrong - total quantity (stock) get from stock.move is not correct
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
 
-        where_query = "sm.company_id = %s"
+        where_query = "sm.company_id = %s and sm.state = 'done'"
         if not self.all_warehouses and self.warehouse_ids:
             warehouse_conditions = "(src_wh.id = any (%s) or des_wh.id = any (%s))"
             where_query += f" and {warehouse_conditions} "
-        if not self.all_products and self.warehouse_ids:
+        if not self.all_products and self.product_ids:
             product_conditions = "sm.product_id = any (%s)"
             where_query += f" and {product_conditions} "
         if self.from_date:
