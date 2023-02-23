@@ -16,7 +16,7 @@ class PromotionCode(models.Model):
         """
         return '044' + str(uuid4())[7:-18]
 
-    program_id = fields.Many2one('promotion.program')
+    program_id = fields.Many2one('promotion.program', ondelete='cascade')
     name = fields.Char(default=lambda self: self._generate_code(), required=True)
     partner_id = fields.Many2one('res.partner')
     used_partner_ids = fields.Many2many('res.partner', 'promotion_code_used_res_partner_rel')
@@ -34,10 +34,12 @@ class PromotionCode(models.Model):
     reward_for_referring = fields.Boolean(related='program_id.reward_for_referring')
     referred_partner_id = fields.Many2one('res.partner')
     expiration_date = fields.Datetime()
-    use_count = fields.Integer(compute='_compute_use_count')
+    use_count = fields.Integer(compute='_compute_use_count_order', string='Number of Order Usage')
+    order_ids = fields.Many2many('pos.order', compute='_compute_use_count_order', string='Order')
 
-    def _compute_use_count(self):
-        self.use_count = 0
+    def _compute_use_count_order(self):
         for code in self:
-            self.use_count = self.env['promotion.usage.line'].search(
-                ['code_id', '=', code.id]).mapped('order_line_id.order_id')
+            order_ids = self.env['promotion.usage.line'].search([('code_id', '=', code.id)])\
+                            .mapped('order_line_id.order_id')
+            self.order_ids = order_ids
+            self.use_count = len(order_ids)

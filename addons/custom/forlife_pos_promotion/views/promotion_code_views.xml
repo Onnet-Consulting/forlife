@@ -5,19 +5,22 @@
         <field name="model">promotion.code</field>
         <field name="arch" type="xml">
             <form>
-                <group>
-                    <field name="name"/>
-                    <field name="partner_id"/>
-                    <field name="used_partner_ids"
-                           widget="many2many_tags"/>
-                    <field name="limit_usage"/>
-                    <field name="max_usage"/>
-                    <field name="num_of_usage"/>
-<!--                    <field name="amount"/>-->
-<!--                    <field name="consumed_amount"/>-->
-<!--                    <field name="remaining_amount"/>-->
-<!--                    <field name="reward_for_referring"/>-->
-                </group>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="partner_id"/>
+                        <field name="used_partner_ids"
+                               widget="many2many_tags"/>
+    <!--                    <field name="limit_usage"/>-->
+    <!--                    <field name="max_usage"/>-->
+                        <field name="use_count"/>
+                        <field name="order_ids" widget="many2many_tags"/>
+    <!--                    <field name="amount"/>-->
+    <!--                    <field name="consumed_amount"/>-->
+    <!--                    <field name="remaining_amount"/>-->
+    <!--                    <field name="reward_for_referring"/>-->
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
@@ -30,9 +33,11 @@
                     <field name="partner_id"/>
                     <field name="used_partner_ids"
                            widget="many2many_tags"/>
-                    <field name="limit_usage"/>
-                    <field name="max_usage"/>
-                    <field name="num_of_usage"/>
+<!--                    <field name="use_count"/>-->
+<!--                    <field name="order_ids" widget="many2many_tags"/>-->
+<!--                    <field name="limit_usage"/>-->
+<!--                    <field name="max_usage"/>-->
+<!--                    <field name="use_count"/>-->
 <!--                    <field name="amount"/>-->
 <!--                    <field name="consumed_amount"/>-->
 <!--                    <field name="remaining_amount"/>-->
