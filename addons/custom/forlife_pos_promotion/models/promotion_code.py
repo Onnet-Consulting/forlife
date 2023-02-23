@@ -19,27 +19,26 @@ class PromotionCode(models.Model):
     program_id = fields.Many2one('promotion.program', ondelete='cascade')
     name = fields.Char(default=lambda self: self._generate_code(), required=True)
     partner_id = fields.Many2one('res.partner')
-    used_partner_ids = fields.Many2many('res.partner', 'promotion_code_used_res_partner_rel')
+    used_partner_ids = fields.Many2many('res.partner', 'promotion_code_used_res_partner_rel', readonly=True)
     # Nếu được gán Partner thì dùng 1 lần duy nhất
     # Nếu không gán Partner thì dùng được nhiều lần dựa trên giới hạn sử dụng
 
     limit_usage = fields.Boolean(related='program_id.limit_usage', store=True)
     max_usage = fields.Integer(related='program_id.max_usage', store=True)
-    num_of_usage = fields.Integer('Number of usage')
 
     amount = fields.Float()
     consumed_amount = fields.Float()
     remaining_amount = fields.Float()
-    pos_order_ids = fields.Many2many('pos.order')
     reward_for_referring = fields.Boolean(related='program_id.reward_for_referring')
     referred_partner_id = fields.Many2one('res.partner')
     expiration_date = fields.Datetime()
+
+    usage_line_ids = fields.One2many('promotion.usage.line', 'code_id')
     use_count = fields.Integer(compute='_compute_use_count_order', string='Number of Order Usage')
     order_ids = fields.Many2many('pos.order', compute='_compute_use_count_order', string='Order')
 
     def _compute_use_count_order(self):
         for code in self:
-            order_ids = self.env['promotion.usage.line'].search([('code_id', '=', code.id)])\
-                            .mapped('order_line_id.order_id')
-            self.order_ids = order_ids
-            self.use_count = len(order_ids)
+            order_ids = code.usage_line_ids.mapped('order_line_id.order_id')
+            code.order_ids = order_ids
+            code.use_count = len(order_ids)

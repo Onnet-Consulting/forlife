@@ -83,7 +83,7 @@ class PromotionProgram(models.Model):
     # Combo
     combo_line_ids = fields.One2many(
         'promotion.combo.line', 'program_id', 'Conditional rules', copy=True, readonly=False, store=True)
-    with_code = fields.Boolean('Use a code', default=True)
+    with_code = fields.Boolean('Use a code', default=False)
     combo_code = fields.Char('Combo Code')
     combo_name = fields.Char('Combo Name')
     apply_multi_program = fields.Boolean()
@@ -138,6 +138,11 @@ class PromotionProgram(models.Model):
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
+        ('disc_amount', 'CHECK (disc_amount >= 0.0 )', 'Discount Amount must be positive'),
+        ('disc_percent', 'CHECK (disc_percent >= 0 and disc_percent <= 100)', 'Discount Percent must be between 0.0 and 100.0'),
+        ('disc_fixed_price', 'CHECK (disc_fixed_price >= 0.0)', 'Discount Fixed Price must be positive'),
+        ('disc_max_amount', 'CHECK (disc_max_amount >= 0.0)', 'Max Discount Amount must be positive.'),
+        ('max_usage', 'CHECK (max_usage >= 0.0)', 'Max Usage must be positive.')
     ]
 
     @api.depends('company_id')
@@ -219,6 +224,7 @@ class PromotionProgram(models.Model):
         for program in self:
             if bool(self.env['promotion.usage.line'].search([('program_id', '=', program.id)])):
                 raise UserError(_('Can not unlink program which is already used!'))
+        return super().unlink()
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")
