@@ -182,35 +182,63 @@
     <data noupdate="1">
         <record id="dayofweek0" model="dayofweek.data">
             <field name="name">Monday</field>
-            <field name="code">0</field>
+            <field name="code">1</field>
         </record>
         <record id="dayofweek1" model="dayofweek.data">
             <field name="name">Tuesday</field>
-            <field name="code">1</field>
+            <field name="code">2</field>
         </record>
         <record id="dayofweek2" model="dayofweek.data">
             <field name="name">Wednesday</field>
-            <field name="code">2</field>
+            <field name="code">3</field>
         </record>
         <record id="dayofweek3" model="dayofweek.data">
             <field name="name">Thursday</field>
-            <field name="code">3</field>
+            <field name="code">4</field>
         </record>
         <record id="dayofweek4" model="dayofweek.data">
             <field name="name">Friday</field>
-            <field name="code">4</field>
+            <field name="code">5</field>
         </record>
         <record id="dayofweek5" model="dayofweek.data">
             <field name="name">Saturday</field>
-            <field name="code">5</field>
+            <field name="code">6</field>
         </record>
         <record id="dayofweek6" model="dayofweek.data">
             <field name="name">Sunday</field>
-            <field name="code">6</field>
+            <field name="code">0</field>
         </record>
     </data>
     <!--Hour-->
     <data noupdate="1">
+        <record id="hour0" model="hour.data">
+            <field name="name">0h-1h</field>
+            <field name="code">0</field>
+        </record>
+        <record id="hour1" model="hour.data">
+            <field name="name">1h-2h</field>
+            <field name="code">1</field>
+        </record>
+        <record id="hour2" model="hour.data">
+            <field name="name">2h-3h</field>
+            <field name="code">2</field>
+        </record>
+        <record id="hour3" model="hour.data">
+            <field name="name">3h-4h</field>
+            <field name="code">3</field>
+        </record>
+        <record id="hour4" model="hour.data">
+            <field name="name">4h-5h</field>
+            <field name="code">4</field>
+        </record>
+        <record id="hour5" model="hour.data">
+            <field name="name">5h-6h</field>
+            <field name="code">5</field>
+        </record>
+        <record id="hour6" model="hour.data">
+            <field name="name">6h-7h</field>
+            <field name="code">6</field>
+        </record>
         <record id="hour7" model="hour.data">
             <field name="name">7h-8h</field>
             <field name="code">7</field>

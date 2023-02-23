@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promotion_program_view_form" model="ir.ui.view">
+        <field name="name">promotion.program.view.form</field>
+        <field name="model">promotion.program</field>
+        <field name="arch" type="xml">
+            <form string="Promotion">
+
+                <header>
+                    <field name="show_gen_code" invisible="1"/>
+                    <button name="%(promotion_generate_code_action)d" string="Generate Codes"
+                            class="btn-primary" type="action"
+                            attrs="{'invisible': [('show_gen_code', '=', False)]}"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_open_promotion_codes" icon="fa-tags"
+                                attrs="{'invisible': [('with_code', '=', False), ('promotion_type', '!=', 'code')]}"
+                        >
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="code_count"/>
+                                </span>
+                                <span class="o_stat_text" >
+                                Promotion Codes</span>
+                            </div>
+                        </button>
+                    </div>
+                    <field name="active" invisible="1"/>
+                    <field name="discount_apply_on" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name" string="Program Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. 10% discount on laptops"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="active" widget="boolean_toggle"/>
+                            <label for="promotion_type"/>
+                            <div>
+                                <field name="promotion_type" widget="filterable_selection"/>
+                            </div>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="currency_symbol" invisible="1"/>
+<!--                            <field name="applicability" string="Use points on" groups="base.group_no_one" widget="radio" force_save="1"/>-->
+<!--                            <field name="customer_domain" widget="domain"-->
+<!--                                   options="{'model': 'res.partner', 'in_dialog': true}"/>-->
+                            <label for="limit_usage" invisible="1"
+                                   attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}"/>
+                            <span invisible="1" attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}">
+                                <field name="limit_usage" class="oe_inline"/>
+                                <span attrs="{'invisible': [('limit_usage', '=', False)]}"> to <field name="max_usage" class="oe_inline"/> usages</span>
+                            </span>
+                            <field name="company_id" invisible="1"/>
+
+                        </group>
+                        <group>
+                            <field name="brand_id" invisible="1"/>
+                            <field name="store_ids" widget="many2many_tags" invisible="1"/>
+<!--                            <field name="from_date"/>-->
+<!--                            <field name="to_date"/>-->
+<!--                            <field name="month_ids" widget="many2many_tags"/>-->
+<!--                            <field name="dayofmonth_ids" widget="many2many_tags"/>-->
+<!--                            <field name="dayofweek_ids"  widget="many2many_tags"/>-->
+<!--                            <field name="hour_ids"  widget="many2many_tags"/>-->
+                            <field name="combo_code" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
+                        </group>
+                    </group>
+                    <group string="Combo" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">
+                            <field name="with_code" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
+                            <field name="apply_multi_program" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
+                            <label for="combo_line_ids"/>
+                            <field name="combo_line_ids" colspan="2" mode="tree" nolabel="1"
+                                   add-label="Add a product"
+                                   class="o_loyalty_kanban_inline"/>
+                    </group>
+                    <group string="Conditions" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
+                        <field name="product_ids" widget="many2many_tags"
+                               attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
+                        <field name="product_categ_ids" widget="many2many_tags"
+                              attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
+                        <field name="min_quantity" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
+                        <label for="product_count" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
+                        <div class="o_row" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
+                            <button name="open_products" type="object" string="Products" class="btn-secondary" attrs="{'invisible':[('product_count','=',0)]}">
+                              <field name="product_count" string="Products"/>
+                            </button>
+                        </div>
+                    </group>
+                    <group string="Rewards">
+                        <group>
+                            <field name="discount_based_on"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent'))]}"/>
+                            <field name="discount_apply_on"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent'))]}"/>
+                            <field name="reward_type"/>
+                            <field name="disc_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('combo_amount', 'code_amount'))]}"/>
+
+                            <label for="disc_fixed_price" attrs="{'invisible': [('reward_type', 'not in', ('combo_fixed_price', 'code_fixed_price', 'cart_discount_fixed_price'))]}"/>
+                            <div attrs="{'invisible': [('reward_type', 'not in', ('combo_fixed_price', 'code_fixed_price', 'cart_discount_fixed_price'))]}">
+                                <field name="disc_fixed_price"  class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('combo_fixed_price', 'code_fixed_price', 'cart_discount_fixed_price'))]}"/>
+                                <span attrs="{'invisible': [('reward_type', 'not in', ('combo_fixed_price'))]}">per Combo</span>
+                            </div>
+
+                            <label for="disc_percent"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent'))]}"/>
+                            <div attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent'))]}">
+                                <field name="disc_percent" class="oe_inline"/>
+                                <span  class="oe_inline"
+                                       attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent'))]}">%</span>
+                            </div>
+
+                            <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('combo_percent'))]}"/>
+                            <field name="discount_product_ids"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_percent'))]}"
+                                   widget="many2many_tags"/>
+                            <field name="reward_product_ids"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"
+                                   widget="many2many_tags"/>
+                            <field name="reward_quantity"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"/>
+                        </group>
+                        <group/>
+                        <group>
+                            <field name="reward_ids" colspan="2" mode="tree,form" nolabel="1" add-label="Add a reward"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('combo_percent_by_qty', 'combo_fixed_price_by_qty'))]}"
+                                   class="o_loyalty_kanban_inline" widget="promotion_one2many">
+                                <tree>
+                                    <field name="quantity_min"/>
+                                    <field name="reward_type" invisible="1"/>
+                                    <field name="disc_percent"
+                                           attrs="{'column_invisible': [('parent.reward_type', '!=', 'combo_percent_by_qty')]}"/>
+                                    <field name="disc_max_amount"
+                                           attrs="{'column_invisible': [('parent.reward_type', '!=', 'combo_percent_by_qty')]}"/>
+                                    <field name="disc_fixed_price"
+                                           attrs="{'column_invisible': [('parent.reward_type', '!=', 'combo_fixed_price_by_qty')]}"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="quantity_min"/>
+                                            <field name="reward_type" invisible="1"/>
+
+                                            <label for="disc_percent"
+                                                   attrs="{'invisible': [('reward_type', '!=', 'combo_percent_by_qty')]}"/>
+                                            <div attrs="{'invisible': [('reward_type', '!=', 'combo_percent_by_qty')]}">
+                                                <field name="disc_percent" class="oe_inline"/>
+                                                <span class="oe_inline">%</span>
+                                            </div>
+
+                                            <label for="disc_fixed_price" attrs="{'invisible': [('reward_type', '!=', 'combo_fixed_price_by_qty')]}"/>
+                                            <div attrs="{'invisible': [('reward_type', '!=', 'combo_fixed_price_by_qty')]}">
+                                                <field class="oe_inline" name="disc_fixed_price" widget="monetary" options="{'currency_field': 'parent.currency_id'}"/>
+                                                <span class="oe_inline">per Combo</span>
+                                            </div>
+
+                                            <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'parent.currency_id'}"
+                                                   attrs="{'invisible': [('reward_type', '!=', 'combo_percent_by_qty')]}"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="promotion_program_view_tree" model="ir.ui.view">
+        <field name="name">promotion.program.view.tree</field>
+        <field name="model">promotion.program</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="campaign_id"/>
+                <field name="state"/>
+                <field name="promotion_type"/>
+                <field name="reward_type"/>
+                <field name="with_code"/>
+                <field name="active" widget="boolean_toggle"/>
+                <field name="show_gen_code" invisible="1"/>
+                <button name="%(promotion_generate_code_action)d" string="Generate Codes"
+                        class="btn-primary" type="action"
+                        attrs="{'invisible': [('show_gen_code', '=', False)]}"/>
+                <button name="view_program" class="btn-secondary" type="object"
+                        icon="fa-share-square-o"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="promotion_program_view_search" model="ir.ui.view">
+        <field name="name">promotion.program.view.search</field>
+        <field name="model">promotion.program</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="campaign_id"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="promotion_program_action" model="ir.actions.act_window">
+        <field name="name">Promotion</field>
+        <field name="res_model">promotion.program</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="help" type="html">
+            <div class="o_loyalty_not_found container">
+                <h1>No program found.</h1>
+                <p class="lead">Create a new one from scratch, or use one of the templates below.</p>
+            </div>
+        </field>
+    </record>
+
+</odoo>

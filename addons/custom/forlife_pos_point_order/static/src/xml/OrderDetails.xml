@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<t t-inherit="point_of_sale.OrderSummary" t-inherit-mode="extension">
+    <xpath expr="//div[hasclass('line')]" position="inside">
+        <div>
+            <span>
+                <t t-if="props.order.partner">
+                    <span>
+                        Điểm :
+                        <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">
+                            <t t-if="branch.name == 'TokyoLife'">
+                                <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_forlife)"/>
+                            </t>
+                            <t t-if="branch.name == 'Format'">
+                                <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_format)"/>
+                            </t>
+                        </t>
+                    </span>
+
+                </t>
+            </span>
+        </div>
+    </xpath>
+</t>

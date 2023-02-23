@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="outgoing_value_diff_picking_type_report_view_form" model="ir.ui.view">
+        <field name="name">outgoing_value_diff_picking_type_report_view_form</field>
+        <field name="model">stock.value.report</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1 class="text-center">
+                        Outgoing Value Different based on Picking type Report
+                    </h1>
+                    <separator/>
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                        <group></group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_export_outgoing_value_diff_picking_type_report" string="Export Report"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="outgoing_value_diff_picking_type_report_action" model="ir.actions.act_window">
+        <field name="name">Outgoing Value Different based on Picking type Report</field>
+        <field name="res_model">stock.value.report</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.outgoing_value_diff_picking_type_report_view_form')})]"/>
+    </record>
+
+    <menuitem id="outgoing_value_diff_picking_type_report_menu"
+              name="Outgoing Value Different based on Picking type Report"
+              parent="stock.menu_warehouse_report"
+              action="outgoing_value_diff_picking_type_report_action"
+              sequence="310"/>
+
+</odoo>

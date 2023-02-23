@@ -11,7 +11,7 @@ class PrintStampsBarcode(models.Model):
 
     create_uid = fields.Many2one(comodel_name="res.users", string="Create By", default=lambda s: s.env.user)
     approve_uid = fields.Many2one(comodel_name="res.users", string="Approve By")
-    create_date = fields.Datetime(string="Create Date", default=fields.Datetime.now())
+    create_date = fields.Datetime(string="Create Date", default=fields.Datetime.now)
     start_print = fields.Integer(string="Start Print", required=True, default=1)
     state = fields.Selection(string="State", selection=[('draft', _('Draft')), ('approved', _('Approved'))], default='draft')
     view = fields.Html('View', compute='compute_view')

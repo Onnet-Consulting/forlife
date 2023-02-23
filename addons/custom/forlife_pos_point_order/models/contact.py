@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from dateutil.relativedelta import relativedelta
 import datetime
 import logging
 
@@ -9,11 +10,11 @@ class Contact(models.Model):
     _inherit = 'res.partner'
 
     is_purchased_of_forlife = fields.Boolean('Is Purchased Forlife', compute='_comnpute_is_purchased')
-    is_purchased_of_format = fields.Boolean('Is Purchased Forlife', compute='_comnpute_is_purchased')
+    is_purchased_of_format = fields.Boolean('Is Purchased Format', compute='_comnpute_is_purchased')
     is_member_app_forlife = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     is_member_app_format = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
-    reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife')
-    reset_day_of_point_format = fields.Datetime('Day Reset Format')
+    reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife', readonly=True)
+    reset_day_of_point_format = fields.Datetime('Day Reset Format', readonly=True)
     total_points_available_forlife = fields.Integer('Total Points Availible', compute='compute_point_total')
     total_points_available_format = fields.Integer('Total Points Availible', compute='compute_point_total')
     history_points_format_ids = fields.One2many('partner.history.point', 'partner_id', string='History Point Store', domain=[('store', '=', 'format')], readonly=True)
@@ -106,6 +107,8 @@ class Contact(models.Model):
         # Reset Forlife point
         reset_forlife_partners = self.search([('reset_day_of_point_forlife', '<=', now), ('point_forlife_reseted', '=', False)])
         if reset_forlife_partners:
+            # vals = {'point_forlife_reseted': True}
+            vals = {}
             # create journal entries
             if point_promotion_forlife_id:
                 move_line_vals = [(0, 0, {
@@ -127,7 +130,7 @@ class Contact(models.Model):
                     'line_ids': move_line_vals,
                     'point_order_type': 'reset_order'
                 }
-                account_move_obj.create(move_vals)
+                account_move_obj.create(move_vals).sudo().action_post()
 
                 for partner in reset_forlife_partners:
                     # create reset history point
@@ -142,12 +145,20 @@ class Contact(models.Model):
                         'reason': _("Hệ thống chạy tự động")
                     })
 
-                # Update reset flag
-                reset_forlife_partners.write({'point_forlife_reseted': True})
+                # Update reset date
+                new_reset_date = now + relativedelta(days=point_promotion_forlife_id.point_expiration)
+                vals.update({
+                    'reset_day_of_point_forlife': new_reset_date,
+                    'point_forlife_reseted': False
+                })
+
+            reset_forlife_partners.write(vals)
 
         # Reset Format point
         reset_format_partners = self.search([('reset_day_of_point_format', '<=', now), ('point_format_reseted', '=', False)])
         if reset_format_partners:
+            # vals = {'point_format_reseted': True}
+            vals = {}
             # create journal entries
             if point_promotion_format_id:
                 move_line_vals = [(0, 0, {
@@ -184,5 +195,11 @@ class Contact(models.Model):
                         'reason': _("Hệ thống chạy tự động")
                     })
 
-                # Update reset flag
-                reset_format_partners.write({'point_format_reseted': True})
+                # Update reset date
+                new_reset_date = now + relativedelta(days=point_promotion_format_id.point_expiration)
+                vals.update({
+                    'reset_day_of_point_format': new_reset_date,
+                    'point_format_reseted': False
+                })
+
+            reset_format_partners.write(vals)

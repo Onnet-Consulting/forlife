@@ -5,7 +5,7 @@ class PartnerHistoryPointForLife(models.Model):
     _name = 'partner.history.point'
 
     _description = 'History of Customer purchase POS'
-    _order = 'date_order desc'
+    _order = 'create_date desc'
 
     point_order_type = fields.Selection([('new', 'Order New'), ('back_order', 'Back Order'),('reset_order', 'Reset Point'),('point compensate', 'Point Compensate')], string='Type', readonly=True)
 

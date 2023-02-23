@@ -25,6 +25,7 @@ class Event(models.Model):
     points_product_ids = fields.One2many('points.product.line', 'event_id', string='Points Product')
     is_lock_change_points_promotion = fields.Boolean('Lock Change Points Promotion', default=False)
     points_product_existed = fields.Text(string='Points Product Existed', default='[]')
+    brand_id = fields.Many2one('res.brand', string='Brand', related='points_promotion_id.brand_id', store=False)
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
