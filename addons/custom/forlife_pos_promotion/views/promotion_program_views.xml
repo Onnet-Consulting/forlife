@@ -186,6 +186,7 @@
                 <field name="reward_type"/>
                 <field name="with_code"/>
                 <field name="active" widget="boolean_toggle"/>
+                <field name="apply_multi_program"/>
                 <field name="show_gen_code" invisible="1"/>
                 <button name="%(promotion_generate_code_action)d" string="Generate Codes"
                         class="btn-primary" type="action"

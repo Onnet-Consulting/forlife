@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="ComboDetailsPopup" owl="1">
+            <div class="popup product-info-popup">
+                <header class="title">
+                    Applied Combo Details
+                </header>
+                <footer class="footer">
+                    <div class="button cancel" t-on-click="cancel">
+                        Close
+                    </div>
+                </footer>
+            </div>
+    </t>
+</templates>

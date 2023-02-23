@@ -7,6 +7,14 @@
                 <t t-esc="'Chọn chương trình khuyến mãi'" />
             </header>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
+                <p t-if="props.hasNonMultiProgram">
+                    Đã có CTKM Combo "Độc lập" áp dụng vào đơn hàng!<br/>
+                    Bấm <b>Đặt lại CTKM</b> để lựa chọn CT Combo khác!
+                </p>
+                <p t-if="props.hasComboApplied">
+                    Đã có CTKM Combo áp dụng vào đơn hàng!<br/>
+                    Bấm <b>Đặt lại CTKM</b> để có thể chọn CT Combo "Độc lập" khác!
+                </p>
                 <ul>
                     <t t-foreach="props.programs.filter(p => p.apply_multi_program)" t-as="program" t-key="program.id">
                         <li class="program-item" t-att-class="program.forecastedNumber > 0 ? 'selectable' : ''">
@@ -30,11 +38,9 @@
                                 <div t-if="program.isSelected" class="number-combo">Đã áp dụng&nbsp;
                                     <strong t-esc="program.numberCombo or 0"/> &nbsp;Combo
                                 </div>
-<!--                                <t t-if="program.isSelected and program.order_apply >= 0">-->
-<!--                                    <div style="display: inline-block" class="badge rounded-pill text-bg-success">-->
-<!--                                    Thứ tự áp dụng: <span style="padding-right: 20px; font-weight: 700" t-esc="program.index"/>-->
-<!--                                    </div>-->
-<!--                                </t>-->
+<!--                                <div style="display: inline-block;" class="btn-primary">-->
+<!--                                    <i style="" class="fa fa-list" t-on-click="() => this.view_combo_details(program)"/>-->
+<!--                                </div>-->
                                 <t t-if="program.isSelected and program.discounted_amount > 0">
                                     <div style="display: inline-block" >
                                     Số tiền đã giảm: <strong t-esc="this.env.pos.format_currency(program.discounted_amount)"/>
@@ -74,11 +80,9 @@
                                 <div t-if="program.isSelected" class="number-combo">Đã áp dụng&nbsp;
                                     <strong t-esc="program.numberCombo or 0"/> &nbsp;Combo
                                 </div>
-<!--                                <t t-if="program.isSelected and program.order_apply >= 0">-->
-<!--                                    <div style="display: inline-block" class="badge rounded-pill text-bg-success">-->
-<!--                                    Thứ tự áp dụng: <span style="padding-right: 20px; font-weight: 700" t-esc="program.index"/>-->
-<!--                                    </div>-->
-<!--                                </t>-->
+<!--                                <div style="display: inline-block;" class="btn-primary">-->
+<!--                                    <i style="" class="fa fa-list" t-on-click="() => this.view_combo_details(program)"/>-->
+<!--                                </div>-->
                                 <t t-if="program.isSelected and program.discounted_amount > 0">
                                     <div style="display: inline-block" >
                                     Số tiền đã giảm: <strong t-esc="this.env.pos.format_currency(program.discounted_amount)"/>
@@ -124,6 +128,9 @@
                 }
                 label {
                     padding: 0px 100px 40px 0;
+                }
+                .btn-primary {
+                    color: #017e84;
                 }
             </style>
             </main>

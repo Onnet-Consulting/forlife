@@ -14,26 +14,18 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             this.state = useState({
                 programs: this.props.programs || [],
                 discount_total: this.props.discount_total || 0.0,
-                maxIndex: this.props.maxIndex || 0,
                 discount_amount_order: this.props.discount_amount_order || 0,
             });
+            this.combo_details = {}
+            this.selectItem(undefined);
         }
-        selectItem(itemId) {
-            let current_program = this.state.programs.find((p) => p.id == itemId);
-            current_program.isSelected = !current_program.isSelected;
-            let program_by_id = this.env.pos.promotion_program_by_id
-            if (!program_by_id[current_program.id].apply_multi_program && current_program.isSelected) {
-                this.state.programs.filter(p => p.id !== current_program.id).forEach(p => p.isSelected = false);
-            } else if (current_program.isSelected && program_by_id[current_program.id].apply_multi_program ) {
-                this.state.programs.filter(p => !program_by_id[p.id].apply_multi_program).forEach(p => p.isSelected = false);
-            };
 
+        _makeIndex(current_program) {
             // Increase order_apply number every selected item
             let max_order = Math.max(...this.state.programs.map(p => p.order_apply))
             if (current_program.isSelected) {
                 current_program.order_apply = max_order + 1;
             };
-            this.state.maxIndex = Math.max(...this.state.programs.map(p => p.order_apply));
 
             // Make sure index is start with Number '1'
             let clonePrograms = [...this.state.programs].filter(p => p.isSelected).sort((a, b) => a.order_apply - b.order_apply);
@@ -41,18 +33,55 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             let cloneProgramsDict = {};
             clonePrograms.forEach(p => {cloneProgramsDict[p.id] = index; index ++});
             this.state.programs.filter(p => p.isSelected).forEach(p => {p.index = cloneProgramsDict[p.id]});
-            let clone_order_lines = this.env.pos.get_order().get_orderlines_to_check().map(obj => ({...obj}))
+        }
 
+        // Set Combo Details
+        setComboDetails(newLinesToApply) {
+            Object.entries(newLinesToApply).forEach(
+            ([k, v]) => {
+            this.combo_details[k] = v;
+            });
+        }
+
+        async view_combo_details(program) {
+            try {
+                await this.showPopup('ComboDetailsPopup', {
+                     title: 'Combo Details',
+                     info: []
+                });
+            } catch (e) {
+                console.log(e);
+            };
+        }
+
+        selectItem(itemId) {
+            let program_by_id = this.env.pos.promotion_program_by_id;
+
+            if (itemId !== undefined) {
+                let current_program = this.state.programs.find((p) => p.id == itemId);
+                current_program.isSelected = !current_program.isSelected;
+
+                if (!program_by_id[current_program.id].apply_multi_program && current_program.isSelected) {
+                    this.state.programs.filter(p => p.id !== current_program.id).forEach(p => p.isSelected = false);
+                } else if (current_program.isSelected && program_by_id[current_program.id].apply_multi_program ) {
+                    this.state.programs.filter(p => !program_by_id[p.id].apply_multi_program).forEach(p => p.isSelected = false);
+                };
+                this._makeIndex(current_program);
+            }
+
+            let clone_order_lines = this.env.pos.get_order().get_orderlines_to_check().map(obj => ({...obj}));
 
             let selectedPrograms = this.state.programs.filter(p => p.isSelected)
                                     .sort((x, y) => x.index - y.index)
                                     .map(pro => program_by_id[pro.id]);
 
             // Reset discounted_amount = 0.0 for programs not selected
-            let not_selected_programs = this.state.programs.filter(p => !p.isSelected)
-            not_selected_programs.forEach(p => p.discounted_amount = 0.0)
+            let not_selected_programs = this.state.programs.filter(p => !p.isSelected);
+            not_selected_programs.forEach(p => p.discounted_amount = 0.0);
 
             let [newLinesToApply, remainingLines, combo_count] = this.env.pos.get_order().computeForListOfCombo(clone_order_lines, selectedPrograms);
+
+            this.setComboDetails(newLinesToApply);
 
             // todo: chương trình không có giảm giá thì kiểm tra promotion_usage_ids có undefined không?
             // Tính số tiền đã giảm cho mỗi chương trình đã áp dụng, và cấp số lượng combo đã áp dụng
@@ -77,11 +106,15 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 
             let notSelectPrograms = not_selected_programs.map(p => program_by_id[p.id]);
             for (let notSelectProgram of notSelectPrograms) {
+                // This step to copy without reference
                 let remainingLinesCopy = JSON.parse(JSON.stringify(remainingLinesClone));
 
                 let remaining_clone_order_lines = [...remainingLinesCopy]
                 let [newLinesToApplyNoSelected, ol, combo_count] = this.env.pos.get_order()
                         .computeForListOfCombo(remaining_clone_order_lines, [notSelectProgram]);
+
+               this.setComboDetails(newLinesToApplyNoSelected);
+
                 this.state.programs.forEach(p => {
                     if (combo_count.hasOwnProperty(p.id)) {
                         p.forecastedNumber = combo_count[p.id];
@@ -116,6 +149,8 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
         programs: [],
         confirmKey: false,
         discount_total: 0,
+        hasNonMultiProgram: false,
+        hasComboApplied: false
     };
 
     Registries.Component.add(ProgramSelectionPopup);

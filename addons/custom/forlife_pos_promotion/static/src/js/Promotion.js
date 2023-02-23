@@ -165,7 +165,9 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
     set_quantity(quantity, keep_price) {
         let result = super.set_quantity(...arguments);
         this.order._updateActivatedPromotionPrograms();
-        if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length) {
+        if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length > 0) {
+            this.promotion_usage_ids = [];
+            this.reset_unit_price();
             this.order._resetPromotionPrograms(false);
         };
         return result;
@@ -189,6 +191,17 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
 
     reset_unit_price() {
         this.set_unit_price(this.product.get_price(this.order.pricelist, this.get_quantity()));
+    }
+
+    is_applied_promotion() {
+        let result = true;
+        if (!this.promotion_usage_ids) {
+            result = false;
+        } else if (!this.promotion_usage_ids.length > 0) {
+            result = false;
+        }
+        return result;
+
     }
 
     get_applied_promotion_str() {
@@ -292,9 +305,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             this.activatedComboPrograms = new Set();
             this.activatedCodePrograms = new Set();
         }
-        this.orderlines.remove(this._get_reward_lines());
-        this.orderlines.filter(line => line._isDiscountedComboProgram()).forEach(line => line.reset_unit_price());
-        this.orderlines.filter(line => line._isDiscountedComboProgram()).forEach(line => line.promotion_usage_ids = []);
+        this.orderlines.remove(this._get_reward_lines()); // TODO: Xác định reward line của CTKM nào
+        let orderlines = this.orderlines.filter(line => line._isDiscountedComboProgram())
+        orderlines.forEach(line => line.reset_unit_price());
+        orderlines.forEach(line => line.promotion_usage_ids = []);
 
         this._updateActivatedPromotionPrograms();
     }
@@ -379,6 +393,21 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return JSON.parse(JSON.stringify(lines));
     }
 
+    _get_program_usage_ids() {
+        let lines = this.get_orderlines().filter(line => line.is_applied_promotion());
+        return lines.reduce((acc, line) => {
+        acc.push(...line.promotion_usage_ids); return acc;}, []);
+    }
+
+    _checkHasComboApplied() {
+        return this._get_program_usage_ids().length > 0;
+    }
+
+    _checkHasNoMultiComboApplied() {
+        let programs = this._get_program_usage_ids().map(p => this.pos.promotion_program_by_id[p.program_id]);
+        return programs.some(p => p.apply_multi_program == false);
+    }
+
     /* return {<program_id>: number_of_combo}*/
     verifyComboProgramOnOrder(toVerifyPromotionPrograms) {
         var comboProgramToCheck = new Set();
@@ -416,6 +445,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
             return true;
         })
+//        .sort((a,b) => b.product.lst_price - a.product.lst_price)
     }
 
     getActivatedComboPrograms() {
@@ -423,12 +453,24 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     getPotentialProgramsToSelect() {
-        var numberOfProgramsValues = this.verifyComboProgramOnOrder(this.pos.promotionPrograms);
+        let toCheck = this.pos.promotionPrograms;
+
+        if (this._checkHasComboApplied()) {
+            toCheck = toCheck.filter((p => !(p.apply_multi_program == false && p.promotion_type == 'combo')));
+        };
+
+        if (this._checkHasNoMultiComboApplied()) {
+            toCheck = this.pos.promotionPrograms.filter(p => p.promotion_type !== 'combo');
+        };
+
+        var numberOfProgramsValues = this.verifyComboProgramOnOrder(toCheck);
         return Object.entries(numberOfProgramsValues)
-                    .reduce((tmp, p) => {tmp.push({
+                    .reduce((tmp, p) => {
+                    tmp.push({
                         program : this.pos.promotionPrograms.find((pro)=> pro.id == p[0]),
-                        number: p[1],
-                        id: p[0] }); return tmp;
+                        number: p[1]
+                    });
+                    return tmp;
                     }, []);
     }
 
