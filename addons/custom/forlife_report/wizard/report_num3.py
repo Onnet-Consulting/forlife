@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 
 class ReportNum3(models.TransientModel):
@@ -39,17 +40,17 @@ class ReportNum3(models.TransientModel):
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
 
-        where_query = "sm.company_id = %s and sm.state = 'done'"
+        where_query = "sm.company_id = %s and sm.state = 'done'\n"
         if not self.all_warehouses and self.warehouse_ids:
             warehouse_conditions = "(src_wh.id = any (%s) or des_wh.id = any (%s))"
-            where_query += f" and {warehouse_conditions} "
+            where_query += f"and {warehouse_conditions}\n"
         if not self.all_products and self.product_ids:
             product_conditions = "sm.product_id = any (%s)"
-            where_query += f" and {product_conditions} "
+            where_query += f"and {product_conditions}\n"
         if self.from_date:
-            where_query += f" and to_char(sm.date + interval '{tz_offset} hours', 'YYYY-MM-DD') >= %s "
+            where_query += f"""and {format_date_query("sm.date", tz_offset)} >= %s\n"""
         if self.to_date:
-            where_query += f" and to_char(sm.date + interval '{tz_offset} hours', 'YYYY-MM-DD') <= %s "
+            where_query += f"""and {format_date_query("sm.date", tz_offset)} <= %s\n"""
 
         query = f"""
 with stock as (select sm.product_id          as product_id,

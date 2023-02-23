@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 
 class ReportNum1(models.TransientModel):
@@ -34,6 +35,7 @@ class ReportNum1(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
+
         query = f"""
 select row_number() over (order by pt.name)                                      as num,
        pol.product_id                                                            as product_id,
@@ -52,8 +54,8 @@ from pos_order_line pol
          left join pos_order po on pol.order_id = po.id
 where po.company_id = %s
   and po.state in ('paid', 'done', 'invoiced')
-  and to_char(po.date_order + interval '{tz_offset} hours', 'YYYY-MM-DD') >= %s
-  and to_char(po.date_order + interval '{tz_offset} hours', 'YYYY-MM-DD') <= %s
+  and {format_date_query("po.date_order", tz_offset)} >= %s
+  and {format_date_query("po.date_order", tz_offset)} <= %s
         """
         return query
 
