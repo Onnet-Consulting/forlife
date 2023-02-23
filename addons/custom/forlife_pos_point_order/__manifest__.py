@@ -46,7 +46,8 @@
             'forlife_pos_point_order/static/src/js/Popup/PointsConsumptionPopup.js',
             'forlife_pos_point_order/static/src/js/OrderDetails/OrderLinesDetails.js',
             'forlife_pos_point_order/static/src/js/models.js',
-            'forlife_pos_point_order/static/src/js/ProductScreen.js'
+            'forlife_pos_point_order/static/src/js/ProductScreen.js',
+            'forlife_pos_point_order/static/src/js/OrderSummary/OrderSummary.js'
         ]
     },
     'installable': True,

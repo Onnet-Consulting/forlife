@@ -36,8 +36,8 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 return this.point;
             }
 
-            get_price_point_tax(){
-                return this.get_all_prices_of_point().total_point_after_Tax;
+            get_price_point_without_tax(){
+                return this.get_all_prices_of_point().total_point_without_Tax;
             }
 
 
@@ -49,14 +49,14 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 var taxes_ids = this.tax_ids || product.taxes_id;
                 taxes_ids = _.filter(taxes_ids, t => t in this.pos.taxes_by_id);
                 var product_taxes = this.pos.get_taxes_after_fp(taxes_ids, this.order.fiscal_position);
-
-                var all_taxes_of_point = this.compute_all(product_taxes, pointOfline, qty, this.pos.currency.rounding);
+                var pointOflineBeforeTax = pointOfline/1.1;
+                var all_taxes_of_point = this.compute_all(product_taxes, pointOflineBeforeTax, qty, this.pos.currency.rounding);
                 _(all_taxes_of_point.taxes).each(function(tax) {
                     tax_point += tax.amount;
                 });
 
                 return {
-                    "total_point_after_Tax": parseInt(pointOfline) - tax_point
+                    "total_point_without_Tax": parseInt(pointOfline) - tax_point
                 };
             }
 
@@ -79,7 +79,7 @@ odoo.define('forlife_pos_point_order.models', function (require) {
             export_as_JSON() {
                 const json = super.export_as_JSON(...arguments);
                 var total = this.get_total_with_tax();
-                var totalWithoutTax = this.get_total_without_tax() - this.get_total_point_tax();
+                var totalWithoutTax = this.get_total_without_tax() - this.get_total_point_without_tax();
                 var taxAmount = total - totalWithoutTax;
                 json.amount_tax = taxAmount;
                 return json;
@@ -95,9 +95,9 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 return total + vals;
             }
 
-            get_total_point_tax() {
+            get_total_point_without_tax() {
                 return round_pr(this.orderlines.reduce((function(sum, orderLine) {
-                    return sum + orderLine.get_price_point_tax();
+                    return sum + orderLine.get_price_point_without_tax();
                 }), 0), this.pos.currency.rounding);
             }
 
