@@ -20,7 +20,13 @@ class ReportBase(models.AbstractModel):
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True)
 
     def print_xlsx(self):
-        ...
+        report = self.env.ref('forlife_report.%s_xlsx' % self._name.replace('.', '_'))
+        return {
+            'type': 'ir.actions.act_url',
+            'name': report.name,
+            'url': '/report/xlsx/%s/%d' % (report.report_name, self.id),
+            'target': 'self'
+        }
 
     def view_report(self):
         ...

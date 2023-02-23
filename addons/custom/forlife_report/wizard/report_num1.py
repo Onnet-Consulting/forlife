@@ -27,9 +27,6 @@ class ReportNum1(models.TransientModel):
         action = self.env.ref('forlife_report.report_num_1_client_action').read()[0]
         return action
 
-    def print_xlsx(self):
-        ...
-
     def _get_query(self):
         self.ensure_one()
         user_lang_code = self.env.user.lang

@@ -26,6 +26,9 @@
         'wizard/report_num1_views.xml',
         'wizard/report_num2_views.xml',
         'wizard/report_num3_views.xml',
+        'report/report_num1_xlsx.xml',
+        'report/report_num2_xlsx.xml',
+        'report/report_num3_xlsx.xml',
     ],
     'assets': {
         'web.assets_backend': [
