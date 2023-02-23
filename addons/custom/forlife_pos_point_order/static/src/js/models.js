@@ -49,7 +49,12 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 var taxes_ids = this.tax_ids || product.taxes_id;
                 taxes_ids = _.filter(taxes_ids, t => t in this.pos.taxes_by_id);
                 var product_taxes = this.pos.get_taxes_after_fp(taxes_ids, this.order.fiscal_position);
-                var pointOflineBeforeTax = pointOfline/1.1;
+                var number_tax = 0
+                for(let i =0; i<product_taxes.length;i++){
+                    number_tax += product_taxes[i].amount
+                }
+                var total_tax = 1 + number_tax / 100;
+                var pointOflineBeforeTax = pointOfline/total_tax;
                 var all_taxes_of_point = this.compute_all(product_taxes, pointOflineBeforeTax, qty, this.pos.currency.rounding);
                 _(all_taxes_of_point.taxes).each(function(tax) {
                     tax_point += tax.amount;
