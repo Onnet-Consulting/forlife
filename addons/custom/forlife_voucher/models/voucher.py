@@ -51,7 +51,7 @@ class Voucher(models.Model):
     def _compute_name(self):
         for v in self:
             if v.program_voucher_id:
-                X = v.program_voucher_id.type
+                X = "V" if v.program_voucher_id.type == 'v' else "E"
                 Y = v.program_voucher_id.purpose_id.ref
                 T = 1 if v.program_voucher_id.apply_many_times else 1
                 Z = 1 if v.program_voucher_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id else 2
@@ -61,8 +61,8 @@ class Voucher(models.Model):
             else:
                 v.name = ''
 
-    def _generator_charnumber_code(self, size, chars=string.ascii_letters + string.digits):
-        string_generate = chars.replace("O","").replace("o","")
+    def _generator_charnumber_code(self, size, chars=string.ascii_uppercase + string.digits):
+        string_generate = chars.replace("O", "")
         return ''.join(random.choice(string_generate) for _ in range(size))
 
     @api.onchange('phone_number')
