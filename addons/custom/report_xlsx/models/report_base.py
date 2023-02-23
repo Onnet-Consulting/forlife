@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import copy
 
 
 class ReportBase(models.AbstractModel):
@@ -40,8 +41,10 @@ class ReportBase(models.AbstractModel):
         }
         datetime_format.update(normal_format)
         float_number_format = {}
+        center_format = copy.copy(normal_format)
         int_number_format = {}
 
+        center_format.update({'align': 'center'})
         float_number_format.update(normal_format)
         int_number_format.update(normal_format)
         float_number_title_format = float_number_format.copy()
@@ -52,6 +55,7 @@ class ReportBase(models.AbstractModel):
         title_format = workbook.add_format(title_format)
         datetime_format = workbook.add_format(datetime_format)
         normal_format = workbook.add_format(normal_format)
+        center_format = workbook.add_format(center_format)
         header_format = workbook.add_format(header_format)
 
         float_number_format = workbook.add_format(float_number_format)
@@ -69,6 +73,7 @@ class ReportBase(models.AbstractModel):
             'title_format': title_format,
             'datetime_format': datetime_format,
             'normal_format': normal_format,
+            'center_format': center_format,
             'float_number_format': float_number_format,
             'int_number_format': int_number_format,
             'float_number_title_format': float_number_title_format,
