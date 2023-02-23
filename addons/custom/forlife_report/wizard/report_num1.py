@@ -3,6 +3,8 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
+from odoo.tools.misc import xlsxwriter
+import io
 
 
 class ReportNum1(models.TransientModel):
@@ -70,3 +72,35 @@ where po.company_id = %s
         self._cr.execute(query, params)
         data = self._cr.dictfetchall()
         return data
+
+    def get_xlsx(self):
+        data = self.get_data()
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {
+            'in_memory': True,
+            'strings_to_formulas': False,
+        })
+        formats = self.get_format_workbook(workbook)
+        sheet = workbook.add_worksheet(self._description)
+        titles = ['STT', 'Mã SP', 'Tên SP', 'Đơn vị', 'Giá', 'Số lượng', 'Chiết khấu', 'Thành tiền', 'Thành tiền có thuế']
+        column_widths = [5, 20, 30, 10, 20, 8, 20, 20, 30]
+        for idx, title in enumerate(titles):
+            sheet.write(0, idx, title, formats.get('title_format'))
+            sheet.set_column(idx, idx, column_widths[idx])
+        row = 1
+        for value in data:
+            sheet.write(row, 0, value['num'], formats.get('int_number_format'))
+            sheet.write(row, 1, value['product_barcode'], formats.get('normal_format'))
+            sheet.write(row, 2, value['product_name'], formats.get('normal_format'))
+            sheet.write(row, 3, value['uom_name'], formats.get('normal_format'))
+            sheet.write(row, 4, value['price_unit'], formats.get('float_number_format'))
+            sheet.write(row, 5, value['qty'], formats.get('int_number_format'))
+            sheet.write(row, 6, value['discount_percent'], formats.get('float_number_format'))
+            sheet.write(row, 7, value['amount_without_tax'], formats.get('float_number_format'))
+            sheet.write(row, 8, value['amount_with_tax'], formats.get('float_number_format'))
+            row += 1
+        workbook.close()
+        output.seek(0)
+        generated_file = output.read()
+        output.close()
+        return generated_file

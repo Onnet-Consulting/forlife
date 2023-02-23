@@ -2,6 +2,8 @@
 
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
+from odoo.tools.misc import xlsxwriter
+import io
 
 
 class ReportNum3(models.TransientModel):
@@ -139,3 +141,34 @@ order by sbw.product_id
         data = self.format_data(data)
         warehouse_data = self.get_warehouse_data()
         return {"data": data, **warehouse_data}
+
+    def get_xlsx(self):
+        data = self.get_data()
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {
+            'in_memory': True,
+            'strings_to_formulas': False,
+        })
+        formats = self.get_format_workbook(workbook)
+        sheet = workbook.add_worksheet(self._description)
+        titles = ['Mã SP', 'Tên SP', 'Đơn vị', 'Tổng tồn'] + data['warehouse_names']
+        column_widths = [20, 30, 20, 20] + [20] * len(data['warehouse_names'])
+        for idx, title in enumerate(titles):
+            sheet.write(0, idx, title, formats.get('title_format'))
+            sheet.set_column(idx, idx, column_widths[idx])
+        row = 1
+        for value in data['data']:
+            sheet.write(row, 0, value['product_barcode'], formats.get('normal_format'))
+            sheet.write(row, 1, value['product_name'], formats.get('normal_format'))
+            sheet.write(row, 2, value['uom_name'], formats.get('normal_format'))
+            sheet.write(row, 3, value['total_qty'], formats.get('float_number_format'))
+            col = 4
+            for i in data['warehouse_ids']:
+                sheet.write(row, col, value['product_qty_by_warehouse'].get(i), formats.get('float_number_format'))
+                col += 1
+            row += 1
+        workbook.close()
+        output.seek(0)
+        generated_file = output.read()
+        output.close()
+        return generated_file

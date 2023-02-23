@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.tools.misc import xlsxwriter
+import io
 
 
 class ReportNum2(models.TransientModel):
@@ -98,3 +100,29 @@ from stock_product stp
             "product_data": list(data_by_product_id.values()),
             "detail_data_by_product_id": detail_data_by_product_id
         }
+
+    def get_xlsx(self):
+        data = self.get_data()
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {
+            'in_memory': True,
+            'strings_to_formulas': False,
+        })
+        formats = self.get_format_workbook(workbook)
+        sheet = workbook.add_worksheet(self._description)
+        titles = ['Mã SP', 'Tên SP', 'Tồn']
+        column_widths = [20, 30, 20]
+        for idx, title in enumerate(titles):
+            sheet.write(0, idx, title, formats.get('title_format'))
+            sheet.set_column(idx, idx, column_widths[idx])
+        row = 1
+        for value in data['product_data']:
+            sheet.write(row, 0, value['product_barcode'], formats.get('normal_format'))
+            sheet.write(row, 1, value['product_name'], formats.get('normal_format'))
+            sheet.write(row, 2, value['quantity'], formats.get('int_number_format'))
+            row += 1
+        workbook.close()
+        output.seek(0)
+        generated_file = output.read()
+        output.close()
+        return generated_file
