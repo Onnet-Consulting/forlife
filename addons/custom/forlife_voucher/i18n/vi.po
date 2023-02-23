@@ -427,7 +427,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:forlife_voucher.forlife_set_voucher_action
 #: model:ir.ui.menu,name:forlife_voucher.forlife_set_voucher
 msgid "Set Voucher"
-msgstr ""
+msgstr "Đặt Voucher"
 
 #. module: forlife_voucher
 #: model:ir.model,name:forlife_voucher.model_setup_voucher
@@ -502,7 +502,7 @@ msgstr "Còn giá trị"
 #: model_terms:ir.ui.view,arch_db:forlife_voucher.voucher_form_view
 #, python-format
 msgid "Voucher"
-msgstr ""
+msgstr "Mã Voucher"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__voucher_count
