@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<odoo><data noupdate="1">
+
+    <record id="mail_template_warning_opened_pos" model="mail.template">
+        <field name="name">Cảnh báo đóng POS</field>
+        <field name="model_id" ref="point_of_sale.model_pos_session"/>
+        <field name="subject">CẢNH BÁO ĐÓNG QUẦY THANH TOÁN TRÊN PHẦN MỀM</field>
+        <field name="partner_to">{{ object.config_id.store_id.contact_id.id }}</field>
+        <field name="email_to">{{ object.config_id.store_id.contact_id.email }}</field>
+        <field name="body_html" type="html">
+<table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #FFFFFF; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;"><tbody><tr><td align="center">
+<table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: #FFFFFF; color: #454748; border-collapse:separate;">
+<tbody>
+    <tr>
+        <td align="center" style="min-width: 590px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
+                <tbody><tr><td valign="top" style="font-size: 13px;">
+                    <div>
+                        Dear anh chị cửa hàng <t t-out="object.config_id.name or ''">Cửa hàng xxx</t>,<br/><br/>Cửa hàng <t t-out="object.config_id.name or ''">Cửa hàng xxx</t> có các POS bán hàng sau chưa đóng tính đến thời điểm hiện tại:
+                        <br/>
+                        <t t-foreach="object.config_id.get_pos_opened()" t-as="pos_config" t-key="key">
+                            <t t-out="pos_config[0]"/> mở ngày <t t-out="pos_config[1]"/>
+                        </t>
+                        <br/><br/>
+                        Đề nghị anh/chị kiểm tra lại các POS bán hàng trên.<br/>Nếu chưa hoàn thành POS bán hàng vui lòng bỏ qua email này.
+<br/>
+Nếu đã hoàn thành POS bán hàng vui lòng đăng nhập hệ thống và tiến hành đóng POS để đảm bảo tiến độ cập nhật dữ liệu trên hệ thống.
+<br/>
+<br/>Trân trọng cảm ơn!</div>
+                </td>
+            </tr>
+            </tbody></table>
+        </td>
+    </tr>
+</tbody>
+</table>
+</td></tr>
+</tbody></table>
+        </field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+
+</data></odoo>
