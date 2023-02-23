@@ -52,8 +52,8 @@ from pos_order_line pol
          left join pos_order po on pol.order_id = po.id
 where po.company_id = %s
   and po.state in ('paid', 'done', 'invoiced')
-  and po.date_order + interval '{tz_offset} hours' >= %s
-  and po.date_order + interval '{tz_offset} hours' <= %s
+  and to_char(po.date_order + interval '{tz_offset} hours', 'YYYY-MM-DD') >= %s
+  and to_char(po.date_order + interval '{tz_offset} hours', 'YYYY-MM-DD') <= %s
         """
         return query
 

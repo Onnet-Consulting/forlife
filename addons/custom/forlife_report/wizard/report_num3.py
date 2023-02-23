@@ -9,9 +9,9 @@ class ReportNum3(models.TransientModel):
     _description = 'Report stock in time range by warehouse'
 
     from_date = fields.Date(string='From date')
-    to_date = fields.Date(string='To date', required=True)
+    to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     all_products = fields.Boolean(string='All products', default=False)
-    all_warehouses = fields.Boolean(string='All warehouses', default=False)
+    all_warehouses = fields.Boolean(string='All warehouses', default=True)
     product_ids = fields.Many2many('product.product', string='Products')
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
 
@@ -47,9 +47,9 @@ class ReportNum3(models.TransientModel):
             product_conditions = "sm.product_id = any (%s)"
             where_query += f" and {product_conditions} "
         if self.from_date:
-            where_query += f" and sm.date + interval '{tz_offset} hours' >= %s"
+            where_query += f" and to_char(sm.date + interval '{tz_offset} hours', 'YYYY-MM-DD') >= %s "
         if self.to_date:
-            where_query += f" and sm.date + interval '{tz_offset} hours' <= %s"
+            where_query += f" and to_char(sm.date + interval '{tz_offset} hours', 'YYYY-MM-DD') <= %s "
 
         query = f"""
 with stock as (select sm.product_id          as product_id,
