@@ -33,7 +33,7 @@ class ReportBase(models.AbstractModel):
         report = self.env.ref('forlife_report.%s_xlsx' % self._name.replace('.', '_'))
         return {
             'type': 'ir.actions.act_url',
-            'name': report.name,
+            'name': report.print_report_name,
             'url': '/report/xlsx/%s/%d' % (report.report_name, self.id),
             'target': 'self'
         }
