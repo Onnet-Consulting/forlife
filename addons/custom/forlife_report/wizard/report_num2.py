@@ -12,7 +12,7 @@ class ReportNum2(models.TransientModel):
 
     all_products = fields.Boolean(string='All products', default=False)
     all_warehouses = fields.Boolean(string='All warehouses', default=False)
-    product_ids = fields.Many2many('product.product', string='Products')
+    product_ids = fields.Many2many('product.product', string='Products', domain=[('type', '=', 'product')])
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
 
     def view_report(self):

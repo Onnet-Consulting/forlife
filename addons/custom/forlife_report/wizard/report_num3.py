@@ -15,7 +15,7 @@ class ReportNum3(models.TransientModel):
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     all_products = fields.Boolean(string='All products', default=False)
     all_warehouses = fields.Boolean(string='All warehouses', default=True)
-    product_ids = fields.Many2many('product.product', string='Products')
+    product_ids = fields.Many2many('product.product', string='Products', domain=[('type', '=', 'product')])
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
 
     def view_report(self):
@@ -37,12 +37,15 @@ class ReportNum3(models.TransientModel):
         return params
 
     def _get_query(self):
-        # FIXME: something wrong - total quantity (stock) get from stock.move is not correct
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
 
-        where_query = "sm.company_id = %s and sm.state = 'done'\n"
+        where_query = """
+            sm.company_id = %s
+            and sm.state = 'done'
+            and pt.type = 'product'\n
+        """
         if not self.all_warehouses and self.warehouse_ids:
             warehouse_conditions = "(src_wh.id = any (%s) or des_wh.id = any (%s))"
             where_query += f"and {warehouse_conditions}\n"
@@ -58,9 +61,11 @@ class ReportNum3(models.TransientModel):
 with stock as (select sm.product_id          as product_id,
                       coalesce(src_wh.id, 0) as src_warehouse_id,
                       coalesce(des_wh.id, 0) as dest_warehouse_id,
-                      sum(sm.quantity_done)  as qty
+                      sum(sm.product_qty)    as qty
                from stock_move sm
                         left join stock_location des_lc on sm.location_dest_id = des_lc.id
+                        left join product_product pp on sm.product_id = pp.id
+                        left join product_template pt on pp.product_tmpl_id = pt.id
                         left join stock_warehouse des_wh
                                   on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
                         left join stock_location src_lc on sm.location_id = src_lc.id
@@ -68,37 +73,52 @@ with stock as (select sm.product_id          as product_id,
                                   on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
                where {where_query}
                group by sm.product_id, src_wh.id, des_wh.id),
+     source_stock as (select product_id,
+                             src_warehouse_id as warehouse_id,
+                             sum(qty)         as qty
+                      from stock
+                      where src_warehouse_id != 0
+                      group by product_id, src_warehouse_id),
+     agg_source_stock as (select product_id,
+                                 json_object_agg(warehouse_id, qty) as qty_by_wh
+                          from source_stock
+                          group by product_id),
+     destination_stock as (select product_id,
+                                  dest_warehouse_id as warehouse_id,
+                                  sum(qty)          as qty
+                           from stock
+                           where dest_warehouse_id != 0
+                           group by product_id, dest_warehouse_id),
+     agg_destination_stock as (select product_id,
+                                      json_object_agg(warehouse_id, qty) as qty_by_wh
+                               from destination_stock
+                               group by product_id)
 
-     stock_by_warehouse as (select product_id,
-                                   jsonb_object_agg(src_warehouse_id, qty)  as source_warehouse_qty,
-                                   jsonb_object_agg(dest_warehouse_id, qty) as destination_warehouse_qty
-                            from stock
-                            group by product_id)
-select sbw.product_id                                                            as product_id,
-       sbw.source_warehouse_qty                                                  as source_warehouse_qty,
-       sbw.destination_warehouse_qty                                             as destination_warehouse_qty,
+select coalesce(aggs.product_id, aggd.product_id)                                as product_id,
        pp.barcode                                                                as product_barcode,
        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
-       coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as uom_name
-from stock_by_warehouse sbw
-         left join product_product pp on sbw.product_id = pp.id
+       coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as uom_name,
+       aggs.qty_by_wh                                                            as source_qty_by_wh,
+       aggd.qty_by_wh                                                            as destination_qty_by_wh
+from agg_source_stock aggs
+         full join agg_destination_stock aggd on aggs.product_id = aggd.product_id
+         left join product_product pp on coalesce(aggs.product_id, aggd.product_id) = pp.id
          left join product_template pt on pp.product_tmpl_id = pt.id
          left join uom_uom uom on pt.uom_id = uom.id
-order by sbw.product_id
+order by pp.id
+
         """
         return query
 
     def get_warehouse_data(self):
+        query = """
+            select id,name from stock_warehouse where company_id = %s
+        """
+        params = [self.company_id.id]
         if not self.all_warehouses and self.warehouse_ids:
-            query = """
-                select id,name from stock_warehouse where id = any (%s)
-            """
-            params = [self.warehouse_ids.ids]
-        else:
-            query = """
-                select id,name from stock_warehouse
-            """
-            params = []
+            query += "\n and id = any (%s)"
+            params.append([self.warehouse_ids.ids])
+
         self._cr.execute(query, params)
         data = self._cr.dictfetchall()
         warehouse_ids = []
@@ -110,16 +130,16 @@ order by sbw.product_id
             warehouse_ids.append(wh_id)
             warehouse_names.append(wh_name)
             warehouse_name_by_id[wh_id] = wh_name
-        return dict(warehouse_name_by_id=warehouse_name_by_id,
-                    warehouse_names=warehouse_names,
-                    warehouse_ids=warehouse_ids)
+        return dict(
+            warehouse_name_by_id=warehouse_name_by_id,
+            warehouse_names=warehouse_names,
+            warehouse_ids=warehouse_ids
+        )
 
     def format_data(self, data):
         for line in data:
-            source_warehouse_qty = line.pop('source_warehouse_qty')
-            destination_warehouse_qty = line.pop('destination_warehouse_qty')
-            source_warehouse_qty.pop('0', None)
-            destination_warehouse_qty.pop('0', None)
+            source_warehouse_qty = line.pop('source_qty_by_wh') or {}
+            destination_warehouse_qty = line.pop('destination_qty_by_wh') or {}
             product_qty_by_warehouse = {}
             total_qty = 0
             warehouse_ids = {**source_warehouse_qty, **destination_warehouse_qty}.keys()
