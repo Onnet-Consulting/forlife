@@ -7,9 +7,10 @@
             <form string="Promotion">
 
                 <header>
+                    <field name="show_gen_code" invisible="1"/>
                     <button name="%(promotion_generate_code_action)d" string="Generate Codes"
                             class="btn-primary" type="action"
-                            attrs="{'invisible': [('with_code', '=', False), ('promotion_type', '!=', '')]}"/>
+                            attrs="{'invisible': [('show_gen_code', '=', False)]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -47,9 +48,9 @@
 <!--                            <field name="applicability" string="Use points on" groups="base.group_no_one" widget="radio" force_save="1"/>-->
 <!--                            <field name="customer_domain" widget="domain"-->
 <!--                                   options="{'model': 'res.partner', 'in_dialog': true}"/>-->
-                            <label for="limit_usage"
+                            <label for="limit_usage" invisible="1"
                                    attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}"/>
-                            <span attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}">
+                            <span invisible="1" attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}">
                                 <field name="limit_usage" class="oe_inline"/>
                                 <span attrs="{'invisible': [('limit_usage', '=', False)]}"> to <field name="max_usage" class="oe_inline"/> usages</span>
                             </span>
@@ -185,7 +186,12 @@
                 <field name="reward_type"/>
                 <field name="with_code"/>
                 <field name="active" widget="boolean_toggle"/>
-<!--                <field name="company_id" groups="base.group_multi_company"/>-->
+                <field name="show_gen_code" invisible="1"/>
+                <button name="%(promotion_generate_code_action)d" string="Generate Codes"
+                        class="btn-primary" type="action"
+                        attrs="{'invisible': [('show_gen_code', '=', False)]}"/>
+                <button name="view_program" class="btn-secondary" type="object"
+                        icon="fa-share-square-o"/>
             </tree>
         </field>
     </record>
