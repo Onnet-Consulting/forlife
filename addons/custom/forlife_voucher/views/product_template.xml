@@ -13,7 +13,11 @@
                         </span>
                 </xpath>
                 <xpath expr="//page[@name='general_information']//field[@name='company_id']" position="after">
-                    <field name="program_voucher_id" attrs="{'invisible': [('voucher', '=', False)]}"/>
+                    <field name="program_voucher_ids" attrs="{'invisible': [('voucher', '=', False)]}">
+                        <tree>
+                            <field name="name"/>
+                        </tree>
+                    </field>
                 </xpath>
             </field>
         </record>

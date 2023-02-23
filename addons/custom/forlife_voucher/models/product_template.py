@@ -4,4 +4,4 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     voucher = fields.Boolean('Voucher')
-    program_voucher_id = fields.Many2one('program.voucher')
+    program_voucher_ids = fields.One2many('program.voucher','product_id')
