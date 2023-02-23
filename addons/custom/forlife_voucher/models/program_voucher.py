@@ -32,13 +32,10 @@ class ProgramVoucher(models.Model):
 
     store_id = fields.Many2one('store', 'Apply for store', required=True)
 
-    product_id = fields.Many2one('product.template', 'Product Voucher', required=True)
-
-    _sql_constraints = [
-        ('product_id_uniq', 'unique(product_id)', 'Only one booth can be linked !'),
-    ]
+    product_id = fields.Many2one('product.template', 'Product Voucher')
 
     program_voucher_line_ids = fields.One2many('program.voucher.line', 'program_voucher_id', string='Voucher')
+
     voucher_ids = fields.One2many('voucher.voucher', 'program_voucher_id')
     voucher_count = fields.Integer('Voucher Count', compute='_compute_count_voucher', store=True)
 
