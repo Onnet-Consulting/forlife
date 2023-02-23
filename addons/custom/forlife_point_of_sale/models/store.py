@@ -21,12 +21,3 @@ class Store(models.Model):
     @api.onchange('warehouse_id')
     def onchange_warehouse(self):
         self.stock_location_id = False
-
-    @api.model
-    def get_pos_opened(self, *args, **kwargs):
-        query = '''SELECT (SELECT name FROM pos_config WHERE id = ps.config_id) FROM pos_session ps WHERE ps.state = 'opened' AND ps.config_id = %s'''
-        config_id = args[0].get("config_id", 0)
-        self.env.cr.execute(query, (config_id,))
-        data = self.env.cr.fetchall()
-
-        return data
