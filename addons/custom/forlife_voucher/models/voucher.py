@@ -12,8 +12,8 @@ class Voucher(models.Model):
 
     _description = 'Voucher'
 
-    name = fields.Char('Code', required=True, compute='_compute_name', store=True)
-    program_voucher_id = fields.Many2one('program.voucher', 'Program name', required=True, readonly=True)
+    name = fields.Char('Code', compute='_compute_name', store=True)
+    program_voucher_id = fields.Many2one('program.voucher', 'Program name')
     purpose_id = fields.Many2one('setup.voucher', 'Purpose', required=True, related='program_voucher_id.purpose_id')
     currency_id = fields.Many2one('res.currency', related='product_voucher_id.currency_id')  # related currency of program voucher
     type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True, related='program_voucher_id.type')
@@ -62,7 +62,8 @@ class Voucher(models.Model):
                 v.name = ''
 
     def _generator_charnumber_code(self, size, chars=string.ascii_letters + string.digits):
-        return ''.join(random.choice(chars) for _ in range(size))
+        string_generate = chars.replace("O","").replace("o","")
+        return ''.join(random.choice(string_generate) for _ in range(size))
 
     @api.onchange('phone_number')
     def onchage_phone_number(self):

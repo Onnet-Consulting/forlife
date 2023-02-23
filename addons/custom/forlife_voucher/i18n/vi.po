@@ -259,7 +259,7 @@ msgstr ""
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__status_latest
 msgid "Latest status"
-msgstr ""
+msgstr "Trạng thái gần nhất"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_main_attachment_id
@@ -400,7 +400,7 @@ msgstr "Chương trình voucher"
 #. module: forlife_voucher
 #: model:ir.actions.act_window,name:forlife_voucher.forlife_program_action
 msgid "Programn Voucher"
-msgstr "Chương trìnhVvoucher"
+msgstr "Chương trình Voucher"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__purpose_id

@@ -10,7 +10,7 @@ class ProgramVoucher(models.Model):
 
     name = fields.Char('Program Voucher Name', required=True)
 
-    program_voucher_code = fields.Char('Voucher Program Code', store=True, copy=False)
+    program_voucher_code = fields.Char('Voucher Program Code', store=True, copy=False, readonly=True, default='New')
 
     type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True)
 
@@ -36,7 +36,7 @@ class ProgramVoucher(models.Model):
 
     program_voucher_line_ids = fields.One2many('program.voucher.line', 'program_voucher_id', string='Voucher')
     voucher_ids = fields.One2many('voucher.voucher', 'program_voucher_id')
-    voucher_count = fields.Integer('Voucher Count',compute='_compute_count_voucher')
+    voucher_count = fields.Integer('Voucher Count', compute='_compute_count_voucher', store=True)
 
     @api.depends('voucher_ids')
     def _compute_count_voucher(self):
@@ -53,8 +53,11 @@ class ProgramVoucher(models.Model):
 
     @api.model
     def create(self, vals):
+        if 'program_voucher_line_ids' not in vals or not vals['program_voucher_line_ids']:
+            raise UserError(_('Please set the infomation of Vourcher!'))
         last_record = self.get_last_sequence()
         if last_record:
+            #change character of sequence
             code = last_record.program_voucher_code
             if code[1:] == '999':
                 seq = self.env['ir.sequence'].search([('code', '=', 'program.voucher')])
@@ -64,10 +67,9 @@ class ProgramVoucher(models.Model):
 
                 }
                 seq.write(vals_seq)
-        if vals.get('program_voucher_code', '') == '':
-            vals['program_voucher_code'] = self.env['ir.sequence'].next_by_code('program.voucher') or ''
-        result = super(ProgramVoucher, self).create(vals)
-        return result
+        if vals.get('program_voucher_code', 'New') == 'New':
+            vals['program_voucher_code'] = self.env['ir.sequence'].next_by_code('program.voucher') or 'New'
+        return super(ProgramVoucher, self).create(vals)
 
     def get_last_sequence(self):
         last_record = self.env['program.voucher'].search([], limit=1, order='id desc')
@@ -78,14 +80,25 @@ class ProgramVoucher(models.Model):
     def create_voucher(self):
         if len(self.program_voucher_line_ids) > 0:
             for rec in self.program_voucher_line_ids:
-                for p in rec.partner_ids:
+                if rec.partner_ids:
+                    for p in rec.partner_ids:
+                        for i in range(rec.count):
+                            self.env['voucher.voucher'].create({
+                                'program_voucher_id': self.id,
+                                'state':'new',
+                                'partner_id': p.id,
+                                'price': rec.price,
+                                'price_used':0,
+                                'price_residual': rec.price - 0,
+                                'derpartment_id': self.derpartment_id.id,
+                            })
+                if not rec.partner_ids:
                     for i in range(rec.count):
                         self.env['voucher.voucher'].create({
                             'program_voucher_id': self.id,
-                            'state':'new',
-                            'partner_id': p.id,
+                            'state': 'new',
                             'price': rec.price,
-                            'price_used':0,
+                            'price_used': 0,
                             'price_residual': rec.price - 0,
                             'derpartment_id': self.derpartment_id.id,
                         })
