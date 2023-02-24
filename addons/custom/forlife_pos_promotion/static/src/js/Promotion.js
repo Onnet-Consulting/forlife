@@ -61,6 +61,12 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.reward_line_by_id = {};
         var self = this;
         for (const program of this.promotionPrograms) {
+            if (program.from_date) {
+                program.from_date = new Date(program.from_date);
+            };
+            if (program.to_date) {
+                program.to_date = new Date(program.to_date);
+            };
             program.valid_product_ids = new Set(program.valid_product_ids);
             program.valid_customer_ids = new Set(program.valid_customer_ids);
             program.discount_product_ids = new Set(program.discount_product_ids);
@@ -84,7 +90,14 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
 
             var daysOfWeek = program.dayofweek_ids.reduce(function (accumulator, d) {
                 var day = self.dayofweekData.find((elem) => elem.id === d);
-                accumulator.add(day.code);
+                let code;
+                // Fix master data dayOfWeeks
+                if ([0, 1, 2, 3, 4, 5].includes(day.code)) {
+                    code = day.code + 1
+                } else if (day.code == 6) {
+                    code = 0
+                }
+                accumulator.add(code);
                 return accumulator
             }, new Set());
             program.applied_days = daysOfWeek;
@@ -268,11 +281,17 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         const customer = this.partner;
         if (!program.valid_customer_ids.has(customer ? customer.id : 0)) {return false;};
 
+        if (program.to_date && program.to_date <= new Date()) {
+            return false;
+        };
+        if (program.from_date && program.from_date >= new Date()) {
+            return false;
+        };
         var hasDate = program.applied_dates.has(this.creation_date.getDate()) || program.applied_dates.size == 0;
         var hasMonth = program.applied_months.has(this.creation_date.getMonth() + 1) || program.applied_months.size == 0;
         var hasHour = program.applied_hours.has(this.creation_date.getHours()) || program.applied_hours.size == 0;
         var hasDay = program.applied_days.has(this.creation_date.getDay()) || program.applied_days.size == 0;
-        if (!hasDate || !hasMonth || !hasHour) {;return false};
+        if (!hasDate || !hasMonth || !hasHour || !hasDay) {;return false};
         return true;
     }
 
