@@ -360,6 +360,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         count = count || 0;
         to_discount_line_vals = to_discount_line_vals || [];
         var comboFormula = comboProgram.comboFormula;
+        if (comboFormula.length == 0) {
+            return [order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
+        };
         var enoughCombo = true;
         for (const part of comboFormula) {
             var order_lines_has_valid_product = order_lines.filter(l => part.valid_product_ids.has(l.product.id));

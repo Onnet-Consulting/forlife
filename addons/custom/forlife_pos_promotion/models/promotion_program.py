@@ -136,6 +136,8 @@ class PromotionProgram(models.Model):
                 for couple in combine_couple_of_set:
                     if couple[0] & couple[1]:
                         raise UserError(_('Products duplication occurs in the combo formula!'))
+            if program.promotion_type == 'combo' and not program.combo_line_ids:
+                raise UserError(_('Combo Formular is not set!'))
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
