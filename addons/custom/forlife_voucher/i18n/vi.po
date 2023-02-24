@@ -1,0 +1,563 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_voucher
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-23 02:52+0000\n"
+"PO-Revision-Date: 2023-02-23 02:52+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__store_id
+msgid "Apply for store"
+msgstr "Cửa hàng áp dụng"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__apply_many_times
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__apply_many_times
+msgid "Apply many times"
+msgstr "Áp dụng nhiều lần"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__brand_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__brand_id
+msgid "Brand"
+msgstr "Thương hiệu"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_hr_department__center_expense_id
+msgid "Center Expense"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.actions.server,name:forlife_voucher.ir_cron_check_due_date_voucher_ir_actions_server
+#: model:ir.cron,cron_name:forlife_voucher.ir_cron_check_due_date_voucher
+msgid "Check Due Date Voucher"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__name
+msgid "Code"
+msgstr "Mã"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__count
+msgid "Count"
+msgstr ""
+
+#. module: forlife_voucher
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.voucher_form_view
+msgid "Create Voucher"
+msgstr "Tạo Voucher"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__create_uid
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__create_uid
+#: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__create_uid
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__create_date
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__create_date
+#: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__create_date
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__currency_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__currency_id
+msgid "Currency"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__partner_ids
+msgid "Customers"
+msgstr "Khách hàng"
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_hr_department
+msgid "Department"
+msgstr "Phòng/Ban"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__derpartment_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__derpartment_id
+msgid "Department Code"
+msgstr "Mã phòng ban"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__display_name
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__display_name
+#: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__display_name
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__program_voucher__type__e
+msgid "E-Điện tử"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__end_date
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__end_date
+msgid "End date"
+msgstr "Ngày kết thúc"
+
+#. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__state__expired
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__status_latest__expired
+msgid "Expired"
+msgstr "Hết hạn"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__setup_voucher__purpose_voucher__gift
+msgid "Gift"
+msgstr "Tặng"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__price_residual
+msgid "Giá trị còn lại"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__price_used
+msgid "Giá trị đã dùng"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__id
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__id
+#: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__id
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__id
+msgid "ID"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__message_has_error
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_program_voucher_line
+msgid "Info of Program Voucher"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-python
+#: code:addons/forlife_voucher/models/voucher.py:0
+#, python-format
+msgid "Invalid phone number - %s"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher____last_update
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line____last_update
+#: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher____last_update
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__write_uid
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__write_uid
+#: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__write_uid
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__write_date
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__write_date
+#: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__write_date
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__status_latest
+msgid "Latest status"
+msgstr "Trạng thái gần nhất"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__ref
+msgid "Mã viết tắt"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__price
+msgid "Mệnh giá"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__purpose_voucher
+msgid "Mục đích sử dụng"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__state__new
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__status_latest__new
+msgid "New"
+msgstr "Mới"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__state__off_value
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__status_latest__off_value
+msgid "Off Value"
+msgstr "Hết giá trị"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__partner_id
+msgid "Partner"
+msgstr "Khách hàng"
+
+#. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__setup_voucher__purpose_voucher__pay
+msgid "Pay"
+msgstr "Bán"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__phone_number
+msgid "Phone"
+msgstr "Số điện thoại"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__price
+msgid "Price"
+msgstr "Mệnh giá"
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_product_template
+msgid "Product"
+msgstr "Sản phẩm"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__product_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__product_voucher_id
+msgid "Product Voucher"
+msgstr "Sản phẩm voucher"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_product__program_voucher_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_template__program_voucher_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__program_voucher_id
+#: model:ir.ui.menu,name:forlife_voucher.forlife_program_voucher
+msgid "Program Voucher"
+msgstr "Chương trình voucher"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__name
+msgid "Program Voucher Name"
+msgstr "Tên chương trình"
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_program_voucher
+msgid "Program Voucher for Forlife"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__program_voucher_id
+msgid "Program name"
+msgstr "Chương trình voucher"
+
+#. module: forlife_voucher
+#: model:ir.actions.act_window,name:forlife_voucher.forlife_program_action
+msgid "Programn Voucher"
+msgstr "Chương trình Voucher"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__purpose_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__purpose_id
+msgid "Purpose"
+msgstr "Mục đích sử dụng"
+
+#. module: forlife_voucher
+#: model:ir.model.constraint,message:forlife_voucher.constraint_setup_voucher_unique_ref
+msgid "Ref must be unique!"
+msgstr "Mã viết tắt phải là duy nhất"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.actions.act_window,name:forlife_voucher.forlife_set_voucher_action
+#: model:ir.ui.menu,name:forlife_voucher.forlife_set_voucher
+msgid "Set Voucher"
+msgstr "Đặt Voucher"
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_setup_voucher
+msgid "Set Voucher code"
+msgstr "Đặt mã Voucher"
+
+#. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__state__sold
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__status_latest__sold
+msgid "Sold"
+msgstr "Đã bán"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__start_date
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__start_date
+msgid "Start date"
+msgstr "Ngày bắt đầu"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__state
+msgid "State"
+msgstr "Trạng thái"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__state_app
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__state_app
+msgid "Trạng thái App"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__type
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__type
+msgid "Type"
+msgstr "Loại"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__program_voucher__type__v
+msgid "V-Giấy"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__state__valid
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__status_latest__valid
+msgid "Valid"
+msgstr "Còn giá trị"
+
+#. module: forlife_voucher
+#. odoo-python
+#: code:addons/forlife_voucher/models/program_voucher.py:0
+#: model:ir.actions.act_window,name:forlife_voucher.forlife_voucher_action
+#: model:ir.model,name:forlife_voucher.model_voucher_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_product__voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_template__voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__program_voucher_line_ids
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__voucher_ids
+#: model:ir.ui.menu,name:forlife_voucher.forlife_voucher
+#: model:ir.ui.menu,name:forlife_voucher.forlife_voucher_menuitem_root
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.voucher_form_view
+#, python-format
+msgid "Voucher"
+msgstr "Mã Voucher"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__voucher_count
+msgid "Voucher Count"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__program_voucher_code
+msgid "Voucher Program Code"
+msgstr "Mã chương trình"
+
+#. module: forlife_voucher
+#. odoo-python
+#: code:addons/forlife_voucher/models/program_voucher.py:0
+#, python-format
+msgid "Vui lòng thiết lập dữ liệu voucher!"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,help:forlife_voucher.field_voucher_voucher__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__apply_contemp_time
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__apply_contemp_time
+msgid "Áp dụng đồng thời"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__order_pos
+msgid "Đơn hàng POS"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__sale_id
+msgid "Đơn hàng bán"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__purchase_id
+msgid "Đơn hàng mua"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__order_use
+msgid "Đơn hàng sử dụng"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__applicable_object
+msgid "Đối tượng"
+msgstr ""
