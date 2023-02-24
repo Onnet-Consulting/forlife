@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<odoo noupdate="1">
+    <record id="noti_pos_not_closed" model="ir.cron">
+        <field name="name">Thông báo chưa đóng phiên</field>
+        <field name="model_id" ref="point_of_sale.model_pos_session"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_noti_pos_not_closed()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">False</field>
+    </record>
+</odoo>

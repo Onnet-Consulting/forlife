@@ -243,7 +243,7 @@ class PosOrder(models.Model):
             raise UserError(_('Order had already point addition journal entry posted!'))
         move_vals = {
             'ref': self.name,
-            'pos_order_ids': [(6, 0, self.ids)],
+            'pos_order_id': self.id,
             'move_type': 'entry',
             'date': self.date_order,
             'journal_id': self.program_store_point_id.account_journal_id.id,
@@ -296,7 +296,7 @@ class PosOrder(models.Model):
     def action_point_subtraction(self):
         move_vals = {
             'ref': self.name,
-            'pos_order_ids': [(6, 0, self.ids)],
+            'pos_order_id': self.id,
             'move_type': 'entry',
             'date': self.date_order,
             'journal_id': self.program_store_point_id.account_journal_id.id,
