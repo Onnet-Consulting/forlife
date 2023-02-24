@@ -92,6 +92,12 @@ class PromotionCampaign(models.Model):
         'promotion.program', 'campaign_id', context={'active_test': False})
     program_count = fields.Integer(compute='_compute_program_count')
 
+    @api.constrains('program_ids')
+    def check_program(self):
+        for campaign in self:
+            if any([program.promotion_type == 'combo' and not program.combo_line_ids for program in campaign.program_ids]):
+                raise UserError(_('Combo\'s Formular must be set for the program!'))
+
     def _compute_program_count(self):
         for campaign in self:
             campaign.program_count = len(campaign.program_ids)

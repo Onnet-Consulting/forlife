@@ -61,6 +61,12 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.reward_line_by_id = {};
         var self = this;
         for (const program of this.promotionPrograms) {
+            if (program.from_date) {
+                program.from_date = new Date(program.from_date);
+            };
+            if (program.to_date) {
+                program.to_date = new Date(program.to_date);
+            };
             program.valid_product_ids = new Set(program.valid_product_ids);
             program.valid_customer_ids = new Set(program.valid_customer_ids);
             program.discount_product_ids = new Set(program.discount_product_ids);
@@ -75,12 +81,26 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             }, new Set());
             program.applied_months = months;
 
-            var days = program.dayofmonth_ids.reduce(function (accumulator, d) {
+            var daysOfMonth = program.dayofmonth_ids.reduce(function (accumulator, d) {
                 var day = self.dayofmonthData.find((elem) => elem.id === d);
                 accumulator.add(day.code);
                 return accumulator
             }, new Set());
-            program.applied_days = days;
+            program.applied_dates = daysOfMonth;
+
+            var daysOfWeek = program.dayofweek_ids.reduce(function (accumulator, d) {
+                var day = self.dayofweekData.find((elem) => elem.id === d);
+                let code;
+                // Fix master data dayOfWeeks
+                if ([0, 1, 2, 3, 4, 5].includes(day.code)) {
+                    code = day.code + 1
+                } else if (day.code == 6) {
+                    code = 0
+                }
+                accumulator.add(code);
+                return accumulator
+            }, new Set());
+            program.applied_days = daysOfWeek;
 
             var hours = program.hour_ids.reduce(function (accumulator, h) {
                 var hour = self.hourData.find((elem) => elem.id === h);
@@ -165,7 +185,9 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
     set_quantity(quantity, keep_price) {
         let result = super.set_quantity(...arguments);
         this.order._updateActivatedPromotionPrograms();
-        if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length) {
+        if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length > 0) {
+            this.promotion_usage_ids = [];
+            this.reset_unit_price();
             this.order._resetPromotionPrograms(false);
         };
         return result;
@@ -189,6 +211,17 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
 
     reset_unit_price() {
         this.set_unit_price(this.product.get_price(this.order.pricelist, this.get_quantity()));
+    }
+
+    is_applied_promotion() {
+        let result = true;
+        if (!this.promotion_usage_ids) {
+            result = false;
+        } else if (!this.promotion_usage_ids.length > 0) {
+            result = false;
+        }
+        return result;
+
     }
 
     get_applied_promotion_str() {
@@ -248,10 +281,17 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         const customer = this.partner;
         if (!program.valid_customer_ids.has(customer ? customer.id : 0)) {return false;};
 
-        var hasDate = program.applied_days.has(this.creation_date.getDate()) || program.applied_days.size == 0;
+        if (program.to_date && program.to_date <= new Date()) {
+            return false;
+        };
+        if (program.from_date && program.from_date >= new Date()) {
+            return false;
+        };
+        var hasDate = program.applied_dates.has(this.creation_date.getDate()) || program.applied_dates.size == 0;
         var hasMonth = program.applied_months.has(this.creation_date.getMonth() + 1) || program.applied_months.size == 0;
         var hasHour = program.applied_hours.has(this.creation_date.getHours()) || program.applied_hours.size == 0;
-        if (!hasDate || !hasMonth || !hasHour) {;return false};
+        var hasDay = program.applied_days.has(this.creation_date.getDay()) || program.applied_days.size == 0;
+        if (!hasDate || !hasMonth || !hasHour || !hasDay) {;return false};
         return true;
     }
 
@@ -292,9 +332,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             this.activatedComboPrograms = new Set();
             this.activatedCodePrograms = new Set();
         }
-        this.orderlines.remove(this._get_reward_lines());
-        this.orderlines.filter(line => line._isDiscountedComboProgram()).forEach(line => line.reset_unit_price());
-        this.orderlines.filter(line => line._isDiscountedComboProgram()).forEach(line => line.promotion_usage_ids = []);
+        this.orderlines.remove(this._get_reward_lines()); // TODO: Xác định reward line của CTKM nào
+        let orderlines = this.orderlines.filter(line => line._isDiscountedComboProgram())
+        orderlines.forEach(line => line.reset_unit_price());
+        orderlines.forEach(line => line.promotion_usage_ids = []);
 
         this._updateActivatedPromotionPrograms();
     }
@@ -319,6 +360,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         count = count || 0;
         to_discount_line_vals = to_discount_line_vals || [];
         var comboFormula = comboProgram.comboFormula;
+        if (comboFormula.length == 0) {
+            return [order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
+        };
         var enoughCombo = true;
         for (const part of comboFormula) {
             var order_lines_has_valid_product = order_lines.filter(l => part.valid_product_ids.has(l.product.id));
@@ -379,6 +423,21 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return JSON.parse(JSON.stringify(lines));
     }
 
+    _get_program_usage_ids() {
+        let lines = this.get_orderlines().filter(line => line.is_applied_promotion());
+        return lines.reduce((acc, line) => {
+        acc.push(...line.promotion_usage_ids); return acc;}, []);
+    }
+
+    _checkHasComboApplied() {
+        return this._get_program_usage_ids().length > 0;
+    }
+
+    _checkHasNoMultiComboApplied() {
+        let programs = this._get_program_usage_ids().map(p => this.pos.promotion_program_by_id[p.program_id]);
+        return programs.some(p => p.apply_multi_program == false);
+    }
+
     /* return {<program_id>: number_of_combo}*/
     verifyComboProgramOnOrder(toVerifyPromotionPrograms) {
         var comboProgramToCheck = new Set();
@@ -416,6 +475,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
             return true;
         })
+//        .sort((a,b) => b.product.lst_price - a.product.lst_price)
     }
 
     getActivatedComboPrograms() {
@@ -423,12 +483,24 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     getPotentialProgramsToSelect() {
-        var numberOfProgramsValues = this.verifyComboProgramOnOrder(this.pos.promotionPrograms);
+        let toCheck = this.pos.promotionPrograms;
+
+        if (this._checkHasComboApplied()) {
+            toCheck = toCheck.filter((p => !(p.apply_multi_program == false && p.promotion_type == 'combo')));
+        };
+
+        if (this._checkHasNoMultiComboApplied()) {
+            toCheck = this.pos.promotionPrograms.filter(p => p.promotion_type !== 'combo');
+        };
+
+        var numberOfProgramsValues = this.verifyComboProgramOnOrder(toCheck);
         return Object.entries(numberOfProgramsValues)
-                    .reduce((tmp, p) => {tmp.push({
+                    .reduce((tmp, p) => {
+                    tmp.push({
                         program : this.pos.promotionPrograms.find((pro)=> pro.id == p[0]),
-                        number: p[1],
-                        id: p[0] }); return tmp;
+                        number: p[1]
+                    });
+                    return tmp;
                     }, []);
     }
 

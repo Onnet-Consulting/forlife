@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="ComboDetailsPopup" owl="1">
+            <div class="popup product-info-popup">
+                <header class="title">
+                    Applied Combo Details
+                </header>
+                <main class="body">
+                    <div class="section-product-info-title">
+                        <div class="column flex-start">
+                            <strong t-esc="props.program.name"/>
+                            <span><t t-if="props.program.combo_code" t-esc="props.program.combo_code"/></span>
+                        </div>
+                        <div class="column flex-end">
+                            <strong>
+                                <t t-esc="props.qty_per_combo"/> &nbsp;SP / Combo
+                            </strong>
+                        </div>
+                    </div>
+                    <hr/>
+                    <div style="text-align: left;"><strong>Qty of Combo: <t t-esc="props.qty_of_combo"/></strong></div>
+                    <table style="width:100%;" class="payment-list">
+                        <thead>
+                            <tr height="50px">
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Pre Price</th>
+                                <th>New Price</th>
+                                <th>Discount Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="props.details" t-as="line" t-key="line.product.id">
+                                <tr height="50px" class="payment-item">
+                                    <td style="font-weight:normal" t-esc="line.product.display_name"/>
+                                    <td style="font-weight:normal" t-esc="line.quantity"/>
+                                    <td style="font-weight:normal" t-esc="this.env.pos.format_currency(line.pre_price)"/>
+                                    <td style="font-weight:normal" t-esc="this.env.pos.format_currency(line.new_price)"/>
+                                    <td style="font-weight:normal" t-esc="this.env.pos.format_currency(line.discount_amount)"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </main>
+                <footer class="footer">
+                    <div class="button cancel" t-on-click="cancel">
+                        Close
+                    </div>
+                </footer>
+            </div>
+    </t>
+</templates>
