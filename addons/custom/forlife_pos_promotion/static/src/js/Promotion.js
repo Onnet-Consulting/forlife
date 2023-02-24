@@ -75,12 +75,19 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             }, new Set());
             program.applied_months = months;
 
-            var days = program.dayofmonth_ids.reduce(function (accumulator, d) {
+            var daysOfMonth = program.dayofmonth_ids.reduce(function (accumulator, d) {
                 var day = self.dayofmonthData.find((elem) => elem.id === d);
                 accumulator.add(day.code);
                 return accumulator
             }, new Set());
-            program.applied_days = days;
+            program.applied_dates = daysOfMonth;
+
+            var daysOfWeek = program.dayofweek_ids.reduce(function (accumulator, d) {
+                var day = self.dayofweekData.find((elem) => elem.id === d);
+                accumulator.add(day.code);
+                return accumulator
+            }, new Set());
+            program.applied_days = daysOfWeek;
 
             var hours = program.hour_ids.reduce(function (accumulator, h) {
                 var hour = self.hourData.find((elem) => elem.id === h);
@@ -261,9 +268,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         const customer = this.partner;
         if (!program.valid_customer_ids.has(customer ? customer.id : 0)) {return false;};
 
-        var hasDate = program.applied_days.has(this.creation_date.getDate()) || program.applied_days.size == 0;
+        var hasDate = program.applied_dates.has(this.creation_date.getDate()) || program.applied_dates.size == 0;
         var hasMonth = program.applied_months.has(this.creation_date.getMonth() + 1) || program.applied_months.size == 0;
         var hasHour = program.applied_hours.has(this.creation_date.getHours()) || program.applied_hours.size == 0;
+        var hasDay = program.applied_days.has(this.creation_date.getDay()) || program.applied_days.size == 0;
         if (!hasDate || !hasMonth || !hasHour) {;return false};
         return true;
     }

@@ -23,8 +23,8 @@ class PromotionCode(models.Model):
     # Nếu được gán Partner thì dùng 1 lần duy nhất
     # Nếu không gán Partner thì dùng được nhiều lần dựa trên giới hạn sử dụng
 
-    limit_usage = fields.Boolean(related='program_id.limit_usage', store=True)
-    max_usage = fields.Integer(related='program_id.max_usage', store=True)
+    limit_usage = fields.Boolean(related='program_id.limit_usage')
+    max_usage = fields.Integer()
 
     amount = fields.Float()
     consumed_amount = fields.Float()
