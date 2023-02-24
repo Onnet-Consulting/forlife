@@ -4,11 +4,9 @@ from odoo import api, fields, models, _
 import pytz
 import copy
 from datetime import timedelta
-from odoo.tools.misc import xlsxwriter
-import io
 
 REPORT_HEADER = ['STT', 'Chi nhánh', 'Mã chi nhánh', 'Khu vực', 'Mã KH', 'Tên KH', 'Mã HĐ', 'Ngày mua hàng', 'Ngày đánh giá', 'Đánh giá', 'Bình luận', 'Trạng thái']
-COLUMN_WIDTHS = [5, 30, 20, 12, 15, 30, 25, 16, 16, 12, 40, 12]
+COLUMN_WIDTHS = [8, 30, 20, 12, 15, 30, 25, 16, 16, 12, 40, 12]
 POP_INDEX_IN_FORM_REPORT = (3, 2)  # xóa cột khu vực và mã chi nhánh trên phom báo cáo
 DATA_NOT_FOUND = f'<tr style="text-align: center; color: #000000;"><td colspan="{len(REPORT_HEADER) - len(POP_INDEX_IN_FORM_REPORT)}"><h3>Không tìm thấy bản ghi nào !</h3></td></tr>'
 MIN_RECORD_PER_PAGE = 80
@@ -196,13 +194,8 @@ class NetPromoterScoreReport(models.TransientModel):
             values.update({'record_per_page': record_per_page})
         return values
 
-    def get_xlsx(self):
+    def generate_xlsx_report(self, workbook):
         data, values = self.filter_data([], {})
-        output = io.BytesIO()
-        workbook = xlsxwriter.Workbook(output, {
-            'in_memory': True,
-            'strings_to_formulas': False,
-        })
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet(self._description)
         sheet.set_row(0, 25)
@@ -217,8 +210,3 @@ class NetPromoterScoreReport(models.TransientModel):
                 else:
                     sheet.write(row, i, val, formats.get('normal_format'))
             row += 1
-        workbook.close()
-        output.seek(0)
-        generated_file = output.read()
-        output.close()
-        return generated_file

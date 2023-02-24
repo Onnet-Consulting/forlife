@@ -1,7 +1,9 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.tools.misc import xlsxwriter
 import copy
+import io
 
 
 class ReportBase(models.AbstractModel):
@@ -18,6 +20,22 @@ class ReportBase(models.AbstractModel):
 
     def view_report(self):
         ...
+
+    def generate_xlsx_report(self, workbook):
+        ...
+
+    def get_xlsx(self):
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {
+            'in_memory': True,
+            'strings_to_formulas': False,
+        })
+        self.generate_xlsx_report(workbook)
+        workbook.close()
+        output.seek(0)
+        generated_file = output.read()
+        output.close()
+        return generated_file
 
     def get_format_workbook(self, workbook):
         header_format = {

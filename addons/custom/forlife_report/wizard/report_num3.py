@@ -162,13 +162,8 @@ order by pp.id
         warehouse_data = self.get_warehouse_data()
         return {"data": data, **warehouse_data}
 
-    def get_xlsx(self):
+    def generate_xlsx_report(self, workbook):
         data = self.get_data()
-        output = io.BytesIO()
-        workbook = xlsxwriter.Workbook(output, {
-            'in_memory': True,
-            'strings_to_formulas': False,
-        })
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet(self._description)
         titles = ['Mã SP', 'Tên SP', 'Đơn vị', 'Tổng tồn'] + data['warehouse_names']
@@ -187,8 +182,3 @@ order by pp.id
                 sheet.write(row, col, value['product_qty_by_warehouse'].get(i), formats.get('float_number_format'))
                 col += 1
             row += 1
-        workbook.close()
-        output.seek(0)
-        generated_file = output.read()
-        output.close()
-        return generated_file

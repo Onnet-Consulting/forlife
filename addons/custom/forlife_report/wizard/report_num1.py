@@ -3,8 +3,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
-from odoo.tools.misc import xlsxwriter
-import io
 
 
 class ReportNum1(models.TransientModel):
@@ -73,13 +71,8 @@ where po.company_id = %s
         data = self._cr.dictfetchall()
         return data
 
-    def get_xlsx(self):
+    def generate_xlsx_report(self, workbook):
         data = self.get_data()
-        output = io.BytesIO()
-        workbook = xlsxwriter.Workbook(output, {
-            'in_memory': True,
-            'strings_to_formulas': False,
-        })
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet(self._description)
         titles = ['STT', 'Mã SP', 'Tên SP', 'Đơn vị', 'Giá', 'Số lượng', 'Chiết khấu', 'Thành tiền', 'Thành tiền có thuế']
@@ -99,8 +92,3 @@ where po.company_id = %s
             sheet.write(row, 7, value['amount_without_tax'], formats.get('float_number_format'))
             sheet.write(row, 8, value['amount_with_tax'], formats.get('float_number_format'))
             row += 1
-        workbook.close()
-        output.seek(0)
-        generated_file = output.read()
-        output.close()
-        return generated_file

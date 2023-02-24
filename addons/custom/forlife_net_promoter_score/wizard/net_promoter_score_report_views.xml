@@ -44,7 +44,7 @@
                         </div>
                         <div class="col-3">
                             <field name="brand_ids" widget="many2many_checkboxes"/>
-                            <button name="print_xlsx" type="object" string="Export Excel" icon="fa-download" class="oe_right"/>
+                            <button name="print_xlsx" type="object" string="Export Excel" icon="fa-download" class="btn-secondary oe_right"/>
                             <button name="btn_reset_searching" string=" Reset" icon="fa-refresh" class="oe_highlight oe_right" type="object" context="{'pop_colum': True}"/>
                         </div>
                     </div>
@@ -52,14 +52,14 @@
                         <div class="col-7"/>
                         <div class="col-3">
                             <span class="oe_right">
-                                <field name="record_per_page" class="oe_inline"/>
+                                <field name="record_per_page" class="oe_inline" force_save="1"/>
                                 records per page
                             </span>
                         </div>
                         <div class="col-2">
                             <button name="btn_next_page" attrs="{'invisible': [('number_of_page', '=', 1)]}" icon="fa-chevron-right" class="oe_right" type="object" context="{'pop_colum': True, 'paging': True}" aria-label="Next" title="Next"/>
                             <button name="btn_previous_page" attrs="{'invisible': [('number_of_page', '=', 1)]}" icon="fa-chevron-left" class="oe_right" type="object" context="{'pop_colum': True, 'paging': True}" aria-label="Previous" title="Previous"/>
-                            <field name="number_of_record" class="oe_right" readonly="1"/>
+                            <field name="number_of_record" class="oe_right" readonly="1" force_save="1"/>
                         </div>
                     </div>
                     <field name="view_report" readonly="1" force_save="1"/>
