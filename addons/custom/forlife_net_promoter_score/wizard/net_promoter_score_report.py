@@ -84,6 +84,7 @@ class NetPromoterScoreReport(models.TransientModel):
             'record_by_page': False,
             'record_per_page': min(max(self.record_per_page, MIN_RECORD_PER_PAGE), MAX_RECORD_PER_PAGE),
         })
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def btn_next_page(self):
         self.load_new_page(1)
