@@ -52,7 +52,7 @@
                             <field name="active" widget="boolean_toggle"/>
                             <label for="promotion_type"/>
                             <div>
-                                <field name="promotion_type" widget="filterable_selection"/>
+                                <field name="promotion_type"/>
                             </div>
                             <field name="currency_id" invisible="1"/>
                             <field name="currency_symbol" invisible="1"/>
@@ -141,7 +141,7 @@
                         <group>
                             <field name="reward_ids" colspan="2" mode="tree,form" nolabel="1" add-label="Add a reward"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_percent_by_qty', 'combo_fixed_price_by_qty'))]}"
-                                   class="o_loyalty_kanban_inline" widget="promotion_one2many">
+                                   class="o_loyalty_kanban_inline" context="{'default_program_id': active_id}">
                                 <tree>
                                     <field name="quantity_min"/>
                                     <field name="reward_type" invisible="1"/>
@@ -167,11 +167,11 @@
 
                                             <label for="disc_fixed_price" attrs="{'invisible': [('reward_type', '!=', 'combo_fixed_price_by_qty')]}"/>
                                             <div attrs="{'invisible': [('reward_type', '!=', 'combo_fixed_price_by_qty')]}">
-                                                <field class="oe_inline" name="disc_fixed_price" widget="monetary" options="{'currency_field': 'parent.currency_id'}"/>
+                                                <field class="oe_inline" name="disc_fixed_price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                                                 <span class="oe_inline">per Combo</span>
                                             </div>
 
-                                            <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'parent.currency_id'}"
+                                            <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
                                                    attrs="{'invisible': [('reward_type', '!=', 'combo_percent_by_qty')]}"/>
                                         </group>
                                     </group>
@@ -191,7 +191,7 @@
             <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="campaign_id"/>
+                <field name="campaign_id" optional="hide"/>
                 <field name="state"/>
                 <field name="promotion_type"/>
                 <field name="reward_type"/>
