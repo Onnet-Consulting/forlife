@@ -47,10 +47,10 @@ class Voucher(models.Model):
     derpartment_id = fields.Many2one('hr.department', 'Department Code', required=True)
     brand_id = fields.Many2one('res.brand', 'Brand', required=True, related='program_voucher_id.brand_id')
 
-    @api.depends('program_voucher_id.currency_id')
+    @api.depends('program_voucher_id')
     def _compute_currency_field(self):
         for rec in self:
-            rec.currency_id = rec.program_voucher_id.currency_id.id
+            rec.currency_id = rec.program_voucher_id.currency_id
 
     @api.depends('program_voucher_id')
     def _compute_name(self):

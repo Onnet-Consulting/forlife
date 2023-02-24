@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="program_voucher_sequence" model="ir.sequence">
             <field name="name">Program Voucher</field>
             <field name="code">program.voucher</field>
