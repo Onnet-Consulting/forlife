@@ -6,14 +6,14 @@
             <field name="name">salary_accounting_config_view_tree</field>
             <field name="model">salary.accounting.config</field>
             <field name="arch" type="xml">
-                <tree string="salary_accounting_config_tree">
+                <tree string="salary_accounting_config_tree" multi_edit="1">
                     <field name="company_id"/>
                     <field name="entry_id"/>
                     <field name="purpose_id"/>
                     <field name="debit_account_id"/>
                     <field name="credit_account_id"/>
-                    <field name="debit_partner_id"/>
-                    <field name="credit_partner_id"/>
+                    <field name="debit_partner_id" context="{'salary_accounting_config': 1}"/>
+                    <field name="credit_partner_id" context="{'salary_accounting_config': 1}"/>
                 </tree>
             </field>
         </record>
