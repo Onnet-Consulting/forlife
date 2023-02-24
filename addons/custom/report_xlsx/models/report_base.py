@@ -15,7 +15,7 @@ class ReportBase(models.AbstractModel):
             'type': 'ir.actions.act_url',
             'name': self._description,
             'url': '/custom/download/xlsx/%s/%s/%d' % (self._description, self._name, self.id),
-            'target': 'self'
+            'target': 'current'
         }
 
     def view_report(self):
