@@ -16,5 +16,5 @@ from . import salary_supplementary
 from . import salary_total_income
 from . import salary_accounting
 from . import save_change_log
-from . import res.utility1
+from . import res_utility
 from . import account_move
