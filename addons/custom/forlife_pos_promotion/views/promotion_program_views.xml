@@ -27,6 +27,17 @@
                                 Promotion Codes</span>
                             </div>
                         </button>
+                        <button class="oe_stat_button" type="object" name="action_open_orders" icon="fa-list"
+                                attrs="{'invisible': [('total_order_count', '=', 0)]}"
+                        >
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="total_order_count"/>
+                                </span>
+                                <span class="o_stat_text" >
+                                POS Orders</span>
+                            </div>
+                        </button>
                     </div>
                     <field name="active" invisible="1"/>
                     <field name="discount_apply_on" invisible="1"/>

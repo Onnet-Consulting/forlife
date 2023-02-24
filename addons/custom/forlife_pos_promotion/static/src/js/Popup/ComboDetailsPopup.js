@@ -3,6 +3,7 @@ odoo.define('forlife_pos_promotion.ComboDetailsPopup', function(require) {
 
     const AbstractAwaitablePopup = require('point_of_sale.AbstractAwaitablePopup');
     const Registries = require('point_of_sale.Registries');
+    const { _lt } = require('@web/core/l10n/translation');
 
     class ComboDetailsPopup extends AbstractAwaitablePopup {
         setup() {
@@ -15,7 +16,7 @@ odoo.define('forlife_pos_promotion.ComboDetailsPopup', function(require) {
     ComboDetailsPopup.defaultProps = {
          title: 'Combo Details',
          confirmKey: false,
-         info: [],
+         details: [],
          cancelText: _lt('Cancel')
      };
     Registries.Component.add(ComboDetailsPopup);

@@ -79,6 +79,7 @@ class PromotionProgram(models.Model):
     valid_customer_ids = fields.Many2many(related='campaign_id.valid_customer_ids')
 
     total_order_count = fields.Integer("Total Order Count", compute="_compute_total_order_count")
+    order_ids = fields.Many2many('pos.order', compute="_compute_total_order_count")
 
     # Combo
     combo_line_ids = fields.One2many(
@@ -184,6 +185,7 @@ class PromotionProgram(models.Model):
         for program in self:
             usages = self.env['promotion.usage.line'].search([('program_id', '=', program.id)])
             program.total_order_count = len(usages.mapped('order_id'))
+            program.order_ids = usages.mapped('order_id')
 
     def _show_gen_code(self):
         for program in self:
@@ -251,3 +253,17 @@ class PromotionProgram(models.Model):
             'default_program_id': self.id,
         }
         return action
+
+    def action_open_orders(self):
+        self.ensure_one()
+        return {
+            'name': _('Orders'),
+            'res_model': 'pos.order',
+            'view_mode': 'tree,form',
+            'views': [
+                (self.env.ref('point_of_sale.view_pos_order_tree_no_session_id').id, 'tree'),
+                (self.env.ref('point_of_sale.view_pos_pos_form').id, 'form'),
+            ],
+            'type': 'ir.actions.act_window',
+            'domain': [('id', 'in', self.order_ids.ids)],
+        }

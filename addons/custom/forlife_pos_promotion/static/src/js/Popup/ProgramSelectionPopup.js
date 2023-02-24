@@ -43,20 +43,48 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             });
         }
 
-        async view_combo_details(program) {
+        async view_combo_details(program_id) {
+            if (!this.combo_details.hasOwnProperty(program_id)) {
+                this.showPopup('ErrorPopup', {
+                    title: 'Lỗi hiển thị',
+                    body: 'Không có sản phẩm nào được áp dụng!'
+                });
+            };
+            let program = this.env.pos.promotion_program_by_id[program_id];
+            let qty_per_combo = program.comboFormula.reduce((total, line) => total + line.quantity, 0);
+            let qty_of_combo = this.combo_details[program_id].reduce((total, line) => total + line.quantity, 0);
+            let details = [];
+            this.combo_details[program_id].forEach((line) => {
+                let usage = line.promotion_usage_ids.find(l => l.program_id == program_id)
+                if (usage) {
+                    details.push({
+                        product: this.env.pos.db.get_product_by_id(line.product.id),
+                        quantity: line.quantity,
+                        pre_price: usage.original_price,
+                        new_price: usage.new_price,
+                        discount_amount: usage.discount_amount
+                    });
+                };
+            });
             try {
                 await this.showPopup('ComboDetailsPopup', {
                      title: 'Combo Details',
-                     info: []
+                     details: details,
+                     program: program,
+                     qty_per_combo: qty_per_combo,
+                     qty_of_combo: qty_per_combo > 0 ? Math.floor(qty_of_combo/qty_per_combo) : 0,
                 });
             } catch (e) {
-                console.log(e);
+                this.showPopup('ErrorPopup', {
+                    title: this.env._t('Unknown error'),
+                    body: this.env._t('An unknown error prevents us from loading detail combo information.'),
+                });
             };
         }
 
         selectItem(itemId) {
             let program_by_id = this.env.pos.promotion_program_by_id;
-
+            this.combo_details = {};
             if (itemId !== undefined) {
                 let current_program = this.state.programs.find((p) => p.id == itemId);
                 current_program.isSelected = !current_program.isSelected;

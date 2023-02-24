@@ -10,7 +10,7 @@ class PromotionComboLine(models.Model):
     _description = 'Promotion Combo Line'
 
     program_id = fields.Many2one('promotion.program')
-    product_ids = fields.Many2many('product.product', string='Products')
+    product_ids = fields.Many2many('product.product', string='Products', domain="[('available_in_pos', '=', True)]")
     product_categ_ids = fields.Many2many('product.category', string='Product Categories')
     quantity = fields.Float()
     valid_product_ids = fields.Many2many('product.product', compute='_compute_valid_product_ids')

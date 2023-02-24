@@ -38,9 +38,9 @@
                                 <div t-if="program.isSelected" class="number-combo">Đã áp dụng&nbsp;
                                     <strong t-esc="program.numberCombo or 0"/> &nbsp;Combo
                                 </div>
-<!--                                <div style="display: inline-block;" class="btn-primary">-->
-<!--                                    <i style="" class="fa fa-list" t-on-click="() => this.view_combo_details(program)"/>-->
-<!--                                </div>-->
+                                <div t-if="program.forecastedNumber > 0"  style="display: inline-block;" class="btn-primary">
+                                    <i title="Chi tiết" class="fa fa-list" t-on-click="() => this.view_combo_details(program.id)"/>
+                                </div>
                                 <t t-if="program.isSelected and program.discounted_amount > 0">
                                     <div style="display: inline-block" >
                                     Số tiền đã giảm: <strong t-esc="this.env.pos.format_currency(program.discounted_amount)"/>
@@ -80,9 +80,9 @@
                                 <div t-if="program.isSelected" class="number-combo">Đã áp dụng&nbsp;
                                     <strong t-esc="program.numberCombo or 0"/> &nbsp;Combo
                                 </div>
-<!--                                <div style="display: inline-block;" class="btn-primary">-->
-<!--                                    <i style="" class="fa fa-list" t-on-click="() => this.view_combo_details(program)"/>-->
-<!--                                </div>-->
+                                <div t-if="program.forecastedNumber > 0" style="display: inline-block;" class="btn-primary">
+                                    <i title="Chi tiết" class="fa fa-list" t-on-click="() => this.view_combo_details(program.id)"/>
+                                </div>
                                 <t t-if="program.isSelected and program.discounted_amount > 0">
                                     <div style="display: inline-block" >
                                     Số tiền đã giảm: <strong t-esc="this.env.pos.format_currency(program.discounted_amount)"/>
