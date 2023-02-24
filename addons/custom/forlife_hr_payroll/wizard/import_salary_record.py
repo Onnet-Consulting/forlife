@@ -384,7 +384,7 @@ class ImportSalaryRecord(models.TransientModel):
             xls_purposes.append(row[0])
             xls_departments.append(row[1])
             xls_analytic_accounts.append(row[3])
-            xls_projects.append(row[4])
+            # xls_projects.append(row[4]) fixme
         xls_data = dict(purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts, project=xls_projects)
         mapped_data = self.map_data(**xls_data)
         purpose_by_code, purpose_error_by_code = mapped_data.get('purpose')
@@ -439,9 +439,9 @@ class ImportSalaryRecord(models.TransientModel):
             xls_purposes.append(row[0])
             xls_departments.append(row[1])
             xls_analytic_accounts.append(row[3])
-            xls_projects.append(row[4])
+            # xls_projects.append(row[4]) fixme
             xls_manufacturing.append(row[5])
-            xls_internal_orders.append(row[6])
+            # xls_internal_orders.append(row[6]) fixme
         xls_data = dict(
             purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts,
             project=xls_projects, manufacturing=xls_manufacturing, internal_order=xls_internal_orders
@@ -507,9 +507,9 @@ class ImportSalaryRecord(models.TransientModel):
             xls_purposes.append(row[0])
             xls_departments.append(row[1])
             xls_analytic_accounts.append(row[3])
-            xls_projects.append(row[4])
+            # xls_projects.append(row[4]) fixme
             xls_manufacturing.append(row[5])
-            xls_internal_orders.append(row[6])
+            # xls_internal_orders.append(row[6]) fixme
         xls_data = dict(
             purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts,
             project=xls_projects, manufacturing=xls_manufacturing, internal_order=xls_internal_orders
@@ -588,9 +588,9 @@ class ImportSalaryRecord(models.TransientModel):
             xls_employees.append(row[1])
             xls_departments.append(row[3])
             xls_analytic_accounts.append(row[5])
-            xls_projects.append(row[6])
+            # xls_projects.append(row[6]) fixme
             xls_manufacturing.append(row[7])
-            xls_internal_orders.append(row[8])
+            # xls_internal_orders.append(row[8]) fixme
         xls_data = dict(
             purpose=xls_purposes, employee=xls_employees, department=xls_departments, analytic=xls_analytic_accounts,
             project=xls_projects, manufacturing=xls_manufacturing, internal_order=xls_internal_orders
