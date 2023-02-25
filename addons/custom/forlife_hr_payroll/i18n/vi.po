@@ -46,21 +46,6 @@ msgid "'Total income' in Salary total income table must >= 0!"
 msgstr "'Tổng thu nhập' trong bảng Tổng thu nhập phải lớn hơn hoặc bằng 0!"
 
 #. module: forlife_hr_payroll
-#: model:ir.model.fields.selection,name:forlife_hr_payroll.selection__salary_record__month__10
-msgid "10"
-msgstr "Tháng mười"
-
-#. module: forlife_hr_payroll
-#: model:ir.model.fields.selection,name:forlife_hr_payroll.selection__salary_record__month__11
-msgid "11"
-msgstr "Tháng mười một"
-
-#. module: forlife_hr_payroll
-#: model:ir.model.fields.selection,name:forlife_hr_payroll.selection__salary_record__month__12
-msgid "12"
-msgstr "Tháng mười hai"
-
-#. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_accounting__account_id
 msgid "Account"
 msgstr "Tài khoản"
