@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-25 09:28+0000\n"
-"PO-Revision-Date: 2023-02-25 09:28+0000\n"
+"POT-Creation-Date: 2023-02-25 09:42+0000\n"
+"PO-Revision-Date: 2023-02-25 09:42+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -44,6 +44,21 @@ msgstr ""
 #, python-format
 msgid "'Total income' in Salary total income table must >= 0!"
 msgstr "'Tổng thu nhập' trong bảng Tổng thu nhập phải lớn hơn hoặc bằng 0!"
+
+#. module: forlife_hr_payroll
+#: model:ir.model.fields.selection,name:forlife_hr_payroll.selection__salary_record__month__10
+msgid "10"
+msgstr ""
+
+#. module: forlife_hr_payroll
+#: model:ir.model.fields.selection,name:forlife_hr_payroll.selection__salary_record__month__11
+msgid "11"
+msgstr ""
+
+#. module: forlife_hr_payroll
+#: model:ir.model.fields.selection,name:forlife_hr_payroll.selection__salary_record__month__12
+msgid "12"
+msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_accounting__account_id
@@ -238,7 +253,7 @@ msgstr "Xác nhận bởi (NS)"
 #. module: forlife_hr_payroll
 #: model:ir.model,name:forlife_hr_payroll.model_res_partner
 msgid "Contact"
-msgstr "Danh bạ"
+msgstr "Liên hệ"
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_account_move_line__analytic_account_id
@@ -641,6 +656,8 @@ msgstr "Dòng  %r, Loại lương \"%s\" không hợp lệ\n"
 
 #. module: forlife_hr_payroll
 #. odoo-python
+#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
+#: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
 #: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
 #, python-format
 msgid "Line %s, "
