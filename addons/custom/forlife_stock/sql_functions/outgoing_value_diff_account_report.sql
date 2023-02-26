@@ -1,16 +1,16 @@
-DROP FUNCTION IF EXISTS outgoing_value_diff_report;
-CREATE OR REPLACE FUNCTION outgoing_value_diff_report(_date_from character varying , _date_to character varying, _company_id integer)
+DROP FUNCTION IF EXISTS outgoing_value_diff_account_report;
+CREATE OR REPLACE FUNCTION outgoing_value_diff_account_report(_date_from character varying , _date_to character varying, _company_id integer)
 RETURNS TABLE
         (
             product_id               INTEGER,
             opening_quantity         NUMERIC,
-            opening_value            FLOAT,
+            opening_value            NUMERIC,
             incoming_quantity        NUMERIC,
-            incoming_value           FLOAT,
+            incoming_value           NUMERIC,
             odoo_outgoing_quantity   NUMERIC,
-            odoo_outgoing_value      FLOAT,
-            real_outgoing_price_unit FLOAT,
-            real_outgoing_value      FLOAT
+            odoo_outgoing_value      NUMERIC,
+            real_outgoing_price_unit NUMERIC,
+            real_outgoing_value      NUMERIC
         )
     LANGUAGE plpgsql
 AS

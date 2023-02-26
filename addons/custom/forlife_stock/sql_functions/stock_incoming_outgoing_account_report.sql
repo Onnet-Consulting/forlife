@@ -1,16 +1,16 @@
-DROP FUNCTION IF EXISTS stock_incoming_outgoing_report;
-CREATE OR REPLACE FUNCTION stock_incoming_outgoing_report(_date_from character varying , _date_to character varying, _company_id integer)
+DROP FUNCTION IF EXISTS stock_incoming_outgoing_report_account;
+CREATE OR REPLACE FUNCTION stock_incoming_outgoing_report_account(_date_from character varying , _date_to character varying, _company_id integer)
 RETURNS TABLE
         (
             product_id               INTEGER,
             opening_quantity         NUMERIC,
-            opening_value            FLOAT,
+            opening_value            NUMERIC,
             incoming_quantity        NUMERIC,
-            incoming_value           FLOAT,
+            incoming_value           NUMERIC,
             odoo_outgoing_quantity   NUMERIC,
-            real_outgoing_value      FLOAT,
+            real_outgoing_value      NUMERIC,
             closing_quantity         NUMERIC,
-            closing_value            FLOAT
+            closing_value            NUMERIC
         )
     LANGUAGE plpgsql
 AS

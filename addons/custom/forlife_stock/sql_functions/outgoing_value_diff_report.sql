@@ -4,13 +4,13 @@ RETURNS TABLE
         (
             product_id               INTEGER,
             opening_quantity         NUMERIC,
-            opening_value            FLOAT,
+            opening_value            NUMERIC,
             incoming_quantity        NUMERIC,
-            incoming_value           FLOAT,
+            incoming_value           NUMERIC,
             odoo_outgoing_quantity   NUMERIC,
-            odoo_outgoing_value      FLOAT,
-            real_outgoing_price_unit FLOAT,
-            real_outgoing_value      FLOAT
+            odoo_outgoing_value      NUMERIC,
+            real_outgoing_price_unit NUMERIC,
+            real_outgoing_value      NUMERIC
         )
     LANGUAGE plpgsql
 AS
