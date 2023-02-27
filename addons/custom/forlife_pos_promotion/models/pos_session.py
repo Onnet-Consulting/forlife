@@ -77,6 +77,7 @@ class PosSession(models.Model):
                     'min_quantity',
                     'order_amount_min',
                     'reward_type',
+                    'qty_min_required',
                     'reward_quantity',
                     'reward_for_referring',
                     'discount_product_ids',
