@@ -187,8 +187,6 @@ msgid "Cancelled Posting"
 msgstr "Hủy bút toán"
 
 #. module: forlife_hr_payroll
-#: model:ir.model.fields,field_description:forlife_hr_payroll.field_hr_department__code
-#: model:ir.model.fields,field_description:forlife_hr_payroll.field_res_company__code
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_purpose__code
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record_type__code
 msgid "Code"
@@ -210,11 +208,6 @@ msgstr "Công ty"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_total_income__company_id
 msgid "Company"
 msgstr "Công ty"
-
-#. module: forlife_hr_payroll
-#: model:ir.model.constraint,message:forlife_hr_payroll.constraint_res_company_unique_code
-msgid "Company code must be unique!"
-msgstr "Mã công ty phải là duy nhất !"
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_save_change_log__company_id
@@ -371,7 +364,6 @@ msgid "Debit partner"
 msgstr "Ghi nợ của đối tác"
 
 #. module: forlife_hr_payroll
-#: model:ir.model,name:forlife_hr_payroll.model_hr_department
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_arrears__department_id
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_backlog__department_id
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_general_info__department_id
@@ -380,11 +372,6 @@ msgstr "Ghi nợ của đối tác"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_total_income__department_id
 msgid "Department"
 msgstr "Phòng/Ban"
-
-#. module: forlife_hr_payroll
-#: model:ir.model.constraint,message:forlife_hr_payroll.constraint_hr_department_unique_code
-msgid "Department code must be unique!"
-msgstr "Mã phòng ban phải là duy nhất !"
 
 #. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record__note
@@ -542,13 +529,6 @@ msgstr "Ghi có của đối tác không hợp lệ !"
 #, python-format
 msgid "Invalid Debit partner !"
 msgstr "Ghi nợ của đối tác không hợp lệ !"
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/models/res_utility.py:0
-#, python-format
-msgid "Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s"
-msgstr "Giá trị tại hàng %(row)s, cột %(col)s: %(cell_value)s không hợp l"
 
 #. module: forlife_hr_payroll
 #: model:ir.model,name:forlife_hr_payroll.model_account_move
@@ -1238,11 +1218,6 @@ msgid "Users"
 msgstr "Người dùng"
 
 #. module: forlife_hr_payroll
-#: model:ir.model,name:forlife_hr_payroll.model_res_utility1
-msgid "Utility Methods"
-msgstr "Hàm tiện ích"
-
-#. module: forlife_hr_payroll
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_record__version
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_save_change_log__version
 msgid "Version"
@@ -1391,10 +1366,3 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_hr_payroll.save_change_log_view_tree
 msgid "save_change_log_tree"
 msgstr ""
-
-#. module: forlife_hr_payroll
-#. odoo-python
-#: code:addons/forlife_hr_payroll/models/res_utility.py:0
-#, python-format
-msgid "unknown error code %s"
-msgstr "mã lỗi không xác định %s"

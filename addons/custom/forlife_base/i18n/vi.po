@@ -1,0 +1,61 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-27 09:15+0000\n"
+"PO-Revision-Date: 2023-02-27 09:15+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_hr_department__code
+#: model:ir.model.fields,field_description:forlife_base.field_res_company__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: forlife_base
+#: model:ir.model.constraint,message:forlife_base.constraint_res_company_unique_code
+msgid "Company code must be unique!"
+msgstr "Mã công ty phải là duy nhất !"
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_hr_department
+msgid "Department"
+msgstr "Phòng/Ban"
+
+#. module: forlife_base
+#: model:ir.model.constraint,message:forlife_base.constraint_hr_department_unique_code
+msgid "Department code must be unique!"
+msgstr "Mã phòng ban phải là duy nhất !"
+
+#. module: forlife_base
+#. odoo-python
+#: code:addons/forlife_base/models/res_utility.py:0
+#, python-format
+msgid "Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s"
+msgstr "Giá trị tại hàng %(row)s, cột %(col)s: %(cell_value)s không hợp lệ"
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_res_utility
+msgid "Utility Methods"
+msgstr "Hàm tiện ích"
+
+#. module: forlife_base
+#. odoo-python
+#: code:addons/forlife_base/models/res_utility.py:0
+#, python-format
+msgid "unknown error code %s"
+msgstr "mã lỗi không xác định %s"

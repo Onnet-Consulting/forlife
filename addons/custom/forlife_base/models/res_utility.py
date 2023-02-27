@@ -7,7 +7,7 @@ import xlrd
 
 
 class ResUtility(models.AbstractModel):
-    _name = 'res.utility1'
+    _name = 'res.utility'
     _description = 'Utility Methods'
 
     @api.model

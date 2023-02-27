@@ -330,7 +330,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_header_data(self, workbook, sheet_index=0):
-        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         data = data[1:2]
         errors = ''
@@ -373,7 +373,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_salary_main_data(self, workbook, sheet_index=1):
-        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
@@ -426,7 +426,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_salary_total_income_data(self, workbook, sheet_index=2):
-        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
@@ -494,7 +494,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_salary_supplementary_data(self, workbook, sheet_index=3):
-        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
@@ -573,7 +573,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_salary_arrears_data(self, workbook, sheet_index=4):
-        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
@@ -661,7 +661,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_salary_backlog_data(self, workbook, sheet_index=5):
-        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
