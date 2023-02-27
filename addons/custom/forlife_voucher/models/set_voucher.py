@@ -32,3 +32,4 @@ class SetVoucher(models.Model):
             program_used = self.env['program.voucher'].search([('purpose_id', '=', rec.id)], limit=1)
             if program_used:
                 raise ValidationError(_('Không thể hoàn thành thao tác: Bản ghi "{}" yêu cầu bản ghi bị xóa. Nếu có thể, hãy lưu trữ nó để thay thế.'.format(program_used.name)))
+        return super(SetVoucher, self).unlink()

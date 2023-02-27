@@ -147,7 +147,7 @@ class ProgramVoucher(models.Model):
         for rec in self:
             if rec.voucher_ids:
                 raise ValidationError(_('Bạn không được phép xóa chương trình chứa mã Voucher!'))
-
+        return super(ProgramVoucher, self).unlink()
 
 
 
