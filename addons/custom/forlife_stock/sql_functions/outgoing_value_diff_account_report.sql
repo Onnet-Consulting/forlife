@@ -113,11 +113,9 @@ BEGIN
                     coalesce(outgoing.quantity, 0) as odoo_outgoing_quantity,
                     coalesce(outgoing.total_value, 0) as odoo_outgoing_value
             FROM product_product pp
-            LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
             LEFT JOIN opening ON opening.product_id = pp.id
             LEFT JOIN incoming ON incoming.product_id = pp.id
             LEFT JOIN outgoing ON outgoing.product_id = pp.id
-            WHERE pt.detailed_type = 'product'
             ORDER BY pp.default_code) as data
         WHERE data.opening_quantity <> 0
             OR data.incoming_quantity <> 0
