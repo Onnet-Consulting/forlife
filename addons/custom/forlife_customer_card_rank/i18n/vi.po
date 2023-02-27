@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-27 06:48+0000\n"
-"PO-Revision-Date: 2023-02-27 06:48+0000\n"
+"POT-Creation-Date: 2023-02-27 07:55+0000\n"
+"PO-Revision-Date: 2023-02-27 07:55+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -167,6 +167,11 @@ msgid "Customer Group"
 msgstr "Nhóm khách hàng"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__partner_retail_ids
+msgid "Customer Retail Types"
+msgstr "Loại khách hàng lẻ"
+
+#. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_form
 msgid "Detail"
 msgstr "Chi tiết"
@@ -175,6 +180,11 @@ msgstr "Chi tiết"
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
 msgid "Detail Card Rank"
 msgstr "Chi tiết hạng thẻ"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__discount_account_id
+msgid "Discount Account"
+msgstr "Tài khoản chiết khấu hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__display_name
@@ -288,6 +298,11 @@ msgid ""
 "ongoing programs"
 msgstr ""
 "Không thể thay đổi thứ hạng của hạng '%s' do các chương trình đang diễn ra"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__journal_ids
+msgid "Journal"
+msgstr "Sổ nhật ký"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank____last_update
@@ -575,6 +590,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value3
 msgid "Value 3"
 msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value_account_id
+msgid "Value Account"
+msgstr "Tài khoản giá trị tặng khách"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__value_orders

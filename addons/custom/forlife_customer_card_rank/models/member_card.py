@@ -21,7 +21,8 @@ class MemberCard(models.Model):
     from_date = fields.Date('Time Apply', copy=False, tracking=True)
     to_date = fields.Date('To Date', copy=False, tracking=True)
     time_set_rank = fields.Integer('Time Set Rank', default=180, tracking=True)
-    customer_group_ids = fields.Many2many('res.partner.group', string='Customer Group')
+    customer_group_ids = fields.Many2many('res.partner.group', string='Customer Group', default=lambda f: [(4, f.env.ref('forlife_pos_app_member.partner_group_c').ids)])
+    partner_retail_ids = fields.Many2many('res.partner.retail', string='Customer Retail Types')
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method')
     card_rank_id = fields.Many2one('card.rank', string='Rank', tracking=True)
     min_turnover = fields.Integer('Turnover', tracking=True)
@@ -38,6 +39,9 @@ class MemberCard(models.Model):
     active = fields.Boolean('Active', default=True, tracking=True)
     order_ids = fields.Many2many('pos.order', string='Orders')
     qty_order = fields.Integer('Order', compute='_compute_qty_order')
+    journal_ids = fields.Many2many('account.journal', string='Journal')
+    discount_account_id = fields.Many2one('account.account', string='Discount Account', tracking=True, required=True)
+    value_account_id = fields.Many2one('account.account', string='Value Account', tracking=True, required=True)
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -112,6 +116,7 @@ class MemberCard(models.Model):
             'default_to_date': self.to_date,
             'default_time_set_rank': self.time_set_rank,
             'default_customer_group_ids': self.customer_group_ids.ids,
+            'default_partner_retail_ids': self.partner_retail_ids.ids,
             'default_payment_method_ids': self.payment_method_ids.ids,
             'default_card_rank_id': self.card_rank_id.id,
             'default_min_turnover': self.min_turnover,
@@ -122,6 +127,9 @@ class MemberCard(models.Model):
             'default_apply_value_to_1': self.apply_value_to_1,
             'default_apply_value_to_2': self.apply_value_to_2,
             'default_apply_value_to_3': self.apply_value_to_3,
+            'default_journal_ids': self.journal_ids.ids,
+            'default_discount_account_id': self.discount_account_id.id,
+            'default_value_account_id': self.value_account_id.id,
         })
         return {
             'type': 'ir.actions.act_window',

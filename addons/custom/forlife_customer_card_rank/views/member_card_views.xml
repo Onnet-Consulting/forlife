@@ -61,6 +61,7 @@
                             <group>
                                 <field name="time_set_rank"/>
                                 <field name="customer_group_ids" widget="many2many_tags" required="1"/>
+                                <field name="partner_retail_ids" widget="many2many_tags" required="1" domain="[('brand_id', '=', brand_id)]"/>
                                 <field name="payment_method_ids" widget="many2many_tags" required="1"/>
                                 <field name="card_rank_id" class="oe_inline" required="1"/>
                                 <field name="min_turnover" class="oe_inline"/>
@@ -87,8 +88,14 @@
                                 discount (%)
                                 <field name="value3" class="oe_inline"/>
                             </div>
+                            <group>
+                                <field name="journal_ids" widget="many2many_tags" required="1"/>
+                                <field name="discount_account_id"/>
+                                <field name="value_account_id"/>
+                            </group>
                         </group>
                         <field name="active" invisible="1"/>
+                        <field name="brand_id" invisible="1"/>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_ids" widget="mail_thread"/>
