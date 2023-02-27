@@ -65,7 +65,7 @@ msgstr "Thương hiệu"
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_hr_department__center_expense_id
 msgid "Center Expense"
-msgstr ""
+msgstr "Trung tâm chi phí"
 
 #. module: forlife_voucher
 #: model:ir.actions.server,name:forlife_voucher.ir_cron_check_due_date_voucher_ir_actions_server
@@ -81,7 +81,7 @@ msgstr "Mã"
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__count
 msgid "Count"
-msgstr ""
+msgstr "Số lượng"
 
 #. module: forlife_voucher
 #: model_terms:ir.ui.view,arch_db:forlife_voucher.voucher_form_view
@@ -427,7 +427,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:forlife_voucher.forlife_set_voucher_action
 #: model:ir.ui.menu,name:forlife_voucher.forlife_set_voucher
 msgid "Set Voucher"
-msgstr "Đặt Voucher"
+msgstr "Đặt mã Voucher"
 
 #. module: forlife_voucher
 #: model:ir.model,name:forlife_voucher.model_setup_voucher

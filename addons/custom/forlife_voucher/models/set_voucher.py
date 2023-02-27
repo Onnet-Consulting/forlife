@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError, ValidationError
 
 
 class SetVoucher(models.Model):
@@ -17,3 +18,9 @@ class SetVoucher(models.Model):
     _sql_constraints = [
         ('unique_ref', 'UNIQUE(ref)', 'Ref must be unique!')
     ]
+
+    def unlink(self):
+        for rec in self:
+            program_used = self.env['program.voucher'].search([('purpose_id', '=', rec.id)])
+            if program_used:
+                raise ValidationError(_('Không thể hoàn thành thao tác: Bản ghi "{}" yêu cầu bản ghi bị xóa. Nếu có thể, hãy lưu trữ nó để thay thế.'.format(program_used.name)))
