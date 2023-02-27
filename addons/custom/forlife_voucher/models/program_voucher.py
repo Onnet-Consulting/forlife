@@ -32,7 +32,22 @@ class ProgramVoucher(models.Model):
 
     store_id = fields.Many2one('store', 'Apply for store', required=True)
 
-    product_id = fields.Many2one('product.template', 'Product Voucher')
+    product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse')
+
+    product_ids = fields.One2many('product.template', 'program_voucher_id')
+
+    currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
+
+    @api.depends('product_ids')
+    def compute_product(self):
+        if len(self.product_ids) > 0:
+            self.product_id = self.product_ids[0]
+
+    def product_inverse(self):
+        if len(self.product_ids) > 0:
+            product = self.env['product.template'].browse(self.product_ids[0].id)
+            product.program_voucher_id = False
+        self.product_id.program_voucher_id = self
 
     program_voucher_line_ids = fields.One2many('program.voucher.line', 'program_voucher_id', string='Voucher')
 

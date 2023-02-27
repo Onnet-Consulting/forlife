@@ -9,8 +9,13 @@ class Voucher(models.Model):
 
     price = fields.Monetary('Price')
 
-    currency_id = fields.Many2one('res.currency')
+    currency_id = fields.Many2one('res.currency', compute='_compute_currency_field')
 
     partner_ids = fields.Many2many('res.partner', string='Customers')
 
     count = fields.Integer('Count')
+
+    @api.depends('program_voucher_id')
+    def _compute_currency_field(self):
+        for rec in self:
+            rec.currency_id = rec.program_voucher_id.currency_id

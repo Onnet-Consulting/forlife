@@ -15,7 +15,7 @@ class Voucher(models.Model):
     name = fields.Char('Code', compute='_compute_name', store=True)
     program_voucher_id = fields.Many2one('program.voucher', 'Program name')
     purpose_id = fields.Many2one('setup.voucher', 'Purpose', required=True, related='program_voucher_id.purpose_id')
-    currency_id = fields.Many2one('res.currency', related='product_voucher_id.currency_id')  # related currency of program voucher
+    currency_id = fields.Many2one('res.currency', compute='_compute_currency_field')  # related currency of program voucher
     type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True, related='program_voucher_id.type')
     state = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string='State', required=True, tracking=True)
     price = fields.Monetary('Mệnh giá')
@@ -46,6 +46,11 @@ class Voucher(models.Model):
 
     derpartment_id = fields.Many2one('hr.department', 'Department Code', required=True)
     brand_id = fields.Many2one('res.brand', 'Brand', required=True, related='program_voucher_id.brand_id')
+
+    @api.depends('program_voucher_id')
+    def _compute_currency_field(self):
+        for rec in self:
+            rec.currency_id = rec.program_voucher_id.currency_id
 
     @api.depends('program_voucher_id')
     def _compute_name(self):

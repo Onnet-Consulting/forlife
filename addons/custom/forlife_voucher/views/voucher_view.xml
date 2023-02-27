@@ -40,6 +40,7 @@
                     <sheet>
                         <group>
                             <field name="name"/>
+                            <field name="currency_id" invisible="1"/>
                             <field name="program_voucher_id" readonly="True"/>
                             <field name="type"/>
                             <field name="purpose_id"/>
@@ -61,11 +62,12 @@
                             <field name="state_app"/>
                             <field name="phone_number"/>
                         </group>
-                    </sheet><div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
 
                 </form>
             </field>

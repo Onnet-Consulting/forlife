@@ -55,9 +55,10 @@
                             <page name="voucher" string="Voucher">
                                 <field name="program_voucher_line_ids">
                                     <tree editable="bottom">
-                                        <field name="price"/>
+                                        <field name="price" widget="monetary"/>
                                         <field name="partner_ids" widget="many2many_tags"/>
                                         <field name="count"/>
+                                        <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
                             </page>
