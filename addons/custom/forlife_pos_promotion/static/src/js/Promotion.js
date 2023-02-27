@@ -450,6 +450,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         for (const program of comboProgramToCheck) {
             var to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
             let NumberOfCombo = this._checkNumberOfCombo(program, to_check_order_lines, [] , 0)[2];
+            if (['combo_percent_by_qty', 'combo_fixed_price_by_qty'].includes(program.reward_type) && !(NumberOfCombo >= program.qty_min_required)) {
+                continue;
+            };
             if (NumberOfCombo >= 1) {
                 comboProgramIsVerified[program.id] = NumberOfCombo;
             };
@@ -569,12 +572,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         // Mua Comboo càng nhiều càng giảm, theo tỷ lệ %
         else if (program.reward_type == 'combo_percent_by_qty' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
-            let rewardLines = program.rewards.sort((l1, l2) => l2.disc_percent > l1.disc_percent);
+            let rewardLines = program.rewards.sort((l1, l2) => l2.disc_percent - l1.disc_percent);
             let applyRewardLine;
             for (let i = 0; i < rewardLines.length; i++) {
                 if (number_of_combo >= rewardLines[i].quantity_min) {
                     applyRewardLine = rewardLines[i];
+                    break;
                 };
+            };
+            if (!applyRewardLine) {
+                return comboLineList;
             };
             let disc_total_amount = base_total_amount * applyRewardLine.disc_percent / 100;
             if (applyRewardLine.disc_max_amount > 0) {
@@ -594,12 +601,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         // Mua Comboo càng nhiều càng giảm, theo đơn giá cố đinh
         else if (program.reward_type == 'combo_fixed_price_by_qty' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
-            let rewardLines = program.rewards.sort((l1, l2) => l2.disc_percent > l1.disc_percent);
+            let rewardLines = program.rewards.sort((l1, l2) => l2.disc_percent - l1.disc_percent);
             let applyRewardLine;
             for (let i = 0; i < rewardLines.length; i++) {
                 if (number_of_combo >= rewardLines[i].quantity_min) {
                     applyRewardLine = rewardLines[i];
+                    break;
                 };
+            };
+            if (!applyRewardLine) {
+                return comboLineList;
             };
             let disc_total_amount = base_total_amount - applyRewardLine.disc_fixed_price;
             disc_total_amount = disc_total_amount > 0 ? disc_total_amount : 0.0;

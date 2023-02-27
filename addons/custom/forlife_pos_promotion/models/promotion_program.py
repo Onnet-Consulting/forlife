@@ -108,6 +108,7 @@ class PromotionProgram(models.Model):
     reward_type = fields.Selection(REWARD_TYPE, string='Reward Type')
 
     reward_ids = fields.One2many('promotion.reward.line', 'program_id', 'Rewards', copy=True, readonly=False, store=True)
+    qty_min_required = fields.Float(compute='_qty_min_required', help='Use for Combo Program  based on quantity of the Combo')
 
     voucher_ids = fields.One2many('promotion.voucher', 'program_id')
 
@@ -188,6 +189,12 @@ class PromotionProgram(models.Model):
             usages = self.env['promotion.usage.line'].search([('program_id', '=', program.id)])
             program.total_order_count = len(usages.mapped('order_id'))
             program.order_ids = usages.mapped('order_id')
+
+    def _qty_min_required(self):
+        for program in self:
+            program.qty_min_required = 0
+            if program.reward_type in ['combo_percent_by_qty', 'combo_fixed_price_by_qty'] and program.reward_ids:
+                program.qty_min_required = min(program.reward_ids.mapped('quantity_min')) or 0
 
     def _show_gen_code(self):
         for program in self:
