@@ -36,7 +36,7 @@ class PosOrder(models.Model):
         new_rank = partner_card_rank.card_rank_id
         is_rank = False
         for program in member_cards:
-            if partner_card_rank.customer_id.group_id.id in program.customer_group_ids.ids and (program.is_all_store or self.config_id.store_id.id in program.store_ids.ids):
+            if partner_card_rank.customer_id.group_id.id in program.customer_group_ids.ids:
                 is_rank = True
                 value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
                 if program.time_set_rank != 0:

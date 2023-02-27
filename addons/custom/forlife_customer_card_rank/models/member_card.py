@@ -20,8 +20,6 @@ class MemberCard(models.Model):
     register_to_date = fields.Date('Register To Date')
     from_date = fields.Date('Time Apply', copy=False, tracking=True)
     to_date = fields.Date('To Date', copy=False, tracking=True)
-    is_all_store = fields.Boolean('Is All Store', default=True, tracking=True)
-    store_ids = fields.Many2many('store', string='Stores Apply')
     time_set_rank = fields.Integer('Time Set Rank', default=180, tracking=True)
     customer_group_ids = fields.Many2many('res.partner.group', string='Customer Group')
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method')
@@ -48,12 +46,6 @@ class MemberCard(models.Model):
     def _compute_qty_order(self):
         for line in self:
             line.qty_order = len(line.order_ids)
-
-    @api.onchange('is_all_store')
-    def onchange_is_all_store(self):
-        for line in self:
-            if not line.is_all_store and not line.store_ids:
-                line.store_ids = self.env['store'].search([('brand_id', '=', line.brand_id.id)], limit=1)
 
     @api.constrains("from_date", "to_date", 'active', 'min_turnover', 'card_rank_id')
     def validate_time(self):
@@ -96,44 +88,12 @@ class MemberCard(models.Model):
                 '|', '&', ('from_date', '<=', self.from_date), ('to_date', '>=', self.from_date),
                 '&', ('from_date', '<=', self.to_date), ('to_date', '>=', self.to_date)]
 
-    def btn_add_stores(self):
-        ctx = dict(self._context)
-        ctx.update({
-            'default_member_card_id': self.id,
-            'default_store_ids': self.store_ids.ids,
-            'brand_id': self.brand_id.id,
-        })
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Update Store'),
-            'res_model': 'form.update.store',
-            'target': 'new',
-            'view_mode': 'form',
-            'views': [[self.env.ref('forlife_customer_card_rank.form_update_store_view_form').id, 'form']],
-            'context': ctx,
-        }
-
     def action_inactive_member_card_program(self):
         res = self.search([('active', '=', True), ('to_date', '<', fields.Date.today())])
         if res:
             res.sudo().write({
                 'active': False,
             })
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        res = super().create(vals_list)
-        for line in res:
-            if line.store_ids:
-                message = {
-                    'added': _('Store added: %s') % ', '.join(line.store_ids.mapped('name')),
-                    'time': fields.Datetime.now().astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y %H:%M:%S')
-                }
-                line.message_post_with_view(
-                    'forlife_customer_card_rank.message_update_stores',
-                    values=message
-                )
-        return res
 
     def get_member_card_by_date(self, date, brand_id):
         return self.search([('brand_id', '=', brand_id), ('from_date', '<=', date), ('to_date', '>=', date)])
@@ -150,8 +110,6 @@ class MemberCard(models.Model):
             'default_register_to_date': self.register_to_date,
             'default_from_date': self.from_date,
             'default_to_date': self.to_date,
-            'default_is_all_store': self.is_all_store,
-            'default_store_ids': self.store_ids.ids,
             'default_time_set_rank': self.time_set_rank,
             'default_customer_group_ids': self.customer_group_ids.ids,
             'default_payment_method_ids': self.payment_method_ids.ids,
@@ -185,31 +143,3 @@ class MemberCard(models.Model):
             if line.order_ids:
                 raise ValidationError(_("You can't delete the card rank program that delivered the order"))
         return super().unlink()
-
-
-class FormUpdateStore(models.TransientModel):
-    _name = 'form.update.store'
-    _description = 'Form Update Store'
-
-    member_card_id = fields.Many2one('member.card', string='Member Card')
-    store_ids = fields.Many2many('store', string='Stores Apply')
-
-    def btn_ok(self):
-        if not self.store_ids:
-            raise ValidationError(_('Stores Apply is required !'))
-        store_add = self.store_ids - self.member_card_id.store_ids
-        store_del = self.member_card_id.store_ids - self.store_ids
-        message = {}
-        if store_add:
-            message.update({'added': _('Store added: %s') % ', '.join(store_add.mapped('name'))})
-        if store_del:
-            message.update({'deleted': _('Store deleted: %s') % ', '.join(store_del.mapped('name'))})
-        if message:
-            message.update({'time': fields.Datetime.now().astimezone(pytz.timezone(self.env.user.tz)).strftime('%d/%m/%Y %H:%M:%S')})
-            self.member_card_id.message_post_with_view(
-                'forlife_customer_card_rank.message_update_stores',
-                values=message
-            )
-            self.member_card_id.sudo().write({
-                'store_ids': [(6, 0, self.store_ids.ids)],
-            })

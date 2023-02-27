@@ -277,11 +277,6 @@ msgid "Inactive Member Card Program"
 msgstr "Tắt chương trình hạng thẻ"
 
 #. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__is_all_store
-msgid "Is All Store"
-msgstr "Tất cả cửa hàng"
-
-#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_is_follower
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_is_follower
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_is_follower
@@ -532,35 +527,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_filter
 msgid "Search"
 msgstr "Tìm kiếm"
-
-#. module: forlife_customer_card_rank
-#. odoo-python
-#: code:addons/forlife_customer_card_rank/models/member_card.py:0
-#: code:addons/forlife_customer_card_rank/models/member_card.py:0
-#, python-format
-msgid "Store added: %s"
-msgstr "Cửa hàng đã thêm: %s"
-
-#. module: forlife_customer_card_rank
-#. odoo-python
-#: code:addons/forlife_customer_card_rank/models/member_card.py:0
-#, python-format
-msgid "Store deleted: %s"
-msgstr "Cửa hàng đã xóa: %s"
-
-#. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__store_ids
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__store_ids
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.form_update_store_view_form
-msgid "Stores Apply"
-msgstr "Cửa hàng áp dụng"
-
-#. module: forlife_customer_card_rank
-#. odoo-python
-#: code:addons/forlife_customer_card_rank/models/member_card.py:0
-#, python-format
-msgid "Stores Apply is required !"
-msgstr "Trường cửa hàng áp dụng không được để trống !"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__from_date
