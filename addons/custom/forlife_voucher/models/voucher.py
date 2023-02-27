@@ -58,7 +58,7 @@ class Voucher(models.Model):
             if v.program_voucher_id:
                 X = "V" if v.program_voucher_id.type == 'v' else "E"
                 Y = v.program_voucher_id.purpose_id.ref
-                T = 1 if v.program_voucher_id.apply_many_times else 1
+                T = 1 if v.program_voucher_id.apply_many_times else 0
                 Z = 1 if v.program_voucher_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id else 2
                 ABBB = v.program_voucher_id.program_voucher_code
                 NNNNN = self._generator_charnumber_code(size=5)
@@ -89,9 +89,10 @@ class Voucher(models.Model):
     def check_due_date_voucher(self):
         now = datetime.now()
         vouchers = self.search([('state', '!=', 'expired')])
-        for rec in vouchers:
-            if rec.end_date < now:
-                rec.state = 'expired'
+        if vouchers:
+            for rec in vouchers:
+                if rec.end_date and rec.end_date < now:
+                    rec.state = 'expired'
 
     def write(self, values):
         for record in self:

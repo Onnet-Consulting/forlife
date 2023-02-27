@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 Character = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -119,7 +119,7 @@ class ProgramVoucher(models.Model):
                             'derpartment_id': self.derpartment_id.id,
                         })
         else:
-            raise UserError(_("Vui lòng thiết lập dữ liệu voucher!"))
+            raise UserError(_("Vui lòng thêm dòng thông tin cho vourcher!"))
 
     def action_view_voucher_relation(self):
         self.ensure_one()
@@ -131,6 +131,11 @@ class ProgramVoucher(models.Model):
             'view_id': False,
             'view_mode': 'tree,form',
         }
+
+    def unlink(self):
+        for rec in self:
+            if rec.voucher_ids:
+                raise ValidationError(_('Bạn không được phép xóa chương trình chứa mã Voucher!'))
 
 
 

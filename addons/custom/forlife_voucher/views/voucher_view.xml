@@ -23,6 +23,7 @@
                     <field name="sale_id"/>
                     <field name="order_use"/>
                     <field name="state_app"/>
+                    <field name="product_voucher_id"/>
                     <field name="phone_number"/>
                     <field name="status_latest"/>
                 </tree>

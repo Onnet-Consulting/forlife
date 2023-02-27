@@ -33,6 +33,7 @@
         'views/menu_views.xml',
         'views/product_template.xml',
         'data/ir_sequence.xml',
-        'data/ir_cron.xml'
+        'data/ir_cron.xml',
+        'views/hr_department.xml'
     ]
 }
