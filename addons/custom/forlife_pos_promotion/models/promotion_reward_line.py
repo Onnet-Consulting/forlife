@@ -9,6 +9,7 @@ class PromotionRewardLine(models.Model):
     _order = 'quantity_min'
 
     program_id = fields.Many2one('promotion.program')
+    currency_id = fields.Many2one('res.currency', related='program_id.currency_id')
     quantity_min = fields.Float('Minimum Quantity Required')
     reward_type = fields.Selection(related='program_id.reward_type', string='Reward Type')
     quantity = fields.Float('Quantity')

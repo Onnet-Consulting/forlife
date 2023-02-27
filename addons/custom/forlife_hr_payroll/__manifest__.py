@@ -30,6 +30,8 @@
         'data/queue_job_data.xml',
         'security/ir.model.access.csv',
         'data/ir_attachment_data.xml',
+        'data/salary_record_type_data.xml',
+        'data/salary_record_purpose_data.xml',
         'security/ir_rule.xml',
 
         # report

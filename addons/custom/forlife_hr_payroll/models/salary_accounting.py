@@ -8,7 +8,8 @@ class SalaryAccounting(models.Model):
     _description = "Salary Accounting"
     _order = 'entry_id asc, purpose_id asc, analytic_account_id asc, manufacture_order_code asc, project_code asc, internal_order_code asc, id asc'
 
-    salary_record_id = fields.Many2one('salary.record', string='Reference', ondelete="cascade", required=True, copy=False)
+    salary_record_id = fields.Many2one('salary.record', string='Reference', ondelete="cascade", required=True,
+                                       copy=False)
     accounting_config_id = fields.Many2one('salary.accounting.config', required=True, ondelete='restrict')
     entry_id = fields.Many2one(related='accounting_config_id.entry_id', store=True)
     purpose_id = fields.Many2one(related='accounting_config_id.purpose_id', store=True)
@@ -57,6 +58,11 @@ class SalaryAccounting(models.Model):
                 credit = amount
                 partner_id = rec.accounting_config_id.credit_partner_id
                 account_id = rec.accounting_config_id.credit_account_id
+
+            if rec.record._name == 'salary.arrears' and account_id.code[:4] == '1388':
+                employee_code = rec.record.employee_id.code or ''
+                partner = self.env['res.partner'].search([('ref', '=', '4000' + employee_code)], limit=1)
+                partner_id = partner.id
 
             rec.debit = debit
             rec.credit = credit

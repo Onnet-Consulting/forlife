@@ -10,13 +10,15 @@
                         <group>
                             <field name="program_id" invisible="1"/>
                             <field name="promotion_type" invisible="1"/>
-                            <field name="mode"/>
+                            <field name="mode" force_save="1"/>
                             <field name="customer_domain" widget="domain" string="Domain"
                                    options="{'model': 'res.partner', 'in_dialog': True}"
                                    attrs="{'invisible': [('mode', '=', 'anonymous')]}"/>
                             <field name="coupon_qty"
                                    string="Quantity to generate" attrs="{'readonly': [('mode', '=', 'selected')], 'required': [('mode', '=', 'anonymous')]}"/>
-                            <field name="valid_until"/>
+                            <field name="valid_until" invisible="1"/>
+                            <field name="limit_usage" attrs="{'invisible': [('limit_usage', '=', False)]}"/>
+                            <field name="max_usage" attrs="{'invisible': [('limit_usage', '=', False)]}" force_save="1"/>
                         </group>
                     </group>
                 </sheet>

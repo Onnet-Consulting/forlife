@@ -15,13 +15,24 @@ class PromotionGenerateCode(models.Model):
     mode = fields.Selection([
         ('anonymous', 'Anonymous Customers'),
         ('selected', 'Selected Customers')],
-        string='For', required=True, default='anonymous'
+        string='For', compute='_compute_mode'
     )
     valid_until = fields.Date()
     coupon_qty = fields.Integer(
         'Quantity', compute='_compute_coupon_qty', readonly=False, store=True)
     reward_for_referring = fields.Boolean(related='program_id.reward_for_referring')
     promotion_type = fields.Selection(related='program_id.promotion_type')
+
+    limit_usage = fields.Boolean(string='Limit usage', related='program_id.limit_usage')
+    max_usage = fields.Integer(string='Max usage per Code')
+
+    @api.depends('program_id', 'program_id.customer_domain')
+    def _compute_mode(self):
+        for wizard in self:
+            if wizard.program_id.customer_domain in ['[]', False]:
+                wizard.mode = 'anonymous'
+            else:
+                wizard.mode = 'selected'
 
     def _get_partners(self):
         self.ensure_one()
@@ -53,6 +64,11 @@ class PromotionGenerateCode(models.Model):
             'partner_id': partner.id if self.mode == 'selected' else False,
             'expiration_date': self.valid_until,
         }
+
+    @api.onchange('program_id')
+    def onchange_program_id(self):
+        if self.program_id.limit_usage:
+            self.max_usage = self.program_id.max_usage
 
     def generate_codes(self):
         if any(not wizard.program_id for wizard in self):

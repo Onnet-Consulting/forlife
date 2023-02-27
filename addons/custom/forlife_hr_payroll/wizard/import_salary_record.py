@@ -250,16 +250,18 @@ class ImportSalaryRecord(models.TransientModel):
         return analytic_by_code, error_by_code
 
     def map_project_data(self, asset_codes):
-        company_code = self.env.company.code
-        asset_codes = [c for c in asset_codes if c]
-        if not asset_codes:
-            return {}, {}
-        sap_asset_codes = self.env['integration.sap'].int07(asset_codes, company_code)
-        asset_code_by_code = {code: code for code in sap_asset_codes if code in asset_codes}
+        # FIXME: chờ chốt giải pháp cho Mã dự án
+        # company_code = self.env.company.code
+        # asset_codes = [c for c in asset_codes if c]
+        # if not asset_codes:
+        #     return {}, {}
+        # sap_asset_codes = self.env['integration.sap'].int07(asset_codes, company_code)
+        # asset_code_by_code = {code: code for code in sap_asset_codes if code in asset_codes}
+        asset_code_by_code = {code: code for code in asset_codes}
         error_by_code = {}
-        for code in asset_codes:
-            if code and not asset_code_by_code.get(code):
-                error_by_code[code] = _('Mã dự án %s không tồn tại') % code
+        # for code in asset_codes:
+        #     if code and not asset_code_by_code.get(code):
+        #         error_by_code[code] = _('Mã dự án %s không tồn tại') % code
         return asset_code_by_code, error_by_code
 
     def map_manufacturing_data(self, data):
@@ -268,15 +270,17 @@ class ImportSalaryRecord(models.TransientModel):
         return manufacturing_code_by_code, {}
 
     def map_internal_order_data(self, io_codes):
-        io_codes = [c for c in io_codes if c]
-        if not io_codes:
-            return {}, {}
-        sap_io_codes = self.env['integration.sap'].int10(io_codes)
-        io_code_by_code = {code: code for code in sap_io_codes if code in io_codes}
+        # FIXME: chờ chốt giải pháp cho Mã chương trình sự kiện
+        # io_codes = [c for c in io_codes if c]
+        # if not io_codes:
+        #     return {}, {}
+        # sap_io_codes = self.env['integration.sap'].int10(io_codes)
+        # io_code_by_code = {code: code for code in sap_io_codes if code in io_codes}
+        io_code_by_code = {code: code for code in io_codes}
         error_by_code = {}
-        for code in io_codes:
-            if code and not io_code_by_code.get(code):
-                error_by_code[code] = _('Mã chương trình sự kiện %s không tồn tại') % code
+        # for code in io_codes:
+        #     if code and not io_code_by_code.get(code):
+        #         error_by_code[code] = _('Mã chương trình sự kiện %s không tồn tại') % code
         return io_code_by_code, error_by_code
 
     def map_data(self, **kwargs):
@@ -326,7 +330,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_header_data(self, workbook, sheet_index=0):
-        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         data = data[1:2]
         errors = ''
@@ -369,7 +373,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_salary_main_data(self, workbook, sheet_index=1):
-        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
@@ -422,7 +426,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_salary_total_income_data(self, workbook, sheet_index=2):
-        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
@@ -490,7 +494,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_salary_supplementary_data(self, workbook, sheet_index=3):
-        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
@@ -569,7 +573,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_salary_arrears_data(self, workbook, sheet_index=4):
-        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
@@ -657,7 +661,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def read_salary_backlog_data(self, workbook, sheet_index=5):
-        data = self.env['res.utility'].read_xls_book(workbook, sheet_index)
+        data = self.env['res.utility1'].read_xls_book(workbook, sheet_index)
         data = [x for x in data]
         start_row = 1
         data = data[start_row:]
