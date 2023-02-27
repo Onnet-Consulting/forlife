@@ -9,7 +9,7 @@
                     <field name="name"/>
                     <field name="type"/>
                     <field name="program_voucher_code"/>
-                    <field name="purpose_id"/>
+                    <field name="purpose_id" context="{'get_name': 1}"/>
                     <field name="derpartment_id"/>
                     <field name="apply_many_times" attrs="{'invisible': [('type','=', 'v')]}"/>
                     <field name="apply_contemp_time"/>
@@ -41,7 +41,7 @@
                             <field name="name"/>
                             <field name="type"/>
                             <field name="program_voucher_code"/>
-                            <field name="purpose_id"/>
+                            <field name="purpose_id" context="{'get_name': 1}"/>
                             <field name="derpartment_id"/>
                             <field name="apply_many_times" attrs="{'invisible': [('type','=', 'v')]}"/>
                             <field name="apply_contemp_time"/>

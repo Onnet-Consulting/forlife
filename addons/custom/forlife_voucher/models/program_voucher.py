@@ -54,6 +54,17 @@ class ProgramVoucher(models.Model):
     voucher_ids = fields.One2many('voucher.voucher', 'program_voucher_id')
     voucher_count = fields.Integer('Voucher Count', compute='_compute_count_voucher', store=True)
 
+    @api.constrains('start_date','end_date')
+    def check_contrains_date(self):
+        for rec in self:
+            if rec.start_date > rec.end_date:
+                raise UserError(_('Ngày kết thúc không được nhỏ hơn ngày bắt đầu! '))
+
+    @api.onchange('type')
+    def onchange_type_program_voucher(self):
+        if self.type == 'v':
+            self.apply_many_times = False
+
     @api.depends('voucher_ids')
     def _compute_count_voucher(self):
         for rec in self:
