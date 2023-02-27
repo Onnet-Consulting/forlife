@@ -1,5 +1,5 @@
-DROP FUNCTION IF EXISTS outgoing_value_diff_report;
-CREATE OR REPLACE FUNCTION outgoing_value_diff_report(_date_from character varying , _date_to character varying, _company_id integer)
+DROP FUNCTION IF EXISTS outgoing_value_diff_account_report;
+CREATE OR REPLACE FUNCTION outgoing_value_diff_account_report(_date_from character varying , _date_to character varying, _company_id integer)
 RETURNS TABLE
         (
             product_id               INTEGER,
@@ -21,12 +21,13 @@ BEGIN
         WITH opening as (
             -- đầu kỳ
             select sm.product_id,
-                    sum(case when spt.code = 'incoming' then coalesce(svl.quantity, 0)
-                            when spt.code = 'outgoing' then coalesce(-svl.quantity, 0)
+                    sum(case when spt.code = 'incoming' then coalesce(sm.quantity_done, 0)
+                            when spt.code = 'outgoing' then coalesce(-sm.quantity_done, 0)
                                 end) as quantity,
-                    sum(svl.value) as total_value
-            from stock_valuation_layer svl
-            left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
+                    sum(aml.balance) as total_value
+            from account_move_line aml
+            left join account_move am on am.id = aml.move_id
+            left join stock_move sm on sm.id = am.stock_move_id and am.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
             left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
@@ -35,15 +36,23 @@ BEGIN
             and sm.company_id = _company_id
             and spt.code in ('incoming', 'outgoing')
             and pt.detailed_type = 'product'
+            and aml.account_id = (select split_part(value_reference, ',', 2)::integer
+                                from ir_property
+                                where name = 'property_stock_valuation_account_id'
+                                and res_id = 'product.category,' || (select pt.categ_id from product_product pp
+                                                                    join product_template pt on pp.product_tmpl_id = pt.id
+                                                                    where pp.id = aml.product_id)
+                                                                    and company_id = _company_id)
             group by sm.product_id
         ),
         incoming as (
             -- nhập trong kỳ
             select sm.product_id,
-                    sum(svl.quantity) as quantity,
-                    sum(svl.value) as total_value
-            from stock_valuation_layer svl
-            left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
+                    sum(sm.quantity_done) as quantity,
+                    sum(aml.balance) as total_value
+            from account_move_line aml
+            left join account_move am on am.id = aml.move_id
+            left join stock_move sm on sm.id = am.stock_move_id and am.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
             left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
@@ -52,15 +61,23 @@ BEGIN
             and sm.company_id = _company_id
             and spt.code in ('incoming')
             and pt.detailed_type = 'product'
+            and aml.account_id = (select split_part(value_reference, ',', 2)::integer
+                                from ir_property
+                                where name = 'property_stock_valuation_account_id'
+                                and res_id = 'product.category,' || (select pt.categ_id from product_product pp
+                                                                    join product_template pt on pp.product_tmpl_id = pt.id
+                                                                    where pp.id = aml.product_id)
+                                                                    and company_id = _company_id)
             group by sm.product_id
         ),
         outgoing as (
             -- xuất trong kỳ
             select sm.product_id,
-                    sum(svl.quantity) as quantity,
-                    sum(svl.value) as total_value
-            from stock_valuation_layer svl
-            left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
+                    sum(sm.quantity_done) as quantity,
+                    sum(aml.balance) as total_value
+            from account_move_line aml
+            left join account_move am on am.id = aml.move_id
+            left join stock_move sm on sm.id = am.stock_move_id and am.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
             left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
@@ -69,6 +86,13 @@ BEGIN
             and sm.company_id = _company_id
             and spt.code in ('outgoing')
             and pt.detailed_type = 'product'
+            and aml.account_id = (select split_part(value_reference, ',', 2)::integer
+                                from ir_property
+                                where name = 'property_stock_valuation_account_id'
+                                and res_id = 'product.category,' || (select pt.categ_id from product_product pp
+                                                                    join product_template pt on pp.product_tmpl_id = pt.id
+                                                                    where pp.id = aml.product_id)
+                                                                    and company_id = _company_id)
             group by sm.product_id
         )
 
@@ -100,4 +124,3 @@ BEGIN
 END;
 
 $BODY$;
--- select * from outgoing_value_diff_report('2023-01-31 23:00:00', '2023-02-19 22:59:59', 1)

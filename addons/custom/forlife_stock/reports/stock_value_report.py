@@ -256,9 +256,6 @@ class StockValueReport(models.TransientModel):
 
         return self.action_download_excel(base64.encodebytes(xlsx_data), _('Outgoing Value Different Report'))
 
-    def action_export_outgoing_value_diff_picking_type_report(self):
-        pass
-
     def action_get_stock_incoming_outgoing_report(self):
         # must be utc time
         current_tz = pytz.timezone(self.env.context.get('tz'))
@@ -462,3 +459,6 @@ class StockValueReport(models.TransientModel):
         xlsx_data = buf.getvalue()
 
         return self.action_download_excel(base64.encodebytes(xlsx_data), _('Stock Incoming Outgoing Report'))
+
+    def action_export_outgoing_value_diff_picking_type_report(self):
+        pass
