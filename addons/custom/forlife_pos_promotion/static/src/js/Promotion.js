@@ -572,7 +572,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         // Mua Comboo càng nhiều càng giảm, theo tỷ lệ %
         else if (program.reward_type == 'combo_percent_by_qty' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
-            let rewardLines = program.rewards.sort((l1, l2) => l2.disc_percent - l1.disc_percent);
+            let rewardLines = program.rewards.sort((l1, l2) => l2.quantity_min - l1.quantity_min);
             let applyRewardLine;
             for (let i = 0; i < rewardLines.length; i++) {
                 if (number_of_combo >= rewardLines[i].quantity_min) {
@@ -601,7 +601,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         // Mua Comboo càng nhiều càng giảm, theo đơn giá cố đinh
         else if (program.reward_type == 'combo_fixed_price_by_qty' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
-            let rewardLines = program.rewards.sort((l1, l2) => l2.disc_percent - l1.disc_percent);
+            let rewardLines = program.rewards.sort((l1, l2) => l2.quantity_min - l1.quantity_min);
             let applyRewardLine;
             for (let i = 0; i < rewardLines.length; i++) {
                 if (number_of_combo >= rewardLines[i].quantity_min) {
