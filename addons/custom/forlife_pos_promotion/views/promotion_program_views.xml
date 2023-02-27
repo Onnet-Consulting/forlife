@@ -167,11 +167,11 @@
 
                                             <label for="disc_fixed_price" attrs="{'invisible': [('reward_type', '!=', 'combo_fixed_price_by_qty')]}"/>
                                             <div attrs="{'invisible': [('reward_type', '!=', 'combo_fixed_price_by_qty')]}">
-                                                <field class="oe_inline" name="disc_fixed_price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                                <field class="oe_inline" name="disc_fixed_price"/>
                                                 <span class="oe_inline">per Combo</span>
                                             </div>
 
-                                            <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
+                                            <field name="disc_max_amount"
                                                    attrs="{'invisible': [('reward_type', '!=', 'combo_percent_by_qty')]}"/>
                                         </group>
                                     </group>
