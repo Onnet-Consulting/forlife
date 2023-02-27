@@ -22,6 +22,7 @@
 
     'data': [
         'security/ir.model.access.csv',
+        'views/res_config_settings.xml',
     ],
     'external_dependencies': {
         'python': ['pyodbc'],

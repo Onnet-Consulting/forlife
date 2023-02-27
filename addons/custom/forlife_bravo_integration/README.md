@@ -2,7 +2,7 @@
 
 1. [Install MSSQL driver and python DB connector](https://learn.microsoft.com/en-us/sql/connect/python/pyodbc/python-sql-driver-pyodbc?view=sql-server-ver16)
     1. [Install the Microsoft ODBC driver for SQL Server (Linux)](https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16&tabs=alpine18-install%2Calpine17-install%2Cdebian8-install%2Credhat7-13-install%2Crhel7-offline)
-    2. [Install pyodbc](https://pypi.org/project/pyodbc/)
+    2. [Install pyodbc](https://github.com/mkleehammer/pyodbc)
    ```shell
       source venv/bin/active
       pip install pyodbc 
@@ -20,7 +20,7 @@
     1. [MSSQL docker image](https://hub.docker.com/_/microsoft-mssql-server)
     2. Run mssql server
    ```shell
-      docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=admin123@()[]"  -p 1433:1433 -d mcr.microsoft.com/mssql/server:2022-latest
+      docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=admin123@()[]"  -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
    ```
 
 # Connect to DB
