@@ -478,7 +478,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
             return true;
         })
-        .sort((a,b) => b.product.lst_price - a.product.lst_price)
+//        .sort((a,b) => b.product.lst_price - a.product.lst_price)
     }
 
     getActivatedComboPrograms() {
