@@ -28,12 +28,12 @@ class StockValueReport(models.TransientModel):
     # file sql
     def init(self):
         outgoing_value_diff_report = read_sql_file('./forlife_stock/sql_functions/outgoing_value_diff_report.sql')
-        outgoing_value_diff_picking_type_report = read_sql_file(
-            './forlife_stock/sql_functions/outgoing_value_diff_picking_type_report.sql')
+        # outgoing_value_diff_picking_type_report = read_sql_file(
+        #     './forlife_stock/sql_functions/outgoing_value_diff_picking_type_report.sql')
         stock_incoming_outgoing_report = read_sql_file(
             './forlife_stock/sql_functions/stock_incoming_outgoing_report.sql')
         self.env.cr.execute(outgoing_value_diff_report)
-        self.env.cr.execute(outgoing_value_diff_picking_type_report)
+        # self.env.cr.execute(outgoing_value_diff_picking_type_report)
         self.env.cr.execute(stock_incoming_outgoing_report)
 
     def action_download_excel(self, data, name):
