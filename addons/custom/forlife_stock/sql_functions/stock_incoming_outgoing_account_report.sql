@@ -29,13 +29,11 @@ BEGIN
             left join account_move am on am.id = aml.move_id
             left join stock_move sm on sm.id = am.stock_move_id and am.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
-            left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
             where sm.state = 'done'
             and sm.date < _date_from::timestamp
             and sm.company_id = _company_id
             and spt.code in ('incoming', 'outgoing')
-            and pt.detailed_type = 'product'
             and aml.account_id = (select split_part(value_reference, ',', 2)::integer
                                 from ir_property
                                 where name = 'property_stock_valuation_account_id'
@@ -54,13 +52,11 @@ BEGIN
             left join account_move am on am.id = aml.move_id
             left join stock_move sm on sm.id = am.stock_move_id and am.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
-            left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
             where sm.state = 'done'
-            and sm.date <= _date_from::timestamp and sm.date >= _date_to::timestamp
+            and sm.date >= _date_from::timestamp and sm.date <= _date_to::timestamp
             and sm.company_id = _company_id
             and spt.code in ('incoming')
-            and pt.detailed_type = 'product'
             and aml.account_id = (select split_part(value_reference, ',', 2)::integer
                                 from ir_property
                                 where name = 'property_stock_valuation_account_id'
@@ -79,13 +75,11 @@ BEGIN
             left join account_move am on am.id = aml.move_id
             left join stock_move sm on sm.id = am.stock_move_id and am.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
-            left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
             where sm.state = 'done'
-            and sm.date <= _date_from::timestamp and sm.date >= _date_to::timestamp
+            and sm.date >= _date_from::timestamp and sm.date <= _date_to::timestamp
             and sm.company_id = _company_id
             and spt.code in ('outgoing')
-            and pt.detailed_type = 'product'
             and aml.account_id = (select split_part(value_reference, ',', 2)::integer
                                 from ir_property
                                 where name = 'property_stock_valuation_account_id'
