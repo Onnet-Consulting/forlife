@@ -21,6 +21,8 @@ class BravoModel(models.AbstractModel):
 
     def get_insert_sql(self):
         # FIXME: insert into have limited the number of records to 1000 each time insert
+        # TODO: try bulk insert (https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlbulkoperations-function?view=sql-server-ver16)
+        # FIXME: this function has bad time complexity
         values = self.get_bravo_values()
         if not values:
             return False
@@ -30,8 +32,11 @@ class BravoModel(models.AbstractModel):
             for fname in field_names:
                 params.append(rec_value.get(fname))
 
-        field_values_placeholder = ','.join(['?']*len(field_names))
-        values_placeholder = ','.join([f"({field_values_placeholder})"])
+        single_record_values_placeholder = ['?']*len(field_names)
+        single_record_values_placeholder.append('GETUTCDATE()')
+        single_record_values_placeholder = f"({','.join(single_record_values_placeholder)})"
+        values_placeholder = ','.join([single_record_values_placeholder] * len(values))
+        field_names.append('PushDate')
         field_names = ','.join(field_names)
         query = f"""
         INSERT INTO {self._bravo_table} ({field_names})
@@ -54,7 +59,6 @@ class BravoModel(models.AbstractModel):
             if not issubclass(type(field), BravoField):
                 continue
             res.append(field)
-
         return res
 
     @api.model_create_multi
