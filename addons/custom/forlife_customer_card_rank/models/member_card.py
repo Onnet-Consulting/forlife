@@ -89,8 +89,9 @@ class MemberCard(models.Model):
     def get_master_domain(self):
         self.ensure_one()
         return ['&', '&', ('brand_id', '=', self.brand_id.id), ('id', '!=', self.id),
-                '|', '&', ('from_date', '<=', self.from_date), ('to_date', '>=', self.from_date),
-                '&', ('from_date', '<=', self.to_date), ('to_date', '>=', self.to_date)]
+                '|', '|', '&', ('from_date', '<=', self.from_date), ('to_date', '>=', self.from_date),
+                '&', ('from_date', '<=', self.to_date), ('to_date', '>=', self.to_date),
+                '&', ('from_date', '>', self.from_date), ('to_date', '<', self.to_date)]
 
     def action_inactive_member_card_program(self):
         res = self.search([('active', '=', True), ('to_date', '<', fields.Date.today())])
