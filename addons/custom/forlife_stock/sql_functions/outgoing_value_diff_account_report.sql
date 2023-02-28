@@ -57,7 +57,7 @@ BEGIN
             left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
             where sm.state = 'done'
-            and sm.date <= _date_from::timestamp and sm.date >= _date_to::timestamp
+            and sm.date >= _date_from::timestamp and sm.date <= _date_to::timestamp
             and sm.company_id = _company_id
             and spt.code in ('incoming')
             and pt.detailed_type = 'product'
@@ -82,7 +82,7 @@ BEGIN
             left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
             where sm.state = 'done'
-            and sm.date <= _date_from::timestamp and sm.date >= _date_to::timestamp
+            and sm.date >= _date_from::timestamp and sm.date <= _date_to::timestamp
             and sm.company_id = _company_id
             and spt.code in ('outgoing')
             and pt.detailed_type = 'product'

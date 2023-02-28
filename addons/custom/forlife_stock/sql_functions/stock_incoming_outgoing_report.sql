@@ -21,20 +21,16 @@ BEGIN
         WITH opening as (
             -- đầu kỳ
             select sm.product_id,
-                    sum(case when spt.code = 'incoming' then coalesce(svl.quantity, 0)
-                            when spt.code = 'outgoing' then coalesce(-svl.quantity, 0)
-                                end) as quantity,
+                    sum(svl.quantity) as quantity,
                     sum(svl.value) as total_value
             from stock_valuation_layer svl
             left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
-            left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
             where sm.state = 'done'
             and sm.date < _date_from::timestamp
             and sm.company_id = _company_id
             and spt.code in ('incoming', 'outgoing')
-            and pt.detailed_type = 'product'
             group by sm.product_id
         ),
         incoming as (
@@ -45,30 +41,27 @@ BEGIN
             from stock_valuation_layer svl
             left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
-            left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
             where sm.state = 'done'
-            and sm.date <= _date_from::timestamp and sm.date >= _date_to::timestamp
+            and sm.date >= _date_from::timestamp and sm.date <= _date_to::timestamp
             and sm.company_id = _company_id
             and spt.code in ('incoming')
-            and pt.detailed_type = 'product'
             group by sm.product_id
         ),
         outgoing as (
             -- xuất trong kỳ
             select sm.product_id,
-                    sum(svl.quantity) as quantity,
-                    sum(svl.value) as total_value
+                    abs(sum(svl.quantity)) as quantity,
+                    abs(sum(svl.value)) as total_value
             from stock_valuation_layer svl
             left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
             left join product_product pp on pp.id = sm.product_id
             left join product_template pt on pt.id = pp.product_tmpl_id
             left join stock_picking_type spt on spt.id = sm.picking_type_id
             where sm.state = 'done'
-            and sm.date <= _date_from::timestamp and sm.date >= _date_to::timestamp
+            and sm.date >= _date_from::timestamp and sm.date <= _date_to::timestamp
             and sm.company_id = _company_id
             and spt.code in ('outgoing')
-            and pt.detailed_type = 'product'
             group by sm.product_id
         )
 
