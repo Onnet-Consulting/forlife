@@ -32,7 +32,7 @@ class ProgramVoucher(models.Model):
 
     store_id = fields.Many2one('store', 'Apply for store', required=True)
 
-    product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse')
+    product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse', domain=[('voucher','=',True)])
 
     product_ids = fields.One2many('product.template', 'program_voucher_id')
 
@@ -40,8 +40,9 @@ class ProgramVoucher(models.Model):
 
     @api.depends('product_ids')
     def compute_product(self):
-        if len(self.product_ids) > 0:
-            self.product_id = self.product_ids[0]
+        for rec in self:
+            if len(rec.product_ids) > 0:
+                rec.product_id = rec.product_ids[0]
 
     def product_inverse(self):
         if len(self.product_ids) > 0:
@@ -112,22 +113,38 @@ class ProgramVoucher(models.Model):
                         for i in range(rec.count):
                             self.env['voucher.voucher'].create({
                                 'program_voucher_id': self.id,
+                                'type':self.type,
+                                'brand_id':self.brand_id.id,
+                                'start_date':self.start_date,
                                 'state':'new',
                                 'partner_id': p.id,
                                 'price': rec.price,
                                 'price_used':0,
                                 'price_residual': rec.price - 0,
                                 'derpartment_id': self.derpartment_id.id,
+                                'end_date':self.end_date,
+                                'apply_many_times': self.apply_many_times,
+                                'apply_contemp_time':self.apply_contemp_time,
+                                'product_voucher_id':self.product_id.id,
+                                'purpose_id':self.purpose_id.id
                             })
                 if not rec.partner_ids:
                     for i in range(rec.count):
                         self.env['voucher.voucher'].create({
                             'program_voucher_id': self.id,
+                            'type': self.type,
+                            'brand_id': self.brand_id.id,
+                            'start_date': self.start_date,
                             'state': 'new',
                             'price': rec.price,
                             'price_used': 0,
                             'price_residual': rec.price - 0,
                             'derpartment_id': self.derpartment_id.id,
+                            'end_date': self.end_date,
+                            'apply_many_times': self.apply_many_times,
+                            'apply_contemp_time': self.apply_contemp_time,
+                            'product_voucher_id': self.product_id.id,
+                            'purpose_id':self.purpose_id.id
                         })
         else:
             raise UserError(_("Vui lòng thêm dòng thông tin cho vourcher!"))
