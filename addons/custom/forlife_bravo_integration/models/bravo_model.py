@@ -38,12 +38,17 @@ class BravoModel(models.AbstractModel):
         bravo_fields = self.fields_bravo_get(allfields=updated_fields)
         bravo_odoo_mapping = {bfield.odoo_name: bfield.bravo_name for bfield in bravo_fields}
         bravo_values = {}
+        if not bravo_odoo_mapping:
+            return bravo_values
 
         for odoo_name, odoo_value in values.items():
-            bravo_values[bravo_odoo_mapping[odoo_name]] = odoo_value
+            bravo_field_name = bravo_odoo_mapping.get(odoo_name)
+            if not bravo_field_name:
+                continue
+            bravo_values[bravo_field_name] = odoo_value
         return bravo_values
 
-    def get_bravo_update_key_values(self):
+    def get_bravo_identity_key_values(self):
         values = []
         identity_fields = self.fields_bravo_identity_get()
         for record in self:
@@ -59,7 +64,7 @@ class BravoModel(models.AbstractModel):
         column_names, values = self.get_bravo_insert_values()
 
         if not values:
-            return False
+            return False,False
         insert_table = self._bravo_table
         params = []
         insert_column_names = column_names.copy()
@@ -86,11 +91,14 @@ class BravoModel(models.AbstractModel):
         return query, params
 
     def get_update_sql(self, values):
+        """
+        @param dict values: odoo updated value (or bravo updated value)
+        """
         updated_values = self.get_bravo_update_values(values)
-        updated_key_values = self.get_bravo_update_key_values()
+        identity_key_values = self.get_bravo_identity_key_values()
         params = []
         if not updated_values:
-            return False
+            return False, False
         update_table_name = self._bravo_table
 
         set_query_value = []
@@ -102,7 +110,7 @@ class BravoModel(models.AbstractModel):
         set_query_value = ','.join(set_query_value)
 
         where_query_value = []
-        for value in updated_key_values:
+        for value in identity_key_values:
             single_update = []
             for upkey, upvalue in value.items():
                 single_update.append(f"{upkey} = ?")
@@ -119,7 +127,34 @@ class BravoModel(models.AbstractModel):
         return query, params
 
     def get_delete_sql(self):
-        values = self.get_bravo_insert_values(active=False)
+        """
+        @param dict values: odoo updated value (or bravo updated value)
+        """
+        identity_key_values = self.get_bravo_identity_key_values()
+        params = []
+        update_table_name = self._bravo_table
+
+        set_query_value = []
+        for key, value in DELETE_DEFAULT_VALUE.items():
+            set_query_value.append(f"{key}={value}")
+        set_query_value = ','.join(set_query_value)
+
+        where_query_value = []
+        for value in identity_key_values:
+            single_update = []
+            for upkey, upvalue in value.items():
+                single_update.append(f"{upkey} = ?")
+                params.append(upvalue)
+            single_update = "(" + ' and '.join(single_update) + ")"
+            where_query_value.append(single_update)
+        where_query_value = ' or '.join(where_query_value)
+
+        query = f"""
+            UPDATE {update_table_name}
+            SET {set_query_value}
+            WHERE {where_query_value}
+        """
+        return query, params
 
     @api.model
     def fields_bravo_get(self, allfields=None):
@@ -140,11 +175,17 @@ class BravoModel(models.AbstractModel):
 
     def insert_into_bravo_db(self):
         query, params = self.get_insert_sql()
-        self._execute(query, params)
+        if query:
+            self._execute(query, params)
         return True
 
     def update_bravo_db(self, values):
         query, params = self.get_update_sql(values)
+        if query:
+            self._execute(query, params)
+        return True
+
+    def delete_bravo_data_db(self, query, params):
         self._execute(query, params)
         return True
 
@@ -152,10 +193,19 @@ class BravoModel(models.AbstractModel):
     def create(self, vals_list):
         res = super(BravoModel, self).create(vals_list)
         # FIXME: push below function to job queue
-        res.insert_into_bravo_db()
+        res.sudo().insert_into_bravo_db()
         return res
 
     def write(self, vals):
         res = super(BravoModel, self).write(vals)
-        self.update_bravo_db(vals)
+        # FIXME: push below function to job queue
+        self.sudo().update_bravo_db(vals)
+        return res
+
+    def unlink(self):
+        # need to extract query and params before records be deleted in Odoo
+        query, params = self.sudo().get_delete_sql()
+        res = super(BravoModel, self).unlink()
+        # FIXME: push below function to job queue
+        self.sudo().delete_bravo_data_db(query, params)
         return res
