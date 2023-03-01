@@ -87,7 +87,7 @@ class PromotionProgram(models.Model):
     with_code = fields.Boolean('Use a code', default=False)
     combo_code = fields.Char('Combo Code')
     combo_name = fields.Char('Combo Name')
-    apply_multi_program = fields.Boolean()
+    apply_multi_program = fields.Boolean(default=True)
     # Code
     discount_based_on = fields.Selection([
         ('unit_price', 'Unit Price'),
@@ -103,6 +103,9 @@ class PromotionProgram(models.Model):
     # Cart
     order_amount_min = fields.Float()
     # Pricelist
+
+    pricelist_item_ids = fields.One2many('promotion.pricelist.item', 'program_id', string='Pricelist Item')
+    pricelist_item_count = fields.Integer(compute='_compute_pricelist_item_count')
 
     # Rewards
     reward_type = fields.Selection(REWARD_TYPE, string='Reward Type')
@@ -190,6 +193,10 @@ class PromotionProgram(models.Model):
             program.total_order_count = len(usages.mapped('order_id'))
             program.order_ids = usages.mapped('order_id')
 
+    def _compute_pricelist_item_count(self):
+        for pro in self:
+            pro.pricelist_item_count = len(pro.pricelist_item_ids)
+
     def _qty_min_required(self):
         for program in self:
             program.qty_min_required = 0
@@ -275,4 +282,17 @@ class PromotionProgram(models.Model):
             ],
             'type': 'ir.actions.act_window',
             'domain': [('id', 'in', self.order_ids.ids)],
+        }
+
+    def action_open_pricelist_items(self):
+        return {
+            'name': _('Product Pricelist Items'),
+            'res_model': 'promotion.pricelist.item',
+            'view_mode': 'tree',
+            'views': [
+                (self.env.ref('forlife_pos_promotion.promotion_pricelist_item_tree_view').id, 'tree'),
+            ],
+            'type': 'ir.actions.act_window',
+            'domain': [('id', 'in', self.pricelist_item_ids.ids)],
+            'context': {'default_program_id': self.id}
         }

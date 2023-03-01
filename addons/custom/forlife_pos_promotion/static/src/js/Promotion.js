@@ -50,6 +50,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.promotionPrograms = loadedData['promotion.program'] || [];
         this.promotionComboLines = loadedData['promotion.combo.line'] || [];
         this.rewardLines = loadedData['promotion.reward.line'] || [];
+        this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
         this.monthData = loadedData['month.data'] || [];
         this.dayofmonthData = loadedData['dayofmonth.data'] || [];
         this.dayofweekData = loadedData['dayofweek.data'] || [];
@@ -59,6 +60,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
     _loadPromotionData() {
         this.promotion_program_by_id = {};
         this.reward_line_by_id = {};
+        this.pro_pricelist_item_by_id = {};
         var self = this;
         for (const program of this.promotionPrograms) {
             if (program.from_date) {
@@ -111,6 +113,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
 
             program.comboFormula = [];
             program.rewards = [];
+            program.pricelistItems = [];
+            program.productPricelistItems = new Set();
         };
         for (const item of this.promotionComboLines) {
             item.valid_product_ids = new Set(item.valid_product_ids);
@@ -121,6 +125,13 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             this.reward_line_by_id[reward.id] = reward;
             reward.program_id = this.promotion_program_by_id[reward.program_id[0]];
             reward.program_id.rewards.push(reward);
+        };
+        for (const item of this.promotionPricelistItems) {
+            this.pro_pricelist_item_by_id[item.id] = item;
+            item.product_id = item.product_id[0];
+            item.program_id = this.promotion_program_by_id[item.program_id[0]];
+            item.program_id.pricelistItems.push(item);
+            item.program_id.productPricelistItems.add(item.product_id);
         };
     }
 
