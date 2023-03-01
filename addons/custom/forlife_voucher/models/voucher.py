@@ -17,7 +17,8 @@ class Voucher(models.Model):
     purpose_id = fields.Many2one('setup.voucher', 'Purpose', required=True)
     currency_id = fields.Many2one('res.currency', compute='_compute_currency_field')  # related currency of program voucher
     type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True)
-    state = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string='State', required=True, tracking=True, default='new')
+    state = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string='State', required=True,
+                             tracking=True, default='new')
     price = fields.Monetary('Mệnh giá')
     price_used = fields.Monetary('Giá trị đã dùng')
     price_residual = fields.Monetary('Giá trị còn lại')
@@ -93,11 +94,32 @@ class Voucher(models.Model):
         if vouchers:
             for rec in vouchers:
                 if rec.end_date and rec.end_date < now:
+                    rec.status_latest = rec.state
                     rec.state = 'expired'
 
     def write(self, values):
         for record in self:
-            old_state = record.state
-            if 'state' in values and values['state']:
-                values['status_latest'] = old_state
+            status_latest = record.status_latest
+            now = datetime.now()
+            if 'end_date' in values and values['end_date'] and status_latest:
+                end_date = datetime.strptime(values['end_date'], '%Y-%m-%d %H:%M:%S')
+                if end_date > now:
+                    values['state'] = status_latest
         return super(Voucher, self).write(values)
+
+    @api.model
+    def create(self, vals_list):
+        if 'import_file' in self._context and self._context.get('import_file'):
+            if 'phone_number' in vals_list and vals_list['phone_number']:
+                phonenumbers_format = vals_list['phone_number'].replace(" ", "").replace("'", "").replace("’", "")
+                partner = self.env['res.partner'].sudo().search(
+                    [('phone', '=', phonenumbers_format), ('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_c', raise_if_not_found=False).id)], limit=1)
+                vals_list['phone_number'] = phonenumbers_format
+                if not partner:
+                    partner = self.env['res.partner'].sudo().create({
+                        'name': phonenumbers_format,
+                        'phone': phonenumbers_format,
+                        'group_id': self.env.ref('forlife_pos_app_member.partner_group_c', raise_if_not_found=False).id,
+                    })
+                vals_list['partner_id'] = partner.id
+        return super(Voucher, self).create(vals_list)

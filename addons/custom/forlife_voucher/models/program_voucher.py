@@ -26,7 +26,7 @@ class ProgramVoucher(models.Model):
 
     start_date = fields.Datetime('Start date', required=True)
 
-    end_date = fields.Datetime('End date', required=True)
+    end_date = fields.Datetime('End date', required=True, tracking=True)
 
     state_app = fields.Boolean('Trạng thái App')
 
@@ -126,8 +126,8 @@ class ProgramVoucher(models.Model):
                                 'end_date':self.end_date,
                                 'apply_many_times': self.apply_many_times,
                                 'apply_contemp_time':self.apply_contemp_time,
-                                'product_voucher_id':self.product_id.id,
-                                'purpose_id':self.purpose_id.id
+                                'product_voucher_id': self.product_id.id,
+                                'purpose_id': self.purpose_id.id
                             })
                 if not rec.partner_ids:
                     for i in range(rec.count):

@@ -7,9 +7,9 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
-                    <field name="program_voucher_id"/>
+                    <field name="program_voucher_id" required="1"/>
                     <field name="type"/>
-                    <field name="purpose_id"/>
+                    <field name="purpose_id" required="1"/>
                     <field name="derpartment_id"/>
                     <field name="apply_many_times"/>
                     <field name="apply_contemp_time"/>
@@ -42,19 +42,19 @@
                         <group>
                             <field name="name"/>
                             <field name="currency_id" invisible="1"/>
-                            <field name="program_voucher_id"/>
+                            <field name="program_voucher_id" required="1"/>
                             <field name="type"/>
-                            <field name="purpose_id"/>
+                            <field name="purpose_id" required="1"/>
                             <field name="derpartment_id"/>
                             <field name="apply_many_times"/>
                             <field name="apply_contemp_time"/>
-                            <field name="brand_id"/>
+                            <field name="brand_id" required="1"/>
                             <field name="store_ids" widget="many2many_tags" domain="[('brand_id','=', brand_id)]"/>
                             <field name="status_latest"/>
                         </group>
                         <group>
-                            <field name="start_date"/>
-                            <field name="end_date"/>
+                            <field name="start_date" required="1"/>
+                            <field name="end_date" required="1"/>
                             <field name="partner_id"/>
                             <field name="price"/>
                             <field name="price_used" readonly="1"/>
