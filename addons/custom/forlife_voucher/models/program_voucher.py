@@ -26,11 +26,11 @@ class ProgramVoucher(models.Model):
 
     start_date = fields.Datetime('Start date', required=True)
 
-    end_date = fields.Datetime('End date', required=True)
+    end_date = fields.Datetime('End date', required=True, tracking=True)
 
     state_app = fields.Boolean('Trạng thái App')
 
-    store_id = fields.Many2one('store', 'Apply for store', required=True)
+    store_ids = fields.Many2many('store', string='Apply for store', required=True)
 
     product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse', domain=[('voucher','=',True)])
 
@@ -50,7 +50,7 @@ class ProgramVoucher(models.Model):
             product.program_voucher_id = False
         self.product_id.program_voucher_id = self
 
-    program_voucher_line_ids = fields.One2many('program.voucher.line', 'program_voucher_id', string='Voucher')
+    program_voucher_line_ids = fields.One2many('program.voucher.line', 'program_voucher_id', string='Voucher', copy=True)
 
     voucher_ids = fields.One2many('voucher.voucher', 'program_voucher_id')
     voucher_count = fields.Integer('Voucher Count', compute='_compute_count_voucher', store=True)
@@ -115,6 +115,7 @@ class ProgramVoucher(models.Model):
                                 'program_voucher_id': self.id,
                                 'type':self.type,
                                 'brand_id':self.brand_id.id,
+                                'store_ids': [(6, False, self.store_ids.ids)],
                                 'start_date':self.start_date,
                                 'state':'new',
                                 'partner_id': p.id,
@@ -125,8 +126,8 @@ class ProgramVoucher(models.Model):
                                 'end_date':self.end_date,
                                 'apply_many_times': self.apply_many_times,
                                 'apply_contemp_time':self.apply_contemp_time,
-                                'product_voucher_id':self.product_id.id,
-                                'purpose_id':self.purpose_id.id
+                                'product_voucher_id': self.product_id.id,
+                                'purpose_id': self.purpose_id.id
                             })
                 if not rec.partner_ids:
                     for i in range(rec.count):
@@ -134,6 +135,7 @@ class ProgramVoucher(models.Model):
                             'program_voucher_id': self.id,
                             'type': self.type,
                             'brand_id': self.brand_id.id,
+                            'store_ids': [(6, False, self.store_ids.ids)],
                             'start_date': self.start_date,
                             'state': 'new',
                             'price': rec.price,
