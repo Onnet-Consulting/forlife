@@ -22,14 +22,14 @@ class SalaryAccountingConfig(models.Model):
 
     @api.constrains('entry_id', 'debit_account_id', 'debit_partner_id')
     def _check_debit_value(self):
-        exist_config = self.search([])
+        exist_config = self.search([('company_id', '=', self.env.company.id)])
         for rec in self:
             if exist_config.filtered(lambda x: x != rec and x.entry_id == rec.entry_id and x.debit_account_id == rec.debit_account_id and x.debit_partner_id != rec.debit_partner_id):
                 raise ValidationError(_('Invalid Debit partner !'))
 
     @api.constrains('entry_id', 'credit_account_id', 'credit_partner_id')
     def _check_credit_value(self):
-        exist_config = self.search([])
+        exist_config = self.search([('company_id', '=', self.env.company.id)])
         for rec in self:
             if exist_config.filtered(lambda x: x != rec and x.entry_id == rec.entry_id and x.credit_account_id == rec.credit_account_id and x.credit_partner_id != rec.credit_partner_id):
                 raise ValidationError(_('Invalid Credit partner !'))

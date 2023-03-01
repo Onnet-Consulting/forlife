@@ -27,6 +27,17 @@
                                 Promotion Codes</span>
                             </div>
                         </button>
+                        <button class="oe_stat_button" type="object" name="action_open_orders" icon="fa-list"
+                                attrs="{'invisible': [('total_order_count', '=', 0)]}"
+                        >
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="total_order_count"/>
+                                </span>
+                                <span class="o_stat_text" >
+                                POS Orders</span>
+                            </div>
+                        </button>
                     </div>
                     <field name="active" invisible="1"/>
                     <field name="discount_apply_on" invisible="1"/>
@@ -41,16 +52,16 @@
                             <field name="active" widget="boolean_toggle"/>
                             <label for="promotion_type"/>
                             <div>
-                                <field name="promotion_type" widget="filterable_selection"/>
+                                <field name="promotion_type"/>
                             </div>
                             <field name="currency_id" invisible="1"/>
                             <field name="currency_symbol" invisible="1"/>
 <!--                            <field name="applicability" string="Use points on" groups="base.group_no_one" widget="radio" force_save="1"/>-->
 <!--                            <field name="customer_domain" widget="domain"-->
 <!--                                   options="{'model': 'res.partner', 'in_dialog': true}"/>-->
-                            <label for="limit_usage" invisible="1"
+                            <label for="limit_usage"
                                    attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}"/>
-                            <span invisible="1" attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}">
+                            <span attrs="{'invisible': [('promotion_type', '!=', 'code'), ('with_code', '=', False)]}">
                                 <field name="limit_usage" class="oe_inline"/>
                                 <span attrs="{'invisible': [('limit_usage', '=', False)]}"> to <field name="max_usage" class="oe_inline"/> usages</span>
                             </span>
@@ -130,7 +141,7 @@
                         <group>
                             <field name="reward_ids" colspan="2" mode="tree,form" nolabel="1" add-label="Add a reward"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_percent_by_qty', 'combo_fixed_price_by_qty'))]}"
-                                   class="o_loyalty_kanban_inline" widget="promotion_one2many">
+                                   class="o_loyalty_kanban_inline" context="{'default_program_id': active_id}">
                                 <tree>
                                     <field name="quantity_min"/>
                                     <field name="reward_type" invisible="1"/>
@@ -156,11 +167,11 @@
 
                                             <label for="disc_fixed_price" attrs="{'invisible': [('reward_type', '!=', 'combo_fixed_price_by_qty')]}"/>
                                             <div attrs="{'invisible': [('reward_type', '!=', 'combo_fixed_price_by_qty')]}">
-                                                <field class="oe_inline" name="disc_fixed_price" widget="monetary" options="{'currency_field': 'parent.currency_id'}"/>
+                                                <field class="oe_inline" name="disc_fixed_price"/>
                                                 <span class="oe_inline">per Combo</span>
                                             </div>
 
-                                            <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'parent.currency_id'}"
+                                            <field name="disc_max_amount"
                                                    attrs="{'invisible': [('reward_type', '!=', 'combo_percent_by_qty')]}"/>
                                         </group>
                                     </group>
@@ -180,12 +191,13 @@
             <tree>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
-                <field name="campaign_id"/>
+                <field name="campaign_id" optional="hide"/>
                 <field name="state"/>
                 <field name="promotion_type"/>
                 <field name="reward_type"/>
                 <field name="with_code"/>
                 <field name="active" widget="boolean_toggle"/>
+                <field name="apply_multi_program"/>
                 <field name="show_gen_code" invisible="1"/>
                 <button name="%(promotion_generate_code_action)d" string="Generate Codes"
                         class="btn-primary" type="action"

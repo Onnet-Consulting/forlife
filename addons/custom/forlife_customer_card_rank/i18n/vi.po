@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-22 07:10+0000\n"
-"PO-Revision-Date: 2023-02-22 07:10+0000\n"
+"POT-Creation-Date: 2023-02-27 07:55+0000\n"
+"PO-Revision-Date: 2023-02-27 07:55+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -106,11 +106,6 @@ msgid "Brand on Customer must be unique !"
 msgstr "Thương hiệu trên Khách hàng là duy nhất !"
 
 #. module: forlife_customer_card_rank
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.form_update_store_view_form
-msgid "Cancel"
-msgstr "Hủy"
-
-#. module: forlife_customer_card_rank
 #: model:ir.actions.act_window,name:forlife_customer_card_rank.card_rank_action
 #: model:ir.model,name:forlife_customer_card_rank.model_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_ids
@@ -147,7 +142,6 @@ msgstr "Danh bạ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__create_uid
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__create_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__create_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__create_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__create_uid
@@ -156,7 +150,6 @@ msgstr "Được tạo bởi"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__create_date
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__create_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__create_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__create_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__create_date
@@ -174,6 +167,11 @@ msgid "Customer Group"
 msgstr "Nhóm khách hàng"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__partner_retail_ids
+msgid "Customer Retail Types"
+msgstr "Loại khách hàng lẻ"
+
+#. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_form
 msgid "Detail"
 msgstr "Chi tiết"
@@ -184,8 +182,12 @@ msgid "Detail Card Rank"
 msgstr "Chi tiết hạng thẻ"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__discount_account_id
+msgid "Discount Account"
+msgstr "Tài khoản chiết khấu hạng thẻ"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__display_name
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__display_name
@@ -217,11 +219,6 @@ msgid "Followers (Partners)"
 msgstr ""
 
 #. module: forlife_customer_card_rank
-#: model:ir.model,name:forlife_customer_card_rank.model_form_update_store
-msgid "Form Update Store"
-msgstr ""
-
-#. module: forlife_customer_card_rank
 #: model:ir.actions.act_window,name:forlife_customer_card_rank.member_card_format_action
 #: model:ir.ui.menu,name:forlife_customer_card_rank.member_card_format_menu
 msgid "Format"
@@ -246,7 +243,6 @@ msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__id
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__id
@@ -277,11 +273,6 @@ msgid "Inactive Member Card Program"
 msgstr "Tắt chương trình hạng thẻ"
 
 #. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__is_all_store
-msgid "Is All Store"
-msgstr "Tất cả cửa hàng"
-
-#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_is_follower
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_is_follower
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_is_follower
@@ -309,8 +300,12 @@ msgstr ""
 "Không thể thay đổi thứ hạng của hạng '%s' do các chương trình đang diễn ra"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__journal_ids
+msgid "Journal"
+msgstr "Sổ nhật ký"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank____last_update
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line____last_update
@@ -324,7 +319,6 @@ msgstr "Ngày mua gần nhất"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__write_uid
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__write_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__write_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__write_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__write_uid
@@ -333,7 +327,6 @@ msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__write_date
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__write_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__write_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__write_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__write_date
@@ -356,7 +349,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/forlife_customer_card_rank/models/member_card.py:0
 #: model:ir.model,name:forlife_customer_card_rank.model_member_card
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__member_card_id
 #: model:ir.ui.menu,name:forlife_customer_card_rank.member_card_categ_menu
 #, python-format
 msgid "Member Card"
@@ -417,11 +409,6 @@ msgstr ""
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_member_card__message_has_error_counter
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_partner_card_rank__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
-
-#. module: forlife_customer_card_rank
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.form_update_store_view_form
-msgid "OK"
 msgstr ""
 
 #. module: forlife_customer_card_rank
@@ -488,7 +475,7 @@ msgstr "Thứ hạng"
 #: code:addons/forlife_customer_card_rank/models/card_rank.py:0
 #, python-format
 msgid "Priority must be unique '%s'"
-msgstr ""
+msgstr "Thứ hạng không được trùng '%s'"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__name
@@ -532,35 +519,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_filter
 msgid "Search"
 msgstr "Tìm kiếm"
-
-#. module: forlife_customer_card_rank
-#. odoo-python
-#: code:addons/forlife_customer_card_rank/models/member_card.py:0
-#: code:addons/forlife_customer_card_rank/models/member_card.py:0
-#, python-format
-msgid "Store added: %s"
-msgstr "Cửa hàng đã thêm: %s"
-
-#. module: forlife_customer_card_rank
-#. odoo-python
-#: code:addons/forlife_customer_card_rank/models/member_card.py:0
-#, python-format
-msgid "Store deleted: %s"
-msgstr "Cửa hàng đã xóa: %s"
-
-#. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_form_update_store__store_ids
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__store_ids
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.form_update_store_view_form
-msgid "Stores Apply"
-msgstr "Cửa hàng áp dụng"
-
-#. module: forlife_customer_card_rank
-#. odoo-python
-#: code:addons/forlife_customer_card_rank/models/member_card.py:0
-#, python-format
-msgid "Stores Apply is required !"
-msgstr "Trường cửa hàng áp dụng không được để trống !"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__from_date
@@ -619,14 +577,6 @@ msgid "Update Card Rank"
 msgstr "Điều chỉnh hạng"
 
 #. module: forlife_customer_card_rank
-#. odoo-python
-#: code:addons/forlife_customer_card_rank/models/member_card.py:0
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
-#, python-format
-msgid "Update Store"
-msgstr "Cập nhật cửa hàng áp dụng"
-
-#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value1
 msgid "Value 1"
 msgstr ""
@@ -640,6 +590,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value3
 msgid "Value 3"
 msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value_account_id
+msgid "Value Account"
+msgstr "Tài khoản giá trị tặng khách"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__value_orders
@@ -693,11 +648,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
 msgid "discount (%)"
 msgstr "chiết khấu (%)"
-
-#. module: forlife_customer_card_rank
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.form_update_store_view_form
-msgid "form_update_store_form"
-msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form

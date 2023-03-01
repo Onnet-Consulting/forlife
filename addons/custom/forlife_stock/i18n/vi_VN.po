@@ -237,6 +237,11 @@ msgid "To Date"
 msgstr "Đến ngày"
 
 #. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_value_report__based_on_account
+msgid "Based on Account"
+msgstr "Dựa vào Bút toán"
+
+#. module: forlife_stock
 #: model_terms:ir.ui.view,arch_db:forlife_stock.stock_incoming_outgoing_report_view_form
 msgid "Total Closing Quantity"
 msgstr "Tổng tồn cuối kỳ"

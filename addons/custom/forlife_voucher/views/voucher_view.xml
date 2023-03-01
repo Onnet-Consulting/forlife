@@ -7,7 +7,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
-                    <field name="program_voucher_id" readonly="True"/>
+                    <field name="program_voucher_id"/>
                     <field name="type"/>
                     <field name="purpose_id"/>
                     <field name="derpartment_id"/>
@@ -21,8 +21,9 @@
                     <field name="price_used"/>
                     <field name="price_residual"/>
                     <field name="sale_id"/>
-                    <field name="order_use"/>
+                    <field name="order_use_ids" widget="many2many_tags"/>
                     <field name="state_app"/>
+                    <field name="product_voucher_id"/>
                     <field name="phone_number"/>
                     <field name="status_latest"/>
                 </tree>
@@ -40,7 +41,8 @@
                     <sheet>
                         <group>
                             <field name="name"/>
-                            <field name="program_voucher_id" readonly="True"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="program_voucher_id"/>
                             <field name="type"/>
                             <field name="purpose_id"/>
                             <field name="derpartment_id"/>
@@ -54,18 +56,20 @@
                             <field name="end_date"/>
                             <field name="partner_id"/>
                             <field name="price"/>
-                            <field name="price_used"/>
+                            <field name="price_used" readonly="1"/>
                             <field name="price_residual"/>
-                            <field name="sale_id"/>
-                            <field name="order_use"/>
+                            <field name="sale_id" readonly="1"/>
+                            <field name="order_pos" readonly="1"/>
+                            <field name="order_use_ids" widget="many2many_tags" readonly="1"/>
                             <field name="state_app"/>
                             <field name="phone_number"/>
                         </group>
-                    </sheet><div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
 
                 </form>
             </field>

@@ -79,11 +79,12 @@ class PromotionProgram(models.Model):
     valid_customer_ids = fields.Many2many(related='campaign_id.valid_customer_ids')
 
     total_order_count = fields.Integer("Total Order Count", compute="_compute_total_order_count")
+    order_ids = fields.Many2many('pos.order', compute="_compute_total_order_count")
 
     # Combo
     combo_line_ids = fields.One2many(
         'promotion.combo.line', 'program_id', 'Conditional rules', copy=True, readonly=False, store=True)
-    with_code = fields.Boolean('Use a code', default=True)
+    with_code = fields.Boolean('Use a code', default=False)
     combo_code = fields.Char('Combo Code')
     combo_name = fields.Char('Combo Name')
     apply_multi_program = fields.Boolean()
@@ -107,6 +108,7 @@ class PromotionProgram(models.Model):
     reward_type = fields.Selection(REWARD_TYPE, string='Reward Type')
 
     reward_ids = fields.One2many('promotion.reward.line', 'program_id', 'Rewards', copy=True, readonly=False, store=True)
+    qty_min_required = fields.Float(compute='_qty_min_required', help='Use for Combo Program  based on quantity of the Combo')
 
     voucher_ids = fields.One2many('promotion.voucher', 'program_id')
 
@@ -135,9 +137,16 @@ class PromotionProgram(models.Model):
                 for couple in combine_couple_of_set:
                     if couple[0] & couple[1]:
                         raise UserError(_('Products duplication occurs in the combo formula!'))
+            if program.promotion_type == 'combo' and not program.combo_line_ids:
+                raise UserError(_('Combo Formular is not set!'))
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
+        ('disc_amount', 'CHECK (disc_amount >= 0.0 )', 'Discount Amount must be positive'),
+        ('disc_percent', 'CHECK (disc_percent >= 0 and disc_percent <= 100)', 'Discount Percent must be between 0.0 and 100.0'),
+        ('disc_fixed_price', 'CHECK (disc_fixed_price >= 0.0)', 'Discount Fixed Price must be positive'),
+        ('disc_max_amount', 'CHECK (disc_max_amount >= 0.0)', 'Max Discount Amount must be positive.'),
+        ('max_usage', 'CHECK (max_usage >= 0.0)', 'Max Usage must be positive.')
     ]
 
     @api.depends('company_id')
@@ -179,6 +188,13 @@ class PromotionProgram(models.Model):
         for program in self:
             usages = self.env['promotion.usage.line'].search([('program_id', '=', program.id)])
             program.total_order_count = len(usages.mapped('order_id'))
+            program.order_ids = usages.mapped('order_id')
+
+    def _qty_min_required(self):
+        for program in self:
+            program.qty_min_required = 0
+            if program.reward_type in ['combo_percent_by_qty', 'combo_fixed_price_by_qty'] and program.reward_ids:
+                program.qty_min_required = min(program.reward_ids.mapped('quantity_min')) or 0
 
     def _show_gen_code(self):
         for program in self:
@@ -219,6 +235,7 @@ class PromotionProgram(models.Model):
         for program in self:
             if bool(self.env['promotion.usage.line'].search([('program_id', '=', program.id)])):
                 raise UserError(_('Can not unlink program which is already used!'))
+        return super().unlink()
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")
@@ -245,3 +262,17 @@ class PromotionProgram(models.Model):
             'default_program_id': self.id,
         }
         return action
+
+    def action_open_orders(self):
+        self.ensure_one()
+        return {
+            'name': _('Orders'),
+            'res_model': 'pos.order',
+            'view_mode': 'tree,form',
+            'views': [
+                (self.env.ref('point_of_sale.view_pos_order_tree_no_session_id').id, 'tree'),
+                (self.env.ref('point_of_sale.view_pos_pos_form').id, 'form'),
+            ],
+            'type': 'ir.actions.act_window',
+            'domain': [('id', 'in', self.order_ids.ids)],
+        }

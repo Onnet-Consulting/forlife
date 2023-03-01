@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+       <record id="salary_record_type_6421" model="salary.record.purpose">
+           <field name="name">Chi phí quản lý doanh nghiệp</field>
+           <field name="code">6421</field>
+       </record>
+
+       <record id="salary_record_type_6411" model="salary.record.purpose">
+           <field name="name">Chi phí bán hàng</field>
+           <field name="code">6411</field>
+       </record>
+
+       <record id="salary_record_type_6271" model="salary.record.purpose">
+           <field name="name">Chi phí sản xuất chung</field>
+           <field name="code">6271</field>
+       </record>
+
+       <record id="salary_record_type_6221" model="salary.record.purpose">
+           <field name="name">Chi phí nhân công trực tiếp</field>
+           <field name="code">6221</field>
+       </record>
+
+       <record id="salary_record_type_2411" model="salary.record.purpose">
+           <field name="name">Chi phí XDCB dở dang</field>
+           <field name="code">2411</field>
+       </record>
+
+    </data>
+</odoo>
+
+
+
+
+
+
+
+
+

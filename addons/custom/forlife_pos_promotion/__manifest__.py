@@ -27,7 +27,7 @@
             'forlife_pos_promotion/static/src/js/ControlButtons/EnterCodeButton.js',
             'forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js',
             'forlife_pos_promotion/static/src/js/ControlButtons/ResetPromotionProgramsButton.js',
-
+            'forlife_pos_promotion/static/src/js/Popup/ComboDetailsPopup.js',
 
             'forlife_pos_promotion/static/src/xml/ControlButtons/PromotionButton.xml',
             'forlife_pos_promotion/static/src/xml/ControlButtons/EnterCodeButton.xml',
@@ -35,6 +35,8 @@
             'forlife_pos_promotion/static/src/xml/ControlButtons/ResetPromotionProgramsButton.xml',
 
             'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/Orderline.xml',
+            'forlife_pos_promotion/static/src/xml/Popup/ProgramSelectionPopup.xml',
+            'forlife_pos_promotion/static/src/xml/Popup/ComboDetailsPopup.xml',
         ],
     },
 

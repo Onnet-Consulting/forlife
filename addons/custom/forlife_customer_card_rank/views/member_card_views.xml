@@ -13,7 +13,6 @@
                     <field name="to_date"/>
                     <field name="min_turnover"/>
                     <field name="is_register"/>
-                    <field name="is_all_store"/>
                     <field name="time_set_rank"/>
                     <field name="active" invisible="1"/>
                 </tree>
@@ -59,20 +58,10 @@
                                     <field name="to_date" class="oe_inline" required="1"/>
                                 </div>
                             </group>
-                            <div class="row">
-                                <div class="col-6">
-                                    <group>
-                                        <field name="is_all_store"/>
-                                    </group>
-                                </div>
-                                <div class="col-6">
-                                    <button name="btn_add_stores" type="object" context="{'update_stores': True}" string="Update Store" class="oe_highlight" attrs="{'invisible': [('is_all_store', '=', True)]}" groups="forlife_customer_card_rank.member_card_manager"/>
-                                </div>
-                            </div>
                             <group>
-                                <field name="store_ids" widget="many2many_tags" attrs="{'invisible': [('is_all_store', '=', True)], 'required': [('is_all_store', '=', False)]}" readonly="1" force_save="1"/>
                                 <field name="time_set_rank"/>
                                 <field name="customer_group_ids" widget="many2many_tags" required="1"/>
+                                <field name="partner_retail_ids" widget="many2many_tags" required="1" domain="[('brand_id', '=', brand_id)]"/>
                                 <field name="payment_method_ids" widget="many2many_tags" required="1"/>
                                 <field name="card_rank_id" class="oe_inline" required="1"/>
                                 <field name="min_turnover" class="oe_inline"/>
@@ -99,8 +88,14 @@
                                 discount (%)
                                 <field name="value3" class="oe_inline"/>
                             </div>
+                            <group>
+                                <field name="journal_ids" widget="many2many_tags" required="1"/>
+                                <field name="discount_account_id"/>
+                                <field name="value_account_id"/>
+                            </group>
                         </group>
                         <field name="active" invisible="1"/>
+                        <field name="brand_id" invisible="1"/>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_ids" widget="mail_thread"/>
@@ -137,35 +132,5 @@
             <field name="domain">[('brand_code', '=', 'TKL')]</field>
         </record>
 
-    </data>
-
-    <data>
-        <record id="form_update_store_view_form" model="ir.ui.view">
-            <field name="name">form_update_store_view_form</field>
-            <field name="model">form.update.store</field>
-            <field name="arch" type="xml">
-                <form string="form_update_store_form">
-                    <sheet>
-                        <separator string="Stores Apply"/>
-                        <field name="store_ids" domain="[('brand_id', '=', context.get('brand_id'))]" nolabel="1"/>
-                        <field name="member_card_id" invisible="1"/>
-                        <footer>
-                            <button name="btn_ok" type="object" string="OK" class="btn-primary" context="{'update_comment': True}"/>
-                            <button special="cancel" string="Cancel" class="btn-secondary"/>
-                        </footer>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-
-        <template id="message_update_stores">
-            <t t-out="time"/>
-            <p t-if="added">
-                <t t-out="added"/>
-            </p>
-            <p t-if="deleted">
-                <t t-out="deleted"/>
-            </p>
-        </template>
     </data>
 </odoo>
