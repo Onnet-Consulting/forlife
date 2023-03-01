@@ -475,7 +475,7 @@ msgstr "Thứ hạng"
 #: code:addons/forlife_customer_card_rank/models/card_rank.py:0
 #, python-format
 msgid "Priority must be unique '%s'"
-msgstr ""
+msgstr "Thứ hạng không được trùng '%s'"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__name
