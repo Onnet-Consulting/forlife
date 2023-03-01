@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<t t-name="ActionpadWidget" t-inherit="point_of_sale.ActionpadWidget" t-inherit-mode="extension" owl="1">
+    <xpath expr="//button[hasclass('set-partner')]" position="inside">
+        <t t-if="props.partner and props.partner.card_rank_by_brand[this.env.pos.pos_branch[0].id]">
+            -
+            <t t-esc="props.partner.card_rank_by_brand[this.env.pos.pos_branch[0].id][1]"/>
+        </t>
+    </xpath>
+</t>

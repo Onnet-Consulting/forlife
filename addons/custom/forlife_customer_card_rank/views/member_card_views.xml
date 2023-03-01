@@ -65,8 +65,12 @@
                                 <field name="payment_method_ids" widget="many2many_tags" required="1"/>
                                 <field name="card_rank_id" class="oe_inline" required="1"/>
                                 <field name="min_turnover" class="oe_inline"/>
-                                <field name="original_price" class="oe_inline"/>
                             </group>
+                            <div>
+                                <label for="original_price"/>
+                                discount (%)
+                                <field name="original_price" class="oe_inline"/>
+                            </div>
                             <div>From
                                 <field name="apply_value_from_1" class="oe_inline"/>
                                 to

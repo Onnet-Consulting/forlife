@@ -34,5 +34,12 @@
         'views/res_partner_views.xml',
         'views/pos_order_views.xml',
         'views/menuitem.xml',
-    ]
+    ],
+    'assets': {
+        'point_of_sale.assets': [
+            'forlife_customer_card_rank/static/src/js/*.js',
+
+            'forlife_customer_card_rank/static/src/xml/*.xml',
+        ],
+    },
 }
