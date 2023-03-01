@@ -24,7 +24,7 @@ class MssqlServer(models.AbstractModel):
             autocommit=autocommit)
 
     @api.model
-    def execute(self, query, params, autocommit=True):
+    def _execute(self, query, params, autocommit=True):
         with self._conn(autocommit=autocommit) as conn:
             cursor = conn.cursor()
             if type(query) in [list, tuple]:
@@ -37,7 +37,7 @@ class MssqlServer(models.AbstractModel):
             return True
 
     @api.model
-    def execute_read(self, query, params, size=1000):
+    def _execute_read(self, query, params, size=1000):
         with self._conn() as conn:
             cursor = conn.cursor()
             cursor.execute(query)

@@ -13,13 +13,16 @@ MSSQL_TIME_FORMAT = '%H:%M:%S'
 class BravoField(fields.Field):
     bravo_name = None
     odoo_name = None
-    store = False
+    identity = False  # fields with identity = True use to indentify which record to update or delete
+    store = False  # don't save to Odoo DB
+    groups = "base.group_no_one"  # prevent normal user read this field type
 
     _description_bravo_name = property(attrgetter('bravo_name'))
     _description_odoo_name = property(attrgetter('odoo_name'))
+    _description_identity = property(attrgetter('identity'))
 
-    def __int__(self, bravo_name=Default, odoo_name=Default, **kwargs):
-        super(BravoField, self).__int__(bravo_name=bravo_name, odoo_name=odoo_name, **kwargs)
+    def __int__(self, bravo_name=Default, odoo_name=Default, identity=Default, **kwargs):
+        super(BravoField, self).__int__(bravo_name=bravo_name, odoo_name=odoo_name, identity=identity, **kwargs)
 
     def compute_value(self, record):
         return {self.bravo_name: record[self.odoo_name]}
