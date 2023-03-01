@@ -71,7 +71,6 @@ class PosSession(models.Model):
                     'max_usage',
                     'promotion_type',
                     'with_code',
-                    'apply_multi_program',
                     'discount_based_on',
                     'valid_product_ids',
                     'valid_customer_ids',
@@ -124,10 +123,7 @@ class PosSession(models.Model):
         return self.env['promotion.reward.line'].search_read(**params['search_params'])
 
     def _get_pos_ui_promotion_pricelist_item(self, params):
-        result = self.env['promotion.pricelist.item'].search_read(**params['search_params'])
-        print('result')
-        print(result)
-        return result
+        return self.env['promotion.pricelist.item'].search_read(**params['search_params'])
 
     def _get_pos_ui_month_data(self, params):
         return self.env['month.data'].search_read(**params['search_params'])

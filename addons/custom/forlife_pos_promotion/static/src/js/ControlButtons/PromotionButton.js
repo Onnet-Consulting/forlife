@@ -41,15 +41,12 @@ export class PromotionButton extends PosComponent {
             });
             return false;
         };
-        let hasNonMultiProgram = order._checkHasNoMultiComboApplied();
-        let hasComboApplied = order._checkHasComboApplied();
         const programsList = potentialPrograms.map((pro) => ({
             id: pro.program.id,
             label: pro.program.name,
             isSelected: false,
             forecastedNumber: pro.number,
             order_apply: -1,
-            apply_multi_program: pro.program.apply_multi_program,
             discounted_amount: 0.0,
             forecasted_discounted_amount: 0.0,
         }));
@@ -58,8 +55,6 @@ export class PromotionButton extends PosComponent {
             title: this.env._t('Please select some program'),
             programs: programsList,
             discount_total: 0,
-            hasNonMultiProgram: hasNonMultiProgram,
-            hasComboApplied: hasComboApplied
         });
         if (confirmed) {
             return this._applyPromotionProgram(payload);

@@ -87,7 +87,6 @@ class PromotionProgram(models.Model):
     with_code = fields.Boolean('Use a code', default=False)
     combo_code = fields.Char('Combo Code')
     combo_name = fields.Char('Combo Name')
-    apply_multi_program = fields.Boolean(default=True)
     # Code
     discount_based_on = fields.Selection([
         ('unit_price', 'Unit Price'),

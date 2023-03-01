@@ -444,11 +444,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return this._get_program_usage_ids().length > 0;
     }
 
-    _checkHasNoMultiComboApplied() {
-        let programs = this._get_program_usage_ids().map(p => this.pos.promotion_program_by_id[p.program_id]);
-        return programs.some(p => p.apply_multi_program == false);
-    }
-
     /* return {<program_id>: number_of_combo}*/
     verifyComboProgramOnOrder(toVerifyPromotionPrograms) {
         var comboProgramToCheck = new Set();
@@ -498,14 +493,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     getPotentialProgramsToSelect() {
         let toCheck = this.pos.promotionPrograms;
-
-        if (this._checkHasComboApplied()) {
-            toCheck = toCheck.filter((p => !(p.apply_multi_program == false && p.promotion_type == 'combo')));
-        };
-
-        if (this._checkHasNoMultiComboApplied()) {
-            toCheck = this.pos.promotionPrograms.filter(p => p.promotion_type !== 'combo');
-        };
 
         var numberOfProgramsValues = this.verifyComboProgramOnOrder(toCheck);
         return Object.entries(numberOfProgramsValues)
