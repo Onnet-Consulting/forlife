@@ -49,6 +49,7 @@
                             <field name="apply_many_times"/>
                             <field name="apply_contemp_time"/>
                             <field name="brand_id"/>
+                            <field name="store_ids" widget="many2many_tags" domain="[('brand_id','=', brand_id)]"/>
                             <field name="status_latest"/>
                         </group>
                         <group>
@@ -57,7 +58,7 @@
                             <field name="partner_id"/>
                             <field name="price"/>
                             <field name="price_used" readonly="1"/>
-                            <field name="price_residual"/>
+                            <field name="price_residual" readonly="1"/>
                             <field name="sale_id" readonly="1"/>
                             <field name="order_pos" readonly="1"/>
                             <field name="order_use_ids" widget="many2many_tags" readonly="1"/>

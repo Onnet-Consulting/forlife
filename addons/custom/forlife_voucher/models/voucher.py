@@ -17,7 +17,7 @@ class Voucher(models.Model):
     purpose_id = fields.Many2one('setup.voucher', 'Purpose', required=True)
     currency_id = fields.Many2one('res.currency', compute='_compute_currency_field')  # related currency of program voucher
     type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True)
-    state = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string='State', required=True, tracking=True)
+    state = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string='State', required=True, tracking=True, default='new')
     price = fields.Monetary('Mệnh giá')
     price_used = fields.Monetary('Giá trị đã dùng')
     price_residual = fields.Monetary('Giá trị còn lại')
@@ -46,6 +46,7 @@ class Voucher(models.Model):
 
     derpartment_id = fields.Many2one('hr.department', 'Department Code', required=True)
     brand_id = fields.Many2one('res.brand', 'Brand', required=True)
+    store_ids = fields.Many2many('store', string='Cửa hàng áp dụng')
 
     @api.depends('program_voucher_id')
     def _compute_currency_field(self):
