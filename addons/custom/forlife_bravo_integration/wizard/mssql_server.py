@@ -37,6 +37,15 @@ class MssqlServer(models.AbstractModel):
             return True
 
     @api.model
+    def _execute_many(self, queries):
+        with self._conn(autocommit=False) as conn:
+            cursor = conn.cursor()
+            for query, params in queries:
+                cursor.execute(query, params)
+            conn.commit()
+            return True
+
+    @api.model
     def _execute_read(self, query, params, size=1000):
         with self._conn() as conn:
             cursor = conn.cursor()
@@ -46,4 +55,3 @@ class MssqlServer(models.AbstractModel):
                 yield data
                 if not data:
                     break
-

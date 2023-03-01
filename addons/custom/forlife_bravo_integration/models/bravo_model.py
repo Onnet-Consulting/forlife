@@ -184,9 +184,7 @@ class BravoModel(models.AbstractModel):
 
     def insert_into_bravo_db(self):
         queries = self.get_insert_sql()
-        for query, params in queries:
-            if query:
-                self._execute(query, params)
+        self._execute_many(queries)
         return True
 
     def update_bravo_db(self, values):
