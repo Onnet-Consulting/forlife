@@ -38,3 +38,6 @@ docker logs -f <CONTAINER_NAME>
 ```shell
 ERROR: Unable to set system administrator password: Password validation failed. The password does not meet SQL Server password policy requirements because it is too short. The password must be at least 8 characters..
 ```
+
+2. MSSQL Server query limitation
+   1. [Parameter per stored procedure](https://learn.microsoft.com/en-us/sql/sql-server/maximum-capacity-specifications-for-sql-server?redirectedfrom=MSDN&view=sql-server-ver16)

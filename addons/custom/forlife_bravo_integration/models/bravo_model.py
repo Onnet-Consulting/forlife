@@ -64,7 +64,7 @@ class BravoModel(models.AbstractModel):
         column_names, values = self.get_bravo_insert_values()
 
         if not values:
-            return False,False
+            return False, False
         insert_table = self._bravo_table
         params = []
         insert_column_names = column_names.copy()
@@ -127,9 +127,6 @@ class BravoModel(models.AbstractModel):
         return query, params
 
     def get_delete_sql(self):
-        """
-        @param dict values: odoo updated value (or bravo updated value)
-        """
         identity_key_values = self.get_bravo_identity_key_values()
         params = []
         update_table_name = self._bravo_table
