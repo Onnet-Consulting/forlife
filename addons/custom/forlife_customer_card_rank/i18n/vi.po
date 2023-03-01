@@ -162,7 +162,7 @@ msgid "Customer"
 msgstr "Khách hàng"
 
 #. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__customer_group_ids
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__customer_group_id
 msgid "Customer Group"
 msgstr "Nhóm khách hàng"
 

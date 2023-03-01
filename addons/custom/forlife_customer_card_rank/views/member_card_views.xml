@@ -60,7 +60,7 @@
                             </group>
                             <group>
                                 <field name="time_set_rank"/>
-                                <field name="customer_group_ids" widget="many2many_tags" required="1"/>
+                                <field name="customer_group_id" readonly="1" force_save="1"/>
                                 <field name="partner_retail_ids" widget="many2many_tags" required="1" domain="[('brand_id', '=', brand_id)]"/>
                                 <field name="payment_method_ids" widget="many2many_tags" required="1"/>
                                 <field name="card_rank_id" class="oe_inline" required="1"/>

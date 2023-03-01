@@ -21,7 +21,7 @@ class MemberCard(models.Model):
     from_date = fields.Date('Time Apply', copy=False, tracking=True)
     to_date = fields.Date('To Date', copy=False, tracking=True)
     time_set_rank = fields.Integer('Time Set Rank', default=180, tracking=True)
-    customer_group_ids = fields.Many2many('res.partner.group', string='Customer Group', default=lambda f: [(4, f.env.ref('forlife_pos_app_member.partner_group_c').ids)])
+    customer_group_id = fields.Many2one('res.partner.group', string='Customer Group', default=lambda f: f.env['res.partner.group'].search([('code', '=', 'C')]).id)
     partner_retail_ids = fields.Many2many('res.partner.retail', string='Customer Retail Types')
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method')
     card_rank_id = fields.Many2one('card.rank', string='Rank', tracking=True)
@@ -115,7 +115,7 @@ class MemberCard(models.Model):
             'default_from_date': self.from_date,
             'default_to_date': self.to_date,
             'default_time_set_rank': self.time_set_rank,
-            'default_customer_group_ids': self.customer_group_ids.ids,
+            'default_customer_group_id': self.customer_group_id.id,
             'default_partner_retail_ids': self.partner_retail_ids.ids,
             'default_payment_method_ids': self.payment_method_ids.ids,
             'default_card_rank_id': self.card_rank_id.id,
