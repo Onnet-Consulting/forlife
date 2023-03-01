@@ -40,4 +40,5 @@ ERROR: Unable to set system administrator password: Password validation failed. 
 ```
 
 2. MSSQL Server query limitation
-   1. [Parameter per stored procedure](https://learn.microsoft.com/en-us/sql/sql-server/maximum-capacity-specifications-for-sql-server?redirectedfrom=MSDN&view=sql-server-ver16)
+   1. [Parameter per stored procedure - 2100 parameters](https://learn.microsoft.com/en-us/sql/sql-server/maximum-capacity-specifications-for-sql-server?redirectedfrom=MSDN&view=sql-server-ver16)
+   2. [Insert row number - maximum 1000 rows](https://learn.microsoft.com/en-us/sql/t-sql/queries/table-value-constructor-transact-sql?redirectedfrom=MSDN&view=sql-server-ver15#limitations-and-restrictions)

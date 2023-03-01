@@ -62,6 +62,7 @@ class BravoModel(models.AbstractModel):
         # FIXME: insert into have limited the number of records to 1000 each time insert
         # TODO: try bulk insert (https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlbulkoperations-function?view=sql-server-ver16)
         column_names, values = self.get_bravo_insert_values()
+        queries = []
 
         if not values:
             return False, False
@@ -79,16 +80,27 @@ class BravoModel(models.AbstractModel):
             single_record_values_placeholder.append(str(fvalue))
 
         single_record_values_placeholder = "(" + ','.join(single_record_values_placeholder) + ")"
-        insert_values_placholder = ','.join([single_record_values_placeholder] * len(values))
         insert_column_names = "(" + ','.join(insert_column_names) + ")"
 
-        query = f"""
-        INSERT INTO {insert_table} 
-        {insert_column_names}
-        VALUES {insert_values_placholder}
-        """
+        # LIMITATION params per request is 2100 -> so 2000 params per request is a reasonable number
+        num_param_per_row = len(column_names)
+        num_row_per_request = 2000 // num_param_per_row
+        offset = 0
+        while True:
+            sub_params = params[offset: num_row_per_request * num_param_per_row + offset]
+            actual_num_row = len(sub_params) // num_param_per_row
+            if actual_num_row <= 0:
+                break
+            insert_values_placholder = ','.join([single_record_values_placeholder] * actual_num_row)
+            sub_query = f"""
+            INSERT INTO {insert_table} 
+            {insert_column_names}
+            VALUES {insert_values_placholder}
+            """
+            queries.append((sub_query, sub_params))
+            offset += num_row_per_request * num_param_per_row
 
-        return query, params
+        return queries
 
     def get_update_sql(self, values):
         """
@@ -171,9 +183,10 @@ class BravoModel(models.AbstractModel):
         return list(filter(lambda bfield: bfield.identity, bravo_fields))
 
     def insert_into_bravo_db(self):
-        query, params = self.get_insert_sql()
-        if query:
-            self._execute(query, params)
+        queries = self.get_insert_sql()
+        for query, params in queries:
+            if query:
+                self._execute(query, params)
         return True
 
     def update_bravo_db(self, values):
