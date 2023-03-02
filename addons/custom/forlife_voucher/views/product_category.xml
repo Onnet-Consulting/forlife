@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="product_category_voucher_form_inherit" model="ir.ui.view">
+        <field name="name">product.category.voucher.form.inherit</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//sheet" position="inside">
+                <group name="account_price">
+                    <group string="Account Price" groups="account.group_account_readonly">
+                        <field name="price_account_id"/>
+                    </group>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
