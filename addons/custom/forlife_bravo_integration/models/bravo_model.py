@@ -199,8 +199,7 @@ class BravoModel(models.AbstractModel):
     def fields_bravo_get(self, allfields=None):
         res = []
         for bfield in self._fields.values():
-            if not issubclass(type(bfield), BravoField) \
-                    or not hasattr(bfield, "odoo_name") or not hasattr(bfield, "bravo_name"):
+            if not issubclass(type(bfield), BravoField) or not hasattr(bfield, "bravo_name"):
                 continue
             if allfields and bfield.odoo_name not in allfields:
                 continue
@@ -254,13 +253,36 @@ class BravoModel(models.AbstractModel):
 class BravoHeaderModel(models.AbstractModel):
     _name = 'bravo.header.model'
     _inherit = 'bravo.model'
+    _bravo_update_table = 'B30UpdateData'
+
+    def insert_into_bravo_db(self):
+        # ignore insert to bravo db for this type of table
+        pass
+
+    def get_delete_sql(self):
+        pass
+
+    def delete_bravo_data_db(self, queries):
+        pass
 
 
 class BravoLineModel(models.AbstractModel):
     _name = 'bravo.line.model'
     _inherit = 'bravo.model'
+    _bravo_update_table = 'B30UpdateData'
+
+    def get_bravo_header_insert_values(self):
+        # get insert values of header table here
+        header_field = self._bravo_header_field
+        header_record = self.mapped(header_field)
+        header_record.ensure_one()
+        header_columns, header_values = header_record.get_bravo_insert_values()
+        return header_columns, header_values[0]
 
     def get_bravo_insert_values(self):
-        res = super(BravoLineModel, self).get_bravo_insert_values()
-        return res
-        # get insert values of header table here
+        line_columns, line_values = super(BravoLineModel, self).get_bravo_insert_values()
+        header_columns, header_value = self.get_bravo_header_insert_values()
+        line_columns.extend(header_columns)
+        for value in line_values:
+            value.update(header_value)
+        return line_columns, line_values

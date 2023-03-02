@@ -14,6 +14,7 @@ NONE_VALUE = None
 
 class BravoField(fields.Field):
     bravo_name = None
+    bravo_default = None
     odoo_name = None
     identity = False  # fields with identity = True use to indentify which record to update or delete
     store = False  # don't save to Odoo DB
@@ -23,11 +24,16 @@ class BravoField(fields.Field):
     _description_odoo_name = property(attrgetter('odoo_name'))
     _description_identity = property(attrgetter('identity'))
 
-    def __int__(self, bravo_name=Default, odoo_name=Default, identity=Default, **kwargs):
-        super(BravoField, self).__int__(bravo_name=bravo_name, odoo_name=odoo_name, identity=identity, **kwargs)
+    def __int__(self, bravo_name=Default, bravo_default=bravo_default, odoo_name=Default, identity=Default, **kwargs):
+        super(BravoField, self).__int__(bravo_name=bravo_name, bravo_default=bravo_default,
+                                        odoo_name=odoo_name, identity=identity, **kwargs)
 
     def compute_value(self, record):
-        return {self.bravo_name: record[self.odoo_name] or NONE_VALUE}
+        if self.bravo_default is not None:
+            value = self.bravo_default
+        else:
+            value = record[self.odoo_name]
+        return {self.bravo_name: value or NONE_VALUE}
 
     def compute_update_value(self, value, model=Default):
         odoo_name = self.odoo_name
@@ -98,5 +104,3 @@ class BravoHeaderField(BravoField, fields.Many2one):
 
     def __init__(self, header_fields=Default, **kwargs):
         super(BravoHeaderField, self).__init__(header_fields=header_fields, **kwargs)
-
-
