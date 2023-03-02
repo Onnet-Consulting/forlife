@@ -34,8 +34,8 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
 
     action_apply_card_rank(cr_program) {
         for (let line of cr_program.discounts) {
-            if (this.discount > line[1][0] && this.discount <= line[1][1]) {
-                this.discount_card_rank = line[0]
+            if (this.discount > line.from && this.discount <= line.to) {
+                this.discount_card_rank = line.disc;
                 break;
             }
         }

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-27 07:55+0000\n"
-"PO-Revision-Date: 2023-02-27 07:55+0000\n"
+"POT-Creation-Date: 2023-03-02 08:19+0000\n"
+"PO-Revision-Date: 2023-03-02 08:19+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -78,6 +78,7 @@ msgstr ""
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__brand_id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__brand_id
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_filter
 msgid "Brand"
 msgstr "Thương hiệu"
 
@@ -106,13 +107,27 @@ msgid "Brand on Customer must be unique !"
 msgstr "Thương hiệu trên Khách hàng là duy nhất !"
 
 #. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/ControlButtons/CardButton.xml:0
+#, python-format
+msgid "Card"
+msgstr "Thẻ"
+
+#. module: forlife_customer_card_rank
 #: model:ir.actions.act_window,name:forlife_customer_card_rank.card_rank_action
 #: model:ir.model,name:forlife_customer_card_rank.model_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_ids
 #: model:ir.ui.menu,name:forlife_customer_card_rank.card_rank_menu
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_filter
 msgid "Card Rank"
 msgstr "Hạng thẻ"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_by_brand
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_by_brand
+msgid "Card Rank By Brand"
+msgstr "Hạng thẻ theo thương hiệu"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_format
@@ -120,6 +135,20 @@ msgstr "Hạng thẻ"
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
 msgid "Card Rank Format"
 msgstr "Hạng thẻ Format"
+
+#. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/js/ProductScreen/ControlButtons/CardButton.js:0
+#, python-format
+msgid "Card Rank Program error"
+msgstr "Lỗi chương trình hạng thẻ"
+
+#. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/js/ProductScreen/ProductScreen.js:0
+#, python-format
+msgid "Card Rank Program warning"
+msgstr "Cảnh báo chương trình hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_tokyolife
@@ -134,6 +163,13 @@ msgstr "Hạng thẻ TokyoLife"
 #, python-format
 msgid "Card Rank for '%s' brand not found"
 msgstr "Không tim thấy hạng thẻ cho thương hiệu '%s'"
+
+#. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/js/ProductScreen/ControlButtons/CardButton.js:0
+#, python-format
+msgid "Card rank program '%s' not found."
+msgstr "Không tìm thấy chương trình hạng thẻ '%s'"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_res_partner
@@ -158,8 +194,15 @@ msgstr "Được tạo vào"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__customer_id
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_filter
 msgid "Customer"
 msgstr "Khách hàng"
+
+#. module: forlife_customer_card_rank
+#: model:ir.actions.act_window,name:forlife_customer_card_rank.partner_card_rank_action
+#: model:ir.ui.menu,name:forlife_customer_card_rank.partner_card_rank_menu
+msgid "Customer Card Rank"
+msgstr "Hạng thẻ khách hàng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__customer_group_id
@@ -185,6 +228,14 @@ msgstr "Chi tiết hạng thẻ"
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__discount_account_id
 msgid "Discount Account"
 msgstr "Tài khoản chiết khấu hạng thẻ"
+
+#. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineDetails.xml:0
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineDetails.xml:0
+#, python-format
+msgid "Discount Card"
+msgstr "Giảm hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__display_name
@@ -233,6 +284,11 @@ msgstr "Từ"
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_tree
 msgid "From Date"
 msgstr "Từ ngày"
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_filter
+msgid "Group By..."
+msgstr "Nhóm theo ..."
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__has_message
@@ -458,7 +514,12 @@ msgstr "Chi tiết hạng thẻ"
 #. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_pos_order
 msgid "Point of Sale Orders"
-msgstr ""
+msgstr "Đơn bán lẻ"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Phiên bán hàng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__order_id
@@ -509,6 +570,13 @@ msgid "Register To Date"
 msgstr "Hạn ngày đăng ký"
 
 #. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/ControlButtons/ResetCardButton.xml:0
+#, python-format
+msgid "Reset Card"
+msgstr "Xóa thẻ"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_has_sms_error
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_has_sms_error
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_has_sms_error
@@ -517,8 +585,18 @@ msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_filter
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_filter
 msgid "Search"
 msgstr "Tìm kiếm"
+
+#. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/js/ProductScreen/ProductScreen.js:0
+#, python-format
+msgid ""
+"Some products have not been applied to the card rank. Are you sure you want "
+"to proceed ?"
+msgstr "Một số sản phẩm chưa được áp dụng hạng thẻ. Bạn có chắc muốn tiếp tục ?"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__from_date

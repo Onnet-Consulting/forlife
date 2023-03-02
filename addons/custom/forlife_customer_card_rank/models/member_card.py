@@ -26,7 +26,7 @@ class MemberCard(models.Model):
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method')
     card_rank_id = fields.Many2one('card.rank', string='Rank', tracking=True)
     min_turnover = fields.Integer('Turnover', tracking=True)
-    original_price = fields.Integer('Original Price')
+    original_price = fields.Float('Original Price')
     apply_value_from_1 = fields.Float('Apply Value From1')
     apply_value_to_1 = fields.Float('Apply Value To1')
     value1 = fields.Float('Value 1')
