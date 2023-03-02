@@ -30,6 +30,8 @@ class BravoModel(models.AbstractModel):
             value = {}
             for bfield in bravo_fields:
                 value.update(bfield.compute_value(record))
+            if not value:
+                continue
             values.append(value)
         return bravo_column_names, values
 
@@ -51,17 +53,17 @@ class BravoModel(models.AbstractModel):
             value = {}
             for bfield in identity_fields:
                 value.update(bfield.compute_value(record))
+            if not value:
+                continue
             values.append(value)
         return values
 
     def get_insert_sql(self):
-        # FIXME: insert into have limited the number of records to 1000 each time insert
-        # TODO: try bulk insert (https://learn.microsoft.com/en-us/sql/odbc/reference/syntax/sqlbulkoperations-function?view=sql-server-ver16)
         column_names, values = self.get_bravo_insert_values()
         queries = []
 
         if not values:
-            return False, False
+            return False
         insert_table = self._bravo_table
         params = []
         insert_column_names = column_names.copy()
@@ -247,3 +249,18 @@ class BravoModel(models.AbstractModel):
         # FIXME: push below function to job queue
         self.sudo().delete_bravo_data_db(queries)
         return res
+
+
+class BravoHeaderModel(models.AbstractModel):
+    _name = 'bravo.header.model'
+    _inherit = 'bravo.model'
+
+
+class BravoLineModel(models.AbstractModel):
+    _name = 'bravo.line.model'
+    _inherit = 'bravo.model'
+
+    def get_bravo_insert_values(self):
+        res = super(BravoLineModel, self).get_bravo_insert_values()
+        return res
+        # get insert values of header table here

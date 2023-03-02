@@ -91,3 +91,12 @@ class BravoMany2oneField(BravoField, fields.Many2one):
         key, value = res.popitem()
         detail_value = model.env[self.comodel_name].browse(value)[self.field_detail] or NONE_VALUE
         return {key: detail_value}
+
+
+class BravoHeaderField(BravoField, fields.Many2one):
+    header_fields = None
+
+    def __init__(self, header_fields=Default, **kwargs):
+        super(BravoHeaderField, self).__init__(header_fields=header_fields, **kwargs)
+
+

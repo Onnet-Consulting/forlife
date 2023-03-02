@@ -18,6 +18,7 @@
         'base',
         'queue_job',
         'stock',
+        'sale_management',
     ],
     'auto_install': True,
 
