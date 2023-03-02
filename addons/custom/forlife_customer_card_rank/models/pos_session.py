@@ -17,7 +17,7 @@ class PosSession(models.Model):
             'from_date': p['from_date'],
             'to_date': p['to_date'],
             'card_rank_name': p['card_rank_id'][1],
-            'discounts': [disc for disc in sorted([[p['original_price'], [0, 0]],
+            'discounts': [disc for disc in sorted([[p['original_price'], [-1, 0]],
                                                    [p['value1'], [p['apply_value_from_1'], p['apply_value_to_1']]],
                                                    [p['value2'], [p['apply_value_from_2'], p['apply_value_to_2']]],
                                                    [p['value3'], [p['apply_value_from_3'], p['apply_value_to_3']]]],

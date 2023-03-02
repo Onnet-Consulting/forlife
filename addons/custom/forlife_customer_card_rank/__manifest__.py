@@ -20,6 +20,7 @@
         'forlife_point_of_sale',
         'forlife_promotion',
         'forlife_pos_app_member',
+        'forlife_pos_promotion',
     ],
 
     'data': [
@@ -37,9 +38,8 @@
     ],
     'assets': {
         'point_of_sale.assets': [
-            'forlife_customer_card_rank/static/src/js/*.js',
-
-            'forlife_customer_card_rank/static/src/xml/*.xml',
+            'forlife_customer_card_rank/static/src/js/**/*.js',
+            'forlife_customer_card_rank/static/src/xml/**/*.xml',
         ],
     },
 }

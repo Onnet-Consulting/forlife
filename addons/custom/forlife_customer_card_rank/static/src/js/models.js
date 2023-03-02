@@ -1,7 +1,7 @@
 odoo.define('forlife_customer_card_rank.models', function (require) {
     "use strict";
 
-    var {PosGlobalState, register_payment_method} = require('point_of_sale.models');
+    var {PosGlobalState} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
 
 
