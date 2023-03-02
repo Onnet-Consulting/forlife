@@ -110,7 +110,7 @@ class BravoModel(models.AbstractModel):
         identity_key_values = self.get_bravo_identity_key_values()
 
         if not updated_values or not identity_key_values:
-            return False, False
+            return False
         update_table_name = self._bravo_table
 
         set_query_params = []
@@ -155,30 +155,47 @@ class BravoModel(models.AbstractModel):
 
     def get_delete_sql(self):
         identity_key_values = self.get_bravo_identity_key_values()
-        params = []
+
+        if not identity_key_values:
+            return False
         update_table_name = self._bravo_table
 
-        set_query_value = []
+        set_query_params = []
+        set_query_placeholder = []
         for key, value in DELETE_DEFAULT_VALUE.items():
-            set_query_value.append(f"{key}={value}")
-        set_query_value = ','.join(set_query_value)
+            set_query_placeholder.append(f"{key}={value}")
+        set_query_placeholder = ','.join(set_query_placeholder)
 
-        where_query_value = []
+        single_where_value = []
+        for upkey, upvalue in identity_key_values[0].items():
+            single_where_value.append(f"{upkey} = ?")
+        single_where_value = "(" + ' and '.join(single_where_value) + ")"
+
+        where_params = []
         for value in identity_key_values:
-            single_where_value = []
-            for upkey, upvalue in value.items():
-                single_where_value.append(f"{upkey} = ?")
-                params.append(upvalue)
-            single_where_value = "(" + ' and '.join(single_where_value) + ")"
-            where_query_value.append(single_where_value)
-        where_query_value = ' or '.join(where_query_value)
+            for ivalue in value.values():
+                where_params.append(ivalue)
 
-        query = f"""
-            UPDATE {update_table_name}
-            SET {set_query_value}
-            WHERE {where_query_value}
-        """
-        return query, params
+        num_param_per_where_condition = len(identity_key_values[0].keys())
+        num_row_per_request = 2000 // num_param_per_where_condition
+        offset = 0
+        queries = []
+
+        while True:
+            sub_where_params = where_params[offset: num_param_per_where_condition * num_row_per_request + offset]
+            actual_num_row = len(sub_where_params) // num_param_per_where_condition
+            if actual_num_row <= 0:
+                break
+            where_query_placholder = " or ".join([single_where_value] * actual_num_row)
+            query = f"""
+                UPDATE {update_table_name}
+                SET {set_query_placeholder}
+                WHERE {where_query_placholder}
+            """
+            queries.append((query, set_query_params + sub_where_params))
+            offset += num_param_per_where_condition * num_row_per_request
+
+        return queries
 
     @api.model
     def fields_bravo_get(self, allfields=None):
@@ -207,8 +224,8 @@ class BravoModel(models.AbstractModel):
         self._execute_many(queries)
         return True
 
-    def delete_bravo_data_db(self, query, params):
-        self._execute(query, params)
+    def delete_bravo_data_db(self, queries):
+        self._execute_many(queries)
         return True
 
     @api.model_create_multi
@@ -226,8 +243,8 @@ class BravoModel(models.AbstractModel):
 
     def unlink(self):
         # need to extract query and params before records be deleted in Odoo
-        query, params = self.sudo().get_delete_sql()
+        queries = self.sudo().get_delete_sql()
         res = super(BravoModel, self).unlink()
         # FIXME: push below function to job queue
-        self.sudo().delete_bravo_data_db(query, params)
+        self.sudo().delete_bravo_data_db(queries)
         return res
