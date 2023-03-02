@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-02 08:19+0000\n"
-"PO-Revision-Date: 2023-03-02 08:19+0000\n"
+"POT-Creation-Date: 2023-03-02 09:29+0000\n"
+"PO-Revision-Date: 2023-03-02 09:29+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -130,6 +130,11 @@ msgid "Card Rank By Brand"
 msgstr "Hạng thẻ theo thương hiệu"
 
 #. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
+msgid "Card Rank Discount"
+msgstr "Chiết khấu theo hạng thẻ"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_format
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_format
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
@@ -238,6 +243,11 @@ msgid "Discount Card"
 msgstr "Giảm hạng thẻ"
 
 #. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
+msgid "Discounted from"
+msgstr "Đã giảm giá từ"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__display_name
@@ -274,11 +284,6 @@ msgstr ""
 #: model:ir.ui.menu,name:forlife_customer_card_rank.member_card_format_menu
 msgid "Format"
 msgstr ""
-
-#. module: forlife_customer_card_rank
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
-msgid "From"
-msgstr "Từ"
 
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_tree
@@ -357,6 +362,7 @@ msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__journal_ids
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
 msgid "Journal"
 msgstr "Sổ nhật ký"
 
@@ -596,7 +602,8 @@ msgstr "Tìm kiếm"
 msgid ""
 "Some products have not been applied to the card rank. Are you sure you want "
 "to proceed ?"
-msgstr "Một số sản phẩm chưa được áp dụng hạng thẻ. Bạn có chắc muốn tiếp tục ?"
+msgstr ""
+"Một số sản phẩm chưa được áp dụng hạng thẻ. Bạn có chắc muốn tiếp tục ?"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__from_date
@@ -724,8 +731,8 @@ msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
-msgid "discount (%)"
-msgstr "chiết khấu (%)"
+msgid "extra discount (%)"
+msgstr "giảm giá thêm (%)"
 
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form

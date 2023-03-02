@@ -66,33 +66,34 @@
                                 <field name="card_rank_id" class="oe_inline" required="1"/>
                                 <field name="min_turnover" class="oe_inline"/>
                             </group>
+                            <separator string="Card Rank Discount"/>
                             <div>
                                 <label for="original_price"/>
-                                discount (%)
+                                extra discount (%)
                                 <field name="original_price" class="oe_inline"/>
                             </div>
-                            <div>From
+                            <div>Discounted from
                                 <field name="apply_value_from_1" class="oe_inline"/>
                                 to
                                 <field name="apply_value_to_1" class="oe_inline"/>
-                                discount (%)
+                                extra discount (%)
                                 <field name="value1" class="oe_inline"/>
                             </div>
-                            <div>From
+                            <div>Discounted from
                                 <field name="apply_value_from_2" class="oe_inline"/>
                                 to
                                 <field name="apply_value_to_2" class="oe_inline"/>
-                                discount (%)
+                                extra discount (%)
                                 <field name="value2" class="oe_inline"/>
                             </div>
-                            <div>From
+                            <div>Discounted from
                                 <field name="apply_value_from_3" class="oe_inline"/>
                                 to
                                 <field name="apply_value_to_3" class="oe_inline"/>
-                                discount (%)
+                                extra discount (%)
                                 <field name="value3" class="oe_inline"/>
                             </div>
-                            <group>
+                            <group string="Journal">
                                 <field name="journal_ids" widget="many2many_tags" required="1"/>
                                 <field name="discount_account_id"/>
                                 <field name="value_account_id"/>
