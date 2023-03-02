@@ -20,8 +20,8 @@ class MssqlServer(models.AbstractModel):
         username = ir_config.get_param("mssql.username")
         password = ir_config.get_param("mssql.password")
         return pyodbc.connect(
-            f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};ENCRYPT={encrypt}',
-            autocommit=autocommit)
+            f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};'
+            f'ENCRYPT={encrypt};CHARSET=UTF8;', autocommit=autocommit)
 
     @api.model
     def _execute(self, query, params, autocommit=True):

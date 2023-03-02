@@ -36,16 +36,12 @@ class BravoModel(models.AbstractModel):
     def get_bravo_update_values(self, values):
         updated_fields = list(values.keys())
         bravo_fields = self.fields_bravo_get(allfields=updated_fields)
-        bravo_odoo_mapping = {bfield.odoo_name: bfield.bravo_name for bfield in bravo_fields}
         bravo_values = {}
-        if not bravo_odoo_mapping:
-            return bravo_values
 
-        for odoo_name, odoo_value in values.items():
-            bravo_field_name = bravo_odoo_mapping.get(odoo_name)
-            if not bravo_field_name:
-                continue
-            bravo_values[bravo_field_name] = odoo_value
+        for bfield in bravo_fields:
+            bvalue = bfield.compute_update_value(values, self)
+            if bvalue:
+                bravo_values.update(bvalue)
         return bravo_values
 
     def get_bravo_identity_key_values(self):
@@ -132,7 +128,7 @@ class BravoModel(models.AbstractModel):
             for ivalue in value.values():
                 where_params.append(ivalue)
 
-        num_param_per_where_condition = len(identity_key_values[0].keys())
+        num_param_per_where_condition = max(len(identity_key_values[0].keys()), 1)
         num_row_per_request = 2000 // num_param_per_where_condition
         offset = 0
         queries = []
@@ -176,7 +172,7 @@ class BravoModel(models.AbstractModel):
             for ivalue in value.values():
                 where_params.append(ivalue)
 
-        num_param_per_where_condition = len(identity_key_values[0].keys())
+        num_param_per_where_condition = max(len(identity_key_values[0].keys()), 1)
         num_row_per_request = 2000 // num_param_per_where_condition
         offset = 0
         queries = []
@@ -216,16 +212,19 @@ class BravoModel(models.AbstractModel):
 
     def insert_into_bravo_db(self):
         queries = self.get_insert_sql()
-        self._execute_many(queries)
+        if queries:
+            self._execute_many(queries)
         return True
 
     def update_bravo_db(self, values):
         queries = self.get_update_sql(values)
-        self._execute_many(queries)
+        if queries:
+            self._execute_many(queries)
         return True
 
     def delete_bravo_data_db(self, queries):
-        self._execute_many(queries)
+        if queries:
+            self._execute_many(queries)
         return True
 
     @api.model_create_multi

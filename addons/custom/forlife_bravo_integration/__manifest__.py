@@ -17,6 +17,7 @@
     'depends': [
         'base',
         'queue_job',
+        'stock',
     ],
     'auto_install': True,
 
