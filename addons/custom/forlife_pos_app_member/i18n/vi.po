@@ -424,11 +424,6 @@ msgid "Use a barcode to identify this contact."
 msgstr "Sử dụng barcode để xác định liên hệ."
 
 #. module: forlife_pos_app_member
-#: model:ir.model,name:forlife_pos_app_member.model_res_utility
-msgid "Utility"
-msgstr "Tiện ích"
-
-#. module: forlife_pos_app_member
 #: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner_group__partner_type__vendor
 msgid "Vendor"
 msgstr "Nhà cung cấp"
