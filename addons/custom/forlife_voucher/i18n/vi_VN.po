@@ -6,14 +6,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-23 02:52+0000\n"
-"PO-Revision-Date: 2023-02-23 02:52+0000\n"
+"POT-Creation-Date: 2023-03-02 16:08+0000\n"
+"PO-Revision-Date: 2023-03-02 16:08+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: forlife_voucher
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.view_order_form_voucher_inherit
+msgid "<span class=\"o_stat_text\">Voucher</span>"
+msgstr ""
+
+#. module: forlife_voucher
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.product_category_voucher_form_inherit
+msgid "Account Price"
+msgstr "Tài khoản chịu giá"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__message_needaction
@@ -41,7 +51,7 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: forlife_voucher
-#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__store_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__store_ids
 msgid "Apply for store"
 msgstr "Cửa hàng áp dụng"
 
@@ -61,6 +71,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__brand_id
 msgid "Brand"
 msgstr "Thương hiệu"
+
+#. module: forlife_voucher
+#. odoo-python
+#: code:addons/forlife_voucher/models/program_voucher.py:0
+#, python-format
+msgid "Bạn không được phép xóa chương trình chứa mã Voucher!"
+msgstr ""
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_hr_department__center_expense_id
@@ -105,15 +122,21 @@ msgid "Created on"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__currency_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__currency_id
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__currency_id
 msgid "Currency"
-msgstr ""
+msgstr "Tiền tệ"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__partner_ids
 msgid "Customers"
 msgstr "Khách hàng"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__store_ids
+msgid "Cửa hàng áp dụng"
+msgstr ""
 
 #. module: forlife_voucher
 #: model:ir.model,name:forlife_voucher.model_hr_department
@@ -136,6 +159,7 @@ msgstr ""
 
 #. module: forlife_voucher
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__program_voucher__type__e
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__type__e
 msgid "E-Điện tử"
 msgstr ""
 
@@ -233,6 +257,15 @@ msgid "Is Follower"
 msgstr ""
 
 #. module: forlife_voucher
+#. odoo-python
+#: code:addons/forlife_voucher/models/set_voucher.py:0
+#, python-format
+msgid ""
+"Không thể hoàn thành thao tác: Bản ghi \"{}\" yêu cầu bản ghi bị xóa. Nếu có"
+" thể, hãy lưu trữ nó để thay thế."
+msgstr ""
+
+#. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher____last_update
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line____last_update
 #: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher____last_update
@@ -287,6 +320,13 @@ msgid "Mã viết tắt"
 msgstr ""
 
 #. module: forlife_voucher
+#. odoo-python
+#: code:addons/forlife_voucher/models/set_voucher.py:0
+#, python-format
+msgid "Mã viết tắt tối đa chỉ 1 kí tự!"
+msgstr ""
+
+#. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__price
 msgid "Mệnh giá"
 msgstr ""
@@ -315,6 +355,13 @@ msgstr ""
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__activity_type_id
 msgid "Next Activity Type"
+msgstr ""
+
+#. module: forlife_voucher
+#. odoo-python
+#: code:addons/forlife_voucher/models/program_voucher.py:0
+#, python-format
+msgid "Ngày kết thúc không được nhỏ hơn ngày bắt đầu! "
 msgstr ""
 
 #. module: forlife_voucher
@@ -359,14 +406,41 @@ msgid "Phone"
 msgstr "Số điện thoại"
 
 #. module: forlife_voucher
+#. odoo-python
+#: code:addons/forlife_voucher/models/program_voucher.py:0
+#, python-format
+msgid "Please set the infomation of Vourcher!"
+msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_product__price
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_template__price
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__price
 msgid "Price"
 msgstr "Mệnh giá"
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_category__price_account_id
+msgid "Account Price"
+msgstr "Tài khoản chịu giá"
+
+#. module: forlife_voucher
+#. odoo-python
+#: code:addons/forlife_voucher/models/sale_order_line.py:0
+#, python-format
+msgid "Price unit cannot be higher than Voucher's price"
+msgstr "Giá bán không được lớn hơn mệnh giá Voucher"
+
+#. module: forlife_voucher
 #: model:ir.model,name:forlife_voucher.model_product_template
+#: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__product_ids
 msgid "Product"
 msgstr "Sản phẩm"
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_product_category
+msgid "Product Category"
+msgstr "Danh mục sản phẩm"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__product_id
@@ -424,6 +498,16 @@ msgid "SMS Delivery error"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_sale_order
+msgid "Sales Order"
+msgstr "Đơn bán hàng"
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Chi tiết đơn hàng"
+
+#. module: forlife_voucher
 #: model:ir.actions.act_window,name:forlife_voucher.forlife_set_voucher_action
 #: model:ir.ui.menu,name:forlife_voucher.forlife_set_voucher
 msgid "Set Voucher"
@@ -461,6 +545,11 @@ msgid ""
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_stock_move
+msgid "Stock Move"
+msgstr "Dịch chuyển kho"
+
+#. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__state_app
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__state_app
 msgid "Trạng thái App"
@@ -479,6 +568,7 @@ msgstr ""
 
 #. module: forlife_voucher
 #: model:ir.model.fields.selection,name:forlife_voucher.selection__program_voucher__type__v
+#: model:ir.model.fields.selection,name:forlife_voucher.selection__voucher_voucher__type__v
 msgid "V-Giấy"
 msgstr ""
 
@@ -518,7 +608,7 @@ msgstr "Mã chương trình"
 #. odoo-python
 #: code:addons/forlife_voucher/models/program_voucher.py:0
 #, python-format
-msgid "Vui lòng thiết lập dữ liệu voucher!"
+msgid "Vui lòng thêm dòng thông tin cho vourcher!"
 msgstr ""
 
 #. module: forlife_voucher
@@ -553,7 +643,7 @@ msgid "Đơn hàng mua"
 msgstr ""
 
 #. module: forlife_voucher
-#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__order_use
+#: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__order_use_ids
 msgid "Đơn hàng sử dụng"
 msgstr ""
 
