@@ -101,7 +101,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             let not_selected_programs = this.state.programs.filter(p => !p.isSelected);
             not_selected_programs.forEach(p => p.discounted_amount = 0.0);
 
-            let [newLinesToApply, remainingLines, combo_count] = this.env.pos.get_order().computeForListOfCombo(clone_order_lines, selectedPrograms);
+            let [newLinesToApply, remainingLines, combo_count] = this.env.pos.get_order().computeForListOfProgram(clone_order_lines, selectedPrograms);
 
             this.setComboDetails(newLinesToApply);
 
@@ -133,7 +133,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 
                 let remaining_clone_order_lines = [...remainingLinesCopy]
                 let [newLinesToApplyNoSelected, ol, combo_count] = this.env.pos.get_order()
-                        .computeForListOfCombo(remaining_clone_order_lines, [notSelectProgram]);
+                        .computeForListOfProgram(remaining_clone_order_lines, [notSelectProgram]);
 
                this.setComboDetails(newLinesToApplyNoSelected);
 

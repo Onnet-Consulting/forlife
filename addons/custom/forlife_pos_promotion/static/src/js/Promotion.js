@@ -283,7 +283,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     _programIsApplicableAutomatically(program) {
 
-        if (!program.promotion_type == 'combo') {return false;};
+        if (program.promotion_type == 'cart') {return false;};
         if (program.with_code) {
             if (this.activatedInputCodes) {
                 if (!this.activatedInputCodes.map(code => code.program_id).includes(program.id)) {return false;};
@@ -444,6 +444,18 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return this._get_program_usage_ids().length > 0;
     }
 
+    _getPricelistItem(product) {
+        let programs = this.getValidProgramsOnOrder().filter(p => p.promotion_type == 'pricelist');
+        let pricelistItem;
+        for (program in programs) {
+            pricelistItem = program.productPricelistItems.find(item => item.product_id === product.id);
+            if (pricelistItem) {
+                return pricelistItem;
+            };
+        };
+        return false;
+    }
+
     /* return {<program_id>: number_of_combo}*/
     verifyComboProgramOnOrder(toVerifyPromotionPrograms) {
         var comboProgramToCheck = new Set();
@@ -484,11 +496,17 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
             return true;
         })
-//        .sort((a,b) => b.product.lst_price - a.product.lst_price)
+        .sort((a,b) => b.product.lst_price - a.product.lst_price)
     }
 
     getActivatedComboPrograms() {
         return Array.from(this.activatedComboPrograms).map(proID => this.pos.promotion_program_by_id[proID]);
+    }
+
+    getValidProgramsOnOrder() {
+        let toCheck = this.pos.promotionPrograms;
+        var numberOfProgramsValues = this.verifyComboProgramOnOrder(toCheck);
+        return Object.keys(numberOfProgramsValues).reduce((tmp, p) => {tmp.push(p); return tmp}, tmp);
     }
 
     getPotentialProgramsToSelect() {
@@ -512,6 +530,22 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return [newPrice, discAmount]
     }
 
+    applyAPricelistProgramToLineVales(PricelistItem, LineList, number_of_combo) {
+        for (line of LineList) {
+            let fixed_price = PricelistItem.fixed_price;
+            let discount_amount = line.quantity*(line.price - fixed_price);
+            if (discount_amount > 0) {
+                comboLine.promotion_usage_ids.push(new PromotionUsageLine(
+                    program.id,
+                    null,
+                    line.price,
+                    PricelistItem.fixed_price,
+                    discAmountInLine));
+            };
+        };
+    };
+
+    // For Combo Program
     applyAProgramToLineVales(program, comboLineList, number_of_combo) {
         let code = null;
         let activatedCodeObj = this.activatedInputCodes.find(c => c.program_id === program.id)
@@ -626,7 +660,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return comboLineList;
     }
     // todo: Fix trường hợp tiền giảm lớn hơn tổng giá trị của Combo
-    computeForListOfCombo(orderLines, listOfComboProgram) {
+    computeForListOfProgram(orderLines, listOfComboProgram) {
         let lines_to_check = orderLines;
         let to_apply_lines = {};
         let combo_count = {};

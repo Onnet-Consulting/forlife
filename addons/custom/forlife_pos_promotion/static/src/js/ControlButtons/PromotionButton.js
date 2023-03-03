@@ -15,7 +15,7 @@ export class PromotionButton extends PosComponent {
     async _applyPromotionProgram(selectedProgramsList) {
         const order = this.env.pos.get_order();
         let order_lines = order.get_orderlines_to_check();
-        let [newLines, remainingOrderLines, combo_count] = order.computeForListOfCombo(order_lines, selectedProgramsList);
+        let [newLines, remainingOrderLines, combo_count] = order.computeForListOfProgram(order_lines, selectedProgramsList);
         remainingOrderLines.forEach(line => {
             line.set_quantity(line.get_quantity());
             if (line.quantity === 0) {
