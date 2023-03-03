@@ -6,7 +6,7 @@ import Registries from 'point_of_sale.Registries';
 export const PosCardRankProductScreen = (ProductScreen) => class extends ProductScreen {
     async _onClickPay() {
         const order = this.env.pos.get_order();
-        const notApplied = order.get_orderlines().find(line => !line.order_line_card_rank_applied);
+        const notApplied = order.get_orderlines().find(line => !line.card_rank_applied);
         if (notApplied) {
             const {confirmed} = await this.showPopup('ConfirmPopup', {
                 title: this.env._t('Card Rank Program warning'),

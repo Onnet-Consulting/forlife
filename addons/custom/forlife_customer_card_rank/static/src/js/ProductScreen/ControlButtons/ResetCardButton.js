@@ -14,7 +14,6 @@ export class ResetCardButton extends PosComponent {
     async onClick() {
         const order = this.env.pos.get_order();
         order.card_rank_program = null;
-        order.card_rank_applied = false;
         for (let line of order.orderlines) {
             line.action_reset_card_rank();
         }
@@ -25,7 +24,7 @@ ResetCardButton.template = 'ResetCardButton';
 
 ProductScreen.addControlButton({
     component: ResetCardButton, position: ['after', 'RefundButton'], condition: function () {
-        return this.env.pos.get_order().card_rank_applied;
+        return this.env.pos.get_order().card_rank_program;
     }
 });
 

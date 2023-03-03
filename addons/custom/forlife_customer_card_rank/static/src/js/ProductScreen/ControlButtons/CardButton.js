@@ -26,7 +26,6 @@ export class CardButton extends PosComponent {
             });
         } else {
             order.card_rank_program = card_rank_program;
-            order.card_rank_applied = true;
             for (let line of order.orderlines) {
                 line.action_apply_card_rank(card_rank_program);
             }
@@ -38,7 +37,7 @@ CardButton.template = 'CardButton';
 
 ProductScreen.addControlButton({
     component: CardButton, position: ['after', 'RefundButton'], condition: function () {
-        return this.partner && this.partner.card_rank_by_brand[this.env.pos.pos_branch[0].id] && this.env.pos.get_order().orderlines.length > 0 && !this.env.pos.get_order().card_rank_applied;
+        return this.partner && this.partner.card_rank_by_brand[this.env.pos.pos_branch[0].id] && this.env.pos.get_order().orderlines.length > 0 && !this.env.pos.get_order().card_rank_program;
     }
 });
 

@@ -8,6 +8,7 @@ class PosOrder(models.Model):
     _inherit = 'pos.order'
 
     is_rank = fields.Boolean('Is Rank', default=False)
+    card_rank_program_id = fields.Many2one('member.card', 'Card Rank Program', ondelete='restrict')
 
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
@@ -74,3 +75,17 @@ class PosOrder(models.Model):
         program.sudo().write({
             'order_ids': [(4, self.id)]
         })
+
+    @api.model
+    def _order_fields(self, ui_order):
+        res = super()._order_fields(ui_order)
+        if 'card_rank_program_id' not in res and ui_order.get('card_rank_program'):
+            res.update({'card_rank_program_id': ui_order.get('card_rank_program').get('id')})
+        return res
+
+
+class PosOrderLine(models.Model):
+    _inherit = 'pos.order.line'
+
+    card_rank_applied = fields.Boolean('Card Rank Applied', default=False)
+    discount_card_rank = fields.Float('Discount Card Rank', default=0)
