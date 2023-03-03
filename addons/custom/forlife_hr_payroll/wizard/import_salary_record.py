@@ -232,22 +232,37 @@ class ImportSalaryRecord(models.TransientModel):
         return purpose_by_code, error_by_code
 
     def map_employee_data(self, data):
-        employees = self.env['hr.employee'].search([('code', 'in', data)])
+        employees = self.env['hr.employee'].search(
+            ['|', ('code', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
         error_by_code = {}
-        employee_by_code = {e.code: e.id for e in employees}
-        for code in data:
-            if code and not employee_by_code.get(code):
-                error_by_code[code] = _('Mã nhân viên %s không tồn tại') % code
+        employee_by_code = {}
+        employee_data_by_code = {epl.code: (epl.name, epl.id) for epl in employees}
+
+        for import_code, import_name in data.items():
+            db_data = employee_data_by_code.get(import_code)
+            if not db_data or import_name != db_data[0]:
+                error_by_code[import_code] = _('Tên-mã nhân viên không tồn tại hoặc không khớp: "%s" "%s"') \
+                                             % (import_name, import_code)
+                continue
+            employee_by_code[import_code] = db_data[1]
 
         return employee_by_code, error_by_code
 
     def map_department_data(self, data):
-        departments = self.env['hr.department'].search([('code', 'in', data)])
+        departments = self.env['hr.department'].search(
+            ['|', ('code', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
         error_by_code = {}
-        department_by_code = {d.code: d.id for d in departments}
-        for code in data:
-            if code and not department_by_code.get(code):
-                error_by_code[code] = _('Mã phòng ban/bộ phận %s không tồn tại') % code
+        department_by_code = {}
+        department_data_by_code = {d.code: (d.name, d.id) for d in departments}
+
+        for import_code, import_name in data.items():
+            db_data = department_data_by_code.get(import_code)
+            if not db_data or import_name != db_data[0]:
+                error_by_code[import_code] = _('Tên-Mã phòng ban/bộ phận không tồn tại hoặc không khớp:  "%s" "%s"') \
+                                             % (import_name, import_code)
+                continue
+            department_by_code[import_code] = db_data[1]
+
         return department_by_code, error_by_code
 
     def map_analytic_data(self, data):
@@ -344,7 +359,7 @@ class ImportSalaryRecord(models.TransientModel):
                 month = False
 
             errors += _('Line %r, Salary Record Type "%s" is invalid\n') % (
-            index, type_code) if not salary_record_type else ''
+                index, type_code) if not salary_record_type else ''
             errors += _('Line %r, %r is an invalid year\n') % (index, year) if not year else ''
             errors += _('Line %r, %r is an invalid month\n') % (index, month) if month not in MONTH else ''
 
@@ -376,16 +391,16 @@ class ImportSalaryRecord(models.TransientModel):
         res = []
         errors = []
         xls_purposes = []
-        xls_departments = []
+        xls_departments_name_and_code = {}
         xls_analytic_accounts = []
         xls_projects = []
 
         for row_idx, row in enumerate(data):
             xls_purposes.append(row[0])
-            xls_departments.append(row[1])
+            xls_departments_name_and_code.update({row[1]: row[2]})
             xls_analytic_accounts.append(row[3])
             xls_projects.append(row[4])
-        xls_data = dict(purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts,
+        xls_data = dict(purpose=xls_purposes, department=xls_departments_name_and_code, analytic=xls_analytic_accounts,
                         project=xls_projects)
         mapped_data = self.map_data(**xls_data)
         purpose_by_code, purpose_error_by_code = mapped_data.get('purpose')
@@ -430,7 +445,7 @@ class ImportSalaryRecord(models.TransientModel):
         res = []
         errors = []
         xls_purposes = []
-        xls_departments = []
+        xls_departments_name_and_code = {}
         xls_analytic_accounts = []
         xls_projects = []
         xls_manufacturing = []
@@ -438,13 +453,13 @@ class ImportSalaryRecord(models.TransientModel):
 
         for row_idx, row in enumerate(data):
             xls_purposes.append(row[0])
-            xls_departments.append(row[1])
+            xls_departments_name_and_code.update({row[1]: row[2]})
             xls_analytic_accounts.append(row[3])
             xls_projects.append(row[4])
             xls_manufacturing.append(row[5])
             xls_internal_orders.append(row[6])
         xls_data = dict(
-            purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts,
+            purpose=xls_purposes, department=xls_departments_name_and_code, analytic=xls_analytic_accounts,
             project=xls_projects, manufacturing=xls_manufacturing, internal_order=xls_internal_orders
         )
         mapped_data = self.map_data(**xls_data)
@@ -499,7 +514,7 @@ class ImportSalaryRecord(models.TransientModel):
         res = []
         errors = []
         xls_purposes = []
-        xls_departments = []
+        xls_departments_name_and_code = {}
         xls_analytic_accounts = []
         xls_projects = []
         xls_manufacturing = []
@@ -507,13 +522,13 @@ class ImportSalaryRecord(models.TransientModel):
 
         for row_idx, row in enumerate(data):
             xls_purposes.append(row[0])
-            xls_departments.append(row[1])
+            xls_departments_name_and_code.update({row[1]: row[2]})
             xls_analytic_accounts.append(row[3])
             xls_projects.append(row[4])
             xls_manufacturing.append(row[5])
             xls_internal_orders.append(row[6])
         xls_data = dict(
-            purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts,
+            purpose=xls_purposes, department=xls_departments_name_and_code, analytic=xls_analytic_accounts,
             project=xls_projects, manufacturing=xls_manufacturing, internal_order=xls_internal_orders
         )
         mapped_data = self.map_data(**xls_data)
@@ -579,8 +594,8 @@ class ImportSalaryRecord(models.TransientModel):
         res = []
         errors = []
         xls_purposes = []
-        xls_employees = []
-        xls_departments = []
+        xls_employees_name_and_code = {}
+        xls_departments_name_and_code = {}
         xls_analytic_accounts = []
         xls_projects = []
         xls_manufacturing = []
@@ -588,14 +603,15 @@ class ImportSalaryRecord(models.TransientModel):
 
         for row_idx, row in enumerate(data, start=start_row):
             xls_purposes.append(row[0])
-            xls_employees.append(row[1])
-            xls_departments.append(row[3])
+            xls_employees_name_and_code.update({row[1]: row[2]})
+            xls_departments_name_and_code.update({row[3]: row[4]})
             xls_analytic_accounts.append(row[5])
             xls_projects.append(row[6])
             xls_manufacturing.append(row[7])
             xls_internal_orders.append(row[8])
         xls_data = dict(
-            purpose=xls_purposes, employee=xls_employees, department=xls_departments, analytic=xls_analytic_accounts,
+            purpose=xls_purposes, employee=xls_employees_name_and_code, department=xls_departments_name_and_code,
+            analytic=xls_analytic_accounts,
             project=xls_projects, manufacturing=xls_manufacturing, internal_order=xls_internal_orders
         )
         mapped_data = self.map_data(**xls_data)
@@ -667,12 +683,12 @@ class ImportSalaryRecord(models.TransientModel):
         data = data[start_row:]
         res = []
         errors = []
-        xls_employees = []
-        xls_departments = []
+        xls_employees_name_and_code = {}
+        xls_departments_name_and_code = {}
         for row_idx, row in enumerate(data):
-            xls_employees.append(row[1])
-            xls_departments.append(row[3])
-        xls_data = dict(employee=xls_employees, department=xls_departments)
+            xls_employees_name_and_code.update({row[1]: row[2]})
+            xls_departments_name_and_code.update({row[3]: row[4]})
+        xls_data = dict(employee=xls_employees_name_and_code, department=xls_departments_name_and_code)
         mapped_data = self.map_data(**xls_data)
         employee_by_code, employee_error_by_code = mapped_data.get('employee')
         department_by_code, department_error_by_code = mapped_data.get('department')
