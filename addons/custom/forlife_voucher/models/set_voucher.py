@@ -5,6 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 class SetVoucher(models.Model):
     _name = 'setup.voucher'
     _description = 'Set Voucher code'
+    _rec_names_search = ['applicable_object']
 
     purpose_voucher = fields.Selection([('gift', 'Gift'), ('pay', 'Pay')], string='Mục đích sử dụng', required=True)
 

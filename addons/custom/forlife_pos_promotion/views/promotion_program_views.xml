@@ -38,6 +38,17 @@
                                 POS Orders</span>
                             </div>
                         </button>
+                        <button class="oe_stat_button" type="object" name="action_open_pricelist_items" icon="fa-list"
+                                attrs="{'invisible': [('promotion_type', '!=', 'pricelist')]}"
+                        >
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="pricelist_item_count"/>
+                                </span>
+                                <span class="o_stat_text" >
+                                Pricelist Items</span>
+                            </div>
+                        </button>
                     </div>
                     <field name="active" invisible="1"/>
                     <field name="discount_apply_on" invisible="1"/>
@@ -82,7 +93,6 @@
                     </group>
                     <group string="Combo" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">
                             <field name="with_code" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
-                            <field name="apply_multi_program" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
                             <label for="combo_line_ids"/>
                             <field name="combo_line_ids" colspan="2" mode="tree" nolabel="1"
                                    add-label="Add a product"
@@ -101,7 +111,7 @@
                             </button>
                         </div>
                     </group>
-                    <group string="Rewards">
+                    <group string="Rewards" attrs="{'invisible': [('reward_type', '=', 'pricelist')]}">
                         <group>
                             <field name="discount_based_on"
                                    attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent'))]}"/>
@@ -197,13 +207,15 @@
                 <field name="reward_type"/>
                 <field name="with_code"/>
                 <field name="active" widget="boolean_toggle"/>
-                <field name="apply_multi_program"/>
                 <field name="show_gen_code" invisible="1"/>
                 <button name="%(promotion_generate_code_action)d" string="Generate Codes"
                         class="btn-primary" type="action"
                         attrs="{'invisible': [('show_gen_code', '=', False)]}"/>
                 <button name="view_program" class="btn-secondary" type="object"
                         icon="fa-share-square-o"/>
+                <button name="action_open_pricelist_items" class="btn-secondary" type="object"
+                        attrs="{'invisible': [('promotion_type', '!=', 'pricelist')]}"
+                        icon="fa-list"/>
             </tree>
         </field>
     </record>
