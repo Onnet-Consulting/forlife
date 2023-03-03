@@ -145,7 +145,7 @@ class ForlifeHrPayrollXlsx(models.AbstractModel):
         sh_tt.set_column(0, len(header) - 1, 20)
         for row, value in enumerate(salary_arrears, start=1):
             sh_tt.write(row, 0, value.purpose_id.name)
-            sh_tt.write(row, 1, value.employee_id.barcode)
+            sh_tt.write(row, 1, value.employee_id.code)
             sh_tt.write(row, 2, value.employee_id.name)
             sh_tt.write(row, 3, value.department_id.code)
             sh_tt.write(row, 4, value.department_id.name)
@@ -178,7 +178,7 @@ class ForlifeHrPayrollXlsx(models.AbstractModel):
         sh_ltd.set_column(0, len(header) - 1, 20)
         for row, value in enumerate(salary_backlog, start=1):
             sh_ltd.write(row, 0, row)
-            sh_ltd.write(row, 1, value.employee_id.barcode)
+            sh_ltd.write(row, 1, value.employee_id.code)
             sh_ltd.write(row, 2, value.employee_id.name)
             sh_ltd.write(row, 3, value.department_id.code)
             sh_ltd.write(row, 4, value.department_id.name)

@@ -143,15 +143,25 @@ class ImportSalaryRecord(models.TransientModel):
         entry_arrears = entries.filtered(lambda x: x.salary_table_id.model == 'salary.arrears')
 
         accounting_configs = self.env['salary.accounting.config'].search([])
-        salary_main_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_salary_main, accounting_configs)
-        total_income_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_total_income, accounting_configs)
-        supplementary_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_supplementary, accounting_configs)
+        salary_main_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_salary_main,
+                                                                                         accounting_configs)
+        total_income_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_total_income,
+                                                                                          accounting_configs)
+        supplementary_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_supplementary,
+                                                                                           accounting_configs)
         arrears_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_arrears, accounting_configs)
 
-        salary_main_accounting_values = self.generate_accounting_value(salary_record.salary_record_main_ids, salary_main_accounting_by_purpose_id, 'salary.record.main')
-        total_income_accounting_values = self.generate_accounting_value(salary_record.salary_total_income_ids, total_income_accounting_by_purpose_id, 'salary.total.income')
-        supplementary_accounting_values = self.generate_accounting_value(salary_record.salary_supplementary_ids, supplementary_accounting_by_purpose_id, 'salary.supplementary')
-        arrears_accounting_values = self.generate_accounting_value(salary_record.salary_arrears_ids, arrears_accounting_by_purpose_id, 'salary.arrears')
+        salary_main_accounting_values = self.generate_accounting_value(salary_record.salary_record_main_ids,
+                                                                       salary_main_accounting_by_purpose_id,
+                                                                       'salary.record.main')
+        total_income_accounting_values = self.generate_accounting_value(salary_record.salary_total_income_ids,
+                                                                        total_income_accounting_by_purpose_id,
+                                                                        'salary.total.income')
+        supplementary_accounting_values = self.generate_accounting_value(salary_record.salary_supplementary_ids,
+                                                                         supplementary_accounting_by_purpose_id,
+                                                                         'salary.supplementary')
+        arrears_accounting_values = self.generate_accounting_value(salary_record.salary_arrears_ids,
+                                                                   arrears_accounting_by_purpose_id, 'salary.arrears')
 
         accounting_values = salary_main_accounting_values + total_income_accounting_values + supplementary_accounting_values + arrears_accounting_values
         salary_record_id = salary_record.id
@@ -222,9 +232,9 @@ class ImportSalaryRecord(models.TransientModel):
         return purpose_by_code, error_by_code
 
     def map_employee_data(self, data):
-        employees = self.env['hr.employee'].search([('barcode', 'in', data)])
+        employees = self.env['hr.employee'].search([('code', 'in', data)])
         error_by_code = {}
-        employee_by_code = {e.barcode: e.id for e in employees}
+        employee_by_code = {e.code: e.id for e in employees}
         for code in data:
             if code and not employee_by_code.get(code):
                 error_by_code[code] = _('Mã nhân viên %s không tồn tại') % code
@@ -251,17 +261,8 @@ class ImportSalaryRecord(models.TransientModel):
 
     def map_project_data(self, asset_codes):
         # FIXME: chờ chốt giải pháp cho Mã dự án
-        # company_code = self.env.company.code
-        # asset_codes = [c for c in asset_codes if c]
-        # if not asset_codes:
-        #     return {}, {}
-        # sap_asset_codes = self.env['integration.sap'].int07(asset_codes, company_code)
-        # asset_code_by_code = {code: code for code in sap_asset_codes if code in asset_codes}
         asset_code_by_code = {code: code for code in asset_codes}
         error_by_code = {}
-        # for code in asset_codes:
-        #     if code and not asset_code_by_code.get(code):
-        #         error_by_code[code] = _('Mã dự án %s không tồn tại') % code
         return asset_code_by_code, error_by_code
 
     def map_manufacturing_data(self, data):
@@ -271,22 +272,14 @@ class ImportSalaryRecord(models.TransientModel):
 
     def map_internal_order_data(self, io_codes):
         # FIXME: chờ chốt giải pháp cho Mã chương trình sự kiện
-        # io_codes = [c for c in io_codes if c]
-        # if not io_codes:
-        #     return {}, {}
-        # sap_io_codes = self.env['integration.sap'].int10(io_codes)
-        # io_code_by_code = {code: code for code in sap_io_codes if code in io_codes}
         io_code_by_code = {code: code for code in io_codes}
         error_by_code = {}
-        # for code in io_codes:
-        #     if code and not io_code_by_code.get(code):
-        #         error_by_code[code] = _('Mã chương trình sự kiện %s không tồn tại') % code
         return io_code_by_code, error_by_code
 
     def map_data(self, **kwargs):
         """
-        Mapping data between Excel file <-> Odoo,SAP
-        :param kwargs: Contains dict value of data from xls, each pair of key-value is the value need to check in system (Odoo, SAP)
+        Mapping data between Excel file <-> Odoo
+        :param kwargs: Contains dict value of data from xls, each pair of key-value is the value need to check in system Odoo
                      possible keys: ['purpose', 'employee', 'department', 'analytic', 'project', 'manufacturing', 'internal_order']
         :return: dict
         """
@@ -350,7 +343,8 @@ class ImportSalaryRecord(models.TransientModel):
             except (TypeError, ValueError):
                 month = False
 
-            errors += _('Line %r, Salary Record Type "%s" is invalid\n') % (index, type_code) if not salary_record_type else ''
+            errors += _('Line %r, Salary Record Type "%s" is invalid\n') % (
+            index, type_code) if not salary_record_type else ''
             errors += _('Line %r, %r is an invalid year\n') % (index, year) if not year else ''
             errors += _('Line %r, %r is an invalid month\n') % (index, month) if month not in MONTH else ''
 
@@ -359,7 +353,9 @@ class ImportSalaryRecord(models.TransientModel):
                     ('company_id', '=', self.env.company.id), ('type_id', '=', salary_record_type.id),
                     ('month', '=', month), ('year', '=', year), ('state', 'in', ('approved', 'posted'))])
                 if salary_record_exits:
-                    message = _('Salary records could not be imported, some previous versions [%s] were approved or posted.') % ', '.join(salary_record_exits.mapped('name'))
+                    message = _(
+                        'Salary records could not be imported, some previous versions [%s] were approved or posted.') % ', '.join(
+                        salary_record_exits.mapped('name'))
                     raise ValidationError(message)
                 res.append({
                     'type_id': salary_record_type.id,
@@ -389,7 +385,8 @@ class ImportSalaryRecord(models.TransientModel):
             xls_departments.append(row[1])
             xls_analytic_accounts.append(row[3])
             xls_projects.append(row[4])
-        xls_data = dict(purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts, project=xls_projects)
+        xls_data = dict(purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts,
+                        project=xls_projects)
         mapped_data = self.map_data(**xls_data)
         purpose_by_code, purpose_error_by_code = mapped_data.get('purpose')
         department_by_code, department_error_by_code = mapped_data.get('department')
@@ -472,7 +469,8 @@ class ImportSalaryRecord(models.TransientModel):
             project_error = project_error_by_code.get(project_code)
             manufacturing_error = manufacturing_error_by_code.get(manufacturing_code)
             internal_order_error = internal_order_error_by_code.get(internal_order_code)
-            line_error = [purpose_error, department_error, analytic_error, project_error, manufacturing_error, internal_order_error]
+            line_error = [purpose_error, department_error, analytic_error, project_error, manufacturing_error,
+                          internal_order_error]
             line_error = list(filter(None, line_error))
             if line_error:
                 line_error = [_('Line %s, ' % row_idx) + error for error in line_error]
@@ -540,7 +538,8 @@ class ImportSalaryRecord(models.TransientModel):
             project_error = project_error_by_code.get(project_code)
             manufacturing_error = manufacturing_error_by_code.get(manufacturing_code)
             internal_order_error = internal_order_error_by_code.get(internal_order_code)
-            line_error = [purpose_error, department_error, analytic_error, project_error, manufacturing_error, internal_order_error]
+            line_error = [purpose_error, department_error, analytic_error, project_error, manufacturing_error,
+                          internal_order_error]
             line_error = list(filter(None, line_error))
             if line_error:
                 line_error = [_('Line %s, ' % row_idx) + error for error in line_error]
@@ -624,7 +623,8 @@ class ImportSalaryRecord(models.TransientModel):
             project_error = project_error_by_code.get(project_code)
             manufacturing_error = manufacturing_error_by_code.get(manufacturing_code)
             internal_order_error = internal_order_error_by_code.get(internal_order_code)
-            line_error = [purpose_error, employee_error, department_error, analytic_error, project_error, manufacturing_error, internal_order_error]
+            line_error = [purpose_error, employee_error, department_error, analytic_error, project_error,
+                          manufacturing_error, internal_order_error]
             line_error = list(filter(None, line_error))
             if line_error:
                 line_error = [_('Line %d - %s') % (row_idx, error_message) for error_message in line_error]

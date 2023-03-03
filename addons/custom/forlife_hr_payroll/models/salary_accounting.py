@@ -32,9 +32,7 @@ class SalaryAccounting(models.Model):
     partner_id = fields.Many2one('res.partner', compute='_compute_accounting_value', store=True)
 
     move_id = fields.Many2one('account.move', string='Odoo FI')
-    sap_move_ref = fields.Char(string='SAP FI')
     reverse_move_id = fields.Many2one('account.move', string='Reverse Odoo FI')
-    reverse_sap_move_ref = fields.Char(string='Reverse SAP FI')
 
     @api.depends('record')
     def _compute_record_fields(self):
@@ -52,17 +50,20 @@ class SalaryAccounting(models.Model):
             amount = rec.record[field_id]
             if rec.accounting_type == 'debit':
                 debit = amount
-                partner_id = rec.accounting_config_id.debit_partner_id
-                account_id = rec.accounting_config_id.debit_account_id
+                accounting_config = rec.accounting_config_id
+                account_id = accounting_config.debit_account_id
+                if accounting_config.debit_partner_by_employee and hasattr(rec.record, 'employee_id'):
+                    partner_id = rec.record.employee_id.work_contact_id.id
+                else:
+                    partner_id = accounting_config.debit_partner_id.id
             else:
                 credit = amount
-                partner_id = rec.accounting_config_id.credit_partner_id
-                account_id = rec.accounting_config_id.credit_account_id
-
-            if rec.record._name == 'salary.arrears' and account_id.code[:4] == '1388':
-                employee_code = rec.record.employee_id.code or ''
-                partner = self.env['res.partner'].search([('ref', '=', '4000' + employee_code)], limit=1)
-                partner_id = partner.id
+                accounting_config = rec.accounting_config_id
+                account_id = accounting_config.credit_account_id
+                if accounting_config.credit_partner_by_employee and hasattr(rec.record, 'employee_id'):
+                    partner_id = rec.record.employee_id.work_contact_id.id
+                else:
+                    partner_id = accounting_config.credit_partner_id.id
 
             rec.debit = debit
             rec.credit = credit

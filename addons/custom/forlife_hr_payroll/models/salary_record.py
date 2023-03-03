@@ -21,6 +21,7 @@ MONTH_SELECTION = [
     ('12', '12'),
 ]
 
+
 class SalaryRecord(models.Model):
     _name = 'salary.record'
     _description = 'Salary Record'
@@ -40,8 +41,10 @@ class SalaryRecord(models.Model):
     month = fields.Selection(MONTH_SELECTION, string='Month', required=True)
     year = fields.Selection(_get_years, string='Year', required=True)
     version = fields.Integer(string='Version', default=1)
-    state = fields.Selection([('waiting', 'Waiting'), ('confirm', 'Confirm'), ('approved', 'Approved'), ('cancel', 'Cancelled'), ('posted', 'Posted'), ('cancel_post', 'Cancelled Posting')],
-                             string='State', default='waiting', required=True)
+    state = fields.Selection(
+        [('waiting', 'Waiting'), ('confirm', 'Confirm'), ('approved', 'Approved'), ('cancel', 'Cancelled'),
+         ('posted', 'Posted'), ('cancel_post', 'Cancelled Posting')],
+        string='State', default='waiting', required=True)
     confirm_date = fields.Date(string='Confirmation Date (HR)')
     confirm_user = fields.Many2one('res.users', string='Confirmation User (HR)', ondelete="restrict")
     confirm_date_accounting = fields.Date(string='Confirmation Date (ACC)')
@@ -60,7 +63,8 @@ class SalaryRecord(models.Model):
     move_count = fields.Integer(compute='_compute_move_count')
 
     _sql_constraints = [
-        ('unique_combination', 'UNIQUE(company_id, type_id, month, year, version)', 'The combination of Company, Type, Month, Year and Version must be unique !')
+        ('unique_combination', 'UNIQUE(company_id, type_id, month, year, version)',
+         'The combination of Company, Type, Month, Year and Version must be unique !')
     ]
 
     @api.depends('move_ids')
@@ -166,6 +170,7 @@ class SalaryRecord(models.Model):
         self.ensure_one()
         if self.state != 'approved':
             return False
+        self._active_employee_partners()
         self.generate_account_moves()
 
         self.sudo().write({
@@ -180,6 +185,12 @@ class SalaryRecord(models.Model):
         start_of_month = datetime.strptime('%s-%s-01' % (self.year, self.month), DF).date()
         end_of_month = date_utils.end_of(start_of_month, 'month')
         return end_of_month
+
+    def _active_employee_partners(self):
+        self.ensure_one()
+        self.salary_arrears_ids.mapped('employee_id'). \
+            mapped('work_contact_id').filtered(lambda p: not p.active).write({'active': True})
+        return True
 
     def generate_account_moves(self):
         self.ensure_one()
@@ -234,7 +245,8 @@ class SalaryRecord(models.Model):
             return False
 
         accounting_date = self.get_accounting_date()
-        move_reversal = self.env['account.move.reversal'].sudo().with_context(active_ids=self.move_ids.ids, active_model='account.move').create({
+        move_reversal = self.env['account.move.reversal'].sudo().with_context(active_ids=self.move_ids.ids,
+                                                                              active_model='account.move').create({
             'date_mode': 'custom',
             'move_ids': [(6, 0, self.move_ids.ids)],
             'journal_id': self.move_ids[0].journal_id.id,

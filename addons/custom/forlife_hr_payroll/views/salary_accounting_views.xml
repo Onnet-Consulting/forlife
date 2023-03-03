@@ -18,9 +18,7 @@
                     <field name="project_code"/>
                     <field name="internal_order_code"/>
                     <field name="move_id" options='{"no_open": True, "no_create": True}'/>
-                    <field name="sap_move_ref"/>
                     <field name="reverse_move_id"/>
-                    <field name="reverse_sap_move_ref"/>
                 </tree>
             </field>
         </record>
