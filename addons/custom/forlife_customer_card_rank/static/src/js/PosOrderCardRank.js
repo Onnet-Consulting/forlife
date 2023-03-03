@@ -6,6 +6,9 @@ import Registries from 'point_of_sale.Registries';
 const PosOrderCardRank = (Order) => class extends Order {
     constructor(obj, options) {
         super(...arguments);
+        if (!this.card_rank_program) {
+            this.card_rank_program = options.json.card_rank_program || null;
+        }
     }
 
     init_from_JSON(json) {
@@ -22,6 +25,15 @@ const PosOrderCardRank = (Order) => class extends Order {
 };
 Registries.Model.extend(Order, PosOrderCardRank);
 const PosOrderLineCardRank = (Orderline) => class extends Orderline {
+    constructor(obj, options) {
+        super(...arguments);
+        if (!this.discount_card_rank) {
+            this.discount_card_rank = 0;
+        }
+        if (!this.card_rank_applied) {
+            this.card_rank_applied = false;
+        }
+    }
     init_from_JSON(json) {
         super.init_from_JSON(...arguments);
         this.discount_card_rank = json.discount_card_rank || 0;
