@@ -3,7 +3,7 @@
     <t t-name="Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension" owl="1">
         <xpath expr="//span[hasclass('price')]" position="inside">
             <t t-if="props.line.order_line_card_rank_applied">
-                <t t-set="total_price" t-value="props.line.quantity * props.line.original_price"/>
+                <t t-set="total_price" t-value="props.line.quantity * props.line.price"/>
                 <li class="info orderline-card-rank">
                     <i class="fa fa-id-card-o" role="img" aria-label="Discount Card" title="Discount Card"/>
                     <span>&#160;-<t t-esc="env.pos.format_currency((total_price - (total_price * props.line.discount / 100)) * props.line.discount_card_rank / 100)"/></span>
