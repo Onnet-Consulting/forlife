@@ -4,6 +4,8 @@ from odoo.addons.forlife_pos_app_member.models.res_utility import get_valid_phon
 import string
 import random
 from datetime import datetime
+from odoo.exceptions import ValidationError
+import pytz
 
 
 class Voucher(models.Model):
@@ -64,9 +66,10 @@ class Voucher(models.Model):
                 Z = 1 if v.program_voucher_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id else 2
                 ABBB = v.program_voucher_id.program_voucher_code
                 NNNNN = self._generator_charnumber_code(size=5)
-                v.name = '{}{}{}{}{}{}'.format(X, Y, T, Z, ABBB, NNNNN)
-            else:
-                v.name = ''
+                if not v.name:
+                    v.name = '{}{}{}{}{}{}'.format(X, Y, T, Z, ABBB, NNNNN)
+                else:
+                    v.name = v.name
 
     def _generator_charnumber_code(self, size, chars=string.ascii_uppercase + string.digits):
         string_generate = chars.replace("O", "")
@@ -97,14 +100,26 @@ class Voucher(models.Model):
                     rec.status_latest = rec.state
                     rec.state = 'expired'
 
+    def _format_time_zone(self, time):
+        datetime_object = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
+        utcmoment_naive = datetime_object
+        utcmoment = utcmoment_naive.replace(tzinfo=pytz.utc)
+        # localFormat = "%Y-%m-%d %H:%M:%S"
+        tz = 'Asia/Ho_Chi_Minh'
+        create_Date = utcmoment.astimezone(pytz.timezone(tz))
+        return create_Date
+
     def write(self, values):
+        if 'lang' not in self._context:
+            self._context['lang'] = self.env.user.lang
         for record in self:
             status_latest = record.status_latest
             now = datetime.now()
-            if 'end_date' in values and values['end_date'] and status_latest:
+            if 'end_date' in values and values['end_date']:
                 end_date = datetime.strptime(values['end_date'], '%Y-%m-%d %H:%M:%S')
                 if end_date > now:
                     values['state'] = status_latest
+                    values['status_latest'] = record.state
         return super(Voucher, self).write(values)
 
     @api.model
@@ -113,7 +128,8 @@ class Voucher(models.Model):
             if 'phone_number' in vals_list and vals_list['phone_number']:
                 phonenumbers_format = vals_list['phone_number'].replace(" ", "").replace("'", "").replace("’", "")
                 partner = self.env['res.partner'].sudo().search(
-                    [('phone', '=', phonenumbers_format), ('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_c', raise_if_not_found=False).id)], limit=1)
+                    [('phone', '=', phonenumbers_format), ('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_c', raise_if_not_found=False).id)],
+                    limit=1)
                 vals_list['phone_number'] = phonenumbers_format
                 if not partner:
                     partner = self.env['res.partner'].sudo().create({
