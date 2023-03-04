@@ -26,8 +26,11 @@
                 <form string="member_card_form" duplicate="0">
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="action_view_pos_order" type="object" class="oe_stat_button" icon="fa-list" groups="forlife_customer_card_rank.member_card_manager">
-                                <field name="qty_order" widget="statinfo"/>
+                            <button name="action_view_pos_order" context="{'domain_order': 'order_discount'}" type="object" class="oe_stat_button" icon="fa-list" groups="forlife_customer_card_rank.member_card_manager">
+                                <field name="qty_order_discount" widget="statinfo"/>
+                            </button>
+                            <button name="action_view_pos_order" context="{'domain_order': 'order_rank'}" type="object" class="oe_stat_button" icon="fa-list" groups="forlife_customer_card_rank.member_card_manager">
+                                <field name="qty_order_rank" widget="statinfo"/>
                             </button>
                             <button name="btn_duplicate_member_card" icon="fa-clone" class="oe_stat_button" type="object" string=" Duplicate" groups="forlife_customer_card_rank.member_card_manager"/>
                         </div>

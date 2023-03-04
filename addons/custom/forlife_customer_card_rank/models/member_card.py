@@ -38,7 +38,8 @@ class MemberCard(models.Model):
     value3 = fields.Float('Value 3')
     active = fields.Boolean('Active', default=True, tracking=True)
     order_ids = fields.Many2many('pos.order', string='Orders')
-    qty_order = fields.Integer('Order', compute='_compute_qty_order')
+    qty_order_rank = fields.Integer('Order Rank', compute='_compute_qty_order')
+    qty_order_discount = fields.Integer('Order Discount', compute='_compute_qty_order')
     journal_ids = fields.Many2many('account.journal', string='Journal')
     discount_account_id = fields.Many2one('account.account', string='Discount Account', tracking=True, required=True)
     value_account_id = fields.Many2one('account.account', string='Value Account', tracking=True, required=True)
@@ -49,7 +50,8 @@ class MemberCard(models.Model):
 
     def _compute_qty_order(self):
         for line in self:
-            line.qty_order = len(line.order_ids)
+            line.qty_order_rank = len(line.order_ids)
+            line.qty_order_discount = self.env['pos.order'].search_count([('card_rank_program_id', '=', line.id)])
 
     @api.constrains("from_date", "to_date", 'active', 'min_turnover', 'card_rank_id')
     def validate_time(self):
@@ -143,8 +145,12 @@ class MemberCard(models.Model):
         }
 
     def action_view_pos_order(self):
+        domain = {
+            'order_discount': [('card_rank_program_id', '=', self.id)],
+            'order_rank': [('id', 'in', self.order_ids.ids)],
+        }
         action = self.env['ir.actions.act_window']._for_xml_id('point_of_sale.action_pos_pos_form')
-        action['domain'] = [('id', 'in', self.order_ids.ids)]
+        action['domain'] = domain.get(self._context.get('domain_order')) or [('id', 'in', [])]
         return action
 
     def unlink(self):
