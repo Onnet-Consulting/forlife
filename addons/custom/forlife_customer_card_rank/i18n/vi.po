@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-02 09:29+0000\n"
-"PO-Revision-Date: 2023-03-02 09:29+0000\n"
+"POT-Creation-Date: 2023-03-04 03:52+0000\n"
+"PO-Revision-Date: 2023-03-04 03:52+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -124,15 +124,28 @@ msgid "Card Rank"
 msgstr "Hạng thẻ"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order_line__card_rank_applied
+msgid "Card Rank Applied"
+msgstr "Đã áp dụng thẻ"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_by_brand
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_by_brand
 msgid "Card Rank By Brand"
 msgstr "Hạng thẻ theo thương hiệu"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order_line__card_rank_discount
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
 msgid "Card Rank Discount"
 msgstr "Chiết khấu theo hạng thẻ"
+
+#. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderSummary.xml:0
+#, python-format
+msgid "Card Rank Discount:"
+msgstr "Chiếu khấu hạng thẻ:"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_format
@@ -140,6 +153,11 @@ msgstr "Chiết khấu theo hạng thẻ"
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
 msgid "Card Rank Format"
 msgstr "Hạng thẻ Format"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order__card_rank_program_id
+msgid "Card Rank Program"
+msgstr "Chương trình hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #. odoo-javascript
@@ -516,6 +534,11 @@ msgstr "Hạng thẻ khách hàng"
 #: model:ir.model,name:forlife_customer_card_rank.model_partner_card_rank_line
 msgid "Partner Card Rank Line"
 msgstr "Chi tiết hạng thẻ"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr "Chi tiết đơn hàng bán lẻ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_pos_order

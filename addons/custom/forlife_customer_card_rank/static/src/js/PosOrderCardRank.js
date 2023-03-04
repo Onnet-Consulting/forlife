@@ -3,11 +3,14 @@
 import {Order, Orderline} from 'point_of_sale.models';
 import Registries from 'point_of_sale.Registries';
 
+var utils = require('web.utils');
+var round_pr = utils.round_precision;
+
 const PosOrderCardRank = (Order) => class extends Order {
     constructor(obj, options) {
         super(...arguments);
         if (!this.card_rank_program) {
-            this.card_rank_program = options.json.card_rank_program || null;
+            this.card_rank_program = null;
         }
     }
 
@@ -22,27 +25,39 @@ const PosOrderCardRank = (Order) => class extends Order {
         return json;
     }
 
+    get_total_without_tax() {
+        return super.get_total_without_tax() - this.get_total_card_rank_discount();
+    }
+
+    get_total_card_rank_discount() {
+        return round_pr(this.orderlines.reduce((function (sum, orderLine) {
+            return sum + orderLine.get_card_rank_discount();
+        }), 0), this.pos.currency.rounding);
+    }
+
+
 };
 Registries.Model.extend(Order, PosOrderCardRank);
 const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     constructor(obj, options) {
         super(...arguments);
-        if (!this.discount_card_rank) {
-            this.discount_card_rank = 0;
+        if (!this.card_rank_discount) {
+            this.card_rank_discount = 0;
         }
         if (!this.card_rank_applied) {
             this.card_rank_applied = false;
         }
     }
+
     init_from_JSON(json) {
         super.init_from_JSON(...arguments);
-        this.discount_card_rank = json.discount_card_rank || 0;
+        this.card_rank_discount = json.card_rank_discount || 0;
         this.card_rank_applied = json.card_rank_applied || false;
     }
 
     export_as_JSON() {
         const json = super.export_as_JSON(...arguments);
-        json.discount_card_rank = this.discount_card_rank;
+        json.card_rank_discount = this.card_rank_discount;
         json.card_rank_applied = this.card_rank_applied;
         return json;
     }
@@ -50,7 +65,7 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     action_apply_card_rank(cr_program) {
         for (let line of cr_program.discounts) {
             if (this.discount > line.from && this.discount <= line.to) {
-                this.discount_card_rank = line.disc;
+                this.card_rank_discount = line.disc;
                 break;
             }
         }
@@ -58,8 +73,17 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     action_reset_card_rank() {
-        this.discount_card_rank = 0;
+        this.card_rank_discount = 0;
         this.card_rank_applied = false;
+    }
+
+    get_card_rank_discount() {
+        var discount_amount = 0;
+        if (this.card_rank_applied) {
+            let total_price = this.get_quantity() * this.get_unit_price();
+            discount_amount = (total_price - (total_price * this.get_discount() / 100)) * this.card_rank_discount / 100;
+        }
+        return discount_amount;
     }
 };
 Registries.Model.extend(Orderline, PosOrderLineCardRank);

@@ -88,4 +88,4 @@ class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'
 
     card_rank_applied = fields.Boolean('Card Rank Applied', default=False)
-    discount_card_rank = fields.Float('Discount Card Rank', default=0)
+    card_rank_discount = fields.Float('Card Rank Discount', default=0)
