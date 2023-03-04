@@ -67,6 +67,13 @@ const PosOrderCardRank = (Order) => class extends Order {
         }
     }
 
+    check_all_orderline_reseted() {
+        const notApplied = this.get_orderlines().find(line => line.card_rank_applied);
+        if (!notApplied && this.card_rank_program) {
+            this.card_rank_program = null;
+        }
+    }
+
 
 };
 Registries.Model.extend(Order, PosOrderCardRank);
@@ -99,13 +106,15 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         let result = super.set_quantity(...arguments);
         if (oldQty !== this.quantity) {
             this.action_reset_card_rank();
+            this.order.check_all_orderline_reseted();
         }
         return result;
     }
 
     action_apply_card_rank(cr_program) {
+        var total_percent_discounted = this.discount + (this.get_total_discounted() / (this.get_quantity() * this.get_unit_price()) * 100);
         for (let line of cr_program.discounts) {
-            if (this.discount > line.from && this.discount <= line.to) {
+            if (total_percent_discounted > line.from && total_percent_discounted <= line.to) {
                 this.card_rank_discount = line.disc;
                 break;
             }
