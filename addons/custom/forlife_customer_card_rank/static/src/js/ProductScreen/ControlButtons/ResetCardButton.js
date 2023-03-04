@@ -12,11 +12,7 @@ export class ResetCardButton extends PosComponent {
     }
 
     async onClick() {
-        const order = this.env.pos.get_order();
-        order.card_rank_program = null;
-        for (let line of order.orderlines) {
-            line.action_reset_card_rank();
-        }
+        this.env.pos.get_order().action_reset_card_rank_program();
     }
 }
 

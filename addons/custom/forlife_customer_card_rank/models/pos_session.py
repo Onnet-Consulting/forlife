@@ -16,6 +16,7 @@ class PosSession(models.Model):
             'name': p['name'],
             'from_date': p['from_date'],
             'to_date': p['to_date'],
+            'card_rank_id': p['card_rank_id'][0],
             'card_rank_name': p['card_rank_id'][1],
             'discounts': [{'from': disc[1], 'to': disc[2], 'disc': disc[0]}
                           for disc in sorted([[p['original_price'], -1, 0],

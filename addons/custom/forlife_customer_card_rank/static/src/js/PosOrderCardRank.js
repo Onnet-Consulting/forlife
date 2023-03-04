@@ -25,6 +25,22 @@ const PosOrderCardRank = (Order) => class extends Order {
         return json;
     }
 
+    set_partner(partner) {
+        const oldPartner = this.get_partner();
+        super.set_partner(partner);
+        let newPartner = this.get_partner();
+        if (oldPartner && newPartner && (oldPartner !== newPartner) && this.card_rank_program) {
+            if (!newPartner.card_rank_by_brand || (newPartner.card_rank_by_brand && (newPartner.card_rank_by_brand[this.pos.pos_branch[0].id] !== this.card_rank_program.card_rank_id))) {
+                this.action_reset_card_rank_program();
+            }
+        }
+    }
+
+    add_product(product, options) {
+        super.add_product(...arguments);
+        this.action_reset_card_rank_program();
+    }
+
     get_total_without_tax() {
         return super.get_total_without_tax() - this.get_total_card_rank_discount();
     }
@@ -33,6 +49,22 @@ const PosOrderCardRank = (Order) => class extends Order {
         return round_pr(this.orderlines.reduce((function (sum, orderLine) {
             return sum + orderLine.get_card_rank_discount();
         }), 0), this.pos.currency.rounding);
+    }
+
+    action_apply_card_rank_program(card_rank_program) {
+        this.card_rank_program = card_rank_program;
+        for (let line of this.orderlines) {
+            line.action_apply_card_rank(card_rank_program);
+        }
+    }
+
+    action_reset_card_rank_program() {
+        if (this.card_rank_program) {
+            this.card_rank_program = null;
+            for (let line of this.orderlines) {
+                line.action_reset_card_rank();
+            }
+        }
     }
 
 
@@ -62,6 +94,15 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         return json;
     }
 
+    set_quantity(quantity, keep_price) {
+        let oldQty = this.quantity;
+        let result = super.set_quantity(...arguments);
+        if (oldQty !== this.quantity) {
+            this.action_reset_card_rank();
+        }
+        return result;
+    }
+
     action_apply_card_rank(cr_program) {
         for (let line of cr_program.discounts) {
             if (this.discount > line.from && this.discount <= line.to) {
@@ -73,8 +114,10 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     action_reset_card_rank() {
-        this.card_rank_discount = 0;
-        this.card_rank_applied = false;
+        if (this.card_rank_applied) {
+            this.card_rank_discount = 0;
+            this.card_rank_applied = false;
+        }
     }
 
     get_card_rank_discount() {

@@ -25,10 +25,7 @@ export class CardButton extends PosComponent {
                 'body': _.str.sprintf(_t("Card rank program '%s' not found."), current_rank[1]),
             });
         } else {
-            order.card_rank_program = card_rank_program;
-            for (let line of order.orderlines) {
-                line.action_apply_card_rank(card_rank_program);
-            }
+            order.action_apply_card_rank_program(card_rank_program);
         }
     }
 }
