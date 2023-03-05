@@ -8,12 +8,19 @@
             <field name="arch" type="xml">
                 <xpath expr="//div[@name='options']" position="inside">
                     <span class="d-inline-block">
-                            <field name="voucher"/>
-                            <label for="voucher"/>
-                        </span>
+                        <field name="voucher"/>
+                        <label for="voucher"/>
+                    </span>
                 </xpath>
                 <xpath expr="//page[@name='general_information']//field[@name='company_id']" position="after">
                     <field name="program_voucher_id" attrs="{'invisible': [('voucher', '=', False)]}"/>
+                </xpath>
+                <xpath expr="//div[@name='pricing']" position="after">
+                    <label for="price"/>
+                    <div name="price">
+                        <field name="price" class="oe_inline" widget='monetary'
+                               options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                    </div>
                 </xpath>
             </field>
         </record>
