@@ -97,9 +97,9 @@
                                 <field name="value3" class="oe_inline"/>
                             </div>
                             <group string="Accounting Info">
-                                <field name="journal_id"/>
-                                <field name="discount_account_id"/>
-                                <field name="value_account_id"/>
+                                <field name="journal_id" attrs="{'required': ['|', '|', '|', ('original_price', '!=', 0), ('value1', '!=', 0), ('value2', '!=', 0), ('value3', '!=', 0)]}"/>
+                                <field name="discount_account_id" attrs="{'required': ['|', '|', '|', ('original_price', '!=', 0), ('value1', '!=', 0), ('value2', '!=', 0), ('value3', '!=', 0)]}"/>
+                                <field name="value_account_id" attrs="{'required': ['|', '|', '|', ('original_price', '!=', 0), ('value1', '!=', 0), ('value2', '!=', 0), ('value3', '!=', 0)]}"/>
                             </group>
                         </group>
                         <field name="active" invisible="1"/>
