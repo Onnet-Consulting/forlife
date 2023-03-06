@@ -22,7 +22,7 @@ class SaleOrder(models.Model):
                 if not line.product_id.categ_id.property_price_account_id:
                     continue
                 invoice_line_vals.append((0, 0, {
-                    'display_type': line.display_type or 'product',
+                    # 'display_type': line.display_type or 'line_section',
                     'sequence': line.sequence,
                     'account_id': line.product_id.categ_id.property_price_account_id.id,
                     'quantity': line.qty_delivered,
