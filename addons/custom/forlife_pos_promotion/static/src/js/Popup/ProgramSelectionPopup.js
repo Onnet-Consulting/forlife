@@ -20,6 +20,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             this.selectItem(undefined);
         }
 
+        // Thể hiện thứ tự áp dụng các CTKM, index=1 đối với CTKM nào được áp dụng đầu tiên
         _makeIndex(current_program) {
             // Increase order_apply number every selected item
             let max_order = Math.max(...this.state.programs.map(p => p.order_apply))
@@ -129,9 +130,8 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             let notSelectPrograms = not_selected_programs.map(p => program_by_id[p.id]);
             for (let notSelectProgram of notSelectPrograms) {
                 // This step to copy without reference
-                let remainingLinesCopy = JSON.parse(JSON.stringify(remainingLinesClone));
+                let remaining_clone_order_lines = JSON.parse(JSON.stringify(remainingLinesClone));
 
-                let remaining_clone_order_lines = [...remainingLinesCopy]
                 let [newLinesToApplyNoSelected, ol, combo_count] = this.env.pos.get_order()
                         .computeForListOfProgram(remaining_clone_order_lines, [notSelectProgram]);
 
