@@ -18,7 +18,6 @@
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
 
-<!--                <xpath expr="//page[@name='general_information']/group/group[2]/div" position="after">-->
                 <xpath expr="//div[@name='pricing']" position="after">
                     <label for="price"/>
                     <div name="price">
