@@ -40,7 +40,7 @@ class MemberCard(models.Model):
     order_ids = fields.Many2many('pos.order', string='Orders')
     qty_order_rank = fields.Integer('Order Rank', compute='_compute_qty_order')
     qty_order_discount = fields.Integer('Order Discount', compute='_compute_qty_order')
-    journal_id = fields.Many2one('account.journal', string='Journal', required=True)
+    journal_id = fields.Many2one('account.journal', string='Journal', tracking=True, required=True)
     discount_account_id = fields.Many2one('account.account', string='Discount Account', tracking=True, required=True)
     value_account_id = fields.Many2one('account.account', string='Value Account', tracking=True, required=True)
 

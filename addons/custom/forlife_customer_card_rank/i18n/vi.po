@@ -16,6 +16,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
+msgid "Accounting Info"
+msgstr "Thông tin hạch toán"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__accumulated_sales
 msgid "Accumulated Sales"
 msgstr "Doanh số xét hạng hiện tại"
@@ -380,7 +385,6 @@ msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__journal_id
-#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
 msgid "Journal"
 msgstr "Sổ nhật ký"
 

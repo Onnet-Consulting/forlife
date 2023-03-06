@@ -96,7 +96,7 @@
                                 extra discount (%)
                                 <field name="value3" class="oe_inline"/>
                             </div>
-                            <group string="Journal">
+                            <group string="Accounting Info">
                                 <field name="journal_id"/>
                                 <field name="discount_account_id"/>
                                 <field name="value_account_id"/>
