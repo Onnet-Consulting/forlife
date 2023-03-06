@@ -94,6 +94,7 @@ class PosOrder(models.Model):
 
     def _prepare_cr_discount_account_move(self):
         return {
+            'pos_order_id': self.id,
             'ref': self.session_id.name,
             'date': self.date_order,
             'journal_id': self.card_rank_program_id.journal_id.id,
