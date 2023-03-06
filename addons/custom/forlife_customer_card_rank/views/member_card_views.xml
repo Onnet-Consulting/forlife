@@ -48,9 +48,9 @@
                             <group attrs="{'invisible': [('is_register', '=', False)]}">
                                 <label for="register_from_date"/>
                                 <div>from
-                                    <field name="register_from_date" class="oe_inline"/>
+                                    <field name="register_from_date" class="oe_inline" attrs="{'required': [('is_register', '=', True)]}"/>
                                     to
-                                    <field name="register_to_date" class="oe_inline"/>
+                                    <field name="register_to_date" class="oe_inline" attrs="{'required': [('is_register', '=', True)]}"/>
                                 </div>
                             </group>
                             <group>
@@ -97,7 +97,7 @@
                                 <field name="value3" class="oe_inline"/>
                             </div>
                             <group string="Journal">
-                                <field name="journal_ids" widget="many2many_tags" required="1"/>
+                                <field name="journal_id"/>
                                 <field name="discount_account_id"/>
                                 <field name="value_account_id"/>
                             </group>

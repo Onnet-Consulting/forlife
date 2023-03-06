@@ -13,6 +13,9 @@ class PosOrder(models.Model):
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
         self.with_delay().update_partner_card_rank()
+        if self.card_rank_program_id:
+            total_amount_discount = sum(self.mapped('lines.discount_details_lines.money_reduced'))
+            self.with_delay().accounting_card_rank_discount(total_amount_discount) if total_amount_discount else None
         return res
 
     def update_partner_card_rank(self):
@@ -83,9 +86,51 @@ class PosOrder(models.Model):
             res.update({'card_rank_program_id': ui_order.get('card_rank_program').get('id')})
         return res
 
+    def accounting_card_rank_discount(self, total_amount_discount):
+        values = self._prepare_cr_discount_account_move()
+        values['line_ids'] = self._prepare_cr_discount_account_move_line(total_amount_discount)
+        res = self.env['account.move'].create(values)
+        return res.action_post() if res else False
+
+    def _prepare_cr_discount_account_move(self):
+        return {
+            'ref': self.session_id.name,
+            'date': self.date_order,
+            'journal_id': self.card_rank_program_id.journal_id.id,
+        }
+
+    def _prepare_cr_discount_account_move_line(self, total_amount_discount):
+        if self.card_rank_program_id.is_register and self.card_rank_program_id.register_from_date <= self.date_order and  self.card_rank_program_id.register_to_date >= self.date_order:
+            debit_account = self.card_rank_program_id.discount_account_id.id
+        else:
+            debit_account = self.card_rank_program_id.value_account_id.id
+        return [
+            (0, 0, {
+                'account_id': debit_account,
+                'debit': total_amount_discount,
+            }),
+            (0, 0, {
+                'account_id': self.partner_id.property_account_receivable_id.id,
+                'credit': total_amount_discount,
+                'partner_id': self.config_id.store_id.contact_id.id,
+            }),
+        ]
+
 
 class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'
 
     card_rank_applied = fields.Boolean('Card Rank Applied', default=False)
     card_rank_discount = fields.Float('Card Rank Discount', default=0)
+
+    @api.model
+    def create(self, vals_list):
+        if vals_list.get('card_rank_discount') and vals_list.get('card_rank_applied'):
+            vals_list['discount_details_lines'] = [
+                (0, 0, {
+                    'type': 'card',
+                    'listed_price': vals_list['price_unit'],
+                    'recipe': vals_list['card_rank_discount'],
+                })
+            ]
+        return super(PosOrderLine, self).create(vals_list)

@@ -379,7 +379,7 @@ msgstr ""
 "Không thể thay đổi thứ hạng của hạng '%s' do các chương trình đang diễn ra"
 
 #. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__journal_ids
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__journal_id
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
 msgid "Journal"
 msgstr "Sổ nhật ký"
