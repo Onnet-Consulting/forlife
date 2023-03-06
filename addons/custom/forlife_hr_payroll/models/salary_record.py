@@ -189,7 +189,7 @@ class SalaryRecord(models.Model):
     def _active_employee_partners(self):
         self.ensure_one()
         self.salary_arrears_ids.mapped('employee_id'). \
-            mapped('work_contact_id').filtered(lambda p: not p.active).write({'active': True})
+            mapped('partner_id').filtered(lambda p: not p.active).write({'active': True})
         return True
 
     def generate_account_moves(self):

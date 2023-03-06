@@ -53,7 +53,7 @@ class SalaryAccounting(models.Model):
                 accounting_config = rec.accounting_config_id
                 account_id = accounting_config.debit_account_id
                 if accounting_config.debit_partner_by_employee and hasattr(rec.record, 'employee_id'):
-                    partner_id = rec.record.employee_id.work_contact_id.id
+                    partner_id = rec.record.employee_id.partner_id.id
                 else:
                     partner_id = accounting_config.debit_partner_id.id
             else:
@@ -61,7 +61,7 @@ class SalaryAccounting(models.Model):
                 accounting_config = rec.accounting_config_id
                 account_id = accounting_config.credit_account_id
                 if accounting_config.credit_partner_by_employee and hasattr(rec.record, 'employee_id'):
-                    partner_id = rec.record.employee_id.work_contact_id.id
+                    partner_id = rec.record.employee_id.partner_id.id
                 else:
                     partner_id = accounting_config.credit_partner_id.id
 
