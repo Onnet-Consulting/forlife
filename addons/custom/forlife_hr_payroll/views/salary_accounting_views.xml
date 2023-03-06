@@ -11,8 +11,8 @@
                     <field name="partner_id"/>
                     <field name="title"/>
                     <field name="entry_id"/>
-                    <field name="debit"/>
-                    <field name="credit"/>
+                    <field name="debit" sum="Total"/>
+                    <field name="credit" sum="Total"/>
                     <field name="analytic_account_id"/>
                     <field name="manufacture_order_code"/>
                     <field name="project_code"/>

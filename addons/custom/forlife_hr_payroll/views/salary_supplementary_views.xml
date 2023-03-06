@@ -14,18 +14,18 @@
                     <field name="project_code"/>
                     <field name="manufacture_order_code"/>
                     <field name="internal_order_code"/>
-                    <field name="x_bhxh_level" optional="show"/>
-                    <field name="x_bhxh_nld" optional="show"/>
-                    <field name="x_bhyt_nld" optional="show"/>
-                    <field name="x_bhtn_nld" optional="show"/>
-                    <field name="x_tbh_nld" optional="show"/>
-                    <field name="x_bhxh_bhbnn_tnld_ct" optional="show"/>
-                    <field name="x_bhyt_ct" optional="show"/>
-                    <field name="x_bhtn_ct" optional="show"/>
-                    <field name="x_tbh_ct" optional="show"/>
-                    <field name="x_cdp_ct" optional="show"/>
-                    <field name="x_cdp_nld" optional="show"/>
-                    <field name="x_tncn" optional="show"/>
+                    <field name="x_bhxh_level" optional="show" sum="Total"/>
+                    <field name="x_bhxh_nld" optional="show" sum="Total"/>
+                    <field name="x_bhyt_nld" optional="show" sum="Total"/>
+                    <field name="x_bhtn_nld" optional="show" sum="Total"/>
+                    <field name="x_tbh_nld" optional="show" sum="Total"/>
+                    <field name="x_bhxh_bhbnn_tnld_ct" optional="show" sum="Total"/>
+                    <field name="x_bhyt_ct" optional="show" sum="Total"/>
+                    <field name="x_bhtn_ct" optional="show" sum="Total"/>
+                    <field name="x_tbh_ct" optional="show" sum="Total"/>
+                    <field name="x_cdp_ct" optional="show" sum="Total"/>
+                    <field name="x_cdp_nld" optional="show" sum="Total"/>
+                    <field name="x_tncn" optional="show" sum="Total"/>
                     <field name="note" optional="show"/>
                 </tree>
             </field>

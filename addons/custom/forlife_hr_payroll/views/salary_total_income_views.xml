@@ -14,8 +14,8 @@
                     <field name="project_code"/>
                     <field name="manufacture_order_code"/>
                     <field name="internal_order_code"/>
-                    <field name="x_ttn" optional="show"/>
-                    <field name="note" optional="show"/>
+                    <field name="x_ttn" optional="show" sum="Total"/>
+                    <field name="note" optional="show" sum="Total"/>
                 </tree>
             </field>
         </record>
