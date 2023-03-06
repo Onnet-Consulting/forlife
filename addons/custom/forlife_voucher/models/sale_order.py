@@ -32,6 +32,7 @@ class SaleOrder(models.Model):
                     'account_id': line.product_id.categ_id.property_price_account_id.id,
                     'quantity': quantity,
                     # 'sale_line_ids': [Command.link(line.id)],
+                    'tax_ids': [(6, 0, line.tax_id.ids)],
                     'price_unit': line.product_id.price - line.price_unit,
                     'is_downpayment': line.is_downpayment,
                 }))
