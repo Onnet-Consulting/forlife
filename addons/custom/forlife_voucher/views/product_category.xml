@@ -10,7 +10,7 @@
             <xpath expr="//sheet" position="inside">
                 <group name="account_price">
                     <group string="Account Price" groups="account.group_account_readonly">
-                        <field name="price_account_id"/>
+                        <field name="property_price_account_id"/>
                     </group>
                 </group>
             </xpath>

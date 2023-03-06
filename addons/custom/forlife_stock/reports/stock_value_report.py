@@ -61,8 +61,8 @@ class StockValueReport(models.TransientModel):
     def action_get_outgoing_value_diff_report(self):
         # must be utc time
         current_tz = pytz.timezone(self.env.context.get('tz'))
-        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00")
-        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59")
+        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
+        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
         self._cr.execute(f"""
             DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
             INSERT INTO stock_value_report_detail (
@@ -266,8 +266,8 @@ class StockValueReport(models.TransientModel):
     def action_get_stock_incoming_outgoing_report(self):
         # must be utc time
         current_tz = pytz.timezone(self.env.context.get('tz'))
-        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00")
-        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59")
+        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
+        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
         self._cr.execute(f"""
             DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
             INSERT INTO stock_value_report_detail (

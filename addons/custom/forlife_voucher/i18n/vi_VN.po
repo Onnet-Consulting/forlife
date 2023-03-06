@@ -420,7 +420,7 @@ msgid "Price"
 msgstr "Mệnh giá"
 
 #. module: forlife_voucher
-#: model:ir.model.fields,field_description:forlife_voucher.field_product_category__price_account_id
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_category__property_price_account_id
 msgid "Account Price"
 msgstr "Tài khoản chịu giá"
 
