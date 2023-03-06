@@ -3,6 +3,7 @@ from . import program_voucher_line
 from . import set_voucher
 from . import hr_department
 from . import product_template
+from . import product_product
 from . import voucher
 from . import sale_order
 from . import sale_order_line
