@@ -92,11 +92,28 @@ class PromotionCampaign(models.Model):
         'promotion.program', 'campaign_id', context={'active_test': False})
     program_count = fields.Integer(compute='_compute_program_count')
 
+    combo_program_ids = fields.One2many('promotion.program', 'campaign_id', domain=[('promotion_type', '=', 'combo')])
+    code_program_ids = fields.One2many('promotion.program', 'campaign_id', domain=[('promotion_type', '=', 'code')])
+    cart_program_ids = fields.One2many('promotion.program', 'campaign_id', domain=[('promotion_type', '=', 'cart')])
+    pricelist_program_ids = fields.One2many('promotion.program', 'campaign_id', domain=[('promotion_type', '=', 'pricelist')])
+
+    has_combo = fields.Boolean(compute='_compute_programs')
+    has_code = fields.Boolean(compute='_compute_programs')
+    has_cart = fields.Boolean(compute='_compute_programs')
+    has_pricelist = fields.Boolean(compute='_compute_programs')
+
     @api.constrains('program_ids')
     def check_program(self):
         for campaign in self:
             if any([program.promotion_type == 'combo' and not program.combo_line_ids for program in campaign.program_ids]):
                 raise UserError(_('Combo\'s Formular must be set for the program!'))
+
+    def _compute_programs(self):
+        for campaign in self:
+            campaign.has_combo = len(campaign.combo_program_ids)
+            campaign.has_code = len(campaign.code_program_ids)
+            campaign.has_cart = len(campaign.cart_program_ids)
+            campaign.has_pricelist = len(campaign.pricelist_program_ids)
 
     def _compute_program_count(self):
         for campaign in self:

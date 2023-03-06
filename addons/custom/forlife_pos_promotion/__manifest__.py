@@ -51,6 +51,7 @@
         'views/promotion_code_views.xml',
         'views/pos_order_views.xml',
         'views/promotion_campaign_views.xml',
+        'views/promotion_pricelist_item_views.xml',
         # Menu
         'menu/menu_views.xml',
     ]
