@@ -19,10 +19,12 @@ class SaleOrder(models.Model):
                     continue
                 if line.product_id.price - line.price_unit <= 0:
                     continue
+                if not line.product_id.categ_id.property_price_account_id:
+                    continue
                 invoice_line_vals.append((0, 0, {
                     'display_type': line.display_type or 'product',
                     'sequence': line.sequence,
-                    'account_id': line.product_id.categ_id.price_account_id.id,
+                    'account_id': line.product_id.categ_id.property_price_account_id.id,
                     'quantity': line.qty_delivered,
                     'sale_line_ids': [Command.link(line.id)],
                     'price_unit': line.product_id.price - line.price_unit,
