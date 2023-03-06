@@ -15,9 +15,7 @@ class SaleOrder(models.Model):
         for order in self:
             invoice_line_vals = []
             for line in order.order_line:
-                if line.product_id.price - line.price_unit <= 0:
-                    continue
-                if not line.product_id.categ_id.property_price_account_id:
+                if not line.product_id.categ_id.property_price_account_id or line.product_id.price - line.price_unit <= 0:
                     continue
                 imei = []
                 move_line_ids = self.env['stock.move.line'].search([('move_id.sale_line_id', '=', line.id)])
