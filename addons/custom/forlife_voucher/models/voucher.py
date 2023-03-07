@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 import phonenumbers
 from odoo.addons.forlife_pos_app_member.models.res_utility import get_valid_phone_number, is_valid_phone_number
 import string
@@ -109,18 +109,6 @@ class Voucher(models.Model):
         create_Date = utcmoment.astimezone(pytz.timezone(tz))
         return create_Date
 
-    def write(self, values):
-        if 'lang' not in self._context:
-            self._context['lang'] = self.env.user.lang
-        for record in self:
-            status_latest = record.status_latest
-            now = datetime.now()
-            if 'end_date' in values and values['end_date']:
-                end_date = datetime.strptime(values['end_date'], '%Y-%m-%d %H:%M:%S')
-                if end_date > now:
-                    values['state'] = status_latest
-                    values['status_latest'] = record.state
-        return super(Voucher, self).write(values)
 
     @api.model
     def create(self, vals_list):
