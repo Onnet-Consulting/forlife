@@ -88,15 +88,24 @@ class BravoMany2oneField(BravoField, fields.Many2one):
         super(BravoField, self).__int__(field_detail=field_detail, **kwargs)
 
     def compute_value(self, record):
-        return {self.bravo_name: record[self.odoo_name][self.field_detail] or NONE_VALUE}
+        field_value = record[self.odoo_name]
+        for field_name in self.field_detail.split('.'):
+            if not field_value:
+                break
+            field_value = field_value[field_name]
+        return {self.bravo_name: field_value or NONE_VALUE}
 
     def compute_update_value(self, value, model=Default):
         res = super(BravoMany2oneField, self).compute_update_value(value)
         if not res:
             return res
         key, value = res.popitem()
-        detail_value = model.env[self.comodel_name].browse(value)[self.field_detail] or NONE_VALUE
-        return {key: detail_value}
+        field_value = model.env[self.comodel_name].browse(value)
+        for field_name in self.field_detail.split('.'):
+            if not field_value:
+                break
+            field_value = field_value[field_name]
+        return {key: field_value or NONE_VALUE}
 
 
 class BravoHeaderField(BravoField, fields.Many2one):

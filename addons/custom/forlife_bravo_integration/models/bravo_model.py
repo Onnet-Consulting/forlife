@@ -340,3 +340,4 @@ class BravoLineModel(models.AbstractModel):
 
     def get_update_sql(self, values):
         update_table = self._bravo_update_table
+
