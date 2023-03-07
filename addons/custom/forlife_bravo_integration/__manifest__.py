@@ -15,10 +15,10 @@
     'version': '16.0.1.0.0',
 
     'depends': [
-        'base',
         'queue_job',
         'stock',
         'sale_management',
+        'forlife_base',
     ],
     'auto_install': True,
 

@@ -44,3 +44,13 @@ ERROR: Unable to set system administrator password: Password validation failed. 
    2. [Insert row number - maximum 1000 rows](https://learn.microsoft.com/en-us/sql/t-sql/queries/table-value-constructor-transact-sql?redirectedfrom=MSDN&view=sql-server-ver15#limitations-and-restrictions)
 3. Display utf-8 content in DB
    1. [Set collation for column in DB](https://learn.microsoft.com/en-us/sql/relational-databases/collations/set-or-change-the-column-collation?view=sql-server-ver16)
+
+4. SQL server datetime
+   1. select available timezone in SQL server
+   ```sql
+      SELECT * FROM sys.time_zone_info;
+   ```
+   2. default datetime value in specific timezone
+   ```sql
+      insert into B20Warehouse (PushDate) values(SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time')
+   ```

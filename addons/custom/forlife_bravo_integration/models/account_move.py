@@ -7,17 +7,24 @@ from odoo.exceptions import ValidationError
 
 
 class PurchaseAccountMoveLine(models.TransientModel):
-    _name = 'purchase.account.move.line'
-    _inherit = 'bravo.model'
-    _bravo_table = 'xyz'
+    _name = 'bravo.purchase.account.move'
+    _bravo_table = 'B30AccDocPurchase'
 
-    line_id = fields.Many2one('account.move.line', required=True)
-    move_id = fields.Many2one('account.move', related='line_id.move_id', store=True)
-    br1 = BravoMany2oneField('account.move', bravo_name='BranchCode', odoo_name='move_id',
-                             field_detail='company_id.code')
-    br2 = BravoMany2oneField('account.move', bravo_name='CustomerName', odoo_name='move_id',
-                             field_detail='partner_id.ref')
+    account_move_id = fields.Many2one('account.move', required=True)
 
+    def read_insert_bravo_data(self):
+        self.ensure_one()
+        move_id = self.account_move_id
+        partner = self.account_move_id.partner_id
+        header_data = {
+            "BranchCode": move_id.company_id.code,
+            "Stt": move_id.id,
+            "DocNo": move_id.stock_move_id.picking_id.name,
+            "CustomerCode": partner.ref,
+            "CustomerName": partner.name,
+            "Description": move_id.narration
+        }
+        line_data = []
+        for line in move_id.line_ids:
+            pass
 
-    def get_insert_sql(self):
-        pass
