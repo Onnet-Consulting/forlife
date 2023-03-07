@@ -17,11 +17,13 @@ export class PromotionButton extends PosComponent {
         let order_lines = order.get_orderlines_to_check();
         let [newLines, remainingOrderLines, combo_count] = order.computeForListOfProgram(order_lines, selectedProgramsList);
         remainingOrderLines.forEach(line => {
-            if (!line.get_quantity() == parseFloat(line.quantityStr)) {
+            let qty = line.get_quantity();
+            let qty_orig = parseFloat(line.quantityStr);
+            if (qty != qty_orig) {
                 line.set_quantity(line.get_quantity());
             };
-            if (line.quantity === 0) {
-                order.orderlines.remove(line)
+            if (line.quantity == 0) {
+                order.remove_orderline(line);
             };
         });
 

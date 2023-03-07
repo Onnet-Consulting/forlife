@@ -17,6 +17,8 @@ class PosPromotionLine(models.Model):
     new_price = fields.Float('New Price', readonly=True)
     qty = fields.Float('Quantity', related='order_line_id.qty', digits='Product Unit of Measure')
 
+    registering_tax = fields.Boolean(readonly=True)
+
     def name_get(self):
         res = []
         for line in self:
