@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-22 08:47+0000\n"
-"PO-Revision-Date: 2023-02-22 08:47+0000\n"
+"POT-Creation-Date: 2023-02-27 03:46+0000\n"
+"PO-Revision-Date: 2023-02-27 03:46+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -44,6 +44,15 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
 msgid ""
 "<span class=\"o_stat_text\">\n"
+"                                POS Orders</span>"
+msgstr ""
+"<span class=\"o_stat_text\">\n"
+"                                Đơn hàng</span>"
+
+#. module: forlife_pos_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
+msgid ""
+"<span class=\"o_stat_text\">\n"
 "                                Promotion Codes</span>"
 msgstr ""
 "<span class=\"o_stat_text\">\n"
@@ -64,7 +73,7 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
 msgid "<span class=\"oe_inline\">per Combo</span>"
-msgstr ""
+msgstr "<span class=\"oe_inline\">mỗi Combo</span>"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_generate_wizard_view_form
@@ -100,6 +109,13 @@ msgid "Amount"
 msgstr "Số tiền"
 
 #. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js:0
+#, python-format
+msgid "An unknown error prevents us from loading detail combo information."
+msgstr "Lỗi khi tải chi tiết chương trình Combo."
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_generate_code__mode__anonymous
 msgid "Anonymous Customers"
 msgstr "Khách hàng ẩn danh"
@@ -115,11 +131,6 @@ msgstr "Khả năng áp dụng"
 #, python-format
 msgid "Apply Discount"
 msgstr "Áp dụng KM"
-
-#. module: forlife_pos_promotion
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__apply_multi_program
-msgid "Apply Multi Program"
-msgstr "Được áp dụng đồng thời"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_form
@@ -148,7 +159,9 @@ msgstr "Chiến dịch"
 #: code:addons/forlife_pos_promotion/wizards/promotion_generate_code.py:0
 #, python-format
 msgid "Can not generate code, no program is set."
-msgstr "Không thể tạo mã khuyến mãi, không có chương trình nào được thiết lập.\n Thử lưu chương trình khuyến mãi trước khi tạo"
+msgstr ""
+"Không thể tạo mã khuyến mãi, không có chương trình nào được thiết lập.\n"
+" Thử lưu chương trình khuyến mãi trước khi tạo"
 
 #. module: forlife_pos_promotion
 #. odoo-python
@@ -159,6 +172,7 @@ msgstr "Không thể xóa chương trình khuyến mãi đã được sử dụn
 
 #. module: forlife_pos_promotion
 #. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Popup/ComboDetailsPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js:0
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_generate_wizard_view_form
 #, python-format
@@ -278,9 +292,23 @@ msgid "Combo Discount Percent by Qty"
 msgstr "(Combo) Giảm phần trăm theo số lượng"
 
 #. module: forlife_pos_promotion
+#. odoo-python
+#: code:addons/forlife_pos_promotion/models/promotion_program.py:0
+#, python-format
+msgid "Combo Formular is not set!"
+msgstr "Công thức Combo chưa được thiết lập!"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__combo_name
 msgid "Combo Name"
 msgstr "Tên Combo"
+
+#. module: forlife_pos_promotion
+#. odoo-python
+#: code:addons/forlife_pos_promotion/models/promotion_campaign.py:0
+#, python-format
+msgid "Combo's Formular must be set for the program!"
+msgstr "Công thức Combo phải được thiết lập cho chương trình Combo!"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__company_id
@@ -339,6 +367,7 @@ msgstr ""
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__currency_id
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__currency_id
 msgid "Currency"
 msgstr "Tiền tệ"
 
@@ -389,6 +418,11 @@ msgid "Discount Amount"
 msgstr "Số tiền giảm"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_program_disc_amount
+msgid "Discount Amount must be positive"
+msgstr "Số tiền giảm phải là số dương"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__discount_apply_on
 msgid "Discount Apply On"
 msgstr "Áp dụng trên"
@@ -404,10 +438,20 @@ msgid "Discount Fixed Price"
 msgstr "Giá cố định"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_program_disc_fixed_price
+msgid "Discount Fixed Price must be positive"
+msgstr "Giá cố định phải là số dương"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__disc_percent
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__disc_percent
 msgid "Discount Percent"
 msgstr "Phần trăm giảm"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_program_disc_percent
+msgid "Discount Percent must be between 0.0 and 100.0"
+msgstr "Phần tram giảm giá phải là số dương"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__discount_product_ids
@@ -452,8 +496,8 @@ msgstr "Nhập mã KM"
 #. odoo-javascript
 #: code:addons/forlife_pos_promotion/static/src/js/ControlButtons/EnterCodeButton.js:0
 #, python-format
-msgid "Ex: CODE-001"
-msgstr ""
+msgid "Ex: FORMAT-001"
+msgstr "VD: FORMAT-001"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__expiration_date
@@ -579,16 +623,36 @@ msgid "Limit Usage"
 msgstr "Giới hạn sử dụng"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__limit_usage
+msgid "Limit usage"
+msgstr "Giới hạn sử dụng"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__disc_max_amount
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__disc_max_amount
 msgid "Max Discount Amount"
 msgstr "Số tiền giảm tối đa"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_program_disc_max_amount
+msgid "Max Discount Amount must be positive."
+msgstr "Số tiền giảm tối đa phải là số dương"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__max_usage
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__max_usage
 msgid "Max Usage"
 msgstr "Số lần sử dụng tối đa"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_program_max_usage
+msgid "Max Usage must be positive."
+msgstr ""
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__max_usage
+msgid "Max usage per Code"
+msgstr "Tối đa lần sử dụng mỗi mã KM"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__min_quantity
@@ -652,11 +716,13 @@ msgid "No program found."
 msgstr ""
 
 #. module: forlife_pos_promotion
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__num_of_usage
-msgid "Number of usage"
-msgstr "Số lần sử dụng"
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__use_count
+msgid "Number of Order Usage"
+msgstr "Số đơn đã dùng"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__order_ids
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__order_ids
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__discount_apply_on__order
 msgid "Order"
 msgstr "Đơn hàng"
@@ -674,6 +740,13 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__order_id
 msgid "Order Ref"
+msgstr "Đơn hàng"
+
+#. module: forlife_pos_promotion
+#. odoo-python
+#: code:addons/forlife_pos_promotion/models/promotion_program.py:0
+#, python-format
+msgid "Orders"
 msgstr "Đơn hàng"
 
 #. module: forlife_pos_promotion
@@ -704,6 +777,11 @@ msgid "Point of Sale Order Lines"
 msgstr "Chi tiết đơn hàng bán lẻ"
 
 #. module: forlife_pos_promotion
+#: model:ir.model,name:forlife_pos_promotion.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "Đơn bán lẻ"
+
+#. module: forlife_pos_promotion
 #: model:ir.model,name:forlife_pos_promotion.model_pos_session
 msgid "Point of Sale Session"
 msgstr "Phiên bán hàng"
@@ -712,11 +790,6 @@ msgstr "Phiên bán hàng"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__pos_config_ids
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__pos_config_ids
 msgid "Point of Sales"
-msgstr ""
-
-#. module: forlife_pos_promotion
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__pos_order_ids
-msgid "Pos Order"
 msgstr ""
 
 #. module: forlife_pos_promotion
@@ -852,11 +925,22 @@ msgid "Promotion Usage Line"
 msgstr "Chi tiết sử dụng KM"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__qty_min_required
+msgid "Qty Min Required"
+msgstr "số lượng tối thiểu"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_combo_line__quantity
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__coupon_qty
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__quantity
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__qty
 msgid "Quantity"
 msgstr "Số lượng"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_combo_line_quantity
+msgid "Quantity must be positive"
+msgstr "số lượng phải là số dương"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_generate_wizard_view_form
@@ -871,7 +955,7 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__remaining_amount
 msgid "Remaining Amount"
-msgstr ""
+msgstr "Tiền còn lại"
 
 #. module: forlife_pos_promotion
 #. odoo-javascript
@@ -970,8 +1054,8 @@ msgid ""
 "There are no program applicable for this customer. Add more product and try "
 "again."
 msgstr ""
-"Không có chương trình nào có thể áp dụng cho khách hàng này. Thêm sản phẩm và thử lại "
-"."
+"Không có chương trình nào có thể áp dụng cho khách hàng này. Thêm sản phẩm "
+"và thử lại ."
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.actions.act_window,help:forlife_pos_promotion.promotion_code_card_action
@@ -1010,14 +1094,26 @@ msgid "Unit Price"
 msgstr "Nguyên giá"
 
 #. module: forlife_pos_promotion
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__use_count
-msgid "Use Count"
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js:0
+#, python-format
+msgid "Unknown error"
+msgstr ""
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__usage_line_ids
+msgid "Usage Line"
 msgstr ""
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__with_code
 msgid "Use a code"
 msgstr "Cần mã KM"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__qty_min_required
+msgid "Use for Combo Program  based on quantity of the Combo"
+msgstr ""
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__used_partner_ids

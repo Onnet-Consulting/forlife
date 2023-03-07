@@ -50,6 +50,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.promotionPrograms = loadedData['promotion.program'] || [];
         this.promotionComboLines = loadedData['promotion.combo.line'] || [];
         this.rewardLines = loadedData['promotion.reward.line'] || [];
+        this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
         this.monthData = loadedData['month.data'] || [];
         this.dayofmonthData = loadedData['dayofmonth.data'] || [];
         this.dayofweekData = loadedData['dayofweek.data'] || [];
@@ -59,6 +60,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
     _loadPromotionData() {
         this.promotion_program_by_id = {};
         this.reward_line_by_id = {};
+        this.pro_pricelist_item_by_id = {};
         var self = this;
         for (const program of this.promotionPrograms) {
             if (program.from_date) {
@@ -111,6 +113,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
 
             program.comboFormula = [];
             program.rewards = [];
+            program.pricelistItems = [];
+            program.productPricelistItems = new Set();
         };
         for (const item of this.promotionComboLines) {
             item.valid_product_ids = new Set(item.valid_product_ids);
@@ -121,6 +125,13 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             this.reward_line_by_id[reward.id] = reward;
             reward.program_id = this.promotion_program_by_id[reward.program_id[0]];
             reward.program_id.rewards.push(reward);
+        };
+        for (const item of this.promotionPricelistItems) {
+            this.pro_pricelist_item_by_id[item.id] = item;
+            item.product_id = item.product_id[0];
+            item.program_id = this.promotion_program_by_id[item.program_id[0]];
+            item.program_id.pricelistItems.push(item);
+            item.program_id.productPricelistItems.add(item.product_id);
         };
     }
 
@@ -193,6 +204,12 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
         return result;
     }
 
+    clone() {
+        var orderline = super.clone();
+        orderline.promotion_usage_ids = [...this.promotion_usage_ids];
+        return orderline;
+    }
+
     get_original_price() {
         return this.product.get_display_price(this.order.pricelist, 1)
     }
@@ -257,6 +274,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.activatedComboPrograms = new Set(json.activatedComboPrograms);
         this.activatedCodePrograms = new Set(json.activatedCodePrograms);
         this.activatedInputCodes = json.activatedInputCodes;
+        this._resetPromotionPrograms();
     }
     /**
      * @override
@@ -272,7 +290,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     _programIsApplicableAutomatically(program) {
 
-        if (!program.promotion_type == 'combo') {return false;};
+        if (program.promotion_type == 'cart') {return false;};
         if (program.with_code) {
             if (this.activatedInputCodes) {
                 if (!this.activatedInputCodes.map(code => code.program_id).includes(program.id)) {return false;};
@@ -352,46 +370,32 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
         };
     }
-    /*
-    * recursion function
-    * return {number} count of  combo
-    */
-    _checkNumberOfCombo(comboProgram, order_lines, to_discount_line_vals , count) {
-        count = count || 0;
-        to_discount_line_vals = to_discount_line_vals || [];
-        var comboFormula = comboProgram.comboFormula;
-        if (comboFormula.length == 0) {
-            return [order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
-        };
-        var enoughCombo = true;
-        for (const part of comboFormula) {
-            var order_lines_has_valid_product = order_lines.filter(l => part.valid_product_ids.has(l.product.id));
-            var qty_total = order_lines_has_valid_product.reduce((accumulator, l) => accumulator + l.quantity, 0);
-            if (qty_total < part.quantity) {enoughCombo = false; break;};
-        };
-        if (enoughCombo == false) {
-            return [order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
-        } else {
-            var oneCombo = []
-            for (const part of comboFormula) {
-                var qty_to_take_on_candidates = part.quantity
-                for (const ol of order_lines.filter(ol => part.valid_product_ids.has(ol.product.id)  && ol.quantity > 0)) {
-                    var qty_taken_on_candidate = Math.min(qty_to_take_on_candidates, ol.quantity);
-                    /* ============ */
-                    ol.quantity = ol.quantity - qty_taken_on_candidate;
-                    oneCombo.push({
-                        product: ol.product,
-                        quantity: qty_taken_on_candidate,
-                        price: ol.product.lst_price,
-                    });
-                    qty_to_take_on_candidates -= qty_taken_on_candidate;
-                    if (qty_to_take_on_candidates <= 0.0) {break;};
-                };
-            };
-            to_discount_line_vals.push(oneCombo);
-            return this._checkNumberOfCombo(comboProgram, order_lines, to_discount_line_vals, count + 1);
-        }
+
+
+    getActivatedComboPrograms() {
+        return Array.from(this.activatedComboPrograms).map(proID => this.pos.promotion_program_by_id[proID]);
     }
+
+    getValidProgramsOnOrder() {
+        let toCheck = this.pos.promotionPrograms;
+        var numberOfProgramsValues = this.verifyComboProgramOnOrder(toCheck);
+        return Object.keys(numberOfProgramsValues).reduce((tmp, p) => {tmp.push(p); return tmp}, tmp);
+    }
+
+    getPotentialProgramsToSelect() {
+        let toCheck = this.pos.promotionPrograms;
+
+        var numberOfProgramsValues = this.verifyComboProgramOnOrder(toCheck);
+        return Object.entries(numberOfProgramsValues)
+                    .reduce((tmp, p) => {
+                    tmp.push({
+                        program : this.pos.promotionPrograms.find((pro)=> pro.id == p[0]),
+                        number: p[1]
+                    });
+                    return tmp;
+                    }, []);
+    }
+
 
     // get reward lines
     _get_reward_lines() {
@@ -417,10 +421,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 id: l.id,
                 price: l.price,
                 full_product_name: l.full_product_name,
-                tax_ids: l.tax_ids
+                tax_ids: [...(l.tax_ids || [])]
             });
         })
-        return JSON.parse(JSON.stringify(lines));
+        return lines;
     }
 
     _get_program_usage_ids() {
@@ -429,13 +433,93 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         acc.push(...line.promotion_usage_ids); return acc;}, []);
     }
 
-    _checkHasComboApplied() {
-        return this._get_program_usage_ids().length > 0;
+    _getPricelistItem(product) {
+        let programs = this.getValidProgramsOnOrder().filter(p => p.promotion_type == 'pricelist');
+        let pricelistItem;
+        for (program in programs) {
+            pricelistItem = program.productPricelistItems.find(item => item.product_id === product.id);
+            if (pricelistItem) {
+                return pricelistItem;
+            };
+        };
+        return false;
     }
 
-    _checkHasNoMultiComboApplied() {
-        let programs = this._get_program_usage_ids().map(p => this.pos.promotion_program_by_id[p.program_id]);
-        return programs.some(p => p.apply_multi_program == false);
+    // Filter based on promotion_usage_ids
+    _filterOrderLinesToCheckComboPro(order_lines) {
+        return order_lines.filter(l => {
+            for (let usage of l.promotion_usage_ids) {
+                let program = this.pos.promotion_program_by_id[usage.program_id];
+                if (['pricelist', 'combo'].includes(program.promotion_type)) {return false};
+                if (program == 'code' && program.discount_based_on == 'unit_price') {return false};
+            };
+            return true;
+        });
+    }
+
+    _filterOrderLinesToCheckCodePro(pro, order_lines) {
+        if (pro.promotion_type == 'code' && pro.discount_based_on == 'unit_price') {
+            let func = function(l) {
+                return l.promotion_usage_ids || l.promotion_usage_ids.length == 0 ? true : false;
+            }
+        } else if (pro.promotion_type == 'code' && pro.discount_based_on == 'discounted_price') {
+            let func = function(l) {
+                if (l.promotion_usage_ids) {
+                    return l.promotion_usage_ids.some(p => p.promotion_type == 'pricelist' || (p.promotion_type == 'pricelist' && p.discount_based_on == 'unit_price')) ? true : false;
+                } else {return true};
+            };
+        };
+        return order_lines.filter(func(l));
+    }
+
+    _filterOrderLinesToCheckPricelistPro(order_lines) {
+        return order_lines.filter(l => {
+            return l.promotion_usage_ids || l.promotion_usage_ids.length == 0 ? true : false;
+        });
+    }
+
+    /*
+    * recursion function
+    * return {number} count of  combo
+    */
+    _checkNumberOfCombo(comboProgram, order_lines, to_discount_line_vals , count) {
+        let to_check_order_lines = this._filterOrderLinesToCheckComboPro(order_lines);
+        count = count || 0;
+        to_discount_line_vals = to_discount_line_vals || [];
+        var comboFormula = comboProgram.comboFormula;
+        if (comboFormula.length == 0) {
+            return [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
+        };
+        var enoughCombo = true;
+        for (const part of comboFormula) {
+            var order_lines_has_valid_product = to_check_order_lines.filter(l => part.valid_product_ids.has(l.product.id));
+            var qty_total = order_lines_has_valid_product.reduce((accumulator, l) => accumulator + l.quantity, 0);
+            if (qty_total < part.quantity) {enoughCombo = false; break;};
+        };
+        if (enoughCombo == false) {
+            return [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
+        } else {
+            var oneCombo = []
+            for (const part of comboFormula) {
+                var qty_to_take_on_candidates = part.quantity
+                for (const ol of to_check_order_lines.filter(ol => part.valid_product_ids.has(ol.product.id)  && ol.quantity > 0)) {
+                    var qty_taken_on_candidate = Math.min(qty_to_take_on_candidates, ol.quantity);
+                    /* ============ */
+                    ol.quantity = ol.quantity - qty_taken_on_candidate;
+                    oneCombo.push({
+                        product: ol.product,
+                        quantity: qty_taken_on_candidate,
+                        price: ol.product.lst_price,
+                        isNew: true,
+                        promotion_usage_ids: [...ol.promotion_usage_ids]
+                    });
+                    qty_to_take_on_candidates -= qty_taken_on_candidate;
+                    if (qty_to_take_on_candidates <= 0.0) {break;};
+                };
+            };
+            to_discount_line_vals.push(oneCombo);
+            return this._checkNumberOfCombo(comboProgram, order_lines, to_discount_line_vals, count + 1);
+        }
     }
 
     /* return {<program_id>: number_of_combo}*/
@@ -450,6 +534,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         for (const program of comboProgramToCheck) {
             var to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
             let NumberOfCombo = this._checkNumberOfCombo(program, to_check_order_lines, [] , 0)[2];
+            if (['combo_percent_by_qty', 'combo_fixed_price_by_qty'].includes(program.reward_type) && !(NumberOfCombo >= program.qty_min_required)) {
+                continue;
+            };
             if (NumberOfCombo >= 1) {
                 comboProgramIsVerified[program.id] = NumberOfCombo;
             };
@@ -468,40 +555,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     line.promotion_usage_ids = [];
                     line.reset_unit_price();
                     return true;
-                }
-                else if (line.promotion_usage_ids.some(pro => this.pos.promotion_program_by_id[pro.program_id].promotion_type == 'combo')) {
-                    return false;
                 };
+//                else if (line.promotion_usage_ids.some(pro => this.pos.promotion_program_by_id[pro.program_id].promotion_type == 'combo')) {
+//                    return false;
+//                };
             };
             return true;
         })
-//        .sort((a,b) => b.product.lst_price - a.product.lst_price)
-    }
-
-    getActivatedComboPrograms() {
-        return Array.from(this.activatedComboPrograms).map(proID => this.pos.promotion_program_by_id[proID]);
-    }
-
-    getPotentialProgramsToSelect() {
-        let toCheck = this.pos.promotionPrograms;
-
-        if (this._checkHasComboApplied()) {
-            toCheck = toCheck.filter((p => !(p.apply_multi_program == false && p.promotion_type == 'combo')));
-        };
-
-        if (this._checkHasNoMultiComboApplied()) {
-            toCheck = this.pos.promotionPrograms.filter(p => p.promotion_type !== 'combo');
-        };
-
-        var numberOfProgramsValues = this.verifyComboProgramOnOrder(toCheck);
-        return Object.entries(numberOfProgramsValues)
-                    .reduce((tmp, p) => {
-                    tmp.push({
-                        program : this.pos.promotionPrograms.find((pro)=> pro.id == p[0]),
-                        number: p[1]
-                    });
-                    return tmp;
-                    }, []);
     }
 
     _computeNewPriceForComboProgram(disc_total, base_total, prePrice, quantity) {
@@ -511,12 +571,34 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return [newPrice, discAmount]
     }
 
-    applyAProgramToLineVales(program, comboLineList, number_of_combo) {
+    applyAPricelistProgramToLineVales(PricelistItem, LineList, number_of_product) {
+        for (line of LineList) {
+            let fixed_price = PricelistItem.fixed_price;
+            let discount_amount = line.quantity*(line.price - fixed_price);
+            if (discount_amount > 0) {
+                comboLine.promotion_usage_ids.push(new PromotionUsageLine(
+                    program.id,
+                    null,
+                    line.price,
+                    PricelistItem.fixed_price,
+                    discAmountInLine));
+            };
+        };
+    }
+
+    applyACodeProgramToLineVales(CodeProgram, LineList, number_of_product) {
+        // pass
+    }
+
+    // For Combo Program
+    applyAComboProgramToLineVales(program, comboLineList, number_of_combo) {
         let code = null;
         let activatedCodeObj = this.activatedInputCodes.find(c => c.program_id === program.id)
         if (activatedCodeObj) {code = activatedCodeObj.id};
 
-        comboLineList.forEach(line => {line['promotion_usage_ids'] = [];});
+        comboLineList.forEach(line => {
+            line['promotion_usage_ids'] = line['promotion_usage_ids'] == undefined ? [] : line['promotion_usage_ids'];
+        });
         // Combo: Mua Combo, giảm tiền
         if (program.reward_type == 'combo_amount' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
@@ -569,12 +651,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         // Mua Comboo càng nhiều càng giảm, theo tỷ lệ %
         else if (program.reward_type == 'combo_percent_by_qty' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
-            let rewardLines = program.rewards.sort((l1, l2) => l2.disc_percent > l1.disc_percent);
+            let rewardLines = program.rewards.sort((l1, l2) => l2.quantity_min - l1.quantity_min);
             let applyRewardLine;
             for (let i = 0; i < rewardLines.length; i++) {
                 if (number_of_combo >= rewardLines[i].quantity_min) {
                     applyRewardLine = rewardLines[i];
+                    break;
                 };
+            };
+            if (!applyRewardLine) {
+                return comboLineList;
             };
             let disc_total_amount = base_total_amount * applyRewardLine.disc_percent / 100;
             if (applyRewardLine.disc_max_amount > 0) {
@@ -594,12 +680,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         // Mua Comboo càng nhiều càng giảm, theo đơn giá cố đinh
         else if (program.reward_type == 'combo_fixed_price_by_qty' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
-            let rewardLines = program.rewards.sort((l1, l2) => l2.disc_percent > l1.disc_percent);
+            let rewardLines = program.rewards.sort((l1, l2) => l2.quantity_min - l1.quantity_min);
             let applyRewardLine;
             for (let i = 0; i < rewardLines.length; i++) {
                 if (number_of_combo >= rewardLines[i].quantity_min) {
                     applyRewardLine = rewardLines[i];
+                    break;
                 };
+            };
+            if (!applyRewardLine) {
+                return comboLineList;
             };
             let disc_total_amount = base_total_amount - applyRewardLine.disc_fixed_price;
             disc_total_amount = disc_total_amount > 0 ? disc_total_amount : 0.0;
@@ -616,30 +706,40 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         }
         return comboLineList;
     }
-    // todo: Fix trường hợp tiền giảm lớn hơn tổng giá trị của Combo
-    computeForListOfCombo(orderLines, listOfComboProgram) {
-        let lines_to_check = orderLines;
+    // Compute Order With list of Combo Program
+    computeForListOfProgram(orderLines, listOfComboProgram) {
         let to_apply_lines = {};
         let combo_count = {};
         for (const program of listOfComboProgram) {
-            var [remainingOrderLines, to_discount_line_vals, numberOfCombo] = this._checkNumberOfCombo(program, orderLines, [], 0);
-            lines_to_check = remainingOrderLines;
-            // ---------------------------------------------------------------- //
-
-            combo_count[program.id] = numberOfCombo;
-
-            for (let i = 0; i < to_discount_line_vals.length; i++) {
-                let result = this.applyAProgramToLineVales(program, to_discount_line_vals[i], numberOfCombo);
-                if (to_apply_lines.hasOwnProperty(program.id) && combo_count.hasOwnProperty(program.id)) {
-                    to_apply_lines[program.id].push(...result);
-                }
-                else {
-                    to_apply_lines[program.id] = result;
+            // Combo Program
+            if (program.promotion_type == 'combo') {
+                if (program.reward_type == 'combo_amount') {
+                    orderLines.sort((a,b) => a.product.lst_price - b.product.lst_price)
+                } else {
+                    orderLines.sort((a,b) => b.product.lst_price - a.product.lst_price)
                 };
+                var [remaining, to_discount_line_vals, numberOfCombo] = this._checkNumberOfCombo(program, orderLines, [], 0);
 
+                combo_count[program.id] = numberOfCombo;
+
+                for (let i = 0; i < to_discount_line_vals.length; i++) {
+                    let result = this.applyAComboProgramToLineVales(program, to_discount_line_vals[i], numberOfCombo);
+                    if (to_apply_lines.hasOwnProperty(program.id) && combo_count.hasOwnProperty(program.id)) {
+                        to_apply_lines[program.id].push(...result);
+                    } else {
+                        to_apply_lines[program.id] = result;
+                    };
+                };
+            }
+            // Code Program
+            else if (program.promotion_type == 'code') {
+                // TODO: Apply to orderlines for code program
+            }
+            // Pricelist Program
+            else if (program.promotion_type == 'pricelist') {
+                // TODO: Apply to orderlines for price program
             };
         };
-        let total_discount_per_program = {}
         return [to_apply_lines, orderLines, combo_count];
     }
 

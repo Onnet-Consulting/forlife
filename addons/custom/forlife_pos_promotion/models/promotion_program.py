@@ -87,7 +87,6 @@ class PromotionProgram(models.Model):
     with_code = fields.Boolean('Use a code', default=False)
     combo_code = fields.Char('Combo Code')
     combo_name = fields.Char('Combo Name')
-    apply_multi_program = fields.Boolean()
     # Code
     discount_based_on = fields.Selection([
         ('unit_price', 'Unit Price'),
@@ -104,10 +103,14 @@ class PromotionProgram(models.Model):
     order_amount_min = fields.Float()
     # Pricelist
 
+    pricelist_item_ids = fields.One2many('promotion.pricelist.item', 'program_id', string='Pricelist Item')
+    pricelist_item_count = fields.Integer(compute='_compute_pricelist_item_count')
+
     # Rewards
     reward_type = fields.Selection(REWARD_TYPE, string='Reward Type')
 
     reward_ids = fields.One2many('promotion.reward.line', 'program_id', 'Rewards', copy=True, readonly=False, store=True)
+    qty_min_required = fields.Float(compute='_qty_min_required', help='Use for Combo Program  based on quantity of the Combo')
 
     voucher_ids = fields.One2many('promotion.voucher', 'program_id')
 
@@ -126,6 +129,10 @@ class PromotionProgram(models.Model):
     disc_max_amount = fields.Float('Max Discount Amount')
 
     show_gen_code = fields.Boolean('Show Gencode button', compute='_show_gen_code')
+
+    registering_tax = fields.Boolean('Register Tax')
+    tax_from_date = fields.Date('Registered Tax From')
+    tax_to_date = fields.Date('Registered Tax To')
 
     @api.constrains('combo_line_ids')
     def _check_duplicate_product_in_combo(self):
@@ -188,6 +195,16 @@ class PromotionProgram(models.Model):
             usages = self.env['promotion.usage.line'].search([('program_id', '=', program.id)])
             program.total_order_count = len(usages.mapped('order_id'))
             program.order_ids = usages.mapped('order_id')
+
+    def _compute_pricelist_item_count(self):
+        for pro in self:
+            pro.pricelist_item_count = len(pro.pricelist_item_ids)
+
+    def _qty_min_required(self):
+        for program in self:
+            program.qty_min_required = 0
+            if program.reward_type in ['combo_percent_by_qty', 'combo_fixed_price_by_qty'] and program.reward_ids:
+                program.qty_min_required = min(program.reward_ids.mapped('quantity_min')) or 0
 
     def _show_gen_code(self):
         for program in self:
@@ -268,4 +285,17 @@ class PromotionProgram(models.Model):
             ],
             'type': 'ir.actions.act_window',
             'domain': [('id', 'in', self.order_ids.ids)],
+        }
+
+    def action_open_pricelist_items(self):
+        return {
+            'name': _('Product Pricelist Items'),
+            'res_model': 'promotion.pricelist.item',
+            'view_mode': 'tree',
+            'views': [
+                (self.env.ref('forlife_pos_promotion.promotion_pricelist_item_tree_view').id, 'tree'),
+            ],
+            'type': 'ir.actions.act_window',
+            'domain': [('id', 'in', self.pricelist_item_ids.ids)],
+            'context': {'default_program_id': self.id}
         }

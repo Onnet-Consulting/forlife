@@ -11,7 +11,9 @@
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" type="object" name="action_open_programs" icon="fa-tags">
+                        <button class="oe_stat_button" type="object" name="action_open_programs" icon="fa-tags"
+                                context="{'default_campaign_id': active_id}"
+                        >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value" readonly="1">
                                     <field name="program_count"/>
@@ -46,9 +48,28 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Programs" name="program_ids" colspan="4">
-                            <field name="program_ids" context="{'active_test':False}"
-                                   widget="section_and_note_one2many" mode="tree,kanban" colspan="4" nolabel="1">
+                        <page string="Combo Programs" name="program_ids" colspan="4">
+                            <field name="combo_program_ids"
+                                   context="{'active_test':False, 'default_promotion_type': 'combo'}"
+                                   mode="tree,kanban" colspan="4" nolabel="1">
+                            </field>
+                        </page>
+                        <page string="Code Programs" name="program_ids" colspan="4">
+                            <field name="code_program_ids"
+                                   context="{'active_test':False, 'default_promotion_type': 'code'}"
+                                   mode="tree,kanban" colspan="4" nolabel="1">
+                            </field>
+                        </page>
+                        <page string="Cart Programs" name="program_ids" colspan="4">
+                            <field name="cart_program_ids"
+                                   context="{'active_test':False, 'default_promotion_type': 'cart'}"
+                                   mode="tree,kanban" colspan="4" nolabel="1">
+                            </field>
+                        </page>
+                        <page string="Pricelist Programs" name="program_ids" colspan="4">
+                            <field name="pricelist_program_ids"
+                                   context="{'active_test':False, 'default_promotion_type': 'pricelist'}"
+                                   mode="tree,kanban" colspan="4" nolabel="1">
                             </field>
                         </page>
                     </notebook>

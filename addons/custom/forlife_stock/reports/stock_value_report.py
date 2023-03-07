@@ -24,17 +24,24 @@ class StockValueReport(models.TransientModel):
     date_from = fields.Date('From Date', required=True)
     date_to = fields.Date('To Date', default=fields.Date.context_today, required=True)
     detail_ids = fields.One2many('stock.value.report.detail', 'report_id', 'Detail')
+    based_on_account = fields.Boolean('Based on Account')
 
     # file sql
     def init(self):
         outgoing_value_diff_report = read_sql_file('./forlife_stock/sql_functions/outgoing_value_diff_report.sql')
-        outgoing_value_diff_picking_type_report = read_sql_file(
-            './forlife_stock/sql_functions/outgoing_value_diff_picking_type_report.sql')
+        outgoing_value_diff_account_report = read_sql_file(
+            './forlife_stock/sql_functions/outgoing_value_diff_account_report.sql')
+        # outgoing_value_diff_picking_type_report = read_sql_file(
+        #     './forlife_stock/sql_functions/outgoing_value_diff_picking_type_report.sql')
         stock_incoming_outgoing_report = read_sql_file(
             './forlife_stock/sql_functions/stock_incoming_outgoing_report.sql')
+        stock_incoming_outgoing_account_report = read_sql_file(
+            './forlife_stock/sql_functions/stock_incoming_outgoing_account_report.sql')
         self.env.cr.execute(outgoing_value_diff_report)
-        self.env.cr.execute(outgoing_value_diff_picking_type_report)
+        self.env.cr.execute(outgoing_value_diff_account_report)
+        # self.env.cr.execute(outgoing_value_diff_picking_type_report)
         self.env.cr.execute(stock_incoming_outgoing_report)
+        self.env.cr.execute(stock_incoming_outgoing_account_report)
 
     def action_download_excel(self, data, name):
         vals = {
@@ -54,9 +61,9 @@ class StockValueReport(models.TransientModel):
     def action_get_outgoing_value_diff_report(self):
         # must be utc time
         current_tz = pytz.timezone(self.env.context.get('tz'))
-        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00")
-        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59")
-        self._cr.execute("""
+        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
+        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
+        self._cr.execute(f"""
             DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
             INSERT INTO stock_value_report_detail (
                                         report_id,
@@ -89,7 +96,7 @@ class StockValueReport(models.TransientModel):
                     %s,
                     %s,
                     %s
-            FROM outgoing_value_diff_report(%s, %s, %s)
+            FROM {"outgoing_value_diff_report" if not self.based_on_account else "outgoing_value_diff_account_report"}(%s, %s, %s)
         """, (self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(), datetime.utcnow(),
               self.env.user.id,
               self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id))
@@ -99,9 +106,9 @@ class StockValueReport(models.TransientModel):
         def get_data():
             # must be utc time
             current_tz = pytz.timezone(self.env.context.get('tz'))
-            utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00")
-            utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59")
-            self._cr.execute("""
+            utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
+            utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
+            self._cr.execute(f"""
                         SELECT pp.default_code,
                                 pt.name,
                                 report.opening_quantity,
@@ -112,7 +119,7 @@ class StockValueReport(models.TransientModel):
                                 report.odoo_outgoing_value,
                                 report.real_outgoing_price_unit,
                                 report.real_outgoing_value
-                        FROM outgoing_value_diff_report(%s, %s, %s) as report
+                        FROM {"outgoing_value_diff_report" if not self.based_on_account else "outgoing_value_diff_account_report"}(%s, %s, %s) as report
                         LEFT JOIN product_product pp ON pp.id = report.product_id
                         LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id""",
                              (utc_datetime_from, utc_datetime_to, self.env.company.id))
@@ -126,10 +133,6 @@ class StockValueReport(models.TransientModel):
                           style_excel['style_left_data_string'])
             wssheet.write("F3", f'Đến ngày: {self.date_to.strftime("%d/%m/%Y")}',
                           style_excel['style_left_data_string'])
-            # --------------------------------------Header---------------------------------------------------
-
-            wssheet.write("E4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
-            wssheet.write("F4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
 
             # --------------------------------------Header Table----------------------------------------------
             wssheet.merge_range("A7:A8", 'STT', style_excel['style_header_bold_border'])
@@ -256,15 +259,12 @@ class StockValueReport(models.TransientModel):
 
         return self.action_download_excel(base64.encodebytes(xlsx_data), _('Outgoing Value Different Report'))
 
-    def action_export_outgoing_value_diff_picking_type_report(self):
-        pass
-
     def action_get_stock_incoming_outgoing_report(self):
         # must be utc time
         current_tz = pytz.timezone(self.env.context.get('tz'))
-        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00")
-        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59")
-        self._cr.execute("""
+        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
+        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
+        self._cr.execute(f"""
             DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
             INSERT INTO stock_value_report_detail (
                                         report_id,
@@ -297,7 +297,7 @@ class StockValueReport(models.TransientModel):
                     %s,
                     %s,
                     %s
-            FROM stock_incoming_outgoing_report(%s, %s, %s)
+            FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s)
         """, (self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(), datetime.utcnow(),
               self.env.user.id,
               self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id))
@@ -307,9 +307,9 @@ class StockValueReport(models.TransientModel):
         def get_data():
             # must be utc time
             current_tz = pytz.timezone(self.env.context.get('tz'))
-            utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00")
-            utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59")
-            self._cr.execute("""
+            utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
+            utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
+            self._cr.execute(f"""
                                 SELECT pp.default_code,
                                         pt.name,
                                         report.opening_quantity,
@@ -320,7 +320,7 @@ class StockValueReport(models.TransientModel):
                                         report.real_outgoing_value,
                                         report.closing_quantity,
                                         report.closing_value
-                                FROM stock_incoming_outgoing_report(%s, %s, %s) as report
+                                FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s) as report
                                 LEFT JOIN product_product pp ON pp.id = report.product_id
                                 LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id""",
                              (utc_datetime_from, utc_datetime_to, self.env.company.id))
@@ -334,10 +334,6 @@ class StockValueReport(models.TransientModel):
                           style_excel['style_left_data_string'])
             wssheet.write("F3", f'Đến ngày: {self.date_to.strftime("%d/%m/%Y")}',
                           style_excel['style_left_data_string'])
-            # --------------------------------------Header---------------------------------------------------
-
-            wssheet.write("E4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
-            wssheet.write("F4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
 
             # --------------------------------------Header Table----------------------------------------------
             wssheet.merge_range("A7:A8", 'STT', style_excel['style_header_bold_border'])
@@ -462,3 +458,6 @@ class StockValueReport(models.TransientModel):
         xlsx_data = buf.getvalue()
 
         return self.action_download_excel(base64.encodebytes(xlsx_data), _('Stock Incoming Outgoing Report'))
+
+    def action_export_outgoing_value_diff_picking_type_report(self):
+        pass

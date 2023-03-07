@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 Character = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
@@ -26,13 +26,13 @@ class ProgramVoucher(models.Model):
 
     start_date = fields.Datetime('Start date', required=True)
 
-    end_date = fields.Datetime('End date', required=True)
+    end_date = fields.Datetime('End date', required=True, tracking=True)
 
     state_app = fields.Boolean('Trạng thái App')
 
-    store_id = fields.Many2one('store', 'Apply for store', required=True)
+    store_ids = fields.Many2many('store', string='Apply for store', required=True)
 
-    product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse')
+    product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse', domain=[('voucher','=',True)])
 
     product_ids = fields.One2many('product.template', 'program_voucher_id')
 
@@ -40,8 +40,9 @@ class ProgramVoucher(models.Model):
 
     @api.depends('product_ids')
     def compute_product(self):
-        if len(self.product_ids) > 0:
-            self.product_id = self.product_ids[0]
+        for rec in self:
+            if len(rec.product_ids) > 0:
+                rec.product_id = rec.product_ids[0]
 
     def product_inverse(self):
         if len(self.product_ids) > 0:
@@ -49,10 +50,21 @@ class ProgramVoucher(models.Model):
             product.program_voucher_id = False
         self.product_id.program_voucher_id = self
 
-    program_voucher_line_ids = fields.One2many('program.voucher.line', 'program_voucher_id', string='Voucher')
+    program_voucher_line_ids = fields.One2many('program.voucher.line', 'program_voucher_id', string='Voucher', copy=True)
 
     voucher_ids = fields.One2many('voucher.voucher', 'program_voucher_id')
     voucher_count = fields.Integer('Voucher Count', compute='_compute_count_voucher', store=True)
+
+    @api.constrains('start_date','end_date')
+    def check_contrains_date(self):
+        for rec in self:
+            if rec.start_date > rec.end_date:
+                raise UserError(_('Ngày kết thúc không được nhỏ hơn ngày bắt đầu! '))
+
+    @api.onchange('type')
+    def onchange_type_program_voucher(self):
+        if self.type == 'v':
+            self.apply_many_times = False
 
     @api.depends('voucher_ids')
     def _compute_count_voucher(self):
@@ -101,25 +113,43 @@ class ProgramVoucher(models.Model):
                         for i in range(rec.count):
                             self.env['voucher.voucher'].create({
                                 'program_voucher_id': self.id,
+                                'type':self.type,
+                                'brand_id':self.brand_id.id,
+                                'store_ids': [(6, False, self.store_ids.ids)],
+                                'start_date':self.start_date,
                                 'state':'new',
                                 'partner_id': p.id,
                                 'price': rec.price,
                                 'price_used':0,
                                 'price_residual': rec.price - 0,
                                 'derpartment_id': self.derpartment_id.id,
+                                'end_date':self.end_date,
+                                'apply_many_times': self.apply_many_times,
+                                'apply_contemp_time':self.apply_contemp_time,
+                                'product_voucher_id': self.product_id.id,
+                                'purpose_id': self.purpose_id.id
                             })
                 if not rec.partner_ids:
                     for i in range(rec.count):
                         self.env['voucher.voucher'].create({
                             'program_voucher_id': self.id,
+                            'type': self.type,
+                            'brand_id': self.brand_id.id,
+                            'store_ids': [(6, False, self.store_ids.ids)],
+                            'start_date': self.start_date,
                             'state': 'new',
                             'price': rec.price,
                             'price_used': 0,
                             'price_residual': rec.price - 0,
                             'derpartment_id': self.derpartment_id.id,
+                            'end_date': self.end_date,
+                            'apply_many_times': self.apply_many_times,
+                            'apply_contemp_time': self.apply_contemp_time,
+                            'product_voucher_id': self.product_id.id,
+                            'purpose_id':self.purpose_id.id
                         })
         else:
-            raise UserError(_("Vui lòng thiết lập dữ liệu voucher!"))
+            raise UserError(_("Vui lòng thêm dòng thông tin cho vourcher!"))
 
     def action_view_voucher_relation(self):
         self.ensure_one()
@@ -132,6 +162,11 @@ class ProgramVoucher(models.Model):
             'view_mode': 'tree,form',
         }
 
+    def unlink(self):
+        for rec in self:
+            if rec.voucher_ids:
+                raise ValidationError(_('Bạn không được phép xóa chương trình chứa mã Voucher!'))
+        return super(ProgramVoucher, self).unlink()
 
 
 

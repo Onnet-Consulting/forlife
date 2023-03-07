@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="product_product_tree_view_inherit">
+            <field name="name">product.product.tree.view.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="lst_price" position="before">
+                    <field name="price"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="product_product_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.product.form.view.inherit</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//div[@name='pricing']" position="after">
+                    <label for="price"/>
+                    <div name="price">
+                        <field name="price" class="oe_inline" widget='monetary'
+                               options="{'currency_field': 'currency_id', 'field_digits': True}"/>
+                    </div>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

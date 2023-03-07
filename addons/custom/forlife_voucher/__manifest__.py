@@ -31,8 +31,13 @@
         'views/setup_voucher.xml',
         'views/voucher_view.xml',
         'views/menu_views.xml',
+        'views/product_category.xml',
+        'views/product_product.xml',
         'views/product_template.xml',
+        'views/sale_order.xml',
         'data/ir_sequence.xml',
-        'data/ir_cron.xml'
+        'data/ir_cron.xml',
+        'views/hr_department.xml',
+        'views/pos_order.xml'
     ]
 }

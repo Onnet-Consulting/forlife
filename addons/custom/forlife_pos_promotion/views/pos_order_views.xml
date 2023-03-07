@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <record id="pos_order_form_inherit" model="ir.ui.view">
-        <field name="name">name</field>
+        <field name="name">pos_order_form_inherit</field>
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
         <field name="arch" type="xml">
@@ -16,6 +16,7 @@
                             <field name="new_price"/>
                             <field name="qty"/>
                             <field name="discount_amount"/>
+                            <field name="registering_tax"/>
                         </tree>
                     </field>
                 </div>

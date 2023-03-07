@@ -1,9 +1,11 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 import phonenumbers
 from odoo.addons.forlife_pos_app_member.models.res_utility import get_valid_phone_number, is_valid_phone_number
 import string
 import random
 from datetime import datetime
+from odoo.exceptions import ValidationError
+import pytz
 
 
 class Voucher(models.Model):
@@ -14,18 +16,19 @@ class Voucher(models.Model):
 
     name = fields.Char('Code', compute='_compute_name', store=True)
     program_voucher_id = fields.Many2one('program.voucher', 'Program name')
-    purpose_id = fields.Many2one('setup.voucher', 'Purpose', required=True, related='program_voucher_id.purpose_id')
+    purpose_id = fields.Many2one('setup.voucher', 'Purpose', required=True)
     currency_id = fields.Many2one('res.currency', compute='_compute_currency_field')  # related currency of program voucher
-    type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True, related='program_voucher_id.type')
-    state = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string='State', required=True, tracking=True)
+    type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True)
+    state = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string='State', required=True,
+                             tracking=True, default='new')
     price = fields.Monetary('Mệnh giá')
     price_used = fields.Monetary('Giá trị đã dùng')
     price_residual = fields.Monetary('Giá trị còn lại')
-    start_date = fields.Datetime('Start date',related='program_voucher_id.start_date')
-    end_date = fields.Datetime('End date', related='program_voucher_id.end_date', tracking=True)
-    apply_many_times = fields.Boolean('Apply many times', related='program_voucher_id.apply_many_times')
+    start_date = fields.Datetime('Start date')
+    end_date = fields.Datetime('End date', tracking=True)
+    apply_many_times = fields.Boolean('Apply many times')
 
-    apply_contemp_time = fields.Boolean('Áp dụng đồng thời', related='program_voucher_id.apply_contemp_time')
+    apply_contemp_time = fields.Boolean('Áp dụng đồng thời')
 
     purchase_id = fields.Many2one('purchase.order', 'Đơn hàng mua')
 
@@ -37,15 +40,16 @@ class Voucher(models.Model):
 
     order_pos = fields.Many2one('pos.order', 'Đơn hàng POS')
 
-    order_use = fields.Many2one('pos.order', 'Đơn hàng sử dụng')
+    order_use_ids = fields.Many2many('pos.order', string='Đơn hàng sử dụng')
 
     partner_id = fields.Many2one('res.partner')
     phone_number = fields.Char(copy=False, string='Phone')
 
-    product_voucher_id = fields.Many2one('product.template', 'Product Voucher', related='program_voucher_id.product_id')
+    product_voucher_id = fields.Many2one('product.template', 'Product Voucher')
 
     derpartment_id = fields.Many2one('hr.department', 'Department Code', required=True)
-    brand_id = fields.Many2one('res.brand', 'Brand', required=True, related='program_voucher_id.brand_id')
+    brand_id = fields.Many2one('res.brand', 'Brand', required=True)
+    store_ids = fields.Many2many('store', string='Cửa hàng áp dụng')
 
     @api.depends('program_voucher_id')
     def _compute_currency_field(self):
@@ -58,13 +62,14 @@ class Voucher(models.Model):
             if v.program_voucher_id:
                 X = "V" if v.program_voucher_id.type == 'v' else "E"
                 Y = v.program_voucher_id.purpose_id.ref
-                T = 1 if v.program_voucher_id.apply_many_times else 1
+                T = 1 if v.program_voucher_id.apply_many_times else 0
                 Z = 1 if v.program_voucher_id.brand_id.id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id else 2
                 ABBB = v.program_voucher_id.program_voucher_code
                 NNNNN = self._generator_charnumber_code(size=5)
-                v.name = '{}{}{}{}{}{}'.format(X, Y, T, Z, ABBB, NNNNN)
-            else:
-                v.name = ''
+                if not v.name:
+                    v.name = '{}{}{}{}{}{}'.format(X, Y, T, Z, ABBB, NNNNN)
+                else:
+                    v.name = v.name
 
     def _generator_charnumber_code(self, size, chars=string.ascii_uppercase + string.digits):
         string_generate = chars.replace("O", "")
@@ -89,13 +94,36 @@ class Voucher(models.Model):
     def check_due_date_voucher(self):
         now = datetime.now()
         vouchers = self.search([('state', '!=', 'expired')])
-        for rec in vouchers:
-            if rec.end_date < now:
-                rec.state = 'expired'
+        if vouchers:
+            for rec in vouchers:
+                if rec.end_date and rec.end_date < now:
+                    rec.status_latest = rec.state
+                    rec.state = 'expired'
 
-    def write(self, values):
-        for record in self:
-            old_state = record.state
-            if 'state' in values and values['state']:
-                values['status_latest'] = old_state
-        return super(Voucher, self).write(values)
+    def _format_time_zone(self, time):
+        datetime_object = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
+        utcmoment_naive = datetime_object
+        utcmoment = utcmoment_naive.replace(tzinfo=pytz.utc)
+        # localFormat = "%Y-%m-%d %H:%M:%S"
+        tz = 'Asia/Ho_Chi_Minh'
+        create_Date = utcmoment.astimezone(pytz.timezone(tz))
+        return create_Date
+
+
+    @api.model
+    def create(self, vals_list):
+        if 'import_file' in self._context and self._context.get('import_file'):
+            if 'phone_number' in vals_list and vals_list['phone_number']:
+                phonenumbers_format = vals_list['phone_number'].replace(" ", "").replace("'", "").replace("’", "")
+                partner = self.env['res.partner'].sudo().search(
+                    [('phone', '=', phonenumbers_format), ('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_c', raise_if_not_found=False).id)],
+                    limit=1)
+                vals_list['phone_number'] = phonenumbers_format
+                if not partner:
+                    partner = self.env['res.partner'].sudo().create({
+                        'name': phonenumbers_format,
+                        'phone': phonenumbers_format,
+                        'group_id': self.env.ref('forlife_pos_app_member.partner_group_c', raise_if_not_found=False).id,
+                    })
+                vals_list['partner_id'] = partner.id
+        return super(Voucher, self).create(vals_list)
