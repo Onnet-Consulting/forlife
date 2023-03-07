@@ -101,7 +101,7 @@ class PosOrder(models.Model):
         }
 
     def _prepare_cr_discount_account_move_line(self, total_amount_discount):
-        if self.card_rank_program_id.is_register and self.card_rank_program_id.register_from_date <= self.date_order and  self.card_rank_program_id.register_to_date >= self.date_order:
+        if self.card_rank_program_id.is_register and self.card_rank_program_id.register_from_date <= self.date_order.date() and self.card_rank_program_id.register_to_date >= self.date_order.date():
             debit_account = self.card_rank_program_id.discount_account_id.id
         else:
             debit_account = self.card_rank_program_id.value_account_id.id
