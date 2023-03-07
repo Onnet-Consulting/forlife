@@ -16,6 +16,6 @@ class PosOlDiscountDetails(models.Model):
     def _compute_money_reduced(self):
         for rec in self:
             if rec.type == 'card':
-                rec.money_reduced = rec.recipe * rec.listed_price / 100
+                rec.money_reduced = - rec.recipe * rec.listed_price / 100
             else:
                 rec.money_reduced = -rec.recipe * 1000
