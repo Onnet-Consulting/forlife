@@ -21,7 +21,6 @@
         'security/ir.model.access.csv',
         'views/stock_picking.xml',
         'reports/outgoing_value_diff_report.xml',
-        'reports/outgoing_value_diff_picking_type_report.xml',
         'reports/stock_incoming_outgoing_report.xml',
     ],
     'assets': {

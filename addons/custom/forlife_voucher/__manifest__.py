@@ -37,6 +37,7 @@
         'views/sale_order.xml',
         'data/ir_sequence.xml',
         'data/ir_cron.xml',
-        'views/hr_department.xml'
+        'views/hr_department.xml',
+        'views/pos_order.xml'
     ]
 }

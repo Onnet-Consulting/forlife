@@ -82,13 +82,16 @@
                         <group>
                             <field name="brand_id" invisible="1"/>
                             <field name="store_ids" widget="many2many_tags" invisible="1"/>
-<!--                            <field name="from_date"/>-->
-<!--                            <field name="to_date"/>-->
-<!--                            <field name="month_ids" widget="many2many_tags"/>-->
-<!--                            <field name="dayofmonth_ids" widget="many2many_tags"/>-->
-<!--                            <field name="dayofweek_ids"  widget="many2many_tags"/>-->
-<!--                            <field name="hour_ids"  widget="many2many_tags"/>-->
                             <field name="combo_code" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
+                            <label for="registering_tax"/>
+                            <div>
+                                <field name="registering_tax" nolabel="1" class="oe_inline"/>
+                                <field name="tax_from_date" class="oe_inline"
+                                       attrs="{'required': [('registering_tax', '=', True)], 'invisible': [('registering_tax', '=', False)]}"/>
+                                <span class="oe_inline" attrs="{'invisible': [('registering_tax', '=', False)]}">To&amp;nbsp;</span>
+                                <field name="tax_to_date" class="oe_inline"
+                                       attrs="{'required': [('registering_tax', '=', True)], 'invisible': [('registering_tax', '=', False)]}"/>
+                            </div>
                         </group>
                     </group>
                     <group string="Combo" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">

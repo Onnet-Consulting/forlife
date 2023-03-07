@@ -130,6 +130,10 @@ class PromotionProgram(models.Model):
 
     show_gen_code = fields.Boolean('Show Gencode button', compute='_show_gen_code')
 
+    registering_tax = fields.Boolean('Register Tax')
+    tax_from_date = fields.Date('Registered Tax From')
+    tax_to_date = fields.Date('Registered Tax To')
+
     @api.constrains('combo_line_ids')
     def _check_duplicate_product_in_combo(self):
         for program in self:

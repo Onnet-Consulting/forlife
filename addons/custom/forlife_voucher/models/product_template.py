@@ -6,7 +6,6 @@ class ProductTemplate(models.Model):
 
     voucher = fields.Boolean('Voucher')
     program_voucher_id = fields.Many2one('program.voucher')
-    price = fields.Float(string='Price', digits='Product Price')
 
     @api.onchange('program_voucher_id')
     def onchange_program_id(self):
