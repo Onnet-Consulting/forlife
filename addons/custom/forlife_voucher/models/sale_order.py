@@ -23,7 +23,8 @@ class SaleOrder(models.Model):
                     imei.append(move_line_id.lot_id.name)
                 quantity = self.env['voucher.voucher'].search_count(
                     [('sale_id', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
-
+                if quantity == 0:
+                    continue
                 invoice_line_vals.append((0, 0, {
                     # 'display_type': line.display_type or 'line_section',
                     'sequence': line.sequence,
