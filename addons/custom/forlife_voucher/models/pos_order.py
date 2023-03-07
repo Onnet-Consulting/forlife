@@ -26,6 +26,8 @@ class PosOrder(models.Model):
             imei = line.pack_lot_ids.mapped('lot_name')
             quantity = self.env['voucher.voucher'].search_count(
                 [('order_pos', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
+            if quantity == 0:
+                continue
             res.append((0, None, {
                 'account_id': line.product_id.categ_id.property_price_account_id.id,
                 'quantity': quantity,
