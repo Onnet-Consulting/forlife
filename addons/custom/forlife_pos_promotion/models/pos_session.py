@@ -71,6 +71,8 @@ class PosSession(models.Model):
                     'max_usage',
                     'limit_usage_per_order',
                     'max_usage_per_order',
+                    'limit_usage_per_customer',
+                    'max_usage_per_customer',
                     'qty_per_combo',
                     'promotion_type',
                     'with_code',

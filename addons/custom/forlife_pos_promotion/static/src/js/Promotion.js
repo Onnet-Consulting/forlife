@@ -267,6 +267,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.activatedComboPrograms = new Set(json.activatedComboPrograms);
         this.activatedCodePrograms = new Set(json.activatedCodePrograms);
         this.activatedInputCodes = json.activatedInputCodes;
+        this.get_history_program_usages();
+        this.historyProgramUsages = this.historyProgramUsages != undefined ? this.historyProgramUsages : {}
         this._resetPromotionPrograms();
     }
     /**
@@ -276,9 +278,29 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         const oldPartner = this.get_partner();
         super.set_partner(partner);
         if (oldPartner !== this.get_partner()) {
+            this.get_history_program_usages();
             this.activatedInputCodes = [];
             this._updateActivatedPromotionPrograms();
         };
+    }
+
+    get_history_program_usages() {
+        var self = this;
+        const customer = this.get_partner();
+        let programs = Object.keys(this.pos.promotion_program_by_id);
+        this.pos.env.services.rpc({
+            model: 'pos.config',
+            method: 'get_history_program_usages',
+            args: [
+                [this.pos.config.id],
+                customer ? customer.id : false,
+                programs
+            ],
+            kwargs: { context: session.user_context },
+        }).then((result) => {
+            self.historyProgramUsages = result || {};
+        });
+        return true;
     }
 
     _programIsApplicableAutomatically(program) {
@@ -526,10 +548,20 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             return result;
         };
         // Check if there is a limitation of number of combo applied program per order
-        let applied = (this._getNumberOfComboApplied()[comboProgram.id] || 0.0) + count
-        if  (comboProgram.limit_usage_per_order && applied >= comboProgram.max_usage_per_order) {
-            return result;
-        }
+        if (comboProgram.limit_usage_per_order) {
+            let applied_per_order = (this._getNumberOfComboApplied()[comboProgram.id] || 0.0) + count;
+            if  (comboProgram.limit_usage_per_order && applied_per_order >= comboProgram.max_usage_per_order) {
+                return result;
+            };
+        };
+        // Check if there is a limitation of number of combo applied program per customer
+        if (comboProgram.limit_usage_per_customer) {
+            let historyUsed = (this.historyProgramUsages || {})[comboProgram.id] || 0;
+            let applied_per_customer = historyUsed + (this._getNumberOfComboApplied()[comboProgram.id] || 0.0) + count;
+            if  (comboProgram.limit_usage_per_customer && applied_per_customer >= comboProgram.max_usage_per_customer) {
+                return result;
+            };
+        };
 
         var enoughCombo = true;
         for (const part of comboFormula) {
