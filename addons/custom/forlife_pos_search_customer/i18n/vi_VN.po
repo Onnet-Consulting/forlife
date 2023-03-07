@@ -74,3 +74,10 @@ msgstr "Tìm kiếm khách hàng"
 #, python-format
 msgid "Search Customers..."
 msgstr "Tìm kiếm khách hàng..."
+
+#. module: point_of_sale
+#. odoo-javascript
+#: code:addons/point_of_sale/static/src/xml/Screens/PartnerListScreen/PartnerListScreen.xml:0
+#, python-format
+msgid "There are no loaded customers."
+msgstr "Không có khách hàng nào được tìm thấy"
