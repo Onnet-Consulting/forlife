@@ -197,7 +197,7 @@ class SalaryRecord(models.Model):
         accounting_values_by_entry = {}
         accounting_line_by_entry = {}
         entry_by_id = {}
-        for line in self.salary_accounting_ids.filtered(lambda sa: sa.debit != 0 or sa.credit != 0):
+        for line in self.salary_accounting_ids:
             line_value = dict(
                 partner_id=line.partner_id.id,
                 account_id=line.account_id.id,

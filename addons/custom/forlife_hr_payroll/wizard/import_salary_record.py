@@ -151,24 +151,26 @@ class ImportSalaryRecord(models.TransientModel):
                                                                                            accounting_configs)
         arrears_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_arrears, accounting_configs)
 
+        salary_record_id = salary_record.id
         salary_main_accounting_values = self.generate_accounting_value(salary_record.salary_record_main_ids,
                                                                        salary_main_accounting_by_purpose_id,
-                                                                       'salary.record.main')
+                                                                       'salary.record.main', salary_record_id)
         total_income_accounting_values = self.generate_accounting_value(salary_record.salary_total_income_ids,
                                                                         total_income_accounting_by_purpose_id,
-                                                                        'salary.total.income')
+                                                                        'salary.total.income', salary_record_id)
         supplementary_accounting_values = self.generate_accounting_value(salary_record.salary_supplementary_ids,
                                                                          supplementary_accounting_by_purpose_id,
-                                                                         'salary.supplementary')
+                                                                         'salary.supplementary', salary_record_id)
         arrears_accounting_values = self.generate_accounting_value(salary_record.salary_arrears_ids,
-                                                                   arrears_accounting_by_purpose_id, 'salary.arrears')
+                                                                   arrears_accounting_by_purpose_id,
+                                                                   'salary.arrears', salary_record_id)
 
-        accounting_values = salary_main_accounting_values + total_income_accounting_values + supplementary_accounting_values + arrears_accounting_values
-        salary_record_id = salary_record.id
-        for value in accounting_values:
-            value.update({'salary_record_id': salary_record_id})
+        accounting_values = salary_main_accounting_values + total_income_accounting_values \
+                            + supplementary_accounting_values + arrears_accounting_values
 
         self.env['salary.accounting'].create(accounting_values)
+        salary_record.salary_accounting_ids.filtered(lambda rec: rec.debit == 0 and rec.credit == 0).unlink()
+        return True
 
     @api.model
     def mapping_entry_with_accounting_config(self, entries, accounting_config):
@@ -191,13 +193,16 @@ class ImportSalaryRecord(models.TransientModel):
         return accounting_value_by_purpose_id
 
     @api.model
-    def generate_accounting_value(self, records, accounting_value_by_purpose_id, record_model):
+    def generate_accounting_value(self, records, accounting_value_by_purpose_id, record_model, salary_record_id):
         accounting_values = []
         for rec in records:
             record_purpose_id = rec.purpose_id.id
             for accounting_value in (accounting_value_by_purpose_id.get(record_purpose_id) or []):
                 copy_accounting_value = accounting_value.copy()
-                copy_accounting_value.update({'record': '%s,%r' % (record_model, rec.id)})
+                copy_accounting_value.update({
+                    'record': '%s,%r' % (record_model, rec.id),
+                    'salary_record_id': salary_record_id
+                })
                 accounting_values.append(copy_accounting_value)
         return accounting_values
 
