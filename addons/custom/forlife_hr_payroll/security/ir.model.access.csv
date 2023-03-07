@@ -34,4 +34,4 @@ payroll_leader_salary_accounting,salary.accounting payroll_leader,model_salary_a
 accounting_salary_accounting,salary.accounting accounting,model_salary_accounting,account.group_account_manager,1,1,0,0
 payroll_save_change_log,save.change.log,model_save_change_log,base.group_user,1,0,0,0
 error_log_wizard,error.log.wizard,model_error_log_wizard,,1,1,1,0
-payroll_employee_import_salary_record,import.salary.record,model_import_salary_record,payroll_employee,1,1,1,0
+payroll_employee_import_salary_record,import.salary.record,model_import_salary_record,payroll_employee,1,1,1,1

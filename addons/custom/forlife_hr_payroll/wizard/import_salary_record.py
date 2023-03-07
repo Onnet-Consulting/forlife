@@ -13,6 +13,8 @@ class ImportSalaryRecord(models.TransientModel):
     _name = 'import.salary.record'
     _description = 'Import Salary Record'
 
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company,
+                                 string='Company', readonly=True, store=True, required=True)
     import_file = fields.Binary(attachment=False, string='Upload file')
     import_file_name = fields.Char()
 
@@ -238,7 +240,8 @@ class ImportSalaryRecord(models.TransientModel):
 
     def map_employee_data(self, data):
         employees = self.env['hr.employee'].search(
-            ['|', ('code', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
+            ['&', '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id),
+             '|', ('code', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
         error_by_code = {}
         employee_by_code = {}
         employee_data_by_code = {epl.code: (epl.name, epl.id) for epl in employees}
@@ -255,7 +258,8 @@ class ImportSalaryRecord(models.TransientModel):
 
     def map_department_data(self, data):
         departments = self.env['hr.department'].search(
-            ['|', ('code', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
+            ['&', '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id),
+             '|', ('code', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
         error_by_code = {}
         department_by_code = {}
         department_data_by_code = {d.code: (d.name, d.id) for d in departments}
@@ -271,7 +275,9 @@ class ImportSalaryRecord(models.TransientModel):
         return department_by_code, error_by_code
 
     def map_analytic_data(self, data):
-        analytic_accounts = self.env['account.analytic.account'].search([('code', 'in', data)])
+        analytic_accounts = self.env['account.analytic.account'].search([
+            ('code', 'in', data),
+            ('company_id', '=', self.company_id.id)])
         analytic_by_code = {a.code: a.id for a in analytic_accounts}
         error_by_code = {}
         for code in data:
@@ -370,12 +376,12 @@ class ImportSalaryRecord(models.TransientModel):
 
             if not errors:
                 salary_record_exits = self.env['salary.record'].search([
-                    ('company_id', '=', self.env.company.id), ('type_id', '=', salary_record_type.id),
+                    ('company_id', '=', self.company_id.id), ('type_id', '=', salary_record_type.id),
                     ('month', '=', month), ('year', '=', year), ('state', 'in', ('approved', 'posted'))])
                 if salary_record_exits:
                     message = _(
-                        'Salary records could not be imported, some previous versions [%s] were approved or posted.') % ', '.join(
-                        salary_record_exits.mapped('name'))
+                        'Salary records could not be imported, some previous versions were approved or posted.: %s') \
+                              % ', '.join(salary_record_exits.mapped('name'))
                     raise ValidationError(message)
                 res.append({
                     'type_id': salary_record_type.id,
