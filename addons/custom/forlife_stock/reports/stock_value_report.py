@@ -106,8 +106,8 @@ class StockValueReport(models.TransientModel):
         def get_data():
             # must be utc time
             current_tz = pytz.timezone(self.env.context.get('tz'))
-            utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00")
-            utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59")
+            utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
+            utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
             self._cr.execute(f"""
                         SELECT pp.default_code,
                                 pt.name,
@@ -133,10 +133,6 @@ class StockValueReport(models.TransientModel):
                           style_excel['style_left_data_string'])
             wssheet.write("F3", f'Đến ngày: {self.date_to.strftime("%d/%m/%Y")}',
                           style_excel['style_left_data_string'])
-            # --------------------------------------Header---------------------------------------------------
-
-            wssheet.write("E4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
-            wssheet.write("F4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
 
             # --------------------------------------Header Table----------------------------------------------
             wssheet.merge_range("A7:A8", 'STT', style_excel['style_header_bold_border'])
@@ -311,8 +307,8 @@ class StockValueReport(models.TransientModel):
         def get_data():
             # must be utc time
             current_tz = pytz.timezone(self.env.context.get('tz'))
-            utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00")
-            utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59")
+            utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
+            utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
             self._cr.execute(f"""
                                 SELECT pp.default_code,
                                         pt.name,
@@ -338,10 +334,6 @@ class StockValueReport(models.TransientModel):
                           style_excel['style_left_data_string'])
             wssheet.write("F3", f'Đến ngày: {self.date_to.strftime("%d/%m/%Y")}',
                           style_excel['style_left_data_string'])
-            # --------------------------------------Header---------------------------------------------------
-
-            wssheet.write("E4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
-            wssheet.write("F4", '(Ngày hạch toán trên phiếu)', style_excel['style_header_unbold'])
 
             # --------------------------------------Header Table----------------------------------------------
             wssheet.merge_range("A7:A8", 'STT', style_excel['style_header_bold_border'])
