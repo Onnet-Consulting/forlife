@@ -65,8 +65,8 @@ class PromotionProgram(models.Model):
     limit_usage_per_order = fields.Boolean(string='Limit usage per Order', help='Based on qty of combo/product')
     max_usage_per_order = fields.Integer(string='Max usage per Order', help='Based on qty of combo/product')
 
-    limit_usage_per_customer = fields.Boolean(string='Limit usage per Order')
-    max_usage_per_customer = fields.Integer(string='Max usage per Order')
+    limit_usage_per_customer = fields.Boolean(string='Limit usage per Customer', help='Based on qty of combo/product')
+    max_usage_per_customer = fields.Integer(string='Max usage per Customer', help='Based on qty of combo/product')
 
     state = fields.Selection(related='campaign_id.state', store=True, readonly=True)
 
