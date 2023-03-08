@@ -21,6 +21,7 @@ MONTH_SELECTION = [
     ('12', '12'),
 ]
 
+
 class SalaryRecord(models.Model):
     _name = 'salary.record'
     _description = 'Salary Record'
@@ -40,8 +41,10 @@ class SalaryRecord(models.Model):
     month = fields.Selection(MONTH_SELECTION, string='Month', required=True)
     year = fields.Selection(_get_years, string='Year', required=True)
     version = fields.Integer(string='Version', default=1)
-    state = fields.Selection([('waiting', 'Waiting'), ('confirm', 'Confirm'), ('approved', 'Approved'), ('cancel', 'Cancelled'), ('posted', 'Posted'), ('cancel_post', 'Cancelled Posting')],
-                             string='State', default='waiting', required=True)
+    state = fields.Selection(
+        [('waiting', 'Waiting'), ('confirm', 'Confirm'), ('approved', 'Approved'), ('cancel', 'Cancelled'),
+         ('posted', 'Posted'), ('cancel_post', 'Cancelled Posting')],
+        string='State', default='waiting', required=True)
     confirm_date = fields.Date(string='Confirmation Date (HR)')
     confirm_user = fields.Many2one('res.users', string='Confirmation User (HR)', ondelete="restrict")
     confirm_date_accounting = fields.Date(string='Confirmation Date (ACC)')
@@ -60,7 +63,8 @@ class SalaryRecord(models.Model):
     move_count = fields.Integer(compute='_compute_move_count')
 
     _sql_constraints = [
-        ('unique_combination', 'UNIQUE(company_id, type_id, month, year, version)', 'The combination of Company, Type, Month, Year and Version must be unique !')
+        ('unique_combination', 'UNIQUE(company_id, type_id, month, year, version)',
+         'The combination of Company, Type, Month, Year and Version must be unique !')
     ]
 
     @api.depends('move_ids')
@@ -166,6 +170,7 @@ class SalaryRecord(models.Model):
         self.ensure_one()
         if self.state != 'approved':
             return False
+        self._active_employee_partners()
         self.generate_account_moves()
 
         self.sudo().write({
@@ -180,6 +185,53 @@ class SalaryRecord(models.Model):
         start_of_month = datetime.strptime('%s-%s-01' % (self.year, self.month), DF).date()
         end_of_month = date_utils.end_of(start_of_month, 'month')
         return end_of_month
+
+    def _active_employee_partners(self):
+        self.ensure_one()
+        self.salary_arrears_ids.mapped('employee_id'). \
+            mapped('partner_id').filtered(lambda p: not p.active).write({'active': True})
+        return True
+
+    def group_accounting_data_by_entry_and_account(self, accounting_values_by_entry):
+        entry_ids = list(accounting_values_by_entry.keys())
+        entries = self.env['salary.entry'].browse(entry_ids)
+
+        for entry in entries:
+            groupable_account_ids = entry.groupable_account_ids
+            if not groupable_account_ids:
+                continue
+            new_entry_data = []
+            group_data_by_account_and_partner = {}
+            entry_id = entry.id
+            groupable_account_ids = groupable_account_ids.ids
+            for line_value in accounting_values_by_entry[entry_id]:
+                account_id = line_value['account_id']
+                if account_id not in groupable_account_ids:
+                    new_entry_data.append(line_value)
+                    continue
+                partner_id = line_value['partner_id'] or 0
+                group_key = '%r_%r' % (account_id, partner_id)
+                if group_key not in group_data_by_account_and_partner:
+                    group_data_by_account_and_partner[group_key] = {}
+                    group_data_by_account_and_partner[group_key]['debit'] = line_value['debit']
+                    group_data_by_account_and_partner[group_key]['credit'] = line_value['credit']
+                else:
+                    group_data_by_account_and_partner[group_key]['debit'] += line_value['debit']
+                    group_data_by_account_and_partner[group_key]['credit'] += line_value['credit']
+            for group_key, debit_credit_values in group_data_by_account_and_partner.items():
+                account_id = int(group_key.split('_')[0])
+                partner_id = int(group_key.split('_')[1]) or False
+                total_debit = debit_credit_values['debit']
+                total_credit = debit_credit_values['credit']
+                if total_debit:
+                    new_entry_data.append(
+                        dict(partner_id=partner_id, account_id=account_id, debit=total_debit, credit=0))
+                if total_credit:
+                    new_entry_data.append(
+                        dict(partner_id=partner_id, account_id=account_id, debit=0, credit=total_credit))
+            if new_entry_data:
+                accounting_values_by_entry[entry_id] = new_entry_data
+        return accounting_values_by_entry
 
     def generate_account_moves(self):
         self.ensure_one()
@@ -216,6 +268,8 @@ class SalaryRecord(models.Model):
             'ref': self.name,
         }
 
+        accounting_values_by_entry = self.group_accounting_data_by_entry_and_account(accounting_values_by_entry)
+
         for entry_id, move_lines in accounting_values_by_entry.items():
             entry = entry_by_id[entry_id]
             move_value = account_move_value.copy()
@@ -234,7 +288,8 @@ class SalaryRecord(models.Model):
             return False
 
         accounting_date = self.get_accounting_date()
-        move_reversal = self.env['account.move.reversal'].sudo().with_context(active_ids=self.move_ids.ids, active_model='account.move').create({
+        move_reversal = self.env['account.move.reversal'].sudo().with_context(active_ids=self.move_ids.ids,
+                                                                              active_model='account.move').create({
             'date_mode': 'custom',
             'move_ids': [(6, 0, self.move_ids.ids)],
             'journal_id': self.move_ids[0].journal_id.id,

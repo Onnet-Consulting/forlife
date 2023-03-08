@@ -25,6 +25,7 @@
                                 <field name="salary_table_id"/>
                                 <field name="salary_field_id"/>
                                 <field name="title"/>
+                                <field name="groupable_account_ids" widget="many2many_tags"/>
                             </group>
                         </group>
                     </sheet>

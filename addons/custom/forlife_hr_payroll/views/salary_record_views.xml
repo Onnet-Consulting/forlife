@@ -103,6 +103,7 @@
             <field name="model">salary.record</field>
             <field name="arch" type="xml">
                 <search string="Search">
+                    <field name="name"/>
                     <field name="company_id"/>
                     <field name="type_id"/>
                     <field name="month"/>
