@@ -11,6 +11,24 @@ class PosConfig(models.Model):
         return self.env['promotion.program'].search(
             [('state', '=', 'in_progress'), '|', ('campaign_id.store_ids', '=', False), ('campaign_id.store_ids', '=', self.store_id.id)])
 
+    def get_history_program_usages(self, partner_id: int, programs: list):
+        """"""
+        programs = [int(p) for p in programs]
+        usages = self.env['promotion.usage.line'].search([
+            ('order_id.partner_id', '=', partner_id),
+            ('program_id', 'in', programs)
+        ])
+        result = dict()
+        programs = {key: 0 for key in programs}
+        for usage in usages:
+            programs[usage.program_id.id] += usage.order_line_id.qty
+        for (program_id, qty) in programs.items():
+            program = self.env['promotion.program'].browse(program_id)
+            applied_number = qty/program.qty_per_combo \
+                if program.promotion_type == 'combo' and program.qty_per_combo > 0 else qty
+            result[program_id] = applied_number
+        return result
+
     def use_promotion_code(self, code, creation_date, partner_id):
         self.ensure_one()
         code_id = self.env['promotion.code'].search(

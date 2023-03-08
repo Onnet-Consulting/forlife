@@ -76,6 +76,18 @@
                                 <field name="limit_usage" class="oe_inline"/>
                                 <span attrs="{'invisible': [('limit_usage', '=', False)]}"> to <field name="max_usage" class="oe_inline"/> usages</span>
                             </span>
+                            <label for="limit_usage_per_order"
+                                   attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
+                            <span attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">
+                                <field name="limit_usage_per_order" class="oe_inline"/>
+                                <span attrs="{'invisible': [('limit_usage_per_order', '=', False)]}"> to <field name="max_usage_per_order" class="oe_inline"/> usages</span>
+                            </span>
+                            <label for="limit_usage_per_customer"
+                                   attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
+                            <span attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">
+                                <field name="limit_usage_per_customer" class="oe_inline"/>
+                                <span attrs="{'invisible': [('limit_usage_per_customer', '=', False)]}"> to <field name="max_usage_per_customer" class="oe_inline"/> usages</span>
+                            </span>
                             <field name="company_id" invisible="1"/>
 
                         </group>

@@ -1,0 +1,36 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_supplier_group_user,res_supplier_group user,model_res_supplier_group,base.group_user,1,0,0,0
+access_res_supplier_group_system,res_supplier_group system,model_res_supplier_group,base.group_system,1,1,1,1
+
+access_supplier_product_type_user,supplier_product_type user,model_supplier_product_type,base.group_user,1,0,0,0
+access_supplier_product_type_system,supplier_product_type system,model_supplier_product_type,base.group_system,1,1,1,1
+
+access_product_category_code_user,product_category_code user,model_product_category_code,base.group_user,1,0,0,0
+access_product_category_code_system,product_category_code system,model_product_category_code,base.group_system,1,1,1,1
+
+access_product_category_type_user,product_category_type user,model_product_category_type,base.group_user,1,0,0,0
+access_product_category_type_system,product_category_type system,model_product_category_type,base.group_system,1,1,1,1
+
+access_stock_warehouse_type_user,stock_warehouse_type user,model_stock_warehouse_type,base.group_user,1,0,0,0
+access_stock_warehouse_type_system,stock_warehouse_type system,model_stock_warehouse_type,base.group_system,1,1,1,1
+
+access_stock_warehouse_status_user,stock_warehouse_status user,model_stock_warehouse_status,base.group_user,1,0,0,0
+access_stock_warehouse_status_system,stock_warehouse_status system,model_stock_warehouse_status,base.group_system,1,1,1,1
+
+access_res_forlife_brand_user,res_forlife_brand user,model_res_forlife_brand,base.group_user,1,0,0,0
+access_res_forlife_brand_system,res_forlife_brand system,model_res_forlife_brand,base.group_system,1,1,1,1
+
+access_res_sale_province_user,res_sale_province user,model_res_sale_province,base.group_user,1,0,0,0
+access_res_sale_province_system,res_sale_province system,model_res_sale_province,base.group_system,1,1,1,1
+
+access_res_location_province_user,res_location_province user,model_res_location_province,base.group_user,1,0,0,0
+access_res_location_province_system,res_location_province system,model_res_location_province,base.group_system,1,1,1,1
+
+access_res_weather_province_user,res_weather_province user,model_res_weather_province,base.group_user,1,0,0,0
+access_res_weather_province_system,res_weather_province system,model_res_weather_province,base.group_system,1,1,1,1
+
+access_res_state_district_user,res_state_district user,model_res_state_district,base.group_user,1,0,0,0
+access_res_state_district_system,res_state_district system,model_res_state_district,base.group_system,1,1,1,1
+
+access_product_category_sequece_level_user,product_category_sequece_level user,model_product_category_sequece_level,base.group_user,1,0,0,0
+access_product_category_sequece_level_system,product_category_sequece_level system,model_product_category_sequece_level,base.group_system,1,1,1,1
