@@ -54,3 +54,16 @@ ERROR: Unable to set system administrator password: Password validation failed. 
    ```sql
       insert into B20Warehouse (PushDate) values(SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time')
    ```
+   
+5. Can't install pyodbc <br/><br/>
+_ERROR_
+
+```
+ImportError: libodbc.so.2: cannot open shared object file: No such file or directory
+```
+
+_SOLUTION_
+```shell
+sudo apt install unixodbc-dev -y
+sudo apt-get update
+```
