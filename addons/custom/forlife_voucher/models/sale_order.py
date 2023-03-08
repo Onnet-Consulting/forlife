@@ -25,6 +25,10 @@ class SaleOrder(models.Model):
                     [('sale_id', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
                 if quantity == 0:
                     continue
+                # xác định line tương ứng để cập nhật lại giá voucher bằng mệnh giá
+                account_move_line_id = res.invoice_line_ids.filtered(
+                    lambda x: x.product_id == line.product_id and x.price_unit != line.product_id.price)
+                account_move_line_id.price_unit = line.product_id.price
                 invoice_line_vals.append((0, 0, {
                     # 'display_type': line.display_type or 'line_section',
                     'sequence': line.sequence,
@@ -32,7 +36,7 @@ class SaleOrder(models.Model):
                     'quantity': quantity,
                     # 'sale_line_ids': [Command.link(line.id)],
                     'tax_ids': [(6, 0, line.tax_id.ids)],
-                    'price_unit': line.product_id.price - line.price_unit,
+                    'price_unit': -(line.product_id.price - line.price_unit),
                     'is_downpayment': line.is_downpayment,
                 }))
             if invoice_line_vals:
