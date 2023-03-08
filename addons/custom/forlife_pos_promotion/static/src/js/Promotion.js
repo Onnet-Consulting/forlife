@@ -27,13 +27,6 @@ export class PromotionUsageLine {
 }
 
 export class PosPromotionCode {
-    /**
-     * @param {string} code coupon code
-     * @param {number} id id of loyalty.card, negative if it is cache local only
-     * @param {number} program_id id of loyalty.program
-     * @param {number} partner_id id of res.partner
-     * @param {number} balance points on the coupon, not counting the order's changes
-     */
     constructor(code, id, program_id, partner_id, balance) {
         this.code = code;
         this.id = id || nextId--;
@@ -274,6 +267,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.activatedComboPrograms = new Set(json.activatedComboPrograms);
         this.activatedCodePrograms = new Set(json.activatedCodePrograms);
         this.activatedInputCodes = json.activatedInputCodes;
+        this.get_history_program_usages();
+        this.historyProgramUsages = this.historyProgramUsages != undefined ? this.historyProgramUsages : {}
         this._resetPromotionPrograms();
     }
     /**
@@ -283,9 +278,29 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         const oldPartner = this.get_partner();
         super.set_partner(partner);
         if (oldPartner !== this.get_partner()) {
+            this.get_history_program_usages();
             this.activatedInputCodes = [];
             this._updateActivatedPromotionPrograms();
         };
+    }
+
+    get_history_program_usages() {
+        var self = this;
+        const customer = this.get_partner();
+        let programs = Object.keys(this.pos.promotion_program_by_id);
+        this.pos.env.services.rpc({
+            model: 'pos.config',
+            method: 'get_history_program_usages',
+            args: [
+                [this.pos.config.id],
+                customer ? customer.id : false,
+                programs
+            ],
+            kwargs: { context: session.user_context },
+        }).then((result) => {
+            self.historyProgramUsages = result || {};
+        });
+        return true;
     }
 
     _programIsApplicableAutomatically(program) {
@@ -427,6 +442,24 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return lines;
     }
 
+    get_orderlines_to_check() {
+        return this.get_orderlines().filter(line => {
+            if (line.is_reward_line) {
+                return false;
+            };
+            if (line.promotion_usage_ids) {
+                // Xóa chương trình đã áp dụng, nếu đã lưu trữ sau khi load lại đơn hàng từ Localstorage của browser
+                if (line.promotion_usage_ids.some(usage => this.pos.promotion_program_by_id[usage.program_id] == undefined)) {
+                    line.promotion_usage_ids = [];
+                    line.reset_unit_price();
+                    return true;
+                };
+            };
+            return true;
+        });
+    }
+
+
     _get_program_usage_ids() {
         let lines = this.get_orderlines().filter(line => line.is_applied_promotion());
         return lines.reduce((acc, line) => {
@@ -443,6 +476,28 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
         };
         return false;
+    }
+
+    _getNumberOfComboApplied() {
+//        {program_combo_id: int, ...}
+        let result = {};
+        for (let line of this.get_orderlines_to_check()) {
+            for (let usage of line.promotion_usage_ids) {
+                if (this.pos.promotion_program_by_id[usage.program_id].promotion_type == 'combo'){
+                    if (usage.program_id in result) {
+                        result[usage.program_id] += line.quantity;
+                    } else {
+                        result[usage.program_id] = line.quantity;
+                    };
+                };
+            };
+        };
+        Object.entries(result).forEach(([k,v]) => {
+            let program = this.pos.promotion_program_by_id[k];
+            v = v/program.qty_per_combo;
+            result[k] = v;
+        });
+        return result
     }
 
     // Filter based on promotion_usage_ids
@@ -486,10 +541,28 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let to_check_order_lines = this._filterOrderLinesToCheckComboPro(order_lines);
         count = count || 0;
         to_discount_line_vals = to_discount_line_vals || [];
+        let result = [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
+        // Check if combo formula is not defined
         var comboFormula = comboProgram.comboFormula;
         if (comboFormula.length == 0) {
-            return [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
+            return result;
         };
+        // Check if there is a limitation of number of combo applied program per order
+        if (comboProgram.limit_usage_per_order) {
+            let applied_per_order = (this._getNumberOfComboApplied()[comboProgram.id] || 0.0) + count;
+            if  (comboProgram.limit_usage_per_order && applied_per_order >= comboProgram.max_usage_per_order) {
+                return result;
+            };
+        };
+        // Check if there is a limitation of number of combo applied program per customer
+        if (comboProgram.limit_usage_per_customer) {
+            let historyUsed = (this.historyProgramUsages || {})[comboProgram.id] || 0;
+            let applied_per_customer = historyUsed + (this._getNumberOfComboApplied()[comboProgram.id] || 0.0) + count;
+            if  (comboProgram.limit_usage_per_customer && applied_per_customer >= comboProgram.max_usage_per_customer) {
+                return result;
+            };
+        };
+
         var enoughCombo = true;
         for (const part of comboFormula) {
             var order_lines_has_valid_product = to_check_order_lines.filter(l => part.valid_product_ids.has(l.product.id));
@@ -497,7 +570,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (qty_total < part.quantity) {enoughCombo = false; break;};
         };
         if (enoughCombo == false) {
-            return [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
+            return result;
         } else {
             var oneCombo = []
             for (const part of comboFormula) {
@@ -519,7 +592,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
             to_discount_line_vals.push(oneCombo);
             return this._checkNumberOfCombo(comboProgram, order_lines, to_discount_line_vals, count + 1);
-        }
+        };
     }
 
     /* return {<program_id>: number_of_combo}*/
@@ -542,26 +615,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
         };
         return comboProgramIsVerified;
-    }
-
-    get_orderlines_to_check() {
-        return this.get_orderlines().filter(line => {
-            if (line.is_reward_line) {
-                return false;
-            };
-            if (line.promotion_usage_ids) {
-                // Xóa chương trình đã áp dụng, nếu đã lưu trữ sau khi load lại đơn hàng từ Localstorage của browser
-                if (line.promotion_usage_ids.some(usage => this.pos.promotion_program_by_id[usage.program_id] == undefined)) {
-                    line.promotion_usage_ids = [];
-                    line.reset_unit_price();
-                    return true;
-                };
-//                else if (line.promotion_usage_ids.some(pro => this.pos.promotion_program_by_id[pro.program_id].promotion_type == 'combo')) {
-//                    return false;
-//                };
-            };
-            return true;
-        })
     }
 
     _computeNewPriceForComboProgram(disc_total, base_total, prePrice, quantity) {

@@ -62,6 +62,12 @@ class PromotionProgram(models.Model):
     limit_usage = fields.Boolean(string='Limit Usage')
     max_usage = fields.Integer()
 
+    limit_usage_per_order = fields.Boolean(string='Limit usage per Order', help='Based on qty of combo/product')
+    max_usage_per_order = fields.Integer(string='Max usage per Order', help='Based on qty of combo/product')
+
+    limit_usage_per_customer = fields.Boolean(string='Limit usage per Customer', help='Based on qty of combo/product')
+    max_usage_per_customer = fields.Integer(string='Max usage per Customer', help='Based on qty of combo/product')
+
     state = fields.Selection(related='campaign_id.state', store=True, readonly=True)
 
     promotion_type = fields.Selection([
@@ -87,6 +93,7 @@ class PromotionProgram(models.Model):
     with_code = fields.Boolean('Use a code', default=False)
     combo_code = fields.Char('Combo Code')
     combo_name = fields.Char('Combo Name')
+    qty_per_combo = fields.Float(compute='_compute_qty_per_combo')
     # Code
     discount_based_on = fields.Selection([
         ('unit_price', 'Unit Price'),
@@ -199,6 +206,10 @@ class PromotionProgram(models.Model):
     def _compute_pricelist_item_count(self):
         for pro in self:
             pro.pricelist_item_count = len(pro.pricelist_item_ids)
+
+    def _compute_qty_per_combo(self):
+        for pro in self:
+            pro.qty_per_combo = sum(pro.combo_line_ids.mapped('quantity')) or 0.0
 
     def _qty_min_required(self):
         for program in self:
