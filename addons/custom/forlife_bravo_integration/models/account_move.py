@@ -28,6 +28,10 @@ class AccountMove(models.Model):
         # TODO: add other type of account.move to bravo
         return True
 
+    def write(self, vals):
+        res = super(AccountMove, self).write(vals)
+        return res
+
 
 class BravoAccountMove(models.AbstractModel):
     _name = 'bravo.account.move.model'
