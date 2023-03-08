@@ -12,9 +12,11 @@ class SalaryEntry(models.Model):
     salary_table_id = fields.Many2one('ir.model',
                                       domain="[('model', 'in', ['salary.record.main', 'salary.total.income', 'salary.supplementary', 'salary.arrears'])]",
                                       string='Table', required=True, ondelete="cascade")
-    salary_field_id = fields.Many2one('ir.model.fields', required=True, string='Field', domain="[('model_id', '=', salary_table_id)]", ondelete="cascade")
+    salary_field_id = fields.Many2one('ir.model.fields', required=True, string='Field',
+                                      domain="[('model_id', '=', salary_table_id)]", ondelete="cascade")
     title = fields.Char(string='Title', required=True)
     show_name = fields.Char(compute='_compute_show_name', store=True, string='Name')
+    groupable_account_ids = fields.Many2many('account.account', string='Groupable Accounts')
 
     @api.depends('salary_table_id', 'salary_field_id')
     def _compute_show_name(self):

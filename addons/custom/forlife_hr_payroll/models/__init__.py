@@ -16,3 +16,4 @@ from . import salary_total_income
 from . import salary_accounting
 from . import save_change_log
 from . import account_move
+from . import salary_entry_settings

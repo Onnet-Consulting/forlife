@@ -192,6 +192,47 @@ class SalaryRecord(models.Model):
             mapped('partner_id').filtered(lambda p: not p.active).write({'active': True})
         return True
 
+    def group_accounting_data_by_entry_and_account(self, accounting_values_by_entry):
+        entry_ids = list(accounting_values_by_entry.keys())
+        entries = self.env['salary.entry'].browse(entry_ids)
+
+        for entry in entries:
+            groupable_account_ids = entry.groupable_account_ids
+            if not groupable_account_ids:
+                continue
+            new_entry_data = []
+            group_data_by_account_and_partner = {}
+            entry_id = entry.id
+            groupable_account_ids = groupable_account_ids.ids
+            for line_value in accounting_values_by_entry[entry_id]:
+                account_id = line_value['account_id']
+                if account_id not in groupable_account_ids:
+                    new_entry_data.append(line_value)
+                    continue
+                partner_id = line_value['partner_id'] or 0
+                group_key = '%r_%r' % (account_id, partner_id)
+                if group_key not in group_data_by_account_and_partner:
+                    group_data_by_account_and_partner[group_key] = {}
+                    group_data_by_account_and_partner[group_key]['debit'] = line_value['debit']
+                    group_data_by_account_and_partner[group_key]['credit'] = line_value['credit']
+                else:
+                    group_data_by_account_and_partner[group_key]['debit'] += line_value['debit']
+                    group_data_by_account_and_partner[group_key]['credit'] += line_value['credit']
+            for group_key, debit_credit_values in group_data_by_account_and_partner.items():
+                account_id = int(group_key.split('_')[0])
+                partner_id = int(group_key.split('_')[1]) or False
+                total_debit = debit_credit_values['debit']
+                total_credit = debit_credit_values['credit']
+                if total_debit:
+                    new_entry_data.append(
+                        dict(partner_id=partner_id, account_id=account_id, debit=total_debit, credit=0))
+                if total_credit:
+                    new_entry_data.append(
+                        dict(partner_id=partner_id, account_id=account_id, debit=0, credit=total_credit))
+            if new_entry_data:
+                accounting_values_by_entry[entry_id] = new_entry_data
+        return accounting_values_by_entry
+
     def generate_account_moves(self):
         self.ensure_one()
         accounting_values_by_entry = {}
@@ -226,6 +267,8 @@ class SalaryRecord(models.Model):
             'narration': self.note,
             'ref': self.name,
         }
+
+        accounting_values_by_entry = self.group_accounting_data_by_entry_and_account(accounting_values_by_entry)
 
         for entry_id, move_lines in accounting_values_by_entry.items():
             entry = entry_by_id[entry_id]

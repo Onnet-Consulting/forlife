@@ -380,7 +380,7 @@ class ImportSalaryRecord(models.TransientModel):
                     ('month', '=', month), ('year', '=', year), ('state', 'in', ('approved', 'posted'))])
                 if salary_record_exits:
                     message = _(
-                        'Salary records could not be imported, some previous versions were approved or posted.: %s') \
+                        'Salary records could not be imported, some previous versions were approved or posted: %s') \
                               % ', '.join(salary_record_exits.mapped('name'))
                     raise ValidationError(message)
                 res.append({
