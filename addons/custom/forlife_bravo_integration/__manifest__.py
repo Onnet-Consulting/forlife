@@ -19,6 +19,7 @@
         'stock',
         'sale_management',
         'forlife_base',
+        'forlife_pos_app_member',
     ],
     'auto_install': True,
 
