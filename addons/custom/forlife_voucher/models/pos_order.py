@@ -28,10 +28,14 @@ class PosOrder(models.Model):
                 [('order_pos', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
             if quantity == 0:
                 continue
+            # xác định line tương ứng để cập nhật lại giá voucher bằng mệnh giá
+            for item in res:
+                if item[2] and item[2].get('product_id', False) and item[2].get('product_id', False) == line.product_id.id:
+                    item[2]['price_unit'] = line.product_id.price
             res.append((0, None, {
                 'account_id': line.product_id.categ_id.property_price_account_id.id,
                 'quantity': quantity,
-                'price_unit': line.product_id.price - line.price_unit,
+                'price_unit': -(line.product_id.price - line.price_unit),
                 'tax_ids': [(6, 0, line.tax_ids_after_fiscal_position.ids)],
             }))
         return res
