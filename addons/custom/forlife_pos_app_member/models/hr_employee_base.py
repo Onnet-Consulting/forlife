@@ -9,12 +9,18 @@ class HrEmployeeBase(models.AbstractModel):
     # FIXME: after install database, we need update this module again to set 'code' column to not null in DB
     code = fields.Char(string='Code', required=True, copy=False)
     related_contact_ids = fields.Many2many(context={'active_test': False})
-    work_contact_id = fields.Many2one(context={'active_test': False})
+    partner_id = fields.Many2one('res.partner', readonly=True, context={'active_test': False}, ondelete="restrict")
     user_id = fields.Many2one(readonly=True)
 
     _sql_constraints = [
         ('unique_code', 'UNIQUE(code)', 'Only one Code   occurrence by employee')
     ]
+
+    @api.depends('partner_id')
+    def _compute_related_contacts(self):
+        super()._compute_related_contacts()
+        for employee in self:
+            employee.related_contact_ids |= employee.partner_id
 
     def action_related_contacts(self):
         res = super(HrEmployeeBase, self).action_related_contacts()
@@ -23,29 +29,25 @@ class HrEmployeeBase(models.AbstractModel):
         })
         return res
 
-    @api.depends('work_contact_id', 'work_contact_id.phone', 'work_contact_id.email')
-    def _compute_work_contact_details(self):
-        for employee in self:
-            if employee.work_contact_id:
-                employee.mobile_phone = employee.work_contact_id.phone
-                employee.work_email = employee.work_contact_id.email
-
     def _inverse_work_contact_details(self):
+        pass
+
+    def _create_employee_partner(self):
+        partner_group_id = self.env.ref('forlife_pos_app_member.partner_group_4').id
         for employee in self:
-            if not employee.work_contact_id:
-                employee.work_contact_id = self.env['res.partner'].sudo().create({
-                    "company_type": "person",
-                    "group_id": self.env.ref('forlife_pos_app_member.partner_group_4').id,
-                    "ref": self.code,
-                    'phone': employee.mobile_phone,
-                    'email': employee.work_email,
-                    'name': employee.name,
-                    'image_1920': employee.image_1920,
-                    'company_id': employee.company_id.id,
-                    'active': False
-                })
-            else:
-                employee.work_contact_id.sudo().write({
-                    'email': employee.work_email,
-                    'phone': employee.mobile_phone,
-                })
+            employee.partner_id = self.env['res.partner'].sudo().create({
+                "company_type": "person",
+                "group_id": partner_group_id,
+                "ref": employee.code,
+                'name': employee.name,
+                'image_1920': employee.image_1920,
+                'company_id': employee.company_id.id,
+                'active': False
+            })
+        return True
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(HrEmployeeBase, self).create(vals_list)
+        res._create_employee_partner()
+        return res

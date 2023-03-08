@@ -859,15 +859,6 @@ msgstr "Tham chiếu #2"
 msgid "Reverse Odoo FI"
 msgstr ""
 
-#. module: forlife_hr_payroll
-#: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_accounting__reverse_sap_move_ref
-msgid "Reverse SAP FI"
-msgstr ""
-
-#. module: forlife_hr_payroll
-#: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_accounting__sap_move_ref
-msgid "SAP FI"
-msgstr ""
 
 #. module: forlife_hr_payroll
 #: model:ir.actions.act_window,name:forlife_hr_payroll.action_view_accounting
@@ -989,11 +980,11 @@ msgstr "Lương"
 #: code:addons/forlife_hr_payroll/wizard/import_salary_record.py:0
 #, python-format
 msgid ""
-"Salary records could not be imported, some previous versions [%s] were "
+"Salary records could not be imported, some previous versions were approved or posted: %s"
 "approved or posted."
 msgstr ""
-"Không thể nhập bản ghi lương, một số phiên bản trước đó [%s] đã được phê "
-"duyệt hoặc hạch toán."
+"Không thể nhập bản ghi lương, một số phiên bản trước đó đã được phê "
+"duyệt hoặc hạch toán: %s"
 
 #. module: forlife_hr_payroll
 #: model:ir.actions.act_window,name:forlife_hr_payroll.save_change_log_action

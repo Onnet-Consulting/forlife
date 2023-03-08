@@ -15,21 +15,21 @@
                     <field name="project_code"/>
                     <field name="manufacture_order_code"/>
                     <field name="internal_order_code"/>
-                    <field name="x_kq" optional="show"/>
-                    <field name="x_tkdp" optional="show"/>
-                    <field name="x_pvp" optional="show"/>
-                    <field name="x_tthh" optional="show"/>
-                    <field name="x_thl" optional="show"/>
-                    <field name="x_dpfm" optional="show"/>
-                    <field name="x_pds" optional="show"/>
-                    <field name="x_ttl" optional="show"/>
-                    <field name="x_ttpc" optional="show"/>
-                    <field name="x_tu" optional="show"/>
-                    <field name="x_tk" optional="show"/>
-                    <field name="x_bhxh_cn" optional="show"/>
-                    <field name="x_bhyt_cn" optional="show"/>
-                    <field name="x_bhxh_bhbnn_tnld_cn" optional="show"/>
-                    <field name="x_ttbh" optional="show"/>
+                    <field name="x_kq" optional="show" sum="Total"/>
+                    <field name="x_tkdp" optional="show" sum="Total"/>
+                    <field name="x_pvp" optional="show" sum="Total"/>
+                    <field name="x_tthh" optional="show" sum="Total"/>
+                    <field name="x_thl" optional="show" sum="Total"/>
+                    <field name="x_dpfm" optional="show" sum="Total"/>
+                    <field name="x_pds" optional="show" sum="Total"/>
+                    <field name="x_ttl" optional="show" sum="Total"/>
+                    <field name="x_ttpc" optional="show" sum="Total"/>
+                    <field name="x_tu" optional="show" sum="Total"/>
+                    <field name="x_tk" optional="show" sum="Total"/>
+                    <field name="x_bhxh_cn" optional="show" sum="Total"/>
+                    <field name="x_bhyt_cn" optional="show" sum="Total"/>
+                    <field name="x_bhxh_bhbnn_tnld_cn" optional="show" sum="Total"/>
+                    <field name="x_ttbh" optional="show" sum="Total"/>
                     <field name="note" optional="show"/>
                 </tree>
             </field>
