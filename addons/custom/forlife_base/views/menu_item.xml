@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="menu_master_data_root" name="Master Data" sequence="100"/>
+
+            <menuitem id="menu_master_data_config" name="Configuration" parent="menu_master_data_root" sequence="10"/>
+                <menuitem
+                    action="product_category_code_action" id="menu_product_category_code_action_purchase"
+                    parent="menu_master_data_config" sequence="1" />
+                <menuitem
+                    action="product_category_type_action" id="menu_product_category_type_action_purchase"
+                    parent="menu_master_data_config" sequence="2" />
+
+                <menuitem 
+                    id="res_supplier_group_menu" action="res_supplier_group_action" 
+                    parent="menu_master_data_config" sequence="3"/>
+
+                <menuitem 
+                    id="supplier_product_type_menu" action="supplier_product_type_action" 
+                    parent="menu_master_data_config" sequence="4"/>
+                    
+                <menuitem 
+                    id="stock_warehouse_type_menu" action="stock_warehouse_type_action" 
+                    parent="menu_master_data_config" sequence="5"/>
+                <menuitem 
+                    id="stock_warehouse_status_menu" action="stock_warehouse_status_action" 
+                    parent="menu_master_data_config" sequence="6"/>
+                <menuitem 
+                    id="res_forlife_brand_menu" action="res_forlife_brand_action" 
+                    parent="menu_master_data_config" sequence="7"/>
+                <menuitem 
+                    id="res_sale_province_menu" action="res_sale_province_action" 
+                    parent="menu_master_data_config" sequence="8"/>
+                <menuitem 
+                    id="res_location_province_menu" action="res_location_province_action" 
+                    parent="menu_master_data_config" sequence="9"/>
+                <menuitem 
+                    id="res_weather_province_menu" action="res_weather_province_action" 
+                    parent="menu_master_data_config" sequence="10"/>
+                <menuitem 
+                    id="res_state_district_menu" action="res_state_district_action" 
+                    parent="menu_master_data_config" sequence="11"/>
+    </data>
+</odoo>
