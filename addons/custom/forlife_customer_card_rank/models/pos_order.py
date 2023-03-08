@@ -109,6 +109,7 @@ class PosOrder(models.Model):
             (0, 0, {
                 'account_id': debit_account,
                 'debit': total_amount_discount,
+                'analytic_account_id': self.config_id.store_id.analytic_account_id.id,
             }),
             (0, 0, {
                 'account_id': self.partner_id.property_account_receivable_id.id,

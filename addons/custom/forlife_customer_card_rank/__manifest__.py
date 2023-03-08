@@ -16,6 +16,7 @@
     'category': 'Sales/Point of Sale',
 
     'depends': [
+        'forlife_base',
         'point_of_sale',
         'forlife_point_of_sale',
         'forlife_promotion',
