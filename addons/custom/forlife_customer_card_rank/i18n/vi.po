@@ -508,7 +508,7 @@ msgstr "Ngày mua hàng"
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__qty_order_discount
 msgid "Order Discount"
-msgstr "ĐH áp chiết khấu"
+msgstr "ĐH chiết khấu"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__qty_order_rank
