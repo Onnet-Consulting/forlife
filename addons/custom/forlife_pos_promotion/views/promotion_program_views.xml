@@ -116,8 +116,8 @@
                     <group string="Conditions" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
                         <field name="product_ids" widget="many2many_tags"
                                attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
-                        <field name="product_categ_ids" widget="many2many_tags"
-                              attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
+<!--                        <field name="product_categ_ids" widget="many2many_tags"-->
+<!--                              attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>-->
                         <field name="min_quantity" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
                         <label for="product_count" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
                         <div class="o_row" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
