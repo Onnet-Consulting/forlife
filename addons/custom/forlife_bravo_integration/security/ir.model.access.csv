@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 base_group_user_mssql_server,base.group.user_mssql_server,model_mssql_server,base.group_user,1,1,1,1
+base_group_system_bravo_sync_account_wizard,base.group_system_bravo_sync_account_wizard,model_bravo_sync_account_wizard,base.group_system,1,1,1,1
