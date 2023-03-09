@@ -6,7 +6,7 @@ from odoo.tests.common import Form, tagged
 from odoo.addons.partner_commission.tests.setup import Line, Spec, TestCommissionsSetup
 
 
-@tagged('commission')
+@tagged('commission', 'post_install', '-at_install')
 class TestCommissions(TestCommissionsSetup):
 
     def test_commissions(self):

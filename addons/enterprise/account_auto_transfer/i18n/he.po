@@ -61,6 +61,8 @@ msgid ""
 "Adds a condition to only transfer the sum of the lines from the origin "
 "accounts that match these analytic accounts to the destination account"
 msgstr ""
+"מוסיף תנאי שרק השורות המתאימות לניתוח החשבונות, יועברו מחשבון המקור לחשבון "
+"היעד."
 
 #. module: account_auto_transfer
 #: model:ir.model.fields,help:account_auto_transfer.field_account_transfer_model_line__partner_ids
@@ -68,6 +70,7 @@ msgid ""
 "Adds a condition to only transfer the sum of the lines from the origin "
 "accounts that match these partners to the destination account"
 msgstr ""
+"מוסיף תנאי להעביר רק את השורות מחשבון המקור לחשבון היעד של השותפים האלו"
 
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model_line__analytic_account_ids
@@ -116,7 +119,7 @@ msgstr "העברות אוטומטיות (רשומות עם שותף(ים):%s)"
 msgid ""
 "Automatic Transfer (from account %s with analytic account(s): %s and "
 "partner(s): %s)"
-msgstr ""
+msgstr "העברה אוטומטית (מחשבון %s עם ניתוח חשבון(ות): %s ושותף(ים): %s)"
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
@@ -128,7 +131,7 @@ msgstr "העברה אוטומטית (מחשבון %s עם חשבונות אנל�
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
 #, python-format
 msgid "Automatic Transfer (from account %s with partner(s): %s)"
-msgstr ""
+msgstr "העברה אוטומטית (מחשבון %sעם שותף(ות)): %s)"
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
@@ -363,7 +366,7 @@ msgstr "תאריך סיום"
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
 #, python-format
 msgid "The analytic filter %s is duplicated"
-msgstr ""
+msgstr "פילטר ניתוח נתונים %s שוכפל"
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0

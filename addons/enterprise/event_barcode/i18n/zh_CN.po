@@ -59,7 +59,7 @@ msgstr "条码应该是唯一的"
 #: code:addons/event_barcode/static/src/xml/event_barcode.xml:0
 #, python-format
 msgid "Canceled registration"
-msgstr "取消登记记录"
+msgstr "取消的登记"
 
 #. module: event_barcode
 #. openerp-web
@@ -100,7 +100,7 @@ msgstr "确认"
 #: code:addons/event_barcode/static/src/xml/event_barcode.xml:0
 #, python-format
 msgid "Confirm attendance for"
-msgstr "确认出席"
+msgstr "确认参加"
 
 #. module: event_barcode
 #. openerp-web

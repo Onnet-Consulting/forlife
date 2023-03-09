@@ -5,7 +5,7 @@ from markupsafe import Markup
 from odoo import SUPERUSER_ID, api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.fields import Command
-from odoo.tools import float_compare, float_round
+from odoo.tools import float_compare, float_round, is_html_empty, float_is_zero
 
 
 class TestType(models.Model):
@@ -241,7 +241,7 @@ class QualityCheck(models.Model):
     def _compute_title(self):
         super()._compute_title()
         for check in self:
-            if not check.point_id or check.component_id:
+            if not check.point_id and check.component_id:
                 check.title = '{} "{}"'.format(check.test_type_id.display_name, check.component_id.name or check.workorder_id.name)
 
     @api.depends('point_id', 'quality_state', 'component_id', 'component_uom_id', 'lot_id', 'qty_done')
@@ -291,36 +291,48 @@ class QualityCheck(models.Model):
                 check.component_uom_id = check.move_id.product_uom
 
     def action_print(self):
-        if self.product_id.uom_id.category_id == self.env.ref('uom.product_uom_categ_unit'):
-            qty = int(self.workorder_id.qty_producing)
-        else:
-            qty = 1
-
         quality_point_id = self.point_id
         report_type = quality_point_id.test_report_type
 
         if self.product_id.tracking == 'none':
-            xml_id = 'product.action_open_label_layout'
-            wizard_action = self.env['ir.actions.act_window']._for_xml_id(xml_id)
-            wizard_action['context'] = {'default_product_ids': self.product_id.ids}
-            if report_type == 'zpl':
-                wizard_action['context']['default_print_format'] = 'zpl'
-            res = wizard_action
+            res = self._get_product_label_action(report_type)
         else:
             if self.workorder_id.finished_lot_id:
-                if report_type == 'zpl':
-                    xml_id = 'stock.label_lot_template'
-                else:
-                    xml_id = 'stock.action_report_lot_label'
-                res = self.env.ref(xml_id).report_action([self.workorder_id.finished_lot_id.id] * qty)
+                res = self._get_lot_label_action(report_type)
             else:
                 raise UserError(_('You did not set a lot/serial number for '
                                 'the final product'))
 
-        res['id'] = self.env.ref(xml_id).id
-
         # The button goes immediately to the next step
         self._next()
+        return res
+
+    def _get_print_qty(self):
+        if self.product_id.uom_id.category_id == self.env.ref('uom.product_uom_categ_unit'):
+            qty = int(self.workorder_id.qty_producing)
+        else:
+            qty = 1
+        return qty
+
+    def _get_product_label_action(self, report_type):
+        self.ensure_one()
+        xml_id = 'product.action_open_label_layout'
+        wizard_action = self.env['ir.actions.act_window']._for_xml_id(xml_id)
+        wizard_action['context'] = {'default_product_ids': self.product_id.ids}
+        if report_type == 'zpl':
+            wizard_action['context']['default_print_format'] = 'zpl'
+        wizard_action['id'] = self.env.ref(xml_id).id
+        return wizard_action
+
+    def _get_lot_label_action(self, report_type):
+        qty = self._get_print_qty()
+
+        if report_type == 'zpl':
+            xml_id = 'stock.label_lot_template'
+        else:
+            xml_id = 'stock.action_report_lot_label'
+        res = self.env.ref(xml_id).report_action([self.workorder_id.finished_lot_id.id] * qty)
+        res['id'] = self.env.ref(xml_id).id
         return res
 
     def action_next(self):
@@ -338,16 +350,17 @@ class QualityCheck(models.Model):
         else:
             self.workorder_id.current_quality_check_id = self
         if self.workorder_id.production_id.bom_id and activity:
-            body = Markup(_("<b>New Step suggested by %s</b><br/>"
-                 "<b>Reason:</b>"
-                 "%s", self.env.user.name, self.additional_note
-            ))
+            tl_text = _("New Step suggested by %(user_name)s", user_name=self.env.user.name)
+            body = Markup("<b>%s</b>") % tl_text
+            if self.note and not is_html_empty(self.note):
+                tl_text = _("Instruction:")
+                body += Markup("<br/><b>%s</b>%s") % (tl_text, self.note)
             self.env['mail.activity'].sudo().create({
                 'res_model_id': self.env.ref('mrp.model_mrp_bom').id,
                 'res_id': self.workorder_id.production_id.bom_id.id,
                 'user_id': self.workorder_id.product_id.responsible_id.id or SUPERUSER_ID,
                 'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
-                'summary': _('BoM feedback %s (%s)', self.title, self.workorder_id.production_id.name),
+                'summary': _('BoM feedback %s (%s)', self.title or self.test_type, self.workorder_id.production_id.name),
                 'note': body,
             })
 
@@ -437,6 +450,13 @@ class QualityCheck(models.Model):
 
             # Write the lot and qty to the move line
             if self.move_line_id:
+                # In case of a tracked component, another SML may already exists for
+                # the reservation of self.lot_id, so let's try to find and use it
+                if self.move_line_id.product_id.tracking != 'none':
+                    self.move_line_id = next((sml
+                                              for sml in self.move_line_id.move_id.move_line_ids
+                                              if sml.lot_id == self.lot_id and float_is_zero(sml.qty_done, precision_rounding=sml.product_uom_id.rounding)),
+                                             self.move_line_id)
                 rounding = self.move_line_id.product_uom_id.rounding
                 if float_compare(self.qty_done, self.move_line_id.reserved_uom_qty, precision_rounding=rounding) >= 0:
                     self.move_line_id.write({

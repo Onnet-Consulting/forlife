@@ -285,19 +285,17 @@ class AccountGeneralLedger(models.AbstractModel):
                 partner_addresses_map[current_partner][address_key] = partner
 
         def _track_contact(current_partner, partner):
-            phone = partner.phone or partner.mobile
-            if phone:
-                partner_contacts_map[current_partner] |= partner
+            partner_contacts_map[current_partner] |= partner
 
         for partner in all_partners:
             _track_address(partner, partner)
             _track_contact(partner, partner)
             for child in partner.child_ids:
-                _track_address(partner, child)
-                _track_contact(partner, child)
+                if child.type == 'contact':
+                    _track_address(partner, child)
+                    _track_contact(partner, child)
 
         no_partner_address = self.env['res.partner']
-        no_partner_contact = self.env['res.partner']
         for partner in all_partners:
             res['partner_detail_map'][partner.id].update({
                 'partner': partner,
@@ -306,18 +304,11 @@ class AccountGeneralLedger(models.AbstractModel):
             })
             if not res['partner_detail_map'][partner.id]['addresses']:
                 no_partner_address |= partner
-            if not res['partner_detail_map'][partner.id]['contacts']:
-                no_partner_contact |= partner
 
         if no_partner_address:
             raise UserError(_(
                     "Please define at least one address (Zip/City) for the following partners: %s.",
                     ', '.join(no_partner_address.mapped('display_name')),
-            ))
-        if no_partner_contact:
-            raise UserError(_(
-                    "Please define at least one contact (Phone or Mobile) for the following partners: %s.",
-                    ', '.join(no_partner_contact.mapped('display_name')),
             ))
 
         # Add newly computed values to the final template values.
@@ -335,6 +326,9 @@ class AccountGeneralLedger(models.AbstractModel):
         company = self.env.company
         if not company.company_registry:
             raise UserError(_("Please define `Company Registry` for your company."))
+
+        if not (company.phone or company.mobile):
+            raise UserError(_("Please define a `Phone` or `Mobile` for your company."))
 
         if len(options["column_groups"]) > 1:
             raise UserError(_("SAFT is only compatible with one column group."))

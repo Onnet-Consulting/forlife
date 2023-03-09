@@ -148,7 +148,7 @@ class Sign(http.Controller):
             pdf_content, __ = report_action._render_qweb_pdf(
                 'sign.action_sign_request_print_logs',
                 sign_request.id,
-                data={'format_date': tools.format_date}
+                data={'format_date': tools.format_date, 'company_id': sign_request.communication_company_id}
             )
             pdfhttpheaders = [
                 ('Content-Type', 'application/pdf'),

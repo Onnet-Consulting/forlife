@@ -4,8 +4,8 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
 # Jolien De Paepe, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Jolien De Paepe, 2022\n"
+"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2023\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -148,7 +148,7 @@ msgstr ""
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
 "                    <t t-set=\"company\" t-value=\"object.company_id\"/>\n"
-"                    <span style=\"font-size: 10px;\">Je SEPA Automatische Incasso Transactie</span><br/>\n"
+"                    <span style=\"font-size: 10px;\">Je SEPA Direct Debit transactie</span><br/>\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.reference or ''\"/>\n"
 "                </td></tr>\n"
 "                <tr><td valign=\"middle\" align=\"right\">\n"
@@ -312,7 +312,7 @@ msgstr ""
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
 "                    <t t-set=\"company\" t-value=\"object.payment_journal_id.company_id\"/>\n"
-"                    <span style=\"font-size: 10px;\">Je SEPA automatische incasso mandaat</span><br/>\n"
+"                    <span style=\"font-size: 10px;\">Je SEPA Direct Debit mandaat</span><br/>\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.partner_bank_id.acc_number or ''\">BE15001559627230</span>\n"
 "                </td></tr>\n"
 "                <tr><td valign=\"middle\" align=\"right\">\n"
@@ -331,11 +331,11 @@ msgstr ""
 "                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
 "                    Hallo <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,<br/><br/>\n"
 "\n"
-"                    <p>A SEPA incassomandaat is zojuist bevestigd voor gebruik met <t t-out=\"company.name or ''\">YourCompany</t>.</p>\n"
+"                    <p>Een SEPA Direct Debit mandaat is zojuist bevestigd voor gebruik met <t t-out=\"company.name or ''\">YourCompany</t>.</p>\n"
 "\n"
 "                    <p>Je vindt een kopie van de machtigingsbevestiging als bijlage bij deze e-mail.</p>\n"
 "\n"
-"                    <p>Aarzel niet om contact met ons op te nemen als je vragen hebt..</p>\n"
+"                    <p>Aarzel niet om contact met ons op te nemen als je vragen hebt.</p>\n"
 "                </td></tr>\n"
 "                <tr><td style=\"text-align:center;\">\n"
 "                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
@@ -392,7 +392,7 @@ msgstr "Zowel het telefoonnummer als de verificatiecode zijn vereist."
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.payment_provider_form
 msgid "Buy credits"
-msgstr "Koop krediet"
+msgstr "Credits kopen"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_provider__code
@@ -447,7 +447,7 @@ msgstr "Online handtekening"
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_account_payment_method
 msgid "Payment Methods"
-msgstr "Betaalwijzes"
+msgstr "Betalingswijzen"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_payment_provider
@@ -491,33 +491,33 @@ msgstr "Beperkt tot landen in de SEPA-zone. Verboden landen: %s"
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_sdd_mandate
 msgid "SDD Mandate"
-msgstr "Incasso mandaat"
+msgstr "SDD mandaat"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields.selection,name:payment_sepa_direct_debit.selection__payment_provider__code__sepa_direct_debit
 msgid "SEPA Direct Debit"
-msgstr "SEPA automatische incasso"
+msgstr "SEPA Direct Debit"
 
 #. module: payment_sepa_direct_debit
 #: model:account.payment.method,name:payment_sepa_direct_debit.payment_method_sepa_direct_debit
 msgid "SEPA Direct Debit (provider)"
-msgstr "SEPA automatische incasso (provider)"
+msgstr "SEPA Direct Debit (provider)"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_token__sdd_mandate_id
 msgid "SEPA Direct Debit Mandate"
-msgstr "SEPA automatische incasso mandaat"
+msgstr "SEPA Direct Debit mandaat"
 
 #. module: payment_sepa_direct_debit
 #: model:mail.template,name:payment_sepa_direct_debit.mail_template_sepa_notify_debit
 #: model:mail.template,subject:payment_sepa_direct_debit.mail_template_sepa_notify_debit
 msgid "SEPA Direct Debit: Charge Notification"
-msgstr "SEPA automatische incasso: Kennisgeving van kosten"
+msgstr "SEPA Direct Debit: Kennisgeving van kosten"
 
 #. module: payment_sepa_direct_debit
 #: model:mail.template,name:payment_sepa_direct_debit.mail_template_sepa_notify_validation
 msgid "SEPA Direct Debit: Validation Notification"
-msgstr "SEPA-incasso: validatiemelding"
+msgstr "SEPA Direct Debit: validatiemelding"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_payment_provider__sdd_sms_credits
@@ -546,14 +546,14 @@ msgstr "Sms-verificatie is uitgeschakeld."
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form
 msgid "Send SMS"
-msgstr "Verzend SMS"
+msgstr "SMS verzenden"
 
 #. module: payment_sepa_direct_debit
 #: model:mail.template,description:payment_sepa_direct_debit.mail_template_sepa_notify_validation
 msgid ""
 "Send the SEPA mandate in attachement, to partners who signed a new mandate"
 msgstr ""
-"Verstuur het SEPA mandaat in bijlage naar de partners die een nieuw mandaat "
+"Verstuur het SEPA mandaat in bijlage naar de relaties die een nieuw mandaat "
 "ondertekend hebben"
 
 #. module: payment_sepa_direct_debit
@@ -569,7 +569,7 @@ msgstr ""
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "Server Error"
-msgstr "Server Error"
+msgstr "Serverfout"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__signature
@@ -607,13 +607,13 @@ msgstr "De datum van de handtekening"
 #: code:addons/payment_sepa_direct_debit/models/payment_transaction.py:0
 #, python-format
 msgid "The mandate is invalid."
-msgstr "De machtiging is ongeldig."
+msgstr "Het mandaat is ongeldig."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_provider.py:0
 #, python-format
 msgid "The mandate owner and customer do not match."
-msgstr "De machtigingseigenaar en klant komen niet overeen."
+msgstr "De mandaathouder en de klant komen niet overeen."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
@@ -655,7 +655,7 @@ msgstr "Het telefoonnummer moet worden opgegeven en geverifieerd."
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "The phone number should be in international format."
-msgstr "Het telefoonnummer moet in internationaal formaat zijn."
+msgstr "Het telefoonnummer moet een internationaal formaat hebben."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_sdd_mandate__phone_number
@@ -689,14 +689,14 @@ msgstr "De verificatiecode komt niet overeen."
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "This mandate has already been verified."
-msgstr "Deze machtiging is al geverifieerd."
+msgstr "Dit mandaat is al geverifieerd."
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #: code:addons/payment_sepa_direct_debit/controllers/main.py:0
 #, python-format
 msgid "Unknown mandate ID."
-msgstr "Onbekende machtigings-ID."
+msgstr "Onbekende ID mandaat."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__verification_code
@@ -719,8 +719,7 @@ msgstr "We kunnen je betaling niet verwerken."
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_provider__sdd_signature_required
 msgid "Whether a signature is required to create a new mandate."
-msgstr ""
-"Of er een handtekening nodig is om een nieuwe machtiging aan te maken."
+msgstr "Of er een handtekening nodig is om een nieuw mandaat aan te maken."
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_provider__sdd_sms_verification_required
@@ -732,7 +731,7 @@ msgstr "Of telefoonnummers moeten worden geverifieerd met een sms-code."
 msgid ""
 "You don't have enough credit to send SMS. You can buy new credits here:"
 msgstr ""
-"Je hebt onvoldoende krediet om deze SMS te versturen. Je kunt hier krediet "
+"Je hebt onvoldoende credits om deze SMS te versturen. Je kunt hier credits "
 "bijkopen:"
 
 #. module: payment_sepa_direct_debit
@@ -741,8 +740,8 @@ msgid ""
 "Your SEPA Direct Debit Mandate with {{ "
 "object.payment_journal_id.company_id.name }}"
 msgstr ""
-"Je SEPA Incassomachtiging met {{ object.payment_journal_id.company_id.name "
-"}}"
+"Je SEPA Direct Debit mandaat met {{ "
+"object.payment_journal_id.company_id.name }}"
 
 #. module: payment_sepa_direct_debit
 #: code:addons/payment_sepa_direct_debit/models/payment_provider.py:0
@@ -751,7 +750,7 @@ msgid ""
 "Your company must have a creditor identifier in order to issue a SEPA Direct"
 " Debit payment request. It can be set in Accounting settings."
 msgstr ""
-"Het bedrijf moet een crediteur-ID hebben om een SEPA-incasso-"
+"Het bedrijf moet een crediteur-ID hebben om een SEPA Direct Debit "
 "betalingsverzoek uit te geven. Het kan worden ingesteld in instellingen van "
 "de boekhouding."
 
@@ -759,7 +758,7 @@ msgstr ""
 #: code:addons/payment_sepa_direct_debit/models/sdd_mandate.py:0
 #, python-format
 msgid "Your confirmation code is %s"
-msgstr "Jouw bevestigingscode is %s"
+msgstr "Je bevestigingscode is %s"
 
 #. module: payment_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:payment_sepa_direct_debit.inline_form

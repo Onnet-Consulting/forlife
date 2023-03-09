@@ -6,6 +6,7 @@
 # Seongseok Shin <shinss61@hotmail.com>, 2022
 # Martin Trigaux, 2022
 # JH CHOI <hwangtog@gmail.com>, 2022
+# Sarah Park, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:49+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: JH CHOI <hwangtog@gmail.com>, 2022\n"
+"Last-Translator: Sarah Park, 2023\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -103,19 +104,19 @@ msgstr "간트 차트 화면"
 #: code:addons/web_gantt/models/ir_ui_view.py:0
 #, python-format
 msgid "Gantt child can only be field or template, got %s"
-msgstr ""
+msgstr "간트 하위 메뉴는 필드나 템플릿만 선택 가능하며, 다음 내용입니다 %s"
 
 #. module: web_gantt
 #: code:addons/web_gantt/models/ir_ui_view.py:0
 #, python-format
 msgid "Gantt must have a 'date_start' attribute"
-msgstr ""
+msgstr "간트에는 'date_start' 속성을 지정해야 합니다"
 
 #. module: web_gantt
 #: code:addons/web_gantt/models/ir_ui_view.py:0
 #, python-format
 msgid "Gantt must have a 'date_stop' attribute"
-msgstr ""
+msgstr "간트에는 'date_stop' 속성을 지정해야 합니다"
 
 #. module: web_gantt
 #: code:addons/web_gantt/models/ir_ui_view.py:0
@@ -124,19 +125,20 @@ msgid ""
 "Gantt must have a 'dependency_inverted_field' attribute once the "
 "'dependency_field' is specified"
 msgstr ""
+"'dependency_field'가 지정되는 경우, 간트에서 'dependency_inverted_field' 속성을 지정해야 합니다."
 
 #. module: web_gantt
 #: code:addons/web_gantt/models/ir_ui_view.py:0
 #, python-format
 msgid "Gantt view can contain only one templates tag"
-msgstr ""
+msgstr "간트 뷰에는 서식 태그가 하나만 포함될 수 있습니다"
 
 #. module: web_gantt
 #. openerp-web
 #: code:addons/web_gantt/static/src/js/gantt_model.js:0
 #, python-format
 msgid "Grouping by date is not supported"
-msgstr ""
+msgstr "날짜별 그룹은 지원되지 않습니다"
 
 #. module: web_gantt
 #: code:addons/web_gantt/models/models.py:0
@@ -148,13 +150,13 @@ msgstr "간트 차트 화면에 대한 필드가 충분하지 않습니다!"
 #: code:addons/web_gantt/models/ir_ui_view.py:0
 #, python-format
 msgid "Invalid attributes (%s) in gantt view. Attributes must be in (%s)"
-msgstr ""
+msgstr "간트뷰에서 유효하지 않은 속성 (%s)입니다. 속성은 (%s)에 위치해야 합니다"
 
 #. module: web_gantt
 #: code:addons/web_gantt/models/ir_ui_view.py:0
 #, python-format
 msgid "Invalid default_scale '%s' in gantt"
-msgstr ""
+msgstr "간트에서 default_scale '%s' 가 유효하지 않습니다"
 
 #. module: web_gantt
 #. openerp-web
@@ -211,7 +213,7 @@ msgstr "이전"
 msgid ""
 "Records that are in the past cannot be automatically rescheduled. They "
 "should be manually rescheduled instead."
-msgstr ""
+msgstr "이전 기록은 자동으로 다시 예약되지 않습니다. 대신 직접 일정을 변경해야 합니다."
 
 #. module: web_gantt
 #. openerp-web
@@ -264,7 +266,7 @@ msgstr "년"
 #: code:addons/web_gantt/models/models.py:0
 #, python-format
 msgid "You cannot reschedule %s towards %s."
-msgstr ""
+msgstr "%s를 %s(으)로 다시 예약할 수 없습니다."
 
 #. module: web_gantt
 #: code:addons/web_gantt/models/models.py:0
@@ -272,4 +274,4 @@ msgstr ""
 msgid ""
 "You cannot reschedule tasks that do not follow a direct dependency path. "
 "Only the first task has been automatically rescheduled."
-msgstr ""
+msgstr "직접 종속성 경로를 따르지 않는 작업의 경우에는 다시 예약할 수 없습니다. 첫 번째 작업만 자동으로 일정이 변경되었습니다."

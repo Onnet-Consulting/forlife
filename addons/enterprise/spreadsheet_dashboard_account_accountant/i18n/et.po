@@ -14,6 +14,8 @@
 # Piia Paurson <piia@avalah.ee>, 2022
 # Arma Gedonsky <armagedonsky@hot.ee>, 2022
 # Martin Trigaux, 2022
+# Leaanika Randmets, 2023
+# Anna, 2023
 # 
 msgid ""
 msgstr ""
@@ -21,7 +23,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-29 09:37+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Anna, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -182,7 +184,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Account type"
-msgstr ""
+msgstr "Konto tüüp"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -196,7 +198,7 @@ msgstr "Kontod"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Aggregate"
-msgstr ""
+msgstr "Koonda"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -212,7 +214,7 @@ msgstr "Keskmine kreeditorite päevade arv"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Average debtor days"
-msgstr ""
+msgstr "Keskmine deebitoride päevade arv"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -228,7 +230,7 @@ msgstr "Keskmine deebitoride päevade arv"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "Balance sheet"
-msgstr ""
+msgstr "Bilanss"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -250,7 +252,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "COGS"
-msgstr ""
+msgstr "COGS"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -265,7 +267,7 @@ msgstr "Kassa"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Cash flow"
-msgstr ""
+msgstr "Rahavoog"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -273,7 +275,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Cash flow / Current liabilities"
-msgstr ""
+msgstr "Rahavoog / Lühiajalised kohustused"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -417,7 +419,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Current liabilities"
-msgstr ""
+msgstr "Lühiajalised kohustused"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -454,7 +456,7 @@ msgstr "Amortisatsioon"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "EBIT"
-msgstr ""
+msgstr "EBIT"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -518,7 +520,7 @@ msgstr "Brutokasum"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Gross profit margin"
-msgstr ""
+msgstr "Brutokasumi marginaal"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -541,14 +543,14 @@ msgstr "Arveldatud"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "KPI"
-msgstr ""
+msgstr "KPI"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "KPIS"
-msgstr ""
+msgstr "KPI'd"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -563,7 +565,7 @@ msgstr "Kuu"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Month-Year"
-msgstr ""
+msgstr "Kuu-Aasta"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -585,7 +587,7 @@ msgstr "Netovarad"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Net income"
-msgstr ""
+msgstr "Puhaskasum"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -593,7 +595,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Net income / Revenue"
-msgstr ""
+msgstr "Puhaskasum / Tulu"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -601,7 +603,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "Net profit"
-msgstr ""
+msgstr "Puhaskasum"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -611,7 +613,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Net profit margin"
-msgstr ""
+msgstr "Puhaskasumi marginaal"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -717,7 +719,7 @@ msgstr "Muud tulud"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "Other variables"
-msgstr ""
+msgstr "Muud muutujad"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -749,7 +751,7 @@ msgstr "Võlad ja ettemaksed"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Payables / Expenses * 120"
-msgstr ""
+msgstr "Võlad ja ettemaksed / Kulud * 120"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -779,14 +781,14 @@ msgstr "Ettemaksud"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "Previous expense"
-msgstr ""
+msgstr "Eelnev kulu"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "Previous income"
-msgstr ""
+msgstr "Eelnev tulu"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -819,7 +821,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Quick ratio"
-msgstr ""
+msgstr "Kiiruse määr (%)"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -851,7 +853,7 @@ msgstr "Nõuded"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Receivables / Income * 120"
-msgstr ""
+msgstr "Nõuded / Tulu * 120"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -859,7 +861,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "Return on investments"
-msgstr ""
+msgstr "Investeeringutasuvus "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -902,28 +904,28 @@ msgstr "Tehniline nimi"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Total assets"
-msgstr ""
+msgstr "Varad kokku"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Total expense"
-msgstr ""
+msgstr "Kogukulu"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Total income"
-msgstr ""
+msgstr "Kogutulu"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Total liabilities"
-msgstr ""
+msgstr "Kohustused kokku"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -931,14 +933,14 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Total liabilities / Total shareholders’ equity"
-msgstr ""
+msgstr "Kohustused kokku / Omakapital kokku"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Total shareholder's equity"
-msgstr ""
+msgstr "Omakapital kokku"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -954,7 +956,7 @@ msgstr "Väärtus"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Very dependent on the sector"
-msgstr ""
+msgstr "Väga sõltub sektorist"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -964,7 +966,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Working capital"
-msgstr ""
+msgstr "Käibekapital"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -980,28 +982,28 @@ msgstr "Aasta"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "bank and cash"
-msgstr ""
+msgstr "pank ja kassa"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "cost of revenue"
-msgstr ""
+msgstr "müügikulud (kaubad, toore, materjal ja teenused)"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "current assets"
-msgstr ""
+msgstr "käibevara"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "current liabilities"
-msgstr ""
+msgstr "lühiajalised kohustused"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -1009,13 +1011,14 @@ msgstr ""
 #, python-format
 msgid "expenses + depreciation + cost of revenue"
 msgstr ""
+"kulud + amortisatsioon + müügikulud (kaubad, toore, materjal ja teenused)"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "expenses - income"
-msgstr ""
+msgstr "kulud – tulud"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -1037,7 +1040,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "last period"
-msgstr ""
+msgstr "viimane periood"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web

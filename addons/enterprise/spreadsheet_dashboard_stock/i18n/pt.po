@@ -73,7 +73,7 @@ msgstr "Atual"
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "KPI"
-msgstr ""
+msgstr "KPI"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
@@ -195,7 +195,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Top Products"
-msgstr ""
+msgstr "Artigos Principais"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
@@ -232,7 +232,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "since last period"
-msgstr ""
+msgstr "desde o período anterior"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web

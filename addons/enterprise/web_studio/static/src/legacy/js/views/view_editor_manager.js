@@ -1049,32 +1049,6 @@ var ViewEditorManager = AbstractEditorManager.extend(WidgetAdapterMixin, {
         });
         return subviewXpath;
     },
-    /**
-     * From the main view's fields_view, go through the x2mEditorPath to get the current x2m fields_view
-     *
-     * @private
-     * @param {Object} fieldsView: the main view's field_view
-     * @return {Object} the fields_view of the x2m field
-     */
-    _getX2mFieldsView(fieldsView) {
-        // this is a crappy way of processing the arch received as string
-        // because we need a processed fields_view to find the x2m fields view
-        const View = view_registry.get(this.mainViewType);
-        const view = new View(fieldsView, _.extend({}, this.x2mViewParams));
-
-        let fields_view = view.fieldsView;
-
-        const x2mEditorPath = this.x2mEditorPath;
-        for (let index = 0; index < x2mEditorPath.length; index++) {
-            const step = x2mEditorPath[index];
-            const x2mField = fields_view.fieldsInfo[step.parentViewType][step.x2mField];
-            fields_view = x2mField.views[step.x2mViewType];
-        }
-        if (fields_view) {
-            fields_view.model = this.x2mModel;
-        }
-        return fields_view;
-    },
 
     async instantiateWowlController(viewParams) {
         const mainViewType = this.mainViewType;
@@ -1101,7 +1075,7 @@ var ViewEditorManager = AbstractEditorManager.extend(WidgetAdapterMixin, {
             const { viewType, fieldName, resModel, fieldContext } = x2ManyInfo;
             const viewId = viewDescriptions.views[mainViewType].id;
             const subViewRef = fieldContext[`${nextViewType === "list" ? "tree" : nextViewType}_view_ref`] || null;;
-            const xpathToCurrentSubView = getX2MFullXpath(x2ManyFullPath.slice(0, -1));
+            const xpathToCurrentSubView = getX2MFullXpath(x2ManyFullPath);
             const studioArch = await wowlCreateInlineView(this.wowlEnv, { subViewType: viewType, viewId, fullXpath: xpathToCurrentSubView, subViewRef, resModel, fieldName })
             this.studio_view_arch = studioArch;
             this.operations = [];
@@ -2120,7 +2094,6 @@ var ViewEditorManager = AbstractEditorManager.extend(WidgetAdapterMixin, {
         };
 
         if (this.isEditingX2m) {
-            this.fields_view = this._getX2mFieldsView(this.fields_view);
             const fieldsGetResult = await this.wowlEnv.services.orm.call(this.x2mModel, "fields_get");
             // relatedModel only contains field descriptions that are present in the view.
             // Merge them with the fields_get's result to have an exhaustive list of all fields for the model

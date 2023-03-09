@@ -111,7 +111,7 @@ class L10nLuGenerateTaxReport(models.TransientModel):
             form['field_values']['164'] = {'value': data.report_section_163 - data.report_section_165, 'field_type': 'float'}
         elif data.report_section_163 and data.report_section_164 and not data.report_section_165:
             form['field_values']['165'] = {'value': data.report_section_163 - data.report_section_164, 'field_type': 'float'}
-        elif data.report_section_163:
+        elif (data.report_section_163 and not data.report_section_164 and not data.report_section_165) or (data.report_section_163 != data.report_section_164 + data.report_section_165):
             raise ValidationError(_("Fields 164 and 165 are mandatory when 163 is filled in and must add up to field 163 (Appendix E)."))
 
         if '361' not in form['field_values']:

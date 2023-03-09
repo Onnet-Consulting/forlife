@@ -57,7 +57,9 @@ class AccountReport(models.Model):
             {where_journals};
 
             WITH payment_table AS (
-                SELECT aml.move_id, aml2.date,
+                SELECT
+                    aml.move_id,
+                    GREATEST(aml.date, aml2.date) AS date,
                     CASE WHEN (aml.balance = 0 OR sub_aml.total_per_account = 0)
                         THEN 0
                         ELSE part.amount / ABS(sub_aml.total_per_account)

@@ -54,7 +54,7 @@ msgstr "# Lidovi"
 #: code:addons/spreadsheet_dashboard_crm/data/files/leads_dashboard.json:0
 #, python-format
 msgid "Average Deal Size"
-msgstr ""
+msgstr "Prosečna veličina posla"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -146,7 +146,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/leads_dashboard.json:0
 #, python-format
 msgid "Days to Assign"
-msgstr ""
+msgstr "Dani za dodeljivanje"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -203,7 +203,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "KPI"
-msgstr ""
+msgstr "KPI"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -531,7 +531,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/leads_dashboard.json:0
 #, python-format
 msgid "last period"
-msgstr ""
+msgstr "prethodni period"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web

@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-12 07:57+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,17 +33,17 @@ msgstr ""
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit
 msgid "Incoming Inventory Value"
-msgstr "Valeur de l'Inventaire Entrant"
+msgstr "Valeur de l'Inventaire entrant"
 
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit
 msgid "Inventory Turnover"
-msgstr "Rotation de Stock "
+msgstr "Rotation des stocks"
 
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit
 msgid "Inventory Value"
-msgstr "Valeur d'inventaire"
+msgstr "Valeur de l'inventaire"
 
 #. module: stock_account_enterprise
 #: model:ir.model.fields,help:stock_account_enterprise.field_stock_report__valuation
@@ -51,7 +52,7 @@ msgid ""
 "operator is supported"
 msgstr ""
 "Notez que vous ne pouvez accéder à cette valeur que dans le read_group, seul"
-" l'opérateur de somme est supporté"
+" l'opérateur de somme est pris en charge"
 
 #. module: stock_account_enterprise
 #: model:ir.model.fields,help:stock_account_enterprise.field_stock_report__stock_value
@@ -60,13 +61,13 @@ msgid ""
 "operator is supported and only date_done is used from the domain"
 msgstr ""
 "Notez que vous ne pouvez accéder à cette valeur que dans le read_group, seul"
-" l'opérateur de somme est supporté et seul date_done est utilisé depuis le "
-"domaine"
+" l'opérateur de somme est pris en charge et seul date_done est utilisé "
+"depuis le domaine"
 
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit
 msgid "Outgoing Inventory Value"
-msgstr "Valeur d'Inventaire Sortant"
+msgstr "Valeur de l'inventaire sortant"
 
 #. module: stock_account_enterprise
 #: model:ir.model,name:stock_account_enterprise.model_stock_report
@@ -81,12 +82,12 @@ msgstr "La valeur totale de ce que vous avez en stock."
 #. module: stock_account_enterprise
 #: model:ir.model.fields,field_description:stock_account_enterprise.field_stock_report__stock_value
 msgid "Total Valuation of Inventory"
-msgstr "Évalutation Totale de l'Inventaire"
+msgstr "Évalutation totale de l'inventaire"
 
 #. module: stock_account_enterprise
 #: model:ir.model.fields,field_description:stock_account_enterprise.field_stock_report__valuation
 msgid "Valuation of Inventory using a Domain"
-msgstr "Évaluation de l'Inventaire utilisant un Domaine"
+msgstr "Évaluation de l'Inventaire utilisant un domaine"
 
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit

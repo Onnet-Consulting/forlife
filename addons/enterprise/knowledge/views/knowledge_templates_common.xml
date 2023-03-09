@@ -27,7 +27,7 @@
             <t t-set="favorite" t-value="favorites_sudo.filtered(lambda f: f.article_id == article) if favorites_sudo else False"/>
             <t t-set="children"
                     t-value="all_visible_articles.filtered(lambda child: child.parent_id == article and not child.is_article_item)
-                             if all_visible_articles else article.child_ids"/>
+                             if all_visible_articles else article.child_ids.filtered(lambda child: not child.is_article_item)"/>
             <t t-set="unfoldChildren" t-value="bool(
                 children and (
                     (not isFavoriteTree and article.id in unfolded_articles_ids)
@@ -40,9 +40,9 @@
                 t-att-data-article-id="article.id" t-att-data-parent-id="article.parent_id.id"
                 t-att-data-favorite-article-id="favorite.id if favorite else False"
                 t-att-data-category="article.category">
-                <div t-attf-class="#{ '' if readonly else 'o_article_handle' } d-flex align-items-center #{ 'o_article_active fw-bold text-900' if isActive else 'text-muted' }">
+                <div t-attf-class="#{ '' if not isFavoriteTree and readonly else 'o_article_handle' } d-flex align-items-center #{ 'o_article_active fw-bold text-900' if isActive else 'text-muted' }">
                     <button type="button"
-                            class="flex-shrink-1 o_article_caret btn btn-link text-muted p-0 border-0 invisible" >
+                            class="flex-shrink-1 o_article_caret btn text-muted p-0 border-0 invisible">
                         <i t-att-class="'align-self-center fa fa-fw fa-caret-' + ('down' if unfoldChildren or not children else 'right')"/>
                     </button>
                     <t t-call="knowledge.articles_template_name"/>
@@ -72,7 +72,7 @@
                     </a>
                 </div>
                 <div class="o_article_name p-1 flex-grow-1 text-truncate cursor-pointer" t-out="article.name"/>
-                <button t-if="not readonly" class="o_article_create btn p-1 opacity-75 opacity-100-hover" type="button">
+                <button t-if="not readonly" class="o_article_create btn p-1 border-0 opacity-75 opacity-100-hover" type="button">
                     <i class="fa fa-fw fa-plus" title="Create a nested article" />
                 </button>
             </t>

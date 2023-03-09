@@ -10,7 +10,7 @@
 # Kim Asplund <kim.asplund@gmail.com>, 2022
 # Martin Trigaux, 2022
 # Kristoffer Grundström <lovaren@gmail.com>, 2022
-# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2022
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -18,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:49+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
-"Last-Translator: Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2022\n"
+"Last-Translator: Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023\n"
 "Language-Team: Swedish (https://www.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -106,6 +106,46 @@ msgstr "Avbryt"
 msgid ""
 "Connect Timesheets to Odoo to synchronize your activities across all "
 "devices."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not find server. Please check that the url you entered is correct."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not login. Please check that the information you entered is correct."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not reach the server. Please check that you have an internet "
+"connection, that the server address and database name you entered is valid, "
+"and that the server is online."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not reach the server. Please check that you have an internet "
+"connection, that the server address you entered is valid, and that the "
+"server is online."
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -278,9 +318,23 @@ msgstr ""
 
 #. module: project_timesheet_synchro
 #. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "No default project"
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "No task"
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "No task selected"
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -289,6 +343,13 @@ msgstr ""
 #, python-format
 msgid ""
 "Note that this will create new projects and tasks on your Odoo instance"
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "Odoo login failed"
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -484,6 +545,35 @@ msgstr "Aktivitet"
 
 #. module: project_timesheet_synchro
 #. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"The code on your Odoo server is not up to date and an important update has "
+"been released. You or your system administrator should consider retrieving "
+"it as soon as possible."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"The server does not support timesheet synchronization. It requires Odoo "
+"Enterprise Edition version 9 or newer."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"The server does not support timesheet synchronization. You should contact "
+"your administrator in order to install the module \"Synchronization with the"
+" external timesheet application\""
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid ""
@@ -519,6 +609,15 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Time unit"
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Timesheet Synchronization is available in Odoo Enterprise Edition. You "
+"should consider upgrading your Odoo version if you would like to use it."
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -579,6 +678,13 @@ msgstr "Vecka"
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Work Summary"
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "Working time per week"
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -655,7 +761,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "minutes"
-msgstr ""
+msgstr "minuter"
 
 #. module: project_timesheet_synchro
 #. openerp-web

@@ -40,6 +40,13 @@ msgid "%(response)s"
 msgstr "%(response)s"
 
 #. module: account_avatax
+#. odoo-python
+#: code:addons/account_avatax/models/account_avatax.py:0
+#, python-format
+msgid "- %s (ID: %s) on %s"
+msgstr ""
+
+#. module: account_avatax
 #: model_terms:ir.ui.view,arch_db:account_avatax.res_config_settings_view_form
 msgid ""
 "<i class=\"fa fa-fw fa-arrow-right\"/>\n"
@@ -334,15 +341,6 @@ msgid "Customer Code set in Avalara for this partner."
 msgstr "Kod klienta określony w Avalara dla tego partnera."
 
 #. module: account_avatax
-#: code:addons/account_avatax/models/account_avatax.py:0
-#, python-format
-msgid ""
-"Customers are required to have a zip, state and country when using Avatax."
-msgstr ""
-"Używając Avatax, klienci są zobowiązani do podania kodu pocztowego, "
-"województwa i kraju."
-
-#. module: account_avatax
 #: model:ir.model.fields,field_description:account_avatax.field_avatax_exemption__description
 #: model:ir.model.fields,field_description:account_avatax.field_product_avatax_category__description
 msgid "Description"
@@ -588,6 +586,15 @@ msgid ""
 msgstr ""
 "Kod podatkowy Avalara Tax jest wymagany dla %(name)s (#%(id)s)\n"
 "Patrz: https://taxcode.avatax.avalara.com/"
+
+#. module: account_avatax
+#. odoo-python
+#: code:addons/account_avatax/models/account_avatax.py:0
+#, python-format
+msgid ""
+"The following customer(s) need to have a zip, state and country when using "
+"Avatax:"
+msgstr ""
 
 #. module: account_avatax
 #: model:ir.model.fields,help:account_avatax.field_res_config_settings__avalara_commit

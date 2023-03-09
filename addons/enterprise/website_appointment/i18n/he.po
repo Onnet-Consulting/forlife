@@ -271,7 +271,7 @@ msgstr "לא פורסם"
 #: model_terms:ir.ui.view,arch_db:website_appointment.appointments_cards
 #: model_terms:ir.ui.view,arch_db:website_appointment.appointments_list_layout
 msgid "Use the top button '<b>+ New</b>' to create an appointment type."
-msgstr ""
+msgstr "השתמשו בכפתור העליון '<b>+חדש</b>' ליצירת סוג חדש של פגישה."
 
 #. module: website_appointment
 #. openerp-web

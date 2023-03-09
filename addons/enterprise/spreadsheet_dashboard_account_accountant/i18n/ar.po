@@ -3,8 +3,9 @@
 # 	* spreadsheet_dashboard_account_accountant
 # 
 # Translators:
-# Malaz Abuidris <msea@odoo.com>, 2022
 # Martin Trigaux, 2022
+# Niyas Raphy, 2022
+# Malaz Abuidris <msea@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-29 09:37+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2023\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,112 +27,112 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "(Net sales – COGS) / Net sales"
-msgstr ""
+msgstr "(صافي المبيعات – كلفة السلع المباعة) / صافي المبيعات "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "< 0.7: company might be stuck with non liquid assets"
-msgstr ""
+msgstr "< 0.7: قد تبقى الشركة مع أصول غير سائلة "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "< 0.8: income might be too low"
-msgstr ""
+msgstr "< 0.8: قد يكون الدخل أقل من الحد المطلوب "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "< 0: company might not be able to meet obligations"
-msgstr ""
+msgstr "< 0: قد لا تكون الشركة قادرة على استيفاء المتطلبات "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "< 1: weak financial performance"
-msgstr ""
+msgstr "< 1: أداء مالي دون المستوى "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "< 2.5: mature company who accumulated a lot of money"
-msgstr ""
+msgstr "< 2.5: شركة ناضجة ربحت الكثير من المال "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "< 20%: hard to become profitable"
-msgstr ""
+msgstr "< 20%: من الصعب أن تكون ذات أرباح "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "< 2: company might be slow to pay suppliers"
-msgstr ""
+msgstr "< 2: قد تكون الشركة بطيئة عند الدفع للموردين "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "< 3%: not efficient at generating business"
-msgstr ""
+msgstr "< 3%: لا تتسم بالكفاءة فيما يتعلق بإيجاد الزبائن "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "< 5%: not efficient at operating business"
-msgstr ""
+msgstr "< 5%: لا تتسم بالكفاءة فيما يتعلق بإدارة العمل "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "< 6: company might not get paid for sales quickly enough"
-msgstr ""
+msgstr "< 6: قد لا يتم الدفع للشركة مقابل المبيعات بسرعة "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "> 0: company can meet financial obligations at any time"
-msgstr ""
+msgstr "> 0: بوسع الشركة تلبية المتطلبات المالية في أي وقت "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "> 1.5: strong financial performance"
-msgstr ""
+msgstr "> 1.5: أداء مالي قوي "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "> 10%: very efficient"
-msgstr ""
+msgstr "> 10%: ذات كفاءة عالية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "> 10%: very efficient at operating business"
-msgstr ""
+msgstr "> 10%: تتسم بالكفاءة العالية فيما يتعلق بإدارة العمل "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "> 10: company gets paid for sales quickly"
-msgstr ""
+msgstr "> 10: يتم الدفع للشركة مقابل المبيعات بسرعة "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -139,41 +140,42 @@ msgstr ""
 #, python-format
 msgid "> 1: company in highly solvent position"
 msgstr ""
+"> 1: الشركة في وضع يسمح لها بتلبية المتطلبات المالية على المدى البعيد "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "> 1: income allow to meet financial obligations"
-msgstr ""
+msgstr "> 1: يسمح الدخل بتلبية المتطلبات المالية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "> 3: company liquidates debts to suppliers quickly"
-msgstr ""
+msgstr "> 3: تقوم الشركة بتسديد ديونها للموردين بسرعة "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "> 50%: hugely profitable business"
-msgstr ""
+msgstr "> 50%: عمل مربح للغاية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "> 5: company owns a lot of debt and not of a lot of own money"
-msgstr ""
+msgstr "> 5: لدى الشركة الكثير من الديون والقليل من المال "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Account type"
-msgstr ""
+msgstr "نوع الحساب "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -203,7 +205,7 @@ msgstr "متوسط أيام الدائنين"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Average debtor days"
-msgstr ""
+msgstr "متوسط أيام المدينين"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -219,7 +221,7 @@ msgstr "متوسط أيام المدينين"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "Balance sheet"
-msgstr ""
+msgstr "الميزانية العمومية"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -234,14 +236,14 @@ msgstr "البنك والنقد "
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Best if compared with competitors"
-msgstr ""
+msgstr "يفضل مقارنته بالمنافسين "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "COGS"
-msgstr ""
+msgstr "كلفة السلع المباعة "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -256,7 +258,7 @@ msgstr "نقدي"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Cash flow"
-msgstr ""
+msgstr "التدفق النقدي "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -264,7 +266,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Cash flow / Current liabilities"
-msgstr ""
+msgstr "التدفق النقدي / الالتزامات الجارية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -272,7 +274,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Cash flow ratio"
-msgstr ""
+msgstr "نسبة التدفق النقدي "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -326,7 +328,7 @@ msgstr "تكاليف الإيرادات "
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "Cost of revenue"
-msgstr ""
+msgstr "تكلفة الإيرادات "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -361,7 +363,7 @@ msgstr "أرباح السنة الجارية"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Current assets"
-msgstr ""
+msgstr "الأصول الجارية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -369,7 +371,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Current assets / Current liabilities"
-msgstr ""
+msgstr "الأصول الجارية / الالتزامات الجارية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -385,7 +387,7 @@ msgstr "نسبة الأصول المتداولة إلى الالتزامات"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Current assets – Current liabilities"
-msgstr ""
+msgstr "الأصول الجارية – الالتزامات الجارية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -393,7 +395,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "Current expense"
-msgstr ""
+msgstr "النفقات الحالية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -401,14 +403,14 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "Current income"
-msgstr ""
+msgstr "الدخل الحالي "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Current liabilities"
-msgstr ""
+msgstr "الالتزامات الجارية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -416,7 +418,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Current ratio"
-msgstr ""
+msgstr "النسبة الحالية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -424,7 +426,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Debt-to-equity"
-msgstr ""
+msgstr "الدين إلى حقوق الملكية "
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -1028,7 +1030,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "last period"
-msgstr ""
+msgstr "الفترة الاخيرة"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web

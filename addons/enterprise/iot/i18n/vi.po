@@ -303,7 +303,7 @@ msgstr "Chỉ Firefox : Bấm vào Xác nhận ngoại lệ an ninh"
 #. module: iot
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__type__fiscal_data_module
 msgid "Fiscal Data Module"
-msgstr "Mô-đun dữ liệu tài chính"
+msgstr "Module dữ liệu tài chính"
 
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.iot_device_search

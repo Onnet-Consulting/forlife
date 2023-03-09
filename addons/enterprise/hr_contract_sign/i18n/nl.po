@@ -31,7 +31,7 @@ msgstr "%sen %s zijn de ondertekenaars."
 #: code:addons/hr_contract_sign/wizard/hr_contract_sign_document_wizard.py:0
 #, python-format
 msgid "%s does not have a work email set."
-msgstr "%s heeft geen zakelijk e-mailadres opgegeven."
+msgstr "%s heeft geen professioneel e-mailadres opgegeven."
 
 #. module: hr_contract_sign
 #: code:addons/hr_contract_sign/wizard/hr_contract_sign_document_wizard.py:0
@@ -47,7 +47,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.hr_employee_sign_view_form
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.res_users_request_sign_view_form
 msgid "<span class=\"o_stat_text\">Signature Requests</span>"
-msgstr "<span class=\"o_stat_text\">Handtekening verzoek</span>"
+msgstr "<span class=\"o_stat_text\">Handtekening verzoeken</span>"
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.view_hr_contract_sign
@@ -72,7 +72,7 @@ msgstr "Contractgeschiedenis"
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__cc_partner_ids
 msgid "Copy to"
-msgstr "Kopie naar"
+msgstr "Kopiëren naar"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__create_uid
@@ -92,7 +92,7 @@ msgstr "Negeren"
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__display_name
 msgid "Display Name"
-msgstr "Schermnaam"
+msgstr "Weergavenaam"
 
 #. module: hr_contract_sign
 #: model:ir.actions.act_window,name:hr_contract_sign.sign_contract_wizard_action
@@ -247,7 +247,7 @@ msgstr "Mogelijk sjabloon"
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_history__sign_request_ids
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_employee__sign_request_ids
 msgid "Requested Signatures"
-msgstr "Handtekening verzoeken"
+msgstr "Verzochte handtekeningen"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__responsible_id
@@ -257,7 +257,7 @@ msgstr "Verantwoordelijke"
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_plan_activity_type__responsible_count
 msgid "Responsible Count"
-msgstr "Verantwoordelijke teller"
+msgstr "Aantal verantwoordelijken"
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.view_hr_contract_sign
@@ -269,7 +269,7 @@ msgstr "Verzenden"
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_employee__sign_request_count
 #: model:ir.model.fields,field_description:hr_contract_sign.field_res_users__sign_request_count
 msgid "Sign Request Count"
-msgstr "Aantal tekenaanvragen"
+msgstr "Aantal handtekeningsverzoeken"
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.view_hr_contract_sign
@@ -285,7 +285,7 @@ msgstr "Onderteken sjabloon verantwoordelijke"
 #. module: hr_contract_sign
 #: model:ir.model,name:hr_contract_sign.model_hr_contract_sign_document_wizard
 msgid "Sign document in contract"
-msgstr "Onderteken document in contract"
+msgstr "Document in contract ondertekenen"
 
 #. module: hr_contract_sign
 #: code:addons/hr_contract_sign/wizard/hr_plan_wizard.py:0
@@ -330,7 +330,7 @@ msgid ""
 "You can't delete a contract linked to a signed document, archive it instead."
 msgstr ""
 "Je kunt een contract dat aan een ondertekend document is gekoppeld, niet "
-"verwijderen, maar archiveren."
+"verwijderen, archiveer het liever."
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.hr_contract_history_view_form

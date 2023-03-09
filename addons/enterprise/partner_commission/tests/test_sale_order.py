@@ -6,7 +6,7 @@ from odoo.tests import Form, tagged
 from odoo.addons.partner_commission.tests.setup import TestCommissionsSetup
 
 
-@tagged('commission_sale')
+@tagged('commission_sale', 'post_install', '-at_install')
 class TestSaleOrder(TestCommissionsSetup):
     def test_referrer_commission_plan_changed(self):
         """When the referrer's commission plan changes, its new commission plan should be set on the sale order."""

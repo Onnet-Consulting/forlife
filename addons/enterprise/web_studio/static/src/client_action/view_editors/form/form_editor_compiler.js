@@ -165,6 +165,10 @@ export class FormEditorCompiler extends formView.Compiler {
             }
         }
 
+        if (nodeType === 1 && node.getAttribute('studio_no_fetch')) {
+            return;
+        }
+
         const compiled = super.compileNode(node, params, true); // always evalInvisible
 
         if (nodeType === 1) {
@@ -176,6 +180,22 @@ export class FormEditorCompiler extends formView.Compiler {
                 } else if (!compiled.hasAttribute("studioXpath")) {
                     compiled.setAttribute("studioXpath", xpath);
                 }
+            }
+
+            if (node.tagName === "notebook") {
+                const originalChildren = Array.from(node.children);
+                Array.from(compiled.children).forEach((elem, index) => {
+                    if (!elem.hasAttribute("studioXpath")) {
+                        const studioXpath = originalChildren[index].getAttribute("studioXpath");
+                        elem.setAttribute("studioXpath", `"${studioXpath}"`);
+                        const pageHookProps = {
+                            position: "'inside'",
+                            type: "'page'",
+                            xpath: `"${studioXpath}"`,
+                        };
+                        elem.setAttribute("studioHookProps", objectToString(pageHookProps));
+                    }
+                });
             }
 
             if (node.classList.contains("oe_chatter")) {

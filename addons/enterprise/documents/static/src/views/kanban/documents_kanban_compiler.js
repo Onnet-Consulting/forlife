@@ -30,7 +30,9 @@ export class DocumentsKanbanCompiler extends KanbanCompiler {
             card.setAttribute("t-on-dragstart.stop", `(ev) => props.record.onDragStart(ev)`);
             const fileInput = card.querySelector("input.o_kanban_replace_document");
             if (fileInput) {
-                fileInput.setAttribute("t-on-change.stop", `(ev) => props.record.onReplaceDocument(ev)`);
+                fileInput.setAttribute("t-on-change.stop.prevent", `(ev) => props.record.onReplaceDocument(ev)`);
+                // Prevent double click issues
+                fileInput.setAttribute("t-on-click.stop", `() => {}`);
             }
         }
         return result;

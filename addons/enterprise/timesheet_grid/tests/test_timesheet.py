@@ -248,6 +248,57 @@ class TestTimesheetValidation(TestCommonTimesheet, MockEmail):
         working_hours = employee.get_timesheet_and_working_hours_for_employees(employees_grid_data, '2021-12-01', '2021-12-31')
         self.assertEqual(working_hours[employee.id]['units_to_work'], 184.0, "Number of hours should be 23d * 8h/d = 184h")
 
+        # Create a user in the second company and link it to the employee created above
+        user = self.env['res.users'].with_company(company).create({
+            'name': 'Juste Leblanc',
+            'login': 'juste_leblanc',
+            'groups_id': [
+                Command.link(self.env.ref('project.group_project_user').id),
+                Command.link(self.env.ref('hr_timesheet.group_hr_timesheet_user').id),
+            ],
+            'company_ids': [Command.link(company.id), Command.link(self.project_customer.company_id.id),],
+        })
+        employee.user_id = user
+
+        # Create a timesheet for a project in the first company for the employee in the second company
+        self.assertTrue(employee.company_id != self.project_customer.company_id)
+        self.assertTrue(user.company_id != self.project_customer.company_id)
+        Timesheet = self.env['account.analytic.line']
+        Timesheet.with_user(user).create({
+            'project_id': self.project_customer.id,
+            'task_id': self.task1.id,
+            'unit_amount': 1.0,
+        })
+
+        # Read the timesheets and working hours of the second company employee as a manager from the first company
+        # Invalidate the env cache first, because the above employee creation filled the fields data as superuser.
+        # The data of the fields must be emptied so the manager user fetches the data again.
+        self.env.invalidate_all()
+        working_hours = self.env['hr.employee'].with_user(
+            self.user_manager
+        ).get_timesheet_and_working_hours_for_employees(employees_grid_data, '2021-04-01', '2021-04-30')
+        self.assertEqual(working_hours[employee.id]['worked_hours'], 1.0)
+
+        # Now, same thing but archiving the employee. The manager should still be able to read his timesheet
+        # despite the fact the employee has been archived.
+        employee.active = False
+        self.env.invalidate_all()
+        working_hours = self.env['hr.employee'].with_user(
+            self.user_manager
+        ).get_timesheet_and_working_hours_for_employees(employees_grid_data, '2021-04-01', '2021-04-30')
+        self.assertEqual(working_hours[employee.id]['worked_hours'], 1.0)
+
+        # Now same thing but with the multi-company employee rule disabled
+        # Users are allowed to disable multi-company rules at will,
+        # the code should be compliant with that,
+        # and should still work/not crash when the multi-company rule is disabled
+        self.env.ref('hr.hr_employee_comp_rule').active = False
+        self.env.invalidate_all()
+        working_hours = self.env['hr.employee'].with_user(
+            self.user_manager
+        ).get_timesheet_and_working_hours_for_employees(employees_grid_data, '2021-04-01', '2021-04-30')
+        self.assertEqual(working_hours[employee.id]['worked_hours'], 1.0)
+
     def test_timesheet_grid_filter_equal_string(self):
         """Make sure that if you use a filter with (not) equal to,
            there won't be any error with grid view"""

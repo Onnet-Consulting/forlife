@@ -49,12 +49,28 @@ export class WorkorderFormController extends FormController {
         // after executing button action
         const reload = () => this.workorderBus.trigger("refresh");
         useViewButtons(this.model, rootRef, { beforeExecuteAction, reload });
+
+        if (this.props.onRecordChanged) {
+            const load = this.model.load.bind(this.model);
+            this.model.load = async (...args) => {
+                const res = await load(...args);
+                const root = this.model.root;
+                const update = root.constructor.prototype.update.bind(root);
+                root.update = async (...args) => {
+                    const res = await update(...args);
+                    this.props.onRecordChanged(root);
+                    return res;
+                }
+                return res;
+            }
+        }
     }
 }
 
 WorkorderFormController.props = {
     ...FormController.props,
     workorderBus: Object,
+    onRecordChanged: {"optional": true, "type": Function},
 };
 registry.category("views").add("workorder_form", {
     ...formView,

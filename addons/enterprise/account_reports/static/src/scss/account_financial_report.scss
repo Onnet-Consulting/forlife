@@ -106,6 +106,20 @@
     .o_account_reports_table {
         margin-bottom: 24px;
 
+        > tbody > tr:hover {
+            background-color: var(--AccountFinancial-background-hover, #F0F0F0);
+            td {
+                background-color: unset !important;
+            }
+
+        }
+
+        tr.o_account_reports_ja_subtable{
+            &:hover {
+                background-color: unset !important;
+            }
+        }
+
         th.o_account_report_column_header {
             &.sortable span {
                 cursor: pointer;
@@ -139,6 +153,10 @@
             }
         }
         thead {
+            th {
+                background-color: var(--AccountFinancial-subtable-color, #f6f7fa);
+            }
+
             tr:first-child {
                 border-bottom: 1px solid $o-gray-300;
             }
@@ -177,8 +195,8 @@
     }
     // truncate span content and add '...' if content width > span width
     .o_account_report_line_ellipsis, .o_account_report_name_ellipsis {
-        min-width: 320px;
-        max-width: 320px;
+        min-width: 160px;
+        max-width: 160px;
 
         .dropdown-toggle, .account_report_line_name {
             display: inline-block;
@@ -265,6 +283,8 @@
                 border-collapse: separate;
                 padding-right: 8px;
                 padding-left: 8px;
+                font-size: 13px;
+                text-align: right !important;
             }
             th:first-child {
                 border: none;
@@ -532,7 +552,20 @@
     }
 
     .o_account_reports_ja_header_line {
-        background-color: var(--AccountFinancial-background-color, #F6F6F6);
+        background-color: var(--AccountFinancial-border-color, #E0E2E6);
+        span {
+            font-weight: bold;
+        }
+    }
+
+    .o_account_reports_ja_move_line {
+        background-color: var(--AccountFinancial-background-contrast, #f6f7fa);
+    }
+
+    .o_account_reports_prefix_group{
+        td {
+            font-weight: bold !important;
+        }
     }
 }
 

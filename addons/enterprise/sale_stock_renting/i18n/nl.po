@@ -3,17 +3,17 @@
 # 	* sale_stock_renting
 # 
 # Translators:
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
 # Martin Trigaux, 2022
 # Jolien De Paepe, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:29+0000\n"
+"POT-Creation-Date: 2022-12-15 13:30+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
-"Last-Translator: Jolien De Paepe, 2022\n"
+"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2023\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,12 +22,14 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: sale_stock_renting
+#. odoo-python
 #: code:addons/sale_stock_renting/models/product_product.py:0
 #, python-format
 msgid "%(product)s (%(qty)s item)"
 msgstr "%(product)s (%(qty)s item)"
 
 #. module: sale_stock_renting
+#. odoo-python
 #: code:addons/sale_stock_renting/models/product_product.py:0
 #, python-format
 msgid "%(product)s (%(qty)s items)"
@@ -62,7 +64,7 @@ msgstr ""
 "als onbeschikbaar wordt beschouwd (voorbereidingstijd)."
 
 #. module: sale_stock_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_stock_renting/static/src/widgets/qty_at_date_widget.xml:0
 #, python-format
 msgid "Availability"
@@ -74,7 +76,7 @@ msgid "Available"
 msgstr "Beschikbaar"
 
 #. module: sale_stock_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_stock_renting/static/src/widgets/qty_at_date_widget.xml:0
 #, python-format
 msgid "Available for Rent"
@@ -122,7 +124,7 @@ msgstr "Heeft regels met getraceerde producten"
 #. module: sale_stock_renting
 #: model:ir.model.fields,field_description:sale_stock_renting.field_res_company__rental_loc_id
 msgid "In rent"
-msgstr "Verhuurt"
+msgstr "Verhuurd"
 
 #. module: sale_stock_renting
 #: model:ir.model.fields,field_description:sale_stock_renting.field_sale_rental_schedule__is_available
@@ -151,6 +153,7 @@ msgid "Minimum amount of time between two rentals"
 msgstr "Minimale hoeveelheid tijd tussen twee verhuren"
 
 #. module: sale_stock_renting
+#. odoo-python
 #: code:addons/sale_stock_renting/models/sale_order_line.py:0
 #, python-format
 msgid "No valid quant has been found in location %s for serial number %s !"
@@ -194,6 +197,7 @@ msgid "Pickedup Lot"
 msgstr "Opgehaalde partij"
 
 #. module: sale_stock_renting
+#. odoo-python
 #: code:addons/sale_stock_renting/wizard/rental_processing.py:0
 #, python-format
 msgid "Please specify the serial numbers picked up for the tracked products."
@@ -201,13 +205,14 @@ msgstr ""
 "Vermeld de serienummers die zijn opgehaald voor de gevolgde producten."
 
 #. module: sale_stock_renting
+#. odoo-python
 #: code:addons/sale_stock_renting/wizard/rental_processing.py:0
 #, python-format
 msgid "Please specify the serial numbers returned for the tracked products."
-msgstr "Geeft de serienummers op van de retour gebrachte producten."
+msgstr ""
+"Geef de serienummers op die voor de gevolgde producten zijn teruggestuurd."
 
 #. module: sale_stock_renting
-#: model:product.product,name:sale_stock_renting.rental_stock_product_1
 #: model:product.template,name:sale_stock_renting.rental_stock_product_1_product_template
 msgid "Printer"
 msgstr "Printer"
@@ -231,7 +236,7 @@ msgstr "Productvariant"
 #: model:ir.model.fields,field_description:sale_stock_renting.field_rental_wizard__qty_available_during_period
 msgid "Quantity available for given period (Stock - In Rent)"
 msgstr ""
-"Beschikbare hoeveelheid voor een bepaalde periode  (voorraad - in huur)"
+"Beschikbare hoeveelheid voor een bepaalde periode (voorraad - verhuurd)"
 
 #. module: sale_stock_renting
 #: model:ir.model.fields,field_description:sale_stock_renting.field_rental_wizard__rentable_qty
@@ -241,7 +246,7 @@ msgstr "Beschikbare hoeveelheid voor een bepaalde periode"
 #. module: sale_stock_renting
 #: model:ir.model.fields,field_description:sale_stock_renting.field_rental_wizard__rented_qty_during_period
 msgid "Quantity reserved"
-msgstr "Hoeveelheid gereserveerd"
+msgstr "Gereserveerde hoeveelheid"
 
 #. module: sale_stock_renting
 #: model:ir.model.fields,help:sale_stock_renting.field_rental_wizard__rented_qty_during_period
@@ -261,6 +266,7 @@ msgid "Rental Schedule"
 msgstr "Verhuurplanning"
 
 #. module: sale_stock_renting
+#. odoo-python
 #: code:addons/sale_stock_renting/models/sale_order_line.py:0
 #: code:addons/sale_stock_renting/models/sale_order_line.py:0
 #, python-format
@@ -317,7 +323,7 @@ msgstr "Serienummer"
 #: model_terms:ir.ui.view,arch_db:sale_stock_renting.rental_order_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:sale_stock_renting.report_rental_order_document
 msgid "Serial Numbers"
-msgstr "Partijnummers"
+msgstr "Serienummers"
 
 #. module: sale_stock_renting
 #: model_terms:ir.ui.view,arch_db:sale_stock_renting.rental_configurator_view_form
@@ -332,7 +338,7 @@ msgstr "Serienummers beschikbaar in voorraad"
 #. module: sale_stock_renting
 #: model:ir.model.fields,field_description:sale_stock_renting.field_rental_wizard__rented_lot_ids
 msgid "Serials in rent for given period"
-msgstr "Serienummers verhuurt voor opgegeven periode"
+msgstr "Verhuurde serienummers voor opgegeven periode"
 
 #. module: sale_stock_renting
 #: model_terms:ir.ui.view,arch_db:sale_stock_renting.rental_configurator_view_form
@@ -343,7 +349,7 @@ msgstr "Voorraad"
 #: model:ir.model.fields,help:sale_stock_renting.field_product_product__preparation_time
 #: model:ir.model.fields,help:sale_stock_renting.field_product_template__preparation_time
 msgid "Temporarily make this product unavailable before pickup."
-msgstr "Maak dit product tijdelijk onbeschikbaar om op te halen."
+msgstr "Maak dit product tijdelijk onbeschikbaar voor afhaling."
 
 #. module: sale_stock_renting
 #: model:ir.model.fields,help:sale_stock_renting.field_res_company__rental_loc_id
@@ -353,8 +359,8 @@ msgid ""
 "company assets."
 msgstr ""
 "Deze technische locatie dient als voorraad voor producten die momenteel "
-"verhuurt zijn. Deze locatie is intern omdat producten welke  verhuurt zijn, "
-"nog steeds als bedrijfsmiddelen worden beschouwd."
+"worden verhuurd. Deze locatie is intern omdat producten in verhuur nog "
+"steeds als bedrijfsmiddelen worden beschouwd."
 
 #. module: sale_stock_renting
 #: model:ir.model.fields,field_description:sale_stock_renting.field_rental_order_wizard_line__tracking
@@ -364,6 +370,7 @@ msgid "Tracking"
 msgstr "Traceren"
 
 #. module: sale_stock_renting
+#. odoo-python
 #: code:addons/sale_stock_renting/models/product_template.py:0
 #, python-format
 msgid ""
@@ -379,13 +386,7 @@ msgid "Unavailable Lot"
 msgstr "Niet beschikbare partij"
 
 #. module: sale_stock_renting
-#: model:product.product,uom_name:sale_stock_renting.rental_stock_product_1
-#: model:product.template,uom_name:sale_stock_renting.rental_stock_product_1_product_template
-msgid "Units"
-msgstr "Stuks"
-
-#. module: sale_stock_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_stock_renting/static/src/widgets/qty_at_date_widget.xml:0
 #, python-format
 msgid "View Rentals"
@@ -398,10 +399,20 @@ msgid "Warehouse"
 msgstr "Magazijn"
 
 #. module: sale_stock_renting
+#. odoo-python
 #: code:addons/sale_stock_renting/wizard/rental_configurator.py:0
 #, python-format
 msgid "You cannot change the product of a picked-up line."
 msgstr "Je kunt het product van een ophaling niet wijzigen."
+
+#. module: sale_stock_renting
+#. odoo-python
+#: code:addons/sale_stock_renting/models/sale_order_line.py:0
+#, python-format
+msgid "You cannot change the product of lines linked to stock moves."
+msgstr ""
+"Je kan het product van regels gekoppeld aan voorraadbewegingen niet "
+"wijzigen."
 
 #. module: sale_stock_renting
 #: model_terms:ir.ui.view,arch_db:sale_stock_renting.res_config_settings_inherit_view_form
@@ -414,7 +425,7 @@ msgid "hours before orders"
 msgstr "uren voor orders"
 
 #. module: sale_stock_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_stock_renting/static/src/widgets/qty_at_date_widget.xml:0
 #, python-format
 msgid "to"

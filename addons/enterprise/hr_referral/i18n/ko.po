@@ -6,6 +6,7 @@
 # Martin Trigaux, 2022
 # Linkup <link-up@naver.com>, 2022
 # JH CHOI <hwangtog@gmail.com>, 2022
+# Sarah Park, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:47+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: JH CHOI <hwangtog@gmail.com>, 2022\n"
+"Last-Translator: Sarah Park, 2023\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -397,7 +398,7 @@ msgstr "직접 추천"
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__dismissed_user_ids
 msgid "Dismissed User"
-msgstr ""
+msgstr "종료된 사용자"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__display_name
@@ -599,8 +600,8 @@ msgid ""
 "Hello,<br><br>There are some amazing job offers in my company! Have a look, "
 "they  can be interesting for you<br><a href=\"%s\">See Job Offers</a>"
 msgstr ""
-"안녕하세요, <br><br>저희 회사에 좋은 근무 제안이 있습니다! 다음을 참조하시면 이곳의 사람들이 흥미로운 것을 보여줄 겁니다. "
-"<br><a href=\"%s\">구인을 참조하십시오.</a>"
+"안녕하세요, <br><br>저희 회사에서 좋은 조건으로 채용 중인 포지션이 있습니다! 다음에서 확인 후 지원하시기 바랍니다 <br><a "
+"href=\"%s\">채용 정보 확인</a>"
 
 #. module: hr_referral
 #: code:addons/hr_referral/wizard/hr_referral_send_mail.py:0
@@ -609,8 +610,8 @@ msgid ""
 "Hello,<br><br>There is an amazing job offer for %s in my company! It will be"
 " a fit for you<br><a href=\"%s\">See Job Offer</a>"
 msgstr ""
-"안녕하세요, <br><br>저희 회사에 %s에 대한 놀라운 근무 제안이 있습니다! 그것은 당신에게 적합할 것입니다. <br><a "
-"href=\"%s\">채용 정보를 참조하십시오.</a>"
+"안녕하세요, <br><br>저희 회사에 %s 포지션을 좋은 조건으로 채용 중에 있습니다! 지원 정보는 다음을 참조하시기 바랍니다 "
+"<br><a href=\"%s\">채용 정보 확인</a>"
 
 #. module: hr_referral
 #: model:ir.model.fields.selection,name:hr_referral.selection__hr_applicant__referral_state__hired
@@ -886,7 +887,7 @@ msgstr "다음"
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "다음 활동 캘린더 행사"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_date_deadline
@@ -1041,7 +1042,7 @@ msgstr "점수를 받을 준비가 되셨습니까?"
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_recruitment_report
 msgid "Recruitment Analysis Report"
-msgstr ""
+msgstr "채용 분석 보고서"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_recruitment_stage
@@ -1092,7 +1093,7 @@ msgstr ""
 #. module: hr_referral
 #: model:res.groups,name:hr_referral.group_hr_referral_reward_responsible_user
 msgid "Referral Reward Responsible User"
-msgstr ""
+msgstr "추천 보상 책임 사용자"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_referral_send_mail
@@ -1470,7 +1471,7 @@ msgstr "사용자"
 #. module: hr_referral
 #: model:res.groups,name:hr_referral.group_hr_recruitment_referral_user
 msgid "User : Referral only"
-msgstr ""
+msgstr "사용자 : 추천 전용"
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__gift_manager_id

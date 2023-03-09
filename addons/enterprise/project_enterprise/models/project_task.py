@@ -462,7 +462,7 @@ class Task(models.Model):
             fill the empty schedule slot between contract with the company schedule.
         """
         if user:
-            employees_work_days_data, dummy = user._get_valid_work_intervals(date_start, date_end)
+            employees_work_days_data, dummy = user.sudo()._get_valid_work_intervals(date_start, date_end)
             schedule = employees_work_days_data.get(user.id) or Intervals([])
             # We are using this function to get the intervals for which the schedule of the employee is invalid. Those data are needed to check if we must fallback on the
             # company schedule. The validity_intervals['valid'] does not contain the work intervals needed, it simply contains large intervals with validity time period
@@ -597,7 +597,7 @@ class Task(models.Model):
         invalid_interval = interval
         resource = self._web_gantt_reschedule_get_resource() if resource is None else resource
         default_company = company or self.company_id or self.project_id.company_id
-        resource_calendar_validity = resource._get_calendars_validity_within_period(
+        resource_calendar_validity = resource.sudo()._get_calendars_validity_within_period(
             date_start, date_end, default_company=default_company
         )[resource.id]
         for calendar in resource_calendar_validity:

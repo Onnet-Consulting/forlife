@@ -139,7 +139,7 @@ msgstr ""
 #. module: project_enterprise
 #: model_terms:ir.ui.view,arch_db:project_enterprise.project_task_map_view
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #. module: project_enterprise
 #: model_terms:ir.ui.view,arch_db:project_enterprise.project_task_view_form_in_gantt
@@ -181,6 +181,13 @@ msgid "ID"
 msgstr "ID"
 
 #. module: project_enterprise
+#. openerp-web
+#: code:addons/project_enterprise/static/src/js/task_gantt_utils.js:0
+#, python-format
+msgid "Invalid scale interval"
+msgstr ""
+
+#. module: project_enterprise
 #: model:ir.model.fields,field_description:project_enterprise.field_project_task_confirm_schedule_line_wizard____last_update
 #: model:ir.model.fields,field_description:project_enterprise.field_project_task_confirm_schedule_wizard____last_update
 msgid "Last Modified on"
@@ -218,6 +225,14 @@ msgstr ""
 #: code:addons/project_enterprise/wizard/task_confirm_schedule_wizard.py:0
 #, python-format
 msgid "No task has been scheduled in the future."
+msgstr ""
+
+#. module: project_enterprise
+#: code:addons/project_enterprise/models/project_task.py:0
+#, python-format
+msgid ""
+"One parameter is missing to use this method. You should give a start and end"
+" dates."
 msgstr ""
 
 #. module: project_enterprise
@@ -383,6 +398,12 @@ msgstr ""
 #. module: project_enterprise
 #: code:addons/project_enterprise/models/project_task.py:0
 #, python-format
+msgid "This Progress Bar is not implemented."
+msgstr ""
+
+#. module: project_enterprise
+#: code:addons/project_enterprise/models/project_task.py:0
+#, python-format
 msgid ""
 "This employee does not have a running contract during the selected period.\n"
 "The working hours of the company were used as a reference instead."
@@ -416,7 +437,7 @@ msgstr ""
 #: model:ir.model,name:project_enterprise.model_res_users
 #: model:ir.model.fields,field_description:project_enterprise.field_project_task_confirm_schedule_wizard__user_id
 msgid "User"
-msgstr ""
+msgstr "Gebruiker"
 
 #. module: project_enterprise
 #: model:ir.model.fields,field_description:project_enterprise.field_project_task__user_names
@@ -434,7 +455,7 @@ msgstr ""
 #. module: project_enterprise
 #: model:ir.model.fields,field_description:project_enterprise.field_project_task_confirm_schedule_line_wizard__parent_id
 msgid "Wizard"
-msgstr ""
+msgstr "Assistent"
 
 #. module: project_enterprise
 #: model:ir.model.fields.selection,name:project_enterprise.selection__project_task__allocation_type__working_hours

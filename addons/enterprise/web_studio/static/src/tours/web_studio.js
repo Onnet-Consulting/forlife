@@ -15,7 +15,7 @@ tour.register(
             trigger: ".o_web_studio_navbar_item",
             content: _t("Want to customize the background? Let’s activate <b>Odoo Studio</b>."),
             position: "bottom",
-            extra_trigger: ".o_home_menu",
+            extra_trigger: ".o_home_menu_background",
         },
         {
             trigger: ".o_web_studio_home_studio_menu .dropdown-toggle",

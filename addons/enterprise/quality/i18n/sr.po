@@ -926,7 +926,7 @@ msgstr "Tim"
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_stage__team_ids
 msgid "Teams"
-msgstr ""
+msgstr "Timovi"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_check__test_type

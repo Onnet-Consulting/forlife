@@ -2,6 +2,7 @@
 import { listView } from "@web/views/list/list_view";
 import { computeXpath } from "../xml_utils";
 import { registry } from "@web/core/registry";
+import { omit } from "@web/core/utils/objects";
 
 import { ListEditorRenderer } from "./list_editor_renderer";
 import { RelationalModel } from "@web/views/relational_model";
@@ -17,6 +18,17 @@ function parseStudioGroups(node) {
 class EditorArchParser extends listView.ArchParser {
     isColumnVisible() {
         return true;
+    }
+
+    parse(arch, models, modelName) {
+        const parsed = super.parse(...arguments);
+        const noFetchFields = Object.entries(parsed.fieldNodes).filter(
+            ([fname, field]) => field.rawAttrs && field.rawAttrs.studio_no_fetch
+        ).map(f => f[0]);
+        parsed.fieldNodes = omit(parsed.fieldNodes, ...noFetchFields);
+        parsed.activeFields = omit(parsed.activeFields, ...noFetchFields);
+        parsed.columns = parsed.columns.filter(field => !noFetchFields.includes(field.name));
+        return parsed;
     }
 
     parseFieldNode(node, models, modelName) {

@@ -5,7 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # Cécile Collart <cco@odoo.com>, 2022
-# Jolien De Paepe, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:47+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Jolien De Paepe, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,7 +41,7 @@ msgstr "ATP"
 #: code:addons/mrp_mps/static/src/components/line.xml:0
 #, python-format
 msgid "Actual"
-msgstr "Actuelle"
+msgstr "Réel"
 
 #. module: mrp_mps
 #. openerp-web
@@ -62,7 +62,7 @@ msgstr "Demande réelle %s %s (%s - %s)"
 #: code:addons/mrp_mps/static/src/search/group_menu.xml:0
 #, python-format
 msgid "Actual Demand Y-1"
-msgstr "Demande Année-1"
+msgstr "Demande réelle Année-1"
 
 #. module: mrp_mps
 #. openerp-web
@@ -70,7 +70,7 @@ msgstr "Demande Année-1"
 #: code:addons/mrp_mps/static/src/search/group_menu.xml:0
 #, python-format
 msgid "Actual Demand Y-2"
-msgstr "Demande Année-2"
+msgstr "Demande réelle Année-2"
 
 #. module: mrp_mps
 #. openerp-web
@@ -99,14 +99,14 @@ msgstr "Ajouter un produit"
 #: code:addons/mrp_mps/static/src/models/master_production_schedule_model.js:0
 #, python-format
 msgid "Are you sure you want to delete these records?"
-msgstr "Voulez-vous réellement supprimer ces enregistrements?"
+msgstr "Êtes-vous sûr de vouloir supprimer ces enregistrements ?"
 
 #. module: mrp_mps
 #. openerp-web
 #: code:addons/mrp_mps/static/src/models/master_production_schedule_model.js:0
 #, python-format
 msgid "Are you sure you want to delete this record?"
-msgstr "Voulez-vous réellement supprimer cet enregistrement?"
+msgstr "Êtes-vous sûr de vouloir supprimer cet enregistrement ?"
 
 #. module: mrp_mps
 #. openerp-web
@@ -123,7 +123,7 @@ msgstr "Nomenclature"
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__bom_id
 msgid "Bill of Materials"
-msgstr "Nomenclature"
+msgstr "Nomenclatures"
 
 #. module: mrp_mps
 #: model_terms:ir.ui.view,arch_db:mrp_mps.mrp_mps_production_schedule_form_view
@@ -148,7 +148,7 @@ msgstr "Société"
 #. module: mrp_mps
 #: model:ir.model,name:mrp_mps.model_res_config_settings
 msgid "Config Settings"
-msgstr "Paramètres de config"
+msgstr "Paramètres de configuration"
 
 #. module: mrp_mps
 #. openerp-web
@@ -185,14 +185,16 @@ msgstr "Date"
 #: model:ir.model.fields,help:mrp_mps.field_mrp_production_schedule__product_uom_id
 msgid "Default unit of measure used for all stock operations."
 msgstr ""
-"Unité de mesure par défaut utilisée pour toutes les opérations de stock"
+"Unité de mesure par défaut utilisée pour toutes les opérations de stock."
 
 #. module: mrp_mps
 #: model:ir.model.fields,help:mrp_mps.field_res_company__manufacturing_period
 #: model:ir.model.fields,help:mrp_mps.field_res_config_settings__manufacturing_period
 msgid ""
 "Default value for the time ranges in Master Production Schedule report."
-msgstr "Valeur par défaut pour les laps de temps dans les rapports PdP"
+msgstr ""
+"Valeur par défaut pour les plages de temps dans le rapport Programme "
+"directeur de production."
 
 #. module: mrp_mps
 #. openerp-web
@@ -227,44 +229,44 @@ msgstr "Afficher la demande réelle de l'année dernière"
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_res_company__mrp_mps_show_actual_replenishment
 msgid "Display Actual Replenishment"
-msgstr "Montrer le réassort réel"
+msgstr "Afficher le réassort réel"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_res_company__mrp_mps_show_available_to_promise
 msgid "Display Available to Promise"
-msgstr "Montrer disponible à promettre"
+msgstr "Afficher disponible à promettre"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_res_company__mrp_mps_show_demand_forecast
 msgid "Display Demand Forecast"
-msgstr "Montrer la demande planifiée"
+msgstr "Afficher la demande planifiée"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_res_company__mrp_mps_show_indirect_demand
 msgid "Display Indirect Demand"
-msgstr "Montrer la demande indirecte"
+msgstr "Afficher la demande indirecte"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_details__display_name
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_product_forecast__display_name
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__display_name
 msgid "Display Name"
-msgstr "Nom affiché"
+msgstr "Afficher le nom"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_res_company__mrp_mps_show_safety_stock
 msgid "Display Safety Stock"
-msgstr "Montrer le stock de sécurité"
+msgstr "Afficher le stock de sécurité"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_res_company__mrp_mps_show_starting_inventory
 msgid "Display Starting Inventory"
-msgstr "Montrer l'inventaire de départ"
+msgstr "Afficher l'inventaire de départ"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_res_company__mrp_mps_show_to_replenish
 msgid "Display To Replenish"
-msgstr "Montrer à réapprovisionner"
+msgstr "Afficher à réapprovisionner"
 
 #. module: mrp_mps
 #. openerp-web
@@ -278,7 +280,7 @@ msgstr "Exporter"
 #: code:addons/mrp_mps/static/src/search/mrp_mps_control_panel.js:0
 #, python-format
 msgid "External ID"
-msgstr "ID Externe"
+msgstr "ID externe"
 
 #. module: mrp_mps
 #: model:ir.model,name:mrp_mps.model_mrp_mps_forecast_details
@@ -305,7 +307,7 @@ msgstr "Prévu"
 #: code:addons/mrp_mps/static/src/components/line.xml:0
 #, python-format
 msgid "Forecasted Demand"
-msgstr "Demande planifiée"
+msgstr "Demande prévue"
 
 #. module: mrp_mps
 #. openerp-web
@@ -313,7 +315,7 @@ msgstr "Demande planifiée"
 #: code:addons/mrp_mps/static/src/search/group_menu.xml:0
 #, python-format
 msgid "Forecasted Stock"
-msgstr "Inventaire planifié"
+msgstr "Stock prévu"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__forecast_ids
@@ -323,7 +325,8 @@ msgstr "Quantité prévue à date"
 #. module: mrp_mps
 #: model:ir.model.fields,help:mrp_mps.field_mrp_production_schedule__sequence
 msgid "Gives the sequence order when displaying a product list"
-msgstr "Indique l'ordre d'affichage lorsqu'une liste d'articles est affichée."
+msgstr ""
+"Indique l'ordre d'affichage lorsqu'une liste de produits est affichée."
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_details__id
@@ -337,7 +340,7 @@ msgstr "ID"
 #: code:addons/mrp_mps/static/src/search/group_menu.xml:0
 #, python-format
 msgid "Indirect Demand Forecast"
-msgstr "Demande indirecte prévue"
+msgstr "Prévision de la demande indirecte"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_details____last_update
@@ -368,7 +371,7 @@ msgstr "MPS"
 #. module: mrp_mps
 #: model_terms:ir.ui.view,arch_db:mrp_mps.mrp_mps_forecast_details_form_view
 msgid "Manufacturing Orders"
-msgstr "Ordres de production"
+msgstr "Ordres de fabrication"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_res_company__manufacturing_period
@@ -410,9 +413,7 @@ msgstr "Mouvement"
 #: code:addons/mrp_mps/static/src/components/main.xml:0
 #, python-format
 msgid "No product yet. Add one to start scheduling."
-msgstr ""
-"Pas de produits sélectionnés. Ajoutez-en au moins un pour commencer à "
-"planifier. "
+msgstr "Pas encore de produit. Ajoutez-en un pour commencer à planifier. "
 
 #. module: mrp_mps
 #: model_terms:ir.ui.view,arch_db:mrp_mps.res_config_settings_view_form
@@ -430,7 +431,7 @@ msgid ""
 "Number of columns for the        given period to display in Master "
 "Production Schedule"
 msgstr ""
-"Nombre de colonnes pour la période données à montrer dans le programme "
+"Nombre de colonnes pour la période donnée à afficher dans le programme "
 "directeur de production"
 
 #. module: mrp_mps
@@ -442,22 +443,22 @@ msgstr "Le réapprovisionnement a été lancé pour cette estimation"
 #: model:ir.model,name:mrp_mps.model_product_template
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__product_id
 msgid "Product"
-msgstr "Article"
+msgstr "Produit"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__product_category_id
 msgid "Product Category"
-msgstr "Catégorie d'article"
+msgstr "Catégorie de produit"
 
 #. module: mrp_mps
 #: model:ir.model,name:mrp_mps.model_mrp_product_forecast
 msgid "Product Forecast at Date"
-msgstr "Estimation de l'article à date"
+msgstr "Prévision des produits à date"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__product_tmpl_id
 msgid "Product Template"
-msgstr "Modèle d'article"
+msgstr "Modèle de produit"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__product_uom_id
@@ -467,7 +468,7 @@ msgstr "UdM du produit"
 #. module: mrp_mps
 #: model:ir.model,name:mrp_mps.model_product_product
 msgid "Product Variant"
-msgstr "Variante d'article"
+msgstr "Variante de produit"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_product_forecast__production_schedule_id
@@ -482,12 +483,12 @@ msgstr "Entrepôt de fabrication"
 #. module: mrp_mps
 #: model:ir.model,name:mrp_mps.model_purchase_order
 msgid "Purchase Order"
-msgstr "Commande fournisseur"
+msgstr "Bon de commande"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_details__purchase_order_line_ids
 msgid "Purchase Order Line"
-msgstr "Ligne de commande d'achat"
+msgstr "Ligne de bon de commande"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_mps_forecast_details__moves_qty
@@ -545,12 +546,12 @@ msgstr "Demandes de prix"
 #: code:addons/mrp_mps/static/src/search/group_menu.xml:0
 #, python-format
 msgid "Rows"
-msgstr "Rangée"
+msgstr "Lignes"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__forecast_target_qty
 msgid "Safety Stock Target"
-msgstr "Stock de sécurité"
+msgstr "Cible du stock de sécurité"
 
 #. module: mrp_mps
 #: model_terms:ir.ui.view,arch_db:mrp_mps.mrp_mps_production_schedule_form_view
@@ -560,12 +561,12 @@ msgstr "Sauvegarder"
 #. module: mrp_mps
 #: model:ir.model,name:mrp_mps.model_mrp_production_schedule
 msgid "Schedule the production of Product in a warehouse"
-msgstr "Planifier la fabrication d'un article dans un entrepôt"
+msgstr "Planifier la fabrication d'un produit dans un entrepôt"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_purchase_order__date_planned_mps
 msgid "Scheduled Date"
-msgstr "Date prévue"
+msgstr "Date planifiée"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_bom__schedule_count
@@ -592,7 +593,7 @@ msgstr "Inventaire de départ"
 #. module: mrp_mps
 #: model:ir.model,name:mrp_mps.model_stock_rule
 msgid "Stock Rule"
-msgstr "Règle de stock minimum"
+msgstr "Règle de stock"
 
 #. module: mrp_mps
 #. openerp-web
@@ -604,14 +605,14 @@ msgstr "Réassort suggéré"
 #. module: mrp_mps
 #: model:ir.model.constraint,message:mrp_mps.constraint_mrp_production_schedule_warehouse_product_ref_uniq
 msgid "The combination of warehouse and product must be unique !"
-msgstr "La combinaison d'entrepôt et article doit être unique !"
+msgstr "La combinaison d'entrepôt et de produit doit être unique !"
 
 #. module: mrp_mps
 #. openerp-web
 #: code:addons/mrp_mps/static/src/components/line.xml:0
 #, python-format
 msgid "The confirmed demand, based on the confirmed sales orders."
-msgstr "La demande confirmée, basée sur les bons de commandes confirmés."
+msgstr "La demande confirmée, basée sur les commandes clients confirmées."
 
 #. module: mrp_mps
 #. openerp-web
@@ -629,7 +630,7 @@ msgstr ""
 #: code:addons/mrp_mps/static/src/components/line.xml:0
 #, python-format
 msgid "The forecasted demand. This value has to be entered manually."
-msgstr "La demande planifiée. Cette valeur doit être entrée manuellement."
+msgstr "La demande prévue. Cette valeur doit être saisie manuellement."
 
 #. module: mrp_mps
 #. openerp-web
@@ -666,8 +667,8 @@ msgid ""
 "quantity will be transferred to the next period automatically."
 msgstr ""
 "Le réassort maximum que vous voulez lancer pour chaque période dans le PDP. "
-"Notez que si la demande est plus grande que le montant, la quantité restante"
-" sera automatiquement reportée à la période suivante."
+"Notez que si la demande est supérieure au montant, la quantité restante sera"
+" automatiquement reportée à la période suivante."
 
 #. module: mrp_mps
 #. openerp-web
@@ -687,8 +688,8 @@ msgstr ""
 msgid ""
 "The quantity to replenish through Purchase Orders or Manufacturing Orders."
 msgstr ""
-"La quantité à réapprovisionner via bons de commandes fournisseurs et ordres "
-"de fabrication."
+"La quantité à réapprovisionner via bons de commande et ordres de "
+"fabrication."
 
 #. module: mrp_mps
 #: model:ir.model.fields,help:mrp_mps.field_mrp_production_schedule__forecast_target_qty
@@ -710,7 +711,7 @@ msgstr "Plage de temps"
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_product_forecast__replenish_qty
 #, python-format
 msgid "To Replenish"
-msgstr "A réapprovisionner"
+msgstr "À réapprovisionner"
 
 #. module: mrp_mps
 #: model:ir.model.fields,help:mrp_mps.field_mrp_production_schedule__min_to_replenish_qty

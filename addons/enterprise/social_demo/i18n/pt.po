@@ -5,6 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # Diogo Duarte <diogocarvalhoduarte@gmail.com>, 2022
+# Manuela Silva <mmsrs@sky.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Diogo Duarte <diogocarvalhoduarte@gmail.com>, 2022\n"
+"Last-Translator: Manuela Silva <mmsrs@sky.com>, 2023\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -131,4 +132,4 @@ msgstr "Unidades"
 #: code:addons/social_demo/static/src/js/social_youtube_upload_field.js:0
 #, python-format
 msgid "You cannot upload videos in demo mode."
-msgstr ""
+msgstr "Não pode enviar vídeos no modo de demonstração."

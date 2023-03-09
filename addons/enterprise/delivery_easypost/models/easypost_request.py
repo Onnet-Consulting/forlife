@@ -91,7 +91,7 @@ class EasypostRequest():
         if order:
             if not order.order_line:
                 raise UserError(_("Please provide at least one item to ship."))
-            error_lines = order.order_line.filtered(lambda line: not line.product_id.weight and not line.is_delivery and line.product_id.type != 'service' and not line.display_type)
+            error_lines = order.order_line.filtered(lambda line: not line.product_id.weight and line.product_qty != 0 and not line.is_delivery and line.product_id.type != 'service' and not line.display_type)
             if error_lines:
                 return _("The estimated shipping price cannot be computed because the weight is missing for the following product(s): \n %s") % ", ".join(error_lines.product_id.mapped('name'))
 
@@ -99,7 +99,7 @@ class EasypostRequest():
         if picking:
             if not picking.move_ids:
                 raise UserError(_("Please provide at least one item to ship."))
-            if picking.move_ids.filtered(lambda line: not line.weight):
+            if picking.move_ids.filtered(lambda line: not line.weight and line.product_qty != 0):
                 raise UserError(_('The estimated price cannot be computed because the weight of your product is missing.'))
         return True
 
@@ -411,15 +411,24 @@ class EasypostRequest():
         modify the returned response in order to make it standard compare to
         other carrier.
         """
-        # An order for UPS will generate a rate for first shipment with the
-        # rate for all shipments but compare to other carriers, it will return
-        # messages for following shipments explaining that their rates is in the
-        # first shipment (other carrier just return an empty list).
-        if response.get('messages') and\
-                carrier.easypost_delivery_type == 'UPS' and\
-                len(response.get('shipments', [])) > 1:
-            if len(response.get('shipments')[0].get('rates', [])) > 0 and all(s.get('messages') for s in response['shipments'][1:]):
-                if picking:
-                    picking.message_post(body=response.get('messages'))
-                response['messages'] = False
+        # With multiples shipments, some carrier will return a message explaining that
+        # the rates are on the first shipments and not on the next ones.
+        if response.get('messages') and carrier.easypost_delivery_type in ['Purolator', 'DPD UK', 'UPS'] and \
+                len(response.get('shipments', [])) > 1 and \
+                len(response.get('shipments')[0].get('rates', [])) > 0 and \
+                all(len(s.get('rates', [])) == 0 for s in response['shipments'][1:]):
+            if carrier.easypost_delivery_type == 'UPS' and not all(s.get('messages') for s in response['shipments'][1:]):
+                # UPS also send a message on following shipments explaining that their rates is in the
+                # first shipment (other carrier just return an empty list).
+                return response
+            if carrier.easypost_delivery_type in ['Purolator', 'DPD UK'] and (
+                    len(response['messages']) != 1 or
+                    response['messages'][0].get('type', '') != 'rate_error' or
+                    "multi-shipment rate includes this shipment." not in response['messages'][0].get('message', '')):
+                # Purolator & DPD UK send a rate_error message for this situation.
+                return response
+
+            if picking:
+                picking.message_post(body=response.get('messages'))
+            response['messages'] = False
         return response

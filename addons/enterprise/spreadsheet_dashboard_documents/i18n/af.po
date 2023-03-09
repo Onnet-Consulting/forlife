@@ -89,7 +89,7 @@ msgstr "Vertoningsnaam"
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__document_id
 msgid "Document"
-msgstr ""
+msgstr "Dokument"
 
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__id

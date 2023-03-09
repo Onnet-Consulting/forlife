@@ -4,16 +4,17 @@
 # 
 # Translators:
 # Rachid Al Assir <rachidalassir@gmail.com>, 2022
-# Malaz Abuidris <msea@odoo.com>, 2022
 # Martin Trigaux, 2022
+# Niyas Raphy, 2022
+# Malaz Abuidris <msea@odoo.com>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-27 15:42+0000\n"
+"POT-Creation-Date: 2023-02-02 10:53+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2022\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,11 +29,11 @@ msgid ""
 msgstr ""
 
 #. module: sign_itsme
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sign_itsme/static/src/js/document_signable.js:0
 #, python-format
 msgid "Confirm your identity"
-msgstr ""
+msgstr "اكد هويتك"
 
 #. module: sign_itsme
 #: model:sign.item.role,name:sign_itsme.sign_item_role_itsme_customer
@@ -42,7 +43,7 @@ msgstr ""
 #. module: sign_itsme
 #: model:ir.model.fields,field_description:sign_itsme.field_sign_item_role__auth_method
 msgid "Extra Authentication Step"
-msgstr ""
+msgstr "خطوة المصادقة الإضافية "
 
 #. module: sign_itsme
 #: model:ir.model.fields,help:sign_itsme.field_sign_item_role__auth_method
@@ -50,14 +51,21 @@ msgid "Force the signatory to identify using a second authentication method"
 msgstr ""
 
 #. module: sign_itsme
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sign_itsme/static/src/xml/templates.xml:0
 #, python-format
 msgid "Go Back"
 msgstr "عد"
 
 #. module: sign_itsme
-#. openerp-web
+#. odoo-javascript
+#: code:addons/sign_itsme/static/src/js/document_signable.js:0
+#, python-format
+msgid "Identification refused"
+msgstr ""
+
+#. module: sign_itsme
+#. odoo-javascript
 #: code:addons/sign_itsme/static/src/xml/templates.xml:0
 #, python-format
 msgid "Identify with itsme"
@@ -69,13 +77,14 @@ msgid "Name"
 msgstr "الاسم"
 
 #. module: sign_itsme
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sign_itsme/static/src/xml/templates.xml:0
 #, python-format
 msgid "Please confirm your identity to finalize your signature."
 msgstr ""
 
 #. module: sign_itsme
+#. odoo-python
 #: code:addons/sign_itsme/models/sign_request_item.py:0
 #, python-format
 msgid "Sign request item is not validated yet."
@@ -92,11 +101,30 @@ msgid "Signature Request Item"
 msgstr "عنصر طلب التوقيع"
 
 #. module: sign_itsme
+#. odoo-javascript
+#: code:addons/sign_itsme/static/src/js/document_signable.js:0
+#, python-format
+msgid ""
+"The itsme® identification data could not be forwarded to Odoo, the signature"
+" could not be saved."
+msgstr ""
+
+#. module: sign_itsme
 #: model:ir.model.fields.selection,name:sign_itsme.selection__sign_item_role__auth_method__itsme
 msgid "Via itsme®"
 msgstr ""
 
 #. module: sign_itsme
+#. odoo-javascript
+#: code:addons/sign_itsme/static/src/js/document_signable.js:0
+#, python-format
+msgid ""
+"You have rejected the identification request or took too long to process it."
+" You can try again to finalize your signature."
+msgstr ""
+
+#. module: sign_itsme
+#. odoo-python
 #: code:addons/sign_itsme/controllers/main.py:0
 #, python-format
 msgid "itsme® IAP service could not be found."

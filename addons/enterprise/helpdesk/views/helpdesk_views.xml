@@ -539,7 +539,7 @@
                 <field name="legend_done" invisible="1"/>
                 <field name="ticket_ref" string="ID" readonly="1" optional="show"/>
                 <field name="priority" optional="show" widget="priority"/>
-                <field name="name" string="Name" readonly="1"/>
+                <field name="name" string="Name"/>
                 <field name="team_id" optional="show" readonly="1" invisible="context.get('default_team_id', False)"/>
                 <field name="team_id" optional="hide" readonly="1" invisible="not context.get('default_team_id', False)"/>
                 <field name="user_id" optional="show" widget="many2one_avatar_user" options="{'no_quick_create': True}"/>
@@ -954,7 +954,7 @@
     <record id="helpdesk_ticket_action_close_analysis" model="ir.actions.act_window">
         <field name="name">Closed Tickets Analysis</field>
         <field name="res_model">helpdesk.ticket</field>
-        <field name="view_mode">tree,pivot,graph</field>
+        <field name="view_mode">tree,form,pivot,graph</field>
         <field name="search_view_id" ref="helpdesk_tickets_view_search"/>
         <field name="domain" eval="[('close_date', '>=', (DateTime.today() - relativedelta(hours=12)).strftime('%Y-%m-%d %H:%M:%S'))]"/>
         <field name="context">{

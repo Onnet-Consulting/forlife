@@ -122,6 +122,7 @@ class Picking(models.Model):
         if not self.l10n_latam_document_number:
             self.l10n_latam_document_number = self._get_next_document_number()
         self.l10n_cl_dte_status = 'not_sent'
+        msg_demo = _(' in DEMO mode.') if self.company_id.l10n_cl_dte_service_provider == 'SIIDEMO' else '.'
         self._l10n_cl_create_dte()
         dte_signed, file_name = self._l10n_cl_get_dte_envelope()
         attachment = self.env['ir.attachment'].create({
@@ -132,7 +133,7 @@ class Picking(models.Model):
             'type': 'binary',
         })
         self.l10n_cl_sii_send_file = attachment.id
-        self.message_post(body=_('DTE has been created'), attachment_ids=attachment.ids)
+        self.message_post(body=_('DTE has been created%s', msg_demo), attachment_ids=attachment.ids)
         return self.print_delivery_guide_pdf()
 
     def print_delivery_guide_pdf(self):
@@ -512,6 +513,11 @@ class Picking(models.Model):
         if self.l10n_cl_dte_status != "not_sent":
             return None
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
+        if self.company_id.l10n_cl_dte_service_provider == 'SIIDEMO':
+            self.message_post(body=_('This DTE has been generated in DEMO Mode. It is considered as accepted and '
+                                     'it won\'t be sent to SII.'))
+            self.l10n_cl_dte_status = 'accepted'
+            return None
         response = self._send_xml_to_sii(
             self.company_id.l10n_cl_dte_service_provider,
             self.company_id.website,

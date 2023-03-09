@@ -7,9 +7,9 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1+e\n"
+"Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:49+0000\n"
+"POT-Creation-Date: 2022-10-10 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
 "Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Vietnamese (https://www.transifex.com/odoo/teams/41243/vi/)\n"
@@ -37,24 +37,24 @@ msgstr ""
 
 #. module: social_twitter
 #: model_terms:ir.ui.view,arch_db:social_twitter.social_stream_post_view_kanban
-msgid "<i class=\"fa fa-comments\" title=\"Comments\"/>"
+msgid "<i class=\"fa fa-comments me-1\" title=\"Comments\"/>"
 msgstr ""
 
 #. module: social_twitter
 #: model_terms:ir.ui.view,arch_db:social_twitter.social_stream_post_view_kanban
-msgid "<i class=\"fa fa-heart\" title=\"Likes\"/>"
+msgid "<i class=\"fa fa-heart me-1\" title=\"Likes\"/>"
 msgstr ""
 
 #. module: social_twitter
 #: model_terms:ir.ui.view,arch_db:social_twitter.social_stream_post_view_kanban
 msgid ""
-"<i class=\"fa fa-pencil\" title=\"Quote a tweet\"/>\n"
+"<i class=\"fa fa-pencil me-1\" title=\"Quote a tweet\"/>\n"
 "                                    <span>Quote Tweet</span>"
 msgstr ""
 
 #. module: social_twitter
 #: model_terms:ir.ui.view,arch_db:social_twitter.social_stream_post_view_kanban
-msgid "<i class=\"fa fa-retweet\" title=\"Retweet a tweet\"/>"
+msgid "<i class=\"fa fa-retweet me-1\" title=\"Retweet a tweet\"/>"
 msgstr ""
 
 #. module: social_twitter
@@ -89,7 +89,7 @@ msgstr ""
 
 #. module: social_twitter
 #. openerp-web
-#: code:addons/social_twitter/static/src/js/stream_post_twitter_quote.js:0
+#: code:addons/social_twitter/static/src/xml/social_twitter_templates.xml:0
 #, python-format
 msgid "Cancel"
 msgstr "Hủy"
@@ -152,8 +152,7 @@ msgstr ""
 
 #. module: social_twitter
 #. openerp-web
-#: code:addons/social_twitter/static/src/js/stream_post_kanban_controller.js:0
-#: code:addons/social_twitter/static/src/js/stream_post_twitter_quote.js:0
+#: code:addons/social_twitter/static/src/js/stream_post_kanban_record.js:0
 #, python-format
 msgid "Error"
 msgstr "Lỗi"
@@ -252,7 +251,7 @@ msgstr ""
 
 #. module: social_twitter
 #. openerp-web
-#: code:addons/social_twitter/static/src/js/stream_post_twitter_quote.js:0
+#: code:addons/social_twitter/static/src/xml/social_twitter_templates.xml:0
 #, python-format
 msgid "Post"
 msgstr "Vào sổ"
@@ -264,7 +263,7 @@ msgstr ""
 
 #. module: social_twitter
 #. openerp-web
-#: code:addons/social_twitter/static/src/js/stream_post_twitter_quote.js:0
+#: code:addons/social_twitter/static/src/js/stream_post_kanban_record.js:0
 #, python-format
 msgid "Quote a Tweet"
 msgstr ""
@@ -416,7 +415,7 @@ msgstr ""
 
 #. module: social_twitter
 #. openerp-web
-#: code:addons/social_twitter/static/src/js/stream_post_twitter_comments.js:0
+#: code:addons/social_twitter/static/src/js/stream_post_kanban_record.js:0
 #: model:ir.model.fields,field_description:social_twitter.field_social_stream_post__twitter_comments_count
 #, python-format
 msgid "Twitter Comments"
@@ -582,7 +581,7 @@ msgstr ""
 
 #. module: social_twitter
 #. openerp-web
-#: code:addons/social_twitter/static/src/js/stream_post_twitter_comments.js:0
+#: code:addons/social_twitter/static/src/js/stream_post_comments.js:0
 #, python-format
 msgid ""
 "You can comment only three times a tweet as it may be considered as spamming"
@@ -623,7 +622,7 @@ msgstr ""
 
 #. module: social_twitter
 #. openerp-web
-#: code:addons/social_twitter/static/src/js/stream_post_twitter_comments.js:0
+#: code:addons/social_twitter/static/src/js/stream_post_comment.js:0
 #, python-format
 msgid "tweet"
 msgstr ""

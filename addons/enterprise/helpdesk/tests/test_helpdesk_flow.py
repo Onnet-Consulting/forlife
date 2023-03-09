@@ -18,8 +18,22 @@ class TestHelpdeskFlow(HelpdeskCommon):
         - test_automatic_ticket_closing: tests automatic ticket closing after set number of days
     """
 
-    def setUp(self):
-        super(TestHelpdeskFlow, self).setUp()
+    @classmethod
+    def setUpClass(cls):
+        res = super().setUpClass()
+        cls.env["ir.config_parameter"].sudo().set_param("mail.catchall.domain", 'aqualung.com')
+
+        ticket_model_id = cls.env['ir.model']._get_id('helpdesk.ticket')
+        helpdesk_team_model_id = cls.env['ir.model']._get_id('helpdesk.team')
+
+        cls.mail_alias = cls.env['mail.alias'].create({
+            'alias_name': 'helpdesk_team',
+            'alias_model_id': ticket_model_id,
+            'alias_parent_model_id': helpdesk_team_model_id,
+            'alias_parent_thread_id': cls.test_team.id,
+            'alias_defaults': "{'team_id': %s}" % cls.test_team.id,
+        })
+        return res
 
     def test_access_rights(self):
         # helpdesk user should only be able to:
@@ -282,11 +296,77 @@ Content-Transfer-Encoding: quoted-printable
         self.assertEqual(partner0.company_id, company0)
         self.assertEqual(partner1.company_id, company1)
 
+        self.assertEqual(partner0.name, "A client")
+        self.assertEqual(partner1.name, "B client")
+
         self.assertEqual(helpdesk_ticket0.partner_id, partner0)
         self.assertEqual(helpdesk_ticket1.partner_id, partner1)
 
         self.assertTrue(partner0 in helpdesk_ticket0.message_follower_ids.mapped('partner_id'))
         self.assertTrue(partner1 in helpdesk_ticket1.message_follower_ids.mapped('partner_id'))
+
+    def test_email_non_ascii(self):
+        """
+        Ensure that non-ascii characters are correctly handled in partner email addresses
+        """
+        new_message = """MIME-Version: 1.0
+Date: Thu, 27 Dec 2018 16:27:45 +0100
+Message-ID: blablabla1
+Subject: helpdesk team 1 in company 1
+From:  Client with a §tràÑge name <client_b@someprovaîdère.com>
+To: helpdesk_team@aqualung.com
+Content-Type: multipart/alternative; boundary="000000000000a47519057e029630"
+
+--000000000000a47519057e029630
+Content-Type: text/plain; charset="UTF-8"
+
+
+--000000000000a47519057e029630
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div>A good message ter</div>
+
+--000000000000a47519057e029630--
+"""
+        helpdesk_ticket = self.env['mail.thread'].message_process('helpdesk.ticket', new_message)
+        helpdesk_ticket = self.env['helpdesk.ticket'].browse(helpdesk_ticket)
+
+        self.assertEqual(helpdesk_ticket.partner_id.name, "Client with a §tràÑge name")
+        self.assertEqual(helpdesk_ticket.partner_id.email, "client_b@someprovaîdère.com")
+        self.assertEqual(helpdesk_ticket.partner_email, "client_b@someprovaîdère.com")
+
+    def test_email_without_mail_template(self):
+        """
+        A mail sent to the alias without mail template on the stage should also create a partner
+        """
+        stage = self.test_team._determine_stage()[self.test_team.id]
+        stage.template_id = False
+
+        new_message = """MIME-Version: 1.0
+Date: Thu, 27 Dec 2018 16:27:45 +0100
+Message-ID: blablabla1
+Subject: helpdesk team 1 in company 1
+From:  Client A <client_a@someprovider.com>
+To: helpdesk_team@aqualung.com
+Content-Type: multipart/alternative; boundary="000000000000a47519057e029630"
+
+--000000000000a47519057e029630
+Content-Type: text/plain; charset="UTF-8"
+
+
+--000000000000a47519057e029630
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div>A good message ter</div>
+
+--000000000000a47519057e029630--
+"""
+        helpdesk_ticket = self.env['mail.thread'].message_process('helpdesk.ticket', new_message)
+        helpdesk_ticket = self.env['helpdesk.ticket'].browse(helpdesk_ticket)
+
+        self.assertEqual(helpdesk_ticket.partner_id.name, "Client A")
 
     def test_team_assignation_balanced_sla(self):
         #We create an sla policy with minimum priority set as '2'

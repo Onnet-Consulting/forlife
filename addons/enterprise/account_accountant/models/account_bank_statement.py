@@ -18,6 +18,21 @@ class AccountBankStatement(models.Model):
             extra_domain=[('statement_id', '=', self.id)]
         )
 
+    def action_generate_attachment(self):
+        ir_actions_report_sudo = self.env['ir.actions.report'].sudo()
+        statement_report_action = self.env.ref('account.action_report_account_statement')
+        for statement in self:
+            statement_report = statement_report_action.sudo()
+            content, _content_type = ir_actions_report_sudo._render_qweb_pdf(statement_report, res_ids=statement.ids)
+            statement.attachment_ids |= self.env['ir.attachment'].create({
+                'name': _("Bank Statement %s.pdf", statement.name) if statement.name else _("Bank Statement.pdf"),
+                'type': 'binary',
+                'mimetype': 'application/pdf',
+                'raw': content,
+                'res_model': statement._name,
+                'res_id': statement.id,
+            })
+        return statement_report_action.report_action(docids=self)
 
 class AccountBankStatementLine(models.Model):
     _inherit = 'account.bank.statement.line'
@@ -50,6 +65,14 @@ class AccountBankStatementLine(models.Model):
             'view_mode': 'kanban,list' if kanban_first else 'list,kanban',
             'views': views if kanban_first else views[::-1],
             'domain': [('state', '!=', 'cancel')] + (extra_domain or []),
+            'help': _("""
+                <p class="o_view_nocontent_smiling_face">
+                    All done!
+                </p>
+                <p>
+                    Create new transactions, or make sure that there is no active filter in the search bar.
+                </p>
+            """),
         }
 
     def action_open_recon_st_line(self):
@@ -89,7 +112,6 @@ class AccountBankStatementLine(models.Model):
         # Find the bank statement lines that are not reconciled and try to reconcile them automatically.
         # The ones that are never be processed by the CRON before are processed first.
         limit = batch_size + 1 if batch_size else None
-        has_more_st_lines_to_reconcile = False
         datetime_now = fields.Datetime.now()
         companies = self.env['res.company'].browse(configured_company_ids)
         lock_dates = companies.filtered('fiscalyear_lock_date').mapped('fiscalyear_lock_date')
@@ -105,9 +127,10 @@ class AccountBankStatementLine(models.Model):
         query_str, query_params = query_obj.select('account_bank_statement_line.id')
         self._cr.execute(query_str, query_params)
         st_line_ids = [r[0] for r in self._cr.fetchall()]
+        remaining_line_id = None
         if batch_size and len(st_line_ids) > batch_size:
+            remaining_line_id = st_line_ids[batch_size]
             st_line_ids = st_line_ids[:batch_size]
-            has_more_st_lines_to_reconcile = True
 
         st_lines = self.env['account.bank.statement.line'].browse(st_line_ids)
         nb_auto_reconciled_lines = 0
@@ -127,5 +150,8 @@ class AccountBankStatementLine(models.Model):
 
         # The configuration seems effective since some lines has been automatically reconciled right now and there is
         # some statement lines left.
-        if nb_auto_reconciled_lines and has_more_st_lines_to_reconcile:
-            self.env.ref('account_accountant.auto_reconcile_bank_statement_line')._trigger()
+        # If the next statement line has never been auto reconciled yet, force the trigger.
+        if remaining_line_id:
+            remaining_st_line = self.env['account.bank.statement.line'].browse(remaining_line_id)
+            if nb_auto_reconciled_lines or not remaining_st_line.cron_last_check:
+                self.env.ref('account_accountant.auto_reconcile_bank_statement_line')._trigger()

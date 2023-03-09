@@ -6,14 +6,15 @@
 # Martin Trigaux, 2022
 # JH CHOI <hwangtog@gmail.com>, 2022
 # Linkup <link-up@naver.com>, 2022
+# Sarah Park, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:26+0000\n"
+"POT-Creation-Date: 2022-12-15 13:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Linkup <link-up@naver.com>, 2022\n"
+"Last-Translator: Sarah Park, 2023\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,10 +23,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid "%s Spent"
-msgstr ""
+msgstr "%s 소요"
 
 #. module: timesheet_grid
 #: model_terms:ir.ui.view,arch_db:timesheet_grid.project_task_view_kanban
@@ -36,6 +38,11 @@ msgstr "<i class=\"fa fa-pause text-warning\" title=\"Timer is Paused\"/>"
 #: model_terms:ir.ui.view,arch_db:timesheet_grid.project_task_view_kanban
 msgid "<i class=\"fa fa-play text-success\" title=\"Timer is Running\"/>"
 msgstr "<i class=\"fa fa-play text-success\" title=\"Timer is Running\"/>"
+
+#. module: timesheet_grid
+#: model_terms:ir.ui.view,arch_db:timesheet_grid.res_config_settings_view_form
+msgid "<span class=\"col-auto ms-2\">minutes</span>"
+msgstr ""
 
 #. module: timesheet_grid
 #: model_terms:ir.ui.view,arch_db:timesheet_grid.res_config_settings_view_form
@@ -132,6 +139,83 @@ msgid ""
 "</table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <span style=\"font-size: 10px;\">작업시간표 관련 안내</span><br/>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Abigail Peterson</span>\n"
+"                </td><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.company_id.name\"/>\n"
+"                </td></tr>\n"
+"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                  <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- CONTENT -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                    <t t-set=\"timesheet_hours\" t-value=\"ctx.get('timesheet_hours', 0)\"/>\n"
+"                    <t t-set=\"working_hours\" t-value=\"ctx.get('working_hours', 0)\"/>\n"
+"                    <div>\n"
+"                        안녕하세요 <t t-out=\"object.name or ''\">Abigail Peterson</t>님,<br/><br/>\n"
+"                        다음 기간동안의 작업 시간을 기록하셔야 함을 알림으로 안내드립니다: <t t-out=\"ctx.get('date_start') or ''\">05/05/2021</t> <i class=\"fa fa-long-arrow-right\"/> <t t-out=\"ctx.get('date_stop') or ''\">05/06/2021</t>.\n"
+"                        해당 기간동안, 사용자님의 로그 시간은 <t t-if=\"timesheet_hours != 0\">단지</t> <t t-out=\"'%d' %int(timesheet_hours)\">2</t><t t-if=\"timesheet_hours % 1 != 0\" t-out=\"':%02d' % (round(timesheet_hours % 1 * 60))\">:30</t> 시간인 반면, 요청 시간은  <t t-out=\"'%d' %int(working_hours)\">8</t><t t-if=\"working_hours % 1 != 0\" t-out=\"':%02d' % (round(working_hours % 1 * 60))\">:30</t> 입니다 .<br/>\n"
+"                        <div t-if=\"ctx.get('action_url')\" style=\"margin: 16px 0px 16px 0px;\">\n"
+"                            <a t-att-href=\"ctx.get('action_url')\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 13px;\">작업시간표 기록하기</a>\n"
+"                        </div>\n"
+"                        <br/>감사합니다.<br/>\n"
+"                        <t t-if=\"user.signature\">\n"
+"                            <t t-out=\"user.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"                        </t>\n"
+"                    </div>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"object.company_id.name or ''\">YourCompany</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                    <t t-out=\"object.company_id.phone or ''\">+1 650-123-4567</t>\n"
+"                    <t t-if=\"object.company_id.email\">\n"
+"                        | <a t-attf-href=\"'mailto:%s' % {{ object.company_id.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.company_id.email or ''\">info@yourcompany.com</a>\n"
+"                    </t>\n"
+"                    <t t-if=\"object.company_id.website\">\n"
+"                        | <a t-attf-href=\"'%s' % {{ object.company_id.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.company_id.website or ''\">http://www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=mail\" style=\"color: #875A7B;\">Odoo</a>\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>\n"
+"            "
 
 #. module: timesheet_grid
 #: model:mail.template,body_html:timesheet_grid.mail_template_timesheet_reminder_manager
@@ -211,6 +295,80 @@ msgid ""
 "</table>\n"
 "            "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <span style=\"font-size: 10px;\">작업시간표 관련 안내</span><br/>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Abigail Peterson</span>\n"
+"                </td><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ object.company_id.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"object.company_id.name\"/>\n"
+"                </td></tr>\n"
+"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- CONTENT -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                    <div>\n"
+"                        안녕하세요 <t t-out=\"object.name or ''\">Abigail Peterson</t>님,<br/><br/>\n"
+"                        다음 기간동안의 팀에 대한 작업시간표를 결재하시도록 알림으로 안내드립니다: <t t-out=\"ctx.get('date_start') or ''\">05/05/2021</t> - <t t-out=\"ctx.get('date_stop') or ''\">06/05/2021</t>.<br/>\n"
+"                        <div t-if=\"ctx.get('action_url')\" style=\"margin: 16px 0px 16px 0px;\">\n"
+"                            <a t-att-href=\"ctx.get('action_url')\" style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 13px;\">작업시간표 승인하기</a>\n"
+"                        </div>\n"
+"                        <br/>감사합니다.<br/>\n"
+"                        <t t-if=\"user.signature\">\n"
+"                            <t t-out=\"user.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"                        </t>\n"
+"                    </div>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"object.company_id.name or ''\">YourCompany</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                    <t t-out=\"object.company_id.phone or ''\">+1 650-123-4567</t>\n"
+"                    <t t-if=\"object.company_id.email\">\n"
+"                        | <a t-attf-href=\"'mailto:%s' % {{ object.company_id.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.company_id.email or ''\">info@yourcompany.com</a>\n"
+"                    </t>\n"
+"                    <t t-if=\"object.company_id.website\">\n"
+"                        | <a t-attf-href=\"'%s' % {{ object.company_id.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"object.company_id.website or ''\">http://www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"        Powered by <a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=mail\" style=\"color: #875A7B;\">Odoo</a>\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>\n"
+"            "
 
 #. module: timesheet_grid
 #: model_terms:ir.ui.view,arch_db:timesheet_grid.timesheet_view_form
@@ -235,6 +393,7 @@ msgid "Amount"
 msgstr "금액"
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid "An employee must be linked to your user to record time."
@@ -246,16 +405,11 @@ msgid "Analytic Account"
 msgstr "분석 계정"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "Apple App Store"
 msgstr "애플 앱스토어"
-
-#. module: timesheet_grid
-#: model_terms:ir.ui.view,arch_db:timesheet_grid.res_config_settings_view_form
-msgid "Block encoding of timesheets after a certain date"
-msgstr ""
 
 #. module: timesheet_grid
 #: model:ir.model.fields,field_description:timesheet_grid.field_account_analytic_line__can_edit
@@ -292,13 +446,14 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/task.py:0
 #, python-format
 msgid "Confirm Time Spent"
 msgstr "보낸 시간 확인"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/tours/timesheet_grid.js:0
 #, python-format
 msgid "Congratulations, you are now a master of Timesheets."
@@ -358,7 +513,7 @@ msgid "Days to Remind User"
 msgstr "사용자 알림 날짜"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/components/timesheet_uom_hour_toggle/timesheet_uom_hour_toggle.xml:0
 #: code:addons/timesheet_grid/static/src/js/timesheet_uom_timer.js:0
 #, python-format
@@ -383,7 +538,7 @@ msgid "Describe your activity"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/tours/timesheet_grid.js:0
 #, python-format
 msgid ""
@@ -392,7 +547,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #: model_terms:ir.ui.view,arch_db:timesheet_grid.project_task_create_timesheet_view_form
 #, python-format
@@ -406,7 +561,7 @@ msgid "Description"
 msgstr "설명"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/widgets/timesheets_m2o_project.js:0
 #, python-format
 msgid ""
@@ -415,7 +570,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/widgets/timesheets_m2o_task.js:0
 #, python-format
 msgid ""
@@ -424,7 +579,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/widgets/timesheets_m2o_avatar_employee.js:0
 #, python-format
 msgid ""
@@ -433,7 +588,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/widgets/timesheets_m2o_avatar_employee.js:0
 #, python-format
 msgid ""
@@ -442,7 +597,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/widgets/timesheets_m2o_widget.js:0
 #, python-format
 msgid "Difference between the time allocated and the time recorded."
@@ -499,7 +654,7 @@ msgid "Display Timesheet Time"
 msgstr "작업 기록 시간 표시"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid ""
@@ -542,7 +697,7 @@ msgid "Encoding Uom"
 msgstr "인코딩 Uom"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "Enter"
@@ -554,25 +709,25 @@ msgid "Frequency"
 msgstr "주기"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "Google Chrome Store"
 msgstr "구글 크롬스토어"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "Google Play Store"
 msgstr "구글 플레이스토어"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/timesheet_grid/timesheet_grid_group_by_no_date_mixin.js:0
 #, python-format
 msgid "Grouping by date is not supported"
-msgstr ""
+msgstr "날짜별 그룹은 지원되지 않습니다"
 
 #. module: timesheet_grid
 #: model_terms:ir.ui.view,arch_db:timesheet_grid.project_task_create_timesheet_view_form
@@ -591,7 +746,7 @@ msgid "ID"
 msgstr "ID"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/components/timesheet_uom_hour_toggle/timesheet_uom_hour_toggle.xml:0
 #: code:addons/timesheet_grid/static/src/js/timesheet_uom_timer.js:0
 #, python-format
@@ -639,7 +794,7 @@ msgid "Last Week"
 msgstr "지난 주"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/tours/timesheet_grid.js:0
 #, python-format
 msgid ""
@@ -650,7 +805,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/tours/timesheet_grid.js:0
 #, python-format
 msgid "Launch the <b>timer</b> to start a new activity."
@@ -690,6 +845,7 @@ msgid "Merge Timesheet"
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #: model:ir.actions.server,name:timesheet_grid.merge_timesheet_action
 #: model:ir.model,name:timesheet_grid.model_hr_timesheet_merge_wizard
@@ -750,11 +906,11 @@ msgid "Next scheduled date for manager reminder"
 msgstr "관리자 알림을 위한 다음 예약 날짜"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "No activities found. Let's start a new one!"
-msgstr ""
+msgstr "확인된 활동이 없습니다. 새 활동을 생성합니다!"
 
 #. module: timesheet_grid
 #: model_terms:ir.actions.act_window,help:timesheet_grid.action_timesheet_previous_month
@@ -774,6 +930,7 @@ msgid ""
 "email reminder will be sent to timesheet managers that still have timesheets"
 " to validate."
 msgstr ""
+"아직 승인 대기중인 작업시간표가 있는 경우 작업시간표 관리자에게 이메일 알림을 주 / 월말일 며칠 후에 자동으로 발송할지 설정합니다."
 
 #. module: timesheet_grid
 #: model:ir.model.fields,help:timesheet_grid.field_res_config_settings__reminder_user_delay
@@ -782,8 +939,11 @@ msgid ""
 "email reminder will be sent to timesheet users that still have timesheets to"
 " encode (according to their working hours)."
 msgstr ""
+"아직 인코딩이 완료되지 않은 작업시간표가 있는 경우, 작업시간표 관리자에게 이메일 알림을 주말/월말일 며칠 후에 자동으로 발송할지 "
+"설정합니다 (각 작업 시간에 따름)."
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid ""
@@ -802,21 +962,29 @@ msgid "Pause timer"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/timesheet_uom_timer.js:0
 #, python-format
 msgid "Play"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "Press Esc to discard"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#: model_terms:ir.ui.view,arch_db:timesheet_grid.res_config_settings_view_form
+msgid ""
+"Prevent employees from creating, modifying, or deleting timesheets prior to "
+"their most recent validated timesheet"
+msgstr ""
+
+#. module: timesheet_grid
+#. odoo-javascript
+#: code:addons/timesheet_grid/static/src/js/timesheet_grid/timer_m2o.js:0
 #: code:addons/timesheet_grid/static/src/js/timesheet_grid/timer_m2o.js:0
 #: model:ir.model,name:timesheet_grid.model_project_project
 #: model:ir.model.fields,field_description:timesheet_grid.field_account_analytic_line__project_id
@@ -883,28 +1051,28 @@ msgid "Save time"
 msgstr "시간 저장"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "See all the records aggregated in this cell"
 msgstr "이 셀에 집계된 모든 레코드 보기"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/timesheet_grid/timer_m2o.js:0
 #, python-format
 msgid "Select a Project"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/timesheet_grid/timer_m2o.js:0
 #, python-format
 msgid "Select a Task"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/tours/timesheet_grid.js:0
 #, python-format
 msgid "Select the <b>project</b> on which you are working."
@@ -915,7 +1083,7 @@ msgstr ""
 #: model:ir.model.fields,help:timesheet_grid.field_res_users__timesheet_manager_id
 msgid ""
 "Select the user responsible for approving \"Timesheet\" of this employee.\n"
-"If empty, the approval is done by an Administrator or Team Approver (determined in settings/users)."
+"If empty, the approval is done by a Timesheets > Administrator or a Timesheets > User: all timesheets (as determined in the users settings)."
 msgstr ""
 
 #. module: timesheet_grid
@@ -931,7 +1099,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/tours/timesheet_grid.js:0
 #, python-format
 msgid ""
@@ -940,7 +1108,14 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-python
+#: code:addons/timesheet_grid/models/analytic.py:0
+#, python-format
+msgid "Sorry, you cannot use a timer for a validated timesheet"
+msgstr ""
+
+#. module: timesheet_grid
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/components/timesheet_uom_hour_timer/timesheet_uom_hour_timer.js:0
 #: code:addons/timesheet_grid/static/src/js/timesheet_uom_timer.js:0
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
@@ -955,7 +1130,7 @@ msgid "Start timer"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/components/timesheet_uom_hour_timer/timesheet_uom_hour_timer.js:0
 #: code:addons/timesheet_grid/static/src/js/timesheet_uom_timer.js:0
 #: code:addons/timesheet_grid/static/src/js/timesheet_uom_timer.js:0
@@ -966,7 +1141,7 @@ msgid "Stop"
 msgstr "중지"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/tours/timesheet_grid.js:0
 #, python-format
 msgid ""
@@ -986,7 +1161,8 @@ msgid "Suspicious Durations"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
+#: code:addons/timesheet_grid/static/src/js/timesheet_grid/timer_m2o.js:0
 #: code:addons/timesheet_grid/static/src/js/timesheet_grid/timer_m2o.js:0
 #: model:ir.model,name:timesheet_grid.model_project_task
 #: model:ir.model.fields,field_description:timesheet_grid.field_hr_timesheet_merge_wizard__task_id
@@ -1017,7 +1193,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/timesheet_grid/timesheet_grid_controller_mixin.js:0
 #, python-format
 msgid "The timesheet entry has successfully been created."
@@ -1029,30 +1205,42 @@ msgid "The timesheet's time must be positive"
 msgstr "작업 기록표 시간은 양수여야 합니다"
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/wizard/timesheet_merge_wizard.py:0
 #, python-format
 msgid "The timesheets have successfully been merged."
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid "The timesheets have successfully been reset to draft."
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid "The timesheets have successfully been validated."
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
+#: code:addons/timesheet_grid/wizard/timesheet_merge_wizard.py:0
+#, python-format
+msgid "The timesheets must have the same encoding unit"
+msgstr ""
+
+#. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid "There are no timesheets to merge."
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid ""
@@ -1061,6 +1249,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/task.py:0
 #, python-format
 msgid ""
@@ -1125,7 +1314,6 @@ msgstr ""
 #. module: timesheet_grid
 #: model:ir.actions.server,name:timesheet_grid.timesheet_reminder_user_ir_actions_server
 #: model:ir.cron,cron_name:timesheet_grid.timesheet_reminder_user
-#: model:ir.cron,name:timesheet_grid.timesheet_reminder_user
 msgid "Timesheet: Employees Email Reminder"
 msgstr "작업 기록 : 직원 이메일 알림"
 
@@ -1142,7 +1330,6 @@ msgstr ""
 #. module: timesheet_grid
 #: model:ir.actions.server,name:timesheet_grid.timesheet_reminder_manager_ir_actions_server
 #: model:ir.cron,cron_name:timesheet_grid.timesheet_reminder_manager
-#: model:ir.cron,name:timesheet_grid.timesheet_reminder_manager
 msgid "Timesheet: Managers Email Reminder"
 msgstr "작업 기록 : 관리자 이메일 알림"
 
@@ -1161,6 +1348,7 @@ msgid "Timesheets Analysis Report"
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid ""
@@ -1192,14 +1380,14 @@ msgid "To Validate"
 msgstr "승인하기"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/tours/timesheet_grid.js:0
 #, python-format
 msgid "Track the <b>time spent</b> on your projects. <i>It starts here.</i>"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid ""
@@ -1234,9 +1422,8 @@ msgid "User responsible of timesheet validation. Should be Timesheet Manager."
 msgstr "작업 기록 승인을 담당하는 사용자입니다. 작업 기록 관리자여야 합니다."
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/js/views/timesheet_kanban/timesheet_validation_kanban_controler.xml:0
-#: code:addons/timesheet_grid/static/src/xml/timesheet_kanban.xml:0
 #: model:ir.actions.server,name:timesheet_grid.timesheet_validate_action
 #: model_terms:ir.ui.view,arch_db:timesheet_grid.timesheet_form_view
 #: model_terms:ir.ui.view,arch_db:timesheet_grid.timesheet_view_form
@@ -1294,6 +1481,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid ""
@@ -1302,6 +1490,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
@@ -1311,12 +1500,14 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid "You cannot access timesheets that are not yours."
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid ""
@@ -1325,6 +1516,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/project.py:0
 #, python-format
 msgid ""
@@ -1333,6 +1525,7 @@ msgid ""
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #: code:addons/timesheet_grid/models/analytic.py:0
 #: code:addons/timesheet_grid/models/analytic.py:0
@@ -1343,6 +1536,7 @@ msgid "You cannot use the timer on validated timesheets."
 msgstr ""
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid ""
@@ -1368,59 +1562,56 @@ msgid "days"
 msgstr "일"
 
 #. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid "deleted"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "letter shortcut"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "min"
 msgstr "최소"
 
 #. module: timesheet_grid
-#: model_terms:ir.ui.view,arch_db:timesheet_grid.res_config_settings_view_form
-msgid "minutes"
-msgstr "분"
-
-#. module: timesheet_grid
+#. odoo-python
 #: code:addons/timesheet_grid/models/analytic.py:0
 #, python-format
 msgid "modified"
 msgstr "수정"
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "or a"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "press"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "press Shift + a letter shortcut"
 msgstr ""
 
 #. module: timesheet_grid
-#. openerp-web
+#. odoo-javascript
 #: code:addons/timesheet_grid/static/src/xml/timesheet_grid.xml:0
 #, python-format
 msgid "to add"

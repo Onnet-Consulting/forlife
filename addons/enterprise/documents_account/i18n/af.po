@@ -105,12 +105,12 @@ msgstr ""
 #. module: documents_account
 #: model:ir.model,name:documents_account.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Maatskappye"
 
 #. module: documents_account
 #: model:ir.model.fields,field_description:documents_account.field_documents_account_folder_setting__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: documents_account
 #: model:ir.model,name:documents_account.model_res_config_settings

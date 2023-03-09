@@ -279,3 +279,9 @@ msgstr ""
 #, python-format
 msgid "You don't have an active subscription. Please buy one here: %s"
 msgstr ""
+
+#. module: social_linkedin
+#: code:addons/social_linkedin/models/social_live_post.py:0
+#, python-format
+msgid "unknown"
+msgstr ""

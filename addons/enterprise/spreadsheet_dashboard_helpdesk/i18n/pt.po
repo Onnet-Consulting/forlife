@@ -73,7 +73,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "KPI"
-msgstr ""
+msgstr "KPI"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
@@ -201,7 +201,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Top Customers"
-msgstr ""
+msgstr "Clientes Principais"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
@@ -232,7 +232,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "since last period"
-msgstr ""
+msgstr "desde o período anterior"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web

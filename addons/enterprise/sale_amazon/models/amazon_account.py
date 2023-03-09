@@ -766,6 +766,13 @@ class AmazonAccount(models.Model):
             subtotal = self._recompute_subtotal(
                 original_subtotal, tax_amount, taxes, currency, fiscal_pos
             )
+            promo_discount = float(item_data.get('PromotionDiscount', {}).get('Amount', '0'))
+            promo_disc_tax = float(item_data.get('PromotionDiscountTax', {}).get('Amount', '0'))
+            original_promo_discount_subtotal = promo_discount - promo_disc_tax \
+                if marketplace.tax_included else promo_discount
+            promo_discount_subtotal = self._recompute_subtotal(
+                original_promo_discount_subtotal, promo_disc_tax, taxes, currency, fiscal_pos
+            )
             amazon_item_ref = item_data['OrderItemId']
             order_lines_values.append(convert_to_order_line_values(
                 product_id=offer.product_id.id,
@@ -773,7 +780,7 @@ class AmazonAccount(models.Model):
                 subtotal=subtotal,
                 tax_ids=taxes.ids,
                 quantity=item_data['QuantityOrdered'],
-                discount=float(item_data.get('PromotionDiscount', {}).get('Amount', '0')),
+                discount=promo_discount_subtotal,
                 amazon_item_ref=amazon_item_ref,
                 amazon_offer_id=offer.id,
             ))
@@ -835,6 +842,13 @@ class AmazonAccount(models.Model):
                 shipping_subtotal = self._recompute_subtotal(
                     origin_ship_subtotal, shipping_tax_amount, shipping_taxes, currency, fiscal_pos
                 )
+                ship_discount = float(item_data.get('ShippingDiscount', {}).get('Amount', '0'))
+                ship_disc_tax = float(item_data.get('ShippingDiscountTax', {}).get('Amount', '0'))
+                origin_ship_disc_subtotal = ship_discount - ship_disc_tax \
+                    if marketplace.tax_included else ship_discount
+                ship_discount_subtotal = self._recompute_subtotal(
+                    origin_ship_disc_subtotal, ship_disc_tax, shipping_taxes, currency, fiscal_pos
+                )
                 order_lines_values.append(convert_to_order_line_values(
                     product_id=shipping_product.id,
                     description=_(
@@ -842,7 +856,7 @@ class AmazonAccount(models.Model):
                     ),
                     subtotal=shipping_subtotal,
                     tax_ids=shipping_taxes.ids,
-                    discount=float(item_data.get('ShippingDiscount', {}).get('Amount', '0')),
+                    discount=ship_discount_subtotal,
                 ))
 
         return order_lines_values

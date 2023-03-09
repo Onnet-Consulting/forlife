@@ -33,7 +33,7 @@ msgstr ""
 #: code:addons/hr_contract_sign/wizard/hr_contract_sign_document_wizard.py:0
 #, python-format
 msgid "%s and %s are the signatories."
-msgstr ""
+msgstr "%s oraz %s są sygatariuszami."
 
 #. module: hr_contract_sign
 #: code:addons/hr_contract_sign/wizard/hr_contract_sign_document_wizard.py:0
@@ -47,13 +47,14 @@ msgstr ""
 msgid ""
 "%s requested a new signature on the following documents:<br/><ul>%s</ul>%s"
 msgstr ""
+"%s poprosił o nowy podpis na następujących dokumentach:<br/><ul>%s</ul>%s"
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.hr_contract_sign_view_form
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.hr_employee_sign_view_form
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.res_users_request_sign_view_form
 msgid "<span class=\"o_stat_text\">Signature Requests</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Prośby o podpis</span>"
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.view_hr_contract_sign
@@ -103,7 +104,7 @@ msgstr "Nazwa wyświetlana"
 #. module: hr_contract_sign
 #: model:ir.actions.act_window,name:hr_contract_sign.sign_contract_wizard_action
 msgid "Document Signature"
-msgstr ""
+msgstr "Podpis dokumentu"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_plan_activity_type__sign_template_id
@@ -113,7 +114,7 @@ msgstr ""
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__sign_template_ids
 msgid "Documents to sign"
-msgstr ""
+msgstr "Dokumenty do podpisu"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,help:hr_contract_sign.field_hr_contract_sign_document_wizard__sign_template_ids
@@ -122,6 +123,9 @@ msgid ""
 "        Documents with 1 responsible will only have to be signed by the employee while documents with 2 different responsible will have to be signed by both the employee and the responsible.\n"
 "        "
 msgstr ""
+"Dokumenty do podpisania. Można wybrać tylko dokumenty z 1 lub 2 różnymi odpowiedzialnymi.\n"
+"        Dokumenty z 1 osobą odpowiedzialną będą musiały być podpisane tylko przez pracownika, podczas gdy dokumenty z 2 różnymi osobami odpowiedzialnymi będą musiały być podpisane zarówno przez pracownika, jak i osobę odpowiedzialną.\n"
+"        "
 
 #. module: hr_contract_sign
 #: model:ir.model,name:hr_contract_sign.model_hr_employee
@@ -137,7 +141,7 @@ msgstr "Umowa pracownika"
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__employee_role_id
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_plan_activity_type__employee_role_id
 msgid "Employee Role"
-msgstr ""
+msgstr "Rola pracownika"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,help:hr_contract_sign.field_hr_contract_sign_document_wizard__employee_role_id
@@ -146,6 +150,8 @@ msgid ""
 "Employee's role on the templates to sign. The same role must be present in "
 "all the templates"
 msgstr ""
+"Rola pracownika na szablonach do podpisania. Ta sama rola musi być obecna we"
+" wszystkich szablonach"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__employee_ids
@@ -204,17 +210,19 @@ msgid ""
 "No appropriate template could be found, please make sure you configured them"
 " properly."
 msgstr ""
+"Nie znaleziono odpowiedniego szablonu. Upewnij się, że zostały poprawnie "
+"skonfigurowane."
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.view_hr_contract_sign
 msgid "No template available"
-msgstr ""
+msgstr "Brak dostępnego szablonu"
 
 #. module: hr_contract_sign
 #: code:addons/hr_contract_sign/wizard/hr_contract_sign_document_wizard.py:0
 #, python-format
 msgid "Only %s has to sign."
-msgstr ""
+msgstr "Tylko %s musi podpisać."
 
 #. module: hr_contract_sign
 #: model:sign.template,redirect_url_text:hr_contract_sign.template_sign_termination
@@ -284,7 +292,7 @@ msgstr ""
 #. module: hr_contract_sign
 #: model:ir.model,name:hr_contract_sign.model_hr_contract_sign_document_wizard
 msgid "Sign document in contract"
-msgstr ""
+msgstr "Podpisz dokument w umowie"
 
 #. module: hr_contract_sign
 #: code:addons/hr_contract_sign/wizard/hr_plan_wizard.py:0
@@ -300,7 +308,7 @@ msgstr "Prośba o podpis"
 #: code:addons/hr_contract_sign/wizard/hr_contract_sign_document_wizard.py:0
 #, python-format
 msgid "Signature Request - %s"
-msgstr ""
+msgstr "Prośby o podpis - %s"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__subject
@@ -310,7 +318,7 @@ msgstr "Temat"
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__template_warning
 msgid "Template Warning"
-msgstr ""
+msgstr "Ostrzeżenie dotyczące szablonu"
 
 #. module: hr_contract_sign
 #: model:ir.model,name:hr_contract_sign.model_res_users
@@ -328,6 +336,8 @@ msgstr "Napisz email lub wyszukaj kontakt..."
 msgid ""
 "You can't delete a contract linked to a signed document, archive it instead."
 msgstr ""
+"Nie możesz usunąć umowy powiązanej z podpisanym dokumentem, zamiast tego "
+"zarchiwizuj ją."
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.hr_contract_history_view_form

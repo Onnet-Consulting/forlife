@@ -137,7 +137,7 @@
                                             <span class="s_website_form_label_content">Attachment</span>
                                         </label>
                                         <div class="col-sm">
-                                            <input type="file" class="form-control-file s_website_form_input" name="Attachment" id="helpdesk5"/>
+                                            <input type="file" class="form-control s_website_form_input" name="Attachment" id="helpdesk5"/>
                                         </div>
                                     </div>
                                 </div>

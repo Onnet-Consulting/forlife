@@ -56,7 +56,7 @@ msgstr ""
 #. module: website_twitter_wall
 #: model:ir.model.fields,field_description:website_twitter_wall.field_website_twitter_wall__active
 msgid "Active"
-msgstr ""
+msgstr "Aktief"
 
 #. module: website_twitter_wall
 #: model_terms:ir.ui.view,arch_db:website_twitter_wall.website_twitter_wall_view_form
@@ -95,7 +95,7 @@ msgstr ""
 #. module: website_twitter_wall
 #: model:ir.model.fields,field_description:website_twitter_wall.field_website_twitter_wall__description
 msgid "Description"
-msgstr ""
+msgstr "Beskrywing"
 
 #. module: website_twitter_wall
 #: model:ir.model.fields,field_description:website_twitter_wall.field_website_twitter_wall__display_name
@@ -185,7 +185,7 @@ msgstr ""
 #. module: website_twitter_wall
 #: model:ir.model.fields,field_description:website_twitter_wall.field_website_twitter_wall__name
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: website_twitter_wall
 #: model:ir.model.fields.selection,name:website_twitter_wall.selection__website_twitter_wall__mode__popular

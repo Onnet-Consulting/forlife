@@ -4,8 +4,8 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
-# Jolien De Paepe, 2022
+# Jolien De Paepe, 2023
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-06-09 14:10+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Jolien De Paepe, 2022\n"
+"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2023\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -89,12 +89,12 @@ msgstr "Totale omzet"
 #. module: event_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:event_sale_dashboard.event_sale_report_view_dashboard
 msgid "Unique invoiced partners"
-msgstr "Unieke gefactureerde partners"
+msgstr "Unieke gefactureerde relaties"
 
 #. module: event_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:event_sale_dashboard.event_sale_report_view_dashboard
 msgid "Unique partners who made sale orders"
-msgstr "Unieke partners die verkooporders hebben gemaakt"
+msgstr "Unieke relaties die verkooporders hebben gemaakt"
 
 #. module: event_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:event_sale_dashboard.event_sale_report_view_dashboard

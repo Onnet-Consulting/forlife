@@ -6,6 +6,7 @@
 # Martin Trigaux, 2022
 # Lucia Pacheco <lpo@odoo.com>, 2022
 # Michael Epstein, 2022
+# Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-06-09 14:10+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Michael Epstein, 2022\n"
+"Last-Translator: Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2023\n"
 "Language-Team: Spanish (Mexico) (https://www.transifex.com/odoo/teams/41243/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -89,12 +90,12 @@ msgstr "Ingresos totales"
 #. module: event_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:event_sale_dashboard.event_sale_report_view_dashboard
 msgid "Unique invoiced partners"
-msgstr "Socios únicos facturados"
+msgstr "Partners únicos facturados"
 
 #. module: event_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:event_sale_dashboard.event_sale_report_view_dashboard
 msgid "Unique partners who made sale orders"
-msgstr "Socios únicos que hicieron pedidos de venta"
+msgstr "Partners únicos que hicieron órdenes de venta"
 
 #. module: event_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:event_sale_dashboard.event_sale_report_view_dashboard

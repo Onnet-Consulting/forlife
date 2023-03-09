@@ -239,7 +239,7 @@ msgstr "Kode"
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Kontak"
 
 #. module: payment_sepa_direct_debit
 #. openerp-web
