@@ -18,4 +18,4 @@ class ResPartner(models.Model):
     def get_bravo_filter_domain(self):
         partner_group_c = self.env.ref('forlife_pos_app_member.partner_group_c').id
         partner_group_system = self.env.ref('forlife_pos_app_member.partner_group_system').id
-        return [('partner_group_id', 'not in', [partner_group_c, partner_group_system])]
+        return [('group_id', 'not in', [partner_group_c, partner_group_system])]
