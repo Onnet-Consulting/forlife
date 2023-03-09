@@ -5,14 +5,15 @@
 # Translators:
 # Martin Trigaux, 2022
 # Nancy Momoland <thanhnguyen.icsc@gmail.com>, 2022
+# Thi Huong Nguyen, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 09:41+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Nancy Momoland <thanhnguyen.icsc@gmail.com>, 2022\n"
+"Last-Translator: Thi Huong Nguyen, 2023\n"
 "Language-Team: Vietnamese (https://www.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -21,12 +22,14 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup.py:0
 #, python-format
 msgid "%s (copy)"
 msgstr "%s (sao chép)"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "%s Payment Reminder - %s"
@@ -47,6 +50,11 @@ msgid ""
 "- Private: Private addresses are only visible by authorized users and contain sensitive data (employee home addresses, ...).\n"
 "- Other: Other address for the company (e.g. subsidiary, ...)"
 msgstr ""
+"- Liên hệ: Sử dụng mục này để tổ chức các chi tiết liên hệ của nhân viên của một công ty nhất định (ví dụ: Giám đốc điều hành, Giám đốc tài chính, ...).\n"
+"- Địa chỉ hóa đơn : Địa chỉ ưa thích cho tất cả các hóa đơn. Được chọn theo mặc định khi bạn lập hóa đơn cho một đơn đặt hàng thuộc về công ty này.\n"
+"- Địa chỉ giao hàng : Địa chỉ ưu tiên cho tất cả các giao hàng. Được chọn theo mặc định khi bạn giao một đơn đặt hàng thuộc về công ty này.\n"
+"- Riêng tư: Địa chỉ riêng tư chỉ được hiển thị bởi người dùng được ủy quyền và chứa dữ liệu nhạy cảm (địa chỉ nhà riêng của nhân viên, ...).\n"
+"- Khác: Địa chỉ khác của công ty (ví dụ: công ty con,...)"
 
 #. module: account_followup
 #: model:account_followup.followup.line,name:account_followup.demo_followup_line1
@@ -208,7 +216,6 @@ msgstr ""
 #. module: account_followup
 #: model:ir.actions.server,name:account_followup.ir_cron_auto_post_draft_entry_ir_actions_server
 #: model:ir.cron,cron_name:account_followup.ir_cron_auto_post_draft_entry
-#: model:ir.cron,name:account_followup.ir_cron_auto_post_draft_entry
 msgid "Account Report Followup; Execute followup"
 msgstr "Account Report Followup; Execute followup"
 
@@ -256,6 +263,12 @@ msgid "Assigned to me"
 msgstr ""
 
 #. module: account_followup
+#: model:ir.model.fields,field_description:account_followup.field_account_followup_followup_line__join_invoices
+#: model:ir.model.fields,field_description:account_followup.field_account_followup_manual_reminder__join_invoices
+msgid "Attach Invoices"
+msgstr ""
+
+#. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_account_followup_manual_reminder__attachment_ids
 msgid "Attachment"
 msgstr "Đính kèm"
@@ -284,6 +297,7 @@ msgid "Cancel"
 msgstr "Hủy"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "Communication"
@@ -343,6 +357,7 @@ msgid "Customers Statement"
 msgstr "Sao kê giao dịch của khách hàng"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_form_view
 #, python-format
@@ -370,6 +385,7 @@ msgid "Days of the follow-up lines must be different per company"
 msgstr ""
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid ""
@@ -382,11 +398,10 @@ msgid ""
 "\n"
 "Best Regards,\n"
 "\n"
-"%s\n"
-"\n"
 msgstr ""
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid ""
@@ -421,6 +436,7 @@ msgid "Display Name"
 msgstr "Tên hiển thị"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "Due Date"
@@ -462,6 +478,7 @@ msgid "Extra Recipients"
 msgstr ""
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/chart_template.py:0
 #, python-format
 msgid "First Reminder"
@@ -473,6 +490,7 @@ msgid "Follow up"
 msgstr ""
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "Follow-up %s - %s"
@@ -496,6 +514,7 @@ msgid "Follow-up Level"
 msgstr "Mức độ theo dõi"
 
 #. module: account_followup
+#: model:ir.actions.act_window,name:account_followup.action_account_followup_line_definition_form
 #: model:ir.ui.menu,name:account_followup.account_followup_menu
 msgid "Follow-up Levels"
 msgstr "Mức độ theo dõi"
@@ -503,18 +522,18 @@ msgstr "Mức độ theo dõi"
 #. module: account_followup
 #: model:ir.model,name:account_followup.model_account_followup_report
 msgid "Follow-up Report"
-msgstr "Báo cáo theo dõi công nợ"
+msgstr "Báo cáo Follow-up"
 
 #. module: account_followup
 #: model:ir.actions.act_window,name:account_followup.action_view_list_customer_statements
 #: model:ir.ui.menu,name:account_followup.customer_statements_menu
 msgid "Follow-up Reports"
-msgstr "Báo cáo theo dõi công nợ"
+msgstr "Báo cáo Follow-up"
 
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_tree_view
 msgid "Follow-up Reports Tree View"
-msgstr "Danh sách báo cáo theo dõi công nợ"
+msgstr "Chế độ xem Phân cấp của Báo cáo Follow-up"
 
 #. module: account_followup
 #: model:ir.model.fields.selection,name:account_followup.selection__account_followup_followup_line__activity_default_responsible_type__followup
@@ -534,6 +553,7 @@ msgid "Follow-up Steps"
 msgstr "Các bước theo dõi"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "Follow-up letter generated"
@@ -542,7 +562,7 @@ msgstr ""
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.account_followup_journal_dashboard_kanban_view
 msgid "Follow-up reports"
-msgstr "Báo cáo công nợ"
+msgstr "Báo cáo follow-up"
 
 #. module: account_followup
 #: model_terms:ir.actions.act_window,help:account_followup.action_account_followup_line_definition_form
@@ -599,12 +619,6 @@ msgstr "Hóa đơn"
 #: model:ir.model.fields,field_description:account_followup.field_account_followup_manual_reminder__is_mail_template_editor
 msgid "Is Editor"
 msgstr "Là biên tập"
-
-#. module: account_followup
-#: model:ir.model.fields,field_description:account_followup.field_account_followup_followup_line__join_invoices
-#: model:ir.model.fields,field_description:account_followup.field_account_followup_manual_reminder__join_invoices
-msgid "Attach Invoices"
-msgstr ""
 
 #. module: account_followup
 #: model:ir.model,name:account_followup.model_account_move_line
@@ -668,6 +682,7 @@ msgid "Next Action Date"
 msgstr "Ngày Hành động Kế tiếp"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/res_partner.py:0
 #, python-format
 msgid "Next Reminder Date set to %s"
@@ -687,7 +702,7 @@ msgstr "Không có gì cần làm"
 #. module: account_followup
 #: model_terms:ir.actions.act_window,help:account_followup.action_view_list_customer_statements
 msgid "No follow-up to send!"
-msgstr "Không có công nợ cần gửi!"
+msgstr "Không có follow-up nào cần gửi!"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_account_followup_followup_line__activity_note
@@ -725,6 +740,7 @@ msgid "Options"
 msgstr "Tùy chọn"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model:ir.model.fields,field_description:account_followup.field_account_move_line__invoice_origin
 #, python-format
@@ -737,6 +753,7 @@ msgid "Overdue Invoices"
 msgstr "Hóa đơn quá hạn"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/res_partner.py:0
 #, python-format
 msgid "Overdue Payments for %s"
@@ -748,11 +765,7 @@ msgid "Partner"
 msgstr "Đối tác"
 
 #. module: account_followup
-#: model:ir.actions.act_window,name:account_followup.action_account_followup_line_definition_form
-msgid "Payment Follow-ups"
-msgstr "Theo dõi thanh toán"
-
-#. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model:mail.template,name:account_followup.email_template_followup_1
 #, python-format
@@ -768,7 +781,7 @@ msgstr "In"
 #. module: account_followup
 #: model:ir.actions.report,name:account_followup.action_report_followup
 msgid "Print Follow-up Letter"
-msgstr "In thư thông báo công nợ"
+msgstr "In Thư  Follow-up"
 
 #. module: account_followup
 #: model:ir.actions.server,name:account_followup.action_account_reports_customer_statements_do_followup
@@ -891,11 +904,6 @@ msgid "Summary"
 msgstr "Tổng kết"
 
 #. module: account_followup
-#: model_terms:ir.ui.view,arch_db:account_followup.view_account_followup_followup_line_form
-msgid "Templates"
-msgstr "Các mẫu"
-
-#. module: account_followup
 #: model:ir.model.fields,help:account_followup.field_res_partner__followup_next_action_date
 #: model:ir.model.fields,help:account_followup.field_res_users__followup_next_action_date
 msgid "The date before which no follow-up action should be taken."
@@ -925,6 +933,7 @@ msgid "Total Amount"
 msgstr "Tổng số tiền"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__total_due
@@ -934,6 +943,7 @@ msgid "Total Due"
 msgstr "Tổng tới hạn"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__total_overdue
 #: model:ir.model.fields,field_description:account_followup.field_res_users__total_overdue
@@ -981,6 +991,7 @@ msgid "Write your message here..."
 msgstr "Viết lời nhắn của bạn ở đây..."
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid ""
@@ -989,6 +1000,7 @@ msgid ""
 msgstr ""
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid ""
@@ -1007,6 +1019,7 @@ msgid "e.g. First Reminder Email"
 msgstr ""
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "payment reminder"

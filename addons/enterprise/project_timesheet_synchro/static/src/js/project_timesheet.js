@@ -1202,13 +1202,13 @@ odoo.define('project_timeshee.ui', function (require ) {
         initialize_project_selector: function() {
             var self = this;
             // Initialization of select2 for projects
-            function format(item) {return item.name;}
-            function formatRes(item) {
+            function format(item, container, fmt) {return fmt(item.name);}
+            function formatRes(item, container, query, fmt) {
                 if (item.isNew) {
-                    return "Create Project : " + item.name;
+                    return "Create Project : " + fmt(item.name);
                 }
                 else {
-                    return item.name;
+                    return fmt(item.name);
                 }
             }
             this.$('.pt_default_project_select2').select2({
@@ -1335,13 +1335,13 @@ odoo.define('project_timeshee.ui', function (require ) {
         initialize_project_selector: function() {
             var self = this;
             // Initialization of select2 for projects
-            function format(item) {return item.name;}
-            function formatRes(item) {
+            function format(item, container, fmt) {return fmt(item.name);}
+            function formatRes(item, container, query, fmt) {
                 if (item.isNew) {
-                    return "Create Project : " + item.name;
+                    return "Create Project : " + fmt(item.name);
                 }
                 else {
-                    return item.name;
+                    return fmt(item.name);
                 }
             }
             this.$('.pt_activity_project').select2({
@@ -1374,10 +1374,10 @@ odoo.define('project_timeshee.ui', function (require ) {
         // Initialization of select2 for tasks
         initialize_task_selector: function() {
             var self = this;
-            function format(item) { return item.name; }
-            function formatRes(item) {
+            function format(item,container,fmt) { return fmt(item.name); }
+            function formatRes(item, container, query, fmt) {
                 if (item.isNew) {
-                    return _t("Create Task : ") + item.name;
+                    return _t("Create Task : ") + fmt(item.name);
                 }
                 else {
                     var name = item.name;
@@ -1386,7 +1386,7 @@ odoo.define('project_timeshee.ui', function (require ) {
                         var minutes = Math.abs(Math.floor((item.remaining_hours - hours) * 60));
                         name += " ‒ (" + hours.toString().padStart(2, 0) + ":" + minutes.toString().padStart(2, 0) + " " + _t("remaining)");
                     }
-                    return name;
+                    return fmt(name);
                 }
             }
             self.task_list = _.where(self.getParent().data.tasks, {project_id : self.activity.project_id});

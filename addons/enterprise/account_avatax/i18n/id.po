@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Abe Manyo, 2023
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Abe Manyo, 2023\n"
 "Language-Team: Indonesian (https://www.transifex.com/odoo/teams/41243/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,6 +24,13 @@ msgstr ""
 #: code:addons/account_avatax/models/account_avatax.py:0
 #, python-format
 msgid "%(response)s"
+msgstr ""
+
+#. module: account_avatax
+#. odoo-python
+#: code:addons/account_avatax/models/account_avatax.py:0
+#, python-format
+msgid "- %s (ID: %s) on %s"
 msgstr ""
 
 #. module: account_avatax
@@ -304,13 +312,6 @@ msgid "Customer Code set in Avalara for this partner."
 msgstr ""
 
 #. module: account_avatax
-#: code:addons/account_avatax/models/account_avatax.py:0
-#, python-format
-msgid ""
-"Customers are required to have a zip, state and country when using Avatax."
-msgstr ""
-
-#. module: account_avatax
 #: model:ir.model.fields,field_description:account_avatax.field_avatax_exemption__description
 #: model:ir.model.fields,field_description:account_avatax.field_product_avatax_category__description
 msgid "Description"
@@ -331,7 +332,7 @@ msgstr "Lingkungan"
 #. module: account_avatax
 #: model:ir.model,name:account_avatax.model_account_fiscal_position
 msgid "Fiscal Position"
-msgstr "Posisi Fiskal"
+msgstr "Fiscal Position"
 
 #. module: account_avatax
 #: model:ir.model,name:account_avatax.model_payment_link_wizard
@@ -544,6 +545,15 @@ msgid ""
 msgstr ""
 
 #. module: account_avatax
+#. odoo-python
+#: code:addons/account_avatax/models/account_avatax.py:0
+#, python-format
+msgid ""
+"The following customer(s) need to have a zip, state and country when using "
+"Avatax:"
+msgstr ""
+
+#. module: account_avatax
 #: model:ir.model.fields,help:account_avatax.field_res_config_settings__avalara_commit
 msgid "The transactions will be committed for reporting in Avatax."
 msgstr ""
@@ -643,7 +653,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_avatax.field_avatax_validate_address__zip
 #: model_terms:ir.ui.view,arch_db:account_avatax.avatax_validate_address_view_form
 msgid "Zip Code"
-msgstr ""
+msgstr "Kode Pos"
 
 #. module: account_avatax
 #: code:addons/account_avatax/models/product.py:0

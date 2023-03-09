@@ -6,6 +6,7 @@
 # Martin Trigaux, 2022
 # Gunther Clauwaert <gclauwae@hotmail.com>, 2022
 # Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:50+0000\n"
-"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -47,7 +48,7 @@ msgid ""
 "                View Ticket"
 msgstr ""
 "<i class=\"fa fa-life-ring fa-fw text-muted\"/>\n"
-"                 Bekijk ticket"
+"                 Ticket bekijken"
 
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.knowledge_base_forum_card
@@ -61,7 +62,7 @@ msgstr ""
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.knowledge_base_forum_card
 msgid "<span style=\"font-weight: bolder; font-size: 18px;\">Community</span>"
-msgstr "<span style=\"font-weight: bolder; font-size: 18px;\">Gemeenschap</span>"
+msgstr "<span style=\"font-weight: bolder; font-size: 18px;\">Community</span>"
 
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.search_result
@@ -72,7 +73,7 @@ msgstr "Antwoorden"
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.footer
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.knowledge_base_forum_card
 msgid "Ask the Community"
-msgstr "Vraag aan de Gemeenschap"
+msgstr "Vraag aan de community"
 
 #. module: website_helpdesk_forum
 #: model:ir.model.fields,field_description:website_helpdesk_forum.field_helpdesk_ticket__can_share_forum
@@ -151,7 +152,7 @@ msgstr "Helpcentrum actief"
 #: code:addons/website_helpdesk_forum/models/helpdesk.py:0
 #, python-format
 msgid "Help Center not active for this team."
-msgstr "Help centrum niet actief voor dit team."
+msgstr "Helpcentrum niet actief voor dit team."
 
 #. module: website_helpdesk_forum
 #: model:ir.model,name:website_helpdesk_forum.model_helpdesk_team
@@ -190,7 +191,7 @@ msgstr "Laatst bijgewerkt door"
 #. module: website_helpdesk_forum
 #: model:ir.model.fields,field_description:website_helpdesk_forum.field_helpdesk_ticket_select_forum_wizard__write_date
 msgid "Last Updated on"
-msgstr "Laatst geupdate op"
+msgstr "Laatst bijgewerkt op"
 
 #. module: website_helpdesk_forum
 #: code:addons/website_helpdesk_forum/models/helpdesk.py:0
@@ -208,7 +209,7 @@ msgstr "Selecteer Forum"
 #: model:ir.model,name:website_helpdesk_forum.model_helpdesk_ticket_select_forum_wizard
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.helpdesk_ticket_view_form_inherit_website_helpdesk_forum
 msgid "Share on Forum"
-msgstr "Deel op Forum"
+msgstr "Delen op Forum"
 
 #. module: website_helpdesk_forum
 #: model:ir.model.fields,field_description:website_helpdesk_forum.field_helpdesk_team__show_knowledge_base_forum

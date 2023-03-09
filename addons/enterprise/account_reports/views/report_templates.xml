@@ -192,13 +192,9 @@
         <t t-foreach="lines" t-as="line">
             <t t-set="trclass" t-value="'o_account_reports_default_style'"/>
             <t t-set="domainClass" t-value="'o_account_reports_domain_line_2 account_report_line_name'"/>
-            <t t-if="not line.get('caret_options')">
-                <t t-if="line.get('level') != None">
-                    <t t-set="trclass" t-value="'o_account_searchable_line o_account_reports_level'+str(line['level'])"/>
-                </t>
-            </t>
-            <t t-if="line.get('caret_options')">
-                <t t-if="line.get('level')">
+            <t t-if="line.get('level') != None">
+                <t t-set="trclass" t-value="'o_account_searchable_line o_account_reports_level'+str(line['level'])"/>
+                <t t-if="line.get('caret_options')">
                     <t t-set="domainClass" t-value="'o_account_reports_domain_line_' + str(line['level']) + ' account_report_line_name'"/>
                 </t>
             </t>
@@ -314,11 +310,11 @@
                         t-foreach="[{'style': 'width: 100%;', 'colspan': 1}]
                                    + header_level * column_headers_render_data['level_repetitions'][header_level_index]"
                         t-as="header">
-
+                        <t t-set="header_name" t-value="header.get('name') if len(options['column_headers'][0]) > 1 else ''"/>
                         <th t-att-class="o_account_report_column_header"
                             t-att-colspan="header.get('colspan', column_headers_render_data['level_colspan'][header_level_index])"
                             t-att-style="header.get('style', 'text-align: center;')">
-                            <t t-out="header.get('name')"/>
+                            <t t-out="header_name"/>
                         </th>
                     </t>
 
@@ -367,11 +363,14 @@
                 <div class="alert alert-info text-center mb-0 no_print" t-if="report.filter_show_draft and not options.get('all_entries') and options.get('unposted_in_period')">
                     <span>There are <a action="open_unposted_moves">unposted Journal Entries</a> prior or included in this period</span>
                 </div>
+                <div class="alert alert-warning text-center mb-0 no_print" t-if="options.get('contains_archived_tag')">
+                    <span>Some journal items appear to point to obsolete report lines. <a action="action_archived_tag_move">Check them</a> and correct their tax tags if necessary.</span>
+                </div>
             </div>
             <div class="o_account_reports_page o_account_reports_no_print">
 
                 <div class="o_account_reports_header">
-                    <div class="print_only"><h2><t t-out="report_title"></t></h2></div>
+                    <div class="print_only"><h2><strong><t t-out="report_title"></t></strong></h2></div>
                     <t t-call="account_reports.filter_info_template"/>
                 </div>
                 <div class="o_account_reports_summary"/>
@@ -440,7 +439,7 @@
 
     <template id="search_template_date_filter">
         <button type="button" class="o-no-caret btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
-            <span class="fa fa-calendar" title="Dates" role="img" aria-label="Dates"/>
+            <span class="fa fa-fw fa-calendar" title="Dates" role="img" aria-label="Dates"/>
             <t t-if="options['date'].get('string') and options['date'].get('filter') != 'custom'"><t t-out="options['date']['string']"/></t>
             <t t-if="options['date'].get('filter') == 'custom'">
                 <t t-if="options['date']['mode'] == 'single'">Date: <span class="js_format_date"><t t-out="options['date']['date_to']"/></span></t>

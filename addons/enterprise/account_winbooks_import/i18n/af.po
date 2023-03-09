@@ -47,7 +47,7 @@ msgstr "Gekanselleer"
 #. module: account_winbooks_import
 #: model:ir.model,name:account_winbooks_import.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Maatskappye"
 
 #. module: account_winbooks_import
 #: code:addons/account_winbooks_import/wizard/import_wizard.py:0

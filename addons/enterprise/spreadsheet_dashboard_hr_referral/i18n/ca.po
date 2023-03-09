@@ -12,6 +12,8 @@
 # jabelchi, 2022
 # marcescu, 2022
 # Cristian Cruz, 2022
+# Farouk Jabiri, 2022
+# Óscar Fonseca <tecnico@extreme-micro.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -19,7 +21,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-29 09:37+0000\n"
-"Last-Translator: Cristian Cruz, 2022\n"
+"Last-Translator: Óscar Fonseca <tecnico@extreme-micro.com>, 2023\n"
 "Language-Team: Catalan (https://www.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -122,7 +124,7 @@ msgstr "Lloc de treball"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Medium"
-msgstr "Mitja"
+msgstr "Mitjà"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -292,7 +294,7 @@ msgstr "Etapa"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Top Companies"
-msgstr "Empreses Top"
+msgstr "Empreses principals"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -306,7 +308,7 @@ msgstr "Principals llocs de treball"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Top Mediums"
-msgstr "Mitjans superiors"
+msgstr "Mitjans principals"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web

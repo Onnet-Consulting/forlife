@@ -3,8 +3,9 @@
 # 	* social_linkedin
 # 
 # Translators:
-# Martin Trigaux, 2022
 # Cécile Collart <cco@odoo.com>, 2022
+# Jolien De Paepe, 2023
+# Martin Trigaux, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Cécile Collart <cco@odoo.com>, 2022\n"
+"Last-Translator: Martin Trigaux, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +24,7 @@ msgstr ""
 #. module: social_linkedin
 #: model_terms:ir.ui.view,arch_db:social_linkedin.linkedin_preview
 msgid "<b>LinkedIn Post</b>"
-msgstr "<b>Post sur LinkedIn</b>"
+msgstr "<b>Post LinkedIn</b>"
 
 #. module: social_linkedin
 #: model_terms:ir.ui.view,arch_db:social_linkedin.social_stream_post_view_kanban
@@ -33,12 +34,12 @@ msgstr "<i class=\"fa fa-comments me-1\" title=\"Commentaires\"/>"
 #. module: social_linkedin
 #: model_terms:ir.ui.view,arch_db:social_linkedin.social_stream_post_view_kanban
 msgid "<i class=\"fa fa-thumbs-up me-1\" title=\"Likes\"/>"
-msgstr "<i class=\"fa fa-thumbs-up me-1\" title=\"Likes\"/>"
+msgstr "<i class=\"fa fa-thumbs-up me-1\" title=\"J'aime\"/>"
 
 #. module: social_linkedin
 #: model:ir.model.fields,field_description:social_linkedin.field_social_live_post__linkedin_post_id
 msgid "Actual LinkedIn ID of the post"
-msgstr "Identifiant LinkedIn réel de la publication"
+msgstr "ID LinkedIn réel de la publication"
 
 #. module: social_linkedin
 #: model:ir.model.fields,field_description:social_linkedin.field_res_config_settings__linkedin_app_id
@@ -48,7 +49,7 @@ msgstr "ID de l'app"
 #. module: social_linkedin
 #: model:ir.model.fields,field_description:social_linkedin.field_res_config_settings__linkedin_client_secret
 msgid "App Secret"
-msgstr "Clé secrète"
+msgstr "App Secret"
 
 #. module: social_linkedin
 #. openerp-web
@@ -70,7 +71,7 @@ msgstr ""
 #. module: social_linkedin
 #: model:ir.model,name:social_linkedin.model_res_config_settings
 msgid "Config Settings"
-msgstr "Paramètres de config"
+msgstr "Paramètres de configuration"
 
 #. module: social_linkedin
 #: model:ir.model.fields,field_description:social_linkedin.field_social_post__display_linkedin_preview
@@ -113,7 +114,7 @@ msgstr "Commentaires LinkedIn"
 #. module: social_linkedin
 #: model:ir.model.fields,field_description:social_linkedin.field_social_stream_post__linkedin_likes_count
 msgid "LinkedIn Likes"
-msgstr "J'aimes sur LinkedIn"
+msgstr "J'aime sur LinkedIn"
 
 #. module: social_linkedin
 #: model:ir.model.fields,field_description:social_linkedin.field_social_post__linkedin_preview
@@ -165,32 +166,32 @@ msgstr "Compte développeur LinkedIn"
 #. module: social_linkedin
 #: model:ir.model.fields,field_description:social_linkedin.field_social_media__media_type
 msgid "Media Type"
-msgstr "Type de Média"
+msgstr "Type de réseau"
 
 #. module: social_linkedin
 #: model_terms:ir.ui.view,arch_db:social_linkedin.linkedin_preview
 msgid "Post Image"
-msgstr "Image de la Publication"
+msgstr "Image de la publication"
 
 #. module: social_linkedin
 #: model:social.stream.type,name:social_linkedin.stream_type_linkedin_company_post
 msgid "Posts"
-msgstr "Articles"
+msgstr "Publications"
 
 #. module: social_linkedin
 #: model:ir.model,name:social_linkedin.model_social_account
 msgid "Social Account"
-msgstr "Compte Social"
+msgstr "Compte social"
 
 #. module: social_linkedin
 #: model:ir.model,name:social_linkedin.model_social_live_post
 msgid "Social Live Post"
-msgstr "Publication en Direct"
+msgstr "Publication en direct"
 
 #. module: social_linkedin
 #: model:ir.model,name:social_linkedin.model_social_media
 msgid "Social Media"
-msgstr "Médias sociaux"
+msgstr "Réseaux sociaux"
 
 #. module: social_linkedin
 #: model:ir.model,name:social_linkedin.model_social_post
@@ -200,7 +201,7 @@ msgstr "Publication"
 #. module: social_linkedin
 #: model:ir.model,name:social_linkedin.model_social_post_template
 msgid "Social Post Template"
-msgstr "Modèle de poste social"
+msgstr "Modèle de post social"
 
 #. module: social_linkedin
 #: model:ir.model,name:social_linkedin.model_social_stream
@@ -210,12 +211,12 @@ msgstr "Flux social"
 #. module: social_linkedin
 #: model:ir.model,name:social_linkedin.model_social_stream_post
 msgid "Social Stream Post"
-msgstr "Publication du Flux Social"
+msgstr "Publication du flux social"
 
 #. module: social_linkedin
 #: model:ir.model.fields,help:social_linkedin.field_social_account__linkedin_access_token
 msgid "The access token is used to perform request to the REST API"
-msgstr "Le jeton d'accès est utilisé pour effectuer des requêtes à l'API REST"
+msgstr "Le jeton d'accès est utilisé pour effectuer des demandes à l'API REST"
 
 #. module: social_linkedin
 #: code:addons/social_linkedin/models/social_media.py:0
@@ -256,8 +257,9 @@ msgid ""
 "Used to make comparisons when we need to restrict some features to a "
 "specific media ('facebook', 'twitter', ...)."
 msgstr ""
-"Utilisé pour établir des comparaisons lorsque l'on doit restreindre "
-"certaines fonctionnalités à un média spécifique (Facebook, Twitter,...) "
+"Utilisé pour faire des comparaisons lorsque nous devons restreindre "
+"certaines fonctionnalités à un réseau spécifique ('facebook', 'twitter', "
+"...)."
 
 #. module: social_linkedin
 #: model:ir.model.fields,help:social_linkedin.field_social_stream_post__linkedin_author_vanity_name
@@ -295,3 +297,9 @@ msgstr "Mauvais type de flux pour \"%s\""
 #, python-format
 msgid "You don't have an active subscription. Please buy one here: %s"
 msgstr "Vous n'avez pas d'abonnement actif. Veuillez en acheter un ici: %s"
+
+#. module: social_linkedin
+#: code:addons/social_linkedin/models/social_live_post.py:0
+#, python-format
+msgid "unknown"
+msgstr "inconnu"

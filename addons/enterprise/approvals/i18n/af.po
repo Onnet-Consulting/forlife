@@ -42,7 +42,7 @@ msgstr ""
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_category__active
 msgid "Active"
-msgstr ""
+msgstr "Aktief"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_request__activity_ids
@@ -310,7 +310,7 @@ msgstr "Kode"
 #: model:ir.model.fields,field_description:approvals.field_approval_product_line__company_id
 #: model:ir.model.fields,field_description:approvals.field_approval_request__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: approvals
 #: model:ir.ui.menu,name:approvals.approvals_menu_config
@@ -321,7 +321,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:approvals.field_approval_request__partner_id
 #: model_terms:ir.ui.view,arch_db:approvals.approval_category_view_form
 msgid "Contact"
-msgstr ""
+msgstr "Kontak"
 
 #. module: approvals
 #: model:approval.category,name:approvals.approval_category_data_contract_approval
@@ -363,7 +363,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:approvals.approval_category_view_form
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_form
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_request__date_confirmed
@@ -399,7 +399,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:approvals.field_approval_request__reason
 #: model_terms:ir.ui.view,arch_db:approvals.approval_request_view_form
 msgid "Description"
-msgstr ""
+msgstr "Beskrywing"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_approver__display_name
@@ -413,7 +413,7 @@ msgstr "Vertoningsnaam"
 #. module: approvals
 #: model_terms:ir.ui.view,arch_db:approvals.approval_category_view_form
 msgid "Document"
-msgstr ""
+msgstr "Dokument"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_category__requirer_document
@@ -742,7 +742,7 @@ msgstr ""
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_category__name
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: approvals
 #: code:addons/approvals/models/approval_category.py:0
@@ -999,12 +999,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:approvals.field_approval_category_approver__sequence
 #, python-format
 msgid "Sequence"
-msgstr ""
+msgstr "Volgorde"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_approver__status
 msgid "Status"
-msgstr ""
+msgstr "Stand"
 
 #. module: approvals
 #: model:ir.model.fields,help:approvals.field_approval_request__activity_state
@@ -1097,7 +1097,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:approvals.field_approval_category_approver__user_id
 #, python-format
 msgid "User"
-msgstr ""
+msgstr "Gebruiker"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_request__user_status

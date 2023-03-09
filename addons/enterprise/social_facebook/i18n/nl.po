@@ -28,12 +28,12 @@ msgstr "<b class=\"d-block mb-2\">Facebook pagina</b>"
 #. module: social_facebook
 #: model_terms:ir.ui.view,arch_db:social_facebook.social_stream_post_view_kanban
 msgid "<i class=\"fa fa-comments me-1\" title=\"Comments\"/>"
-msgstr "<i class=\"fa fa-comments me-1\" title=\"Commentaren\"/>"
+msgstr "<i class=\"fa fa-comments me-1\" title=\"Reacties\"/>"
 
 #. module: social_facebook
 #: model_terms:ir.ui.view,arch_db:social_facebook.social_stream_post_view_kanban
 msgid "<i class=\"fa fa-thumbs-up me-1\" title=\"Likes\"/>"
-msgstr "<i class=\"fa fa-thumbs-up me-1\" title=\"Likes\"/>"
+msgstr "<i class=\"fa fa-thumbs-up me-1\" title=\"Vind-ik-leuks\"/>"
 
 #. module: social_facebook
 #: model:ir.model.fields,field_description:social_facebook.field_social_live_post__facebook_post_id
@@ -71,12 +71,12 @@ msgid ""
 "instead of the provided one."
 msgstr ""
 "Vink dit aan als je je persoonlijke Facebook-ontwikkelaarsaccount wilt "
-"gebruiken in plaats van de verstrekte."
+"gebruiken in plaats van het verstrekte account."
 
 #. module: social_facebook
 #: model:ir.model.fields,field_description:social_facebook.field_social_stream_post__facebook_comments_count
 msgid "Comments"
-msgstr "Opmerkingen"
+msgstr "Reacties"
 
 #. module: social_facebook
 #: model:ir.model,name:social_facebook.model_res_config_settings
@@ -125,7 +125,7 @@ msgstr "Facebook auteur ID"
 #: code:addons/social_facebook/static/src/js/stream_post_kanban_record.js:0
 #, python-format
 msgid "Facebook Comments"
-msgstr "Facebook reactie"
+msgstr "Facebook reacties"
 
 #. module: social_facebook
 #: model_terms:ir.ui.view,arch_db:social_facebook.res_config_settings_view_form
@@ -206,7 +206,7 @@ msgstr "Pagina posts"
 #. module: social_facebook
 #: model_terms:ir.ui.view,arch_db:social_facebook.facebook_preview
 msgid "Post Image"
-msgstr "Plaats afbeelding"
+msgstr "Afbeelding posten"
 
 #. module: social_facebook
 #: code:addons/social_facebook/models/social_stream_post.py:0
@@ -308,7 +308,7 @@ msgstr ""
 #. module: social_facebook
 #: model:ir.model.fields,field_description:social_facebook.field_social_stream_post__facebook_user_likes
 msgid "User Likes"
-msgstr "Gebruiker vind ik leuks"
+msgstr "Gebruiker vind-ik-leuks"
 
 #. module: social_facebook
 #. openerp-web

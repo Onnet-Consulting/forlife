@@ -5,20 +5,20 @@
 # Translators:
 # Xia Fajin <xia.fajin@elico-corp.com>, 2022
 # 山西清水欧度(QQ:54773801) <54773801@qq.com>, 2022
-# Emily Jia <eji@odoo.com>, 2022
 # 深圳 JM <3440895@qq.com>, 2022
 # Martin Trigaux, 2022
 # Raymond Yu <cl_yu@hotmail.com>, 2022
 # digitalliuzg8888, 2022
-# Jeffery CHEN <jeffery9@gmail.com>, 2022
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2022
+# Emily Jia <eji@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2023-02-02 10:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Jeffery CHEN <jeffery9@gmail.com>, 2022\n"
+"Last-Translator: Emily Jia <eji@odoo.com>, 2023\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,6 +27,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -41,7 +42,7 @@ msgstr ""
 "            然后才会被永久地从你的数据库中删除"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.xml:0
 #, python-format
 msgid "\" under:"
@@ -53,6 +54,7 @@ msgid "#Is Favorite"
 msgstr "#是最喜欢的"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #: code:addons/knowledge/models/knowledge_article.py:0
 #: code:addons/knowledge/models/knowledge_article.py:0
@@ -61,6 +63,7 @@ msgid "%s (copy)"
 msgstr "%s (副本)"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "%s has been sent to Trash"
@@ -756,8 +759,8 @@ msgstr "<span style=\"font-size: 14px;\">点击任何地方，然后开始打字
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
-msgid "<span style=\"font-size: 14px;\">Each of them can bu used both as:</span>"
-msgstr "<span style=\"font-size: 14px;\">它们中的每一个都可以作为：</span>"
+msgid "<span style=\"font-size: 14px;\">Each of them can be used both as:</span>"
+msgstr "<span style=\"font-size: 14px;\">各项均可用于以下两方面：</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -845,7 +848,7 @@ msgstr ""
 "color-1\">Twitter</font></span>"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Access Restricted. May not be shared with everyone from"
@@ -882,14 +885,14 @@ msgid "Activity Type Icon"
 msgstr "活动类型图标"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Add a table of content."
 msgstr "添加目录"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Add a template section."
@@ -903,7 +906,7 @@ msgid ""
 msgstr "通过点击文章名称旁边的 <i class=\"fa fa-star-o\"></i>，在您的收藏夹列表中添加文章。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/table_of_content_behavior/table_of_content_behavior.xml:0
 #, python-format
 msgid "Add headings in this Article to create a Table of Content"
@@ -927,28 +930,28 @@ msgid ""
 msgstr "添加成员允许你分享文章，同时授予特定的访问权限<br>(可以写，可以读，……)。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Admin"
 msgstr "管理员"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Administrator"
 msgstr "管理员"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/webclient/commands/knowledge_providers.js:0
 #, python-format
 msgid "Advanced Search"
 msgstr "高级搜索"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid "Archive Article"
@@ -960,7 +963,7 @@ msgid "Archived"
 msgstr "已归档"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/cover_selector/knowledge_cover_dialog.js:0
 #, python-format
 msgid ""
@@ -969,7 +972,7 @@ msgid ""
 msgstr "您确定要删除这个封面吗？它将从每一篇使用的文章中被删除。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
@@ -978,7 +981,7 @@ msgid ""
 msgstr "您确定要离开这篇私人文章吗？ 这样做，这篇文章及其所有后代都将被存档。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/knowledge_renderers.js:0
 #, python-format
 msgid ""
@@ -987,7 +990,7 @@ msgid ""
 msgstr "您确定要将\"%s%s\"移动至私有吗？ 只有您才能访问它。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/knowledge_renderers.js:0
 #, python-format
 msgid ""
@@ -996,7 +999,7 @@ msgid ""
 msgstr "您确定要将\"%s%s\"移动至工作区吗？ 它将被分享给所有内部用户。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/knowledge_renderers.js:0
 #, python-format
 msgid ""
@@ -1005,14 +1008,7 @@ msgid ""
 msgstr "您确定要将\"%s%s\"移动至\"%s%s\"下吗？ 它将被分享给同一个人。"
 
 #. module: knowledge
-#. openerp-web
-#: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
-#, python-format
-msgid "Are you sure you want to remove you own \"Write\" access ?"
-msgstr "您确定要移除自己的 \"写入 \"权限吗？"
-
-#. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
@@ -1021,7 +1017,14 @@ msgid ""
 msgstr "您确定要移除您的会员吗? 通过留下一篇文章，您可能会失去对它的访问。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
+#: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
+#, python-format
+msgid "Are you sure you want to remove your own \"Write\" access ?"
+msgstr "确实删除您的“写入”权限？"
+
+#. module: knowledge
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
@@ -1030,7 +1033,7 @@ msgid ""
 msgstr "您确定要恢复访问权限吗？ 这意味着这篇文章现在将继承其父项上的任何访问集。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
@@ -1039,7 +1042,7 @@ msgid ""
 msgstr "您确定要限制此角色并限制访问权限吗？ 这篇文章将不再从父页面继承访问设置。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
@@ -1048,7 +1051,7 @@ msgid ""
 msgstr "您确定要将内部权限设置为\"无\"吗？ 如果您这样做，您将无法再访问该文章。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
@@ -1057,7 +1060,7 @@ msgid ""
 msgstr "您确定要将权限设置为\"无\"吗？ 如果您这样做，您将无法再访问该文章。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_favorite__article_id
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_member__article_id
@@ -1069,6 +1072,7 @@ msgid "Article"
 msgstr "文章"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article_member.py:0
 #, python-format
 msgid ""
@@ -1093,6 +1097,13 @@ msgid "Article Member"
 msgstr "文章成员"
 
 #. module: knowledge
+#. odoo-javascript
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Article Structure"
+msgstr "文章结构"
+
+#. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__article_url
 msgid "Article URL"
 msgstr "文章 URL"
@@ -1113,7 +1124,7 @@ msgid "Article not found"
 msgstr "文章没有找到"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.js:0
 #: model:ir.actions.act_window,name:knowledge.knowledge_article_action
 #: model:ir.actions.act_window,name:knowledge.knowledge_article_action_form
@@ -1124,6 +1135,7 @@ msgid "Articles"
 msgstr "文章"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #: code:addons/knowledge/models/knowledge_article.py:0
 #: code:addons/knowledge/models/knowledge_article.py:0
@@ -1138,14 +1150,14 @@ msgid "Articles using cover"
 msgstr "文章使用封面"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "As a reader, you can't leave a Workspace article"
 msgstr "作为读者，你不能离开工作区文章"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid ""
@@ -1158,7 +1170,7 @@ msgid "Attachment Count"
 msgstr "附件计数"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
@@ -1186,12 +1198,14 @@ msgid "Can Write"
 msgstr "可写"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article_member.py:0
 #, python-format
 msgid "Can not update the article or partner of a member."
 msgstr "无法更新会员的文章或合作伙伴。"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article_favorite.py:0
 #, python-format
 msgid "Can not update the article or user of a favorite."
@@ -1214,7 +1228,7 @@ msgid "Can write"
 msgstr "可写"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.xml:0
 #: code:addons/knowledge/static/src/js/wysiwyg/knowledge_article_link.js:0
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_invite_view_form
@@ -1223,6 +1237,7 @@ msgid "Cancel"
 msgstr "取消"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -1231,6 +1246,7 @@ msgid ""
 msgstr "无法在文章%(parent_name)s下创建文章，该文章是一个非私有的父类"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -1239,14 +1255,14 @@ msgid ""
 msgstr "不能将%(article_name)s作为”分享“部分的根来移动，因为没有父类就不能推断出访问权限。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.js:0
 #, python-format
 msgid "Categories"
 msgstr "电商品类"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid "Change Permission"
@@ -1258,14 +1274,14 @@ msgid "Child Articles and Items"
 msgstr "下级文章项目"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_editor.xml:0
 #, python-format
 msgid "Choose an Article"
 msgstr "选择文章"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/macros/abstract_macro.js:0
 #, python-format
 msgid "Close"
@@ -1277,7 +1293,7 @@ msgid "Configuration"
 msgstr "配置"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid "Confirmation"
@@ -1289,7 +1305,7 @@ msgid "Contact"
 msgstr "联系人"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #, python-format
@@ -1312,7 +1328,7 @@ msgid "Cover url"
 msgstr "封面网址"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_command_palette.xml:0
 #, python-format
 msgid "Create \""
@@ -1390,7 +1406,7 @@ msgid "Desyncronized with parents"
 msgstr "与父类取消同步"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/cover_selector/knowledge_cover_dialog.xml:0
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.xml:0
 #, python-format
@@ -1412,7 +1428,7 @@ msgid "Diving in"
 msgstr "潜入"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #, python-format
@@ -1420,21 +1436,21 @@ msgid "Download"
 msgstr "下载"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/views/list_view.js:0
 #, python-format
 msgid "Duplicate"
 msgstr "复制"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js:0
 #, python-format
 msgid "Embed a View"
 msgstr "嵌入视图"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Embed a file."
@@ -1446,7 +1462,7 @@ msgid "Emoji"
 msgstr "表情"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/article_behavior/article_behavior.js:0
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #: code:addons/knowledge/static/src/macros/abstract_macro.js:0
@@ -1455,6 +1471,7 @@ msgid "Error"
 msgstr "错误"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -1463,7 +1480,7 @@ msgid ""
 msgstr "错误：给定的操作不是act_window。此操作不能用于创建嵌入视图或视图链接"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "External Guest"
@@ -1494,7 +1511,7 @@ msgid "Favorites"
 msgstr "收藏"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "File"
@@ -1533,7 +1550,7 @@ msgid "Group By"
 msgstr "分组"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Guest"
@@ -1631,7 +1648,7 @@ msgid ""
 msgstr "如果设置，这篇文章将不再从其父项继承访问规则。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Index"
@@ -1649,70 +1666,70 @@ msgid "Inherited Permission Parent Article"
 msgstr "继承权限父文章"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.xml:0
 #, python-format
 msgid "Insert"
 msgstr "插入"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg/knowledge_article_link.js:0
 #, python-format
 msgid "Insert Link"
 msgstr "插入链接"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js:0
 #, python-format
 msgid "Insert a Kanban View"
 msgstr "插入看板视图"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Insert a Kanban view of article items"
 msgstr "插入文章项目的看板视图"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js:0
 #, python-format
 msgid "Insert a List View"
 msgstr "插入列表视图"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Insert a List view of article items"
 msgstr "插入文章项目的列表视图"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/external_embedded_view_favorite_menu/insert_embedded_view.xml:0
 #, python-format
 msgid "Insert link in article"
 msgstr "在文章中插入链接"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/external_embedded_view_favorite_menu/insert_embedded_view.xml:0
 #, python-format
 msgid "Insert view in article"
 msgstr "在文章中插入视图"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Internal Members"
 msgstr "内部成员"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__internal_permission
 #, python-format
@@ -1720,6 +1737,7 @@ msgid "Internal Permission"
 msgstr "内部许可"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "Invitation to access %s"
@@ -1762,21 +1780,31 @@ msgid "Is Property Field Empty?"
 msgstr "属性字段是空白吗？"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Item Kanban"
 msgstr "看板"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Item List"
 msgstr "列表"
 
 #. module: knowledge
+#. odoo-javascript
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #: model:ir.ui.menu,name:knowledge.knowledge_menu_root
+#, python-format
 msgid "Knowledge"
 msgstr "知识"
 
@@ -1845,7 +1873,7 @@ msgid "Last Updated on"
 msgstr "最后更新时间"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
@@ -1854,14 +1882,14 @@ msgid "Leave Article"
 msgstr "离开文章"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg/knowledge_article_link.js:0
 #, python-format
 msgid "Link an Article"
 msgstr "链接文章"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Link an article."
@@ -1873,13 +1901,14 @@ msgid "Locked"
 msgstr "已锁定"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_frontend.xml:0
 #, python-format
 msgid "Log in"
 msgstr "登录"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -1891,6 +1920,14 @@ msgstr "由于层级结构树的更新，记录来自%(partner_name)s的变化�
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__message_main_attachment_id
 msgid "Main Attachment"
 msgstr "主要附件"
+
+#. module: knowledge
+#. odoo-javascript
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Media"
+msgstr "媒体"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_member_view_form
@@ -1925,34 +1962,35 @@ msgid "Messages"
 msgstr "消息"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.js:0
 #, python-format
 msgid "Missing File"
 msgstr "缺少文件"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.xml:0
 #, python-format
 msgid "Move \""
 msgstr "移动 “"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.xml:0
 #, python-format
 msgid "Move Article"
 msgstr "移动文章"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.js:0
 #, python-format
 msgid "Move an Article"
 msgstr "移动一篇文章"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -1983,7 +2021,7 @@ msgid "Navigation Basics"
 msgstr "导航基础知识"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_editor.xml:0
 #, python-format
 msgid "Nest articles under this one to generate a structure"
@@ -2010,20 +2048,21 @@ msgid "Next Activity Type"
 msgstr "下一活动类型"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_command_palette.xml:0
 #, python-format
 msgid "No Article found."
 msgstr "未找到文章。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/webclient/commands/knowledge_providers.js:0
 #, python-format
 msgid "No Article found. Create \"%s\""
 msgstr "未找到文章，创建“%s”"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "No Article in Trash"
@@ -2048,7 +2087,7 @@ msgid "No access"
 msgstr "无法访问"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/webclient/commands/knowledge_providers.js:0
 #, python-format
 msgid "No article found."
@@ -2085,7 +2124,7 @@ msgid "Odoo Survival Guide"
 msgstr "Odoo生存指南"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/article_behavior/article_behavior.js:0
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.js:0
 #, python-format
@@ -2098,7 +2137,7 @@ msgid "Onboarding.pdf"
 msgstr "Onboarding.pdf"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.js:0
 #, python-format
 msgid ""
@@ -2107,19 +2146,12 @@ msgid ""
 msgstr "哎呀，无法找到文件%s。请用一个新的文件框替换这个文件框，重新上传文件。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_manager.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_manager.xml:0
 #, python-format
 msgid "Open"
 msgstr "打开"
-
-#. module: knowledge
-#. openerp-web
-#: code:addons/knowledge/static/src/js/wysiwyg.js:0
-#, python-format
-msgid "Outline"
-msgstr "轮廓"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__parent_id
@@ -2144,7 +2176,7 @@ msgid "Permission"
 msgstr "权限"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.js:0
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article__category__private
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_tree
@@ -2169,21 +2201,21 @@ msgid "Recipients"
 msgstr "收件人"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/articles_structure_behavior/articles_structure_behavior.xml:0
 #, python-format
 msgid "Refresh"
 msgstr "刷新"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/knowledge_emoji_picker_remove_action_view/knowledge_emoji_picker_remove_action_view.xml:0
 #, python-format
 msgid "Remove Icon"
 msgstr "移除图标"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Remove Member"
@@ -2195,7 +2227,7 @@ msgid "Remove from Trash"
 msgstr "从回收站移除"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_manager.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_manager.xml:0
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.xml:0
@@ -2209,21 +2241,21 @@ msgid "Responsible User"
 msgstr "负责用户"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Restore"
 msgstr "还原"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid "Restore Access"
 msgstr "恢复访问"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid "Restrict Access"
@@ -2255,7 +2287,7 @@ msgid "Search Favorites"
 msgstr "搜索收藏夹"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/chatter_topbar.xml:0
 #, python-format
 msgid "Search Knowledge Articles"
@@ -2267,7 +2299,7 @@ msgid "Search Members"
 msgstr "搜索成员"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.xml:0
 #, python-format
 msgid "Search an Article to use as Parent"
@@ -2280,7 +2312,7 @@ msgid "Search an article..."
 msgstr "搜索一篇文章……"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/webclient/commands/knowledge_providers.js:0
 #, python-format
 msgid "Search for an article..."
@@ -2292,21 +2324,21 @@ msgid "Section"
 msgstr "章节"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/cover_selector/knowledge_cover_dialog.js:0
 #, python-format
 msgid "Select a cover"
 msgstr "选择封面"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/external_embedded_view_insertion/views_renderers_patches.js:0
 #, python-format
 msgid "Select an article"
 msgstr "选择文章"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
@@ -2334,27 +2366,28 @@ msgid "Shared with you"
 msgstr "与您分享"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Show all nested articles."
 msgstr "显示所有嵌套文章"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Show the first level of nested articles."
 msgstr "显示第一级嵌套文章"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "Some articles have been sent to Trash"
 msgstr "有些文章被发送到回收站"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_behavior.xml:0
 #, python-format
 msgid "Something went wrong!"
@@ -2374,14 +2407,14 @@ msgstr ""
 " 计划：未来活动。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Table Of Content"
 msgstr "目录"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -2390,13 +2423,21 @@ msgid "Template"
 msgstr "模板"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.js:0
 #, python-format
 msgid "Template copied to clipboard."
 msgstr "模板被复制到剪贴板。"
 
 #. module: knowledge
+#. odoo-python
+#: code:addons/knowledge/models/knowledge_article.py:0
+#, python-format
+msgid "The Article you are trying to access has been deleted"
+msgstr "您要访问的文章已被删除"
+
+#. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "The article '%s' needs at least one member with 'Write' access."
@@ -2410,6 +2451,7 @@ msgid ""
 msgstr "您正在尝试阅读的文章要么已被删除，要么您无法访问它。"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article_member.py:0
 #, python-format
 msgid ""
@@ -2418,7 +2460,7 @@ msgid ""
 msgstr "外部用户%(user_name)s不能对文章%(article_name)s具有\"写入\"权限"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/macros/abstract_macro.js:0
 #, python-format
 msgid ""
@@ -2427,6 +2469,7 @@ msgid ""
 msgstr "由于页面或记录改变，操作被中断。请稍后再试。"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/controllers/main.py:0
 #: code:addons/knowledge/controllers/main.py:0
 #, python-format
@@ -2446,7 +2489,7 @@ msgid ""
 msgstr "主题是文章层次结构中最高父级的标题。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_behavior.xml:0
 #, python-format
 msgid "The view does not exist or you are not allowed to access to it."
@@ -2463,14 +2506,14 @@ msgid "This article is archived."
 msgstr "文章已归档。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/article_behavior/article_behavior.js:0
 #, python-format
 msgid "This article was deleted or you don't have the rights to access it."
 msgstr "文章已删除或您没有权限来访问。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_frontend.xml:0
 #, python-format
 msgid "This view is only available for internal users"
@@ -2509,6 +2552,7 @@ msgid "Try Odoo"
 msgstr "尝试Odoo"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "Trying to remove wrong member."
@@ -2525,7 +2569,8 @@ msgid "Unarchive"
 msgstr "取消归档"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #: code:addons/knowledge/static/src/js/knowledge_renderers.js:0
 #: code:addons/knowledge/static/src/js/knowledge_renderers.js:0
@@ -2539,21 +2584,21 @@ msgid "Untitled"
 msgstr "未命名的"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/articles_structure_behavior/articles_structure_behavior.xml:0
 #, python-format
 msgid "Update"
 msgstr "更新"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #, python-format
 msgid "Use as"
 msgstr "使用为"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #, python-format
@@ -2561,7 +2606,7 @@ msgid "Use as Attachment"
 msgstr "作为附件使用"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #, python-format
 msgid "Use as Description"
@@ -2587,7 +2632,7 @@ msgid "User Favorite Sequence"
 msgstr "用户收藏夹序号"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "User Permission"
@@ -2614,13 +2659,14 @@ msgid "Website communication history"
 msgstr "网上沟通记录"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/res_users.py:0
 #, python-format
 msgid "Welcome %s"
 msgstr "欢迎 %s"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.xml:0
 #, python-format
 msgid "What do you want to manage?"
@@ -2659,7 +2705,7 @@ msgid "Who has access to what?"
 msgstr "谁有权访问什么？"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.js:0
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article__category__workspace
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_tree
@@ -2679,12 +2725,14 @@ msgid "You are currently visiting as a Guest User"
 msgstr "您目前以来宾用户身份访问"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "You are not allowed to make '%(article_name)s' private."
 msgstr "您不被允许将“%(article_name)s”私有。"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -2692,44 +2740,49 @@ msgid ""
 msgstr "你不被允许将'%(article_name)s'移动到'%(parent_name)s'下面。"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "You can't leave an article for which you are the last writer"
 msgstr "您不能离开一篇您是最后一名作者的文章"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "You can't remove the last writer of the article"
 msgstr "您无法移除这篇文章的最后作者"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "You cannot add or remove this article to your favorites"
 msgstr "您无法添加或移除这篇文章到您的收藏夹"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/controllers/main.py:0
 #, python-format
 msgid "You cannot change the internal permission of this article."
 msgstr "您无法改变这篇文章的内部权限。"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/controllers/main.py:0
 #, python-format
 msgid "You cannot change the permission of this member."
 msgstr "您不能改变这位成员的权限。"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "You cannot create an article under articles on which you cannot write"
 msgstr "您无法在无法写入的文章下创建文章"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -2737,12 +2790,14 @@ msgid ""
 msgstr "您不能移动%(parent_name)s下的文章，因为您无法在上面写入"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "You have to be editor on %(article_name)s to add members."
 msgstr "您必须是%(article_name)s的编辑才能添加成员。"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -2750,6 +2805,7 @@ msgid ""
 msgstr "您必须是%(article_name)s的编辑才能改变内部权限。"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -2757,6 +2813,7 @@ msgid ""
 msgstr "您必须是%(article_name)s的编辑才能修改成员权限。"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -2765,6 +2822,7 @@ msgid ""
 msgstr "你必须是%(article_name)s的编辑才能移除或排除成员%(member_name)s。"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "You have to be editor on %(article_name)s to restore it."
@@ -2776,7 +2834,7 @@ msgid "and the following child article(s) have"
 msgstr "和以下子文章有"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/webclient/commands/knowledge_providers.js:0
 #, python-format
 msgid "articles"
@@ -2793,14 +2851,14 @@ msgid "cover"
 msgstr "封面"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js:0
 #, python-format
 msgid "e.g. Buildings"
 msgstr "例如：建筑"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js:0
 #, python-format
 msgid "e.g. Todos"
@@ -2822,7 +2880,7 @@ msgid "invited you to access"
 msgstr "邀请您来访问"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/abstract_behavior/abstract_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/articles_structure_behavior/articles_structure_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_behavior.xml:0

@@ -2,12 +2,19 @@
 # This file contains the translation of the following modules:
 # 	* pos_iot
 # 
+# Translators:
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Grega Vavtar <grega@hbs.si>, 2022
+# Martin Trigaux, 2022
+# Nejc G <nejc@luxim.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~15.2+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-11 15:05+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
+"Last-Translator: Nejc G <nejc@luxim.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,7 +51,7 @@ msgstr ""
 #: code:addons/pos_iot/static/src/xml/LastTransactionStatus.xml:0
 #, python-format
 msgid "Amount:"
-msgstr ""
+msgstr "Znesek:"
 
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.pos_iot_config_view_form
@@ -59,7 +66,7 @@ msgstr ""
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.pos_iot_config_view_form
 msgid "Cashdrawer"
-msgstr ""
+msgstr "Blagajniški predal"
 
 #. module: pos_iot
 #. openerp-web
@@ -87,7 +94,7 @@ msgstr ""
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Uredi nastavitve"
 
 #. module: pos_iot
 #. openerp-web
@@ -121,7 +128,7 @@ msgstr ""
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.pos_iot_config_view_form
 msgid "Customer Display"
-msgstr ""
+msgstr "Prikaz strank"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_config__iface_customer_facing_display_via_proxy
@@ -131,13 +138,13 @@ msgstr ""
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
 msgid "Documentation"
-msgstr ""
+msgstr "Dokumentacija"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_config__iface_electronic_scale
 #: model_terms:ir.ui.view,arch_db:pos_iot.pos_iot_config_view_form
 msgid "Electronic Scale"
-msgstr ""
+msgstr "Elektronska tehtnica"
 
 #. module: pos_iot
 #. openerp-web
@@ -256,12 +263,12 @@ msgstr ""
 #: code:addons/pos_iot/static/src/xml/LastTransactionStatus.xml:0
 #, python-format
 msgid "Ok"
-msgstr ""
+msgstr "V Redu"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_payment_method__payment_terminal_ids
 msgid "Payment Terminal"
-msgstr ""
+msgstr "Plačilni terminal"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_config__payment_terminal_device_ids
@@ -310,7 +317,7 @@ msgstr ""
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_config
 msgid "Point of Sale Configuration"
-msgstr ""
+msgstr "Nastavitve POS-blagajne"
 
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_payment_method
@@ -320,12 +327,12 @@ msgstr ""
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_session
 msgid "Point of Sale Session"
-msgstr ""
+msgstr "Seja POS"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_config__iface_print_via_proxy
 msgid "Print via Proxy"
-msgstr ""
+msgstr "Natisni preko proxy"
 
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.pos_iot_config_view_form
@@ -335,12 +342,12 @@ msgstr ""
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_config__iface_scan_via_proxy
 msgid "Scan via Proxy"
-msgstr ""
+msgstr "Skeniraj preko proxy"
 
 #. module: pos_iot
 #: model:ir.model.fields,help:pos_iot.field_pos_config__iface_customer_facing_display_via_proxy
 msgid "Show checkout to customers with a remotely-connected screen."
-msgstr ""
+msgstr "Strankam z zaslonom na daljavo pokaži checkout"
 
 #. module: pos_iot
 #. openerp-web

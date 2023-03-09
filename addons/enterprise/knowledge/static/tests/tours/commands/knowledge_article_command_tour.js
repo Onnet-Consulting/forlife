@@ -18,18 +18,19 @@ tour.register('knowledge_article_command_tour', {
 }, { // click on the /article command
     trigger: '.oe-powerbox-commandName:contains("Article")',
     run: 'click',
-}, { // set the value of the select2 input field
-    trigger: '.o_knowledge_select2',
-    run: function () {
-        const $select = $(this.$anchor[0]);
-        $select.select2('data', {
-            id: 1,
-            display_name: '📄 My Article'
-        });
-    },
+}, { // select an article in the list
+    trigger: '.select2-results > .select2-result:contains("EditorCommandsArticle")',
+    run: 'click',
+    in_modal: false,
+}, { // wait for the choice to be registered
+    trigger: '.select2-chosen:contains("EditorCommandsArticle")',
+    run: () => {},
 }, { // click on the "Insert Link" button
     trigger: '.modal-footer button.btn-primary',
     run: 'click'
 }, { // wait for the block to appear in the editor
-    trigger: '.o_knowledge_behavior_type_article > span:contains("📄 My Article")'
+    trigger: '.o_knowledge_behavior_type_article:contains("EditorCommandsArticle")',
+    run: 'click',
+}, { // check that the view switched to the corresponding article while keeping the breadcrumbs history
+    trigger: '.o_knowledge_header:has(.o_breadcrumb_article_name_container:contains("EditorCommandsArticle")):has(.breadcrumb-item > a:contains("EditorCommandsArticle"))'
 }]);

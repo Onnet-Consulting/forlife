@@ -164,8 +164,8 @@ class HrPayslip(models.Model):
                 lines_to_remove = slip.input_line_ids.filtered(lambda x: x.input_type_id.id in attachment_type_ids)
                 slip.update({'input_line_ids': [Command.unlink(line.id) for line in lines_to_remove]})
             if slip.employee_id.salary_attachment_ids:
-                lines_to_keep = slip.input_line_ids.filtered(lambda x: x.input_type_id.id not in attachment_type_ids)
-                input_line_vals = [Command.clear()] + [Command.link(line.id) for line in lines_to_keep]
+                lines_to_remove = slip.input_line_ids.filtered(lambda x: x.input_type_id.id in attachment_type_ids)
+                input_line_vals = [Command.unlink(line.id) for line in lines_to_remove]
 
                 valid_attachments = slip.employee_id.salary_attachment_ids.filtered(
                     lambda a: a.state == 'open' and a.date_start <= slip.date_to
@@ -431,7 +431,7 @@ class HrPayslip(models.Model):
 
     def action_open_work_entries(self):
         self.ensure_one()
-        return self.employee_id.action_open_work_entries()
+        return self.employee_id.action_open_work_entries(initial_date=self.date_from)
 
     def action_open_salary_attachments(self):
         self.ensure_one()
@@ -596,6 +596,7 @@ class HrPayslip(models.Model):
         return {
             'float_round': float_round,
             'float_compare': float_compare,
+            'relativedelta': relativedelta,
         }
 
     def _get_localdict(self):

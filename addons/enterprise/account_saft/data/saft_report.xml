@@ -28,7 +28,7 @@
                 <FirstName t-out="partner_contact.name[:35]"/>
                 <LastName/>
             </ContactPerson>
-            <Telephone t-out="(partner_contact.phone or partner_contact.mobile)[:18]"/>
+            <Telephone t-if="partner_contact.phone or partner_contact.mobile" t-out="(partner_contact.phone or partner_contact.mobile)[:18]"/>
             <Email t-if="partner_contact.email" t-out="partner_contact.email[:70]"/>
             <Website t-if="partner_contact.website" t-out="partner_contact.website"/>
         </Contact>

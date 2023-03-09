@@ -5,15 +5,15 @@
 # Translators:
 # Martin Trigaux, 2022
 # JH CHOI <hwangtog@gmail.com>, 2022
-# Sarah Park, 2022
+# Sarah Park, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-23 08:22+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Sarah Park, 2022\n"
+"Last-Translator: Sarah Park, 2023\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -58,12 +58,14 @@ msgid "%<br/>"
 msgstr ""
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/report/builder/abstract.py:0
 #, python-format
 msgid "%s (%s Currency Conversion Method)"
 msgstr "%s (%s 통화 변환 방법)"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_period.py:0
 #, python-format
 msgid "%s Consolidated Accounting"
@@ -86,7 +88,7 @@ msgid "(Re)compute"
 msgstr "(재)계산"
 
 #. module: account_consolidation
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_consolidation/static/src/components/move_line_list/move_line_list.xml:0
 #: code:addons/account_consolidation/static/src/components/move_line_list/move_line_list.xml:0
 #, python-format
@@ -94,14 +96,14 @@ msgid ") and the consolidated company ("
 msgstr ""
 
 #. module: account_consolidation
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_consolidation/static/src/components/move_line_list/move_line_list.xml:0
 #, python-format
 msgid ") have different currencies and the company is consolidated at"
 msgstr ""
 
 #. module: account_consolidation
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_consolidation/static/src/components/move_line_list/move_line_list.xml:0
 #, python-format
 msgid ") have different currencies."
@@ -169,9 +171,10 @@ msgstr "<span role=\"separator\">보기</span>"
 msgid ""
 "A consolidation account with the same code already exists in this "
 "consolidation."
-msgstr "이 연결에는 동일한 코드를 가진 연결 계정이 이미 존재한다."
+msgstr "동일한 코드를 사용하는 연결 계정이 본 연결에 이미 존재합니다."
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_journal.py:0
 #, python-format
 msgid ""
@@ -212,18 +215,21 @@ msgid "Account Mapping"
 msgstr "계정 매핑"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_coa.py:0
 #, python-format
 msgid "Account Mapping: %(chart)s"
 msgstr ""
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/res_company.py:0
 #, python-format
 msgid "Account Mapping: %(company)s"
 msgstr ""
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_period.py:0
 #, python-format
 msgid "Account Mapping: %s (for %s)"
@@ -242,7 +248,7 @@ msgstr "항목이 있는 계정"
 #. module: account_consolidation
 #: model:ir.model,name:account_consolidation.model_account_report
 msgid "Accounting Report"
-msgstr ""
+msgstr "회계 보고서"
 
 #. module: account_consolidation
 #: model:ir.model.fields,field_description:account_consolidation.field_consolidation_account__account_ids
@@ -269,7 +275,7 @@ msgid "Active"
 msgstr "활성"
 
 #. module: account_consolidation
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_consolidation/static/src/js/trial_balance_grid/controller.js:0
 #: code:addons/account_consolidation/static/src/js/trial_balance_grid/controller.js:0
 #, python-format
@@ -303,6 +309,7 @@ msgid "Amount"
 msgstr "금액"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_coa.py:0
 #, python-format
 msgid ""
@@ -558,7 +565,7 @@ msgid "Consolidated In"
 msgstr "다음에서 통합됨"
 
 #. module: account_consolidation
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_consolidation/static/src/js/trial_balance_grid/controller.js:0
 #, python-format
 msgid "Consolidated balance"
@@ -854,6 +861,7 @@ msgid "Draft"
 msgstr "임시"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/report/trial_balance.py:0
 #: model_terms:ir.ui.view,arch_db:account_consolidation.consolidation_period_form
 #, python-format
@@ -861,6 +869,7 @@ msgid "Edit"
 msgstr "편집하기"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/report/trial_balance.py:0
 #, python-format
 msgid "Edit %s"
@@ -956,6 +965,7 @@ msgid "Historical Rates"
 msgstr "과거 비율"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/res_company.py:0
 #, python-format
 msgid "Historical Rates: %(company)s"
@@ -1190,6 +1200,14 @@ msgid "Number of messages with delivery error"
 msgstr "전송 오류 메시지 수"
 
 #. module: account_consolidation
+#. odoo-python
+#: code:addons/account_consolidation/models/consolidation_journal.py:0
+#, python-format
+msgid ""
+"Only one entry by account should be created for a generated journal entry !"
+msgstr ""
+
+#. module: account_consolidation
 #: model_terms:ir.ui.view,arch_db:account_consolidation.consolidation_period_search
 msgid "Only the periods containing today"
 msgstr "오늘을 포함한 기간 한정"
@@ -1216,6 +1234,7 @@ msgid "Originating Currency"
 msgstr "원본 통화"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/report/trial_balance.py:0
 #: code:addons/account_consolidation/report/trial_balance.py:0
 #, python-format
@@ -1413,7 +1432,7 @@ msgid "Subgroups"
 msgstr "하위 그룹"
 
 #. module: account_consolidation
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_consolidation/static/src/components/move_line_list/move_line_list.xml:0
 #: code:addons/account_consolidation/static/src/components/move_line_list/move_line_list.xml:0
 #, python-format
@@ -1421,7 +1440,7 @@ msgid "Take into account that the consolidation ("
 msgstr ""
 
 #. module: account_consolidation
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_consolidation/static/src/components/move_line_list/move_line_list.xml:0
 #, python-format
 msgid "Take into account that this company is consolidated at"
@@ -1437,6 +1456,7 @@ msgid "Target Currency"
 msgstr "대상 통화"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_period.py:0
 #, python-format
 msgid ""
@@ -1462,6 +1482,7 @@ msgid "This journal has been automatically generated on"
 msgstr "이 분개장은 자동으로 생성되었습니다"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/report/builder/abstract.py:0
 #: code:addons/account_consolidation/report/trial_balance.py:0
 #: model_terms:ir.ui.view,arch_db:account_consolidation.consolidation_journal_form
@@ -1472,6 +1493,7 @@ msgid "Total"
 msgstr "합계"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/report/trial_balance.py:0
 #: code:addons/account_consolidation/report/trial_balance.py:0
 #: model_terms:ir.ui.view,arch_db:account_consolidation.consolidation_journal_line_search
@@ -1487,6 +1509,7 @@ msgid "Trial Balance Custom Handler"
 msgstr ""
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_period.py:0
 #, python-format
 msgid "Trial Balance: %s"
@@ -1536,6 +1559,7 @@ msgid "Website communication history"
 msgstr "웹사이트 대화 이력"
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_journal.py:0
 #, python-format
 msgid ""
@@ -1545,6 +1569,7 @@ msgid ""
 msgstr "통합 분개장에서 기간을 설정할 때 선택한 분개장에 대해 통합 일람표가 선택한 기간과 다를 수 없습니다."
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/report/trial_balance.py:0
 #: code:addons/account_consolidation/report/trial_balance.py:0
 #, python-format
@@ -1559,12 +1584,14 @@ msgid ""
 msgstr "전체 체계의 일부로 다른 하위 연결을 기반으로 복잡한 연결을 정의 할 수 있습니다."
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_journal.py:0
 #, python-format
 msgid "You can't delete an auto-generated journal entry."
 msgstr "자동 생성된 분개장 기입 항목은 삭제할 수 없습니다."
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_journal.py:0
 #: code:addons/account_consolidation/models/consolidation_journal.py:0
 #, python-format
@@ -1572,6 +1599,7 @@ msgid "You can't edit an auto-generated journal entry."
 msgstr "자동 생성된 분개장 기입 항목은 편집할 수 없습니다."
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/models/consolidation_journal.py:0
 #, python-format
 msgid "You cannot add journals to a closed period !"
@@ -1580,7 +1608,7 @@ msgstr "마감된 기간에는 분개장을 추가할 수 없습니다!"
 #. module: account_consolidation
 #: model_terms:ir.ui.view,arch_db:account_consolidation.consolidation_group_form
 msgid "e.g. Profit and Loss"
-msgstr ""
+msgstr "예: 손익계산서"
 
 #. module: account_consolidation
 #: model_terms:ir.ui.view,arch_db:account_consolidation.consolidation_account_form
@@ -1588,13 +1616,14 @@ msgid "e.g. Revenue"
 msgstr ""
 
 #. module: account_consolidation
+#. odoo-python
 #: code:addons/account_consolidation/report/builder/comparison.py:0
 #, python-format
 msgid "n/a"
 msgstr "n/a"
 
 #. module: account_consolidation
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_consolidation/static/src/components/dashboard_widget/dashboard_widget.xml:0
 #, python-format
 msgid "unmapped accounts"

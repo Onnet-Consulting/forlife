@@ -207,7 +207,7 @@ class TestCfdiPaymentMultiCurrencies(TestMxEdiCommon):
                                 ImpSaldoInsoluto="0.00"
                                 ObjetoImpDR="01"
                                 MonedaDR="USD"
-                                EquivalenciaDR="4.000000"
+                                EquivalenciaDR="4.0000000000"
                                 NumParcialidad="1"/>
                         </Pago>
                     </Pagos>
@@ -245,7 +245,7 @@ class TestCfdiPaymentMultiCurrencies(TestMxEdiCommon):
                                 ImpSaldoInsoluto="0.00"
                                 ObjetoImpDR="01"
                                 MonedaDR="USD"
-                                EquivalenciaDR="6.000000"
+                                EquivalenciaDR="6.0000000000"
                                 NumParcialidad="1"
                                 Serie="___ignore___"/>
                         </Pago>
@@ -284,7 +284,7 @@ class TestCfdiPaymentMultiCurrencies(TestMxEdiCommon):
                                 ImpSaldoInsoluto="2400.00"
                                 ObjetoImpDR="01"
                                 MonedaDR="USD"
-                                EquivalenciaDR="4.000000"
+                                EquivalenciaDR="4.0000000000"
                                 NumParcialidad="1"
                                 Serie="___ignore___"/>
                         </Pago>
@@ -328,7 +328,7 @@ class TestCfdiPaymentMultiCurrencies(TestMxEdiCommon):
                                 ImpSaldoInsoluto="0.00"
                                 ObjetoImpDR="01"
                                 MonedaDR="USD"
-                                EquivalenciaDR="4.000000"
+                                EquivalenciaDR="4.0000000000"
                                 NumParcialidad="1"
                                 Serie="___ignore___"/>
                         </Pago>
@@ -372,7 +372,7 @@ class TestCfdiPaymentMultiCurrencies(TestMxEdiCommon):
                                 ImpSaldoInsoluto="0.00"
                                 ObjetoImpDR="01"
                                 MonedaDR="USD"
-                                EquivalenciaDR="4.000000"
+                                EquivalenciaDR="4.0000000000"
                                 NumParcialidad="1"
                                 Serie="___ignore___"/>
                         </Pago>
@@ -412,7 +412,7 @@ class TestCfdiPaymentMultiCurrencies(TestMxEdiCommon):
                                 ImpSaldoInsoluto="0.00"
                                 ObjetoImpDR="01"
                                 MonedaDR="USD"
-                                EquivalenciaDR="4.000000"
+                                EquivalenciaDR="4.0000000000"
                                 NumParcialidad="1"
                                 Serie="___ignore___"/>
                         </Pago>

@@ -6,6 +6,10 @@ import Wysiwyg from 'web_editor.wysiwyg';
 import { KnowledgeArticleLinkModal } from './wysiwyg/knowledge_article_link.js';
 import { PromptEmbeddedViewNameDialogWrapper } from '../components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js';
 import { preserveCursor } from '@web_editor/js/editor/odoo-editor/src/OdooEditor';
+import { Markup } from 'web.utils';
+import {
+    encodeDataBehaviorProps,
+} from "@knowledge/js/knowledge_utils";
 
 Wysiwyg.include({
     /**
@@ -24,6 +28,31 @@ Wysiwyg.include({
             options.powerboxFilters.push(this._filterKnowledgeCommandGroupInTemplate);
         }
         this._super.apply(this, arguments);
+    },
+    /**
+     * @override
+     */
+    resetEditor: async function () {
+        await this._super(...arguments);
+        this.$editable[0].dispatchEvent(new Event('refresh_behaviors'));
+    },
+    /**
+     * @override
+     */
+    setValue: function () {
+        // Temporary hack that will be removed in 16.2 with the full
+        // implementation of oeProtected in the editor.
+        // purpose: ignore locks from Behavior components rendering
+        // when the content of the editor is reset (those components will also
+        // have to be reset anyway)
+        if (this.odooEditor._observerUnactiveLabels.size) {
+            [...this.odooEditor._observerUnactiveLabels].forEach(lock => {
+                if (lock.startsWith('knowledge_behavior_id_')) {
+                    this.odooEditor.observerActive(lock);
+                }
+            });
+        }
+        this._super(...arguments);
     },
     /**
      * Prevent usage of commands from the group "Knowledge" inside the tables.
@@ -154,7 +183,7 @@ Wysiwyg.include({
             }, {
                 category: _t('Knowledge'),
                 name: _t('Index'),
-                priority: 40,
+                priority: 60,
                 description: _t('Show the first level of nested articles.'),
                 fontawesome: 'fa-list',
                 callback: () => {
@@ -162,8 +191,8 @@ Wysiwyg.include({
                 }
             }, {
                 category: _t('Knowledge'),
-                name: _t('Outline'),
-                priority: 40,
+                name: _t('Article Structure'),
+                priority: 60,
                 description: _t('Show all nested articles.'),
                 fontawesome: 'fa-list',
                 callback: () => {
@@ -178,9 +207,8 @@ Wysiwyg.include({
      * @see KnowledgeBehavior
      *
      * @param {Element} anchor
-     * @param {Object} props
      */
-    _notifyNewBehavior(anchor, props=null) {
+    _notifyNewBehavior(anchor) {
         const behaviorsData = [];
         const type = Array.from(anchor.classList).find(className => className.startsWith('o_knowledge_behavior_type_'));
         if (type) {
@@ -188,7 +216,6 @@ Wysiwyg.include({
                 anchor: anchor,
                 behaviorType: type,
                 setCursor: true,
-                props: props || {},
             });
         }
         this.$editable.trigger('refresh_behaviors', { behaviorsData: behaviorsData});
@@ -242,6 +269,8 @@ Wysiwyg.include({
                 }))[0];
                 dialog.close();
                 restoreSelection();
+                const nameNode = document.createTextNode(article.display_name);
+                articleLinkBlock.appendChild(nameNode);
                 const [anchor] = this.odooEditor.execCommand('insert', articleLinkBlock);
                 this._notifyNewBehavior(anchor);
             }
@@ -283,15 +312,18 @@ Wysiwyg.include({
             element.classList.remove('o_is_knowledge_file');
             element.classList.add('o_image');
             const extension = (element.title && element.title.split('.').pop()) || element.dataset.mimetype;
-            const fileBlock = $(QWeb.render('knowledge.abstract_behavior', {
+            const fileBlock = $(QWeb.render('knowledge.WysiwygFileBehavior', {
                 behaviorType: "o_knowledge_behavior_type_file",
+                fileName: element.title,
+                fileImage: Markup(element.outerHTML),
+                behaviorProps: encodeDataBehaviorProps({
+                    fileName: element.title,
+                    fileExtension: extension,
+                }),
+                fileExtension: extension,
             }))[0];
             const [container] = this.odooEditor.execCommand('insert', fileBlock);
-            this._notifyNewBehavior(container, {
-                fileName: element.title,
-                fileImage: element.outerHTML,
-                fileExtension: extension,
-            });
+            this._notifyNewBehavior(container);
             // need to set cursor (anchor.sibling)
         } else {
             return this._super(...arguments);

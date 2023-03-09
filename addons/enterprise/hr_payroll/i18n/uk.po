@@ -3,16 +3,17 @@
 # 	* hr_payroll
 # 
 # Translators:
-# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2022
 # Martin Trigaux, 2022
+# Bohdan Lisnenko, 2022
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 09:41+0000\n"
+"POT-Creation-Date: 2023-02-02 10:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2023\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,11 +30,11 @@ msgstr "К-сть розрахункових листів"
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract__payslips_count
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract_history__payslips_count
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment__payslip_count
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "# Payslips"
 msgstr "К-сть розрахункових листів"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
 msgid ""
@@ -54,13 +55,14 @@ msgstr ""
 #. module: hr_payroll
 #: model:ir.actions.report,print_report_name:hr_payroll.action_report_payslip
 msgid "'Payslip - %s' % (object.name)"
-msgstr ""
+msgstr "'Розрахунковий лист - %s' % (object.name)"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "(%s Payslips)"
-msgstr ""
+msgstr "(%s Розрахункові листи)"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip__state
@@ -99,7 +101,7 @@ msgstr "/ Міс."
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_note_demo_content
 msgid "1. Save documents to terminated employees"
-msgstr ""
+msgstr "1. Зберігайте документи для звільнених співробітників"
 
 #. module: hr_payroll
 #: model:hr.salary.rule,name:hr_payroll.hr_salary_rule_13th_month_salary
@@ -109,12 +111,12 @@ msgstr "13-та зарплата"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_note_demo_content
 msgid "2. Index salaries for Marketing department"
-msgstr ""
+msgstr "2. Індексуйте зарплату відділу маркетингу"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_note_demo_content
 msgid "3. Create a new contract for Marc Demo with his new position"
-msgstr ""
+msgstr "3. Створіть новий контракт для Marc Demo з його новою посадою"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_rule_parameter_view_form
@@ -123,11 +125,14 @@ msgid ""
 "                            Save your Salary Rule in order to add Parameter Values.\n"
 "                        </span>"
 msgstr ""
+"<span class=\"bg-white opacity-75 w-100 h-100 o_salary_rule_overlay position-absolute top-0 end-0 w-100 h-100 text-center d-flex justify-content-center flex-column fs-3\">\n"
+"                            Збережіть своє правило зарплати, щоб додати значення параметрів.\n"
+"                        </span>"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_resource_calendar_view_form
 msgid "<span class=\"ms-2\"> hours/week</span>"
-msgstr ""
+msgstr "<span class=\"ms-2\"> годин/тиждень</span>"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.res_config_settings_view_form
@@ -142,47 +147,26 @@ msgstr "<span class=\"o_stat_text\">Розрахункові листки</span>
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_by_employees
 msgid ""
-"<span class=\"text-muted\">Set a specific department if you wish to select "
-"all the employees from this department (and subdepartments) at once.</span>"
-msgstr ""
-"<span class=\"text-muted\">Встановіть конкретний відділ, якщо ви бажаєте "
-"вибрати всіх співробітників з цього відділу (і підвідділів) "
-"одночасно.</span>"
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_by_employees
-msgid ""
-"<span class=\"text-muted\">Set a specific structure if you wish to make an "
-"extra payslip (eg: End of the year bonus). If you leave this field empty, a "
-"regular payslip will be generated for all the selected employees, based on "
-"their contracts configuration.</span>"
-msgstr ""
-"<span class=\"text-muted\">Встановіть конкретну структуру, якщо ви хочете "
-"зробити додатковий розрахунковий лист (наприклад: Бонус на кінець року). "
-"Якщо ви залишите це поле порожнім, для всіх обраних співробітників буде "
-"створена регулярна виплата на основі їх конфігурації контрактів.</span>"
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_by_employees
-msgid ""
-"<span colspan=\"4\" nolabel=\"1\">This wizard will generate payslips for all"
+"<span nolabel=\"1\" colspan=\"2\">This wizard will generate payslips for all"
 " selected employee(s) based on the dates and credit note specified on "
 "Payslips Run.</span>"
 msgstr ""
-"<span colspan=\"4\" nolabel=\"1\">Цей помічник буде створювати авансові "
-"платежі для всіх вибраних працівників на основі дат і сторно, вказаних у "
-"Розрахункових листах.</span>"
+"<span nolabel=\"1\" colspan=\"2\">Цей майстер створить платіжні відомості "
+"для всіх вибраних співробітників на основі дат і сторно, вказаних у Запуску "
+"розрахункових листів.</span>"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_index_form_view
 msgid ""
-"<span role=\"status\" class=\"alert alert-warning\" attrs=\"{'invisible': "
-"[('display_warning', '=', False)]}\">You have selected contracts that are "
-"not running, this wizard can only index running contracts.</span>"
+"<span role=\"status\" class=\"alert alert-warning d-block\" "
+"attrs=\"{'invisible': [('display_warning', '=', False)]}\">You have selected"
+" contracts that are not running, this wizard can only index running "
+"contracts.</span>"
 msgstr ""
-"<span role=\"status\" class=\"alert alert-warning\" attrs=\"{'invisible': "
-"[('display_warning', '=', False)]}\">Ви обрали незапущений контракт, цей "
-"помічник може індексувати лише запущені контракти.</span>"
+"<span role=\"status\" class=\"alert alert-warning d-block\" "
+"attrs=\"{'invisible': [('display_warning', '=', False)]}\">Ви обрали "
+"контракти, які є не Діючими, цей помічник може індексувати лише Діючі "
+"контракти.</span>"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_resource_calendar_view_form
@@ -217,7 +201,7 @@ msgstr ""
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_rule_parameter_view_form
 msgid "<span>Versions</span>"
-msgstr ""
+msgstr "<span>Версії</span>"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.report_payslip
@@ -237,7 +221,7 @@ msgstr "<strong>Дата початку контракту</strong>"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.report_payslip
 msgid "<strong>Contract Type</strong>"
-msgstr ""
+msgstr "<strong>Тип контракту</strong>"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.report_payslip
@@ -313,11 +297,6 @@ msgid "A unforeseen absence must be a leave."
 msgstr "Непередбачена відсутність повинна бути відпусткою."
 
 #. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "Absenteeism Rate"
-msgstr "Коефіцієнт прогулів"
-
-#. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.res_config_settings_view_form
 msgid "Accounting"
 msgstr "Бухоблік"
@@ -366,11 +345,11 @@ msgid "Activity Type Icon"
 msgstr "Іконка типу дії"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Add a <strong>name</strong> to the contract."
-msgstr ""
+msgstr "Додайте <strong>ім'я</strong> до контракту."
 
 #. module: hr_payroll
 #: model_terms:ir.actions.act_window,help:hr_payroll.action_view_hr_payroll_structure_from_type
@@ -385,7 +364,7 @@ msgstr "Додайте внутрішню примітку..."
 #. module: hr_payroll
 #: model:ir.actions.server,name:hr_payroll.action_hr_payslip_run_generate
 msgid "Add payslips"
-msgstr ""
+msgstr "Додати розрахункові листи"
 
 #. module: hr_payroll
 #: model:res.groups,name:hr_payroll.group_hr_payroll_manager
@@ -393,7 +372,7 @@ msgid "Administrator"
 msgstr "Адміністратор"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/components/dashboard/payslip_batch/payslip_batch.xml:0
 #, python-format
 msgid "All"
@@ -445,7 +424,7 @@ msgstr ""
 "що залишилася."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/components/dashboard/payroll_stats/payroll_stats.xml:0
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_structure__schedule_pay__annually
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_structure_type__default_schedule_pay__annually
@@ -490,13 +469,14 @@ msgid "Archived"
 msgstr "Заархівовано"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/components/dashboard/todo_list/todo_list.js:0
 #, python-format
 msgid "Are you sure you want to delete this note?"
-msgstr ""
+msgstr "Ви впевнені, що хочете видалити цю примітку?"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment_report__assignment_amount
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_salary_attachment__deduction_type__assignment
@@ -505,11 +485,14 @@ msgid "Assignment of Salary"
 msgstr "Призначення зарплати"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid ""
 "At least one previous negative net could be reported on this payslip for %s"
 msgstr ""
+"У цій платіжній відомості можна повідомити про принаймні один попередній "
+"негативний результат %s"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__message_attachment_count
@@ -524,17 +507,13 @@ msgid "Attachment Name"
 msgstr "Назва додатку"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment_report__attachment_amount
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_salary_attachment__deduction_type__attachment
 #, python-format
 msgid "Attachment of Salary"
 msgstr "Прикріплення зарплати"
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "Attendance Rate"
-msgstr "Коефіцієнт відвідуваності"
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_report__work_entry_source__attendance
@@ -546,26 +525,6 @@ msgstr "Відвідування"
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip_input_type__struct_ids
 msgid "Availability in Structure"
 msgstr "Доступність у структурі"
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "Average Basic Wage"
-msgstr "Середня основна заробітна плата"
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "Average Gross Wage"
-msgstr "Середня валова заробітна плата"
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "Average Hours per Day of Work"
-msgstr "Середня кількість годин на робочий день"
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "Average Net Wage"
-msgstr "Середній чистий оклад"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_report_view_tree
@@ -583,6 +542,7 @@ msgid "Basic"
 msgstr "Звичайний"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
@@ -592,7 +552,6 @@ msgstr "Основна заробітна плата"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_report__basic_wage
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__basic_wage
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "Basic Wage"
 msgstr "Базова заробітна плата"
 
@@ -605,26 +564,26 @@ msgstr "Базовий оклад за відпустку"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_filter
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
 msgid "Batch"
-msgstr "Група"
+msgstr "Груповий розрахунок"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__payslip_run_id
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payslip_run_form
 msgid "Batch Name"
-msgstr "Назва групи"
+msgstr "Назва групового розрахунку"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/components/dashboard/payslip_batch/payslip_batch.xml:0
 #: model:ir.ui.menu,name:hr_payroll.menu_hr_payslip_run
 #, python-format
 msgid "Batches"
-msgstr "Партії"
+msgstr "Групові розрахунки"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_res_config_settings__module_l10n_be_hr_payroll
 msgid "Belgium Payroll"
-msgstr "Більгійська зарплатня"
+msgstr "Бельгійська зарплата"
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_structure__schedule_pay__bi-monthly
@@ -641,7 +600,7 @@ msgstr "Двічі на тиждень"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_note_demo_content
 msgid "Board meeting summary :"
-msgstr ""
+msgstr "Підсумок панельної зустрічі:"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_line_form
@@ -669,12 +628,14 @@ msgid "Cancelled"
 msgstr "Скасовано"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Cannot cancel a payslip that is done."
 msgstr "Неможливо скасувати сплачений розрахунок."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Cannot mark payslip as paid if not confirmed."
@@ -688,6 +649,8 @@ msgid ""
 "Careful, the Code is used in many references, changing it could lead to "
 "unwanted changes."
 msgstr ""
+"Обережно, Кодекс використовується в багатьох посиланнях, його зміна може "
+"призвести до небажаних змін."
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_edit_payslip_line__category_id
@@ -703,29 +666,32 @@ msgid "Change of Occupation"
 msgstr "Зміна професії"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Check the <strong>Salary Structure Type</strong>."
-msgstr ""
+msgstr "Перевірте <strong>Тип структури зарплати</strong>."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid ""
 "Check the <strong>Work Entries</strong> linked to your newly created "
 "Contract."
 msgstr ""
+"Перевіряйте <strong>Робочі записи</strong> пов'язані з новоствореним "
+"контрактом."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Check the <strong>Working Schedule</strong>."
-msgstr ""
+msgstr "Перевіряйте <strong>Робочий розклад</strong>."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_attachment_report__child_support_amount
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_salary_attachment__deduction_type__child_support
@@ -744,80 +710,90 @@ msgid "Choose a Payroll Localization"
 msgstr "Обрати локалізацію зарплати"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Click here to create a new <strong>Contract</strong>."
-msgstr ""
+msgstr "Натисніть тут, щоб стоврити новий <strong>Контракт</strong>."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid ""
 "Click here to generate a <strong>Batch</strong> for the displayed Employees."
 msgstr ""
+"Натисніть тут, щоб створити <strong>Групу</strong> для відображених "
+"співробітників."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Click here to go back to the <strong>Employee's profile</strong>."
 msgstr ""
+"Натисніть тут, щоби повернутися до <strong>профілю Співробітника</strong>."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid ""
 "Click on <strong>Salary Information</strong> to access additional fields."
 msgstr ""
+"Натисніть на <strong>Інформацію про зарплату</strong> щоб отримати доступ до"
+" додаткових полів."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Click on Employees to pick one of your <strong>Employees</strong>."
 msgstr ""
+"Натисніть на співробітників, щоб обрати одного з ваших "
+"<strong>Співробітників</strong>."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid ""
 "Click on Payroll to manage your employee's <strong>Work Entries</strong>, "
 "<strong>Contracts</strong> and <strong>Payslips</strong>."
 msgstr ""
+"Натисніть на Зарплату для керування <strong>Робочими записами</strong>ваших "
+"співробітників, <strong>Контрактами</strong> та <strong>Розрахунковими "
+"листами</strong>."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Click on the <strong>Payslip</strong>."
-msgstr ""
+msgstr "Натисніть на <strong>Розрахунковий лист</strong>."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Click on the <strong>Work Entries</strong> menu."
-msgstr ""
+msgstr "Натисніть на меню <strong>Робочі записи</strong>."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/components/dashboard/todo_list/todo_list.xml:0
 #, python-format
 msgid "Close"
 msgstr "Закрити"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Close the window."
-msgstr ""
+msgstr "Закрийте вікно."
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_work_entry_type__round_days_type__half-up
@@ -913,11 +889,11 @@ msgid "Confirm"
 msgstr "Підтвердити"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Confirm the <strong>Payslip</strong>."
-msgstr ""
+msgstr "Підтвердіть <strong>Розрахунковий лист</strong>."
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payslip_run__state__verify
@@ -930,19 +906,22 @@ msgid "Conflict"
 msgstr "Конфлікт"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Conflicts"
 msgstr "Конфлікти"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid ""
 "Congratulations! You created your first contract and generated your first "
 "payslip!"
 msgstr ""
+"Вітаємо! Ви створили ваш перший контракт та згенерували перший розрахунковий"
+" лист!"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_edit_payslip_line__contract_id
@@ -956,7 +935,7 @@ msgstr "Контракт"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__contract_domain_ids
 msgid "Contract Domain"
-msgstr ""
+msgstr "Домен контракту"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_structure_type_view_search
@@ -1045,11 +1024,11 @@ msgid "Create a new contract"
 msgstr "Створити новий контракт"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/components/dashboard/todo_list/todo_list.xml:0
 #, python-format
 msgid "Create new todo note"
-msgstr ""
+msgstr "Створіть нову примітку Зробити"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_edit_payslip_line__create_uid
@@ -1106,7 +1085,7 @@ msgstr "Сторно"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract_history__time_credit
 msgid "Credit time"
-msgstr ""
+msgstr "Час кредиту"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__currency_id
@@ -1159,7 +1138,6 @@ msgstr "День"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_work_entry_report__number_of_days
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "Days"
 msgstr "Дні"
 
@@ -1179,6 +1157,7 @@ msgid "Days of Unpaid Time Off"
 msgstr "Дні неоплачуваної відпустки"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #: model:hr.salary.rule.category,name:hr_payroll.DED
@@ -1197,11 +1176,11 @@ msgid "Default Work Entry Type"
 msgstr "Тип робочого запису за замовчуванням"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Define a <strong>Wage</strong>."
-msgstr ""
+msgstr "Визначіть <strong>Оклад</strong>."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_contract__schedule_pay
@@ -1311,6 +1290,7 @@ msgid "Done Slip"
 msgstr "Виконаний лист"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Double Holiday Pay"
@@ -1339,6 +1319,7 @@ msgid "Draft Slip"
 msgstr "Чернетка листа"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #: model:ir.actions.server,name:hr_payroll.action_edit_payslip_lines
 #, python-format
@@ -1405,6 +1386,7 @@ msgid "Employee Contract"
 msgstr "Трудовий контракт"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Employee Count"
@@ -1417,7 +1399,7 @@ msgid "Employee Function"
 msgstr "Функція співробітника"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/components/dashboard/payslip_batch/payslip_batch.js:0
 #: model:ir.actions.act_window,name:hr_payroll.action_view_hr_payslip_form
 #: model:ir.actions.act_window,name:hr_payroll.action_view_hr_payslip_month_form
@@ -1426,16 +1408,18 @@ msgid "Employee Payslips"
 msgstr "Розрахункові листи співробітника"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Employee Trends"
-msgstr ""
+msgstr "Тренди співробітника"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Employee whose contracts and company are differents"
-msgstr ""
+msgstr "Співробітники чиї контракти і компанія відрізняються"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_contract__hourly_wage
@@ -1448,6 +1432,7 @@ msgid "Employee's working schedule."
 msgstr "Робочий графік працівника."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip_employees__employee_ids
 #: model:ir.ui.menu,name:hr_payroll.menu_hr_payroll_contracts_configuration
@@ -1459,36 +1444,46 @@ msgid "Employees"
 msgstr "Співробітники"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Employees (With Running Contracts) missing from open batches"
 msgstr ""
+"Співробітники (з діючими контрактами) відсутні у відкритих групових "
+"розрахунках"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Employees With Both New And Running Contracts"
-msgstr ""
+msgstr "Співробітники з новим та діючим контрактом"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Employees With Multiple Open Payslips of Same Type"
 msgstr ""
+"Співробітники з кількома відкритими розрахунковими листами того ж типу"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Employees Without Running Contracts"
-msgstr ""
+msgstr "Сіпвробітники без діючих контрактів"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Employees with payslips generated on the previous contract"
 msgstr ""
+"Співробітники зі створеними розрахунковими листами за попереднім контрактом"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
@@ -1512,6 +1507,7 @@ msgid "Error"
 msgstr "Помилка"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_rule_category.py:0
 #, python-format
 msgid "Error! You cannot create recursive hierarchy of Salary Rule Category."
@@ -1536,11 +1532,11 @@ msgid "Export Payslip"
 msgstr "Експорт розрахункового листа"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "First, we'll create a new <strong>Contract</strong>."
-msgstr ""
+msgstr "Спершу ми створемо новий <strong>Контракт</strong>."
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip_line__amount_fix
@@ -1567,7 +1563,7 @@ msgstr "Підписники (Партнери)"
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip__activity_type_icon
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_run__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "Іконка зі шрифтом Font awesome, напр. fa-tasks"
+msgstr "Іконка з чудовим шрифтом, напр. fa-tasks"
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_payslip_line__amount_percentage
@@ -1588,6 +1584,7 @@ msgid "From"
 msgstr "Від"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
 #, python-format
 msgid "From %s to %s"
@@ -1615,7 +1612,7 @@ msgid "Generate"
 msgstr "Згенерувати"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/work_entries_controller_mixin.js:0
 #: code:addons/hr_payroll/static/src/views/work_entry_calendar/work_entry_calendar.xml:0
 #: model:ir.actions.act_window,name:hr_payroll.action_hr_payslip_by_employees
@@ -1642,9 +1639,10 @@ msgstr "Створені розрахункові листки"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_note_demo_content
 msgid "Give assurance card to new registered employees"
-msgstr ""
+msgstr "Видайте картку страхування новим зареєстрованим працівникам"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #: model:hr.salary.rule.category,name:hr_payroll.GROSS
@@ -1723,11 +1721,6 @@ msgid "Hourly Wage"
 msgstr "Погодинний оклад"
 
 #. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "Hours of Work"
-msgstr "Години роботи"
-
-#. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract__hours_per_week
 #: model:ir.model.fields,field_description:hr_payroll.field_resource_calendar__hours_per_week
 msgid "Hours per Week"
@@ -1736,7 +1729,7 @@ msgstr "Години на тиждень"
 #. module: hr_payroll
 #: model:hr.salary.rule,name:hr_payroll.hr_salary_rule_houserentallowance1
 msgid "House Rent Allowance"
-msgstr "Знижка на будинок"
+msgstr "Знижка на оренду будинку"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_edit_payslip_line__id
@@ -1801,7 +1794,7 @@ msgstr ""
 "правило про зарплату, не видаливши його."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/xml/hr_contract_tree_views.xml:0
 #, python-format
 msgid "Index Contracts"
@@ -1846,6 +1839,7 @@ msgid "Internet Subscription Invoice"
 msgstr "Рахунок підписки на інтернет"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/note.py:0
 #, python-format
 msgid "Invite Follower"
@@ -1902,8 +1896,8 @@ msgid ""
 " basic salary per product can defined in expression like: result = "
 "inputs.SALEURO.amount * contract.wage * 0.01."
 msgstr ""
-"Вираховується в обчисленні. Напр., правило для продавця, що має 1%% комісію "
-"базової зарплатина товар, може визначатися у виразі, такому як: result = "
+"Вираховується в обчисленні. Напр., правило для продавця, що має 1% комісії "
+"базової зарплати на товар, може визначатися у виразі, такому як: result = "
 "inputs.SALEURO.amount * contract.wage * 0.01."
 
 #. module: hr_payroll
@@ -1920,10 +1914,11 @@ msgid "Last 365 Days Payslip"
 msgstr "Розрахунковий лист останніх 365 днів"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Last Departures"
-msgstr ""
+msgstr "Останні звільнення"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_edit_payslip_line____last_update
@@ -2018,12 +2013,7 @@ msgstr ""
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_note_demo_content
 msgid "Links :"
-msgstr ""
-
-#. module: hr_payroll
-#: model:ir.model.fields,help:hr_payroll.field_hr_payslip__email_cc
-msgid "List of cc from incoming emails."
-msgstr "Список cc від вхідної пошти."
+msgstr "Посилання:"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__paid
@@ -2062,7 +2052,7 @@ msgstr "Позначити як оплачено"
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_report__master_department_id
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_search
 msgid "Master Department"
-msgstr ""
+msgstr "Головний відділ"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_rule__condition_range_max
@@ -2104,7 +2094,7 @@ msgid "Model for Printing hr.payslip.line grouped by register"
 msgstr "Модель для друку hr.payslip.line згрупованого за реєстром"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/components/dashboard/payroll_stats/payroll_stats.xml:0
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_structure__schedule_pay__monthly
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_structure_type__default_schedule_pay__monthly
@@ -2189,6 +2179,7 @@ msgid "Net -"
 msgstr "Чистий оклад -"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
@@ -2202,6 +2193,7 @@ msgid "Net Wage"
 msgstr "Чистий оклад"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/report/hr_contract_history.py:0
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payslip_run__state__draft
 #, python-format
@@ -2209,18 +2201,21 @@ msgid "New"
 msgstr "Новий"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "New Contracts"
 msgstr "Нові контракти"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "New Employees"
 msgstr "Нові співробітники"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
 #, python-format
 msgid "New Payslip"
@@ -2261,6 +2256,7 @@ msgid "No duplication of registration numbers is allowed"
 msgstr "Не допускається дублювання реєстраційних номерів"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_rule_parameter.py:0
 #, python-format
 msgid "No rule parameter with code '%s' was found for %s "
@@ -2272,6 +2268,7 @@ msgid "Normal Wage"
 msgstr "Звичайний оклад"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/res_company.py:0
 #: model:ir.model,name:hr_payroll.model_note_note
 #, python-format
@@ -2279,6 +2276,16 @@ msgid "Note"
 msgstr "Примітка"
 
 #. module: hr_payroll
+#: model_terms:ir.ui.view,arch_db:hr_payroll.hr_rule_parameter_view_form
+msgid ""
+"Note a description of your parameter, when it's used, how is it computed, "
+"what's the source, ..."
+msgstr ""
+"Зверніть увагу на опис вашого параметра, коли він використовується, як він "
+"обчислюється, яке джерело, ..."
+
+#. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid ""
@@ -2351,7 +2358,7 @@ msgstr "Кількість повідомлень з помилковою дст
 #. module: hr_payroll
 #: model:res.groups,name:hr_payroll.group_hr_payroll_user
 msgid "Officer : Manage all contracts"
-msgstr ""
+msgstr "Керівник: Керує усіма контрактами"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_note_demo_content
@@ -2359,36 +2366,42 @@ msgid "On the"
 msgstr "На"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid ""
 "On the first tab is the amount of worked time giving you a <strong>gross "
 "amount</strong>."
 msgstr ""
+"На першій вкладці відображається кількість відпрацьованого часу, що дає вам "
+"<strong>валову суму</strong>."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid ""
 "On the second tab is the computation of the rules linked to the Structure "
 "resulting in a <strong>net amount</strong>."
 msgstr ""
+"На другій вкладці є обчислення правил, пов’язаних зі структурою, що "
+"призводить до <strong>чистої суми</strong>."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid ""
 "On the smartbutton, you can find all the <strong>Payslips</strong> included "
 "in the Batch."
 msgstr ""
+"На смарт-кнопці ви можете знайти всі <strong>Розрахункові листи</strong> "
+"включно з груповими."
 
 #. module: hr_payroll
 #: model:ir.actions.server,name:hr_payroll.ir_actions_server_action_open_reporting
 msgid "Open Payroll Reporting"
-msgstr ""
+msgstr "Відкрити зарплатну звітність"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
@@ -2434,14 +2447,8 @@ msgstr "Оплачена сума"
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_report__work_type__2
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "Paid Time Off"
 msgstr "Оплачена відпустка"
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "Paid Time Off (Basic Wage)"
-msgstr "Оплачена відпустка (Базовий оклад)"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_rule_parameter_value__parameter_value
@@ -2457,12 +2464,12 @@ msgstr "Батьківський"
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract__time_credit
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_contract_form_inherit
 msgid "Part Time"
-msgstr ""
+msgstr "Неповний робочий день"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract__time_credit_type_id
 msgid "Part Time Work Entry Type"
-msgstr ""
+msgstr "Тип запису неповного робочого дня"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip_line__partner_id
@@ -2525,7 +2532,7 @@ msgstr "Звіт аналізу зарплатні"
 #: model:ir.actions.client,name:hr_payroll.hr_payroll_dashboard_open
 #: model:note.tag,name:hr_payroll.payroll_note_tag
 msgid "Payroll Dashboard"
-msgstr ""
+msgstr "Панель приладів зарплати"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.res_config_settings_view_form
@@ -2550,7 +2557,7 @@ msgstr "Правила заробітної плати, які застосов�
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_note_demo_content
 msgid "Payroll tips &amp; tricks :"
-msgstr ""
+msgstr "Поради та підказки щодо зарплати:"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_res_config_settings__module_hr_payroll_account
@@ -2565,7 +2572,6 @@ msgstr "Зарплата з платежем SEPA"
 #. module: hr_payroll
 #: model:ir.actions.server,name:hr_payroll.ir_cron_generate_payslip_pdfs_ir_actions_server
 #: model:ir.cron,cron_name:hr_payroll.ir_cron_generate_payslip_pdfs
-#: model:ir.cron,name:hr_payroll.ir_cron_generate_payslip_pdfs
 msgid "Payroll: Generate pdfs"
 msgstr "Зарплата: Створити pdf"
 
@@ -2577,11 +2583,11 @@ msgstr "Зарплата: Новий розрахунковий лист"
 #. module: hr_payroll
 #: model:ir.actions.server,name:hr_payroll.ir_cron_update_payroll_data_ir_actions_server
 #: model:ir.cron,cron_name:hr_payroll.ir_cron_update_payroll_data
-#: model:ir.cron,name:hr_payroll.ir_cron_update_payroll_data
 msgid "Payroll: Update data"
 msgstr "Зарплата: Оновити дату"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #: model:ir.actions.report,name:hr_payroll.action_report_payslip
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_edit_payslip_lines_wizard__payslip_id
@@ -2591,6 +2597,7 @@ msgid "Payslip"
 msgstr "Розрахунковий лист"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Payslip 'Date From' must be earlier 'Date To'."
@@ -2680,6 +2687,7 @@ msgid "Payslip Worked Days"
 msgstr "Відпрацьовано днів"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_attachment.py:0
 #: model:ir.actions.act_window,name:hr_payroll.act_hr_employee_payslip_list
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_employee__slip_ids
@@ -2706,13 +2714,14 @@ msgstr "Групові розрахунки"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payslip_run_tree
 msgid "Payslips Count"
-msgstr ""
+msgstr "Підрахунок розрахункових листів"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Payslips Generated On Previous Contract"
-msgstr ""
+msgstr "Розрахункові листи створені за попереднім контрактом"
 
 #. module: hr_payroll
 #: model:ir.actions.act_window,name:hr_payroll.hr_payslip_action_view_to_pay
@@ -2720,10 +2729,11 @@ msgid "Payslips To Pay"
 msgstr "Розрахункові листи до сплати"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Payslips With Negative Amounts"
-msgstr ""
+msgstr "Розрахункові листи з мінусовою сумою"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_by_employees
@@ -2731,10 +2741,11 @@ msgid "Payslips by Employees"
 msgstr "Розрахункові листи співробітника"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Payslips with negative NET"
-msgstr ""
+msgstr "Розрахункові листи з мінусовою чистою зарплатою"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_index__percentage
@@ -2760,11 +2771,13 @@ msgid "Period"
 msgstr "Період"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Pick an Employee to see his <strong>Contract's History</strong>."
 msgstr ""
+"Оберіть співробітника, щоби переглянути його <strong>Історію "
+"контрактів</strong>."
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_report__work_entry_source__planning
@@ -2778,13 +2791,14 @@ msgid "Post payroll slips in accounting"
 msgstr "Розрахунковий фонд заробітної плати сягає в бухобліку"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Previous Negative Payslip to Report"
 msgstr "Попередній негативний платіжний лист для звіту"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/xml/payslip_tree_views.xml:0
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
 #, python-format
@@ -2797,6 +2811,7 @@ msgid "Professional Tax"
 msgstr "Професійний податок"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Prorated end-of-year bonus"
@@ -2880,6 +2895,7 @@ msgstr ""
 "дні/вставлені рядки"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_attachment.py:0
 #, python-format
 msgid "Recorded a new payment of %s."
@@ -2896,6 +2912,7 @@ msgid "Refund"
 msgstr "Відшкодування"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Refund: %(payslip)s"
@@ -2917,6 +2934,7 @@ msgid "Regular Working Day"
 msgstr "Регулярний робочий день"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payroll_structure.py:0
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
@@ -3013,10 +3031,11 @@ msgid "Running"
 msgstr "Діючий"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Running contracts coming to an end"
-msgstr ""
+msgstr "Діючі контракти підходять до завершення"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_employee__sim_card
@@ -3036,6 +3055,7 @@ msgid "Salary"
 msgstr "Зарплатня"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_contract.py:0
 #: code:addons/hr_payroll/report/hr_contract_history.py:0
 #: model:ir.actions.act_window,name:hr_payroll.hr_salary_attachment_action
@@ -3070,6 +3090,7 @@ msgid "Salary Attachment count"
 msgstr "Підрахунок прикріплень зарплати"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_employee__salary_attachment_ids
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__salary_attachment_ids
@@ -3137,6 +3158,7 @@ msgid "Salary Rules"
 msgstr "Правила розрахунку"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Salary Slip"
@@ -3201,14 +3223,14 @@ msgstr "Пошук правил розрахунку"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_structure_type_view_search
 msgid "Search Structure Type"
-msgstr "Тип структури пошуку"
+msgstr "Пошук типу структури"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Select an <strong>HR Responsible</strong> for the contract."
-msgstr ""
+msgstr "Оберіть <strong>HR відповідального</strong> на контракті."
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_structure__schedule_pay__semi-annually
@@ -3220,6 +3242,7 @@ msgstr "Раз на півроку"
 #: model:mail.template,description:hr_payroll.mail_template_new_payslip
 msgid "Sent to employee to notify them about their new payslip"
 msgstr ""
+"Надіслано працівнику, щоб повідомити його про новий розрахунковий лист"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_edit_payslip_line__sequence
@@ -3232,11 +3255,33 @@ msgid "Sequence"
 msgstr "Послідовність"
 
 #. module: hr_payroll
-#. openerp-web
+#: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_by_employees
+msgid ""
+"Set a specific department if you wish to select all the employees from this "
+"department (and subdepartments) at once."
+msgstr ""
+"Встановіть окремий відділ, якщо ви хочете вибрати всіх співробітників цього "
+"відділу (і підвідділів) одночасно."
+
+#. module: hr_payroll
+#: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_by_employees
+msgid ""
+"Set a specific structure if you wish to make an extra payslip (eg: End of "
+"the year bonus). If you leave this field empty, a regular payslip will be "
+"generated for all the selected employees, based on their contracts "
+"configuration."
+msgstr ""
+"Встановіть конкретну структуру, якщо ви бажаєте зробити додаткову платіжну "
+"відомість (наприклад: премія наприкінці року). Якщо залишити це поле "
+"порожнім, для всіх вибраних працівників буде створено звичайний "
+"розрахунковий лист відповідно до конфігурації їхніх контрактів."
+
+#. module: hr_payroll
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "Set the Contract as <strong><q>Running</q></strong>."
-msgstr ""
+msgstr "Встановіть контракт як <strong><q>Діючий</q></strong>."
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payslip_run_form
@@ -3256,6 +3301,7 @@ msgid "Slips to Confirm"
 msgstr "Листки для підтвердження"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
 #, python-format
 msgid ""
@@ -3266,6 +3312,7 @@ msgstr ""
 " планування. Часові інтервали для пошуку:%s"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
 #, python-format
 msgid "Some work entries could not be validated."
@@ -3275,7 +3322,7 @@ msgstr "Деякі робочі записи не можливо підтвер�
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract__standard_calendar_id
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract_history__standard_calendar_id
 msgid "Standard Calendar"
-msgstr ""
+msgstr "Стандартний календар"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_report__date_from
@@ -3286,7 +3333,7 @@ msgstr "Початкова дата"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_work_entry_report__state
 msgid "State"
-msgstr "Область"
+msgstr "Статус"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__state
@@ -3382,6 +3429,9 @@ msgid ""
 "The Standard Calendar is the calendar used by the people working at a 100% "
 "rate. It's used here to compute your part-time percentage."
 msgstr ""
+"Стандартний календар – це календар, яким користуються люди, які працюють на "
+"100% ставку. Він використовується тут для обчислення вашого відсотка "
+"неповного робочого дня."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_work_entry_type__is_unforeseen
@@ -3427,6 +3477,7 @@ msgid "The contract this worked days should be applied to"
 msgstr "До договору слід застосовувати ці відпрацьовані дні"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid ""
@@ -3437,6 +3488,7 @@ msgstr ""
 "%s"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid ""
@@ -3466,10 +3518,11 @@ msgstr ""
 " цього."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "The payslips should be in Draft or Waiting state."
-msgstr "Платіжні квитанції мають бути в стані «Чернотка» або «Очікування»."
+msgstr "Розрахункові листи мають бути в стані «Черетка» або «Очікування»."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_contract__time_credit_type_id
@@ -3477,6 +3530,8 @@ msgid ""
 "The work entry type used when generating work entries to fit full time "
 "working schedule."
 msgstr ""
+"Тип запису про роботу, який використовується під час створення записів про "
+"роботу відповідно до графіка повної зайнятості."
 
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_work_entry_type__unpaid_structure_ids
@@ -3485,12 +3540,25 @@ msgstr ""
 "Запис про роботу не надаватиме грошей працівнику в платіжній квитанції."
 
 #. module: hr_payroll
+#. odoo-python
+#: code:addons/hr_payroll/models/hr_payslip.py:0
+#, python-format
+msgid ""
+"There's no contract set on payslip %s for %s. Check that there is at least a"
+" contract set on the employee form."
+msgstr ""
+"На розрахуноковому листі %s не встановлено жодного контракту для %s. "
+"Переконайтеся, що на картці співробітнка є принаймні контракт."
+
+#. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "This action is forbidden on validated payslips."
-msgstr "Ця діє заборонена на дійсних розрахункових листах."
+msgstr "Ця дія заборонена на дійсних розрахункових листах."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "This action is restricted to payroll managers only."
@@ -3516,9 +3584,10 @@ msgstr ""
 #. module: hr_payroll
 #: model:ir.model.fields,help:hr_payroll.field_hr_contract_history__time_credit
 msgid "This is a credit time contract."
-msgstr ""
+msgstr "Це контракт на кредитний термін."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid ""
@@ -3529,12 +3598,14 @@ msgstr ""
 "створені за період з %(start)s до %(end)s."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/wizard/hr_payroll_edit_payslip_lines_wizard.py:0
 #, python-format
 msgid "This payslip has been manually edited by %s."
 msgstr "Цей розрахунковий лист було створено вручну %s."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "This payslip is not validated. This is not a legal document."
@@ -3562,6 +3633,7 @@ msgstr ""
 " в нижньому реєстрі (hra, ma, lta, і т. д.)."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
 #, python-format
 msgid "Time intervals to look for:%s"
@@ -3611,16 +3683,6 @@ msgstr "Разом"
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
 msgid "Total Amount"
 msgstr "Загальна сума"
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "Total Gross Wage"
-msgstr "Всього валового окладу"
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "Total Net Wage"
-msgstr "Всього чистого окладу"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.view_hr_payslip_form
@@ -3683,10 +3745,11 @@ msgid "Unforeseen Absence"
 msgstr "Непередбачена відсутність"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Unknown State"
-msgstr ""
+msgstr "Невідомий статус"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_hr_work_entry_type_view_form_inherit
@@ -3695,7 +3758,6 @@ msgstr "Неоплачено"
 
 #. module: hr_payroll
 #: model:ir.model.fields.selection,name:hr_payroll.selection__hr_payroll_report__work_type__3
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "Unpaid Time Off"
 msgstr "Неоплачувані відпустки"
 
@@ -3742,6 +3804,8 @@ msgstr ""
 #: model:ir.model.fields,help:hr_payroll.field_hr_salary_rule__appears_on_employee_cost_dashboard
 msgid "Used to display the value in the employer cost dashboard."
 msgstr ""
+"Використовується для відображення значення на інформаційній панелі витрат "
+"роботодавця."
 
 #. module: hr_payroll
 #: model:ir.model,name:hr_payroll.model_res_users
@@ -3752,6 +3816,8 @@ msgstr "Користувач"
 #: model:res.groups,comment:hr_payroll.group_hr_payroll_user
 msgid "User can manage all contracts, work entries and create payslips."
 msgstr ""
+"Користувач може керувати всіма контрактами, записами про роботу та "
+"створювати платіжні відомості."
 
 #. module: hr_payroll
 #: model:res.groups,comment:hr_payroll.group_hr_payroll_employee_manager
@@ -3759,11 +3825,12 @@ msgid ""
 "User can see his own contracts and the contracts of the people he's manager "
 "of."
 msgstr ""
+"Користувач може бачити власні контракти та контракти людей, якими він керує."
 
 #. module: hr_payroll
 #: model:res.groups,comment:hr_payroll.group_hr_payroll_manager
 msgid "User have full access on the application."
-msgstr ""
+msgstr "Користувач має повний доступ до модуля."
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payslip_run_form
@@ -3790,12 +3857,12 @@ msgstr "Версії"
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_rule__appears_on_employee_cost_dashboard
 msgid "View on Employer Cost Dashboard"
-msgstr ""
+msgstr "Перегляд на дашборді вартості співробітника"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_salary_rule__appears_on_payroll_report
 msgid "View on Payroll Reporting"
-msgstr ""
+msgstr "Перегляд на дашборді зарплати"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_contract__wage_type
@@ -3806,6 +3873,7 @@ msgid "Wage Type"
 msgstr "Тип окладу"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/wizard/hr_payroll_index_wizard.py:0
 #, python-format
 msgid "Wage indexed by %.2f%% on %s"
@@ -3822,13 +3890,14 @@ msgid "Warning Message"
 msgstr "Повідомлення попередження"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_attachment.py:0
 #, python-format
 msgid "Warning, a similar attachment has been found."
 msgstr "Попередження, схоже вкладення знайдено."
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/components/dashboard/action_box/action_box.xml:0
 #, python-format
 msgid "Warnings"
@@ -3843,6 +3912,8 @@ msgstr "Тип способу округлення робочого запису
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_note_demo_content
 msgid "We have to improve our Payroll flow with the new Odoo process"
 msgstr ""
+"Ми маємо покращити процес нарахування заробітної плати за допомогою нового "
+"процесу Odoo"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payslip__website_message_ids
@@ -3889,7 +3960,6 @@ msgstr ""
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_report__count_work
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
 msgid "Work Days"
 msgstr "Робочі дні"
 
@@ -3913,13 +3983,15 @@ msgid "Work Entries Analysis Report"
 msgstr "Звіт аналізу робочих записів"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid ""
 "Work Entries are generated for each <strong>time period</strong> defined in "
 "the Working Schedule of the Contract."
 msgstr ""
+"Для кожного генеруються <strong>часовий період</strong> робочих записів "
+"визначених в робочому розкладі контракту."
 
 #. module: hr_payroll
 #: model:ir.ui.menu,name:hr_payroll.menu_hr_work_entry_report
@@ -3930,7 +4002,7 @@ msgstr "Аналіз робочих записів"
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_report__work_entry_source
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_work_entry_report__work_entry_source
 msgid "Work Entry Source"
-msgstr ""
+msgstr "Джерело робочого запису"
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_edit_payslip_worked_days_line__work_entry_type_id
@@ -3974,7 +4046,7 @@ msgstr ""
 #: model:ir.model.fields,help:hr_payroll.field_hr_contract__work_time_rate
 #: model:ir.model.fields,help:hr_payroll.field_hr_contract_history__work_time_rate
 msgid "Work time rate versus full time working schedule."
-msgstr ""
+msgstr "Норма робочого часу порівняно з графіком повної зайнятості."
 
 #. module: hr_payroll
 #: model:ir.model.fields,field_description:hr_payroll.field_hr_payroll_report__work_code
@@ -4020,61 +4092,71 @@ msgid "Working Schedule"
 msgstr "Графік робочого часу"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "Working Schedule Changes"
-msgstr ""
+msgstr "Зміни робочого розкладу"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
 msgid "Wrong percentage base or quantity defined for:"
 msgstr "Неправильна відсоткова база або кількість, визначена для:"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
 msgid "Wrong python code defined for:"
 msgstr "Неправильно код python зазначений для:"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
 msgid "Wrong python condition defined for:"
 msgstr "Неправильна умова Python визначена для:"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
 msgid "Wrong quantity defined for:"
 msgstr "Неправильна кількість зазначена для:"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_rule.py:0
 #, python-format
 msgid "Wrong range condition defined for:"
 msgstr "Неправильна умова діапазону визначена для:"
 
 #. module: hr_payroll
-#. openerp-web
+#. odoo-javascript
 #: code:addons/hr_payroll/static/src/js/tours/hr_payroll.js:0
 #, python-format
 msgid "You can access the Payslips from the Employee's Profile."
 msgstr ""
+"Ви можете отримати доступ до розрахункових листів з профілю співробітника."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "You can't validate a cancelled payslip."
 msgstr "Ви не можете підтвердити скасований розрахунковий лист."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip_run.py:0
 #, python-format
 msgid "You cannot delete a payslip batch which is not draft!"
 msgstr "Ви не можете видалити групові платіжні листи, які не є чернеткою!"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #: code:addons/hr_payroll/models/hr_payslip_run.py:0
 #, python-format
@@ -4084,26 +4166,32 @@ msgstr ""
 "скасованому стані."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_salary_attachment.py:0
 #, python-format
 msgid "You cannot delete a running salary attachment!"
 msgstr "Ви не можете видалити запущене прикріплення зарплати!"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip_run.py:0
 #, python-format
 msgid ""
 "You cannot reset a batch to draft if some of the payslips have already been "
 "paid."
 msgstr ""
+"Ви не можете скинути груповий розрахунок до чернетки, якщо деякі з платіжних"
+" відомостей уже були оплачені."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip.py:0
 #, python-format
 msgid "You cannot validate a payslip on which the contract is cancelled"
-msgstr ""
+msgstr "Ви не можете підтвердити платіжну відомість, у якій договір розірвано"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/wizard/hr_payroll_index_wizard.py:0
 #, python-format
 msgid ""
@@ -4114,28 +4202,26 @@ msgstr ""
 "зробіть це вручну"
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/wizard/hr_payroll_payslips_by_employees.py:0
 #, python-format
 msgid "You must select employee(s) to generate payslip(s)."
 msgstr "Ви повинні обрати робітника(ів) для генерації розрахунку(ів)."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payslip_line.py:0
 #, python-format
 msgid "You must set a contract to create a payslip line."
 msgstr "Ви повинні встановити контракт, щоб створити розрахунковий рядок."
 
 #. module: hr_payroll
+#. odoo-python
 #: code:addons/hr_payroll/models/hr_payroll_structure_type.py:0
 #, python-format
 msgid "You should also be logged into a company in %s to set this country."
 msgstr ""
 "Вам також потрібно залогінитися в компанії в %s, щоби встановити цю країну ."
-
-#. module: hr_payroll
-#: model_terms:ir.ui.view,arch_db:hr_payroll.payroll_report_view_dashboard
-msgid "days"
-msgstr "дні"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payslip_run_form
@@ -4165,7 +4251,7 @@ msgstr "напр., Регулярний платіж"
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.hr_payroll_note_demo_content
 msgid "https://www.odoo.com/fr_FR/slides/slide/manage-payroll-1002"
-msgstr ""
+msgstr "https://www.odoo.com/fr_FR/slides/slide/manage-payroll-1002"
 
 #. module: hr_payroll
 #: model_terms:ir.ui.view,arch_db:hr_payroll.report_payslip

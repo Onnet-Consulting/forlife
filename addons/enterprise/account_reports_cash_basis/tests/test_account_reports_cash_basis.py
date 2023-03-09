@@ -158,3 +158,53 @@ class TestAccountReports(TestAccountReportsCommon):
                 ('LIABILITIES + EQUITY',                        460.0),
             ],
         )
+
+    def test_cash_basis_payment_in_the_past(self):
+        self.env['res.currency'].search([('name', '!=', 'USD')]).active = False
+
+        payment_date = fields.Date.from_string('2010-01-01')
+        invoice_date = fields.Date.from_string('2011-01-01')
+
+        invoice = self.init_invoice('out_invoice', amounts=[100.0], partner=self.partner_a, invoice_date=invoice_date, post=True)
+        self.env['account.payment.register'].with_context(active_ids=invoice.ids, active_model='account.move').create({
+            'payment_date': payment_date,
+        })._create_payments()
+
+        # Check the impact in the reports: the invoice date should be the one the invoice appears at, since it greater than the payment's
+        report = self.env.ref('account_reports.general_ledger_report')
+
+        options = self._generate_options(report, payment_date, payment_date)
+        options['cash_basis'] = True
+
+        self.assertLinesValues(
+            # pylint: disable=C0326
+            report._get_lines(options),
+            #   Name                                     Debit           Credit          Balance
+            [   0,                                       4,              5,              6],
+            [
+                # Accounts.
+                ('101402 Outstanding Receipts',        115,             '',            115),
+                ('121000 Account Receivable',           '',            115,           -115),
+                # Report Total.
+                ('Total',                              115,            115,             0),
+            ],
+        )
+
+        options = self._generate_options(report, invoice_date, invoice_date)
+        options['cash_basis'] = True
+
+        self.assertLinesValues(
+            # pylint: disable=C0326
+            report._get_lines(options),
+            #   Name                                     Debit           Credit          Balance
+            [   0,                                       4,              5,              6],
+            [
+                # Accounts.
+                ('101402 Outstanding Receipts',        115,             '',            115),
+                ('121000 Account Receivable',          115,            115,              0),
+                ('251000 Tax Received',                 '',             15,            -15),
+                ('400000 Product Sales',                '',            100,           -100),
+                # Report Total.
+                ('Total',                              230,            230,             0),
+            ],
+        )

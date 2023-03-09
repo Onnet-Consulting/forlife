@@ -3,6 +3,7 @@
 
 import datetime
 import logging
+import pytz
 
 from dateutil.relativedelta import relativedelta
 
@@ -153,18 +154,21 @@ class HrAppraisal(models.Model):
         for appraisal in self:
             appraisal.waiting_feedback = not appraisal.employee_feedback_published or not appraisal.manager_feedback_published
 
+    @api.depends_context('uid')
     @api.depends('meeting_ids.start')
     def _compute_final_interview(self):
         today = fields.Date.today()
+        user_tz = self.env.user.tz or self.env.context.get('tz')
+        user_pytz = pytz.timezone(user_tz) if user_tz else pytz.utc
         with_meeting = self.filtered('meeting_ids')
         (self - with_meeting).date_final_interview = False
         for appraisal in with_meeting:
             all_dates = appraisal.meeting_ids.mapped('start')
             min_date, max_date = min(all_dates), max(all_dates)
             if min_date.date() >= today:
-                appraisal.date_final_interview = min_date
+                appraisal.date_final_interview = min_date.astimezone(user_pytz)
             else:
-                appraisal.date_final_interview = max_date
+                appraisal.date_final_interview = max_date.astimezone(user_pytz)
 
     @api.depends_context('lang')
     @api.depends('meeting_ids')
@@ -291,18 +295,16 @@ class HrAppraisal(models.Model):
             vals['employee_feedback_published'] = True
             vals['manager_feedback_published'] = True
             self.activity_feedback(['mail.mail_activity_data_meeting', 'mail.mail_activity_data_todo'])
-            vals['date_close'] = current_date
             self._appraisal_plan_post()
             body = _("The appraisal's status has been set to Done by %s", self.env.user.name)
             self.env['mail.thread'].message_notify(
-                subject=_("Appraisal reopened"),
+                subject=_("Your Appraisal has been completed"),
                 body=body,
                 partner_ids=appraisal.message_partner_ids.ids)
             appraisal.message_post(body=body)
         if 'state' in vals and vals['state'] == 'cancel':
             self.meeting_ids.unlink()
             self.activity_unlink(['mail.mail_activity_data_meeting', 'mail.mail_activity_data_todo'])
-            vals['date_close'] = current_date
         previous_managers = {}
         if 'manager_ids' in vals:
             previous_managers = {x: y for x, y in self.mapped(lambda a: (a.id, a.manager_ids))}
@@ -401,10 +403,10 @@ class HrAppraisal(models.Model):
         return action
 
     def action_confirm(self):
-        self.write({'state': 'pending'})
+        self.state = 'pending'
 
     def action_done(self):
-        self.write({'state': 'done'})
+        self.state = 'done'
 
     def action_back(self):
         self.action_confirm()

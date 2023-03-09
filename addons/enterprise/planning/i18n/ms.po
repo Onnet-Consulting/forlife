@@ -2,12 +2,17 @@
 # This file contains the translation of the following modules:
 # 	* planning
 # 
+# Translators:
+# Niyas Raphy, 2022
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2023-02-02 10:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,10 +21,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "%s (copy)"
-msgstr ""
+msgstr "%s (Salinan)"
 
 #. module: planning
 #: model:ir.actions.report,print_report_name:planning.report_planning_slot
@@ -27,6 +33,7 @@ msgid "'Planning'"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning_template.py:0
 #, python-format
 msgid "(%s days span)"
@@ -103,14 +110,14 @@ msgid "<b class=\"tip_title\">Tip: Record your planning faster</b>"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid "<b>Congratulations!</b></br> You are now a master of planning."
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid ""
@@ -120,7 +127,7 @@ msgid ""
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid "<b>Publish & send</b> your employee's planning."
@@ -241,7 +248,7 @@ msgstr ""
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_kanban
 msgid "<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Date\" title=\"Date\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-clock-o\" role=\"img\" aria-label=\"Date\" title=\"Date\"/>"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_slot_template_view_kanban
@@ -466,10 +473,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_role__active
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__active
 msgid "Active"
-msgstr ""
+msgstr "Aktif"
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/planning_gantt_controller.js:0
 #, python-format
 msgid "Add Shift"
@@ -493,7 +500,7 @@ msgstr ""
 #. module: planning
 #: model:res.groups,name:planning.group_planning_manager
 msgid "Administrator"
-msgstr ""
+msgstr "Pentadbir"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_form_in_gantt
@@ -543,6 +550,7 @@ msgid "Allow Unassignment"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning_recurrency.py:0
 #, python-format
 msgid "An shift must be in the same company as its recurrency."
@@ -561,16 +569,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_slot_template_view_form
 #: model_terms:ir.ui.view,arch_db:planning.planning_slot_template_view_search
 msgid "Archived"
-msgstr ""
+msgstr "Diarkibkan"
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/views/planning_form/planning_form_view.js:0
 #, python-format
 msgid "Are you sure you want to delete this shift?"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid ""
@@ -579,7 +588,7 @@ msgid ""
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid ""
@@ -628,7 +637,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot__color
 #: model:ir.model.fields,field_description:planning.field_resource_resource__color
 msgid "Color"
-msgstr ""
+msgstr "Warna"
 
 #. module: planning
 #: model:planning.role,name:planning.planning_role_cm
@@ -638,7 +647,7 @@ msgstr ""
 #. module: planning
 #: model:ir.model,name:planning.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Syarikat"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_analysis_report__company_id
@@ -649,7 +658,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_analysis_report_view_search
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 msgid "Company"
-msgstr ""
+msgstr "Syarikat"
 
 #. module: planning
 #: model:ir.model.fields,help:planning.field_planning_planning__company_id
@@ -661,12 +670,12 @@ msgstr ""
 #. module: planning
 #: model:ir.model,name:planning.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Tetapan Konfigurasi"
 
 #. module: planning
 #: model:ir.ui.menu,name:planning.planning_menu_settings
 msgid "Configuration"
-msgstr ""
+msgstr "Konfigurasi"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_slot__confirm_delete
@@ -679,14 +688,14 @@ msgid "Conflicting Slot"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/views/planning_calendar/planning_calendar_controller.xml:0
 #, python-format
 msgid "Copy previous"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/views/planning_calendar/planning_calendar_controller.xml:0
 #: code:addons/planning/static/src/xml/planning_gantt.xml:0
 #: code:addons/planning/static/src/xml/planning_gantt.xml:0
@@ -703,7 +712,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__create_uid
 #: model:ir.model.fields,field_description:planning.field_slot_planning_select_send__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Dicipta oleh"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_planning__create_date
@@ -714,29 +723,29 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__create_date
 #: model:ir.model.fields,field_description:planning.field_slot_planning_select_send__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Dicipta pada"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.period_report_template
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_form
 msgid "Date"
-msgstr ""
+msgstr "Tarikh"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_planning__date_end
 msgid "Date End"
-msgstr ""
+msgstr "Tarikh Tamat"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_planning__date_start
 msgid "Date Start"
-msgstr ""
+msgstr "Tarikh Mula"
 
 #. module: planning
 #: model:ir.model.fields.selection,name:planning.selection__planning_recurrency__repeat_unit__day
 #: model:ir.model.fields.selection,name:planning.selection__planning_slot__repeat_unit__day
 msgid "Days"
-msgstr ""
+msgstr "Hari"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_planning__self_unassign_days_before
@@ -796,7 +805,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_role_view_kanban
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_kanban
 msgid "Delete"
-msgstr ""
+msgstr "Padam"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_analysis_report__department_id
@@ -804,7 +813,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_analysis_report_view_search
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 msgid "Department"
-msgstr ""
+msgstr "Jabatan"
 
 #. module: planning
 #: model:ir.model,name:planning.model_hr_departure_wizard
@@ -822,7 +831,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_form_in_gantt
 #: model_terms:ir.ui.view,arch_db:planning.slot_planning_select_send_view_form
 msgid "Discard"
-msgstr ""
+msgstr "Buang"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_analysis_report__display_name
@@ -834,7 +843,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__display_name
 #: model:ir.model.fields,field_description:planning.field_slot_planning_select_send__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nama paparan"
 
 #. module: planning
 #: model_terms:ir.actions.act_window,help:planning.planning_action_resources
@@ -852,7 +861,7 @@ msgid "Doris Cole (Bartender)"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/views/planning_calendar/planning_calendar_controller.xml:0
 #: model:ir.model.fields.selection,name:planning.selection__planning_analysis_report__state__draft
 #: model:ir.model.fields.selection,name:planning.selection__planning_slot__state__draft
@@ -860,7 +869,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 #, python-format
 msgid "Draft"
-msgstr ""
+msgstr "Draf"
 
 #. module: planning
 #: model_terms:digest.tip,tip_description:planning.digest_tip_planning_0
@@ -882,7 +891,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot__duration
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__duration
 msgid "Duration"
-msgstr ""
+msgstr "Tempoh"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__duration_days
@@ -893,7 +902,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_role_view_kanban
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_kanban
 msgid "Edit"
-msgstr ""
+msgstr "Sunting"
 
 #. module: planning
 #: model_terms:ir.actions.act_window,help:planning.planning_action_roles
@@ -922,17 +931,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot__employee_id
 #: model:ir.model.fields,field_description:planning.field_slot_planning_select_send__employee_ids
 msgid "Employee"
-msgstr ""
+msgstr "Pekerja"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.hr_employee_view_form_simplified
 msgid "Employee Name"
-msgstr ""
+msgstr "Nama Pekerja"
 
 #. module: planning
 #: model:ir.ui.menu,name:planning.planning_menu_settings_employee
 msgid "Employees"
-msgstr ""
+msgstr "Pekerja"
 
 #. module: planning
 #: model:ir.model.fields,help:planning.field_planning_send__employee_ids
@@ -961,7 +970,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_analysis_report_view_search
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 msgid "End Date"
-msgstr ""
+msgstr "Tarikh tamat"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__end_time
@@ -979,6 +988,7 @@ msgid "Every"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning_recurrency.py:0
 #, python-format
 msgid "Every %s week(s) until %s"
@@ -1013,7 +1023,7 @@ msgstr ""
 #. module: planning
 #: model:ir.model.fields.selection,name:planning.selection__planning_slot__allocation_type__forecast
 msgid "Forecast"
-msgstr ""
+msgstr "Ramalan"
 
 #. module: planning
 #: model:ir.model.fields.selection,name:planning.selection__planning_recurrency__repeat_type__forever
@@ -1022,6 +1032,7 @@ msgid "Forever"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning_recurrency.py:0
 #, python-format
 msgid "Forever, every %s week(s)"
@@ -1049,7 +1060,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_slot_template_view_search
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 msgid "Group By"
-msgstr ""
+msgstr "Kumpulan Oleh"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__name
@@ -1071,6 +1082,7 @@ msgstr ""
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_form
+#: model_terms:ir.ui.view,arch_db:planning.planning_view_form_in_gantt
 msgid "I Take It"
 msgstr ""
 
@@ -1089,7 +1101,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__id
 #: model:ir.model.fields,field_description:planning.field_slot_planning_select_send__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: planning
 #: model:ir.model.fields,help:planning.field_planning_analysis_report__publication_warning
@@ -1100,7 +1112,7 @@ msgid ""
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid ""
@@ -1170,7 +1182,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template____last_update
 #: model:ir.model.fields,field_description:planning.field_slot_planning_select_send____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Terakhir Diubah suai pada"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_planning__write_uid
@@ -1181,7 +1193,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__write_uid
 #: model:ir.model.fields,field_description:planning.field_slot_planning_select_send__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Kemas Kini Terakhir oleh"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_planning__write_date
@@ -1192,15 +1204,15 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__write_date
 #: model:ir.model.fields,field_description:planning.field_slot_planning_select_send__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Kemas Kini Terakhir pada"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 msgid "Last Week"
-msgstr ""
+msgstr "Minggu lepas"
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/views/planning_calendar/planning_calendar_controller.xml:0
 #, python-format
 msgid "Legend"
@@ -1218,7 +1230,7 @@ msgid "Let employees unassign themselves from shifts"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid ""
@@ -1227,7 +1239,7 @@ msgid ""
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid "Let's start managing your employees' schedule!"
@@ -1256,13 +1268,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_analysis_report_view_search
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 msgid "Material"
-msgstr ""
+msgstr "bahan"
 
 #. module: planning
 #: model:ir.actions.act_window,name:planning.planning_action_resources
 #: model:ir.ui.menu,name:planning.planning_menu_settings_resource
 msgid "Materials"
-msgstr ""
+msgstr "Bahan"
 
 #. module: planning
 #: model:ir.model.fields,help:planning.field_planning_slot__repeat
@@ -1326,7 +1338,7 @@ msgstr ""
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_role__name
 msgid "Name"
-msgstr ""
+msgstr "Nama"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
@@ -1334,6 +1346,7 @@ msgid "Next Week"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/wizard/planning_send.py:0
 #, python-format
 msgid "No Email Address For Some Employees"
@@ -1377,10 +1390,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.period_report_template
 #: model_terms:ir.ui.view,arch_db:planning.resource_planning
 msgid "Note"
-msgstr ""
+msgstr "Nota"
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid ""
@@ -1395,7 +1408,7 @@ msgid "Number of Repetitions"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/planning_gantt_model.js:0
 #: model_terms:ir.actions.act_window,help:planning.planning_action_roles
 #: model_terms:ir.ui.view,arch_db:planning.planning_analysis_report_view_search
@@ -1411,6 +1424,7 @@ msgid "Open Shifts Available"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid ""
@@ -1433,10 +1447,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_send__start_datetime
 #: model_terms:ir.ui.view,arch_db:planning.planning_send_view_form
 msgid "Period"
-msgstr ""
+msgstr "Tempoh"
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid ""
@@ -1450,6 +1464,7 @@ msgid "Planned Hours"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #: model:ir.actions.report,name:planning.report_planning_slot
 #: model:ir.model.fields.selection,name:planning.selection__planning_slot__allocation_type__planning
@@ -1463,7 +1478,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.slot_report
 #, python-format
 msgid "Planning"
-msgstr ""
+msgstr "Perancangan"
 
 #. module: planning
 #: model:ir.actions.act_window,name:planning.planning_report_action_analysis
@@ -1517,17 +1532,18 @@ msgstr ""
 #. module: planning
 #: model:ir.actions.server,name:planning.ir_cron_forecast_schedule_ir_actions_server
 #: model:ir.cron,cron_name:planning.ir_cron_forecast_schedule
-#: model:ir.cron,name:planning.ir_cron_forecast_schedule
 msgid "Planning: generate next recurring shifts"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "Planning: new open shift available on"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "Planning: new shift on"
@@ -1544,7 +1560,7 @@ msgid "Previous Template"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/views/planning_calendar/planning_calendar_controller.xml:0
 #: code:addons/planning/static/src/xml/planning_gantt.xml:0
 #: model:ir.actions.server,name:planning.model_planning_slot_action_publish
@@ -1564,7 +1580,7 @@ msgid "Publish & Send"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/views/planning_calendar/planning_calendar_controller.xml:0
 #: model:ir.model.fields.selection,name:planning.selection__planning_analysis_report__state__published
 #: model:ir.model.fields.selection,name:planning.selection__planning_slot__state__published
@@ -1572,7 +1588,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 #, python-format
 msgid "Published"
-msgstr ""
+msgstr "Diterbitkan"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_res_company__planning_generation_interval
@@ -1642,7 +1658,7 @@ msgstr ""
 #. module: planning
 #: model:ir.ui.menu,name:planning.planning_menu_reporting
 msgid "Reporting"
-msgstr ""
+msgstr "Pelaporan"
 
 #. module: planning
 #: model:ir.actions.server,name:planning.model_planning_slot_action_reset_to_draft
@@ -1657,7 +1673,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_analysis_report_view_search
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 msgid "Resource"
-msgstr ""
+msgstr "Sumber"
 
 #. module: planning
 #: model:ir.model,name:planning.model_resource_resource
@@ -1665,7 +1681,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_send__employee_ids
 #: model_terms:ir.ui.view,arch_db:planning.planning_role_view_search
 msgid "Resources"
-msgstr ""
+msgstr "Sumber"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_analysis_report__role_id
@@ -1677,7 +1693,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 #: model_terms:ir.ui.view,arch_db:planning.resource_planning
 msgid "Role"
-msgstr ""
+msgstr "Peranan"
 
 #. module: planning
 #: model:ir.model.fields,help:planning.field_hr_employee__default_planning_role_id
@@ -1692,7 +1708,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_resource_resource__role_ids
 #: model:ir.ui.menu,name:planning.planning_menu_settings_role
 msgid "Roles"
-msgstr ""
+msgstr "Peranan"
 
 #. module: planning
 #: model:ir.model.fields,help:planning.field_hr_employee__planning_role_ids
@@ -1719,7 +1735,7 @@ msgid "Save as Template"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid "Save this shift once it is ready."
@@ -1730,7 +1746,7 @@ msgstr ""
 #: model:ir.ui.menu,name:planning.planning_menu_schedule
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_gantt
 msgid "Schedule"
-msgstr ""
+msgstr "Jadual"
 
 #. module: planning
 #: model:ir.actions.act_window,name:planning.planning_action_schedule_by_resource
@@ -1767,7 +1783,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_form_in_gantt
 #: model_terms:ir.ui.view,arch_db:planning.slot_planning_select_send_view_form
 msgid "Send"
-msgstr ""
+msgstr "Hantar"
 
 #. module: planning
 #: model:ir.model,name:planning.model_planning_send
@@ -1780,7 +1796,7 @@ msgid "Send Planning By Email"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/views/planning_calendar/planning_calendar_controller.xml:0
 #: code:addons/planning/static/src/xml/planning_gantt.xml:0
 #, python-format
@@ -1791,15 +1807,16 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_role__sequence
 #: model:ir.model.fields,field_description:planning.field_planning_slot_template__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Urutan"
 
 #. module: planning
 #: model:ir.actions.act_window,name:planning.planning_action_settings
 #: model:ir.ui.menu,name:planning.planning_menu_settings_config
 msgid "Settings"
-msgstr ""
+msgstr "Tetapan"
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/controllers/main.py:0
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_form
 #, python-format
@@ -1844,6 +1861,7 @@ msgid "Shifts from"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 #, python-format
@@ -1885,7 +1903,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_analysis_report_view_search
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 msgid "Start Date"
-msgstr ""
+msgstr "Tarikh mula"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_slot_template_view_search
@@ -1896,13 +1914,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_analysis_report__state
 #: model:ir.model.fields,field_description:planning.field_planning_slot__state
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_planning__end_datetime
 #: model:ir.model.fields,field_description:planning.field_planning_send__end_datetime
 msgid "Stop Date"
-msgstr ""
+msgstr "Tarikh Berhenti"
 
 #. module: planning
 #: model:ir.model.fields,field_description:planning.field_planning_slot__template_autocomplete_ids
@@ -1921,12 +1939,14 @@ msgid ""
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "The company does not allow you to self unassign."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "The deadline for unassignment has passed."
@@ -1938,8 +1958,22 @@ msgid "The duration cannot be negative."
 msgstr ""
 
 #. module: planning
+#. odoo-python
+#: code:addons/planning/models/planning_template.py:0
+#, python-format
+msgid "The duration is too long."
+msgstr ""
+
+#. module: planning
 #: model:ir.model.constraint,message:planning.constraint_planning_slot_check_start_date_lower_end_date
 msgid "The end date of a shift should be after its start date."
+msgstr ""
+
+#. module: planning
+#. odoo-python
+#: code:addons/planning/models/planning_recurrency.py:0
+#, python-format
+msgid "The number of repetitions cannot be negative."
 msgstr ""
 
 #. module: planning
@@ -1948,38 +1982,42 @@ msgid "The recurrence should be greater than 0."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "The recurrence's end date should fall after the shift's start date."
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/views/planning_form/planning_form_view.js:0
 #, python-format
 msgid "The recurring shifts have successfully been created."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/wizard/planning_send.py:0
 #, python-format
 msgid "The schedule was successfully sent to your employees."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning_template.py:0
 #, python-format
 msgid "The selected duration creates a date too far into the future."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "The shift has successfully been sent."
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/planning_mixins.js:0
 #: code:addons/planning/static/src/views/hooks.js:0
 #, python-format
@@ -1987,7 +2025,8 @@ msgid "The shifts from the previous week have successfully been copied."
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/planning/static/src/js/planning_mixins.js:0
 #: code:addons/planning/static/src/views/hooks.js:0
 #: code:addons/planning/wizard/planning_send.py:0
@@ -1998,18 +2037,21 @@ msgid ""
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "The shifts have been successfully reset to draft."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "The shifts have successfully been published and sent."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "The shifts have successfully been published."
@@ -2026,7 +2068,14 @@ msgid "The start hour cannot be negative."
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-python
+#: code:addons/planning/models/planning_template.py:0
+#, python-format
+msgid "The start hour must be greater or equal to 0 and lower than 24."
+msgstr ""
+
+#. module: planning
+#. odoo-javascript
 #: code:addons/planning/static/src/js/planning_mixins.js:0
 #: code:addons/planning/static/src/views/hooks.js:0
 #, python-format
@@ -2036,21 +2085,31 @@ msgid ""
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "There are no shifts to publish and send."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "There are no shifts to publish."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "There are no shifts to reset to draft."
+msgstr ""
+
+#. module: planning
+#. odoo-python
+#: code:addons/planning/models/planning.py:0
+#, python-format
+msgid "This Progress Bar is not implemented."
 msgstr ""
 
 #. module: planning
@@ -2071,7 +2130,7 @@ msgid ""
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/views/planning_form/planning_form_view.js:0
 #, python-format
 msgid "This shift was successfully saved as a template."
@@ -2096,17 +2155,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:planning.planning_analysis_report_view_search
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 msgid "Today"
-msgstr ""
+msgstr "Hari ini"
 
 #. module: planning
 #: model_terms:ir.ui.view,arch_db:planning.planning_view_search
 msgid "Tomorrow"
-msgstr ""
+msgstr "Esok"
 
 #. module: planning
 #: model_terms:ir.actions.act_window,help:planning.planning_action_roles
 msgid "Total"
-msgstr ""
+msgstr "Jumlah"
 
 #. module: planning
 #: model_terms:ir.actions.act_window,help:planning.planning_action_roles
@@ -2117,7 +2176,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_analysis_report__resource_type
 #: model:ir.model.fields,field_description:planning.field_planning_slot__resource_type
 msgid "Type"
-msgstr ""
+msgstr "taip"
 
 #. module: planning
 #: model:ir.model.fields.selection,name:planning.selection__planning_recurrency__repeat_type__until
@@ -2135,9 +2194,10 @@ msgstr ""
 #: model:ir.model.fields,field_description:planning.field_planning_slot__user_id
 #: model:res.groups,name:planning.group_planning_user
 msgid "User"
-msgstr ""
+msgstr "pengguna"
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/hr.py:0
 #: model:ir.actions.server,name:planning.model_hr_employee_action_planning_view
 #: model:ir.actions.server,name:planning.model_hr_employee_public_action_planning_view
@@ -2184,7 +2244,7 @@ msgid "Working Days"
 msgstr ""
 
 #. module: planning
-#. openerp-web
+#. odoo-javascript
 #: code:addons/planning/static/src/js/tours/planning.js:0
 #, python-format
 msgid ""
@@ -2206,30 +2266,35 @@ msgid "Yesterday"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "You are not allowed to reset to draft shifts."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "You can not assign yourself to an already assigned shift."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "You can not unassign another employee than yourself."
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/wizard/slot_planning_select_send.py:0
 #, python-format
 msgid "You cannot send a past unassigned slot"
 msgstr ""
 
 #. module: planning
+#. odoo-python
 #: code:addons/planning/models/planning.py:0
 #, python-format
 msgid "You don't have the right to self assign."

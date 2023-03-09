@@ -2,12 +2,19 @@
 # This file contains the translation of the following modules:
 # 	* sale_planning
 # 
+# Translators:
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# Martin Trigaux, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -52,7 +59,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_analysis_report_view_search
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_slot_view_search_inherit_sale_planning
 msgid "Billable"
-msgstr ""
+msgstr "Zaračunljivo"
 
 #. module: sale_planning
 #: model:ir.ui.menu,name:sale_planning.sale_planning_menu_schedule_by_sale_order
@@ -68,7 +75,7 @@ msgstr ""
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_planning_slot__end_datetime
 msgid "End Date"
-msgstr ""
+msgstr "Končni datum"
 
 #. module: sale_planning
 #: model:planning.role,name:sale_planning.planning_role_tester
@@ -81,7 +88,7 @@ msgstr ""
 #: model:product.template,uom_name:sale_planning.developer_product_product_template
 #: model:product.template,uom_name:sale_planning.technical_maintainance_product_product_template
 msgid "Hours"
-msgstr ""
+msgstr "Ure"
 
 #. module: sale_planning
 #: model:product.product,name:sale_planning.technical_maintainance_product
@@ -119,7 +126,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_analysis_report_view_search
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_slot_view_search_inherit_sale_planning
 msgid "Non Billable"
-msgstr ""
+msgstr "Nezaračunljivo"
 
 #. module: sale_planning
 #: model:ir.model.constraint,message:sale_planning.constraint_planning_slot_check_datetimes_set_or_plannable_slot
@@ -202,12 +209,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_planning.field_product_product__planning_role_id
 #: model:ir.model.fields,field_description:sale_planning.field_product_template__planning_role_id
 msgid "Planning Role"
-msgstr ""
+msgstr "Vloga načrtovanja"
 
 #. module: sale_planning
 #: model:ir.model,name:sale_planning.model_planning_slot
 msgid "Planning Shift"
-msgstr ""
+msgstr "Izmena načrtovanja"
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_sale_order_line__planning_slot_ids
@@ -217,7 +224,7 @@ msgstr ""
 #. module: sale_planning
 #: model:ir.model,name:sale_planning.model_product_template
 msgid "Product"
-msgstr ""
+msgstr "Proizvod"
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_planning_analysis_report__role_product_ids
@@ -232,7 +239,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_slot_view_form_inherit_sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_slot_view_search_inherit_sale_planning
 msgid "Sales Order"
-msgstr ""
+msgstr "Prodajni nalog"
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_planning_analysis_report__sale_line_id
@@ -242,12 +249,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_slot_view_search_inherit_sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.resource_sale_planning
 msgid "Sales Order Item"
-msgstr ""
+msgstr "Postavka prodajnega naloga"
 
 #. module: sale_planning
 #: model:ir.model,name:sale_planning.model_sale_order_line
 msgid "Sales Order Line"
-msgstr ""
+msgstr "Postavka prodajnega naloga"
 
 #. module: sale_planning
 #: model:ir.model.fields,help:sale_planning.field_planning_slot__sale_line_id
@@ -273,24 +280,24 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_analysis_report_view_search
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_slot_view_search_inherit_sale_planning
 msgid "Service"
-msgstr ""
+msgstr "Storitev"
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_planning_role__product_ids
 #: model:ir.model.fields,field_description:sale_planning.field_planning_slot__role_product_ids
 msgid "Services"
-msgstr ""
+msgstr "Storitve"
 
 #. module: sale_planning
 #: code:addons/sale_planning/controllers/main.py:0
 #, python-format
 msgid "Shift"
-msgstr ""
+msgstr "Izmena"
 
 #. module: sale_planning
 #: model:ir.model.fields,field_description:sale_planning.field_planning_slot__start_datetime
 msgid "Start Date"
-msgstr ""
+msgstr "Začetni datum"
 
 #. module: sale_planning
 #: model_terms:product.product,description:sale_planning.technical_maintainance_product
@@ -339,7 +346,7 @@ msgstr ""
 #: code:addons/sale_planning/models/sale_order.py:0
 #, python-format
 msgid "View Planning"
-msgstr ""
+msgstr "Poglej načrtovanje"
 
 #. module: sale_planning
 #. openerp-web

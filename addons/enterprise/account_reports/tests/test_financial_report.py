@@ -721,3 +721,42 @@ class TestFinancialReport(TestAccountReportsCommon):
         # Removing the comparison should hide the lines, as they will be 0 in every considered period (the current one)
         options = self._update_comparison_filter(options, report, 'previous_period', 0)
         self.assertLinesValues(report._get_lines(options), [0, 1, 2, 3], [])
+
+    def test_option_hierarchy(self):
+        """ Check that the report lines are correct when the option "Hierarchy and subtotals is ticked"""
+        self.env['account.group'].create({
+            'name': 'Sales',
+            'code_prefix_start': '40',
+            'code_prefix_end': '49',
+        })
+
+        move = self.env['account.move'].create({
+            'date': '2020-02-02',
+            'line_ids': [
+                Command.create({
+                    'account_id': self.company_data['default_account_revenue'].id,
+                    'name': 'name',
+                })
+            ],
+        })
+        move.action_post()
+        move.line_ids.flush_recordset()
+        profit_and_loss_report = self.env.ref('account_reports.profit_and_loss')
+        line_id = self._get_basic_line_dict_id_from_report_line_ref('account_reports.account_financial_report_income0')
+        options = self._generate_options(profit_and_loss_report, '2020-02-01', '2020-02-28')
+        options['unfolded_lines'] = [line_id]
+        options['hierarchy'] = True
+        self.env.company.totals_below_sections = False
+        lines = profit_and_loss_report._get_lines(options)
+
+        unfolded_lines = profit_and_loss_report._get_unfolded_lines(lines, line_id)
+        unfolded_lines = [{'name': line['name'], 'level': line['level']} for line in unfolded_lines]
+
+        self.assertEqual(
+            unfolded_lines,
+            [
+                {'level': 5, 'name': 'Operating Income'},
+                {'level': 6, 'name': '40-49 Sales'},
+                {'level': 7, 'name': '400000 Product Sales'},
+            ]
+        )

@@ -5,6 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # Malaz Abuidris <msea@odoo.com>, 2022
+# Niyas Raphy, 2022
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:50+0000\n"
-"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2022\n"
+"Last-Translator: Niyas Raphy, 2022\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -54,7 +55,7 @@ msgstr ""
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.knowledge_base_forum_card
 msgid "<span style=\"font-weight: bolder; font-size: 18px;\">Community</span>"
-msgstr ""
+msgstr "<span style=\"font-weight: bolder; font-size: 18px;\">المجتمع</span>"
 
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.search_result
@@ -65,12 +66,12 @@ msgstr "الإجابات"
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.footer
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.knowledge_base_forum_card
 msgid "Ask the Community"
-msgstr ""
+msgstr "اسأل المجتمع"
 
 #. module: website_helpdesk_forum
 #: model:ir.model.fields,field_description:website_helpdesk_forum.field_helpdesk_ticket__can_share_forum
 msgid "Can Share Forum"
-msgstr ""
+msgstr "يمكن مشاركة المنتدى"
 
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.helpdesk_ticket_select_forum_wizard_view_form
@@ -80,12 +81,12 @@ msgstr "إلغاء "
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.helpdesk_ticket_select_forum_wizard_view_form
 msgid "Create Post"
-msgstr ""
+msgstr "إنشاء مشاركة"
 
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.helpdesk_ticket_select_forum_wizard_view_form
 msgid "Create and View Post"
-msgstr ""
+msgstr "إنشاء وعرض مشاركة"
 
 #. module: website_helpdesk_forum
 #: model:ir.model.fields,field_description:website_helpdesk_forum.field_helpdesk_ticket_select_forum_wizard__create_uid
@@ -120,7 +121,7 @@ msgstr "منشور المنتدى "
 #. module: website_helpdesk_forum
 #: model:ir.model.fields,field_description:website_helpdesk_forum.field_helpdesk_ticket__forum_post_count
 msgid "Forum Post Count"
-msgstr ""
+msgstr "المنتدى مشاركة عدد"
 
 #. module: website_helpdesk_forum
 #: code:addons/website_helpdesk_forum/models/helpdesk.py:0
@@ -192,14 +193,14 @@ msgstr ""
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.helpdesk_ticket_select_forum_wizard_view_form
 msgid "Select Forum"
-msgstr ""
+msgstr "حدد المنتدى"
 
 #. module: website_helpdesk_forum
 #: model:ir.actions.act_window,name:website_helpdesk_forum.helpdesk_ticket_select_forum_wizard_action
 #: model:ir.model,name:website_helpdesk_forum.model_helpdesk_ticket_select_forum_wizard
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.helpdesk_ticket_view_form_inherit_website_helpdesk_forum
 msgid "Share on Forum"
-msgstr ""
+msgstr "انشر على المنتدى"
 
 #. module: website_helpdesk_forum
 #: model:ir.model.fields,field_description:website_helpdesk_forum.field_helpdesk_team__show_knowledge_base_forum
@@ -209,7 +210,7 @@ msgstr ""
 #. module: website_helpdesk_forum
 #: model:ir.model.fields,field_description:website_helpdesk_forum.field_forum_post__show_ticket
 msgid "Show Ticket"
-msgstr ""
+msgstr "إظهار التذكرة"
 
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.search_result

@@ -76,7 +76,7 @@ msgstr ""
 
 #. module: documents_project
 #: model:documents.tag,name:documents_project.documents_project_status_deprecated
-msgid "Deprectated"
+msgid "Deprecated"
 msgstr ""
 
 #. module: documents_project
@@ -280,4 +280,10 @@ msgstr ""
 #. module: documents_project
 #: model_terms:ir.ui.view,arch_db:documents_project.share_page
 msgid "documents shared"
+msgstr ""
+
+#. module: documents_project
+#: code:addons/documents_project/models/workflow.py:0
+#, python-format
+msgid "new %s from %s"
 msgstr ""

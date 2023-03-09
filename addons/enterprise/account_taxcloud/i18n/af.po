@@ -44,7 +44,7 @@ msgstr ""
 #. module: account_taxcloud
 #: model:ir.model,name:account_taxcloud.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Maatskappye"
 
 #. module: account_taxcloud
 #: model:ir.model,name:account_taxcloud.model_res_config_settings

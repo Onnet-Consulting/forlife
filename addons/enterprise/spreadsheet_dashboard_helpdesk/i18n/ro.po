@@ -4,8 +4,8 @@
 # 
 # Translators:
 # Dorin Hongu <dhongu@gmail.com>, 2022
-# Cozmin Candea <office@terrabit.ro>, 2022
 # Martin Trigaux, 2022
+# Cozmin Candea <office@terrabit.ro>, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-29 09:37+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Cozmin Candea <office@terrabit.ro>, 2023\n"
 "Language-Team: Romanian (https://www.transifex.com/odoo/teams/41243/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,7 +27,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Agent"
-msgstr ""
+msgstr "Agent"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
@@ -50,28 +50,28 @@ msgstr "Client"
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Hours to assign"
-msgstr ""
+msgstr "Ore de alocat"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Hours to close"
-msgstr ""
+msgstr "Ore de închis"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Hours to respond"
-msgstr ""
+msgstr "Ore de răspuns"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "KPI"
-msgstr ""
+msgstr "KPI"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
@@ -109,28 +109,28 @@ msgstr "Echipă"
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Ticket Analysis by Assigned To"
-msgstr ""
+msgstr "Analiza tichetelor după atribuire"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Ticket Analysis by Customer"
-msgstr ""
+msgstr "Analiza tichetelor după client"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Ticket Analysis by Team"
-msgstr ""
+msgstr "Analiza tichetelor după echipă"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Ticket Analysis by Ticket Type"
-msgstr ""
+msgstr "Analiza tichetelor după tipul tichetului"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
@@ -157,63 +157,63 @@ msgstr "Tichete"
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Tickets by Stage"
-msgstr ""
+msgstr "Tichete după etapă"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Tickets by Type"
-msgstr ""
+msgstr "Tichete după tip"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Time to Assign"
-msgstr ""
+msgstr "Timp de alocat"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Time to Close"
-msgstr ""
+msgstr "Timp de închis"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Time to Respond"
-msgstr ""
+msgstr "Timp de răspuns"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Top Agents"
-msgstr ""
+msgstr "Agenți de top"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Top Customers"
-msgstr ""
+msgstr "Clienți de top"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Top Teams"
-msgstr ""
+msgstr "Echipe de top"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "Top Ticket Types"
-msgstr ""
+msgstr "Top tipuri de tichete"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
@@ -222,7 +222,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "last period"
-msgstr ""
+msgstr "ultima perioadă"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
@@ -230,18 +230,18 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "since last period"
-msgstr ""
+msgstr "de la ultima perioadă"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "stats - current"
-msgstr ""
+msgstr "statistici - curent"
 
 #. module: spreadsheet_dashboard_helpdesk
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_helpdesk/data/files/helpdesk_dashboard.json:0
 #, python-format
 msgid "stats - previous"
-msgstr ""
+msgstr "statistici - precedent"

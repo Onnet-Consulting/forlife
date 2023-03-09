@@ -617,7 +617,7 @@ class SignRequest(models.Model):
         pdf_content, __ = self.env["ir.actions.report"].with_user(public_user).sudo()._render_qweb_pdf(
             'sign.action_sign_request_print_logs',
             self.ids,
-            data={'format_date': format_date}
+            data={'format_date': format_date, 'company_id': self.communication_company_id}
         )
         attachment_log = self.env['ir.attachment'].create({
             'name': "Certificate of completion - %s.pdf" % time.strftime('%Y-%m-%d - %H:%M:%S'),
@@ -806,6 +806,7 @@ class SignRequestItem(models.Model):
     def _send_signature_access_mail(self):
         for signer in self:
             signer_lang = get_lang(self.env, lang_code=signer.partner_id.lang).code
+            context = {'lang': signer_lang}
             body = self.env['ir.qweb']._render('sign.sign_template_mail_request', {
                 'record': signer,
                 'link': url_join(signer.get_base_url(), "sign/document/mail/%(request_id)s/%(access_token)s" % {'request_id': signer.sign_request_id.id, 'access_token': signer.sudo().access_token}),
@@ -819,7 +820,7 @@ class SignRequestItem(models.Model):
             self.env['sign.request']._message_send_mail(
                 body, 'mail.mail_notification_light',
                 {'record_name': signer.sign_request_id.reference},
-                {'model_description': 'signature', 'company': signer.communication_company_id or signer.sign_request_id.create_uid.company_id},
+                {'model_description': _('Signature'), 'company': signer.communication_company_id or signer.sign_request_id.create_uid.company_id},
                 {'email_from': signer.create_uid.email_formatted,
                  'author_id': signer.create_uid.partner_id.id,
                  'email_to': formataddr((signer.partner_id.name, signer.signer_email)),
@@ -829,6 +830,7 @@ class SignRequestItem(models.Model):
                 lang=signer_lang,
             )
             signer.is_mail_sent = True
+            del context
 
     def _edit_and_sign(self, signature, **kwargs):
         """ Sign sign request items at once.
@@ -1052,7 +1054,7 @@ class SignRequestItem(models.Model):
 
     @api.depends('partner_id.email')
     def _compute_email(self):
-        for sign_request_item in self.filtered(lambda sri: sri.state == "sent"):
+        for sign_request_item in self.filtered(lambda sri: sri.state == "sent" or not sri.signer_email):
             sign_request_item.signer_email = sign_request_item.partner_id.email_normalized
 
 

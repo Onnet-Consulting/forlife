@@ -10,6 +10,7 @@
 # Eneli Õigus <enelioigus@gmail.com>, 2022
 # Martin Aavastik <martin@avalah.ee>, 2022
 # Triine Aavik <triine@avalah.ee>, 2022
+# Leaanika Randmets, 2022
 # 
 msgid ""
 msgstr ""
@@ -17,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Triine Aavik <triine@avalah.ee>, 2022\n"
+"Last-Translator: Leaanika Randmets, 2022\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -32,13 +33,16 @@ msgid ""
 "                            Skills tab will be active once the appraisal is confirmed.\n"
 "                        </span>"
 msgstr ""
+"<span class=\"o_appraisal_overlay\" attrs=\"{'invisible': [('state', '!=', 'new')]}\">\n"
+"                            Oskused väli muutub aktiivseks peale hindamise kinnitamist.\n"
+"                        </span>"
 
 #. module: hr_appraisal_skills
 #. openerp-web
 #: code:addons/hr_appraisal_skills/static/src/js/appraisal_skills_one2many.xml:0
 #, python-format
 msgid "Add new skills"
-msgstr ""
+msgstr "Lisa uued oskused"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill__appraisal_id
@@ -49,12 +53,12 @@ msgstr "Hindamine"
 #: model:ir.actions.act_window,name:hr_appraisal_skills.hr_appraisal_skill_report_action
 #: model:ir.model,name:hr_appraisal_skills.model_hr_appraisal_skill_report
 msgid "Appraisal Skills Report"
-msgstr ""
+msgstr "Hindamise oskuste aruanne"
 
 #. module: hr_appraisal_skills
 #: model_terms:ir.actions.act_window,help:hr_appraisal_skills.hr_appraisal_skill_report_action
 msgid "Appraisal skills appear only for marked appraisals."
-msgstr ""
+msgstr "Hindamise oskused ilmuvad ainult märgitud hindamistel."
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill_report__company_id
@@ -74,12 +78,12 @@ msgstr "Loomise kuupäev"
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill_report__current_skill_level_id
 msgid "Current Skill Level"
-msgstr ""
+msgstr "Praegune oskuste tase"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill_report__current_level_progress
 msgid "Current Skill Progress"
-msgstr ""
+msgstr "Praegune oskuste areng"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields.selection,name:hr_appraisal_skills.selection__hr_appraisal_skill_report__evolution__decline
@@ -117,23 +121,23 @@ msgstr "Töötaja nimi"
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill__employee_skill_id
 msgid "Employee Skill"
-msgstr ""
+msgstr "Töötaja oskus"
 
 #. module: hr_appraisal_skills
 #: model:ir.model,name:hr_appraisal_skills.model_hr_appraisal_skill
 msgid "Employee Skills"
-msgstr ""
+msgstr "Töötaja oskused"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill_report__evolution
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_skills.hr_appraisal_skill_report_view_search
 msgid "Evolution"
-msgstr ""
+msgstr "Areng"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill_report__evolution_sequence
 msgid "Evolution Sequence"
-msgstr ""
+msgstr "Arengu järjekord"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill__id
@@ -145,12 +149,12 @@ msgstr "ID"
 #: model:ir.model.fields.selection,name:hr_appraisal_skills.selection__hr_appraisal_skill_report__evolution__improvement
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_skills.hr_appraisal_skill_report_view_search
 msgid "Improvement"
-msgstr ""
+msgstr "Täiustamine"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields.selection,name:hr_appraisal_skills.selection__hr_appraisal_skill_report__evolution__just_added
 msgid "Just added"
-msgstr ""
+msgstr "Hiljuti lisatud"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill__justification
@@ -181,18 +185,18 @@ msgstr "Juhataja"
 #. module: hr_appraisal_skills
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_skills.hr_appraisal_skill_report_view_search
 msgid "No Change"
-msgstr ""
+msgstr "Muutust pole"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill__previous_skill_level_id
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill_report__previous_skill_level_id
 msgid "Previous Skill Level"
-msgstr ""
+msgstr "Eelnev oskuste tase"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill_report__previous_level_progress
 msgid "Previous Skill Progress"
-msgstr ""
+msgstr "Eelnevate oskuste areng"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill__level_progress
@@ -207,12 +211,12 @@ msgstr "Areng null teadmistest (0%) teadmiste täieliku omandamiseni (100%)."
 #. module: hr_appraisal_skills
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_skills.hr_appraisal_skill_report_view_search
 msgid "Regression"
-msgstr ""
+msgstr "Regressioon"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields.selection,name:hr_appraisal_skills.selection__hr_appraisal_skill_report__evolution__same
 msgid "Same"
-msgstr ""
+msgstr "Sama"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill__skill_id
@@ -242,7 +246,7 @@ msgstr "Oskused"
 #: model:ir.ui.menu,name:hr_appraisal_skills.menu_appraisal_skills_report
 #: model_terms:ir.actions.act_window,help:hr_appraisal_skills.hr_appraisal_skill_report_action
 msgid "Skills Evolution"
-msgstr ""
+msgstr "Oskuste areng"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.constraint,message:hr_appraisal_skills.constraint_hr_appraisal_skill__unique_skill
@@ -252,9 +256,9 @@ msgstr "Samal oskusel pole kaks erinevat taset lubatud"
 #. module: hr_appraisal_skills
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_skills.appraisal_skills_update_template
 msgid "has been added."
-msgstr ""
+msgstr "on lisatud."
 
 #. module: hr_appraisal_skills
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_skills.appraisal_skills_update_template
 msgid "has been deleted."
-msgstr ""
+msgstr "on kustutatud."

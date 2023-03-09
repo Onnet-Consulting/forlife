@@ -3,7 +3,7 @@ import { useService } from "@web/core/utils/hooks";
 import { _lt } from "@web/core/l10n/translation";
 import { renderToMarkup } from "@web/core/utils/render";
 
-import { xml, reactive } from "@odoo/owl";
+import { xml, reactive, useComponent } from "@odoo/owl";
 
 const missingApprovalsTemplate = xml`
     <ul>
@@ -127,15 +127,15 @@ class StudioApproval {
 
 const approvalMap = new WeakMap();
 
-export function useApproval({ record, method, action }) {
+export function useApproval({ getRecord, method, action }) {
     const orm = useService("orm");
     const studio = useService("studio");
     const notification = useService("notification");
-
-    let approval = approvalMap.get(record.model);
-    if (!approval) {
-        approval = new StudioApproval();
-        approvalMap.set(record.model, approval);
+    let record = getRecord(useComponent().props);
+    let _approval = approvalMap.get(record.model);
+    if (!_approval) {
+        _approval = new StudioApproval();
+        approvalMap.set(record.model, _approval);
     }
 
     const specialize = {
@@ -147,5 +147,13 @@ export function useApproval({ record, method, action }) {
         studio,
         notification,
     };
-    return Object.assign(Object.create(approval), specialize);
+    const approval = Object.assign(Object.create(_approval), specialize);
+    owl.onWillUpdateProps((nextProps) => {
+        const nextRecord = getRecord(nextProps);
+        approval.resId = nextRecord.resId;
+        approval.resModel = nextRecord.resModel;
+        record = nextRecord;
+    });
+
+    return approval;
 }

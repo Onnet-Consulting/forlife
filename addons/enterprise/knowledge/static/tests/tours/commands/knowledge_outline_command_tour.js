@@ -16,7 +16,7 @@ tour.register('knowledge_outline_command_tour', {
         openCommandBar(this.$anchor[0]);
     },
 }, { // click on the /outline command
-    trigger: '.oe-powerbox-commandName:contains("Outline")',
+    trigger: '.oe-powerbox-commandName:contains("Article Structure")',
     run: 'click',
 }, { // wait for the block to appear in the editor
     trigger: '.o_knowledge_behavior_type_articles_structure',

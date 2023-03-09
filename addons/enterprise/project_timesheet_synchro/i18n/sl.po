@@ -2,12 +2,22 @@
 # This file contains the translation of the following modules:
 # 	* project_timesheet_synchro
 # 
+# Translators:
+# Vida Potočnik <vida.potocnik@mentis.si>, 2022
+# Boris Kodelja <boris@hbs.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Grega Vavtar <grega@hbs.si>, 2022
+# Martin Trigaux, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.5alpha1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:49+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
+"Last-Translator: Jasmina Macur <jasmina@hbs.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -43,14 +53,14 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Action"
-msgstr ""
+msgstr "Dejanje"
 
 #. module: project_timesheet_synchro
 #. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Activity created"
-msgstr ""
+msgstr "Aktivnost ustvarjena"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -58,12 +68,12 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Add"
-msgstr ""
+msgstr "Dodaj"
 
 #. module: project_timesheet_synchro
 #: model:ir.model,name:project_timesheet_synchro.model_account_analytic_line
 msgid "Analytic Account"
-msgstr ""
+msgstr "Analitični konto"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -86,7 +96,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Cancel"
-msgstr ""
+msgstr "Prekliči"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -95,6 +105,46 @@ msgstr ""
 msgid ""
 "Connect Timesheets to Odoo to synchronize your activities across all "
 "devices."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not find server. Please check that the url you entered is correct."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not login. Please check that the information you entered is correct."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not reach the server. Please check that you have an internet "
+"connection, that the server address and database name you entered is valid, "
+"and that the server is online."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not reach the server. Please check that you have an internet "
+"connection, that the server address you entered is valid, and that the "
+"server is online."
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -117,14 +167,14 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Database"
-msgstr ""
+msgstr "Podatkovna zbirka"
 
 #. module: project_timesheet_synchro
 #. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Default project"
-msgstr ""
+msgstr "Privzeti projekt"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -132,7 +182,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Delete"
-msgstr ""
+msgstr "Izbriši"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -141,7 +191,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Discard"
-msgstr ""
+msgstr "Opusti"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -179,7 +229,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Locked"
-msgstr ""
+msgstr "Zaklenjeno"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -196,7 +246,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Login"
-msgstr ""
+msgstr "Prijava"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -218,14 +268,14 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Logout"
-msgstr ""
+msgstr "Odjava"
 
 #. module: project_timesheet_synchro
 #. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Minimal duration"
-msgstr ""
+msgstr "Minimalno trajanje"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -247,7 +297,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Next"
-msgstr ""
+msgstr "Naprej"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -267,9 +317,23 @@ msgstr ""
 
 #. module: project_timesheet_synchro
 #. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "No default project"
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "No task"
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "No task selected"
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -278,6 +342,13 @@ msgstr ""
 #, python-format
 msgid ""
 "Note that this will create new projects and tasks on your Odoo instance"
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "Odoo login failed"
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -302,7 +373,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Password"
-msgstr ""
+msgstr "Geslo"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -323,14 +394,14 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Please select a project first"
-msgstr ""
+msgstr "Prosim, najprej izberite projekt"
 
 #. module: project_timesheet_synchro
 #. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Please select a project."
-msgstr ""
+msgstr "Prosim, izberite projekt."
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -353,7 +424,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Project"
-msgstr ""
+msgstr "Projekt"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -367,7 +438,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Reset"
-msgstr ""
+msgstr "Obnovi"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -375,14 +446,14 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Run"
-msgstr ""
+msgstr "Zaženi"
 
 #. module: project_timesheet_synchro
 #. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Save"
-msgstr ""
+msgstr "Shrani"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -396,7 +467,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Settings"
-msgstr ""
+msgstr "Nastavitve"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -411,21 +482,21 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Sign In"
-msgstr ""
+msgstr "Prijava:"
 
 #. module: project_timesheet_synchro
 #. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Sign Up"
-msgstr ""
+msgstr "Prijavi se"
 
 #. module: project_timesheet_synchro
 #. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Statistics"
-msgstr ""
+msgstr "Statistike"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -469,6 +540,35 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Task"
+msgstr "Opravilo"
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"The code on your Odoo server is not up to date and an important update has "
+"been released. You or your system administrator should consider retrieving "
+"it as soon as possible."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"The server does not support timesheet synchronization. It requires Odoo "
+"Enterprise Edition version 9 or newer."
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"The server does not support timesheet synchronization. You should contact "
+"your administrator in order to install the module \"Synchronization with the"
+" external timesheet application\""
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -487,7 +587,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "This Week"
-msgstr ""
+msgstr "Ta teden"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -508,6 +608,15 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Time unit"
+msgstr "Časovna enota"
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Timesheet Synchronization is available in Odoo Enterprise Edition. You "
+"should consider upgrading your Odoo version if you would like to use it."
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -516,7 +625,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Today"
-msgstr ""
+msgstr "Danes"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -538,7 +647,7 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Total :"
-msgstr ""
+msgstr "Skupaj:"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -561,13 +670,20 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Week"
-msgstr ""
+msgstr "Teden"
 
 #. module: project_timesheet_synchro
 #. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "Work Summary"
+msgstr ""
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "Working time per week"
 msgstr ""
 
 #. module: project_timesheet_synchro
@@ -644,14 +760,14 @@ msgstr ""
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "minutes"
-msgstr ""
+msgstr "minute"
 
 #. module: project_timesheet_synchro
 #. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
 #, python-format
 msgid "remaining)"
-msgstr ""
+msgstr "ostanek)"
 
 #. module: project_timesheet_synchro
 #. openerp-web

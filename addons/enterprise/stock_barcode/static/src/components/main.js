@@ -195,10 +195,10 @@ class MainComponent extends Component {
                 window.navigator.vibrate(100);
             }
         } else {
-            this.env.services.notification.notify({
-                type: 'warning',
-                message: this.env._t("Please, Scan again !"),
-            });
+            this.env.services.notification.add(
+                this.env._t("Please, Scan again !"),
+                {type: 'warning'}
+            );
         }
     }
 
@@ -224,19 +224,8 @@ class MainComponent extends Component {
     }
 
     async print(action, method) {
-        await this.env.model.save();
-        const options = this.env.model._getPrintOptions();
-        if (options.warning) {
-            return this.env.model.notification.add(options.warning, { type: 'warning' });
-        }
-        if (!action && method) {
-            action = await this.orm.call(
-                this.props.model,
-                method,
-                [[this.props.id]]
-            );
-        }
-        bus.trigger('do-action', { action, options });
+        // TODO master: delete
+        await this.env.model.print(action, method);
     }
 
     putInPack(ev) {

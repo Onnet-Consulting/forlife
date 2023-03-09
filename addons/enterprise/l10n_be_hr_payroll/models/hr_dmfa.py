@@ -498,7 +498,7 @@ class DMFAWorkerContribution(DMFANode):
         # the correct value is 0 for 4xx numbers.
         self.contribution_type = 0
         self.calculation_basis = format_amount(basis)
-        self.amount = format_amount(round(basis * 0.3810, 2))
+        self.amount = format_amount(round(basis * 0.3809, 2))
         self.first_hiring_date = -1
 
 class DMFAWorkerContributionFFE(DMFANode):

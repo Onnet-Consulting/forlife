@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* industry_fsm_report
 # 
+# Translators:
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 09:42+0000\n"
+"POT-Creation-Date: 2022-12-15 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +28,7 @@ msgstr ""
 
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.view_worksheet_template_kanban
-msgid "<span class=\"o_label\">Worksheets</span>"
+msgid "<span class=\"o_label ms-2\">Worksheets</span>"
 msgstr ""
 
 #. module: industry_fsm_report
@@ -40,12 +44,12 @@ msgstr ""
 #. module: industry_fsm_report
 #: model:ir.model.fields,field_description:industry_fsm_report.field_project_task__worksheet_color
 msgid "Color"
-msgstr ""
+msgstr "Warna"
 
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_custom_x_project_task_worksheet_template_2
 msgid "Comments"
-msgstr ""
+msgstr "Komen"
 
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.project_project_form_inherit_industry_fsm_report
@@ -67,7 +71,7 @@ msgstr ""
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_custom_x_project_task_worksheet_template_3
 msgid "Date"
-msgstr ""
+msgstr "Tarikh"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_x_custom_worksheet_x_project_task_worksheet_template_2
@@ -113,6 +117,11 @@ msgid "Manufacturer"
 msgstr ""
 
 #. module: industry_fsm_report
+#: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_custom_x_project_task_worksheet_template_3
+msgid "Model"
+msgstr ""
+
+#. module: industry_fsm_report
 #: model_terms:ir.actions.act_window,help:industry_fsm_report.project_task_action_fsm_planning_groupby_worksheet
 msgid "No tasks found. Let's create one!"
 msgstr ""
@@ -130,7 +139,7 @@ msgstr ""
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_project_project
 msgid "Project"
-msgstr ""
+msgstr "Projek"
 
 #. module: industry_fsm_report
 #: model_terms:ir.actions.act_window,help:industry_fsm_report.project_task_action_fsm_planning_groupby_worksheet
@@ -150,12 +159,12 @@ msgstr ""
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_project_task
 msgid "Task"
-msgstr ""
+msgstr "Tugasan"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_project_task_recurrence
 msgid "Task Recurrence"
-msgstr ""
+msgstr "Pengulangan Tugas"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_report_industry_fsm_worksheet_custom

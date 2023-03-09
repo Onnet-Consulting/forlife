@@ -88,9 +88,11 @@ class TestInvoiceExtract(AccountTestInvoicingCommon, account_invoice_extract_com
 
     def test_no_merge_check_status(self):
         # test check_status without lines merging
+        self.env.company.extract_single_line_per_tax = False
+        self.env.company.quick_edit_mode = "out_and_in_invoices"  # Fiduciary mode is necessary for out_invoice
+
         for move_type in ('in_invoice', 'out_invoice'):
             invoice = self.env['account.move'].create({'move_type': move_type, 'extract_state': 'waiting_extraction'})
-            self.env.company.extract_single_line_per_tax = False
             extract_response = self.get_default_extract_response()
 
             with self.mock_iap_extract(extract_response, {}):
@@ -317,7 +319,7 @@ class TestInvoiceExtract(AccountTestInvoicingCommon, account_invoice_extract_com
         usd_currency = self.env['res.currency'].with_context({'active_test': False}).search([('name', '=', 'USD')])
         (cad_currency | usd_currency).active = True
 
-        test_user = self.env.ref('base.user_root')
+        test_user = self.env.user
         test_user.groups_id = [(3, self.env.ref('base.group_multi_currency').id)]
         self.assertEqual(test_user.currency_id, usd_currency)
 

@@ -79,7 +79,7 @@ msgstr ""
 #. module: web_map
 #: model:ir.model,name:web_map.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Kontak"
 
 #. module: web_map
 #: model:ir.model.fields,field_description:web_map.field_res_partner__contact_address_complete
@@ -131,7 +131,7 @@ msgstr ""
 #: code:addons/web_map/static/src/map_view/map_renderer.js:0
 #, python-format
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: web_map
 #: model:ir.model.fields,help:web_map.field_res_config_settings__map_box_token

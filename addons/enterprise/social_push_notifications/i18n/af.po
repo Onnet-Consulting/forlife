@@ -419,7 +419,7 @@ msgstr ""
 #. module: social_push_notifications
 #: model_terms:ir.ui.view,arch_db:social_push_notifications.res_config_settings_view_form
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. module: social_push_notifications
 #: model:ir.model,name:social_push_notifications.model_utm_campaign
@@ -472,7 +472,7 @@ msgstr ""
 #: model:ir.model,name:social_push_notifications.model_website
 #: model:ir.model.fields,field_description:social_push_notifications.field_social_account__website_id
 msgid "Website"
-msgstr ""
+msgstr "Webtuiste"
 
 #. module: social_push_notifications
 #: model:ir.model,name:social_push_notifications.model_website_visitor

@@ -176,6 +176,73 @@ QUnit.module("spreadsheet pivot view", {}, () => {
         assert.ok(target.querySelector("button.o_pivot_add_spreadsheet").disabled);
     });
 
+    QUnit.test(
+        "Insert in spreadsheet is disabled when same groupby occurs in both columns and rows",
+        async (assert) => {
+            setupControlPanelServiceRegistry();
+            const serviceRegistry = registry.category("services");
+            serviceRegistry.add("dialog", dialogService);
+            const serverData = {
+                models: getBasicData(),
+            };
+            await makeView({
+                type: "pivot",
+                resModel: "partner",
+                serverData,
+                arch: /*xml*/ `
+            <pivot>
+                <field name="id" type="col"/>
+                <field name="id" type="row"/>
+                <field name="foo" type="measure"/>
+            </pivot>`,
+                mockRPC: function (route, args) {
+                    if (args.method === "has_group") {
+                        return Promise.resolve(true);
+                    }
+                },
+            });
+
+            const target = getFixture();
+            await toggleMenu(target, "Measures");
+            await toggleMenuItem(target, "Foo");
+            assert.ok(target.querySelector("button.o_pivot_add_spreadsheet").disabled);
+        }
+    );
+
+    QUnit.test(
+        "Insert in spreadsheet is disabled when columns or rows contain duplicate groupbys",
+        async (assert) => {
+            setupControlPanelServiceRegistry();
+            const serviceRegistry = registry.category("services");
+            serviceRegistry.add("dialog", dialogService);
+            const serverData = {
+                models: getBasicData(),
+            };
+            await makeView({
+                type: "pivot",
+                resModel: "partner",
+                serverData,
+                arch: /*xml*/ `
+                <pivot>
+                    <field name="id" type="col"/>
+                    <field name="bar" type="row"/>
+                    <field name="product_id" type="row"/>
+                    <field name="probability" type="measure"/>
+                </pivot>`,
+                mockRPC: function (route, args) {
+                    if (args.method === "has_group") {
+                        return Promise.resolve(true);
+                    }
+                },
+            });
+
+            const target = getFixture();
+            await toggleMenu(target, "Measures");
+            await toggleMenuItem(target, "Probability");
+            assert.ok(target.querySelector("button.o_pivot_add_spreadsheet").disabled);
+        }
+    );
+
     QUnit.test("groupby date field without interval defaults to month", async (assert) => {
         const { model } = await createSpreadsheetFromPivotView({
             serverData: {
@@ -945,6 +1012,56 @@ QUnit.module("spreadsheet pivot view", {}, () => {
             order: "desc",
             originIndexes: [0],
         });
+    });
+
+    QUnit.test("search view with group by and additional row group", async (assert) => {
+        const { model } = await createSpreadsheetFromPivotView({
+            additionalContext: { search_default_group_name: true },
+            serverData: {
+                models: getBasicData(),
+                views: {
+                    "partner,false,pivot": /* xml */ `
+                        <pivot>
+                        </pivot>`,
+                    "partner,false,search": /* xml */ `
+                    <search>
+                        <group>
+                            <filter name="group_name" context="{'group_by':'name'}"/>
+                            <filter name="group_foo" context="{'group_by':'foo'}"/>
+                        </group>
+                    </search>
+                `,
+                },
+            },
+            actions: async (target) => {
+                await click(target.querySelectorAll("tbody .o_pivot_header_cell_closed")[0]);
+                // group by foo
+                await click(target.querySelector(".dropdown-menu span:nth-child(2)"));
+            },
+        });
+        assert.strictEqual(getCellContent(model, "A1"), "");
+        assert.strictEqual(getCellContent(model, "A2"), "");
+        assert.strictEqual(getCellContent(model, "A3"), '=ODOO.PIVOT.HEADER(1,"name","false")');
+        assert.strictEqual(
+            getCellContent(model, "A4"),
+            '=ODOO.PIVOT.HEADER(1,"name","false","foo",1)'
+        );
+        assert.strictEqual(
+            getCellContent(model, "A5"),
+            '=ODOO.PIVOT.HEADER(1,"name","false","foo",2)'
+        );
+        assert.strictEqual(
+            getCellContent(model, "A6"),
+            '=ODOO.PIVOT.HEADER(1,"name","false","foo",12)'
+        );
+        assert.strictEqual(
+            getCellContent(model, "A7"),
+            '=ODOO.PIVOT.HEADER(1,"name","false","foo",17)'
+        );
+        assert.strictEqual(
+            getCellContent(model, "B2"),
+            '=ODOO.PIVOT.HEADER(1,"measure","__count")'
+        );
     });
 
     QUnit.test("Pivot name can be changed from the dialog", async (assert) => {

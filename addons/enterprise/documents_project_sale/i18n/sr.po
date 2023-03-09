@@ -30,12 +30,12 @@ msgstr "Blokiran"
 #: model:ir.model.fields,field_description:documents_project_sale.field_product_product__documents_allowed_company_id
 #: model:ir.model.fields,field_description:documents_project_sale.field_product_template__documents_allowed_company_id
 msgid "Documents Allowed Company"
-msgstr ""
+msgstr "Dokumenta dozvoljena kompanija"
 
 #. module: documents_project_sale
 #: model:documents.tag,name:documents_project_sale.documents_folder_facet_1_tag_3
 msgid "Done/Archived"
-msgstr ""
+msgstr "Završeno/Arhivirano"
 
 #. module: documents_project_sale
 #: model:project.task,legend_normal:documents_project_sale.sale_order_1_task_1
@@ -45,7 +45,7 @@ msgstr "U radu"
 #. module: documents_project_sale
 #: model:documents.tag,name:documents_project_sale.documents_folder_facet_1_tag_2
 msgid "In Use"
-msgstr ""
+msgstr "Koristi se"
 
 #. module: documents_project_sale
 #: model:documents.folder,name:documents_project_sale.documents_folder_template_child_3
@@ -55,7 +55,7 @@ msgstr "Ostalo"
 #. module: documents_project_sale
 #: model:documents.tag,name:documents_project_sale.documents_folder_facet_1_tag_1
 msgid "New/Unsorted"
-msgstr ""
+msgstr "Novo/Nerazvrstano"
 
 #. module: documents_project_sale
 #: model:ir.model.fields,help:documents_project_sale.field_product_product__template_folder_id
@@ -64,6 +64,8 @@ msgid ""
 "On sales order confirmation, a workspace will be automatically generated for"
 " the project based on this template."
 msgstr ""
+"Nakon potvrde porudžbenice, radni prostor će se automatski generisati za "
+"projekt na osnovu ovog šablona."
 
 #. module: documents_project_sale
 #: model:documents.folder,name:documents_project_sale.documents_folder_template_child_2
@@ -73,7 +75,7 @@ msgstr "Fotografije"
 #. module: documents_project_sale
 #: model:documents.folder,name:documents_project_sale.documents_folder_template_child_1
 msgid "Plans"
-msgstr ""
+msgstr "Planovi"
 
 #. module: documents_project_sale
 #: model:ir.model,name:documents_project_sale.model_product_template
@@ -83,17 +85,17 @@ msgstr "Proizvod"
 #. module: documents_project_sale
 #: model:project.task,legend_done:documents_project_sale.sale_order_1_task_1
 msgid "Ready"
-msgstr "Spreman"
+msgstr "Spremno"
 
 #. module: documents_project_sale
 #: model:product.template,name:documents_project_sale.product_1
 msgid "Renovation Architect (Workspace Template)"
-msgstr ""
+msgstr "Arhitekta za renoviranje (šablon radnog prostora)"
 
 #. module: documents_project_sale
 #: model:documents.folder,name:documents_project_sale.documents_folder
 msgid "Renovation Projects"
-msgstr ""
+msgstr "Projekti renoviranja"
 
 #. module: documents_project_sale
 #: model:ir.model,name:documents_project_sale.model_sale_order
@@ -119,4 +121,4 @@ msgstr "Kom"
 #: model:ir.model.fields,field_description:documents_project_sale.field_product_product__template_folder_id
 #: model:ir.model.fields,field_description:documents_project_sale.field_product_template__template_folder_id
 msgid "Workspace Template"
-msgstr ""
+msgstr "Šablon radnog prostora"

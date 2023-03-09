@@ -4,7 +4,6 @@
 # 
 # Translators:
 # Joao Felix <jrmfelix@gmail.com>, 2022
-# Marcelo Pereira <marcelo.pereira@arxi.pt>, 2022
 # Reinaldo Ramos <reinaldo.ramos@arxi.pt>, 2022
 # Pedro Filipe <pedro2.10@hotmail.com>, 2022
 # Ricardo Martins <ricardo.nbs.martins@gmail.com>, 2022
@@ -12,8 +11,8 @@
 # Nuno Silva <nuno.silva@arxi.pt>, 2022
 # Luiz Fernando <lfpsgs@outlook.com>, 2022
 # Martin Trigaux, 2022
-# Manuela Silva <mmsrs@sky.com>, 2022
 # Pedro Castro Silva <pedrocs@exo.pt>, 2022
+# Manuela Silva <mmsrs@sky.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -21,7 +20,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Pedro Castro Silva <pedrocs@exo.pt>, 2022\n"
+"Last-Translator: Manuela Silva <mmsrs@sky.com>, 2023\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -283,7 +282,7 @@ msgstr "Empresa"
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_res_config_settings
 msgid "Config Settings"
-msgstr "Configurações"
+msgstr "Definições de Configuração"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_settings
@@ -317,7 +316,7 @@ msgstr "Criar"
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__create_date
 msgid "Create Date"
-msgstr "Data de criação"
+msgstr "Data de Criação"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.open_create_project_fsm
@@ -605,7 +604,7 @@ msgstr "Horas Gastas"
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line__id
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__id
 msgid "ID"
-msgstr "ID"
+msgstr "Id."
 
 #. module: industry_fsm
 #: model:project.task,legend_normal:industry_fsm.planning_task_0

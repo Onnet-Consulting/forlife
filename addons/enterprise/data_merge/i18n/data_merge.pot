@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:48+0000\n"
-"PO-Revision-Date: 2022-09-20 09:48+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
+"PO-Revision-Date: 2022-12-15 13:28+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,13 +16,14 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: data_merge
+#. odoo-python
 #: code:addons/data_merge/models/data_merge_model.py:0
 #, python-format
 msgid "%s (copy)"
 msgstr ""
 
 #. module: data_merge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/data_merge/static/src/views/data_merge_list_view.js:0
 #, python-format
 msgid "%s records have been merged"
@@ -76,7 +77,7 @@ msgid "Archived"
 msgstr ""
 
 #. module: data_merge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/data_merge/static/src/views/data_merge_list_view.js:0
 #, python-format
 msgid ""
@@ -85,7 +86,7 @@ msgid ""
 msgstr ""
 
 #. module: data_merge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/data_merge/static/src/views/data_merge_list_view.js:0
 #, python-format
 msgid "Are you sure that you want to merge these records?"
@@ -103,6 +104,7 @@ msgid "Can Be Merged"
 msgstr ""
 
 #. module: data_merge
+#. odoo-python
 #: code:addons/data_merge/models/data_merge_rule.py:0
 #, python-format
 msgid "Case/Accent Insensitive Match"
@@ -169,14 +171,12 @@ msgstr ""
 #. module: data_merge
 #: model:ir.actions.server,name:data_merge.ir_cron_cleanup_ir_actions_server
 #: model:ir.cron,cron_name:data_merge.ir_cron_cleanup
-#: model:ir.cron,name:data_merge.ir_cron_cleanup
 msgid "Data Merge: Cleanup Records"
 msgstr ""
 
 #. module: data_merge
 #: model:ir.actions.server,name:data_merge.ir_cron_find_duplicates_ir_actions_server
 #: model:ir.cron,cron_name:data_merge.ir_cron_find_duplicates
-#: model:ir.cron,name:data_merge.ir_cron_find_duplicates
 msgid "Data Merge: Find Duplicate Records"
 msgstr ""
 
@@ -186,6 +186,7 @@ msgid "Days"
 msgstr ""
 
 #. module: data_merge
+#. odoo-python
 #: code:addons/data_merge/models/data_merge_record.py:0
 #: model_terms:ir.ui.view,arch_db:data_merge.view_data_merge_model_form
 #, python-format
@@ -229,15 +230,15 @@ msgid "Deduplication Rules"
 msgstr ""
 
 #. module: data_merge
-#: model:ir.model.fields.selection,name:data_merge.selection__data_merge_model__removal_mode__delete
-msgid "Delete"
-msgstr ""
-
-#. module: data_merge
 #. odoo-python
 #: code:addons/data_merge/models/data_merge_model.py:0
 #, python-format
 msgid "Deduplication is forbidden on the model: %s"
+msgstr ""
+
+#. module: data_merge
+#: model:ir.model.fields.selection,name:data_merge.selection__data_merge_model__removal_mode__delete
+msgid "Delete"
 msgstr ""
 
 #. module: data_merge
@@ -308,6 +309,7 @@ msgid "Enable Merge"
 msgstr ""
 
 #. module: data_merge
+#. odoo-python
 #: code:addons/data_merge/models/data_merge_rule.py:0
 #, python-format
 msgid "Exact Match"
@@ -418,13 +420,15 @@ msgid "Manual"
 msgstr ""
 
 #. module: data_merge
+#. odoo-python
 #: code:addons/data_merge/models/data_merge_record.py:0
 #, python-format
 msgid "Manual Selection - %s"
 msgstr ""
 
 #. module: data_merge
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/data_merge/models/ir_model.py:0
 #: code:addons/data_merge/static/src/views/data_merge_list_view.xml:0
 #: model:ir.actions.server,name:data_merge.merge_action_crm_lost_reason
@@ -477,6 +481,13 @@ msgid "Merge action attached"
 msgstr ""
 
 #. module: data_merge
+#. odoo-python
+#: code:addons/data_merge/models/data_merge_model.py:0
+#, python-format
+msgid "Missing required PostgreSQL extension: unaccent"
+msgstr ""
+
+#. module: data_merge
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_group__res_model_id
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_model__res_model_id
 #: model:ir.model.fields,field_description:data_merge.field_data_merge_record__res_model_id
@@ -484,13 +495,6 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:data_merge.data_merge_record_view_search_merge_action
 #: model_terms:ir.ui.view,arch_db:data_merge.view_data_merge_record_search
 msgid "Model"
-msgstr ""
-
-#. module: data_merge
-#. odoo-python
-#: code:addons/data_merge/models/data_merge_model.py:0
-#, python-format
-msgid "Missing required PostgreSQL extension: unaccent"
 msgstr ""
 
 #. module: data_merge
@@ -517,6 +521,7 @@ msgid "Name"
 msgstr ""
 
 #. module: data_merge
+#. odoo-python
 #: code:addons/data_merge/models/data_merge_record.py:0
 #: model_terms:ir.actions.act_window,help:data_merge.action_data_merge_record
 #: model_terms:ir.actions.act_window,help:data_merge.action_data_merge_record_notification
@@ -579,6 +584,13 @@ msgid "Records eligible for the deduplication process"
 msgstr ""
 
 #. module: data_merge
+#. odoo-python
+#: code:addons/data_merge/models/data_merge_record.py:0
+#, python-format
+msgid "Records must be of the same model"
+msgstr ""
+
+#. module: data_merge
 #: model:ir.model.fields,help:data_merge.field_data_merge_model__merge_threshold
 msgid ""
 "Records with a similarity percentage above this threshold will be "
@@ -593,13 +605,6 @@ msgstr ""
 #. module: data_merge
 #: model_terms:ir.ui.view,arch_db:data_merge.view_data_merge_model_form
 msgid "Select a model to configure deduplication rules"
-msgstr ""
-
-#. module: data_merge
-#. odoo-python
-#: code:addons/data_merge/models/data_merge_record.py:0
-#, python-format
-msgid "Records must be of the same model"
 msgstr ""
 
 #. module: data_merge
@@ -646,19 +651,21 @@ msgid "The referenced record does not exist"
 msgstr ""
 
 #. module: data_merge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/data_merge/static/src/views/data_merge_list_view.js:0
 #, python-format
 msgid "The selected records have been merged"
 msgstr ""
 
 #. module: data_merge
+#. odoo-python
 #: code:addons/data_merge/models/data_merge_record.py:0
 #, python-format
 msgid "The target model does not exists."
 msgstr ""
 
 #. module: data_merge
+#. odoo-python
 #: code:addons/data_merge/models/data_merge_record.py:0
 #, python-format
 msgid "There is not referenced record"
@@ -675,7 +682,7 @@ msgid "Unique ID Field"
 msgstr ""
 
 #. module: data_merge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/data_merge/static/src/views/data_merge_list_view.xml:0
 #, python-format
 msgid "Unselect"
@@ -707,6 +714,7 @@ msgid "When enabled, duplicates across different companies will be suggested"
 msgstr ""
 
 #. module: data_merge
+#. odoo-python
 #: code:addons/data_merge/models/data_merge_record.py:0
 #, python-format
 msgid "You must select at least two %s in order to merge them."

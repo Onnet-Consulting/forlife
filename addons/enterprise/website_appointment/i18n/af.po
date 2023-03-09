@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* website_appointment
 # 
+# Translators:
+# Martin Trigaux, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Afrikaans (https://www.transifex.com/odoo/teams/41243/af/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -268,7 +272,7 @@ msgstr ""
 #: code:addons/website_appointment/static/src/xml/website_appointment_templates.xml:0
 #, python-format
 msgid "Users"
-msgstr ""
+msgstr "Gebruikers"
 
 #. module: website_appointment
 #: model_terms:ir.ui.view,arch_db:website_appointment.appointments_cards
@@ -283,7 +287,7 @@ msgstr ""
 #. module: website_appointment
 #: model:ir.model,name:website_appointment.model_website
 msgid "Website"
-msgstr ""
+msgstr "Webtuiste"
 
 #. module: website_appointment
 #: model:ir.model.fields,field_description:website_appointment.field_appointment_type__website_url

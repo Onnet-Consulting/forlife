@@ -4,9 +4,9 @@
 # 
 # Translators:
 # Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
-# Lukas Van Cauter <cvl@odoo.com>, 2022
 # Martin Trigaux, 2022
-# Jolien De Paepe, 2022
+# Lukas Van Cauter <cvl@odoo.com>, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -14,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:42+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Jolien De Paepe, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,7 +41,7 @@ msgstr "Kortingsbon"
 #. module: helpdesk_sale_loyalty
 #: model:ir.model.fields,field_description:helpdesk_sale_loyalty.field_helpdesk_sale_coupon_generate__program
 msgid "Coupon Program"
-msgstr "Kortingsbonnenprogramma"
+msgstr "Kortingsbonprogramma"
 
 #. module: helpdesk_sale_loyalty
 #: code:addons/helpdesk_sale_loyalty/wizard/helpdesk_sale_coupon_generate.py:0
@@ -95,7 +95,7 @@ msgstr "Genereer kortingscode vanuit helpdesk"
 #: model:ir.actions.act_window,name:helpdesk_sale_loyalty.helpdesk_sale_coupon_generate_action
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_loyalty.helpdesk_sale_coupon_generate_view_form
 msgid "Generate a Coupon"
-msgstr "Genereer kortingsbon"
+msgstr "Genereer een kortingsbon"
 
 #. module: helpdesk_sale_loyalty
 #: model:ir.model.fields,field_description:helpdesk_sale_loyalty.field_helpdesk_ticket__coupon_ids
@@ -125,7 +125,7 @@ msgstr "Laatst bijgewerkt door"
 #. module: helpdesk_sale_loyalty
 #: model:ir.model.fields,field_description:helpdesk_sale_loyalty.field_helpdesk_sale_coupon_generate__write_date
 msgid "Last Updated on"
-msgstr "Laatst geupdate op"
+msgstr "Laatst bijgewerkt op"
 
 #. module: helpdesk_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_loyalty.loyalty_card_view_form_helpdesk_sale_loyalty

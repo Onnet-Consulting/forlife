@@ -5,7 +5,7 @@
 # Translators:
 # Nuno Silva <nuno.silva@arxi.pt>, 2022
 # Ricardo Martins <ricardo.nbs.martins@gmail.com>, 2022
-# Manuela Silva <mmsrs@sky.com>, 2022
+# Manuela Silva <mmsrs@sky.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:24+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Manuela Silva <mmsrs@sky.com>, 2022\n"
+"Last-Translator: Manuela Silva <mmsrs@sky.com>, 2023\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -45,12 +45,6 @@ msgstr ""
 #, python-format
 msgid "Average"
 msgstr "Média"
-
-#. module: web_cohort
-#: code:addons/web_cohort/controllers/main.py:0
-#, python-format
-msgid "Average Value"
-msgstr ""
 
 #. module: web_cohort
 #: model:ir.model,name:web_cohort.model_base
@@ -95,7 +89,7 @@ msgstr "Dia"
 #: code:addons/web_cohort/static/src/cohort_controller.xml:0
 #, python-format
 msgid "Download as Excel file"
-msgstr ""
+msgstr "Transferir como ficheiro do Excel"
 
 #. module: web_cohort
 #. openerp-web

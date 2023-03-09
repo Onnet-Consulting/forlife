@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* sale_subscription_dashboard
 # 
+# Translators:
+# Martin Trigaux, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.5alpha1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:49+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Afrikaans (https://www.transifex.com/odoo/teams/41243/af/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -112,7 +116,7 @@ msgstr ""
 #: code:addons/sale_subscription_dashboard/static/src/xml/sale_subscription_dashboard.xml:0
 #, python-format
 msgid "Companies"
-msgstr ""
+msgstr "Maatskappye"
 
 #. module: sale_subscription_dashboard
 #. openerp-web
@@ -121,7 +125,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_subscription_dashboard.sales_men_pdf_template
 #, python-format
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: sale_subscription_dashboard
 #. openerp-web
@@ -170,7 +174,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_subscription_dashboard.sales_men_pdf_template
 #, python-format
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #. module: sale_subscription_dashboard
 #. openerp-web
@@ -213,7 +217,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_subscription_dashboard.sales_men_pdf_template
 #, python-format
 msgid "Document"
-msgstr ""
+msgstr "Dokument"
 
 #. module: sale_subscription_dashboard
 #. openerp-web
@@ -288,7 +292,7 @@ msgstr ""
 #. module: sale_subscription_dashboard
 #: model_terms:ir.ui.view,arch_db:sale_subscription_dashboard.move_line_entries_report_search
 msgid "Group By"
-msgstr ""
+msgstr "Groepeer deur"
 
 #. module: sale_subscription_dashboard
 #. openerp-web
@@ -540,7 +544,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_subscription_dashboard.sales_men_pdf_template
 #, python-format
 msgid "Partner"
-msgstr ""
+msgstr "Vennoot"
 
 #. module: sale_subscription_dashboard
 #. openerp-web

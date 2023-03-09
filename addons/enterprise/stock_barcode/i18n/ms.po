@@ -2,12 +2,17 @@
 # This file contains the translation of the following modules:
 # 	* stock_barcode
 # 
+# Translators:
+# Niyas Raphy, 2022
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -171,7 +176,7 @@ msgstr ""
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_picking_barcode
 msgid "Allocation"
-msgstr ""
+msgstr "Peruntukan"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_picking_type__barcode_validation_full
@@ -199,7 +204,7 @@ msgstr ""
 #: code:addons/stock_barcode/static/src/components/main.xml:0
 #, python-format
 msgid "Apply"
-msgstr ""
+msgstr "Mohon"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_cancel_operation_view
@@ -221,7 +226,7 @@ msgstr ""
 #: model:ir.ui.menu,name:stock_barcode.stock_barcode_menu
 #, python-format
 msgid "Barcode"
-msgstr ""
+msgstr "Kod bar"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_view_picking_type_form
@@ -274,7 +279,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_cancel_operation_view
 #, python-format
 msgid "Cancel"
-msgstr ""
+msgstr "Batal"
 
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_barcode_cancel_operation
@@ -304,12 +309,12 @@ msgstr ""
 #: code:addons/stock_barcode/static/src/main_menu.xml:0
 #, python-format
 msgid "Close"
-msgstr ""
+msgstr "Tutup"
 
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Tetapan Konfigurasi"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.res_config_settings_view_form
@@ -321,17 +326,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_picking_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 msgid "Confirm"
-msgstr ""
+msgstr "Sahkan"
 
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Kenalan"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 msgid "Counted Quantity"
-msgstr ""
+msgstr "Kuantiti Dikira"
 
 #. module: stock_barcode
 #: model_terms:ir.actions.act_window,help:stock_barcode.stock_picking_action_kanban
@@ -341,12 +346,12 @@ msgstr ""
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Dicipta oleh"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Dicipta pada"
 
 #. module: stock_barcode
 #: model:product.product,name:stock_barcode.product_custom_cabinet_metric
@@ -363,7 +368,7 @@ msgstr ""
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
 msgid "Delete"
-msgstr ""
+msgstr "Padam"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_res_config_settings__stock_barcode_demo_active
@@ -396,12 +401,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_picking_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 msgid "Discard"
-msgstr ""
+msgstr "Buang"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nama paparan"
 
 #. module: stock_barcode
 #. openerp-web
@@ -442,7 +447,7 @@ msgstr ""
 #: code:addons/stock_barcode/static/src/main_menu.xml:0
 #, python-format
 msgid "Download"
-msgstr ""
+msgstr "Muat turun"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_move_line__dummy_id
@@ -503,15 +508,14 @@ msgstr ""
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: stock_barcode
 #: code:addons/stock_barcode/models/stock_picking.py:0
 #, python-format
 msgid ""
-"If the source location must be scanned for each product, the destination "
-"location must be either scanned after each line too, either not scanned at "
-"all."
+"If the source location must be scanned, then the destination location must "
+"either be scanned after each product or not scanned at all."
 msgstr ""
 
 #. module: stock_barcode
@@ -552,17 +556,17 @@ msgstr ""
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Terakhir Diubah suai pada"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Kemas Kini Terakhir oleh"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Kemas Kini Terakhir pada"
 
 #. module: stock_barcode
 #. openerp-web
@@ -579,7 +583,7 @@ msgstr ""
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 msgid "Location"
-msgstr ""
+msgstr "Lokasi"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_move_line__location_processed
@@ -617,7 +621,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:stock_barcode.selection__stock_picking_type__restrict_put_in_pack__no
 #: model:ir.model.fields.selection,name:stock_barcode.selection__stock_picking_type__restrict_scan_dest_location__no
 msgid "No"
-msgstr ""
+msgstr "Tidak"
 
 #. module: stock_barcode
 #: code:addons/stock_barcode/models/stock_picking.py:0
@@ -658,7 +662,7 @@ msgstr ""
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_res_config_settings__barcode_nomenclature_id
 msgid "Nomenclature"
-msgstr ""
+msgstr "Nomenklatur"
 
 #. module: stock_barcode
 #. openerp-web
@@ -686,7 +690,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:stock_barcode.stock_picking_type_action_kanban
 #, python-format
 msgid "Operations"
-msgstr ""
+msgstr "Operasi"
 
 #. module: stock_barcode
 #: model:ir.model.fields.selection,name:stock_barcode.selection__stock_picking_type__restrict_scan_tracking_number__optional
@@ -697,12 +701,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 msgid "Owner"
-msgstr ""
+msgstr "Pemilik"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 msgid "Package"
-msgstr ""
+msgstr "Pakej"
 
 #. module: stock_barcode
 #. openerp-web
@@ -715,12 +719,12 @@ msgstr ""
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_quant_package
 msgid "Packages"
-msgstr ""
+msgstr "Pakej"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_move_line__product_packaging_id
 msgid "Packaging"
-msgstr ""
+msgstr "Pembungkusan"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_move_line__product_packaging_uom_qty
@@ -735,7 +739,7 @@ msgstr ""
 #. module: stock_barcode
 #: model:ir.actions.act_window,name:stock_barcode.stock_picking_action_form
 msgid "Picking"
-msgstr ""
+msgstr "Memetik"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_picking_barcode
@@ -745,7 +749,7 @@ msgstr ""
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_picking_type
 msgid "Picking Type"
-msgstr ""
+msgstr "Jenis Memilih"
 
 #. module: stock_barcode
 #. openerp-web
@@ -788,14 +792,14 @@ msgstr ""
 #: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
 #, python-format
 msgid "Print Inventory"
-msgstr ""
+msgstr "Cetak Inventori"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Print Packages"
-msgstr ""
+msgstr "Cetakan Pakej"
 
 #. module: stock_barcode
 #. openerp-web
@@ -809,7 +813,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 msgid "Product"
-msgstr ""
+msgstr "Produk"
 
 #. module: stock_barcode
 #: model:ir.actions.act_window,name:stock_barcode.product_action_barcodes
@@ -840,7 +844,7 @@ msgstr ""
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_product_product
 msgid "Product Variant"
-msgstr ""
+msgstr "Varian Produk"
 
 #. module: stock_barcode
 #. openerp-web
@@ -857,7 +861,7 @@ msgstr ""
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
 msgid "Quantity"
-msgstr ""
+msgstr "Kuantiti"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode_kanban
@@ -1218,7 +1222,7 @@ msgstr ""
 #: model:ir.model,name:stock_barcode.model_stock_scrap
 #, python-format
 msgid "Scrap"
-msgstr ""
+msgstr "Sekerap"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
@@ -1351,7 +1355,7 @@ msgstr ""
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_picking_type_kanban
 msgid "To Process"
-msgstr ""
+msgstr "Untuk memproses"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1364,7 +1368,7 @@ msgstr ""
 #: model:ir.model,name:stock_barcode.model_stock_picking
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__picking_id
 msgid "Transfer"
-msgstr ""
+msgstr "Pemindahan"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__picking_name
@@ -1380,13 +1384,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode_kanban
 msgid "Unit of Measure"
-msgstr ""
+msgstr "Unit ukuran"
 
 #. module: stock_barcode
 #: model:product.product,uom_name:stock_barcode.product_cable_management_box_2
 #: model:product.template,uom_name:stock_barcode.product_cable_management_box_2_product_template
 msgid "Units"
-msgstr ""
+msgstr "Unit"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.view_stock_quant_tree
@@ -1398,7 +1402,7 @@ msgstr ""
 #: code:addons/stock_barcode/static/src/components/main.xml:0
 #, python-format
 msgid "Validate"
-msgstr ""
+msgstr "Sahkan"
 
 #. module: stock_barcode
 #: model:ir.model.fields,help:stock_barcode.field_stock_scrap___barcode_scanned
@@ -1408,7 +1412,7 @@ msgstr ""
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_warehouse
 msgid "Warehouse"
-msgstr ""
+msgstr "Gudang"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1538,7 +1542,7 @@ msgstr ""
 #: code:addons/stock_barcode/static/src/main_menu.xml:0
 #, python-format
 msgid "product"
-msgstr ""
+msgstr "produk"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.view_backorder_confirmation

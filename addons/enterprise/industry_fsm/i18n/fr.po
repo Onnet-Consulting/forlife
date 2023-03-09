@@ -5,8 +5,8 @@
 # Translators:
 # Cécile Collart <cco@odoo.com>, 2022
 # Martin Trigaux, 2022
-# Jolien De Paepe, 2022
 # Alexandra Jubert, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -14,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Alexandra Jubert, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,7 +25,7 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__nbr
 msgid "# of Tasks"
-msgstr "Nb de tâches"
+msgstr "# de tâches"
 
 #. module: industry_fsm
 #: model:ir.actions.report,print_report_name:industry_fsm.task_custom_report
@@ -161,7 +161,7 @@ msgstr "<strong>Travailleur : </strong>"
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__active
 msgid "Active"
-msgstr "Active"
+msgstr "Actif"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_config_activity_type
@@ -246,7 +246,7 @@ msgstr "Bloqué"
 #. module: industry_fsm
 #: model:project.task,legend_done:industry_fsm.planning_task_18
 msgid "Buzz or set as done"
-msgstr "Buzz ou définir comme terminé"
+msgstr "Buzzer ou marquer comme terminé"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.project_task_menu_planning_by_project_fsm
@@ -267,7 +267,7 @@ msgstr "Annuler"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.portal_task_sign_button
 msgid "Close"
-msgstr "Fermer"
+msgstr "Clôturer"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -309,7 +309,7 @@ msgstr "Société"
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_res_config_settings
 msgid "Config Settings"
-msgstr "Paramètres de config"
+msgstr "Paramètres de configuration"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_settings
@@ -396,7 +396,7 @@ msgstr "Créé le"
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_res_config_settings__module_industry_fsm_report
 msgid "Custom Worksheets"
-msgstr " Feuilles de travail personnalisées"
+msgstr "Feuilles de travail personnalisées"
 
 #. module: industry_fsm
 #: code:addons/industry_fsm/models/project_task.py:0
@@ -416,7 +416,7 @@ msgstr "Aperçu du client"
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_reporting_customer_ratings
 msgid "Customer Ratings"
-msgstr "Évaluations de la Clientèle"
+msgstr "Évaluations du client"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
@@ -446,7 +446,7 @@ msgstr "Description"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_project_view_form_simplified_footer_fsm
 msgid "Discard"
-msgstr "Annuler"
+msgstr "Ignorer"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_enabled_conditions_count
@@ -456,24 +456,24 @@ msgstr "Afficher le compte des conditions activées"
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_mark_as_done_primary
 msgid "Display Mark As Done Primary"
-msgstr "Afficher Marquer comme Fait en primaire"
+msgstr "Afficher Marquer comme fait en primaire"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_mark_as_done_secondary
 msgid "Display Mark As Done Secondary"
-msgstr "Afficher maquer comme fait en secondaire"
+msgstr "Afficher Marquer comme fait en secondaire"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard__display_name
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line__display_name
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__display_name
 msgid "Display Name"
-msgstr "Nom affiché"
+msgstr "Afficher le nom"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_satisfied_conditions_count
 msgid "Display Satisfied Conditions Count"
-msgstr "Afficher le compte des conditions satisfaites"
+msgstr "Afficher le nombre de conditions respectées"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_send_report_primary
@@ -502,7 +502,7 @@ msgid ""
 "Display tasks in the Field Service module and allow planning with start/end "
 "dates."
 msgstr ""
-"Affichez les tâches dans le module Services sur Site et permettez la "
+"Affichez les tâches dans le module Services sur site et permettez la "
 "planification avec des dates de début/fin."
 
 #. module: industry_fsm
@@ -541,12 +541,12 @@ msgstr "Date de fin"
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_res_config_settings__group_industry_fsm_quotations
 msgid "Extra Quotations"
-msgstr "Devis Supplémentaires"
+msgstr "Devis supplémentaires"
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_report_project_task_user_fsm
 msgid "FSM Tasks Analysis"
-msgstr "Analyse des Tâches de Services sur Site"
+msgstr "Analyse des tâches de services sur site"
 
 #. module: industry_fsm
 #: code:addons/industry_fsm/models/project_project.py:0
@@ -680,7 +680,7 @@ msgstr "Heures prévues initialement"
 #: code:addons/industry_fsm/controllers/portal.py:0
 #, python-format
 msgid "Invalid Task."
-msgstr "Tâche Invalide"
+msgstr "Tâche invalide."
 
 #. module: industry_fsm
 #: code:addons/industry_fsm/controllers/portal.py:0
@@ -704,7 +704,7 @@ msgstr "La jalon est-il atteint ?"
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__fsm_is_sent
 msgid "Is Worksheet sent"
-msgstr "Feuille de Travail envoyée"
+msgstr "Feuille de travail envoyée"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__state
@@ -851,7 +851,7 @@ msgstr "Mes projets"
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "My Tasks"
-msgstr "Mes Tâches"
+msgstr "Mes tâches"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -890,12 +890,12 @@ msgstr "Pas de données"
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_project_action_only_fsm
 msgid "No projects found. Let's create one!"
-msgstr "Aucuns projets trouvés. Créons-en un !"
+msgstr "Aucun projet trouvé. Créons-en un !"
 
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_type_action_fsm
 msgid "No stages found. Let's create one!"
-msgstr "Pas d'étapes trouvées. Créons-en une !"
+msgstr "Aucune étape trouvée. Créons-en une !"
 
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_all_fsm
@@ -906,7 +906,7 @@ msgstr "Pas d'étapes trouvées. Créons-en une !"
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_to_schedule_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_tasks_action_fsm
 msgid "No tasks found. Let's create one!"
-msgstr "Aucunes tâches trouvées. Créons-en une !"
+msgstr "Aucune tâche trouvée. Créons-en une !"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -975,17 +975,17 @@ msgstr "Planning"
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__planning_overlap
 msgid "Planning Overlap"
-msgstr "Chevauchement du Planning"
+msgstr "Chevauchement du planning"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_action_fsm_planning_groupby_project
 msgid "Planning by Project"
-msgstr "Planning par Projet"
+msgstr "Planning par projet"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_action_fsm_planning_groupby_user
 msgid "Planning by User"
-msgstr "Planning par Utilisateur"
+msgstr "Planning par utilisateur"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__priority
@@ -1066,7 +1066,7 @@ msgstr ""
 #. module: industry_fsm
 #: model:project.task,legend_done:industry_fsm.planning_task_20
 msgid "Ready to reopen"
-msgstr "Prêt à ré-ouvrir"
+msgstr "Prêt à rouvrir"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__remaining_hours
@@ -1146,12 +1146,12 @@ msgstr "Signature"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
 msgid "Sign Report"
-msgstr "Signer Rapport"
+msgstr "Signer le rapport"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.portal_task_sign_button
 msgid "Sign Task"
-msgstr "Signer Tâche"
+msgstr "Signer la tâche"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__worksheet_signature
@@ -1191,7 +1191,7 @@ msgstr "Étape"
 #: model:ir.actions.act_window,name:industry_fsm.project_task_type_action_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_settings_stage
 msgid "Stages"
-msgstr "Etapes"
+msgstr "Étapes"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -1243,23 +1243,23 @@ msgstr "Tâche"
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_project__allow_task_dependencies
 msgid "Task Dependencies"
-msgstr "Dépendances de Tâches"
+msgstr "Dépendances de tâches"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__fsm_done
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__fsm_done
 msgid "Task Done"
-msgstr "Tâche Effectuée"
+msgstr "Tâche effectuée"
 
 #. module: industry_fsm
 #: model:ir.actions.report,name:industry_fsm.task_custom_report
 msgid "Task Report"
-msgstr "Rapport de Tâche"
+msgstr "Rapport de tâche"
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_report_industry_fsm_worksheet_custom
 msgid "Task Worksheet Custom Report"
-msgstr "Rapport Personnalisé des Feuilles de Travail par Tâche"
+msgstr "Rapport personnalisé des feuilles de travail par tâche"
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_project_task_stop_timers_wizard
@@ -1369,7 +1369,7 @@ msgstr "À faire"
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "To Schedule"
-msgstr "À Planifier"
+msgstr "À planifier"
 
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_all_fsm
@@ -1404,7 +1404,7 @@ msgstr "Suivez l'avancement de vos tâches, de leur création à leur fermeture.
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Unassigned"
-msgstr "Non assigné"
+msgstr "Non attribué"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -1515,7 +1515,7 @@ msgstr "commentaire"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.quick_create_task_form_fsm_inherited
 msgid "e.g. Boiler replacement"
-msgstr "par exemple : Remplacement de chaudière"
+msgstr "par ex. Remplacement de chaudière"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit

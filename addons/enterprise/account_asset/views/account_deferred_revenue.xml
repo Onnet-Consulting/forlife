@@ -86,26 +86,26 @@
                 <attribute name="placeholder">e.g. Annual Subscription</attribute>
             </field>
             <xpath expr="//sheet/group/group/field[@name='account_depreciation_expense_id']" position="attributes">
-                <attribute name="string">Revenue Account</attribute>
-                <attribute name="help">Account used to recognize the revenue</attribute>
+                <attribute name="string">Deferred Revenue Account</attribute>
+                <attribute name="help">Account used to record the deferred income</attribute>
                 <attribute name="domain">[('account_type', 'in', ('income', 'income_other'))]</attribute>
                 <attribute name="context">{'default_account_type': 'income', 'account_type_domain': [('account_type', 'in', ('income', 'income_other'))]}</attribute>
             </xpath>
             <xpath expr="//sheet/group/group/field[@name='account_depreciation_id']" position="attributes">
-                <attribute name="string">Deferred Revenue Account</attribute>
-                <attribute name="help">Account used to record the deferred income</attribute>
+                <attribute name="string">Revenue Account</attribute>
+                <attribute name="help">Account used to recognize the revenue</attribute>
                 <attribute name="domain">[('account_type', '=', 'liability_current')]</attribute>
                 <attribute name="context">{'default_account_type': 'liability_current', 'account_type_domain': [('account_type', '=', 'liability_current')]}</attribute>
             </xpath>
             <xpath expr="//notebook/page/group/group//field[@name='account_depreciation_expense_id']" position="attributes">
-                <attribute name="string">Revenue Account</attribute>
-                <attribute name="help">Account used to recognize the revenue</attribute>
+                <attribute name="string">Deferred Revenue Account</attribute>
+                <attribute name="help">Account used to record the deferred income</attribute>
                 <attribute name="domain">[('account_type', 'in', ('income', 'income_other'))]</attribute>
                 <attribute name="context">{'default_account_type': 'income', 'account_type_domain': [('account_type', 'in', ('income', 'income_other'))]}</attribute>
             </xpath>
             <xpath expr="//notebook/page/group/group//field[@name='account_depreciation_id']" position="attributes">
-                <attribute name="string">Deferred Revenue Account</attribute>
-                <attribute name="help">Account used to record the deferred income</attribute>
+                <attribute name="string">Revenue Account</attribute>
+                <attribute name="help">Account used to recognize the revenue</attribute>
                 <attribute name="domain">[('account_type', '=', 'liability_current')]</attribute>
                 <attribute name="context">{'default_account_type': 'liability_current', 'account_type_domain': [('account_type', '=', 'liability_current')]}</attribute>
             </xpath>

@@ -3,13 +3,13 @@
 # 	* spreadsheet_dashboard_crm
 # 
 # Translators:
-# Reinaldo Ramos <reinaldo.ramos@arxi.pt>, 2022
 # José Gomes <jg@opencloud.pro>, 2022
 # Pedro Filipe <pedro2.10@hotmail.com>, 2022
 # Manuela Silva <mmsrs@sky.com>, 2022
 # Martin Trigaux, 2022
 # Ricardo Martins <ricardo.nbs.martins@gmail.com>, 2022
 # Nuno Silva <nuno.silva@arxi.pt>, 2022
+# Reinaldo Ramos <reinaldo.ramos@arxi.pt>, 2022
 # 
 msgid ""
 msgstr ""
@@ -17,7 +17,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-29 09:37+0000\n"
-"Last-Translator: Nuno Silva <nuno.silva@arxi.pt>, 2022\n"
+"Last-Translator: Reinaldo Ramos <reinaldo.ramos@arxi.pt>, 2022\n"
 "Language-Team: Portuguese (https://www.transifex.com/odoo/teams/41243/pt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -207,7 +207,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "KPI"
-msgstr ""
+msgstr "KPI"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -389,7 +389,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Top Countries"
-msgstr ""
+msgstr "Países Principais"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -404,7 +404,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Top Mediums"
-msgstr ""
+msgstr "Médios Principais"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -419,7 +419,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Top Sales Teams"
-msgstr ""
+msgstr "Equipas de Venda Principais"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -427,7 +427,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Top Salespeople"
-msgstr ""
+msgstr "Vendedores Principais"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -435,7 +435,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Top Sources"
-msgstr ""
+msgstr "Origens Principais"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -552,7 +552,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "since last period"
-msgstr ""
+msgstr "desde o período anterior"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web

@@ -521,7 +521,7 @@ msgstr "מספר ההסכמים"
 #: code:addons/sale_subscription_dashboard/controllers/stat_types.py:0
 #, python-format
 msgid "Number of subscriptions that gets closed during a period"
-msgstr ""
+msgstr "מספר המנויים שנסגרו בתקופה מסויימת"
 
 #. module: sale_subscription_dashboard
 #: model_terms:ir.ui.view,arch_db:sale_subscription_dashboard.move_line_entries_report_search

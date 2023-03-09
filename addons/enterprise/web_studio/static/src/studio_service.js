@@ -145,9 +145,7 @@ export const studioService = {
                         viewType = currentController.view.type;
                         controllerState = Object.assign({}, currentController.getLocalState());
                         const { resIds } = currentController.getGlobalState() || {};
-                        if (resIds) {
-                            controllerState.resIds = resIds;
-                        }
+                        controllerState.resIds = resIds || [controllerState.resId];
                     }
                 }
                 if (!_isStudioEditable(action)) {
@@ -283,6 +281,9 @@ export const studioService = {
                 state.x2mEditorPath = [];
             }
             if ("action" in params) {
+                if ((state.editedAction && state.editedAction.id) !== params.action.id) {
+                    state.editedControllerState = null;
+                }
                 state.editedAction = params.action || null;
             }
             if ("editorTab" in params) {

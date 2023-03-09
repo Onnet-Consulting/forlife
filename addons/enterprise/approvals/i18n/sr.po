@@ -5,7 +5,7 @@
 # Translators:
 # Uros Kalajdzic <ukalajdzic@gmail.com>, 2022
 # Martin Trigaux, 2022
-# Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2022
+# Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:47+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2022\n"
+"Last-Translator: Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2023\n"
 "Language-Team: Serbian (https://www.transifex.com/odoo/teams/41243/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -95,6 +95,8 @@ msgid ""
 "Allows you to define which documents you would like to create once the "
 "request has been approved"
 msgstr ""
+"Omogućava vam da definišete koje dokumente želite da kreirate kada zahtev "
+"bude odobren"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_request__amount
@@ -122,13 +124,13 @@ msgstr ""
 #. module: approvals
 #: model:ir.model,name:approvals.model_approval_category
 msgid "Approval Category"
-msgstr ""
+msgstr "Kategorija odobrenja"
 
 #. module: approvals
 #: model:ir.model,name:approvals.model_approval_request
 #: model:ir.model.fields,field_description:approvals.field_approval_product_line__approval_request_id
 msgid "Approval Request"
-msgstr ""
+msgstr "Zahtev za odobrenje"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_request__name
@@ -141,7 +143,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:approvals.field_approval_request__approval_type
 #: model_terms:ir.ui.view,arch_db:approvals.approval_category_view_form
 msgid "Approval Type"
-msgstr ""
+msgstr "Vrsta odobrenja"
 
 #. module: approvals
 #: model:ir.model,name:approvals.model_approval_category_approver
@@ -360,7 +362,7 @@ msgstr "Kreirano"
 #. module: approvals
 #: model:ir.actions.act_window,name:approvals.approval_category_action_new_request
 msgid "Dashboard"
-msgstr ""
+msgstr "Kontrolna tabla"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_request__date
@@ -895,7 +897,7 @@ msgstr "Proizvod"
 #: model:ir.model,name:approvals.model_approval_product_line
 #: model:ir.model.fields,field_description:approvals.field_approval_request__product_line_ids
 msgid "Product Line"
-msgstr ""
+msgstr "Linija proizvoda"
 
 #. module: approvals
 #: model:ir.ui.menu,name:approvals.approvals_menu_product_variant

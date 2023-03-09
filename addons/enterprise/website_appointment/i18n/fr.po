@@ -6,7 +6,7 @@
 # Martin Trigaux, 2022
 # Fabri Yohann <psn@fabri.pw>, 2022
 # Cécile Collart <cco@odoo.com>, 2022
-# Jolien De Paepe, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -14,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Jolien De Paepe, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -133,7 +133,7 @@ msgstr "Peut publier"
 #. module: website_appointment
 #: model_terms:ir.ui.view,arch_db:website_appointment.snippet_options
 msgid "Card Design"
-msgstr "Design de carte"
+msgstr "Conception de carte"
 
 #. module: website_appointment
 #: model_terms:ir.ui.view,arch_db:website_appointment.appointment_select_operator
@@ -230,18 +230,18 @@ msgstr "Planifier"
 #. module: website_appointment
 #: model_terms:ir.ui.view,arch_db:website_appointment.appointment_validated
 msgid "Schedule Another Appointment"
-msgstr "Programmer un autre rendez-vous"
+msgstr "Prendre un autre rendez-vous"
 
 #. module: website_appointment
 #: model_terms:ir.ui.view,arch_db:website_appointment.appointments_cards
 msgid "Schedule an Appointment"
-msgstr "Programmer un rendez-vous"
+msgstr "Prendre un rendez-vous"
 
 #. module: website_appointment
 #: code:addons/website_appointment/models/website.py:0
 #, python-format
 msgid "Schedule an appointment"
-msgstr "Programmer un rendez-vous"
+msgstr "Prendre un rendez-vous"
 
 #. module: website_appointment
 #: model_terms:ir.ui.view,arch_db:website_appointment.website_calendar_index_topbar
@@ -251,12 +251,12 @@ msgstr "Chercher un rendez-vous..."
 #. module: website_appointment
 #: model:ir.model.fields,field_description:website_appointment.field_appointment_type__seo_name
 msgid "Seo name"
-msgstr "Nom SEO"
+msgstr "Référencement nom"
 
 #. module: website_appointment
 #: model:ir.model.fields,help:website_appointment.field_appointment_type__website_url
 msgid "The full URL to access the document through the website."
-msgstr "L'URL complète afin d'accéder au document à travers le site web."
+msgstr "L'URL complète pour accéder au document à travers le site web."
 
 #. module: website_appointment
 #: model_terms:ir.ui.view,arch_db:website_appointment.appointment_progress_bar
@@ -286,7 +286,7 @@ msgstr "Utilisateurs"
 #. module: website_appointment
 #: model_terms:ir.ui.view,arch_db:website_appointment.appointments_cards
 msgid "View availability <i class=\"fa fa-arrow-right\"/>"
-msgstr "Voir la disponibilité <i class=\"fa fa-arrow-right\"/>"
+msgstr "Voir les disponibilités <i class=\"fa fa-arrow-right\"/>"
 
 #. module: website_appointment
 #: model:ir.model.fields,field_description:website_appointment.field_appointment_type__website_published
@@ -321,7 +321,7 @@ msgstr "Méta-titre du site web"
 #. module: website_appointment
 #: model:ir.model.fields,field_description:website_appointment.field_appointment_type__website_meta_og_img
 msgid "Website opengraph image"
-msgstr "Image site web opengraph"
+msgstr "Image opengraph site web "
 
 #. module: website_appointment
 #. openerp-web
@@ -335,7 +335,7 @@ msgstr "nous contacter"
 #: code:addons/website_appointment/static/src/xml/website_appointment_templates.xml:0
 #, python-format
 msgid "e.g. \"Technical Demo\""
-msgstr "par ex. \"Demo technique\"."
+msgstr "par ex. \"Demonstration technique\"."
 
 #. module: website_appointment
 #. openerp-web

@@ -202,8 +202,10 @@ msgstr "พื้นที่ทำงาน"
 #. module: documents_hr
 #: code:addons/documents_hr/models/hr_employee.py:0
 #, python-format
-msgid "You must set an address on the employee to use Documents features."
-msgstr "คุณต้องตั้งค่าที่อยู่ของพนักงานเพื่อใช้ฟีเจอร์เอกสาร"
+msgid ""
+"You must set a private address on the Employee in order to use Document's "
+"features."
+msgstr ""
 
 #. module: documents_hr
 #: model:ir.model.fields,field_description:documents_hr.field_res_company__documents_hr_folder

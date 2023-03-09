@@ -57,7 +57,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:data_cleaning.field_data_cleaning_model__active
 #: model:ir.model.fields,field_description:data_cleaning.field_data_cleaning_record__active
 msgid "Active"
-msgstr ""
+msgstr "Aktief"
 
 #. module: data_cleaning
 #: code:addons/data_cleaning/models/data_cleaning_rule.py:0
@@ -131,7 +131,7 @@ msgstr ""
 #. module: data_cleaning
 #: model:ir.model.fields,field_description:data_cleaning.field_data_cleaning_record__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: data_cleaning
 #: model_terms:ir.actions.act_window,help:data_cleaning.action_data_cleaning_record
@@ -318,7 +318,7 @@ msgstr ""
 #. module: data_cleaning
 #: model:ir.model.fields,field_description:data_cleaning.field_data_cleaning_model__name
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: data_cleaning
 #: model_terms:ir.actions.act_window,help:data_cleaning.action_data_cleaning_record
@@ -387,7 +387,7 @@ msgstr ""
 #. module: data_cleaning
 #: model:ir.model.fields,field_description:data_cleaning.field_data_cleaning_rule__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Volgorde"
 
 #. module: data_cleaning
 #: code:addons/data_cleaning/models/data_cleaning_rule.py:0

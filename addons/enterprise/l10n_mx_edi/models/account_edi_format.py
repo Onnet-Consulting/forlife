@@ -21,6 +21,7 @@ from zeep.transports import Transport
 from json.decoder import JSONDecodeError
 
 _logger = logging.getLogger(__name__)
+EQUIVALENCIADR_PRECISION_DIGITS = 10
 
 
 class AccountEdiFormat(models.Model):
@@ -82,7 +83,7 @@ class AccountEdiFormat(models.Model):
         # == Check the credentials to call the PAC web-service ==
         if pac_name:
             pac_test_env = company.l10n_mx_edi_pac_test_env
-            pac_password = company.l10n_mx_edi_pac_password
+            pac_password = company.sudo().l10n_mx_edi_pac_password
             if not pac_test_env and not pac_password:
                 errors.append(_('No PAC credentials specified.'))
         else:
@@ -325,7 +326,7 @@ class AccountEdiFormat(models.Model):
                 discount_line_tax_details = cfdi_values[tax_key]['tax_details_per_record'][discount_line]['tax_details']
                 other_line_tax_details = cfdi_values[tax_key]['tax_details_per_record'][other_line]['tax_details']
                 for k, tax_values in discount_line_tax_details.items():
-                    if discount_line.currency_id.is_zero(tax_values['tax_amount_currency']):
+                    if discount_line.currency_id.is_zero(tax_values['base_amount_currency']):
                         continue
 
                     other_tax_values = other_line_tax_details[k]
@@ -518,7 +519,7 @@ class AccountEdiFormat(models.Model):
                 # exchange difference line allowing to switch from the "invoice rate" to the "payment rate".
                 invoice_exchange_rate = float_round(
                     invoice_vals['amount_currency'] / (invoice_vals['balance'] + invoice_vals['exchange_balance']),
-                    precision_digits=6,
+                    precision_digits=EQUIVALENCIADR_PRECISION_DIGITS,
                     rounding_method='UP',
                 )
             else:
@@ -545,6 +546,7 @@ class AccountEdiFormat(models.Model):
                 'amount_before_paid': invoice.amount_residual + invoice_vals['amount_currency'],
                 'tax_details_transferred': tax_details_transferred,
                 'tax_details_withholding': tax_details_withholding,
+                'equivalenciadr_precision_digits': EQUIVALENCIADR_PRECISION_DIGITS,
                 **self._l10n_mx_edi_get_serie_and_folio(invoice),
             })
 
@@ -720,14 +722,14 @@ class AccountEdiFormat(models.Model):
                 'cancel_url': 'http://demo-facturacion.finkok.com/servicios/soap/cancel.wsdl',
             }
         else:
-            if not company.l10n_mx_edi_pac_username or not company.l10n_mx_edi_pac_password:
+            if not company.sudo().l10n_mx_edi_pac_username or not company.sudo().l10n_mx_edi_pac_password:
                 return {
                     'errors': [_("The username and/or password are missing.")]
                 }
 
             return {
-                'username': company.l10n_mx_edi_pac_username,
-                'password': company.l10n_mx_edi_pac_password,
+                'username': company.sudo().l10n_mx_edi_pac_username,
+                'password': company.sudo().l10n_mx_edi_pac_password,
                 'sign_url': 'http://facturacion.finkok.com/servicios/soap/stamp.wsdl',
                 'cancel_url': 'http://facturacion.finkok.com/servicios/soap/cancel.wsdl',
             }
@@ -823,14 +825,14 @@ class AccountEdiFormat(models.Model):
                 'url': 'https://testing.solucionfactible.com/ws/services/Timbrado?wsdl',
             }
         else:
-            if not company.l10n_mx_edi_pac_username or not company.l10n_mx_edi_pac_password:
+            if not company.sudo().l10n_mx_edi_pac_username or not company.sudo().l10n_mx_edi_pac_password:
                 return {
                     'errors': [_("The username and/or password are missing.")]
                 }
 
             return {
-                'username': company.l10n_mx_edi_pac_username,
-                'password': company.l10n_mx_edi_pac_password,
+                'username': company.sudo().l10n_mx_edi_pac_username,
+                'password': company.sudo().l10n_mx_edi_pac_password,
                 'url': 'https://solucionfactible.com/ws/services/Timbrado?wsdl',
             }
 
@@ -945,14 +947,14 @@ class AccountEdiFormat(models.Model):
     def _l10n_mx_edi_get_sw_credentials(self, company):
         '''Get the company credentials for PAC: SW. Does not depend on a recordset
         '''
-        if not company.l10n_mx_edi_pac_username or not company.l10n_mx_edi_pac_password:
+        if not company.sudo().l10n_mx_edi_pac_username or not company.sudo().l10n_mx_edi_pac_password:
             return {
                 'errors': [_("The username and/or password are missing.")]
             }
 
         credentials = {
-            'username': company.l10n_mx_edi_pac_username,
-            'password': company.l10n_mx_edi_pac_password,
+            'username': company.sudo().l10n_mx_edi_pac_username,
+            'password': company.sudo().l10n_mx_edi_pac_password,
         }
 
         if company.l10n_mx_edi_pac_test_env:

@@ -91,7 +91,7 @@ msgstr ""
 #: code:addons/timer/models/timer_mixin.py:0
 #, python-format
 msgid "Operation not supported"
-msgstr ""
+msgstr "Operacija nije podržana"
 
 #. module: timer
 #. openerp-web

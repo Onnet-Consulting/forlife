@@ -7,14 +7,12 @@
 # Jakobus Buntownikus <buntownix@gmail.com>, 2022
 # Radosław Biegalski <radoslaw.biegalski@openglobe.pl>, 2022
 # zieloo <zieloo@gmail.com>, 2022
-# Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2022
 # Natalia Gros <nag@odoo.com>, 2022
 # Grzegorz Krukar <grzegorzgk1@gmail.com>, 2022
 # Rafał Kozak <rafal.kozak@openglobe.pl>, 2022
 # Maja Stawicka <mjstwck@wp.pl>, 2022
 # Jan Dziurz <jan.dziurzynski@openglobe.pl>, 2022
 # Mariusz, 2022
-# Judyta Kaźmierczak <judyta.kazmierczak@openglobe.pl>, 2022
 # Piotr Cierkosz <piotr.w.cierkosz@gmail.com>, 2022
 # Wojciech Warczakowski <w.warczakowski@gmail.com>, 2022
 # Karol Rybak <karolrybak85@gmail.com>, 2022
@@ -27,15 +25,18 @@
 # Martin Trigaux, 2022
 # Tomasz Leppich <t.leppich@gmail.com>, 2022
 # Piotr Szlązak <szlazakpiotr@gmail.com>, 2022
-# Maksym <ms@myodoo.pl>, 2022
+# Judyta Kaźmierczak <judyta.kazmierczak@openglobe.pl>, 2022
+# DanielDemedziuk <daniel.demedziuk@gmail.com>, 2022
+# Maksym <ms@myodoo.pl>, 2023
+# Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2023-02-02 10:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
-"Last-Translator: Maksym <ms@myodoo.pl>, 2022\n"
+"Last-Translator: Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2023\n"
 "Language-Team: Polish (https://www.transifex.com/odoo/teams/41243/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,6 +45,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order_line.py:0
 #, python-format
 msgid ""
@@ -52,11 +54,13 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid ""
 "\n"
-"- You should wait for the current subscription period to pass. New quantities to invoice will be ready at the end of the current period."
+"- You should wait for the current subscription period to pass. New quantities to invoice will be ready at the end of the current period. \n"
+"  Negative recurring lines are considered free."
 msgstr ""
 
 #. module: sale_subscription
@@ -65,6 +69,7 @@ msgid "% Happy"
 msgstr "% Szczęśliwy"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order_line.py:0
 #, python-format
 msgid "%(product)s - %(duration)d %(unit)s"
@@ -84,6 +89,15 @@ msgstr "1 miesiąc"
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_alert__mrr_change_period__3months
 msgid "3 Months"
 msgstr "3 miesiące"
+
+#. module: sale_subscription
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
+#, python-format
+msgid ""
+"<b>Congratulations</b>, your first subscription quotation is ready to be "
+"sent!"
+msgstr ""
 
 #. module: sale_subscription
 #: model:mail.template,body_html:sale_subscription.mail_template_subscription_alert
@@ -112,6 +126,29 @@ msgid ""
 "            </div>\n"
 "        "
 msgstr ""
+"<div style=\"background:#F0F0F0;color:#515166;padding:10px 0px;font-family:Arial,Helvetica,sans-serif;font-size:14px;\">\n"
+"                <table style=\"width:600px;margin:5px auto;\">\n"
+"                    <tbody>\n"
+"                        <tr><td>\n"
+"                            <a href=\"/\"><img src=\"/web/binary/company_logo\" style=\"vertical-align:baseline;max-width:100px;\"/></a>\n"
+"                        </td><td style=\"text-align:right;vertical-align:middle;\">\n"
+"                                Odnowa subskrypcji\n"
+"                        </td></tr>\n"
+"                    </tbody>\n"
+"                </table>\n"
+"                <table style=\"width:600px;margin:0px auto;background:white;border:1px solid #e1e1e1;\">\n"
+"                    <tbody>\n"
+"                        <tr><td style=\"padding:15px 20px 10px 20px;\">\n"
+"                            <p>Drogi/a <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,</p>\n"
+"                            <p>Twoja subskrypcja <strong t-out=\"object.name or ''\">Office Cleaning Service\"</strong> wymaga twojej uwagi.</p>\n"
+"                            <p>Zapraszamy do jej odnowy w linku poniżej.</p>\n"
+"                            <p>Z wyrazami szacunku.</p>\n"
+"                        </td></tr>\n"
+"                        <tr><td style=\"padding:15px 20px 10px 20px;\" t-out=\"object.user_id.signature or ''\">--<br/>Mitchell Admin</td></tr>\n"
+"                    </tbody>\n"
+"                </table>\n"
+"            </div>\n"
+"        "
 
 #. module: sale_subscription
 #: model:mail.template,body_html:sale_subscription.mail_template_subscription_rating
@@ -183,6 +220,72 @@ msgid ""
 "            </div>\n"
 "        "
 msgstr ""
+"<div style=\"background:#F0F0F0;color:#515166;padding:10px 0px;font-family:Arial,Helvetica,sans-serif;font-size:14px;\">\n"
+"            <t t-set=\"access_token\" t-value=\"object._rating_get_access_token()\"/>\n"
+"                <table style=\"width:600px;margin:5px auto;\">\n"
+"                    <tbody>\n"
+"                        <tr><td>\n"
+"                            <a href=\"/\"><img src=\"/web/binary/company_logo\" style=\"vertical-align:baseline;max-width:100px;\"/></a>\n"
+"                        </td><td style=\"text-align:right;vertical-align:middle;\">\n"
+"                                Ankieta satysfakcji\n"
+"                        </td></tr>\n"
+"                    </tbody>\n"
+"                </table>\n"
+"                <table style=\"width:600px;margin:0px auto;background:white;border:1px solid #e1e1e1;\">\n"
+"                    <tbody>\n"
+"                        <tr><td style=\"padding:15px 20px 10px 20px;\">\n"
+"                            <p>Witaj,</p>\n"
+"                            <p>Proszę poświęcić chwilę, aby ocenić nasze usługi związane z subskrypcją \"<strong t-out=\"object.name or ''\">Office Cleaning Service\"</strong>\"\n"
+"                               przypisaną do <strong t-out=\"object._rating_get_operator().name or ''\">Mitchell Admin</strong>.</p>\n"
+"                            <p>Doceniamy Twoje opinie. Pomaga nam to w ciągłym doskonaleniu.</p>\n"
+"                        </td></tr>\n"
+"                        <tr><td style=\"padding:10px 20px\">\n"
+"                            <table summary=\"o_mail_notification\" style=\"width:100%;border-top:1px solid #e1e1e1;\">\n"
+"                                <tr>\n"
+"                                    <td style=\"text-align:center;\">\n"
+"                                        <h2 style=\"font-weight:300;font-size:18px;\">\n"
+"                                            Powiedz nam, co sądzisz o naszych usługach:\n"
+"                                        </h2>\n"
+"                                        <div style=\"text-color: #888888\">(kliknij na jedną z buziek)</div>\n"
+"                                    </td>\n"
+"                                </tr>\n"
+"                                <tr>\n"
+"                                    <td style=\"padding:10px 10px;\">\n"
+"                                        <table style=\"width:100%;text-align:center;\">\n"
+"                                            <tr>\n"
+"                                                <td>\n"
+"                                                    <a t-attf-href=\"/rate/{{ access_token }}/5\">\n"
+"                                                        <img alt=\"Satisfied\" src=\"/rating/static/src/img/rating_5.png\" title=\"Satisfied\"/>\n"
+"                                                    </a>\n"
+"                                                </td>\n"
+"                                                <td>\n"
+"                                                    <a t-attf-href=\"/rate/{{ access_token }}/3\">\n"
+"                                                        <img alt=\"Okay\" src=\"/rating/static/src/img/rating_3.png\" title=\"Okay\"/>\n"
+"                                                    </a>\n"
+"                                                </td>\n"
+"                                                <td>\n"
+"                                                    <a t-attf-href=\"/rate/{{ access_token }}/1\">\n"
+"                                                        <img alt=\"Dissatisfied\" src=\"/rating/static/src/img/rating_1.png\" title=\"Dissatisfied\"/>\n"
+"                                                    </a>\n"
+"                                                </td>\n"
+"                                            </tr>\n"
+"                                        </table>\n"
+"                                    </td>\n"
+"                                </tr>\n"
+"                            </table>\n"
+"                        </td></tr>\n"
+"                        <tr><td style=\"padding:15px 20px 10px 20px;\" t-out=\"object.user_id.signature or ''\">--<br/>Mitchell Admin</td></tr>\n"
+"                    </tbody>\n"
+"                </table>\n"
+"                <table style=\"width:600px;margin:auto;text-align:center;font-size:12px;\">\n"
+"                    <tbody>\n"
+"                        <tr><td style=\"padding-top:10px;color:#afafaf;\">\n"
+"                            <p>Email wysłany automatycznie przez <a target=\"_blank\" href=\"https://www.odoo.com/app/subscriptions\" style=\"color:#875A7B;text-decoration:none;\">Odoo Subskrypcje</a> w imieniu <a t-att-href=\"object.company_id.website\" style=\"color:#875A7B;text-decoration:none;\" t-out=\"object.company_id.name or ''\">YourCompany</a></p>\n"
+"                        </td></tr>\n"
+"                    </tbody>\n"
+"                </table>\n"
+"            </div>\n"
+"        "
 
 #. module: sale_subscription
 #: model:mail.template,body_html:sale_subscription.mail_template_subscription_invoice
@@ -223,6 +326,41 @@ msgid ""
 "            </div>\n"
 "        "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                    Drogi/a <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>\n"
+"                    <t t-if=\"object.partner_id.parent_id\">\n"
+"                        (<t t-out=\"object.partner_id.parent_id.name or ''\">Azure Interior</t>)\n"
+"                    </t>,\n"
+"                    <br/><br/>\n"
+"                    W załączniku znajduje się faktura za Twoją subskrypcję\n"
+"                    <t t-if=\"object.name\">\n"
+"                        <span style=\"font-weight:bold;\" t-out=\"object.name or ''\">Office Cleaning Service</span>\n"
+"                    </t>\n"
+"                    <t t-else=\"\">\n"
+"                        \n"
+"                    </t>\n"
+"                    <t t-if=\"object.invoice_origin\">\n"
+"                        (o numerze referencyjnym: <t t-out=\"object.invoice_origin or ''\">INVOICE_ORIGIN</t>)\n"
+"                    </t>\n"
+"                    na kwotę <span style=\"font-weight:bold;\" t-out=\"format_amount(object.amount_total, object.currency_id) or ''\">$ 10.00</span>\n"
+"                    od <t t-out=\"object.company_id.name or ''\">YourCompany</t>.\n"
+"                    <t t-if=\"object.payment_state in ('paid', 'in_payment')\">\n"
+"                        Faktura została już opłacona.\n"
+"                    </t>\n"
+"                    <t t-else=\"\">\n"
+"                        Prosimy o dokonanie płatności w najbliższym terminie..\n"
+"                    </t>\n"
+"                    <br/><br/>\n"
+"                    W razie pytań, skontaktuj się z nami.\n"
+"                    <br/><br/>\n"
+"                    <t t-if=\"not is_html_empty(object.invoice_user_id.signature)\">\n"
+"                        <br/><br/>\n"
+"                        <t t-out=\"object.invoice_user_id.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"                    </t>\n"
+"                </p>\n"
+"            </div>\n"
+"        "
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription
@@ -451,6 +589,94 @@ msgid ""
 "</table>\n"
 "        "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.company_id or object.invoice_user_id.company_id or user.company_id\"/>\n"
+"                    <span style=\"font-size: 10px;\">Twoja subskrypcja</span><br/>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"ctx.get('code', ctx.get('subscription_name')) or 'Document'\">Dokument</span>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ company.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"company.name\"/>\n"
+"                </td></tr>\n"
+"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- CONTENT -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                    Drogi/a <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,<br/><br/>\n"
+"                    Twoja subskrypcja (<t t-out=\"ctx.get('subscription_name') or ''\">CODE</t>\n"
+"                    <t t-if=\"ctx.get('code')\">\n"
+"                    , Referencja: <t t-out=\"ctx.get('code')\"/>\n"
+"                    </t>) została odnowiona\n"
+"                    <t t-if=\"ctx.get('total_amount') and ctx.get('payment_token')\">\n"
+"                        przez płatność w wysokości <t t-out=\"ctx.get('total_amount') or ''\">100</t> <t t-out=\"ctx.get('currency_name') or ''\">$</t> naliczony na <t t-out=\"ctx.get('payment_token') or ''\">PAYMENT_TOKEN</t>.\n"
+"                    </t>\n"
+"                    <br/><br/>\n"
+"                    Twoja faktura jest w załączniku.\n"
+"                    <t t-if=\"ctx.get('next_date')\">\n"
+"                        Następna faktura zostanie wystawiona dnia <t t-out=\"format_date(ctx.get('next_date')) or ''\">05/05/2021</t>.\n"
+"                    </t>\n"
+"                    <br/><br/>\n"
+"                    W razie pytań, skontaktuj się z nami.\n"
+"                    <br/><br/>\n"
+"                    Dziękujemy za wybranie <t t-out=\"company.name or ''\">YourCompany</t>!\n"
+"                    <div t-if=\"user.signature\">\n"
+"                        <br/><br/>\n"
+"                        <t t-out=\"user.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"                    </div>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"company.name or ''\">YourCompany</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                    <t t-if=\"company.phone\">\n"
+"                        <t t-out=\"company.phone or ''\">+1 650-123-4567</t> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.email\">\n"
+"                        <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or ''\">info@yourcompany.com</a> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.website\">\n"
+"                        <a t-attf-href=\"'%s' % {{ company.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or ''\">http://www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"        Zasilane przez <a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=mail\" style=\"color: #875A7B;\">Odoo</a>\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>\n"
+"        "
 
 #. module: sale_subscription
 #: model:mail.template,body_html:sale_subscription.email_payment_close
@@ -543,6 +769,93 @@ msgid ""
 "</table>\n"
 "        "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.company_id or object.user_id.company_id or user.company_id\"/>\n"
+"                    <span style=\"font-size: 10px;\">Twoja subskrypcja</span><br/>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Office Cleaning Service</span>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ company.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"company.name\"/>\n"
+"                </td></tr>\n"
+"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- CONTENT -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                    Witaj <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,<br/><br/>\n"
+"                    <t t-if=\"ctx.get('payment_token') and ctx.get('total_amount')\">\n"
+"                        Ostatnia próba przetworzenia płatności za Twoją subskrypcję przy użyciu wybranej przez Ciebie metody\n"
+"                        <t t-out=\"ctx.get('payment_token') or ''\">TOKEN</t>\n"
+"                        na kwotę <t t-out=\"ctx['total_amount'] or ''\">100</t> <t t-out=\"ctx.get('currency') or ''\">$</t> nie powiodła się.\n"
+"                        <t t-if=\"ctx.get('error')\">\n"
+"                            Twój bank lub instytucja kredytowa podała w tej sprawie następujące szczegóły: <pre t-out=\"ctx['error'] or ''\"/>.\n"
+"                        </t>\n"
+"                    </t>\n"
+"                    <t t-else=\"\">\n"
+"                        Ostatnia próba przetworzenia płatności za Twoją subskrypcję nie powiodła się, ponieważ nie mamy zarejestrowanej metody płatności dla Ciebie.\n"
+"                    </t>\n"
+"                    <br/><br/>\n"
+"                    Jako że Twoja subskrypcja powinna zostać opłacona <strong><t t-out=\"ctx.get('auto_close_limit') or ''\">5</t> dni temu</strong>, została ona anulowana.\n"
+"                    Nie wahaj się skontaktować z nami, jeśli chcesz rozwiązać ten problem.<br/><br/>\n"
+"                    Dziękujemy za wybór <t t-out=\"company.name or ''\">YourCompany</t>!\n"
+"                    <div t-if=\"user.signature\">\n"
+"                        <br/><br/>\n"
+"                        <t t-out=\"user.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"                    </div>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"company.name or ''\">YourCompany</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                    <t t-if=\"company.phone\">\n"
+"                        <t t-out=\"company.phone or ''\">+1 650-123-4567</t> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.email\">\n"
+"                        <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or ''\">info@yourcompany.com</a> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.website\">\n"
+"                        <a t-attf-href=\"'%s' % {{ company.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or ''\">http://www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"        Zasilane przez <a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=mail\" style=\"color: #875A7B;\">Odoo</a>\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>\n"
+"        "
 
 #. module: sale_subscription
 #: model:mail.template,body_html:sale_subscription.email_payment_reminder
@@ -639,14 +952,107 @@ msgid ""
 "</table>\n"
 "        "
 msgstr ""
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"padding-top: 16px; background-color: #F1F1F1; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;\"><tr><td align=\"center\">\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"padding: 16px; background-color: white; color: #454748; border-collapse:separate;\">\n"
+"<tbody>\n"
+"    <!-- HEADER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\">\n"
+"                    <t t-set=\"company\" t-value=\"object.company_id or object.user_id.company_id or user.company_id\"/>\n"
+"                    <span style=\"font-size: 10px;\">Twoja subskrypcja</span><br/>\n"
+"                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.name or ''\">Office Cleaning Service</span>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"right\">\n"
+"                    <img t-attf-src=\"/logo.png?company={{ company.id }}\" style=\"padding: 0px; margin: 0px; height: auto; width: 80px;\" t-att-alt=\"company.name\"/>\n"
+"                </td></tr>\n"
+"                <tr><td colspan=\"2\" style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- CONTENT -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"top\" style=\"font-size: 13px;\">\n"
+"                    Witaj <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,<br/><br/>\n"
+"                    <t t-if=\"ctx.get('payment_token') and ctx.get('total_amount')\">\n"
+"                        Nie udało nam się przetworzyć płatności za subskrypcję przy użyciu metody\n"
+"                        <t t-out=\"ctx['payment_token'] or ''\">TOKEN</t>\n"
+"                        na kwotę <t t-out=\"ctx['total_amount'] or ''\">10</t> <t t-out=\"ctx.get('currency_name') or ''\">$</t>.\n"
+"                        <t t-if=\"ctx.get('error')\">\n"
+"                            Twój bank lub instytucja kredytowa podała następujące szczegóły dotyczące tej kwestii: <pre t-out=\"ctx['error'] or ''\"/>.\n"
+"                        </t>\n"
+"                    </t>\n"
+"                    <t t-else=\"\">\n"
+"                        Nie mogliśmy przetworzyć płatności za subskrypcję, ponieważ nie mamy zarejestrowanej metody płatności dla Ciebie.\n"
+"                    </t>\n"
+"                    <br/><br/>\n"
+"                    Twoja subskrypcja <t t-out=\"ctx.get('code') or ''\">CODE</t> jest nadal aktywna, ale zostanie <strong>zawieszona</strong>\n"
+"                    dnia <t t-out=\"format_date(ctx.get('date_close')) or ''\">05/05/2021</t> chyba że w międzyczasie płatność się powiedzie (będziemy ponawiać próby raz dziennie).\n"
+"                    Prosimy o ponowne sprawdzenie, czy masz wystarczające środki.<br/><br/>\n"
+"                    W razie pytań, skontaktuj się z nami.<br/><br/>\n"
+"                    Dziękujemy za wybranie <t t-out=\"company.name or ''\">YourCompany</t>!\n"
+"                    <div>\n"
+"                    <t t-if=\"user.signature\">\n"
+"                        <br/><br/>\n"
+"                        <t t-out=\"user.signature or ''\">--<br/>Mitchell Admin</t>\n"
+"                    </t>\n"
+"                    </div>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"text-align:center;\">\n"
+"                    <hr width=\"100%\" style=\"background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 16px 0px 16px 0px;\"/>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"    <!-- FOOTER -->\n"
+"    <tr>\n"
+"        <td align=\"center\" style=\"min-width: 590px;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
+"                <tr><td valign=\"middle\" align=\"left\">\n"
+"                    <t t-out=\"company.name or ''\">YourCompany</t>\n"
+"                </td></tr>\n"
+"                <tr><td valign=\"middle\" align=\"left\" style=\"opacity: 0.7;\">\n"
+"                    <t t-if=\"company.phone\">\n"
+"                        <t t-out=\"company.phone or ''\">+1 650-123-4567</t> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.email\">\n"
+"                        <a t-attf-href=\"'mailto:%s' % {{ company.email }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.email or ''\">info@yourcompany.com</a> |\n"
+"                    </t>\n"
+"                    <t t-if=\"company.website\">\n"
+"                        <a t-attf-href=\"'%s' % {{ company.website }}\" style=\"text-decoration:none; color: #454748;\" t-out=\"company.website or ''\">http://www.example.com</a>\n"
+"                    </t>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td>\n"
+"    </tr>\n"
+"</tbody>\n"
+"</table>\n"
+"</td></tr>\n"
+"<!-- POWERED BY -->\n"
+"<tr><td align=\"center\" style=\"min-width: 590px;\">\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: #F1F1F1; color: #454748; padding: 8px; border-collapse:separate;\">\n"
+"      <tr><td style=\"text-align: center; font-size: 13px;\">\n"
+"        Zasilane przez <a target=\"_blank\" href=\"https://www.odoo.com?utm_source=db&amp;utm_medium=mail\" style=\"color: #875A7B;\">Odoo</a>\n"
+"      </td></tr>\n"
+"    </table>\n"
+"</td></tr>\n"
+"</table>\n"
+"        "
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/product.py:0
 #, python-format
 msgid "A 'Storable Product' cannot be a 'Subscription Product' !"
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/product.py:0
 #, python-format
 msgid "A 'Subscription Product' cannot be a 'Storable Product' !"
@@ -667,6 +1073,7 @@ msgstr ""
 "pośrednictwem strony internetowej."
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "A renewal quotation %s has been created"
@@ -744,6 +1151,7 @@ msgid "Alive"
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 #, python-format
 msgid "All"
@@ -755,6 +1163,7 @@ msgid "Amount:"
 msgstr "Kwota:"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "An upsell quotation %s has been created"
@@ -794,6 +1203,13 @@ msgid "Assign To"
 msgstr "Przypisz do"
 
 #. module: sale_subscription
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
+#, python-format
+msgid "Assign a new partner to the contract"
+msgstr ""
+
+#. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_alert__automation_id
 msgid "Automated Action"
 msgstr "Automatyczne akcje"
@@ -804,6 +1220,7 @@ msgid "Automatic Closing"
 msgstr "Automatyczne Zamykanie"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid ""
@@ -820,6 +1237,15 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
+#: code:addons/sale_subscription/models/sale_order.py:0
+#, python-format
+msgid ""
+"Automatic renewal succeeded. Free subscription. Next Invoice: %(inv)s. No "
+"email sent."
+msgstr ""
+
+#. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_alert__website_published
 msgid "Available on the Website"
 msgstr "Dostępne na stronie"
@@ -827,7 +1253,7 @@ msgstr "Dostępne na stronie"
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__rating_avg
 msgid "Average Rating"
-msgstr ""
+msgstr "Średnia ocena"
 
 #. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order__health__bad
@@ -882,13 +1308,20 @@ msgstr ""
 "całkowitą liczbą ocen"
 
 #. module: sale_subscription
+#: model_terms:ir.ui.view,arch_db:sale_subscription.product_template_search_view_inherit_sale_subscription
+msgid "Can be Recurring"
+msgstr ""
+
+#. module: sale_subscription
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/manage_form.js:0
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_close_reason_view_form
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription
+#, python-format
 msgid "Cancel"
 msgstr "Anuluj"
 
 #. module: sale_subscription
-#: model:product.product,name:sale_subscription.product_car_leasing
 #: model:product.template,name:sale_subscription.product_car_leasing_product_template
 msgid "Car Leasing (SUB)"
 msgstr ""
@@ -932,7 +1365,7 @@ msgstr ""
 "zwracana."
 
 #. module: sale_subscription
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 #, python-format
 msgid "Choose a product name.<br/><i>(e.g. eLearning Access)</i>"
@@ -957,24 +1390,17 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
-#. openerp-web
-#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
-#, python-format
-msgid ""
-"Choose the recurrence for this template.<br/><i>(e.g. 1 time per Year)</i>"
-msgstr "Wybierz rekurencję dla tego szablonu.<br/><i>(np. 1 raz w roku)</i>"
-
-#. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_log__event_type__2_churn
 msgid "Churn"
 msgstr ""
 
 #. module: sale_subscription
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 #, python-format
-msgid "Click here to create <b>your first subscription template</b>"
-msgstr "Kliknij tutaj, aby utworzyć <b>swój pierwszy szablon subskrypcji</b>"
+msgid "Click here to add some products or services to your quotation."
+msgstr ""
+"Kliknij tutaj, aby dodać niektóre produkty lub usługi do swojej oferty."
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
@@ -1004,6 +1430,7 @@ msgid "Close Subscription"
 msgstr "Zamknij subskrypcję"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_log__category__closed
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_stage__category__closed
@@ -1022,6 +1449,7 @@ msgid "Closed subscriptions"
 msgstr "Zamknięte subskrypcje"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 #, python-format
 msgid "Closing text: %s"
@@ -1053,13 +1481,6 @@ msgstr "Waluta firmy"
 #: model:ir.ui.menu,name:sale_subscription.menu_sale_subscription_config
 msgid "Configuration"
 msgstr "Konfiguracja"
-
-#. module: sale_subscription
-#. openerp-web
-#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
-#, python-format
-msgid "Configure your subscription templates here"
-msgstr "Skonfiguruj tutaj swoje szablony subskrypcji"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription
@@ -1144,7 +1565,7 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 #, python-format
 msgid "Create your first subscription product here"
@@ -1322,13 +1743,6 @@ msgid "End Date"
 msgstr "Data końcowa"
 
 #. module: sale_subscription
-#. openerp-web
-#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
-#, python-format
-msgid "Enter a name for this template.<br/><i>(e.g. eLearning Yearly)</i>"
-msgstr "Wprowadź nazwę tego szablonu.<br/><i>(np. eNauka coroczny)</i>"
-
-#. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_sale_order_stage__description
 msgid ""
 "Enter here the internal requirements for this stage. It will appear as a "
@@ -1338,12 +1752,14 @@ msgstr ""
 " nad nazwą etapu."
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "Error during renewal of contract %s (Payment not recorded)"
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "Error: unable to put the subscription in a closed stage"
@@ -1411,11 +1827,25 @@ msgstr ""
 "Nadaj swojemu zespołowi wymagania do przeniesienia subskrypcji na ten etap."
 
 #. module: sale_subscription
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 #, python-format
 msgid "Go ahead and create a new product"
 msgstr "Śmiało, utwórz nowy produkt"
+
+#. module: sale_subscription
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
+#, python-format
+msgid "Go ahead and create a new subscription"
+msgstr ""
+
+#. module: sale_subscription
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
+#, python-format
+msgid "Go back to the subscription view"
+msgstr ""
 
 #. module: sale_subscription
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order__health__done
@@ -1474,6 +1904,7 @@ msgid "History Count"
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/product_pricing.py:0
 #, python-format
 msgid "Hourly and daily pricing are forbidden on recurring products"
@@ -1592,6 +2023,7 @@ msgstr ""
 "fakturowania."
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_log__category__progress
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order_stage__category__progress
@@ -1767,14 +2199,21 @@ msgid "Least Delay Msg"
 msgstr "Najmniej Opóźniona Wiadomość"
 
 #. module: sale_subscription
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 #, python-format
-msgid "Let's create your first subscription template."
-msgstr "Utwórzmy pierwszy szablon subskrypcji."
+msgid "Let's add a pricing with a recurrence"
+msgstr ""
 
 #. module: sale_subscription
-#. openerp-web
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
+#, python-format
+msgid "Let's configure the product price"
+msgstr ""
+
+#. module: sale_subscription
+#. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 #, python-format
 msgid "Let's go to the catalog to create our first subscription product"
@@ -1842,6 +2281,7 @@ msgid "MRR after Change"
 msgstr "MRR Po Zmianie"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "MRR changes"
@@ -1874,6 +2314,7 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid ""
@@ -1890,6 +2331,15 @@ msgstr "Oznacz jako Do Odnowienia"
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__starred_user_ids
 msgid "Members"
 msgstr "Członkowie"
+
+#. module: sale_subscription
+#. odoo-python
+#: code:addons/sale_subscription/models/sale_order.py:0
+#, python-format
+msgid ""
+"Mix of negative recurring lines and non-recurring line. The contract should "
+"be fixed manually"
+msgstr ""
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_alert__model_id
@@ -1944,6 +2394,7 @@ msgid "My Subscriptions"
 msgstr "Moje Subskrypcje"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_report__name
 #, python-format
@@ -1962,6 +2413,7 @@ msgid "Neutral face"
 msgstr "Neutralna twarz"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 #, python-format
 msgid "Newest"
@@ -2012,7 +2464,6 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
-#: model:product.product,name:sale_subscription.product_office_cleaning
 #: model:product.template,name:sale_subscription.product_office_cleaning_product_template
 #: model:sale.order.template.line,name:sale_subscription.montly_template_line
 #: model:sale.order.template.line,name:sale_subscription.yearly_template_line
@@ -2025,6 +2476,7 @@ msgid "On Change Fields Trigger"
 msgstr "Wyzwalacz pól onchange"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order_template.py:0
 #, python-format
 msgid "Operation not supported"
@@ -2097,6 +2549,11 @@ msgid "Payment Failure"
 msgstr ""
 
 #. module: sale_subscription
+#: model:ir.model,name:sale_subscription.model_payment_provider
+msgid "Payment Provider"
+msgstr "Dostawca Płatności"
+
+#. module: sale_subscription
 #: model:ir.model,name:sale_subscription.model_payment_token
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__payment_token_id
 msgid "Payment Token"
@@ -2140,6 +2597,13 @@ msgstr "Detale Planu"
 #: model:ir.ui.menu,name:sale_subscription.menu_template_of_subscription
 msgid "Plans"
 msgstr "Plany"
+
+#. module: sale_subscription
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/manage_form.js:0
+#, python-format
+msgid "Please provide another payment method for these subscriptions."
+msgstr ""
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_report__pricelist_id
@@ -2246,7 +2710,7 @@ msgstr "Ocena"
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__rating_avg_text
 msgid "Rating Avg Text"
-msgstr ""
+msgstr "Tekst średniej rankingu"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_stage__rating_template_id
@@ -2295,7 +2759,7 @@ msgstr ""
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__rating_last_text
 msgid "Rating Text"
-msgstr ""
+msgstr "Tekst oceny"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__rating_count
@@ -2333,8 +2797,8 @@ msgstr ""
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_report__recurring_total
-msgid "Recurring Price"
-msgstr "Cena cykliczna"
+msgid "Recurring Amount"
+msgstr ""
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_template__recurring_rule_type
@@ -2342,6 +2806,7 @@ msgid "Recurring Rule Type"
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order_line.py:0
 #, python-format
 msgid ""
@@ -2355,6 +2820,7 @@ msgid "Reference:"
 msgstr "Odnośnik:"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
 #, python-format
@@ -2467,14 +2933,12 @@ msgstr ""
 #. module: sale_subscription
 #: model:ir.actions.server,name:sale_subscription.ir_cron_sale_subscription_update_kpi_ir_actions_server
 #: model:ir.cron,cron_name:sale_subscription.ir_cron_sale_subscription_update_kpi
-#: model:ir.cron,name:sale_subscription.ir_cron_sale_subscription_update_kpi
 msgid "Sale Subscription: Update KPI"
 msgstr "Subskrypcja Sprzedaży: Aktualizuj KPI"
 
 #. module: sale_subscription
 #: model:ir.actions.server,name:sale_subscription.account_analytic_cron_for_invoice_ir_actions_server
 #: model:ir.cron,cron_name:sale_subscription.account_analytic_cron_for_invoice
-#: model:ir.cron,name:sale_subscription.account_analytic_cron_for_invoice
 msgid "Sale Subscription: generate recurring invoices and payments"
 msgstr ""
 "Subskrypcja sprzedaży: generowanie powtarzających się faktur i płatności"
@@ -2482,7 +2946,6 @@ msgstr ""
 #. module: sale_subscription
 #: model:ir.actions.server,name:sale_subscription.account_analytic_cron_ir_actions_server
 #: model:ir.cron,cron_name:sale_subscription.account_analytic_cron
-#: model:ir.cron,name:sale_subscription.account_analytic_cron
 msgid "Sale Subscription: subscriptions expiration"
 msgstr "Subskrypcja sprzedaży: wygaśnięcie subskrypcji"
 
@@ -2529,38 +2992,23 @@ msgid "Salesperson"
 msgstr "Sprzedawca"
 
 #. module: sale_subscription
-#. openerp-web
-#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
-#, python-format
-msgid ""
-"Save and you're all set!<br/>Simply sell this product to create a "
-"subscription automatically or create a subscription manually!"
-msgstr ""
-"Zapisz i gotowe!<br/>Po prostu sprzedaj ten produkt, aby automatycznie "
-"utworzyć subskrypcję lub utworzyć subskrypcję ręcznie!"
-
-#. module: sale_subscription
-#. openerp-web
-#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
-#, python-format
-msgid "Save this template and the modifications you've made to it."
-msgstr "Zapisz ten szablon i modyfikacje, które do niego wprowadziłeś."
-
-#. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_template_view_search
 msgid "Search Template"
 msgstr ""
 
 #. module: sale_subscription
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 #, python-format
-msgid ""
-"Select your newly created template. Every sale of this product will generate"
-" a new subscription!"
+msgid "Select a recurrence"
 msgstr ""
-"Wybierz nowo utworzony szablon. Każda sprzedaż tego produktu spowoduje "
-"wygenerowanie nowej subskrypcji!"
+
+#. module: sale_subscription
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
+#, python-format
+msgid "Select a recurring product"
+msgstr ""
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_template__user_closable
@@ -2757,6 +3205,7 @@ msgid "Start Date:"
 msgstr "Data Rozpoczęcia:"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 #: model_terms:ir.ui.view,arch_db:sale_subscription.portal_my_subscriptions
 #, python-format
@@ -2774,6 +3223,7 @@ msgid "Subscribe Recipients"
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #: code:addons/sale_subscription/models/sale_order.py:0
 #: model:ir.model.fields,field_description:sale_subscription.field_account_move_line__subscription_id
@@ -2839,11 +3289,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_template_option__recurring_invoice
 msgid "Subscription Product"
 msgstr "Produkt subskrypcyjny"
-
-#. module: sale_subscription
-#: model_terms:ir.ui.view,arch_db:sale_subscription.product_template_search_view_inherit_sale_subscription
-msgid "Subscription Products"
-msgstr "Produkty subskrypcyjne"
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_account_move_line__subscription_end_date
@@ -2947,6 +3392,7 @@ msgid "Subscription: Subscription Invoice"
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order_alert.py:0
 #: model:ir.actions.act_window,name:sale_subscription.sale_subscription_action
 #: model:ir.actions.act_window,name:sale_subscription.sale_subscription_action_filtered
@@ -3007,12 +3453,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_alert__activity_summary
 msgid "Summary"
 msgstr "Podsumowanie"
-
-#. module: sale_subscription
-#: model:base.automation,name:sale_subscription.subscription_alert_percent_revenue_base_automation
-#: model:sale.order.alert,name:sale_subscription.subscription_alert_percent_revenue
-msgid "Take action on less satisfied clients"
-msgstr ""
 
 #. module: sale_subscription
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order_alert__crud_model_id
@@ -3090,6 +3530,24 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
+#: code:addons/sale_subscription/models/sale_order.py:0
+#, python-format
+msgid ""
+"The following recurring orders have draft invoices. Please Confirm them or "
+"cancel them before creating new invoices. %s."
+msgstr ""
+
+#. module: sale_subscription
+#. odoo-python
+#: code:addons/sale_subscription/models/account_move.py:0
+#, python-format
+msgid ""
+"The following refund %s has been made on this contract. Please check the "
+"next invoice date if necessary."
+msgstr ""
+
+#. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_sale_order_alert__website_url
 msgid "The full URL to access the server action through the website."
 msgstr "Pełny adres dostępu do akcji serwera przez stronę."
@@ -3109,6 +3567,7 @@ msgstr ""
 "przedłużony."
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "The renewal %s has been canceled."
@@ -3132,24 +3591,35 @@ msgid "The subscription was renewed with a new plan."
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order_line.py:0
 #, python-format
 msgid "The time unit cannot be used. Please chose one of these unit: %s."
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "The upsell  %s has been confirmed."
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "The upsell %s has been canceled."
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
+#: code:addons/sale_subscription/models/sale_order.py:0
+#, python-format
+msgid "There is already a draft invoice for subscription %s."
+msgstr ""
+
+#. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 #, python-format
 msgid "This Subscription is already running. There is no need to renew it."
@@ -3162,6 +3632,15 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/manage_form.js:0
+#, python-format
+msgid ""
+"This payment method cannot be removed as it is currently linked to the "
+"following active subscriptions:"
+msgstr ""
+
+#. module: sale_subscription
 #: model:ir.model.fields,help:sale_subscription.field_sale_order_stage__fold
 msgid ""
 "This stage is folded in the kanban view when there are no records in that "
@@ -3171,6 +3650,7 @@ msgstr ""
 "wyświetlenia w tym etapie."
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "This subscription is renewed in %s with a change of plan."
@@ -3199,6 +3679,7 @@ msgid "Timed Condition"
 msgstr "Warunek Czasowy"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_order__to_renew
 #: model:ir.model.fields,field_description:sale_subscription.field_sale_subscription_report__to_renew
@@ -3287,6 +3768,7 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "Unable to put the subscription in a progress stage"
@@ -3308,19 +3790,12 @@ msgid "Unit of Measure"
 msgstr "Jednostka miary"
 
 #. module: sale_subscription
-#: model:product.product,uom_name:sale_subscription.product_car_leasing
-#: model:product.product,uom_name:sale_subscription.product_office_cleaning
-#: model:product.template,uom_name:sale_subscription.product_car_leasing_product_template
-#: model:product.template,uom_name:sale_subscription.product_office_cleaning_product_template
-msgid "Units"
-msgstr "Jednostki"
-
-#. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_order_digest
 msgid "Untaxed Total:"
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #: model:ir.model.fields.selection,name:sale_subscription.selection__sale_order__subscription_management__upsell
 #: model_terms:ir.ui.view,arch_db:sale_subscription.sale_subscription_order_view_form
@@ -3398,7 +3873,7 @@ msgid "Value Mapping"
 msgstr "Mapowanie wartości"
 
 #. module: sale_subscription
-#. openerp-web
+#. odoo-javascript
 #: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
 #, python-format
 msgid ""
@@ -3409,11 +3884,19 @@ msgstr ""
 "subskrypcjami? Rozpocznij, klikając tutaj"
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/product.py:0
 #: code:addons/sale_subscription/models/product.py:0
 #, python-format
 msgid "Warning"
 msgstr "Ostrzeżenie"
+
+#. module: sale_subscription
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/manage_form.js:0
+#, python-format
+msgid "Warning!"
+msgstr "Uwaga!"
 
 #. module: sale_subscription
 #: model_terms:ir.ui.view,arch_db:sale_subscription.subscription
@@ -3490,6 +3973,16 @@ msgid "Years"
 msgstr "Lata"
 
 #. module: sale_subscription
+#. odoo-python
+#: code:addons/sale_subscription/models/sale_order.py:0
+#, python-format
+msgid ""
+"You can not delete a confirmed subscription. You must first close and cancel"
+" it before you can delete it."
+msgstr ""
+
+#. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid ""
@@ -3498,6 +3991,7 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/res_partner.py:0
 #, python-format
 msgid ""
@@ -3506,6 +4000,7 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid ""
@@ -3513,12 +4008,14 @@ msgid ""
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid "You cannot save a sale order with recurring product and no recurrence."
 msgstr ""
 
 #. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/models/sale_order.py:0
 #, python-format
 msgid ""
@@ -3568,6 +4065,19 @@ msgid "Your Plan"
 msgstr "Twój plan"
 
 #. module: sale_subscription
+#. odoo-javascript
+#: code:addons/sale_subscription/static/src/js/tours/sale_subscription.js:0
+#, python-format
+msgid "Your contract is recurrent"
+msgstr ""
+
+#. module: sale_subscription
+#: model_terms:ir.ui.view,arch_db:sale_subscription.payment_checkout_inherit
+msgid "Your payment details will be saved for automatic renewals."
+msgstr ""
+
+#. module: sale_subscription
+#. odoo-python
 #: code:addons/sale_subscription/controllers/portal.py:0
 #, python-format
 msgid "Your subscription has been renewed until %s."
@@ -3633,7 +4143,7 @@ msgstr ""
 msgid ""
 "{{ object.company_id.name }}: Our final attempt to process a payment for "
 "your subscription failed. As your payment should have been made on {{ "
-"object.recurring_next_date }}, your subscription has been terminated."
+"object.next_invoice_date }}, your subscription has been terminated."
 msgstr ""
 
 #. module: sale_subscription
@@ -3653,8 +4163,8 @@ msgstr ""
 msgid ""
 "{{ object.company_id.name }}: We were unable to process a payment for your "
 "subscription. Your subscription {{ object.name }} is still valid but will be"
-" suspended on {{ object.recurring_next_date }} unless the payment succeeds "
-"in the meantime."
+" suspended on {{ object.next_invoice_date }} unless the payment succeeds in "
+"the meantime."
 msgstr ""
 
 #. module: sale_subscription

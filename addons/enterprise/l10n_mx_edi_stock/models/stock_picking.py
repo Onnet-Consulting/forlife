@@ -125,8 +125,7 @@ class Picking(models.Model):
         for pick in self:
             if pick.l10n_mx_edi_cfdi_uuid:
                 replaced_pick = pick.search(
-                    [('l10n_mx_edi_origin', 'like', '04|%'),
-                     ('l10n_mx_edi_origin', 'like', '%' + pick.l10n_mx_edi_cfdi_uuid + '%'),
+                    [('l10n_mx_edi_origin', '=like', '04|%' + pick.l10n_mx_edi_cfdi_uuid + '%'),
                      ('company_id', '=', pick.company_id.id)],
                     limit=1,
                 )

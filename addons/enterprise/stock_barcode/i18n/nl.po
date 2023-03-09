@@ -3,10 +3,9 @@
 # 	* stock_barcode
 # 
 # Translators:
-# Yenthe Van Ginneken <yenthespam@gmail.com>, 2022
 # Martin Trigaux, 2022
-# Jolien De Paepe, 2022
 # Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -14,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,7 +27,8 @@ msgstr ""
 #, python-format
 msgid "%s can't be inventoried. Only storable products can be inventoried."
 msgstr ""
-"%s kan niet worden geteld. Alleen voorraadproducten, kunnen worden geteld."
+"%s kan niet worden geïnventariseerd. Alleen voorraadproducten kunnen worden "
+"geïnventariseerd."
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
@@ -130,12 +130,12 @@ msgstr "<i class=\"fa fa-lg fa-user-o\" title=\"Eigenaar\"/>"
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.res_config_settings_view_form
 msgid "<i class=\"fa fa-print\"/> Print barcode commands"
-msgstr "<i class=\"fa fa-print\"/> Print barcode commandos"
+msgstr "<i class=\"fa fa-print\"/> Barcode commandos afdrukken"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.res_config_settings_view_form
 msgid "<i class=\"fa fa-print\"/> Print barcode demo sheet"
-msgstr "<i class=\"fa fa-print\"/> Druk het demo-blad met barcodes af"
+msgstr "<i class=\"fa fa-print\"/> Het demo-blad met barcodes afdrukken"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
@@ -165,7 +165,7 @@ msgstr "Product toevoegen"
 #: code:addons/stock_barcode/static/src/models/barcode_model.js:0
 #, python-format
 msgid "Add extra product?"
-msgstr "Extra artikel toevoegen?"
+msgstr "Extra product toevoegen?"
 
 #. module: stock_barcode
 #: model:ir.model.fields.selection,name:stock_barcode.selection__stock_picking_type__restrict_put_in_pack__mandatory
@@ -177,7 +177,7 @@ msgstr "Na elk product"
 #: model:ir.model.fields.selection,name:stock_barcode.selection__stock_picking_type__restrict_put_in_pack__optional
 #: model:ir.model.fields.selection,name:stock_barcode.selection__stock_picking_type__restrict_scan_dest_location__optional
 msgid "After group of Products"
-msgstr "Na groep producten"
+msgstr "Na een groep producten"
 
 #. module: stock_barcode
 #. openerp-web
@@ -202,8 +202,8 @@ msgid ""
 "Allow to validate a picking even if nothing was scanned yet (and so, do an "
 "immediate transfert)"
 msgstr ""
-"Laat een pick valideren, zelfs als er nog niets is gescand (en doe dus een "
-"onmiddellijke overdracht)"
+"Laat een picking bevestigen, zelfs als er nog niets is gescand (en doe dus "
+"een onmiddellijke overdracht)"
 
 #. module: stock_barcode
 #. openerp-web
@@ -213,8 +213,8 @@ msgid ""
 "An unexisting package type was scanned. This part of the barcode can't be "
 "processed."
 msgstr ""
-"Er is een niet-bestaand pakkettype gescand. Dit deel van de barcode kan niet"
-" worden verwerkt."
+"Er is een niet-bestaand verpakkingstype gescand. Dit deel van de barcode kan"
+" niet worden verwerkt."
 
 #. module: stock_barcode
 #. openerp-web
@@ -231,7 +231,7 @@ msgstr "Weet je zeker dat je deze bewerking wilt annuleren?"
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_backorder_confirmation
 msgid "Backorder Confirmation"
-msgstr "Backorder bevestiging"
+msgstr "Bevestiging backorder"
 
 #. module: stock_barcode
 #. openerp-web
@@ -248,12 +248,12 @@ msgstr "Barcode"
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_view_picking_type_form
 msgid "Barcode App"
-msgstr "Barcode-app"
+msgstr "Barcode app"
 
 #. module: stock_barcode
 #: model:ir.actions.client,name:stock_barcode.stock_barcode_inventory_client_action
 msgid "Barcode Inventory Client Action"
-msgstr "Barcodevoorraad clientactie"
+msgstr "Barcode Voorraad Klant Actie"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.res_config_settings_view_form
@@ -263,7 +263,7 @@ msgstr "Barcode nomenclatuur"
 #. module: stock_barcode
 #: model:ir.actions.client,name:stock_barcode.stock_barcode_picking_client_action
 msgid "Barcode Picking Client Action"
-msgstr "Barcode picking client actie"
+msgstr "Barcode picking klant actie"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_scrap___barcode_scanned
@@ -360,7 +360,7 @@ msgstr "Getelde hoeveelheid"
 #. module: stock_barcode
 #: model_terms:ir.actions.act_window,help:stock_barcode.stock_picking_action_kanban
 msgid "Create a new transfer"
-msgstr "Maak een nieuwe verplaatsing"
+msgstr "Maak een nieuwe overdracht"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__create_uid
@@ -376,7 +376,7 @@ msgstr "Aangemaakt op"
 #: model:product.product,name:stock_barcode.product_custom_cabinet_metric
 #: model:product.template,name:stock_barcode.product_custom_cabinet_metric_product_template
 msgid "Customized Cabinet (Metric)"
-msgstr "Kast op maat (Metrisch)"
+msgstr "Kast op maat (metriek)"
 
 #. module: stock_barcode
 #: model:product.product,name:stock_barcode.product_custom_cabinet_usa
@@ -401,12 +401,12 @@ msgstr "Demogegevens actief"
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_view_picking_type_form
 #, python-format
 msgid "Destination Location"
-msgstr "Bestemming"
+msgstr "Bestemmingslocatie"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
 msgid "Destination Package"
-msgstr "Bestemming Pakket"
+msgstr "Bestemming verpakking"
 
 #. module: stock_barcode
 #. openerp-web
@@ -425,7 +425,7 @@ msgstr "Negeren"
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__display_name
 msgid "Display Name"
-msgstr "Schermnaam"
+msgstr "Weergavenaam"
 
 #. module: stock_barcode
 #. openerp-web
@@ -444,8 +444,8 @@ msgid ""
 "Does the picker have to put in a package the scanned products? If yes, at "
 "which rate?"
 msgstr ""
-"Moet de picker de gescande producten in een pakket doen? Zo ja, tegen welk "
-"tarief?"
+"Moet de picker de gescande producten in de verpakking doen? Zo ja, tegen "
+"welk tarief?"
 
 #. module: stock_barcode
 #: model:ir.model.fields,help:stock_barcode.field_stock_picking_type__restrict_scan_dest_location
@@ -481,12 +481,12 @@ msgstr "Dummie"
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_backorder_confirmation__empty_move_count
 msgid "Empty Move Count"
-msgstr "Maak telling leeg"
+msgstr "Aantal lege verplaatsingen"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_view_picking_type_form
 msgid "Final Validation"
-msgstr "Afsluitende bevestiging"
+msgstr "Eindvalidatie"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_picking_type__restrict_scan_dest_location
@@ -496,7 +496,7 @@ msgstr "Scan bestemmingslocatie forceren?"
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_picking_type__restrict_scan_tracking_number
 msgid "Force Lot/Serial scan?"
-msgstr "Serie/Partijnummer scan forceren?"
+msgstr "Scan partij/serienummer forceren?"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_picking_type__restrict_scan_product
@@ -521,7 +521,7 @@ msgstr "Forceer alle producten om te worden verpakt"
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_picking_type__restrict_put_in_pack
 msgid "Force put in pack?"
-msgstr "Geforceerd in verpakking stoppen?"
+msgstr "In de verpakking doen forceren?"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_view_picking_type_form
@@ -537,13 +537,11 @@ msgstr "ID"
 #: code:addons/stock_barcode/models/stock_picking.py:0
 #, python-format
 msgid ""
-"If the source location must be scanned for each product, the destination "
-"location must be either scanned after each line too, either not scanned at "
-"all."
+"If the source location must be scanned, then the destination location must "
+"either be scanned after each product or not scanned at all."
 msgstr ""
-"Als de bronlocatie voor elk product moet worden gescand, moet de "
-"bestemmingslocatie ofwel na elke regel worden gescand, ofwel helemaal niet "
-"worden gescand."
+"Als de bronlocatie moet worden gescand, moet de bestemmingslocatie ofwel na "
+"elk product worden gescand, ofwel helemaal niet."
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_picking_type_kanban
@@ -554,7 +552,7 @@ msgstr "In #{kanban_getcolorname(record.color.raw_value)}"
 #: model:ir.model.fields,help:stock_barcode.field_stock_move_line__product_barcode
 #: model:ir.model.fields,help:stock_barcode.field_stock_scrap__product_barcode
 msgid "International Article Number used for product identification."
-msgstr "Internationaal artikelnummer voor product identificatie."
+msgstr "Internationaal artikelnummer voor productidentificatie."
 
 #. module: stock_barcode
 #. openerp-web
@@ -600,13 +598,14 @@ msgstr "Laatst bijgewerkt op"
 #: code:addons/stock_barcode/static/src/main_menu.js:0
 #, python-format
 msgid "Leave it"
-msgstr "Laat het"
+msgstr "Laat maar"
 
 #. module: stock_barcode
 #: model:ir.model.fields,help:stock_barcode.field_stock_picking_type__restrict_scan_product
 msgid "Line's product must be scanned before the line can be edited"
 msgstr ""
-"Het product van Line moet worden gescand voordat de lijn kan worden bewerkt"
+"Het product van de regel moet worden gescand voordat de regel kan worden "
+"bewerkt"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
@@ -668,7 +667,7 @@ msgstr "Geen scan"
 msgid ""
 "No internal operation type. Please configure one in warehouse settings."
 msgstr ""
-"Geen intern bewerking type. Je dient één te configureren in de magazijn "
+"Geen intern bewerkingstype. Je dient één te configureren in de magazijn "
 "instellingen."
 
 #. module: stock_barcode
@@ -676,20 +675,19 @@ msgstr ""
 #, python-format
 msgid "No picking or location or product corresponding to barcode %(barcode)s"
 msgstr ""
-"Geen orderpicking of locatie of product dat overeenkomt met barcode "
-"%(barcode)s"
+"Geen picking of locatie of product dat overeenkomt met barcode %(barcode)s"
 
 #. module: stock_barcode
 #: code:addons/stock_barcode/controllers/stock_barcode.py:0
 #, python-format
 msgid "No picking or product corresponding to barcode %(barcode)s"
-msgstr "Geen orderpicking of product dat overeenkomt met barcode %(barcode)s"
+msgstr "Geen picking of product dat overeenkomt met barcode %(barcode)s"
 
 #. module: stock_barcode
 #: code:addons/stock_barcode/models/stock_picking.py:0
 #, python-format
 msgid "No product or package found for barcode %s"
-msgstr "Geen product of pakket gevonden voor streepjescode %s"
+msgstr "Geen product of verpakking gevonden voor streepjescode %s"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_res_config_settings__barcode_nomenclature_id
@@ -713,7 +711,7 @@ msgstr "Open picking"
 #: model:ir.actions.act_window,name:stock_barcode.open_picking
 #, python-format
 msgid "Open picking form"
-msgstr "Open picking formulier"
+msgstr "Open pickingsformulier"
 
 #. module: stock_barcode
 #. openerp-web
@@ -738,7 +736,7 @@ msgstr "Eigenaar"
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 msgid "Package"
-msgstr "Pakket"
+msgstr "Verpakking"
 
 #. module: stock_barcode
 #. openerp-web
@@ -746,7 +744,7 @@ msgstr "Pakket"
 #: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
 #, python-format
 msgid "Package type %s was correctly applied to the package %s"
-msgstr "Pakkettype %s is correct toegepast op pakket %s"
+msgstr "Verpakkingstype %s is correct toegepast op verpakking %s"
 
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_quant_package
@@ -761,17 +759,17 @@ msgstr "Verpakking"
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_move_line__product_packaging_uom_qty
 msgid "Packaging Quantity"
-msgstr "Verpakkingshoeveelheid"
+msgstr "Verpakking hoeveelheid"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_backorder_confirmation__partial_move_count
 msgid "Partial Move Count"
-msgstr "Gedeeltelijk aantal zetten"
+msgstr "Aantal gedeeltelijke verplaatsingen"
 
 #. module: stock_barcode
 #: model:ir.actions.act_window,name:stock_barcode.stock_picking_action_form
 msgid "Picking"
-msgstr "Picken"
+msgstr "Picking"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_picking_barcode
@@ -781,7 +779,7 @@ msgstr "Pickingdetails"
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_picking_type
 msgid "Picking Type"
-msgstr "Type levering"
+msgstr "Pickingstype"
 
 #. module: stock_barcode
 #. openerp-web
@@ -803,7 +801,7 @@ msgstr "Alsjeblieft, scan opnieuw!"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Press Validate or scan another product"
-msgstr "Druk op Bevestig of scan een ander product"
+msgstr "Druk op Bevestigen of scan een ander product"
 
 #. module: stock_barcode
 #. openerp-web
@@ -817,14 +815,14 @@ msgstr "Print barcodes PDF"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Print Delivery Slip"
-msgstr "Pakbon afdrukken"
+msgstr "Leveringsbon afdrukken"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
 #, python-format
 msgid "Print Inventory"
-msgstr "Voorraadtelling afdrukken"
+msgstr "Inventarisatie afdrukken"
 
 #. module: stock_barcode
 #. openerp-web
@@ -838,7 +836,7 @@ msgstr "Verpakkingen afdrukken"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Print Picking Operations"
-msgstr "Pickinglijst afdrukken"
+msgstr "Pickingbewerkingen afdrukken"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_view_picking_type_form
@@ -866,7 +864,7 @@ msgstr "Productverpakkingen"
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_move_line__product_stock_quant_ids
 msgid "Product Stock Quant"
-msgstr "Aantal productvoorraad"
+msgstr "Hoeveelheid producten in voorraad"
 
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_uom_uom
@@ -883,17 +881,17 @@ msgstr "Productvariant"
 #: code:addons/stock_barcode/static/src/components/main.xml:0
 #, python-format
 msgid "Put In Pack"
-msgstr "Stop in pak"
+msgstr "In de verpakking doen"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_view_picking_type_form
 msgid "Put in Pack"
-msgstr "Stop in verpakking"
+msgstr "In de verpakking doen"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
 msgid "Quantity"
-msgstr "Aantal"
+msgstr "Hoeveelheid"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode_kanban
@@ -904,13 +902,13 @@ msgstr "Hoeveelheid gereed"
 #: model:ir.model.fields,help:stock_barcode.field_stock_move_line__product_packaging_uom_qty
 msgid "Quantity of the Packaging in the UoM of the Stock Move Line."
 msgstr ""
-"Hoeveelheid van de verpakking in de hoeveelheidseenheid van de "
+"Hoeveelheid van de verpakking in de maateenheid van de "
 "voorraadverplaatsingsregel."
 
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_quant
 msgid "Quants"
-msgstr "Aantallen"
+msgstr "Hoeveelheden"
 
 #. module: stock_barcode
 #. openerp-web
@@ -950,7 +948,7 @@ msgstr "Scan een partijnummer"
 #, python-format
 msgid "Scan a lot number or a packages then the destination location"
 msgstr ""
-"Scan een partijnummer of een pakket en vervolgens de bestemmingslocatie"
+"Scan een partijnummer of een verpakking en vervolgens de bestemmingslocatie"
 
 #. module: stock_barcode
 #. openerp-web
@@ -971,7 +969,7 @@ msgstr "Scan een pakket"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a package or put in pack"
-msgstr "Een pakket scannen of inpakken"
+msgstr "Een pakket scannen of in de verpakking doen"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1098,7 +1096,7 @@ msgstr "Scan een serienummer en vervolgens de bestemmingslocatie"
 #: code:addons/stock_barcode/static/src/kanban/stock_barcode_kanban_renderer.xml:0
 #, python-format
 msgid "Scan a transfer or a product to filter your records"
-msgstr "Scan een overdracht of een product om je gegevens te filteren"
+msgstr "Scan een overdracht of een product om je records te filteren"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1106,8 +1104,7 @@ msgstr "Scan een overdracht of een product om je gegevens te filteren"
 #, python-format
 msgid "Scan a transfer, a product or a package to filter your records"
 msgstr ""
-"Scan een verplaatsing, een product of een pakket om je administratie te "
-"filteren"
+"Scan een overdracht, een product of een pakket om je records te filteren"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1129,7 +1126,8 @@ msgstr "Scan een ander serienummer"
 #: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
 #, python-format
 msgid "Scan lot numbers for product %s to change their quantity"
-msgstr "Scan lotnummers voor product %s om de hoeveelheid te wijzigen"
+msgstr ""
+"Scan partijnummers voor product %s om de hoeveelheid ervan te wijzigen"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1187,7 +1185,7 @@ msgstr "Scan serienummers voor product %s om de hoeveelheid te wijzigen"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan the destination location"
-msgstr "Scan de doellocatie"
+msgstr "Scan de bestemmingslocatie"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1289,7 +1287,7 @@ msgstr "Barcodenomenclatuur weergeven"
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_picking_type__show_barcode_validation
 msgid "Show Barcode Validation"
-msgstr "Toon Barcode Validatie"
+msgstr "Barcode Validatie weergeven"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1324,8 +1322,8 @@ msgid ""
 "Technical field used to compute whether the \"Final Validation\" group "
 "should be displayed, solving combined groups/invisible complexity."
 msgstr ""
-"Technisch veld dat gebruikt wordt om te berekenen of de groep \"Definitieve "
-"Validatie\" moet worden weergegeven, waarmee gecombineerde "
+"Technisch veld dat gebruikt wordt om te berekenen of de groep "
+"\"Eindvalidatie\" moet worden weergegeven, waarmee gecombineerde "
 "groepen/onzichtbare complexiteit worden opgelost."
 
 #. module: stock_barcode
@@ -1348,14 +1346,14 @@ msgstr "De gescande serienummer is al in gebruik."
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "The transfer has been cancelled"
-msgstr "De verplaatsing is geannuleerd"
+msgstr "De overdracht is geannuleerd"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "The transfer has been validated"
-msgstr "De verplaatsing is bevestigd"
+msgstr "De overdracht is bevestigd"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1392,7 +1390,7 @@ msgstr "De picking is al gereed"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "This picking is cancelled"
-msgstr "Deze selectie is geannuleerd"
+msgstr "Deze picking is geannuleerd"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1417,18 +1415,18 @@ msgstr "Om pakketten te gebruiken, activeer 'Pakketten' in de instellingen"
 #: model:ir.model,name:stock_barcode.model_stock_picking
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__picking_id
 msgid "Transfer"
-msgstr "Verplaatsing"
+msgstr "Overdracht"
 
 #. module: stock_barcode
 #: model:ir.model.fields,field_description:stock_barcode.field_stock_barcode_cancel_operation__picking_name
 msgid "Transfer Name"
-msgstr "Verplaatsingsnaam"
+msgstr "Overdrachtsnaam"
 
 #. module: stock_barcode
 #: model_terms:ir.actions.act_window,help:stock_barcode.stock_picking_action_kanban
 msgid "Transfers allow you to move products from one location to another."
 msgstr ""
-"Met verplaatsingen kun je producten van de ene naar de andere locatie "
+"Met overdrachten kun je producten van de ene naar de andere locatie "
 "verplaatsen."
 
 #. module: stock_barcode
@@ -1453,7 +1451,7 @@ msgstr "Maateenheid"
 #: code:addons/stock_barcode/static/src/components/main.xml:0
 #, python-format
 msgid "Validate"
-msgstr "Bevestig"
+msgstr "Bevestigen"
 
 #. module: stock_barcode
 #: model:ir.model.fields,help:stock_barcode.field_stock_scrap___barcode_scanned
@@ -1529,7 +1527,7 @@ msgstr "Je hebt minder producten verwerkt dan de initiële vraag:"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "You must scan a package or put in pack"
-msgstr "Je moet een pakket scannen of in een pakket doen"
+msgstr "Je moet een pakket scannen of in de verpakking doen"
 
 #. module: stock_barcode
 #. openerp-web

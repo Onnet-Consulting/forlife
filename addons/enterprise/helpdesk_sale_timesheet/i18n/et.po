@@ -29,7 +29,7 @@ msgstr ""
 #. module: helpdesk_sale_timesheet
 #: model:helpdesk.sla,name:helpdesk_sale_timesheet.helpdesk_sla_4
 msgid "4 hours to finish"
-msgstr ""
+msgstr "4 tundi lõpetamiseni"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model,name:helpdesk_sale_timesheet.model_account_analytic_line
@@ -49,7 +49,7 @@ msgstr "Muuda kasutajatoe piletid ülesanneteks"
 #. module: helpdesk_sale_timesheet
 #: model:ir.model,name:helpdesk_sale_timesheet.model_project_task_convert_wizard
 msgid "Convert Project Tasks to Tickets"
-msgstr "Muuda projektiülesanded piletiteks"
+msgstr "Muuda projekti ülesanded piletiteks"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.tickets_followup_timesheet
@@ -69,7 +69,7 @@ msgstr "Kulutatud päevad"
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.tickets_followup_timesheet
 msgid "Days:"
-msgstr ""
+msgstr "Päevad:"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.tickets_followup_timesheet
@@ -79,7 +79,7 @@ msgstr "Kirjeldus"
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_account_analytic_line__display_sol
 msgid "Display Sol"
-msgstr ""
+msgstr "Kuva Sol"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.tickets_followup_timesheet
@@ -94,7 +94,7 @@ msgstr "Kasutajatugi"
 #. module: helpdesk_sale_timesheet
 #: model:ir.model,name:helpdesk_sale_timesheet.model_helpdesk_sla
 msgid "Helpdesk SLA Policies"
-msgstr ""
+msgstr "Kasutajatoe lubatud teenuse tingimused"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model,name:helpdesk_sale_timesheet.model_helpdesk_team
@@ -119,7 +119,7 @@ msgstr "Kulutatud tunnid"
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.tickets_followup_timesheet
 msgid "Hours:"
-msgstr ""
+msgstr "Tunnid:"
 
 #. module: helpdesk_sale_timesheet
 #: model:helpdesk.ticket,legend_normal:helpdesk_sale_timesheet.helpdesk_ticket_24
@@ -141,7 +141,7 @@ msgstr "Projekt"
 msgid ""
 "Project to which the timesheets of this helpdesk team's tickets will be "
 "linked."
-msgstr ""
+msgstr "Projekt, millega seotakse tööaja arvestusleht kasutajatoe piletilt."
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_helpdesk_ticket__project_sale_order_id
@@ -166,34 +166,34 @@ msgstr "Ajaarvestuse arveldamine on meeskonnas aktiveeritud."
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_sale_timesheet
 msgid "Remaining Days on SO"
-msgstr ""
+msgstr "Alles jäänud päevi müügitellimusel"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.tickets_followup_timesheet
 msgid "Remaining Days on SO:"
-msgstr ""
+msgstr "Alles jäänud päevi müügitellimusel:"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_helpdesk_ticket__remaining_hours_available
 msgid "Remaining Hours Available"
-msgstr ""
+msgstr "Alles jäänud saadaval tunde"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_helpdesk_ticket__remaining_hours_so
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_sale_timesheet
 msgid "Remaining Hours on SO"
-msgstr ""
+msgstr "Alles jäänud tunde müügitellimusel"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.tickets_followup_timesheet
 msgid "Remaining Hours on SO:"
-msgstr ""
+msgstr "Alles jäänud tunde müügitellimusel:"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_product_product__sla_id
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_product_template__sla_id
 msgid "SLA Policy"
-msgstr ""
+msgstr "Lubatud teenuse tingimused"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,help:helpdesk_sale_timesheet.field_product_product__sla_id
@@ -208,6 +208,7 @@ msgstr ""
 
 #. module: helpdesk_sale_timesheet
 #: code:addons/helpdesk_sale_timesheet/controllers/portal.py:0
+#: code:addons/helpdesk_sale_timesheet/models/helpdesk.py:0
 #: model:ir.model,name:helpdesk_sale_timesheet.model_sale_order
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_sale_timesheet
 #, python-format
@@ -228,26 +229,30 @@ msgid ""
 "Remove the sales order item in order to make this ticket non-billable.\n"
 "You can also change or remove the sales order item of each timesheet entry individually."
 msgstr ""
+"Müügitellimuse artikkel, millele lisatakse sellele piletile kulunud aeg, et kliendile arveldada.\n"
+"Vaikimisi valitakse viimane ettemakstud müügitellimuse artikkel, millel on aega järele jäänud.\n"
+"Selle pileti mittearveldamiseks eemaldage müügitellimuse artikkel.\n"
+"Samuti saate muuta või eemaldada iga tööajaarvestuse kirje müügitellimuse artiklit eraldi."
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_helpdesk_sla__sale_line_ids
 msgid "Sales Order Items"
-msgstr ""
+msgstr "Müügitellimuse artikkel"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,help:helpdesk_sale_timesheet.field_helpdesk_ticket__project_sale_order_id
 msgid "Sales order to which the project is linked."
-msgstr "Müügitellimus, millega projekt on seotud."
+msgstr "Müügitellimus, mis on seotud projektiga."
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.portal_helpdesk_ticket_timesheet
 msgid "Spent"
-msgstr ""
+msgstr "Kulutatud"
 
 #. module: helpdesk_sale_timesheet
 #: model:ir.model.fields,field_description:helpdesk_sale_timesheet.field_sale_order__ticket_count
 msgid "Ticket Count"
-msgstr ""
+msgstr "Kasutajatoe piletite arv"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.sale_order_form_inherit_helpdesk_sale
@@ -257,7 +262,7 @@ msgstr "Kasutajatoe piletid"
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.helpdesk_ticket_view_search_inherit_helpdesk_sale_timesheet
 msgid "Tickets in Overtime"
-msgstr ""
+msgstr "Üle aja kasutajatoe piletid"
 
 #. module: helpdesk_sale_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.tickets_followup_timesheet

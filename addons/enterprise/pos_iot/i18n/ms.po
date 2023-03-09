@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* pos_iot
 # 
+# Translators:
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~15.2+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-11 15:05+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,7 +48,7 @@ msgstr ""
 #: code:addons/pos_iot/static/src/xml/LastTransactionStatus.xml:0
 #, python-format
 msgid "Amount:"
-msgstr ""
+msgstr "Jumlah:"
 
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.pos_iot_config_view_form
@@ -87,7 +91,7 @@ msgstr ""
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Tetapan Konfigurasi"
 
 #. module: pos_iot
 #. openerp-web
@@ -131,7 +135,7 @@ msgstr ""
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
 msgid "Documentation"
-msgstr ""
+msgstr "Dokumentasi"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_config__iface_electronic_scale
@@ -256,7 +260,7 @@ msgstr ""
 #: code:addons/pos_iot/static/src/xml/LastTransactionStatus.xml:0
 #, python-format
 msgid "Ok"
-msgstr ""
+msgstr "Okey"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_payment_method__payment_terminal_ids
@@ -310,12 +314,12 @@ msgstr ""
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_config
 msgid "Point of Sale Configuration"
-msgstr ""
+msgstr "Konfigurasi Tempat Jualan"
 
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_payment_method
 msgid "Point of Sale Payment Methods"
-msgstr ""
+msgstr "Kaedah Pembayaran Tempat Jualan"
 
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_session
