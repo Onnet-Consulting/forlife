@@ -24,11 +24,19 @@ class BravoModel(models.AbstractModel):
     _name = 'bravo.model'
     _inherit = ['mssql.server']
 
+    @api.model
+    def get_bravo_filter_domain(self):
+        return []
+
+    def filter_bravo_records(self):
+        return self.filtered_domain(self.get_bravo_filter_domain())
+
     def get_bravo_insert_values(self):
+        records = self.filter_bravo_records()
         bravo_fields = self.fields_bravo_get()
         bravo_column_names = [bfield.bravo_name for bfield in bravo_fields]
         values = []
-        for record in self:
+        for record in records:
             value = {}
             for bfield in bravo_fields:
                 value.update(bfield.compute_value(record))
@@ -50,8 +58,9 @@ class BravoModel(models.AbstractModel):
 
     def get_bravo_identity_key_values(self):
         values = []
+        records = self.filter_bravo_records()
         identity_fields = self.fields_bravo_identity_get()
-        for record in self:
+        for record in records:
             value = {}
             for bfield in identity_fields:
                 value.update(bfield.compute_value(record))
