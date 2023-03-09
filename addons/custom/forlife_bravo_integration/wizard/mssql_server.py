@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 import pyodbc
+from typing import Dict, List, Optional, Tuple, Union
 
 
 class MssqlServer(models.AbstractModel):
@@ -46,10 +47,13 @@ class MssqlServer(models.AbstractModel):
             return True
 
     @api.model
-    def _execute_read(self, query, params, size=1000):
+    def _execute_read(self, query, params=None, size=1000):
         with self._conn() as conn:
             cursor = conn.cursor()
-            cursor.execute(query)
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
             while True:
                 data = cursor.fetchmany(size)
                 yield data

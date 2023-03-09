@@ -8,6 +8,7 @@ class BravoSyncAccountWizard(models.TransientModel):
     Synchronize accounts from Bravo to all Company
     """
     _name = 'bravo.sync.account.wizard'
+    _inherit = ['mssql.server']
     _description = 'Bravo Synchronize account wizard'
 
     company_ids = fields.Many2many('res.company', 'bravo_sync_account_compan_rel', 'sync_id', 'cid',
@@ -16,12 +17,29 @@ class BravoSyncAccountWizard(models.TransientModel):
     def sync(self):
         self.ensure_one()
         self.install_coa()
-        # install COA of vn for all company
-        # create account for all company
-        pass
+        self.insert_accounts_to_odoo()
 
     def install_coa(self):
         companies = self.company_ids
         vn_account_chart_template = self.env.ref('l10n_vn.vn_template')
         for company in companies:
             vn_account_chart_template.try_loading(company, install_demo=False)
+
+    def insert_accounts_to_odoo(self):
+        accounts = self.get_bravo_accounts()
+        companies = self.company_ids
+        for company in companies:
+            self.env['account.account'].with_company(company).sudo().create(accounts)
+        return True
+
+    def get_bravo_accounts(self):
+        accounts = []
+        query = """
+            SELECT Code, Name
+            FROM B20ChartOfAccount
+        """
+        data = self._execute_read(query)
+        field_names = ['code', 'name']
+        for chunk_data in data:
+            accounts.extend([dict(zip(field_names, cdata)) for cdata in chunk_data])
+        return accounts
