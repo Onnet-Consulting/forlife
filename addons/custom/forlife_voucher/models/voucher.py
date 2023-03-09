@@ -51,6 +51,16 @@ class Voucher(models.Model):
     brand_id = fields.Many2one('res.brand', 'Brand', required=True)
     store_ids = fields.Many2many('store', string='Cửa hàng áp dụng')
 
+    @api.depends('price_used','price')
+    def _compute_price_residual(self):
+        for rec in self:
+            rec.price_residual = rec.price - rec.price_used
+
+    def write(self, values):
+        if 'lang' not in self._context:
+            self._context['lang'] = self.env.user.lang
+        return super(Voucher, self).write(values)
+
     @api.depends('program_voucher_id')
     def _compute_currency_field(self):
         for rec in self:
