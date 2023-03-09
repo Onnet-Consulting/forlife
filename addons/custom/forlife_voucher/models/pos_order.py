@@ -63,4 +63,4 @@ class PosOrder(models.Model):
                 'purpose_id': program_voucher_id.purpose_id.id if program_voucher_id.purpose_id else None,
                 'order_pos': line.order_id.id
             }] * int(line.qty - line.x_qty_voucher))
-            line.x_qty_voucher = line.product_uom_qty
+            line.x_qty_voucher = line.qty
