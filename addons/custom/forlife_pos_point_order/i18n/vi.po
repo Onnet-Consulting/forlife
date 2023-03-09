@@ -342,6 +342,12 @@ msgstr "Đơn hàng"
 msgid "Pos order"
 msgstr ""
 
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line_discount_details__name
+msgid "Program Name"
+msgstr "Tên chương trình"
+
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__program_store_point_id
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line_discount_details__program_name

@@ -33,7 +33,7 @@
                     <field name="discount_details_lines" colspan="3">
                         <tree>
                             <field name="type"/>
-                            <field name="program_name"/>
+                            <field name="name"/>
                             <field name="listed_price"/>
                             <field name="recipe"/>
                             <field name="money_reduced"/>
@@ -43,7 +43,7 @@
                             <group>
                                 <group>
                                     <field name="type"/>
-                                    <field name="program_name"/>
+                                    <field name="name"/>
                                     <field name="listed_price"/>
                                 </group>
                                 <group>

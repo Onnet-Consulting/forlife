@@ -18,6 +18,7 @@ class Store(models.Model):
     stock_location_id = fields.Many2one('stock.location', string='Location', required=True)
     pos_config_ids = fields.One2many('pos.config', 'store_id', string='POS Config', readonly=True)
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method', required=True)
+    analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic Account')
 
     @api.constrains('warehouse_id')
     def _check_warehouse_id(self):

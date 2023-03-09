@@ -115,9 +115,14 @@ msgid "Configuration"
 msgstr "Thiết lập"
 
 #. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_account_move_line__analytic_account_id
+msgid "Cost Center"
+msgstr "Trung tâm chi phí"
+
+#. module: forlife_base
 #: model:ir.model,name:forlife_base.model_hr_department
 msgid "Department"
-msgstr "Phòng bàn"
+msgstr "Phòng/Ban"
 
 #. module: forlife_base
 #: model:ir.model.constraint,message:forlife_base.constraint_hr_department_unique_code

@@ -26,8 +26,11 @@
                 <form string="member_card_form" duplicate="0">
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="action_view_pos_order" type="object" class="oe_stat_button" icon="fa-list" groups="forlife_customer_card_rank.member_card_manager">
-                                <field name="qty_order" widget="statinfo"/>
+                            <button name="action_view_pos_order" context="{'domain_order': 'order_discount'}" type="object" class="oe_stat_button" icon="fa-list" groups="forlife_customer_card_rank.member_card_manager">
+                                <field name="qty_order_discount" widget="statinfo"/>
+                            </button>
+                            <button name="action_view_pos_order" context="{'domain_order': 'order_rank'}" type="object" class="oe_stat_button" icon="fa-list" groups="forlife_customer_card_rank.member_card_manager">
+                                <field name="qty_order_rank" widget="statinfo"/>
                             </button>
                             <button name="btn_duplicate_member_card" icon="fa-clone" class="oe_stat_button" type="object" string=" Duplicate" groups="forlife_customer_card_rank.member_card_manager"/>
                         </div>
@@ -45,9 +48,9 @@
                             <group attrs="{'invisible': [('is_register', '=', False)]}">
                                 <label for="register_from_date"/>
                                 <div>from
-                                    <field name="register_from_date" class="oe_inline"/>
+                                    <field name="register_from_date" class="oe_inline" attrs="{'required': [('is_register', '=', True)]}"/>
                                     to
-                                    <field name="register_to_date" class="oe_inline"/>
+                                    <field name="register_to_date" class="oe_inline" attrs="{'required': [('is_register', '=', True)]}"/>
                                 </div>
                             </group>
                             <group>
@@ -60,38 +63,43 @@
                             </group>
                             <group>
                                 <field name="time_set_rank"/>
-                                <field name="customer_group_ids" widget="many2many_tags" required="1"/>
+                                <field name="customer_group_id" readonly="1" force_save="1"/>
                                 <field name="partner_retail_ids" widget="many2many_tags" required="1" domain="[('brand_id', '=', brand_id)]"/>
                                 <field name="payment_method_ids" widget="many2many_tags" required="1"/>
                                 <field name="card_rank_id" class="oe_inline" required="1"/>
                                 <field name="min_turnover" class="oe_inline"/>
-                                <field name="original_price" class="oe_inline"/>
                             </group>
-                            <div>From
+                            <separator string="Card Rank Discount"/>
+                            <div>
+                                <label for="original_price"/>
+                                extra discount (%)
+                                <field name="original_price" class="oe_inline"/>
+                            </div>
+                            <div>Discounted from
                                 <field name="apply_value_from_1" class="oe_inline"/>
                                 to
                                 <field name="apply_value_to_1" class="oe_inline"/>
-                                discount (%)
+                                extra discount (%)
                                 <field name="value1" class="oe_inline"/>
                             </div>
-                            <div>From
+                            <div>Discounted from
                                 <field name="apply_value_from_2" class="oe_inline"/>
                                 to
                                 <field name="apply_value_to_2" class="oe_inline"/>
-                                discount (%)
+                                extra discount (%)
                                 <field name="value2" class="oe_inline"/>
                             </div>
-                            <div>From
+                            <div>Discounted from
                                 <field name="apply_value_from_3" class="oe_inline"/>
                                 to
                                 <field name="apply_value_to_3" class="oe_inline"/>
-                                discount (%)
+                                extra discount (%)
                                 <field name="value3" class="oe_inline"/>
                             </div>
-                            <group>
-                                <field name="journal_ids" widget="many2many_tags" required="1"/>
-                                <field name="discount_account_id"/>
-                                <field name="value_account_id"/>
+                            <group string="Accounting Info">
+                                <field name="journal_id" attrs="{'required': ['|', '|', '|', ('original_price', '!=', 0), ('value1', '!=', 0), ('value2', '!=', 0), ('value3', '!=', 0)]}"/>
+                                <field name="discount_account_id" attrs="{'required': ['|', '|', '|', ('original_price', '!=', 0), ('value1', '!=', 0), ('value2', '!=', 0), ('value3', '!=', 0)]}"/>
+                                <field name="value_account_id" attrs="{'required': ['|', '|', '|', ('original_price', '!=', 0), ('value1', '!=', 0), ('value2', '!=', 0), ('value3', '!=', 0)]}"/>
                             </group>
                         </group>
                         <field name="active" invisible="1"/>

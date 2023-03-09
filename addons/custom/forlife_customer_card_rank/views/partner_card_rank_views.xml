@@ -43,6 +43,30 @@
                 </form>
             </field>
         </record>
+
+        <record id="partner_card_rank_view_filter" model="ir.ui.view">
+            <field name="name">partner.card.rank.view.filter</field>
+            <field name="model">partner.card.rank</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="customer_id"/>
+                    <field name="brand_id"/>
+                    <field name="card_rank_id"/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Customer" name="customer_group" context="{'group_by':'customer_id'}"/>
+                        <filter string="Brand" name="brand_group" context="{'group_by':'brand_id'}"/>
+                        <filter string="Card Rank" name="rank_group" context="{'group_by':'card_rank_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="partner_card_rank_action" model="ir.actions.act_window">
+            <field name="name">Customer Card Rank</field>
+            <field name="res_model">partner.card.rank</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_customer_group': 1}</field>
+        </record>
     </data>
 
     <data>
