@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models
 
+BRAVO_ACCOUNT_TABLE = 'B20ChartOfAccount'
 
 class BravoSyncAccountWizard(models.TransientModel):
     """
@@ -20,6 +21,10 @@ class BravoSyncAccountWizard(models.TransientModel):
         self.insert_accounts()
         self.archive_vn_template_accounts()
 
+    def sync_updated(self):
+        self.ensure_one()
+        self.insert_missing_accounts()
+
     def install_coa(self):
         companies = self.company_ids
         vn_account_chart_template = self.env.ref('l10n_vn.vn_template')
@@ -31,6 +36,12 @@ class BravoSyncAccountWizard(models.TransientModel):
         companies = self.company_ids
         for company in companies:
             self.env['account.account'].with_company(company).sudo().create(accounts)
+        return True
+
+    def insert_missing_accounts(self):
+        companies = self.company_ids
+        for company in companies:
+            self.insert_odoo_missing_accounts(company)
         return True
 
     def archive_vn_template_accounts(self):
@@ -48,10 +59,29 @@ class BravoSyncAccountWizard(models.TransientModel):
         accounts = []
         query = """
             SELECT Code, Name
-            FROM B20ChartOfAccount
-        """
+            FROM %s
+        """ % BRAVO_ACCOUNT_TABLE
         data = self._execute_read(query)
         field_names = ['code', 'name']
         for chunk_data in data:
             accounts.extend([dict(zip(field_names, cdata)) for cdata in chunk_data])
         return accounts
+
+    def get_odoo_missing_accounts(self, company):
+        odoo_account_codes = self.env['account.account'].sudo().search([('company_id', '=', company.id)]).mapped('code')
+        accounts = []
+        query = """
+            SELECT Code, Name
+            FROM %s
+            where Code not in (%s)
+        """ % (BRAVO_ACCOUNT_TABLE, ','.join(['?'] * len(odoo_account_codes)))
+        data = self._execute_read(query, params=odoo_account_codes)
+        field_names = ['code', 'name']
+        for chunk_data in data:
+            accounts.extend([dict(zip(field_names, cdata)) for cdata in chunk_data])
+        return accounts
+
+    def insert_odoo_missing_accounts(self, company):
+        odoo_missing_accounts = self.get_odoo_missing_accounts(company)
+        self.env['account.account'].with_company(company).sudo().create(odoo_missing_accounts)
+        return True

@@ -13,6 +13,7 @@
                     </group>
                     <footer>
                         <button string="Synchronize" type="object" name="sync" class="btn-primary"/>
+                        <button string="Synchronize missing" type="object" name="sync_updated" class="btn-secondary"/>
                         <button string="Cancel" special="cancel" data-hotkey="z" class="btn-secondary"/>
                     </footer>
                 </form>
