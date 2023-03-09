@@ -23,7 +23,7 @@ class Voucher(models.Model):
                              tracking=True, default='new')
     price = fields.Monetary('Mệnh giá')
     price_used = fields.Monetary('Giá trị đã dùng')
-    price_residual = fields.Monetary('Giá trị còn lại')
+    price_residual = fields.Monetary('Giá trị còn lại', compute='_compute_price_residual', store=True)
     start_date = fields.Datetime('Start date')
     end_date = fields.Datetime('End date', tracking=True)
     apply_many_times = fields.Boolean('Apply many times')
@@ -59,6 +59,10 @@ class Voucher(models.Model):
     def write(self, values):
         if 'lang' not in self._context:
             self._context['lang'] = self.env.user.lang
+        if 'end_date' in values and values['end_date']:
+            end_date = datetime.strptime(values['end_date'], '%Y-%m-%d %H:%M:%S')
+            if end_date > now:
+                values['state'] = 'new'
         return super(Voucher, self).write(values)
 
     @api.depends('program_voucher_id')
@@ -89,11 +93,50 @@ class Voucher(models.Model):
     def onchage_phone_number(self):
         for rec in self:
             partner_phone = self.env['res.partner'].search([('phone', '=', rec.phone_number)], limit=1)
-            partner_mobile = self.env['res.partner'].search([('mobile', '=', rec.phone_number)], limit=1)
-            if partner_phone or partner_mobile:
+            if partner_phone:
                 rec.partner_id = partner_phone.id or partner_mobile.id
             else:
                 rec.partner_id = False
+
+    @api.model
+    def check_voucher(self, codes):
+        data = []
+        for code in codes:
+            if not code['value']:
+                data.append({
+                    'value': False,
+                })
+            else:
+                vourcher = self.sudo().search([('name','=', code['value'])], limit=1)
+                if vourcher:
+                    start_date = self._format_time_zone(vourcher.start_date)
+                    end_date = self._format_time_zone(vourcher.end_date)
+                    end_date_format = datetime.strptime(end_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
+                    start_date_format = datetime.strptime(start_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
+                    data.append({
+                        'value': {
+                            'voucher_id': vourcher.id,
+                            'type': vourcher.type,
+                            'end_date': end_date_format,
+                            'price_residual': vourcher.price_residual,
+                            'price_used': vourcher.price_used,
+                            'brand_id': vourcher.brand_id.id,
+                            'partner': vourcher.partner_id.id,
+                            'store_ids': vourcher.store_ids.ids,
+                            'state': vourcher.state,
+                            'start_date': start_date_format,
+                            'apply_contemp_time': vourcher.apply_contemp_time
+                        }
+                    })
+        return data
+
+    def _format_time_zone(self, time):
+        utcmoment_naive = time
+        utcmoment = utcmoment_naive.replace(tzinfo=pytz.utc)
+        # localFormat = "%Y-%m-%d %H:%M:%S"
+        tz = 'Asia/Ho_Chi_Minh'
+        create_Date = utcmoment.astimezone(pytz.timezone(tz))
+        return create_Date
 
     @api.constrains('phone_number')
     def _check_phone(self):
@@ -110,14 +153,6 @@ class Voucher(models.Model):
                     rec.status_latest = rec.state
                     rec.state = 'expired'
 
-    def _format_time_zone(self, time):
-        datetime_object = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
-        utcmoment_naive = datetime_object
-        utcmoment = utcmoment_naive.replace(tzinfo=pytz.utc)
-        # localFormat = "%Y-%m-%d %H:%M:%S"
-        tz = 'Asia/Ho_Chi_Minh'
-        create_Date = utcmoment.astimezone(pytz.timezone(tz))
-        return create_Date
 
 
     @api.model

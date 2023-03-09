@@ -14,11 +14,27 @@
                     </div>
                 </button>
             </xpath>
+
             <button name="action_pos_order_invoice" position="after">
                 <button name="action_create_voucher" type="object" string="Create Voucher" data-hotkey="v"/>
             </button>
             <xpath expr="//field[@name='lines']/tree/field[@name='qty']" position="after">
                 <field name="x_qty_voucher" optional="hide"/>
+            </xpath>
+            <xpath expr="//page[@name='payments']" position="after">
+                <page string="Voucher" name="voucher">
+                    <field name="pos_voucher_line_ids">
+                        <tree>
+                            <field name="voucher_id"/>
+                            <field name="priority"/>
+                            <field name="voucher_code"/>
+                            <field name="type"/>
+                            <field name="end_date"/>
+                            <field name="price_residual"/>
+                            <field name="price_used"/>
+                        </tree>
+                    </field>
+                </page>
             </xpath>
 
         </field>
