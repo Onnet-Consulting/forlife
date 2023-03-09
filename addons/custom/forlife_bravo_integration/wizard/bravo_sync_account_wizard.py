@@ -17,7 +17,8 @@ class BravoSyncAccountWizard(models.TransientModel):
     def sync(self):
         self.ensure_one()
         self.install_coa()
-        self.insert_accounts_to_odoo()
+        self.insert_accounts()
+        self.archive_vn_template_accounts()
 
     def install_coa(self):
         companies = self.company_ids
@@ -25,11 +26,22 @@ class BravoSyncAccountWizard(models.TransientModel):
         for company in companies:
             vn_account_chart_template.try_loading(company, install_demo=False)
 
-    def insert_accounts_to_odoo(self):
+    def insert_accounts(self):
         accounts = self.get_bravo_accounts()
         companies = self.company_ids
         for company in companies:
             self.env['account.account'].with_company(company).sudo().create(accounts)
+        return True
+
+    def archive_vn_template_accounts(self):
+        """Set all accounts in l10n_vn module to deprecated"""
+        res_ids = self.env['ir.model.data'].sudo().search([
+            ('model', '=', 'account.account'), ('module', '=', 'l10n_vn')
+        ]).mapped('res_id')
+        companies = self.company_ids
+        for company in companies:
+            self.env['account.account'].with_company(company).sudo(). \
+                search([('company_id', '=', company.id), ('id', 'in', res_ids)]).write({'deprecated': True})
         return True
 
     def get_bravo_accounts(self):
