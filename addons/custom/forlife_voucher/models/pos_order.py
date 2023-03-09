@@ -39,3 +39,28 @@ class PosOrder(models.Model):
                 'tax_ids': [(6, 0, line.tax_ids_after_fiscal_position.ids)],
             }))
         return res
+
+    def action_create_voucher(self):
+        for line in self.lines:
+            program_voucher_id = line.product_id.program_voucher_id
+            if not line.product_id.voucher or line.product_id.detailed_type != 'service' or not program_voucher_id or program_voucher_id.type != 'e' or line.qty <= line.x_qty_voucher:
+                continue
+            self.env['voucher.voucher'].create([{
+                'program_voucher_id': program_voucher_id.id,
+                'type': 'e',
+                'brand_id': program_voucher_id.brand_id.id if program_voucher_id.brand_id else None,
+                'store_ids': [(6, False, program_voucher_id.store_ids.ids)],
+                'start_date': line.order_id.date_order,
+                'state': 'sold',
+                'price': line.product_id.price,
+                'price_used': 0,
+                'price_residual': line.product_id.price - 0,
+                'derpartment_id': program_voucher_id.derpartment_id.id if program_voucher_id.derpartment_id else None,
+                'end_date': program_voucher_id.end_date,
+                'apply_many_times': program_voucher_id.apply_many_times,
+                'apply_contemp_time': program_voucher_id.apply_contemp_time,
+                'product_voucher_id': program_voucher_id.product_id.id if program_voucher_id.product_id else None,
+                'purpose_id': program_voucher_id.purpose_id.id if program_voucher_id.purpose_id else None,
+                'order_pos': line.order_id.id
+            }] * int(line.qty - line.x_qty_voucher))
+            line.x_qty_voucher = line.qty
