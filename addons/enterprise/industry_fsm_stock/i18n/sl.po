@@ -2,12 +2,21 @@
 # This file contains the translation of the following modules:
 # 	* industry_fsm_stock
 # 
+# Translators:
+# Boris Kodelja <boris@hbs.si>, 2022
+# laznikd <laznik@mentis.si>, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Martin Trigaux, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:24+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,36 +32,36 @@ msgstr ""
 #. module: industry_fsm_stock
 #: model_terms:ir.ui.view,arch_db:industry_fsm_stock.fsm_stock_tracking_line_view_form
 msgid "Close"
-msgstr ""
+msgstr "Zaključi"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__company_id
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__company_id
 msgid "Company"
-msgstr ""
+msgstr "Podjetje"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__create_uid
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Ustvaril"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__create_date
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Ustvarjeno"
 
 #. module: industry_fsm_stock
 #: model_terms:ir.ui.view,arch_db:industry_fsm_stock.fsm_stock_tracking_line_view_form
 msgid "Discard"
-msgstr ""
+msgstr "Opusti"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__display_name
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Prikazani naziv"
 
 #. module: industry_fsm_stock
 #: code:addons/industry_fsm_stock/wizard/fsm_stock_tracking.py:0
@@ -74,25 +83,25 @@ msgstr ""
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__id
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking____last_update
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Zadnjič spremenjeno"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__write_uid
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Zadnji posodobil"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__write_date
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Zadnjič posodobljeno"
 
 #. module: industry_fsm_stock
 #: model:ir.model,name:industry_fsm_stock.model_fsm_stock_tracking_line
@@ -102,33 +111,33 @@ msgstr ""
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__lot_id
 msgid "Lot/Serial Number"
-msgstr ""
+msgstr "Lot/serijska številka"
 
 #. module: industry_fsm_stock
 #: model_terms:ir.ui.view,arch_db:industry_fsm_stock.stock_product_product_kanban_material
 msgid "Lot/Serial number"
-msgstr ""
+msgstr "Lot/Serijska številka"
 
 #. module: industry_fsm_stock
 #: model_terms:ir.ui.view,arch_db:industry_fsm_stock.stock_product_product_kanban_material
 msgid "On hand:"
-msgstr ""
+msgstr "Na zalogi:"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__product_id
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__product_id
 msgid "Product"
-msgstr ""
+msgstr "Proizvod"
 
 #. module: industry_fsm_stock
 #: model:ir.model,name:industry_fsm_stock.model_product_product
 msgid "Product Variant"
-msgstr ""
+msgstr "Različica proizvoda"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__quantity
 msgid "Quantity"
-msgstr ""
+msgstr "Količina"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_product_product__quantity_decreasable
@@ -138,12 +147,12 @@ msgstr ""
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__sale_order_line_id
 msgid "Sale Order Line"
-msgstr ""
+msgstr "Postavka prodajnega naloga"
 
 #. module: industry_fsm_stock
 #: model:ir.model,name:industry_fsm_stock.model_sale_order_line
 msgid "Sales Order Line"
-msgstr ""
+msgstr "Postavka prodajnega naloga"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_product_product__serial_missing
@@ -153,13 +162,13 @@ msgstr ""
 #. module: industry_fsm_stock
 #: model:ir.model,name:industry_fsm_stock.model_stock_move
 msgid "Stock Move"
-msgstr ""
+msgstr "Premik zaloge"
 
 #. module: industry_fsm_stock
 #: model:ir.model,name:industry_fsm_stock.model_project_task
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__task_id
 msgid "Task"
-msgstr ""
+msgstr "Opravilo"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__fsm_done
@@ -184,7 +193,7 @@ msgstr ""
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__tracking
 msgid "Tracking"
-msgstr ""
+msgstr "Sledenje"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__tracking_line_ids
@@ -200,7 +209,7 @@ msgstr ""
 #. module: industry_fsm_stock
 #: model_terms:ir.ui.view,arch_db:industry_fsm_stock.fsm_stock_tracking_line_view_form
 msgid "Validate"
-msgstr ""
+msgstr "Potrditev"
 
 #. module: industry_fsm_stock
 #: code:addons/industry_fsm_stock/models/product.py:0

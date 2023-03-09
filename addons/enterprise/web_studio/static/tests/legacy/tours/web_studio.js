@@ -15,6 +15,7 @@ tour.register('web_studio_tests_tour', {
 }, [{
     // open studio
     trigger: '.o_main_navbar .o_web_studio_navbar_item',
+    extra_trigger: ".o_home_menu_background",
 }, {
     trigger: '.o_web_studio_new_app',
 }, {
@@ -55,7 +56,7 @@ tour.register('web_studio_tests_tour', {
     timeout: 60000, /* previous step reloads registry, etc. - could take a long time */
 }, {
     trigger: '.o_main_navbar .o_web_studio_navbar_item',
-    extra_trigger: '.o_home_menu',
+    extra_trigger: '.o_home_menu_background',
 }, {
     // open the app creator and leave it
     trigger: '.o_web_studio_new_app',
@@ -575,6 +576,7 @@ tour.register('web_studio_new_report_tour', {
 }, [{
     // open studio
     trigger: '.o_main_navbar .o_web_studio_navbar_item',
+    extra_trigger: ".o_home_menu_background",
 }, {
     // click on the created app
     trigger: '.o_app[data-menu-xmlid*="studio"]:first',
@@ -719,6 +721,7 @@ tour.register('web_studio_new_report_basic_layout_tour', {
 }, [{
     // open studio
     trigger: '.o_main_navbar .o_web_studio_navbar_item',
+    extra_trigger: ".o_home_menu_background",
 }, {
     // click on the created app
     trigger: '.o_app[data-menu-xmlid*="studio"]:first',
@@ -1028,6 +1031,7 @@ tour.register("web_studio_create_app_with_pipeline_and_user_assignment", {
 }, [{
     // open studio
     trigger: '.o_main_navbar .o_web_studio_navbar_item',
+    extra_trigger: ".o_home_menu_background",
 }, {
     trigger: '.o_web_studio_new_app',
 }, {
@@ -1069,6 +1073,7 @@ tour.register('web_studio_alter_field_existing_in_multiple_views_tour', {
 }, [{
     // open studio
     trigger: '.o_main_navbar .o_web_studio_navbar_item a',
+    extra_trigger: ".o_home_menu_background",
 }, {
     trigger: '.o_web_studio_new_app',
 }, {
@@ -1143,4 +1148,166 @@ tour.register('web_studio_alter_field_existing_in_multiple_views_tour', {
     // check if the invisible option is checked
     trigger: "#invisible:checked",
 }]);
+
+tour.register(
+    "web_studio_test_create_one2many_lines_then_edit_name",
+    {
+        test: true,
+        sequence: 260
+    },
+    [
+        {
+            trigger: "a[data-menu-xmlid='web_studio.studio_test_partner_menu']"
+        },
+        {
+            extra_trigger: ".o_form_view",
+            trigger: ".o_web_studio_navbar_item a"
+        },
+        {
+            trigger: ".o_web_studio_sidebar .o_web_studio_new_fields .o_web_studio_field_lines",
+            run: "drag_and_drop (.o_web_studio_hook:eq(0))"
+        },
+        {
+            trigger: ".o_form_label",
+            extra_trigger: ".o_field_x2many_list"
+        },
+        {
+            extra_trigger: ".o_web_studio_sidebar .o_web_studio_properties.active",
+            trigger: "input[name='string']",
+            run: "text new name",
+        },
+        {
+            trigger: ".o_web_studio_leave"
+        },
+    ]
+);
+
+tour.register(
+    "web_studio_test_address_view_id_no_edit",
+    {
+        test: true,
+        sequence: 260
+    },
+    [
+        {
+            trigger: "a[data-menu-xmlid='web_studio.studio_test_partner_menu']"
+        },
+        {
+            extra_trigger: ".o_form_view",
+            trigger: ".o_address_format",
+            run: function() {
+                if (this.$anchor.find('[name=lang]').length || !this.$anchor.find('[name=street]').length) {
+                    throw new Error("The address view id set on the company country should be displayed");
+                };
+            }
+        },
+        {
+            trigger: ".o_web_studio_navbar_item a"
+        },
+        {
+            extra_trigger: ".o_web_studio_view_renderer",
+            trigger: ".o_address_format",
+            run: function() {
+                if (this.$anchor.find('[name=street]').length || !this.$anchor.find('[name=lang]').length) {
+                    throw new Error("The address view id set on the company country shouldn't be editable");
+                };
+            }
+        },
+        {
+            trigger: ".o_web_studio_leave"
+        },
+    ] 
+);
+
+tour.register(
+    "web_studio_test_create_new_model_from_existing_view",
+    {
+        test: true,
+        sequence: 260
+    },
+    [
+        {
+            trigger: "a[data-menu-xmlid='web_studio.studio_test_partner_menu']"
+        },
+        {
+            extra_trigger: ".o_kanban_view",
+            trigger: ".o_web_studio_navbar_item a"
+        },
+        {
+            trigger: ".o_web_create_new_model"
+        },
+        {
+            extra_trigger: ".modal-dialog",
+            trigger: "input[name='name']",
+            run: "text new model",
+        },
+        {
+            trigger: ".confirm_button",
+        },
+        {
+            trigger: ".o_web_studio_model_configurator_next"
+        },
+        {
+            trigger: ".o_form_view",
+        }
+    ]
+);
+
+tour.register(
+    "web_studio_test_create_model_with_clickable_stages",
+    {
+        test: true,
+        sequence: 260
+    },
+    [
+        {
+            trigger: "a[data-menu-xmlid='web_studio.studio_test_partner_menu']"
+        },
+        {
+            extra_trigger: ".o_form_view",
+            trigger: ".o_web_studio_navbar_item a"
+        },
+        {
+            trigger: ".o_web_create_new_model"
+        },
+        {
+            extra_trigger: ".modal-dialog",
+            trigger: "input[name='name']",
+            run: "text new model",
+        },
+        {
+            trigger: ".confirm_button",
+        },
+        {
+            trigger: "#use_stages"
+        },
+        {
+            trigger: ".o_web_studio_model_configurator_next"
+        },
+        {
+            trigger: ".o_web_studio_leave"
+        },
+        {
+            extra_trigger: ".o_form_view",
+            trigger: "input#x_name",
+            run: "text new record",
+        },
+        {
+            trigger: ".o_arrow_button:contains(In Progress)"
+        },
+        {
+            trigger: ".o_arrow_button_current:contains(In Progress)"
+        },
+        {
+            trigger: ".o_form_button_save"
+        },
+        {
+            trigger: ".o_back_button"
+        },
+        {
+            trigger: ".o_kanban_group:contains(In Progress) .o_kanban_record_details:contains(new record)"
+        }
+    ]
+);
+
 });

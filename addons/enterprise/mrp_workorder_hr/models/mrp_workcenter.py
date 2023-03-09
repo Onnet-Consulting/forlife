@@ -22,6 +22,10 @@ class MrpWorkcenter(models.Model):
         action['context'] = dict(literal_eval(context), employee_id=request.session.get('employee_id'))
         return action
 
+    def get_employee_barcode(self, barcode):
+        employee_ids = self.employee_ids or self.env['hr.employee'].search([])
+        return employee_ids.sudo().filtered(lambda e: e.barcode == barcode)[:1].id
+
 
 class MrpWorkcenterProductivity(models.Model):
     _inherit = "mrp.workcenter.productivity"

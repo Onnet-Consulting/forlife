@@ -2,7 +2,7 @@
   outline: none;
 }
 
- .sb-partner .pos-search-bar .search .search-icon {
+.sb-partner .pos-search-bar .search .search-icon {
   position: absolute;
   left: 15px;
   top: 24px;
@@ -10,7 +10,7 @@
   color: #4f5b66;
 }
 
- .sb-partner .pos-search-bar .search .fields {
+.sb-partner .pos-search-bar .search .fields {
   position: absolute;
   top: calc(100% + 5px);
   right: 2px;
@@ -20,7 +20,7 @@
   z-index: 10
 }
 
- .sb-partner .pos-search-bar .search ul {
+.sb-partner .pos-search-bar .search ul {
   background: white;
   font-size: small;
   display: inline-block;
@@ -35,26 +35,26 @@
   text-align: left;
 }
 
- .sb-partner .pos-search-bar .search li .term {
+.sb-partner .pos-search-bar .search li .term {
   color: #017e84;
 }
 
- .sb-partner .pos-search-bar .search li:hover {
+.sb-partner .pos-search-bar .search li:hover {
   background: #DDD;
 }
 
- .sb-partner .pos-search-bar .search li .field {
+.sb-partner .pos-search-bar .search li .field {
   font-style: italic;
 }
 
- .sb-partner .pos-search-bar .search li .term {
+.sb-partner .pos-search-bar .search li .term {
   font-weight: bold;
 }
 
- .sb-partner .pos-search-bar .search li.highlight {
+.sb-partner .pos-search-bar .search li.highlight {
   background: #DDD;
 }
- .sb-partner .pos-search-bar .filter .down-icon {
+.sb-partner .pos-search-bar .filter .down-icon {
   position: absolute;
   right: 13px;
   top: 12px;
@@ -74,4 +74,13 @@ input.radius-left.radius-right {
 
 .sb-partner .pos-search-bar .search li:hover {
     background: #DDD;
+}
+
+.sb-partner .pos-search-bar .search {
+    width: 85%;
+    text-align: left;
+}
+
+.sb-partner .pos-search-bar .search > input {
+    width: 100%;
 }

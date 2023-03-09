@@ -22,7 +22,7 @@ msgstr ""
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__active
 msgid "Active"
-msgstr ""
+msgstr "Aktief"
 
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__applies_to
@@ -77,7 +77,7 @@ msgstr "Laas Opgedateer op"
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__name
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: product_unspsc
 #: model:ir.model,name:product_unspsc.model_product_template

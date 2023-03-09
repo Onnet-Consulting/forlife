@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* documents_spreadsheet
 # 
+# Translators:
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 09:42+0000\n"
+"POT-Creation-Date: 2022-12-15 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -16,26 +20,21 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: documents_spreadsheet
+#. odoo-python
 #: code:addons/documents_spreadsheet/wizard/save_spreadsheet_template.py:0
 #, python-format
 msgid "\"%s\" saved as template"
 msgstr ""
 
 #. module: documents_spreadsheet
-#: model_terms:ir.ui.view,arch_db:documents_spreadsheet.share_page
-#: model_terms:ir.ui.view,arch_db:documents_spreadsheet.share_single
-msgid ""
-"#{ isSpreadsheet and 'Odoo Spreadsheets not available for download' or ''}"
-msgstr ""
-
-#. module: documents_spreadsheet
+#. odoo-python
 #: code:addons/documents_spreadsheet/models/spreadsheet_template.py:0
 #, python-format
 msgid "%s (copy)"
-msgstr ""
+msgstr "%s (Salinan)"
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/bundle/components/spreadsheet_component.js:0
 #, python-format
 msgid "%s - Template"
@@ -44,8 +43,8 @@ msgstr ""
 #. module: documents_spreadsheet
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.res_config_settings_view_form_inherit_documents_spreadsheet
 msgid ""
-"<strong>Spreadsheets</strong>\n"
-"                            <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\" role=\"img\"/>"
+"<strong class=\"o_form_label\">Spreadsheets</strong>\n"
+"                            <span class=\"fa fa-lg fa-building-o ms-1\" title=\"Values set here are company-specific.\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\" role=\"img\"/>"
 msgstr ""
 
 #. module: documents_spreadsheet
@@ -67,7 +66,7 @@ msgid ""
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_template/template_dialog.xml:0
 #, python-format
 msgid "Blank spreadsheet"
@@ -81,12 +80,12 @@ msgid ""
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_template/template_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.save_spreadsheet_template_view_form
 #, python-format
 msgid "Cancel"
-msgstr ""
+msgstr "Batal"
 
 #. module: documents_spreadsheet
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.res_config_settings_view_form_inherit_documents_spreadsheet
@@ -96,17 +95,17 @@ msgstr ""
 #. module: documents_spreadsheet
 #: model:ir.model,name:documents_spreadsheet.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Syarikat"
 
 #. module: documents_spreadsheet
 #: model:ir.model,name:documents_spreadsheet.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Tetapan Konfigurasi"
 
 #. module: documents_spreadsheet
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.save_spreadsheet_template_view_form
 msgid "Confirm"
-msgstr ""
+msgstr "Sahkan"
 
 #. module: documents_spreadsheet
 #: model:ir.actions.act_window,name:documents_spreadsheet.spreadsheet_contributor_action
@@ -115,14 +114,14 @@ msgid "Contributors"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_template/template_dialog.xml:0
 #, python-format
 msgid "Create"
-msgstr ""
+msgstr "Buat"
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/documents_view/documents_spreadsheet_controller_mixin.xml:0
 #, python-format
 msgid "Create Spreadsheet"
@@ -133,33 +132,33 @@ msgstr ""
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_contributor__create_uid
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Dicipta oleh"
 
 #. module: documents_spreadsheet
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_save_spreadsheet_template__create_date
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_contributor__create_date
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Dicipta pada"
 
 #. module: documents_spreadsheet
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_save_spreadsheet_template__data
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__data
 msgid "Data"
-msgstr ""
+msgstr "Data"
 
 #. module: documents_spreadsheet
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_save_spreadsheet_template__display_name
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_contributor__display_name
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nama paparan"
 
 #. module: documents_spreadsheet
 #: model:ir.model,name:documents_spreadsheet.model_documents_document
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_contributor__document_id
 msgid "Document"
-msgstr ""
+msgstr "Dokumen"
 
 #. module: documents_spreadsheet
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_res_company__documents_spreadsheet_folder_id
@@ -170,7 +169,7 @@ msgstr ""
 #. module: documents_spreadsheet
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.spreadsheet_template_view_tree
 msgid "Edit"
-msgstr ""
+msgstr "Sunting"
 
 #. module: documents_spreadsheet
 #: model_terms:documents.folder,description:documents_spreadsheet.documents_spreadsheet_folder
@@ -192,7 +191,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_contributor__id
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: documents_spreadsheet
 #: model_terms:documents.folder,description:documents_spreadsheet.documents_spreadsheet_folder
@@ -204,21 +203,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_contributor____last_update
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Terakhir Diubah suai pada"
 
 #. module: documents_spreadsheet
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_save_spreadsheet_template__write_uid
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_contributor__write_uid
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Kemas Kini Terakhir oleh"
 
 #. module: documents_spreadsheet
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_save_spreadsheet_template__write_date
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_contributor__write_date
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Kemas Kini Terakhir pada"
 
 #. module: documents_spreadsheet
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_contributor__last_update_date
@@ -250,17 +249,17 @@ msgstr ""
 #. module: documents_spreadsheet
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__name
 msgid "Name"
-msgstr ""
+msgstr "Nama"
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_template/spreadsheet_template_dialog.js:0
 #, python-format
 msgid "New Spreadsheet"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_template/spreadsheet_template_dialog.js:0
 #, python-format
 msgid "New sheet saved in Documents"
@@ -272,7 +271,7 @@ msgid "New spreadsheet"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/bundle/actions/spreadsheet_action.js:0
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_selector_dialog/document_selector_panel.js:0
 #, python-format
@@ -280,10 +279,16 @@ msgid "New spreadsheet created in Documents"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/bundle/actions/spreadsheet_template/spreadsheet_template_action.js:0
 #, python-format
 msgid "New spreadsheet template created"
+msgstr ""
+
+#. module: documents_spreadsheet
+#: model_terms:ir.ui.view,arch_db:documents_spreadsheet.share_page
+#: model_terms:ir.ui.view,arch_db:documents_spreadsheet.share_single
+msgid "Odoo Spreadsheets not available for download"
 msgstr ""
 
 #. module: documents_spreadsheet
@@ -300,7 +305,7 @@ msgstr ""
 #. module: documents_spreadsheet
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Urutan"
 
 #. module: documents_spreadsheet
 #: model:documents.folder,name:documents_spreadsheet.documents_spreadsheet_folder
@@ -348,7 +353,7 @@ msgid "Spreadsheet Templates"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/documents_view/inspector/documents_inspector.js:0
 #, python-format
 msgid ""
@@ -362,18 +367,21 @@ msgid "Template Name"
 msgstr ""
 
 #. module: documents_spreadsheet
+#. odoo-python
 #: code:addons/documents_spreadsheet/models/document.py:0
 #, python-format
 msgid "The file is not a xlsx file"
 msgstr ""
 
 #. module: documents_spreadsheet
+#. odoo-python
 #: code:addons/documents_spreadsheet/models/document.py:0
 #, python-format
 msgid "The xlsx file is corrupted"
 msgstr ""
 
 #. module: documents_spreadsheet
+#. odoo-python
 #: code:addons/documents_spreadsheet/models/document.py:0
 #: code:addons/documents_spreadsheet/models/document.py:0
 #, python-format
@@ -384,17 +392,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_save_spreadsheet_template__thumbnail
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__thumbnail
 msgid "Thumbnail"
-msgstr ""
+msgstr "Gambar kecil"
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/bundle/components/control_panel/spreadsheet_breadcrumbs.xml:0
 #, python-format
 msgid "Toggle favorite"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/bundle/actions/spreadsheet_template/spreadsheet_template_action.js:0
 #, python-format
 msgid "Untitled spreadsheet template"
@@ -403,7 +411,7 @@ msgstr ""
 #. module: documents_spreadsheet
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_contributor__user_id
 msgid "User"
-msgstr ""
+msgstr "pengguna"
 
 #. module: documents_spreadsheet
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.res_config_settings_view_form_inherit_documents_spreadsheet
@@ -411,7 +419,7 @@ msgid "Workspace"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/documents_view/documents_spreadsheet_controller_mixin.js:0
 #, python-format
 msgid ""
@@ -419,7 +427,7 @@ msgid ""
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_selector_dialog/document_selector_panel.xml:0
 #, python-format
 msgid "getPageTitle('SPREADSHEET')"

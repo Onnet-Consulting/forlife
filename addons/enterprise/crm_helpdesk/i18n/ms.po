@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* crm_helpdesk
 # 
+# Translators:
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.5alpha1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:47+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,7 +23,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.crm_lead_convert2ticket_view_form
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.helpdesk_ticket_to_lead_view_form
 msgid "Cancel"
-msgstr ""
+msgstr "Batal"
 
 #. module: crm_helpdesk
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.helpdesk_ticket_to_lead_view_form
@@ -58,26 +62,26 @@ msgstr ""
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__create_uid
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Dicipta oleh"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__create_date
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Dicipta pada"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__partner_id
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__partner_id
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.helpdesk_ticket_to_lead_view_form
 msgid "Customer"
-msgstr ""
+msgstr "Pelanggan"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__display_name
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nama paparan"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields.selection,name:crm_helpdesk.selection__helpdesk_ticket_to_lead__action__nothing
@@ -93,25 +97,25 @@ msgstr ""
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__id
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket____last_update
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Terakhir Diubah suai pada"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__write_uid
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Kemas Kini Terakhir oleh"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__write_date
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Kemas Kini Terakhir pada"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__lead_id
@@ -149,12 +153,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__team_id
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.helpdesk_ticket_to_lead_view_form
 msgid "Sales Team"
-msgstr ""
+msgstr "Pasukan jualan"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__user_id
 msgid "Salesperson"
-msgstr ""
+msgstr "Jurujual"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__team_id
@@ -176,7 +180,7 @@ msgstr ""
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__ticket_id
 msgid "Ticket"
-msgstr ""
+msgstr "Tiket"
 
 #. module: crm_helpdesk
 #: code:addons/crm_helpdesk/wizard/helpdesk_ticket_to_lead.py:0

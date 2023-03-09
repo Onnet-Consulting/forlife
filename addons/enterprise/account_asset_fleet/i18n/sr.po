@@ -29,7 +29,7 @@ msgstr "Sve linije bi trebale biti iz istog automobila"
 #. module: account_asset_fleet
 #: model:ir.model,name:account_asset_fleet.model_account_asset
 msgid "Asset/Revenue Recognition"
-msgstr "Vlasništvo/Prihod odredjivanje"
+msgstr "Vlasništvo/Prihod određivanje"
 
 #. module: account_asset_fleet
 #: model:ir.model,name:account_asset_fleet.model_account_move

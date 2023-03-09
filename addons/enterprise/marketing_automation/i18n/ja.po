@@ -4,7 +4,8 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Ryoko Tsuda <ryoko@quartile.co>, 2022
+# Ryoko Tsuda <ryoko@quartile.co>, 2023
+# Andy Yiu, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Ryoko Tsuda <ryoko@quartile.co>, 2022\n"
+"Last-Translator: Andy Yiu, 2023\n"
 "Language-Team: Japanese (https://www.transifex.com/odoo/teams/41243/ja/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,7 +29,7 @@ msgstr "# クリック"
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__mailing_filter_count
 msgid "# Favorite Filters"
-msgstr ""
+msgstr "# お気に入りフィルタ"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__mass_mailing_count
@@ -575,7 +576,7 @@ msgstr ""
 #. module: marketing_automation
 #: model:ir.ui.menu,name:marketing_automation.mailing_filter_menu_action_marketing_automaion
 msgid "Favorite Filters"
-msgstr ""
+msgstr "お気に入りフィルタ"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__mailing_filter_domain
@@ -880,7 +881,7 @@ msgstr "メール一括配信統計"
 #. module: marketing_automation
 #: model:ir.actions.server,name:marketing_automation.ir_action_server_action_message_sales_person
 msgid "Message for sales person"
-msgstr "販売担当者へのメッセージ"
+msgstr "営業担当者へのメッセージ"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__model_id
@@ -1054,7 +1055,7 @@ msgstr "参加者名"
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_graph
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_pivot
 msgid "Participant summary"
-msgstr ""
+msgstr "参加者概要"
 
 #. module: marketing_automation
 #: model:ir.actions.act_window,name:marketing_automation.marketing_participant_action_campaign
@@ -1073,6 +1074,16 @@ msgstr "対象者"
 #: code:addons/marketing_automation/models/marketing_activity.py:0
 #, python-format
 msgid "Participants of %s (%s)"
+msgstr ""
+
+#. module: marketing_automation
+#: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_view_form
+msgid "Pick a Server Action"
+msgstr ""
+
+#. module: marketing_automation
+#: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_view_form
+msgid "Pick a Template"
 msgstr ""
 
 #. module: marketing_automation
@@ -1168,7 +1179,7 @@ msgstr "返信率"
 #. module: marketing_automation
 #: model:ir.ui.menu,name:marketing_automation.marketing_automation_reporting_menu
 msgid "Reporting"
-msgstr "レポーティング"
+msgstr "レポート作成"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__require_sync
@@ -1247,7 +1258,7 @@ msgstr ""
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__interval_number
 msgid "Send after"
-msgstr ""
+msgstr "送信タイミング:"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__interval_standardized
@@ -1303,7 +1314,7 @@ msgstr "開始"
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_trace__state
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_search
 msgid "State"
-msgstr "都道府県/州"
+msgstr "状況"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_form
@@ -1484,7 +1495,7 @@ msgstr "UTMキャンペーン"
 #. module: marketing_automation
 #: model:ir.model,name:marketing_automation.model_utm_source
 msgid "UTM Source"
-msgstr ""
+msgstr "UTMソース"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form

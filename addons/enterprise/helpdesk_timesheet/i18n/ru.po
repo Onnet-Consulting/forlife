@@ -8,6 +8,7 @@
 # Ivan Kropotkin <yelizariev@itpp.dev>, 2022
 # Martin Trigaux, 2022
 # Сергей Шебанин <sergey@shebanin.ru>, 2022
+# Alena Vlasova, 2023
 # 
 msgid ""
 msgstr ""
@@ -15,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Сергей Шебанин <sergey@shebanin.ru>, 2022\n"
+"Last-Translator: Alena Vlasova, 2023\n"
 "Language-Team: Russian (https://www.transifex.com/odoo/teams/41243/ru/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -237,7 +238,7 @@ msgstr "Руководитель"
 #: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_search_inherit_helpdesk_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.rating_rating_view_search_inherit_helpdesk_timesheet
 msgid "My Department"
-msgstr ""
+msgstr "Мой отдел"
 
 #. module: helpdesk_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.rating_rating_view_search_inherit_helpdesk_timesheet
@@ -330,7 +331,7 @@ msgstr "Окончание"
 #. module: helpdesk_timesheet
 #: model_terms:ir.ui.view,arch_db:helpdesk_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_timesheet
 msgid "Stop timer"
-msgstr ""
+msgstr "Остановить таймер"
 
 #. module: helpdesk_timesheet
 #: model:project.project,label_tasks:helpdesk_timesheet.helpdesk_team3_projet

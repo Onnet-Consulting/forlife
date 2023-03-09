@@ -17,10 +17,6 @@
                             <field name="attachment_ids" widget="many2many_binary"/>
                         </group>
                     </sheet>
-                    <footer>
-                        <button string="Save" special="save" data-hotkey="v" class="oe_highlight"/>
-                        <button string="Discard" special="cancel" data-hotkey="z"/>
-                    </footer>
                 </form>
             </field>
         </record>
@@ -62,8 +58,8 @@
                            filter_domain="['|', ('move_id.name', 'ilike', self), ('move_id.ref', 'ilike', self)]"/>
                     <field name="statement_line_id" string="Statement Line"/>
                     <separator/>
-                    <filter name="deposits" string="Deposits" domain="[('amount', '&lt;', 0.0)]"/>
-                    <filter name="payments" string="Payments" domain="[('amount', '>', 0.0)]"/>
+                    <filter name="deposits" string="Deposits" domain="[('amount', '>', 0.0)]"/>
+                    <filter name="payments" string="Payments" domain="[('amount', '&lt;', 0.0)]"/>
                     <separator/>
                     <filter name="no_statement" string="No statement" domain="[('statement_id', '=', False)]"/>
                     <filter name="invalid_statement" string="Invalid statements"
@@ -103,6 +99,7 @@
                     <field name="partner_bank_id" invisible="1"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="foreign_currency_id" invisible="1"/>
+                    <field name="statement_line_id" invisible="1"/>
                     <templates>
                         <t t-name="kanban-box">
                             <div t-if="!record.statement_complete.raw_value"
@@ -181,7 +178,6 @@
                       decoration-muted="state == 'draft'"
                       default_order="internal_index desc">
                     <!--Invisible fields-->
-                    <field name="id" invisible="1"/>
                     <field name="statement_complete" invisible="1"/>
                     <field name="statement_valid" invisible="1"/>
                     <field name="state" invisible="1"/>
@@ -234,20 +230,8 @@
                                 'st_line_journal_id':journal_id}"
                            decoration-danger="statement_complete == False or statement_valid == False"
                     />
-                    <button class="btn btn-sm btn-secondary"
-                            title="Match"
-                            type="object"
-                            name="action_open_recon_st_line"
-                            string="Match"
-                            attrs="{'invisible':['|', ('id', '=', False), ('is_reconciled', '=', True)]}">
-                    </button>
-                    <button class="btn btn-sm btn-secondary"
-                            title="View"
-                            type="object"
-                            name="action_open_recon_st_line"
-                            string="View"
-                            attrs="{'invisible':['|', ('id', '=', False), ('is_reconciled', '=', False)]}">
-                    </button>
+                    <field name="id" widget="bank_rec_widget_view_switcher"
+                           attrs="{'invisible':[('id', '=', False), ('is_reconciled', '=', True)]}"/>
                 </tree>
             </field>
         </record>
@@ -559,6 +543,8 @@
                 <tree string="Suggestions"
                       create="false"
                       edit="false"
+                      limit="40"
+                      count_limit="40"
                       js_class="bank_rec_widget_form_amls_list">
                     <!-- Invisible fields -->
                     <field name="company_id" invisible="1"/>
@@ -611,6 +597,18 @@
                 <field name="name" position="attributes">
                     <attribute name="widget">bank_rec_widget_open</attribute>
                 </field>
+            </field>
+        </record>
+
+        <record model="ir.actions.server" id="action_bank_statement_attachment">
+            <field name="name">Statement</field>
+            <field name="model_id" ref="model_account_bank_statement"/>
+            <field name="binding_model_id" ref="model_account_bank_statement" />
+            <field name="binding_type">report</field>
+            <field name="state">code</field>
+            <field name="code">
+if records:
+    action = records.action_generate_attachment()
             </field>
         </record>
     </data>

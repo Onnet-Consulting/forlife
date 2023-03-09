@@ -16,10 +16,13 @@
     'category': 'Sales/Point of Sale',
 
     'depends': [
+        'forlife_base',
         'point_of_sale',
         'forlife_point_of_sale',
         'forlife_promotion',
         'forlife_pos_app_member',
+        'forlife_pos_promotion',
+        'forlife_pos_point_order',
     ],
 
     'data': [
@@ -34,5 +37,11 @@
         'views/res_partner_views.xml',
         'views/pos_order_views.xml',
         'views/menuitem.xml',
-    ]
+    ],
+    'assets': {
+        'point_of_sale.assets': [
+            'forlife_customer_card_rank/static/src/js/**/*.js',
+            'forlife_customer_card_rank/static/src/xml/**/*.xml',
+        ],
+    },
 }

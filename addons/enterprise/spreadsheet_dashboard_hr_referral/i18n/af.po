@@ -44,7 +44,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -58,7 +58,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -128,7 +128,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web

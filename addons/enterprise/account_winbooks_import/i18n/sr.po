@@ -160,7 +160,7 @@ msgstr ""
 #. module: account_winbooks_import
 #: model_terms:ir.ui.view,arch_db:account_winbooks_import.winbooks_import_form
 msgid "Stage Search"
-msgstr ""
+msgstr "Pretraži faze"
 
 #. module: account_winbooks_import
 #: model:ir.model.fields,field_description:account_winbooks_import.field_res_company__account_onboarding_winbooks_state

@@ -30,41 +30,41 @@ msgstr "Otkaži"
 #. module: crm_helpdesk
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.helpdesk_ticket_to_lead_view_form
 msgid "Convert"
-msgstr ""
+msgstr "Konvertuj"
 
 #. module: crm_helpdesk
 #: model:ir.model,name:crm_helpdesk.model_helpdesk_ticket_to_lead
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.helpdesk_ticket_to_lead_view_form
 msgid "Convert Ticket to Lead"
-msgstr ""
+msgstr "Konvertuj tiket u prodajni lid"
 
 #. module: crm_helpdesk
 #: model:ir.actions.act_window,name:crm_helpdesk.helpdesk_ticket_to_lead_action
 msgid "Convert to Lead"
-msgstr ""
+msgstr "Konvertuj u prodajni lid"
 
 #. module: crm_helpdesk
 #: model:ir.actions.act_window,name:crm_helpdesk.crm_lead_convert2ticket_action
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.crm_lead_convert2ticket_view_form
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.crm_lead_view_form
 msgid "Convert to Ticket"
-msgstr ""
+msgstr "Konvertuj u tiket"
 
 #. module: crm_helpdesk
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.crm_lead_convert2ticket_view_form
 msgid "Create Ticket"
-msgstr ""
+msgstr "Kreiraj tiket"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields.selection,name:crm_helpdesk.selection__helpdesk_ticket_to_lead__action__create
 msgid "Create a new customer"
-msgstr ""
+msgstr "Kreiraj novog kupca"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__create_uid
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__create_uid
 msgid "Created by"
-msgstr "Kreirao"
+msgstr "Kreirao/la"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__create_date
@@ -88,7 +88,7 @@ msgstr "Naziv za prikaz"
 #. module: crm_helpdesk
 #: model:ir.model.fields.selection,name:crm_helpdesk.selection__helpdesk_ticket_to_lead__action__nothing
 msgid "Do not link to a customer"
-msgstr ""
+msgstr "Nemoj povezivati sa kupcem"
 
 #. module: crm_helpdesk
 #: model:ir.model,name:crm_helpdesk.model_helpdesk_ticket
@@ -122,40 +122,40 @@ msgstr "Poslednje ažuriranje dana"
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__lead_id
 msgid "Lead"
-msgstr "Trag"
+msgstr "Lid"
 
 #. module: crm_helpdesk
 #: code:addons/crm_helpdesk/wizard/crm_lead_convert2ticket.py:0
 #, python-format
 msgid "Lead Converted"
-msgstr ""
+msgstr "Lid je konvertovan"
 
 #. module: crm_helpdesk
 #: model:ir.model,name:crm_helpdesk.model_crm_lead_convert2ticket
 msgid "Lead convert to Ticket"
-msgstr ""
+msgstr "Lid je konvertovan u tiket"
 
 #. module: crm_helpdesk
 #: code:addons/crm_helpdesk/wizard/helpdesk_ticket_to_lead.py:0
 #, python-format
 msgid "Lead created"
-msgstr ""
+msgstr "Lid je kreiran"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields.selection,name:crm_helpdesk.selection__helpdesk_ticket_to_lead__action__exist
 msgid "Link to an existing customer"
-msgstr ""
+msgstr "Poveži sa postojećim kupcem"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__action
 msgid "Related Customer"
-msgstr ""
+msgstr "Povezani kupac"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__team_id
 #: model_terms:ir.ui.view,arch_db:crm_helpdesk.helpdesk_ticket_to_lead_view_form
 msgid "Sales Team"
-msgstr "prodajni Tim"
+msgstr "Prodajni tim"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__user_id
@@ -171,32 +171,32 @@ msgstr "Tim"
 #: code:addons/crm_helpdesk/wizard/helpdesk_ticket_to_lead.py:0
 #, python-format
 msgid "The archived ticket can not converted as lead."
-msgstr ""
+msgstr "Arhivirani tiken ne može biti konvertovan kao lid."
 
 #. module: crm_helpdesk
 #: code:addons/crm_helpdesk/wizard/helpdesk_ticket_to_lead.py:0
 #, python-format
 msgid "This lead has been created from ticket: %s"
-msgstr ""
+msgstr "Ovaj lid je kreiran od tiketa: %s"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_helpdesk_ticket_to_lead__ticket_id
 msgid "Ticket"
-msgstr "Ulaznica"
+msgstr "Tiket"
 
 #. module: crm_helpdesk
 #: code:addons/crm_helpdesk/wizard/helpdesk_ticket_to_lead.py:0
 #, python-format
 msgid "Ticket Converted"
-msgstr ""
+msgstr "Tiket je konvertovan"
 
 #. module: crm_helpdesk
 #: model:ir.model.fields,field_description:crm_helpdesk.field_crm_lead_convert2ticket__ticket_type_id
 msgid "Ticket Type"
-msgstr "Vrsta ulaznice"
+msgstr "Vrsta tiketa"
 
 #. module: crm_helpdesk
 #: code:addons/crm_helpdesk/wizard/crm_lead_convert2ticket.py:0
 #, python-format
 msgid "Ticket created"
-msgstr ""
+msgstr "Tiket je kreiran"

@@ -7,12 +7,12 @@
 # Zsolt Godó <zsolttokio@gmail.com>, 2022
 # Kovács Tibor <kovika@gmail.com>, 2022
 # Tamás Dombos, 2022
-# gezza <geza.nagy@oregional.hu>, 2022
 # Krisztián Juhász <juhasz.krisztian@josafar.hu>, 2022
 # krnkris, 2022
-# Tamás Németh <ntomasz81@gmail.com>, 2022
 # Ákos Nagy <akos.nagy@oregional.hu>, 2022
 # Martin Trigaux, 2022
+# gezza <geza.nagy@oregional.hu>, 2023
+# Tamás Németh <ntomasz81@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -20,7 +20,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Tamás Németh <ntomasz81@gmail.com>, 2023\n"
 "Language-Team: Hungarian (https://www.transifex.com/odoo/teams/41243/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -106,7 +106,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
 msgid "<i class=\"fa fa-fw fa-arrow-right\"/>Edit Survey"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-arrow-right\"/>Felmérés szerkesztése"
 
 #. module: hr_appraisal_survey
 #: model:survey.question,description:hr_appraisal_survey.appraisal_2
@@ -600,6 +600,10 @@ msgid ""
 "a placeholder expression that provides the appropriate language, e.g. {{ "
 "object.partner_id.lang }}."
 msgstr ""
+"Opcionális fordítási nyelv (ISO kód), mely e-mail küldése során választható "
+"ki. Ha nincs beállítva, akkor az angol nyelv kerül felhasználásra. Ez "
+"általában csak egy kitöltő kifejezés, mely megadja a megfelelő nyelvet, pld:"
+" {{ object.partner_id.lang }}."
 
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_4_2
@@ -649,7 +653,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:ir.model.fields,field_description:hr_appraisal_survey.field_appraisal_ask_feedback__render_model
 msgid "Rendering Model"
-msgstr ""
+msgstr "Renderelő modell"
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_page_statistics_header
@@ -790,7 +794,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
 msgid "This is a Test Survey."
-msgstr ""
+msgstr "Ez egy teszt felmérés."
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_15

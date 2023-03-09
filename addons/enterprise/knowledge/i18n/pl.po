@@ -4,11 +4,9 @@
 # 
 # Translators:
 # Tadeusz Karpiński <tadeuszkarpinski@gmail.com>, 2022
-# Jan Dziurz <jan.dziurzynski@openglobe.pl>, 2022
 # Piotr Cierkosz <piotr.w.cierkosz@gmail.com>, 2022
 # Rafał Kozak <rafal.kozak@openglobe.pl>, 2022
 # Grażyna Grzelak <grazyna.grzelak@openglobe.pl>, 2022
-# Maksym <ms@myodoo.pl>, 2022
 # Piotr Strębski <strebski@gmail.com>, 2022
 # Marcin Młynarczyk <mlynarczyk@gmail.com>, 2022
 # Martin Trigaux, 2022
@@ -19,17 +17,19 @@
 # Piotr Szlązak <szlazakpiotr@gmail.com>, 2022
 # Karol Rybak <karolrybak85@gmail.com>, 2022
 # Grzegorz Grzelak <grzegorz.grzelak@openglobe.pl>, 2022
-# Natalia Gros <nag@odoo.com>, 2022
 # Judyta Kaźmierczak <judyta.kazmierczak@openglobe.pl>, 2022
 # Wojciech Warczakowski <w.warczakowski@gmail.com>, 2022
+# Paweł Wodyński <pw@myodoo.pl>, 2022
+# Natalia Gros <nag@odoo.com>, 2022
+# Maksym <ms@myodoo.pl>, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2023-02-02 10:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Wojciech Warczakowski <w.warczakowski@gmail.com>, 2022\n"
+"Last-Translator: Maksym <ms@myodoo.pl>, 2022\n"
 "Language-Team: Polish (https://www.transifex.com/odoo/teams/41243/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -38,6 +38,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
@@ -46,113 +47,123 @@ msgid ""
 "            <b>%(threshold)s</b> days\n"
 "            before being permanently removed for your database"
 msgstr ""
+"\n"
+"            Usunięte artykuły pozostaną w Koszu przez dodatkowe\n"
+"            <b>%(threshold)s</b> dni\n"
+"            zanim zostaną trwale usunięte z Twojej bazy"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.xml:0
 #, python-format
 msgid "\" under:"
-msgstr ""
+msgstr "\" pod:"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__favorite_count
 msgid "#Is Favorite"
-msgstr ""
+msgstr "#jest Ulubione"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #: code:addons/knowledge/models/knowledge_article.py:0
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "%s (copy)"
-msgstr "%s (kopiuj)"
+msgstr "%s (kopia)"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "%s has been sent to Trash"
-msgstr ""
+msgstr "%s zostało wysłane do Kosza"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_mail_invite
 msgid ".<br/><br/>"
-msgstr ""
+msgstr ".<br/><br/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_frontend
 msgid "<i class=\"fa fa-circle-o-notch fa-2x fa-spin\" title=\"loader\" role=\"img\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-circle-o-notch fa-2x fa-spin\" title=\"loader\" role=\"img\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-ellipsis-v\" title=\"Open kebab menu\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-ellipsis-v\" title=\"Open kebab menu\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-angle-double-right\"/> Move To"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-angle-double-right\"/> Przenieś do"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-archive\"/> Unarchive"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-archive\"/> Przywróć"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-arrows-h\"/> Full Width"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-arrows-h\"/> Pełna szerokość"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-cog\" title=\"Add properties\"/> Add Properties"
 msgstr ""
+"<i class=\"fa fa-fw fa-lg fa-cog\" title=\"Add properties\"/> Dodaj "
+"właściwości"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-copy\"/> Create a Copy"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-copy\"/> Stwórz kopię"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-lock\"/> Lock"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-lock\"/> Zablokuj"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-picture-o\" title=\"Add cover\"/> Add cover"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-picture-o\" title=\"Add cover\"/> Dodaj okładkę"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-picture-o\" title=\"Change cover\"/> Change cover"
 msgstr ""
+"<i class=\"fa fa-fw fa-lg fa-picture-o\" title=\"Change cover\"/> Zmień "
+"okładkę"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-smile-o\" title=\"Add icon\"/> Add icon"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-smile-o\" title=\"Add icon\"/> Dodaj ikonę"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-trash\"/> Delete"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-trash\"/> Usuń"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-trash-o\" title=\"Remove cover\"/> Remove cover"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-trash-o\" title=\"Remove cover\"/> Usuń okładkę"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-trash-o\"/> Remove from Trash"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-trash-o\"/> Usuń z Kosza"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-fw fa-lg fa-unlock\"/> Unlock"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-lg fa-unlock\"/> Odblokuj"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
@@ -161,21 +172,24 @@ msgid ""
 "attrs=\"{'invisible': ['|', '|', ('is_locked', '=', False), "
 "('user_can_write', '=', False), ('active', '=', False)]}\"/>"
 msgstr ""
+"<i class=\"fa fa-fw fa-lock\" title=\"This article is locked\" "
+"attrs=\"{'invisible': ['|', '|', ('is_locked', '=', False), "
+"('user_can_write', '=', False), ('active', '=', False)]}\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.articles_template_name
 msgid "<i class=\"fa fa-fw fa-plus\" title=\"Create a nested article\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-plus\" title=\"Create a nested article\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_tree
 msgid "<i class=\"fa fa-fw fa-plus\" title=\"Create a new article in workspace\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-plus\" title=\"Create a new article in workspace\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_tree
 msgid "<i class=\"fa fa-fw fa-plus\" title=\"Create a new private article\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-plus\" title=\"Create a new private article\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
@@ -183,26 +197,28 @@ msgid ""
 "<i class=\"fa fa-lg fa-star\" title=\"Remove from favorites\" attrs=\"{'invisible': [('is_user_favorite', '=', False)]}\"/>\n"
 "                                        <i class=\"fa fa-lg fa-star-o\" title=\"Add to favorites\" attrs=\"{'invisible': [('is_user_favorite', '=', True)]}\"/>"
 msgstr ""
+"<i class=\"fa fa-lg fa-star\" title=\"Remove from favorites\" attrs=\"{'invisible': [('is_user_favorite', '=', False)]}\"/>\n"
+"                                        <i class=\"fa fa-lg fa-star-o\" title=\"Add to favorites\" attrs=\"{'invisible': [('is_user_favorite', '=', True)]}\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-plus-circle me-1\"/>Create"
-msgstr ""
+msgstr "<i class=\"fa fa-plus-circle me-1\"/>Utwórz"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-share-alt me-1\"/>Share"
-msgstr ""
+msgstr "<i class=\"fa fa-share-alt me-1\"/>Udostępnij"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_kanban
 msgid "<i class=\"fa fa-star\" title=\"Remove from favorites\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-star\" title=\"Remove from favorites\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_kanban
 msgid "<i class=\"fa fa-star-o\" title=\"Add to favorites\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-star-o\" title=\"Add to favorites\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
@@ -212,11 +228,15 @@ msgid ""
 "                                                Open the Trash\n"
 "                                            </span>"
 msgstr ""
+"<i class=\"fa fa-trash\"/>\n"
+"                                            <span class=\"ps-2 flex-grow-1 text-truncate\">\n"
+"                                                Otwórz Kosz\n"
+"                                            </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-user-plus fs-3\" title=\"Invite People\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-user-plus fs-3\" title=\"Invite People\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_invite_view_form
@@ -224,6 +244,8 @@ msgid ""
 "<i class=\"fa fa-w fa-info-circle\"/> All external users you selected won't "
 "be added to the members."
 msgstr ""
+"<i class=\"fa fa-w fa-info-circle\"/> Wszyscy użytkownicy zewnętrzni wybrani"
+" przez Ciebie nie zostaną dodani do członków."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_invite_view_form
@@ -231,16 +253,18 @@ msgid ""
 "<i class=\"fa fa-w fa-info-circle\"/> External users cannot write on "
 "Articles and will be granted read access instead."
 msgstr ""
+"<i class=\"fa fa-w fa-info-circle\"/> Użytkownicy zewnętrzni nie mogą pisać "
+"w Artykułach, w zamian otrzymają dostęp tylko do odczytu."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"oi oi-search pe-2\" title=\"search\"/>"
-msgstr ""
+msgstr "<i class=\"oi oi-search pe-2\" title=\"search\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<i class=\"rounded-circle text-center fa fa-cog\" title=\"Show Properties\"/>"
-msgstr ""
+msgstr "<i class=\"rounded-circle text-center fa fa-cog\" title=\"Show Properties\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
@@ -248,21 +272,23 @@ msgid ""
 "<i class=\"rounded-circle text-center fa fa-fw fa-comments\" title=\"Open "
 "chatter\"/>"
 msgstr ""
+"<i class=\"rounded-circle text-center fa fa-fw fa-comments\" title=\"Open "
+"chatter\"/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_tree
 msgid "<i>There are no Articles in your Workspace.</i>"
-msgstr ""
+msgstr "<i>W Twojej Przestrzeni Roboczej nie ma żadnych Artykułów.</i>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_tree
 msgid "<i>You do not have any private Articles.</i>"
-msgstr ""
+msgstr "<i>Nie masz żadnych prywatnych Artykułów.</i>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "<span class=\"mx-1\">-</span>"
-msgstr ""
+msgstr "<span class=\"mx-1\">-</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -272,6 +298,10 @@ msgid ""
 "                    (/<span style=\"font-style: italic;\">checklist</span>)\n"
 "                </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"                    Dodaj listę kontrolną\n"
+"                    (/<span style=\"font-style: italic;\">lista kontrolna</span>)\n"
+"                </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -281,6 +311,10 @@ msgid ""
 "                    (/<span style=\"font-style: italic;\">separator</span>)\n"
 "                </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"                    Dodaj separator\n"
+"                    (/<span style=\"font-style: italic;\">separator</span>)\n"
+"                </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -291,6 +325,11 @@ msgid ""
 "                    to convert a text into a title\n"
 "                </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"                    Użyj\n"
+"                    /<span style=\"font-style: italic;\">nagłówka</span>\n"
+"                    by zamienić tekst na tytuł\n"
+"                </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -307,6 +346,17 @@ msgid ""
 "            Unstar this page at the top to remove it from your favorites.\n"
 "        </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"            <span style=\"font-weight: bolder;\">\n"
+"                <font class=\"text-o-color-2\">Ulubione</font>\n"
+"            </span>\n"
+"            — To\n"
+"            <span style=\"font-weight: bolder;\">\n"
+"                <font class=\"text-o-color-2\">skróty</font>\n"
+"            </span>\n"
+"            które tworzysz dla siebie.\n"
+"            Odkliknij gwiazdkę na górze tej strony, by usunąć ją z ulubionych.\n"
+"        </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -323,6 +373,17 @@ msgid ""
 "            (<span style=\"font-style: italic;\">Drafts, Todo lists, ...</span>)\n"
 "        </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"            <span style=\"font-weight: bolder;\">\n"
+"                <font class=\"text-o-color-2\">Prywatne</font>\n"
+"            </span>\n"
+"        </span>\n"
+"        <span style=\"font-size: 14px;\">\n"
+"            — To są\n"
+"            <span style=\"font-weight: bolder;\"><font class=\"text-o-color-2\">twoje rzeczy</font></span>,\n"
+"            takie, które chcesz zachować dla siebie\n"
+"            (<span style=\"font-style: italic;\">szkice, listy rzeczy do zrobienia, ...</span>)\n"
+"        </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -339,6 +400,17 @@ msgid ""
 "            </span>\n"
 "        </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"            <span style=\"font-weight: bolder;\">\n"
+"                <font class=\"text-o-color-2\">Udostępnione</font>\n"
+"            </span>\n"
+"        </span>\n"
+"        <span style=\"font-size: 14px;\">\n"
+"            — To są te,\n"
+"            <span style=\"font-weight: bolder;\">\n"
+"                <font class=\"text-o-color-2\">do których kogoś zaprosiłeś lub zostałeś zaproszony</font>\n"
+"            </span>\n"
+"        </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -355,6 +427,17 @@ msgid ""
 "        </span>\n"
 "    </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"            <span style=\"font-weight: bolder;\">\n"
+"                <font class=\"text-o-color-2\">Przestrzeń Robocza</font>\n"
+"            </span>\n"
+"        </span>\n"
+"        <span style=\"font-size: 14px;\">\n"
+"            — Artykły dodane tutaj są dostępne dla\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Twojego zespołu</font>\n"
+"        </span>\n"
+"    </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -369,6 +452,15 @@ msgid ""
 "            \"<span style=\"font-weight: bolder;\">/</span>\"\n"
 "        </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"            Pod tą listą, spróbuj użyć\n"
+"            <span style=\"font-weight: bolder;\">komend</span>\n"
+"            \n"
+"            <span style=\"font-weight: bolder;\">\n"
+"                <font class=\"text-o-color-2\">wstawiając</font>\n"
+"            </span>\n"
+"            \"<span style=\"font-weight: bolder;\">/</span>\"\n"
+"        </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -381,6 +473,13 @@ msgid ""
 "            (<span style=\"font-style: italic;\">documentation, tips, reports, ...</span>)\n"
 "        </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"            Treść — Kliknij i\n"
+"            <span style=\"font-weight: bolder;\">\n"
+"                <font class=\"text-o-color-2\">zacznij pisać</font>\n"
+"            </span>\n"
+"            (<span style=\"font-style: italic;\">dokumentację, wskazówki, sprawozdania, ...</span>)\n"
+"        </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -396,6 +495,16 @@ msgid ""
 "            (<span style=\"font-style: italic;\">per team, topic, project, ...</span>)\n"
 "        </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"            Foldery —\n"
+"        </span>\n"
+"        <span style=\"font-size: 14px;\">\n"
+"            <span style=\"font-weight: bolder;\">\n"
+"                <font class=\"text-o-color-2\">Umieść w nim inne Artykuły</font>\n"
+"            </span>\n"
+"            aby je pogrupować\n"
+"            (<span style=\"font-style: italic;\">według zespołu, tematu, projektu, ...</span>)\n"
+"        </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -409,6 +518,14 @@ msgid ""
 "            <span style=\"font-style: italic; text-decoration-line: underline;\">it</span>\n"
 "        </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"            Zaznacz tekst by go\n"
+"            <font class=\"bg-o-color-2\">zakreślić</font>,\n"
+"            <span style=\"text-decoration-line: line-through;\">przekreślić</span>\n"
+"            lub\n"
+"            <span style=\"font-weight: bolder;\">wystylizować</span>\n"
+"            <span style=\"font-style: italic; text-decoration-line: underline;\"></span>\n"
+"        </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -419,6 +536,11 @@ msgid ""
 "            to share documents that are frequently needed\n"
 "        </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"            Użyj\n"
+"            /<span style=\"font-weight: bolder;\"><font class=\"text-o-color-2\">pliku</font></span>\n"
+"            by udostępnić często potrzebne dokumenty\n"
+"        </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -433,6 +555,15 @@ msgid ""
 "            box. Need to re-use its content?\n"
 "        </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"            Użyj\n"
+"            /<span style=\"font-weight: bolder;\"><font class=\"text-o-color-2\">szablonu</font></span>\n"
+"            by wstawić\n"
+"            <span style=\"font-weight: bolder;\">\n"
+"                <font class=\"text-o-color-2\">pole szablonowe</font>\n"
+"            </span>\n"
+"            Potrzebujesz ponownie wykorzystać jego zawartość?\n"
+"        </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -445,6 +576,13 @@ msgid ""
 "        <span style=\"font-weight: bolder;\"><font class=\"text-o-color-2\">Sections</font></span>:\n"
 "    </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Artykuły</font>\n"
+"        </span>\n"
+"        są przechowywane w innych\n"
+"        <span style=\"font-weight: bolder;\"><font class=\"text-o-color-2\">Sekcjach</font></span>:\n"
+"    </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -465,6 +603,21 @@ msgid ""
 "        to share it with everyone.\n"
 "    </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"        Dobrym sposobem jest pisanie szkiców w zakładce\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Prywatne</font>\n"
+"        </span>\n"
+"        a po skończeniu pracy, przeniesienie ich z zakładki\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Prywatne</font>\n"
+"        </span>\n"
+"        do\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Przestrzeni Roboczej</font>\n"
+"        </span>\n"
+"        by podzielić się nimi ze wszystkimi.\n"
+"    </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -485,6 +638,21 @@ msgid ""
 "        it.\n"
 "    </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"        Raz jeszcze, aby przenieść\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Artykuł</font>\n"
+"        </span>\n"
+"        z jednej\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Sekcji</font>\n"
+"        </span>\n"
+"        do drugiej.\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Przeciągnij go i upuść.</font>\n"
+"        </span>\n"
+"        \n"
+"    </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -497,6 +665,13 @@ msgid ""
 "        there, on the left?\n"
 "    </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"        Widzisz\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Menu</font>\n"
+"        </span>\n"
+"        tam, po lewej?\n"
+"    </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -507,6 +682,11 @@ msgid ""
 "        and best practices!\n"
 "    </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"        Tutaj Ty i Twój zespół możecie scentralizować swoją\n"
+"        <font class=\"text-o-color-2\" style=\"font-weight: bolder;\">Wiedzę</font>\n"
+"        i najlepsze praktyki!\n"
+"    </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -516,6 +696,10 @@ msgid ""
 "        <span style=\"font-weight: bolder;\"><font class=\"text-o-color-2\">Articles</font></span>.\n"
 "    </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"        To są Twoje\n"
+"        <span style=\"font-weight: bolder;\"><font class=\"text-o-color-2\">Artykuły</font></span>.\n"
+"    </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -532,6 +716,17 @@ msgid ""
 "        them\n"
 "    </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"        Aby zmienić sposób w jaki\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Artykuły</font>\n"
+"        </span>\n"
+"        są uporządkowane, po prostu\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">pociągnij je i upuść</font>\n"
+"        </span>\n"
+"        \n"
+"    </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -555,17 +750,37 @@ msgid ""
 "        \"<span style=\"font-weight: bolder;\">?</span>\".\n"
 "    </span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">\n"
+"        Chcesz działaś\n"
+"        <span style=\"font-style: italic;\">jeszcze</span>\n"
+"        szybciej?\n"
+"    </span>\n"
+"    <br/>\n"
+"    <span style=\"font-size: 14px;\">\n"
+"        Uzyskaj dostęp do\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Artykułów</font>\n"
+"        </span>\n"
+"        otwierając\n"
+"        <span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-2\">Paletę Poleceń</font>\n"
+"        </span>\n"
+"        (Ctrl + k/⌘ + k) następnie przeszukaj artykuły, rozpoczynając zapytanie od\n"
+"        \"<span style=\"font-weight: bolder;\">?</span>\".\n"
+"    </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "<span style=\"font-size: 14px;\">And voilà, it is that simple.</span>"
-msgstr ""
+msgstr "<span style=\"font-size: 14px;\">Voilà, to tak proste.</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid ""
 "<span style=\"font-size: 14px;\">Check this box to indicate it's done</span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">Zaznacz to pole, by wskazać, że zostało "
+"zrobione</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -573,10 +788,11 @@ msgid ""
 "<span style=\"font-size: 14px;\">Click anywhere, and just start "
 "typing</span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">Kliknij gdziekolwiek i zacznij pisać</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
-msgid "<span style=\"font-size: 14px;\">Each of them can bu used both as:</span>"
+msgid "<span style=\"font-size: 14px;\">Each of them can be used both as:</span>"
 msgstr ""
 
 #. module: knowledge
@@ -585,6 +801,8 @@ msgid ""
 "<span style=\"font-size: 14px;\">From this box, files can be previewed, "
 "forwarded and downloaded.</span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">Z tego pola można oglądać, przekazywać i "
+"pobierać pliki.</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -592,6 +810,8 @@ msgid ""
 "<span style=\"font-size: 14px;\">From your document, find this article by "
 "clicking on the book icon in the chatter.</span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">Znajdź artykuł z poziomu dokumentu klikając"
+" na ikonę książki w czacie.</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -599,6 +819,8 @@ msgid ""
 "<span style=\"font-size: 14px;\">Got it? Now let's try advanced "
 "features</span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">Rozumiesz? Teraz spróbujmy zaawansowanych "
+"funkcji</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -606,11 +828,13 @@ msgid ""
 "<span style=\"font-size: 14px;\">Need this document somewhere? Come back "
 "here by clicking on the book icon in the chatter.</span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">Potrzebujesz gdzieś tego dokumentu? Wróć "
+"tu, klikając na ikonę książki w czacie.</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "<span style=\"font-size: 14px;\">Press Ctrl-Z to undo any change</span>"
-msgstr ""
+msgstr "<span style=\"font-size: 14px;\">Naciśnij Ctrl-Z aby cofnąć zmiany</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -619,11 +843,14 @@ msgid ""
 "    <br/>\n"
 "    <span style=\"font-size: 14px;\">Ready to give it a spin?</span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">Ta prywatna strona jest dla Ciebie do przetestowania.</span>\n"
+"    <br/>\n"
+"    <span style=\"font-size: 14px;\">Gotowy spróbować?</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "<span style=\"font-size: 14px;\">Try the following</span>"
-msgstr ""
+msgstr "<span style=\"font-size: 14px;\">Spróbuj tego</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -631,6 +858,8 @@ msgid ""
 "<span style=\"font-size: 14px;\">You can use the template as a description, "
 "a message or simply copy it to your clipboard!</span>"
 msgstr ""
+"<span style=\"font-size: 14px;\">Możesz użyć szablonu jako opisu, wiadomości"
+" lub zwyczajnie skopiować go do schowka!</span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -639,6 +868,9 @@ msgid ""
 "            <font class=\"text-o-color-1\">YouTube</font>\n"
 "        </span>"
 msgstr ""
+"<span style=\"font-weight: bolder;\">\n"
+"            <font class=\"text-o-color-1\">YouTube</font>\n"
+"        </span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -646,6 +878,8 @@ msgid ""
 "<span style=\"font-weight: bolder;\"><font class=\"text-o-"
 "color-1\">Facebook</font></span>"
 msgstr ""
+"<span style=\"font-weight: bolder;\"><font class=\"text-o-"
+"color-1\">Facebook</font></span>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -653,13 +887,15 @@ msgid ""
 "<span style=\"font-weight: bolder;\"><font class=\"text-o-"
 "color-1\">Twitter</font></span>"
 msgstr ""
+"<span style=\"font-weight: bolder;\"><font class=\"text-o-"
+"color-1\">Twitter</font></span>"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Access Restricted. May not be shared with everyone from"
-msgstr ""
+msgstr "Dostęp zastrzeżony. Nie może być udostępniany wszystkim z"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__message_needaction
@@ -692,18 +928,18 @@ msgid "Activity Type Icon"
 msgstr "Ikona typu aktywności"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Add a table of content."
-msgstr ""
+msgstr "Dodaj spis treści."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Add a template section."
-msgstr ""
+msgstr "Dodaj sekcję szablonów."
 
 #. module: knowledge
 #: model_terms:ir.actions.act_window,help:knowledge.knowledge_article_favorite_action
@@ -711,23 +947,25 @@ msgid ""
 "Add articles in your list of favorites by clicking on the <i class=\"fa fa-"
 "star-o\"></i> next to the article name."
 msgstr ""
+"Dodaj Artykuły do listy ulubionych klikając na <i class=\"fa fa-"
+"star-o\"></i> obok nazwy artykułu."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/table_of_content_behavior/table_of_content_behavior.xml:0
 #, python-format
 msgid "Add headings in this Article to create a Table of Content"
-msgstr ""
+msgstr "Dodaj nagłówki w tym Artykule, aby stworzyć Spis Treści."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_invite_view_form
 msgid "Add people or email addresses"
-msgstr ""
+msgstr "Dodaj osoby lub adresy email"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "Add people or email addresses..."
-msgstr ""
+msgstr "Dodaj osoby lub adresy email..."
 
 #. module: knowledge
 #: model_terms:ir.actions.act_window,help:knowledge.knowledge_article_member_action
@@ -735,34 +973,36 @@ msgid ""
 "Adding members allows you to share Articles while granting specific access "
 "rights<br>(can write, can read, ...)."
 msgstr ""
+"Dodawanie członków pozwala na udostępnianie Artykułów poprzez nadawanie "
+"konkretnych praw dostępu<br>(do zapisu, do odczytu, ...)."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Admin"
-msgstr ""
+msgstr "Admin"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Administrator"
 msgstr "Administrator"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/webclient/commands/knowledge_providers.js:0
 #, python-format
 msgid "Advanced Search"
-msgstr ""
+msgstr "Wyszukiwanie zaawansowane"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid "Archive Article"
-msgstr ""
+msgstr "Archiwizuj Artykuł"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_search_items
@@ -770,104 +1010,124 @@ msgid "Archived"
 msgstr "Zarchiwizowane"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/cover_selector/knowledge_cover_dialog.js:0
 #, python-format
 msgid ""
 "Are you sure you want to delete this cover ? It will be removed from every "
 "article it is used in."
 msgstr ""
+"Czy na pewno chcesz usunąć tę okładkę? Zostanie usunięta z każdego artykułu,"
+" w którym była użyta."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
 "Are you sure you want to leave this private article? By doing so, the "
 "article and all its descendants will be archived."
 msgstr ""
+"Czy na pewno chcesz opuścić ten prywatny artykuł? Jak to zrobisz, artykuł i "
+"jego gałęzie zostaną zarchiwizowane."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/knowledge_renderers.js:0
 #, python-format
 msgid ""
 "Are you sure you want to move \"%s%s\" to private? Only you will be able to "
 "access it."
 msgstr ""
+"Czy na pewno chcesz przenieść \"%s%s\" do zakładki prywatne? Tylko Ty "
+"będziesz miał do tego dostęp."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/knowledge_renderers.js:0
 #, python-format
 msgid ""
 "Are you sure you want to move \"%s%s\" to the Workspace? It will be shared "
 "with all internal users."
 msgstr ""
+"Czy na pewno chcesz przenieść \"%s%s\" do Przestrzeni Roboczej? Będzie "
+"udostępniony wszystkim użytkownikom wewnętrznym."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/knowledge_renderers.js:0
 #, python-format
 msgid ""
 "Are you sure you want to move \"%s%s\" under \"%s%s\"? It will be shared "
 "with the same persons."
 msgstr ""
+"Czy na pewno chcesz przenieść \"%s%s\" pod \"%s%s\"? Będzie udostępniony z "
+"tymi samymi osobami."
 
 #. module: knowledge
-#. openerp-web
-#: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
-#, python-format
-msgid "Are you sure you want to remove you own \"Write\" access ?"
-msgstr ""
-
-#. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
 "Are you sure you want to remove your member? By leaving an article, you may "
 "lose access to it."
 msgstr ""
+"Czy na pewno chcesz usunąć siebie jako członka? Opuszczając artykuł możesz "
+"stracić do niego dostęp."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
+#: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
+#, python-format
+msgid "Are you sure you want to remove your own \"Write\" access ?"
+msgstr "Czy na pewno chcesz usunąć uprawnienie \"do pisania\" dla swojego konta?"
+
+#. module: knowledge
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
 "Are you sure you want to restore access? This means this article will now "
 "inherit any access set on its parent articles."
 msgstr ""
+"Czy na pewno chcesz przywrócić dostęp? Oznacza to, że ten artykuł będzie "
+"teraz dziedziczył wszelkie dostępy ustawione na jego artykułach nadrzędnych."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
 "Are you sure you want to restrict this role and restrict access ? This "
 "article will no longer inherit access settings from the parent page."
 msgstr ""
+"Czy na pewno chcesz ograniczyć tę rolę i ograniczyć dostęp ? Ten artykuł nie"
+" będzie już dziedziczył ustawień dostępu ze strony nadrzędnej."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
 "Are you sure you want to set the internal permission to \"none\" ? If you "
 "do, you will no longer have access to the article."
 msgstr ""
+"Czy na pewno chcesz ustawić wewnętrzny dostęp na \"brak\"? Jeśli to zrobisz,"
+" stracisz dostęp do tego artykułu."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid ""
 "Are you sure you want to set your permission to \"none\"? If you do, you "
 "will no longer have access to the article."
 msgstr ""
+"Czy na pewno chcesz ustawić swój dostęp na \"brak\"? Jeśli tak, to stracisz "
+"dostęp do tego artykułu."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_favorite__article_id
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_member__article_id
@@ -879,51 +1139,61 @@ msgid "Article"
 msgstr "Artykuł"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article_member.py:0
 #, python-format
 msgid ""
 "Article '%s' should always have a writer: inherit write permission, or have "
 "a member with write access"
 msgstr ""
+"Artykuł '%s' powinien zawsze mieć autora: przenieś prawo do pisania lub miej"
+" członka z tym prawem."
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__article_properties_definition
 msgid "Article Item Properties"
-msgstr ""
+msgstr "Właściwości Elementów Artykułu"
 
 #. module: knowledge
 #: model:ir.actions.act_window,name:knowledge.knowledge_article_item_action
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_search
 msgid "Article Items"
-msgstr ""
+msgstr "Elementy Artykułu"
 
 #. module: knowledge
 #: model:ir.model,name:knowledge.model_knowledge_article_member
 msgid "Article Member"
+msgstr "Członek Artykułu"
+
+#. module: knowledge
+#. odoo-javascript
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Article Structure"
 msgstr ""
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__article_url
 msgid "Article URL"
-msgstr ""
+msgstr "URL artykułu"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__cover_image_id
 msgid "Article cover"
-msgstr ""
+msgstr "Okładka artykułu"
 
 #. module: knowledge
 #: model:ir.model.constraint,message:knowledge.constraint_knowledge_article_check_article_item_parent
 msgid "Article items must have a parent."
-msgstr ""
+msgstr "Elementy artykułu muszą mieć element nadrzędny."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_frontend
 msgid "Article not found"
-msgstr ""
+msgstr "Nie znaleziono artykułu"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.js:0
 #: model:ir.actions.act_window,name:knowledge.knowledge_article_action
 #: model:ir.actions.act_window,name:knowledge.knowledge_article_action_form
@@ -934,6 +1204,7 @@ msgid "Articles"
 msgstr "Artykuły"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #: code:addons/knowledge/models/knowledge_article.py:0
 #: code:addons/knowledge/models/knowledge_article.py:0
@@ -941,26 +1212,28 @@ msgstr "Artykuły"
 msgid ""
 "Articles %s cannot be updated as this would create a recursive hierarchy."
 msgstr ""
+"Artykuły %s nie mogą być zaktualizowane, ponieważ stworzy to hierarchię "
+"rekurencyjną."
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_cover__article_ids
 msgid "Articles using cover"
-msgstr ""
+msgstr "Artykuły używające okładek"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "As a reader, you can't leave a Workspace article"
-msgstr ""
+msgstr "Jako czytelnik nie możesz opuścić artykułu w Przestrzeni Roboczej"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid ""
 "As an administrator, you can always modify this article and its members."
-msgstr ""
+msgstr "Jako administrator zawsze możesz modyfikować artykuł i jego członków."
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__message_attachment_count
@@ -968,7 +1241,7 @@ msgid "Attachment Count"
 msgstr "Liczba załączników"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
@@ -978,7 +1251,7 @@ msgstr "Bazując na"
 #. module: knowledge
 #: model_terms:ir.actions.act_window,help:knowledge.knowledge_article_action
 msgid "Be the first one to unleash the power of Knowledge !"
-msgstr ""
+msgstr "Bądź pierwszym, który uwolni potęgę Wiedzy!"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__body
@@ -988,7 +1261,7 @@ msgstr "Treść"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__user_can_read
 msgid "Can Read"
-msgstr ""
+msgstr "Do odczytu"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__user_can_write
@@ -996,16 +1269,18 @@ msgid "Can Write"
 msgstr "Można zapisać"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article_member.py:0
 #, python-format
 msgid "Can not update the article or partner of a member."
-msgstr ""
+msgstr "Nie można zaktualizować artykułu lub partnera członka."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article_favorite.py:0
 #, python-format
 msgid "Can not update the article or user of a favorite."
-msgstr ""
+msgstr "Nie można zaktualizować artykułu lub użytkownika elementu ulubionego."
 
 #. module: knowledge
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article__inherited_permission__read
@@ -1013,7 +1288,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article_member__permission__read
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_invite__permission__read
 msgid "Can read"
-msgstr ""
+msgstr "Do odczytu"
 
 #. module: knowledge
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article__inherited_permission__write
@@ -1021,10 +1296,10 @@ msgstr ""
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article_member__permission__write
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_invite__permission__write
 msgid "Can write"
-msgstr ""
+msgstr "Do pisania"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.xml:0
 #: code:addons/knowledge/static/src/js/wysiwyg/knowledge_article_link.js:0
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_invite_view_form
@@ -1033,49 +1308,55 @@ msgid "Cancel"
 msgstr "Anuluj"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
 "Cannot create an article under article %(parent_name)s which is a non-"
 "private parent"
 msgstr ""
+"Nie można utworzyć artykułu pod artykułem %(parent_name)s, który jest nie-"
+"prywatnym artykułem nadrzędnym."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
 "Cannot move %(article_name)s as a root of the 'shared' section since access "
 "rights can not be inferred without a parent."
 msgstr ""
+"Nie można przenieść %(article_name)s jako rdzenia sekcji \"wspóldzielone\", "
+"ponieważ prawa dostępu nie mogą być wywnioskowane bez elementu nadrzędnego."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.js:0
 #, python-format
 msgid "Categories"
 msgstr "Kategorie"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid "Change Permission"
-msgstr ""
+msgstr "Uprawnienie do zmiany"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__child_ids
 msgid "Child Articles and Items"
-msgstr ""
+msgstr "Artykuły i Elementy podrzędne"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_editor.xml:0
 #, python-format
 msgid "Choose an Article"
-msgstr ""
+msgstr "Wybierz Artykuł"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/macros/abstract_macro.js:0
 #, python-format
 msgid "Close"
@@ -1087,7 +1368,7 @@ msgid "Configuration"
 msgstr "Konfiguracja"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid "Confirmation"
@@ -1099,50 +1380,50 @@ msgid "Contact"
 msgstr "Kontakt"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #, python-format
 msgid "Copy to Clipboard"
-msgstr ""
+msgstr "Skopiuj do schowka"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_cover__attachment_url
 msgid "Cover URL"
-msgstr ""
+msgstr "URL okładki"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_cover__attachment_id
 msgid "Cover attachment"
-msgstr ""
+msgstr "Załącznik okładki"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__cover_image_url
 msgid "Cover url"
-msgstr ""
+msgstr "url okładki"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_command_palette.xml:0
 #, python-format
 msgid "Create \""
-msgstr ""
+msgstr "Utwórz \""
 
 #. module: knowledge
 #: model_terms:ir.actions.act_window,help:knowledge.knowledge_article_item_action
 msgid "Create a new article item"
-msgstr ""
+msgstr "Utwórz nowy element artykułu"
 
 #. module: knowledge
 #: model_terms:ir.actions.act_window,help:knowledge.knowledge_article_action
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "Create an article"
-msgstr ""
+msgstr "Utwórz artykuł"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_frontend
 msgid "Create my own Workspace <i class=\"fa fa-book\"/>"
-msgstr ""
+msgstr "Utwórz moją Przestrzeń Roboczą <i class=\"fa fa-book\"/>"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__create_uid
@@ -1158,7 +1439,7 @@ msgstr "Utworzył(a)"
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "Created by:"
-msgstr ""
+msgstr "Stworzone przez:"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__create_date
@@ -1183,24 +1464,27 @@ msgid ""
 "Default permission for all internal users. (External users can still have "
 "access to this article if they are added to its members)"
 msgstr ""
+"Domyślne uprawnienie dla wszystkich użytkowników wewnętrznych. (Użytkownicy "
+"zewnętrzni nadal mogą mieć dostęp do tego artykułu, jeśli są dodani do jego "
+"członków)"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__deletion_date
 msgid "Deletion Date"
-msgstr ""
+msgstr "Data Usunięcia"
 
 #. module: knowledge
 #: model:ir.model.constraint,message:knowledge.constraint_knowledge_article_check_permission_on_desync
 msgid "Desynchronized articles must have internal permission."
-msgstr ""
+msgstr "Artykuły niezsynchronizowane muszą mieć pozwolenie wewnętrzne."
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__is_desynchronized
 msgid "Desyncronized with parents"
-msgstr ""
+msgstr "Nie zsynchronizowane z artykułem nadrzędnym"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/cover_selector/knowledge_cover_dialog.xml:0
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.xml:0
 #, python-format
@@ -1219,10 +1503,10 @@ msgstr "Nazwa wyświetlana"
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "Diving in"
-msgstr ""
+msgstr "Zagłębianie się"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #, python-format
@@ -1230,33 +1514,33 @@ msgid "Download"
 msgstr "Pobierz"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/views/list_view.js:0
 #, python-format
 msgid "Duplicate"
 msgstr "Duplikuj"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js:0
 #, python-format
 msgid "Embed a View"
-msgstr ""
+msgstr "Osadź Widok"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Embed a file."
-msgstr ""
+msgstr "Osadź plik."
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__icon
 msgid "Emoji"
-msgstr ""
+msgstr "Emotikon"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/article_behavior/article_behavior.js:0
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #: code:addons/knowledge/static/src/macros/abstract_macro.js:0
@@ -1265,19 +1549,22 @@ msgid "Error"
 msgstr "Błąd"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
 "Error: The given action is not an act_window. This action can not be used to"
 " create an embedded view or a view link"
 msgstr ""
+"Błąd: Podana akcja nie jest akcją act_window. Ta akcja nie może być użyta do"
+" stworzenia osadzonego widoku lub linka do wglądu"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "External Guest"
-msgstr ""
+msgstr "Gość zewnętrzny"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_favorite_view_form
@@ -1288,12 +1575,12 @@ msgstr "Ulubiony"
 #. module: knowledge
 #: model:ir.model,name:knowledge.model_knowledge_article_favorite
 msgid "Favorite Article"
-msgstr ""
+msgstr "Ulubiony Artykuł"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__favorite_ids
 msgid "Favorite Articles"
-msgstr ""
+msgstr "Ulubione Artykuły"
 
 #. module: knowledge
 #: model:ir.actions.act_window,name:knowledge.knowledge_article_favorite_action
@@ -1304,7 +1591,7 @@ msgid "Favorites"
 msgstr "Ulubione"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "File"
@@ -1328,12 +1615,12 @@ msgstr "Ikona Font awesome np. fa-tasks"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__full_width
 msgid "Full width"
-msgstr ""
+msgstr "Pełna szerokość"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_mail_invite
 msgid "Go to Article"
-msgstr ""
+msgstr "Idź do Artykułu"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_favorite_view_search
@@ -1343,16 +1630,16 @@ msgid "Group By"
 msgstr "Grupuj wg."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Guest"
-msgstr ""
+msgstr "Gość"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__user_has_access
 msgid "Has Access"
-msgstr ""
+msgstr "Ma Dostęp"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__has_message
@@ -1362,27 +1649,27 @@ msgstr "Ma wiadomość"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__user_has_write_access
 msgid "Has Write Access"
-msgstr ""
+msgstr "Ma Dostęp do Pisania"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__has_item_children
 msgid "Has article item children?"
-msgstr ""
+msgstr "Czy artykuł ma elementy podrzędne?"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__has_article_children
 msgid "Has normal article children?"
-msgstr ""
+msgstr "Czy normalny artykuł ma elementy podrzędne?"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_invite__have_share_partners
 msgid "Have Share Partners"
-msgstr ""
+msgstr "Mieć partnerów współdzielących"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "Hello there"
-msgstr ""
+msgstr "Witaj"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -1393,6 +1680,11 @@ msgid ""
 "            <br/>\n"
 "            No more time wasted!"
 msgstr ""
+"Witaj, jestem szablonem\n"
+"            <br/>\n"
+"            Użyj przycisków w prawnym górnym rogu tego pola aby użyć ponownie mojej treści.\n"
+"            <br/>\n"
+"            Koniec z marnowaniem czasu!"
 
 #. module: knowledge
 #: model:ir.ui.menu,name:knowledge.knowledge_menu_home
@@ -1435,101 +1727,104 @@ msgstr ""
 msgid ""
 "If set, this article won't inherit access rules from its parents anymore."
 msgstr ""
+"Jeśli ta opcja jest ustawiona, ten artykuł nie będzie już dziedziczył zasad "
+"dostępu po swoich artykułach nadrzędnych."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Index"
-msgstr ""
+msgstr "Indeks"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__inherited_permission
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_member__article_permission
 msgid "Inherited Permission"
-msgstr ""
+msgstr "Uprawnienie dziedziczone"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__inherited_permission_parent_id
 msgid "Inherited Permission Parent Article"
-msgstr ""
+msgstr "Artykuł nadrzędny uprawnienia dziedziczonego"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.xml:0
 #, python-format
 msgid "Insert"
 msgstr "Wstaw"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg/knowledge_article_link.js:0
 #, python-format
 msgid "Insert Link"
 msgstr "Wstaw link "
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js:0
 #, python-format
 msgid "Insert a Kanban View"
-msgstr ""
+msgstr "Wstaw widok Kanban"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Insert a Kanban view of article items"
-msgstr ""
+msgstr "Wstaw widok Kanban elementów artykułu"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js:0
 #, python-format
 msgid "Insert a List View"
-msgstr ""
+msgstr "Wstaw widok listy"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Insert a List view of article items"
-msgstr ""
+msgstr "Wstaw widok listy elementów artykułu"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/external_embedded_view_favorite_menu/insert_embedded_view.xml:0
 #, python-format
 msgid "Insert link in article"
-msgstr ""
+msgstr "Wstaw link w artykule"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/external_embedded_view_favorite_menu/insert_embedded_view.xml:0
 #, python-format
 msgid "Insert view in article"
-msgstr ""
+msgstr "Wstaw widok w artykule"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Internal Members"
-msgstr ""
+msgstr "Członkowie wewnętrzni"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__internal_permission
 #, python-format
 msgid "Internal Permission"
-msgstr ""
+msgstr "Uprawnienie wewnętrzne"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "Invitation to access %s"
-msgstr ""
+msgstr "Zaproszenie do dostępu %s"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
@@ -1545,12 +1840,12 @@ msgstr "Zaproś"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_favorite__is_article_active
 msgid "Is Article Active"
-msgstr ""
+msgstr "Czy Artykuł jest aktywny"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__is_user_favorite
 msgid "Is Favorited"
-msgstr ""
+msgstr "Jest Polubiony"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__message_is_follower
@@ -1560,68 +1855,78 @@ msgstr "Jest obserwatorem"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__is_article_item
 msgid "Is Item?"
-msgstr ""
+msgstr "Jest Elementem?"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__article_properties_is_empty
 msgid "Is Property Field Empty?"
-msgstr ""
+msgstr "Czy Pole Właściwość jest puste?"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Item Kanban"
-msgstr ""
+msgstr "Element Kanban"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Item List"
-msgstr ""
+msgstr "Lista elementów"
 
 #. module: knowledge
+#. odoo-javascript
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #: model:ir.ui.menu,name:knowledge.knowledge_menu_root
+#, python-format
 msgid "Knowledge"
 msgstr "Wiedza"
 
 #. module: knowledge
 #: model:ir.model,name:knowledge.model_knowledge_article
 msgid "Knowledge Article"
-msgstr ""
+msgstr "Artykuł Wiedzy"
 
 #. module: knowledge
 #: model:ir.model,name:knowledge.model_knowledge_cover
 msgid "Knowledge Cover"
-msgstr ""
+msgstr "Okładka Wiedzy"
 
 #. module: knowledge
 #: model:ir.model,name:knowledge.model_knowledge_invite
 msgid "Knowledge Invite Wizard"
-msgstr ""
+msgstr "Kreator Zaproszenia Wiedzy"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_tree
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_tree_items
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_tree_trash
 msgid "Last Edit Date"
-msgstr ""
+msgstr "Data ostatniej edycji"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__last_edition_uid
 msgid "Last Edited by"
-msgstr ""
+msgstr "Ostatnio edytowane przez"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "Last Edited by:"
-msgstr ""
+msgstr "Ostatnio edytowane przez:"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__last_edition_date
 msgid "Last Edited on"
-msgstr ""
+msgstr "Ostatnio edytowano dnia"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article____last_update
@@ -1651,27 +1956,27 @@ msgid "Last Updated on"
 msgstr "Data ostatniej aktualizacji"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Leave Article"
-msgstr ""
+msgstr "Opuść Artykuł"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg/knowledge_article_link.js:0
 #, python-format
 msgid "Link an Article"
-msgstr ""
+msgstr "Podlinkuj Artykuł"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Link an article."
-msgstr ""
+msgstr "Podlinkuj Artykuł."
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__is_locked
@@ -1679,24 +1984,35 @@ msgid "Locked"
 msgstr "Zablokowane"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_frontend.xml:0
 #, python-format
 msgid "Log in"
 msgstr "Zaloguj"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
 "Logging changes from %(partner_name)s without write access on article "
 "%(article_name)s due to hierarchy tree update"
 msgstr ""
+"Zapisywanie zmian w %(partner_name)s bez dostępu do pisania w artykule "
+"%(article_name)s poprzez aktualizację grupowania hierarchicznego"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__message_main_attachment_id
 msgid "Main Attachment"
 msgstr "Główny załącznik"
+
+#. module: knowledge
+#. odoo-javascript
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#: code:addons/knowledge/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Media"
+msgstr "Media"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_member_view_form
@@ -1718,7 +2034,7 @@ msgstr "Informacja o członku"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__root_article_id
 msgid "Menu Article"
-msgstr ""
+msgstr "Artykuł Menu"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__message_has_error
@@ -1731,40 +2047,43 @@ msgid "Messages"
 msgstr "Wiadomości"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.js:0
 #, python-format
 msgid "Missing File"
-msgstr ""
+msgstr "Brakujący Plik"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.xml:0
 #, python-format
 msgid "Move \""
-msgstr ""
+msgstr "Przenieś \""
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.xml:0
 #, python-format
 msgid "Move Article"
-msgstr ""
+msgstr "Przenieś Artykuł"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.js:0
 #, python-format
 msgid "Move an Article"
-msgstr ""
+msgstr "Przenieś Artykuł"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
 "Move to target of %(article_name)s is ambiguous, you should specify the "
 "category."
 msgstr ""
+"Przeniesienie do docelowego artykułu %(article_name)s jest niejednoznaczne, "
+"powinieneś wyszczególnić kategorię."
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__my_activity_date_deadline
@@ -1786,14 +2105,14 @@ msgstr "Nazwa"
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "Navigation Basics"
-msgstr ""
+msgstr "Podstawy Nawigacji"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_editor.xml:0
 #, python-format
 msgid "Nest articles under this one to generate a structure"
-msgstr ""
+msgstr "Zagnieżdżaj artykułu pod tym, aby stworzyć strukturę"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__activity_calendar_event_id
@@ -1816,34 +2135,35 @@ msgid "Next Activity Type"
 msgstr "Typ następnej czynności"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_command_palette.xml:0
 #, python-format
 msgid "No Article found."
-msgstr ""
+msgstr "Nie znaleziono Artykułu"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/webclient/commands/knowledge_providers.js:0
 #, python-format
 msgid "No Article found. Create \"%s\""
-msgstr ""
+msgstr "Nie znaleziono Artykułu. Stwórz \"%s\""
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "No Article in Trash"
-msgstr ""
+msgstr "Brak Artykułów w Koszu"
 
 #. module: knowledge
 #: model_terms:ir.actions.act_window,help:knowledge.knowledge_article_favorite_action
 msgid "No Favorites yet!"
-msgstr ""
+msgstr "Nie ma jeszcze Ulubionych!"
 
 #. module: knowledge
 #: model_terms:ir.actions.act_window,help:knowledge.knowledge_article_member_action
 msgid "No Members yet!"
-msgstr ""
+msgstr "Nie ma jeszcze Członków!"
 
 #. module: knowledge
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article__inherited_permission__none
@@ -1851,19 +2171,19 @@ msgstr ""
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article_member__permission__none
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_invite__permission__none
 msgid "No access"
-msgstr ""
+msgstr "Brak dostępu"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/webclient/commands/knowledge_providers.js:0
 #, python-format
 msgid "No article found."
-msgstr ""
+msgstr "Nie znaleziono artykułu"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "No article yet."
-msgstr ""
+msgstr "Nie utworzono jeszcze artykułu."
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__message_needaction_counter
@@ -1888,10 +2208,10 @@ msgstr "Liczba wiadomości z błędami przy doręczeniu"
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "Odoo Survival Guide"
-msgstr ""
+msgstr "Przewodnik Odoo"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/article_behavior/article_behavior.js:0
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.js:0
 #, python-format
@@ -1901,19 +2221,21 @@ msgstr "Ok"
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "Onboarding.pdf"
-msgstr ""
+msgstr "Onboarding.pdf"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.js:0
 #, python-format
 msgid ""
 "Oops, the file %s could not be found. Please replace this file box by a new "
 "one to re-upload the file."
 msgstr ""
+"Ups, plik %s nie został znaleziony. Proszę, zamienić to pole pliku na nowe "
+"aby ponownie zamieścić plik."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_manager.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_manager.xml:0
 #, python-format
@@ -1921,16 +2243,9 @@ msgid "Open"
 msgstr "Otwarta"
 
 #. module: knowledge
-#. openerp-web
-#: code:addons/knowledge/static/src/js/wysiwyg.js:0
-#, python-format
-msgid "Outline"
-msgstr ""
-
-#. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__parent_id
 msgid "Parent Article"
-msgstr ""
+msgstr "Artykuł nadrzędny"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__parent_path
@@ -1947,10 +2262,10 @@ msgstr "Kontrahent"
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article_member__permission
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_invite__permission
 msgid "Permission"
-msgstr ""
+msgstr "Pozwolenie"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.js:0
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article__category__private
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_tree
@@ -1967,7 +2282,7 @@ msgstr "Właściwości"
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "Property Fields"
-msgstr ""
+msgstr "Pola właściwości"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_invite__partner_ids
@@ -1975,33 +2290,33 @@ msgid "Recipients"
 msgstr "Odbiorcy"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/articles_structure_behavior/articles_structure_behavior.xml:0
 #, python-format
 msgid "Refresh"
-msgstr ""
+msgstr "Odśwież"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/knowledge_emoji_picker_remove_action_view/knowledge_emoji_picker_remove_action_view.xml:0
 #, python-format
 msgid "Remove Icon"
-msgstr ""
+msgstr "Usuń ikonę"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Remove Member"
-msgstr ""
+msgstr "Usuń Członka"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "Remove from Trash"
-msgstr ""
+msgstr "Usuń z Kosza"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_manager.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_manager.xml:0
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.xml:0
@@ -2015,35 +2330,35 @@ msgid "Responsible User"
 msgstr "Użytkownik odpowiedzialny"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "Restore"
 msgstr "Przywróć"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid "Restore Access"
-msgstr ""
+msgstr "Przywróć Dostęp"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.js:0
 #, python-format
 msgid "Restrict Access"
-msgstr ""
+msgstr "Ogranicz Dostęp"
 
 #. module: knowledge
 #: model:ir.model.constraint,message:knowledge.constraint_knowledge_article_check_desync_on_root
 msgid "Root articles cannot be desynchronized."
-msgstr ""
+msgstr "Artykuły źródłowe nie mogą być niezsynchronizowane."
 
 #. module: knowledge
 #: model:ir.model.constraint,message:knowledge.constraint_knowledge_article_check_permission_on_root
 msgid "Root articles must have internal permission."
-msgstr ""
+msgstr "Artykuły źródłowe muszą mieć pozwolenie wewnętrzne."
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__message_has_sms_error
@@ -2058,39 +2373,39 @@ msgstr "Szukaj"
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_favorite_view_search
 msgid "Search Favorites"
-msgstr ""
+msgstr "Szukaj Ulubionych"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/chatter_topbar.xml:0
 #, python-format
 msgid "Search Knowledge Articles"
-msgstr ""
+msgstr "Szukaj Artykułów w Wiedzy"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_member_view_search
 msgid "Search Members"
-msgstr ""
+msgstr "Szukaj Członków"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.xml:0
 #, python-format
 msgid "Search an Article to use as Parent"
-msgstr ""
+msgstr "Szukaj Artykułu do wykorzystania jako artykuł nadrzędny"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_frontend
 msgid "Search an article..."
-msgstr ""
+msgstr "Przeszukaj artykuł"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/webclient/commands/knowledge_providers.js:0
 #, python-format
 msgid "Search for an article..."
-msgstr ""
+msgstr "Szukaj artykułu"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__category
@@ -2098,28 +2413,28 @@ msgid "Section"
 msgstr "Sekcja"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/cover_selector/knowledge_cover_dialog.js:0
 #, python-format
 msgid "Select a cover"
-msgstr ""
+msgstr "Wybierz okładkę"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/external_embedded_view_insertion/views_renderers_patches.js:0
 #, python-format
 msgid "Select an article"
-msgstr ""
+msgstr "Wybierz artykuł"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #, python-format
 msgid "Send as Message"
-msgstr ""
+msgstr "Wyślij jako Wiadomość"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__sequence
@@ -2137,34 +2452,35 @@ msgstr "Współdzielone"
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_tree_frontend
 msgid "Shared with you"
-msgstr ""
+msgstr "Udostępnione Tobie"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Show all nested articles."
-msgstr ""
+msgstr "Pokaż wszystkie artykuły podrzędne."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Show the first level of nested articles."
-msgstr ""
+msgstr "Pokaż pierwszy poziom artykułów podrzędnych."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "Some articles have been sent to Trash"
-msgstr ""
+msgstr "Niektóre artykuły zostały wysłane do Kosza"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_behavior.xml:0
 #, python-format
 msgid "Something went wrong!"
-msgstr ""
+msgstr "Coś poszło nie tak!"
 
 #. module: knowledge
 #: model:ir.model.fields,help:knowledge.field_knowledge_article__activity_state
@@ -2180,14 +2496,14 @@ msgstr ""
 "Zaplanowane: Przyszłe czynności."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Table Of Content"
-msgstr ""
+msgstr "Spis Treści"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #: code:addons/knowledge/static/src/js/wysiwyg.js:0
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -2196,17 +2512,26 @@ msgid "Template"
 msgstr "Szablon"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.js:0
 #, python-format
 msgid "Template copied to clipboard."
+msgstr "Szablon skopiowany do schowka."
+
+#. module: knowledge
+#. odoo-python
+#: code:addons/knowledge/models/knowledge_article.py:0
+#, python-format
+msgid "The Article you are trying to access has been deleted"
 msgstr ""
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "The article '%s' needs at least one member with 'Write' access."
 msgstr ""
+"Ten artykuł '%s' wymaga przynajmniej jednej osoby z dostępem \"do pisania\"."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_frontend
@@ -2214,73 +2539,85 @@ msgid ""
 "The article you are trying the read has either been removed or you do not "
 "have access to it."
 msgstr ""
+"Artykuł, który próbujesz przeczytać, został usunięty lub nie masz do niego "
+"dostępu."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article_member.py:0
 #, python-format
 msgid ""
 "The external user %(user_name)s cannot have a 'write' permission on article "
 "%(article_name)s"
 msgstr ""
+"Użytkownik zewnętrzny %(user_name)s nie może mieć uprawnienia do pisania w "
+"artykule %(article_name)s"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/macros/abstract_macro.js:0
 #, python-format
 msgid ""
 "The operation was interrupted because the page or the record changed. Please"
 " try again later."
 msgstr ""
+"Operacja została przerwana, ponieważ strona lub rekord się zmieniły. Prosimy"
+" spróbować ponownie później."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/controllers/main.py:0
 #: code:addons/knowledge/controllers/main.py:0
 #, python-format
 msgid "The selected member does not exists or has been already deleted."
-msgstr ""
+msgstr "Wybrany członek nie istnieje lub został już usunięty."
 
 #. module: knowledge
 #: model:ir.model.fields,help:knowledge.field_knowledge_article__sequence
 msgid ""
 "The sequence is computed only among the articles that have the same parent."
 msgstr ""
+"Sekwencja jest obliczana tylko wśród artykułów, które mają ten sam artykuł "
+"nadrzędny."
 
 #. module: knowledge
 #: model:ir.model.fields,help:knowledge.field_knowledge_article__root_article_id
 msgid ""
 "The subject is the title of the highest parent in the article hierarchy."
 msgstr ""
+"Tematem jest tytuł najwyżej położonego w hierarchii artykułów artykułu "
+"nadrzędnego."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_behavior.xml:0
 #, python-format
 msgid "The view does not exist or you are not allowed to access to it."
-msgstr ""
+msgstr "Widok nie istnieje lub nie masz do niego dostępu."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "This Article is in Trash and will be deleted on the"
-msgstr ""
+msgstr "Ten Artykuł znajduje się w Koszu i zostanie usunięty dnia"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "This article is archived."
-msgstr ""
+msgstr "Ten artykuł został zarchiwizowany."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/article_behavior/article_behavior.js:0
 #, python-format
 msgid "This article was deleted or you don't have the rights to access it."
-msgstr ""
+msgstr "Ten artykuł został usunięty lub nie masz praw dostępu do niego."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/xml/knowledge_frontend.xml:0
 #, python-format
 msgid "This view is only available for internal users"
-msgstr ""
+msgstr "Widok jest dostępny tylko dla użytkowników wewnętrznych"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__name
@@ -2290,35 +2627,36 @@ msgstr "Tytuł"
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "To be sure to stay updated, follow us on"
-msgstr ""
+msgstr "Aby być na bieżąco, obserwuj nas na"
 
 #. module: knowledge
 #: model:ir.actions.act_window,name:knowledge.knowledge_article_action_trashed
 msgid "Trash"
-msgstr ""
+msgstr "Kosz"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__to_delete
 #: model:ir.ui.menu,name:knowledge.knowledge_article_menu_trashed
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_search
 msgid "Trashed"
-msgstr ""
+msgstr "W koszu"
 
 #. module: knowledge
 #: model:ir.model.constraint,message:knowledge.constraint_knowledge_article_check_trash
 msgid "Trashed articles must be archived."
-msgstr ""
+msgstr "Artykuły wrzucone do kosza muszą zostać zarchiwizowane."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_frontend
 msgid "Try Odoo"
-msgstr ""
+msgstr "Wypróbuj Odoo"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "Trying to remove wrong member."
-msgstr ""
+msgstr "Spróbuj usunąć niepoprawny numer."
 
 #. module: knowledge
 #: model:ir.model.fields,help:knowledge.field_knowledge_article__activity_exception_decoration
@@ -2331,7 +2669,8 @@ msgid "Unarchive"
 msgstr "Przywróć"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #: code:addons/knowledge/static/src/js/knowledge_renderers.js:0
 #: code:addons/knowledge/static/src/js/knowledge_renderers.js:0
@@ -2345,33 +2684,33 @@ msgid "Untitled"
 msgstr "Bez tytułu"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/articles_structure_behavior/articles_structure_behavior.xml:0
 #, python-format
 msgid "Update"
 msgstr "Aktualizacja"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #, python-format
 msgid "Use as"
-msgstr ""
+msgstr "Użyj jako"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/file_behavior/file_behavior.xml:0
 #, python-format
 msgid "Use as Attachment"
-msgstr ""
+msgstr "Użyj jako Załącznik"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/template_behavior/template_behavior.xml:0
 #, python-format
 msgid "Use as Description"
-msgstr ""
+msgstr "Użyj jako Opis"
 
 #. module: knowledge
 #: model:ir.model.fields,help:knowledge.field_knowledge_article__category
@@ -2379,6 +2718,8 @@ msgid ""
 "Used to categozie articles in UI, depending on their main permission "
 "definitions."
 msgstr ""
+"Służy do kategoryzacji artykułów w UI, w zależności od tego jak zdefiniowane"
+" są główne uprawnienia."
 
 #. module: knowledge
 #: model:ir.model,name:knowledge.model_res_users
@@ -2390,24 +2731,24 @@ msgstr "Użytkownik"
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__user_favorite_sequence
 msgid "User Favorite Sequence"
-msgstr ""
+msgstr "Użyj Ulubionej Sekwencji"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "User Permission"
-msgstr ""
+msgstr "Uprawnienia Użytkownika"
 
 #. module: knowledge
 #: model:ir.model.constraint,message:knowledge.constraint_knowledge_article_favorite_unique_article_user
 msgid "User already has this article in favorites."
-msgstr ""
+msgstr "Użytkownik dodał już ten artykuł do ulubionych."
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__user_permission
 msgid "User permission"
-msgstr ""
+msgstr "Uprawnienia użytkownika"
 
 #. module: knowledge
 #: model:ir.model.fields,field_description:knowledge.field_knowledge_article__website_message_ids
@@ -2420,17 +2761,18 @@ msgid "Website communication history"
 msgstr "Historia komunikacji"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/res_users.py:0
 #, python-format
 msgid "Welcome %s"
-msgstr ""
+msgstr "Witaj %s"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.xml:0
 #, python-format
 msgid "What do you want to manage?"
-msgstr ""
+msgstr "Czym chciałbyś zarządzać?"
 
 #. module: knowledge
 #: model:ir.model.fields,help:knowledge.field_knowledge_article__is_locked
@@ -2438,6 +2780,8 @@ msgid ""
 "When locked, users cannot write on the body or change the title, even if "
 "they have write access on the article."
 msgstr ""
+"Użytkownicy zablokowani nie mogą pisać w rozwinięciu lub zmienić tytuł "
+"artykułu, nawet jeśli posiadają uprawnienia do pisania w nim."
 
 #. module: knowledge
 #: model:ir.model.fields,help:knowledge.field_knowledge_article__to_delete
@@ -2447,6 +2791,10 @@ msgid ""
 "                parameter can be used to modify the number of days. \n"
 "                (default is 30)"
 msgstr ""
+"Po przeniesieniu do kosza, artykuły oznaczone są do usunięcia \n"
+"                dni od ostatniej edycji. Parametr knowledge_article_trash_limit_days config\n"
+"                może zostać użyty do modyfikacji ilości dni. \n"
+"                (wartość domyślna wynosi 30)"
 
 #. module: knowledge
 #: model:ir.model.fields,help:knowledge.field_knowledge_article__full_width
@@ -2454,14 +2802,16 @@ msgid ""
 "When set, the article body will take the full width available on the article"
 " page. Otherwise, the body will have large horizontal margins."
 msgstr ""
+"Po ustawieniu, rozwinięcie artykułu zajmie całą szerokość dostępną na jego "
+"stronie. W przeciwnym razie marginesy poziome będą duże."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "Who has access to what?"
-msgstr ""
+msgstr "Kto ma dostęp do czego?"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/move_article_dialog/move_article_dialog.js:0
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article__category__workspace
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_tree
@@ -2473,170 +2823,190 @@ msgstr "Przestrzeń robocza"
 #. module: knowledge
 #: model:ir.model.constraint,message:knowledge.constraint_knowledge_article_member_unique_article_partner
 msgid "You already added this partner on this article."
-msgstr ""
+msgstr "Dodałeś już tego partnera do tego artykułu."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_frontend
 msgid "You are currently visiting as a Guest User"
-msgstr ""
+msgstr "Obecnie odwiedzasz stronę jako Gość"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "You are not allowed to make '%(article_name)s' private."
-msgstr ""
+msgstr "Nie masz uprawnień do zmiany \"%(article_name)s\" na prywatny."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
 "You are not allowed to move '%(article_name)s' under '%(parent_name)s'."
 msgstr ""
+"Nie masz pozwolenia na przesunięcie \"%(article_name)s\" pod "
+"\"%(parent_name)s\"."
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "You can't leave an article for which you are the last writer"
-msgstr ""
+msgstr "Nie możesz opuścić artykułu, którego ostatnim twórcą jesteś Ty"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "You can't remove the last writer of the article"
-msgstr ""
+msgstr "Nie możesz usunąć ostatniego twórcy artykułu"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "You cannot add or remove this article to your favorites"
-msgstr ""
+msgstr "Nie możesz dodać ani usunąć tego artykułu z ulubionych"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/controllers/main.py:0
 #, python-format
 msgid "You cannot change the internal permission of this article."
-msgstr ""
+msgstr "Nie możesz zmienić uprawnień wewnętrznych tego artykułu."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/controllers/main.py:0
 #, python-format
 msgid "You cannot change the permission of this member."
-msgstr ""
+msgstr "Nie możesz zmienić uprawnień tego członka."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "You cannot create an article under articles on which you cannot write"
-msgstr ""
+msgstr "Nie możesz stworzyć artykułu pod artykułem, w którym nie możesz pisać"
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
 "You cannot move an article under %(parent_name)s as you cannot write on it"
 msgstr ""
+"Nie możesz przenieść artykułu pod %(parent_name)s, ponieważ nie możesz w nim"
+" pisać "
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "You have to be editor on %(article_name)s to add members."
-msgstr ""
+msgstr "Musisz być edytorem %(article_name)s by dodawać członków."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
 "You have to be editor on %(article_name)s to change its internal permission."
 msgstr ""
+"Musisz być edytorem %(article_name)s by zmienić jego uprawnienia wewnętrzne."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
 "You have to be editor on %(article_name)s to modify members permissions."
 msgstr ""
+"Musisz być edytorem %(article_name)s by modyfikować uprawnienia członków."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid ""
 "You have to be editor on %(article_name)s to remove or exclude member "
 "%(member_name)s."
 msgstr ""
+"Musisz być edytorem %(article_name)s by usuwać lub wykluczać członków. "
+"%(member_name)s."
 
 #. module: knowledge
+#. odoo-python
 #: code:addons/knowledge/models/knowledge_article.py:0
 #, python-format
 msgid "You have to be editor on %(article_name)s to restore it."
-msgstr ""
+msgstr "Musisz być edytorem %(article_name)s by przywrócić ten artykuł."
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_trash_notification
 msgid "and the following child article(s) have"
-msgstr ""
+msgstr "i następujące artykuły podrzędne mają"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/webclient/commands/knowledge_providers.js:0
 #, python-format
 msgid "articles"
-msgstr ""
+msgstr "artykuły"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_trash_notification
 msgid "been sent to Trash.<br/><br/>"
-msgstr ""
+msgstr "zostało wysłane do Kosza.<br/><br/>"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "cover"
-msgstr ""
+msgstr "okładka"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js:0
 #, python-format
 msgid "e.g. Buildings"
-msgstr ""
+msgstr "np. Budynki"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/prompt_embedded_view_name_dialog/prompt_embedded_view_name_dialog.js:0
 #, python-format
 msgid "e.g. Todos"
-msgstr ""
+msgstr "np. Todos"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_trash_notification
 msgid "has"
-msgstr ""
+msgstr "ma"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_trash_notification
 msgid "have"
-msgstr ""
+msgstr "mają"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_mail_invite
 msgid "invited you to access"
-msgstr ""
+msgstr "zaprosił Cię do skorzystania z dostępu"
 
 #. module: knowledge
-#. openerp-web
+#. odoo-javascript
 #: code:addons/knowledge/static/src/components/behaviors/abstract_behavior/abstract_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/articles_structure_behavior/articles_structure_behavior.xml:0
 #: code:addons/knowledge/static/src/components/behaviors/embedded_view_behavior/embedded_view_behavior.xml:0
 #: code:addons/knowledge/static/src/components/permission_panel/permission_panel.xml:0
 #, python-format
 msgid "loader"
-msgstr ""
+msgstr "ładowarka"
 
 #. module: knowledge
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article__user_permission__none
 msgid "none"
-msgstr ""
+msgstr "brak"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
@@ -2646,19 +3016,19 @@ msgstr "lub"
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_user_onboarding
 msgid "pdf"
-msgstr ""
+msgstr "pdf"
 
 #. module: knowledge
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article__user_permission__read
 msgid "read"
-msgstr ""
+msgstr "czytaj"
 
 #. module: knowledge
 #: model_terms:ir.ui.view,arch_db:knowledge.knowledge_article_view_form
 msgid "to unleash the power of Knowledge !"
-msgstr ""
+msgstr "by uwolnić potęgę Wiedzy!"
 
 #. module: knowledge
 #: model:ir.model.fields.selection,name:knowledge.selection__knowledge_article__user_permission__write
 msgid "write"
-msgstr ""
+msgstr "pisz"

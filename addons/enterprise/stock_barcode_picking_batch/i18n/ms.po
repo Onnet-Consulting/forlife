@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* stock_barcode_picking_batch
 # 
+# Translators:
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.5alpha1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:49+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,7 +32,7 @@ msgstr ""
 #. module: stock_barcode_picking_batch
 #: model_terms:ir.ui.view,arch_db:stock_barcode_picking_batch.stock_barcode_batch_picking_view_info
 msgid "Allocation"
-msgstr ""
+msgstr "Peruntukan"
 
 #. module: stock_barcode_picking_batch
 #: model:ir.actions.client,name:stock_barcode_picking_batch.stock_barcode_picking_batch_client_action
@@ -68,17 +72,17 @@ msgstr ""
 #. module: stock_barcode_picking_batch
 #: model_terms:ir.ui.view,arch_db:stock_barcode_picking_batch.stock_barcode_batch_picking_view_info
 msgid "Confirm"
-msgstr ""
+msgstr "Sahkan"
 
 #. module: stock_barcode_picking_batch
 #: model_terms:ir.ui.view,arch_db:stock_barcode_picking_batch.stock_barcode_batch_picking_view_info
 msgid "Description"
-msgstr ""
+msgstr "Penerangan"
 
 #. module: stock_barcode_picking_batch
 #: model_terms:ir.ui.view,arch_db:stock_barcode_picking_batch.stock_barcode_batch_picking_view_info
 msgid "Discard"
-msgstr ""
+msgstr "Buang"
 
 #. module: stock_barcode_picking_batch
 #: model:ir.model.fields,field_description:stock_barcode_picking_batch.field_stock_picking__display_batch_button
@@ -197,12 +201,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:stock_barcode_picking_batch.field_stock_move_line__picking_id
 #: model_terms:ir.ui.view,arch_db:stock_barcode_picking_batch.stock_move_line_product_selector_inherit
 msgid "Transfer"
-msgstr ""
+msgstr "Pemindahan"
 
 #. module: stock_barcode_picking_batch
 #: model:ir.model.fields,field_description:stock_barcode_picking_batch.field_stock_picking_batch__picking_type_code
 msgid "Type of Operation"
-msgstr ""
+msgstr "Jenis Operasi"
 
 #. module: stock_barcode_picking_batch
 #: model_terms:ir.ui.view,arch_db:stock_barcode_picking_batch.stock_barcode_batch_picking_view_info

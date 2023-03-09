@@ -31,6 +31,14 @@ odoo.define('forlife_pos_search_customer.PartnerListScreen', function(require) {
             if(this.state.query != ""){
                 domain = [[fieldName, "ilike", this.state.query + "%"]]
             }
+            this.env.pos.db.partner_sorted = [];
+            this.env.pos.db.partner_by_id = [];
+            this.env.pos.db.partner_by_barcode = [];
+            this.env.pos.db.partner_search_strings = [];
+            if (!domain){
+                this.render(true);
+                return [];
+            }
             const result = await this.env.services.rpc(
                 {
                     model: 'pos.session',

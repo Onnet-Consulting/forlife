@@ -469,7 +469,7 @@ msgstr "Kapital"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "Expenses"
-msgstr ""
+msgstr "Troškovi"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -532,7 +532,7 @@ msgstr "Fakturisano"
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/benchmark_dashboard.json:0
 #, python-format
 msgid "KPI"
-msgstr ""
+msgstr "KPI"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web
@@ -1028,7 +1028,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_account_accountant/data/files/accounting_dashboard.json:0
 #, python-format
 msgid "last period"
-msgstr ""
+msgstr "prethodni period"
 
 #. module: spreadsheet_dashboard_account_accountant
 #. openerp-web

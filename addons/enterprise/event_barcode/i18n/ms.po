@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* event_barcode
 # 
+# Translators:
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~15.4+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-06-09 14:10+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,7 +34,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:event_barcode.event_report_template_full_page_ticket_inherit_barcode
 #, python-format
 msgid "Barcode"
-msgstr ""
+msgstr "Kod bar"
 
 #. module: event_barcode
 #: model:ir.actions.client,name:event_barcode.event_barcode_action_main_view
@@ -60,14 +64,14 @@ msgstr ""
 #: code:addons/event_barcode/static/src/js/event_barcode.js:0
 #, python-format
 msgid "Close"
-msgstr ""
+msgstr "Tutup"
 
 #. module: event_barcode
 #. openerp-web
 #: code:addons/event_barcode/static/src/xml/event_barcode.xml:0
 #, python-format
 msgid "Company"
-msgstr ""
+msgstr "Syarikat"
 
 #. module: event_barcode
 #. openerp-web
@@ -79,14 +83,14 @@ msgstr ""
 #. module: event_barcode
 #: model:ir.model,name:event_barcode.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Tetapan Konfigurasi"
 
 #. module: event_barcode
 #. openerp-web
 #: code:addons/event_barcode/static/src/js/event_barcode.js:0
 #, python-format
 msgid "Confirm"
-msgstr ""
+msgstr "Sahkan"
 
 #. module: event_barcode
 #. openerp-web
@@ -100,12 +104,12 @@ msgstr ""
 #: code:addons/event_barcode/static/src/xml/event_barcode.xml:0
 #, python-format
 msgid "Event"
-msgstr ""
+msgstr "Peristiwa"
 
 #. module: event_barcode
 #: model:ir.model,name:event_barcode.model_event_registration
 msgid "Event Registration"
-msgstr ""
+msgstr "Pendaftaran Acara"
 
 #. module: event_barcode
 #. openerp-web
@@ -126,12 +130,12 @@ msgstr ""
 #: code:addons/event_barcode/static/src/xml/event_barcode.xml:0
 #, python-format
 msgid "Name"
-msgstr ""
+msgstr "Nama"
 
 #. module: event_barcode
 #: model:ir.model.fields,field_description:event_barcode.field_res_config_settings__barcode_nomenclature_id
 msgid "Nomenclature"
-msgstr ""
+msgstr "Nomenklatur"
 
 #. module: event_barcode
 #. openerp-web
@@ -145,7 +149,7 @@ msgstr ""
 #: code:addons/event_barcode/static/src/js/event_barcode.js:0
 #, python-format
 msgid "Print"
-msgstr ""
+msgstr "Cetak"
 
 #. module: event_barcode
 #. openerp-web
@@ -216,21 +220,21 @@ msgstr ""
 #: code:addons/event_barcode/static/src/xml/event_barcode.xml:0
 #, python-format
 msgid "Ticket"
-msgstr ""
+msgstr "Tiket"
 
 #. module: event_barcode
 #. openerp-web
 #: code:addons/event_barcode/static/src/js/event_barcode.js:0
 #, python-format
 msgid "View"
-msgstr ""
+msgstr "Lihat"
 
 #. module: event_barcode
 #. openerp-web
 #: code:addons/event_barcode/static/src/js/event_barcode.js:0
 #, python-format
 msgid "Warning"
-msgstr ""
+msgstr "Amaran"
 
 #. module: event_barcode
 #. openerp-web

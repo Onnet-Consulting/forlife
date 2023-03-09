@@ -269,7 +269,7 @@ class AccountJournal(models.Model):
     def _get_PmtTpInf(self, sct_generic=False, local_instrument=None):
         PmtTpInf = etree.Element("PmtTpInf")
 
-        if not sct_generic:
+        if not sct_generic and self.sepa_pain_version != 'pain.001.001.03.ch.02':
             SvcLvl = etree.SubElement(PmtTpInf, "SvcLvl")
             Cd = etree.SubElement(SvcLvl, "Cd")
             Cd.text = 'SEPA'

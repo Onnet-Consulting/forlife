@@ -10,6 +10,7 @@
 # ievaputnina <ievai.putninai@gmail.com>, 2022
 # Anzelika Adejanova, 2022
 # Martin Trigaux, 2022
+# Armīns Jeltajevs <armins.jeltajevs@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -17,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:47+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Armīns Jeltajevs <armins.jeltajevs@gmail.com>, 2023\n"
 "Language-Team: Latvian (https://www.transifex.com/odoo/teams/41243/lv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -225,7 +226,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:approvals.field_approval_request__approver_ids
 #: model_terms:ir.ui.view,arch_db:approvals.approval_category_view_form
 msgid "Approvers"
-msgstr ""
+msgstr "Apstiprinātāji"
 
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_category__approver_sequence
@@ -278,7 +279,7 @@ msgstr ""
 #. module: approvals
 #: model:ir.model.fields,field_description:approvals.field_approval_approver__can_edit
 msgid "Can Edit"
-msgstr ""
+msgstr "Var rediģēt"
 
 #. module: approvals
 #: model:ir.model.fields.selection,name:approvals.selection__approval_approver__status__cancel

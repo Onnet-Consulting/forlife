@@ -2,12 +2,23 @@
 # This file contains the translation of the following modules:
 # 	* social_youtube
 # 
+# Translators:
+# Vida Potočnik <vida.potocnik@mentis.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# laznikd <laznik@mentis.si>, 2022
+# Grega Vavtar <grega@hbs.si>, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# Martin Trigaux, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
+"Last-Translator: Jasmina Macur <jasmina@hbs.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -63,7 +74,7 @@ msgstr ""
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_account_revoke_youtube__account_id
 msgid "Account"
-msgstr ""
+msgstr "Konto"
 
 #. module: social_youtube
 #: code:addons/social_youtube/models/social_live_post.py:0
@@ -94,12 +105,12 @@ msgstr ""
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_account_revoke_youtube_view_form
 msgid "Cancel"
-msgstr ""
+msgstr "Prekliči"
 
 #. module: social_youtube
 #: model:social.stream.type,name:social_youtube.stream_type_youtube_channel_videos
 msgid "Channel"
-msgstr ""
+msgstr "Kanal"
 
 #. module: social_youtube
 #. openerp-web
@@ -107,7 +118,7 @@ msgstr ""
 #: code:addons/social_youtube/static/src/xml/social_youtube_templates.xml:0
 #, python-format
 msgid "Clear"
-msgstr ""
+msgstr "Počisti"
 
 #. module: social_youtube
 #: code:addons/social_youtube/models/social_stream_post.py:0
@@ -120,14 +131,14 @@ msgstr ""
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Uredi nastavitve"
 
 #. module: social_youtube
 #. openerp-web
 #: code:addons/social_youtube/static/src/js/social_youtube_upload_field.js:0
 #, python-format
 msgid "Confirmation"
-msgstr ""
+msgstr "Potrditev"
 
 #. module: social_youtube
 #: model:ir.model.fields,help:social_youtube.field_social_live_post__youtube_video_id
@@ -151,17 +162,17 @@ msgstr ""
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_account_revoke_youtube__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Ustvaril"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_account_revoke_youtube__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Ustvarjeno"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_account_revoke_youtube__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Prikazani naziv"
 
 #. module: social_youtube
 #. openerp-web
@@ -202,29 +213,29 @@ msgstr ""
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_account_revoke_youtube__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_account_revoke_youtube____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Zadnjič spremenjeno"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_account_revoke_youtube__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Zadnji posodobil"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_account_revoke_youtube__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Zadnjič posodobljeno"
 
 #. module: social_youtube
 #. openerp-web
 #: code:addons/social_youtube/static/src/xml/social_youtube_templates.xml:0
 #, python-format
 msgid "Likes"
-msgstr ""
+msgstr "Všečki"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_media__media_type
@@ -236,7 +247,7 @@ msgstr ""
 #: code:addons/social_youtube/static/src/js/social_youtube_upload_field.js:0
 #, python-format
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.res_config_settings_view_form
@@ -282,13 +293,13 @@ msgstr ""
 #. module: social_youtube
 #: model:ir.model.fields.selection,name:social_youtube.selection__social_post__youtube_video_privacy__public
 msgid "Public"
-msgstr ""
+msgstr "Javno"
 
 #. module: social_youtube
 #: code:addons/social_youtube/controllers/main.py:0
 #, python-format
 msgid "Reason:"
-msgstr ""
+msgstr "Razlog:"
 
 #. module: social_youtube
 #: model:ir.model.fields,help:social_youtube.field_social_account__youtube_refresh_token
@@ -300,7 +311,7 @@ msgstr ""
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_account_view_form
 msgid "Revoke"
-msgstr ""
+msgstr "Prekliči"
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_account_revoke_youtube_view_form
@@ -331,7 +342,7 @@ msgstr ""
 #: code:addons/social_youtube/static/src/xml/social_youtube_templates.xml:0
 #, python-format
 msgid "Select"
-msgstr ""
+msgstr "Izberi"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_post__youtube_accounts_other_count
@@ -363,7 +374,7 @@ msgstr ""
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_media
 msgid "Social Media"
-msgstr ""
+msgstr "Socialni medij"
 
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_post
@@ -378,7 +389,7 @@ msgstr ""
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_stream
 msgid "Social Stream"
-msgstr ""
+msgstr "Socialni pretok"
 
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_stream_post
@@ -440,7 +451,7 @@ msgstr ""
 #: code:addons/social_youtube/wizard/social_account_revoke_youtube.py:0
 #, python-format
 msgid "Unknown"
-msgstr ""
+msgstr "Neznano"
 
 #. module: social_youtube
 #: model:ir.model.fields.selection,name:social_youtube.selection__social_post__youtube_video_privacy__unlisted
@@ -491,7 +502,7 @@ msgstr ""
 #: code:addons/social_youtube/models/social_post.py:0
 #, python-format
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_post_view_form
@@ -527,7 +538,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_stream_post_view_kanban
 #, python-format
 msgid "Views"
-msgstr ""
+msgstr "Prikazi"
 
 #. module: social_youtube
 #. openerp-web
@@ -552,7 +563,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:social_youtube.selection__social_media__media_type__youtube
 #: model:social.media,name:social_youtube.social_media_youtube
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_post__youtube_access_token

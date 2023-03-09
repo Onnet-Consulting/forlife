@@ -421,7 +421,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:social_twitter.field_social_stream_post__twitter_comments_count
 #, python-format
 msgid "Twitter Comments"
-msgstr ""
+msgstr "Twitter komentari"
 
 #. module: social_twitter
 #: model:ir.model.fields,field_description:social_twitter.field_res_config_settings__twitter_consumer_key
@@ -589,6 +589,8 @@ msgid ""
 "You can comment only three times a tweet as it may be considered as spamming"
 " by Twitter"
 msgstr ""
+"Možete da komentarišete samo tri puta po tvitu jer to može biti tretirano "
+"kao spam od strane Twitter-a"
 
 #. module: social_twitter
 #: model:ir.model.constraint,message:social_twitter.constraint_social_stream_post_tweet_uniq

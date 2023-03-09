@@ -84,7 +84,7 @@ msgstr "库存价值使用域"
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit
 msgid "Value of all incoming stock moves."
-msgstr "标示所有进货变化的值"
+msgstr "所有进货库存移动的价值。"
 
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit

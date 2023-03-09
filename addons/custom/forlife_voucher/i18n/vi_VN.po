@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-02 16:08+0000\n"
-"PO-Revision-Date: 2023-03-02 16:08+0000\n"
+"POT-Creation-Date: 2023-03-09 04:27+0000\n"
+"PO-Revision-Date: 2023-03-09 04:27+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -17,10 +17,12 @@ msgstr ""
 
 #. module: forlife_voucher
 #: model_terms:ir.ui.view,arch_db:forlife_voucher.view_order_form_voucher_inherit
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.view_pos_form_voucher_inherit
 msgid "<span class=\"o_stat_text\">Voucher</span>"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_product_category__property_price_account_id
 #: model_terms:ir.ui.view,arch_db:forlife_voucher.product_category_voucher_form_inherit
 msgid "Account Price"
 msgstr "Tài khoản chịu giá"
@@ -88,7 +90,7 @@ msgstr "Trung tâm chi phí"
 #: model:ir.actions.server,name:forlife_voucher.ir_cron_check_due_date_voucher_ir_actions_server
 #: model:ir.cron,cron_name:forlife_voucher.ir_cron_check_due_date_voucher
 msgid "Check Due Date Voucher"
-msgstr ""
+msgstr "Cập nhật trạng thái Mã Voucher"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_voucher_voucher__name
@@ -101,9 +103,17 @@ msgid "Count"
 msgstr "Số lượng"
 
 #. module: forlife_voucher
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.view_order_form_voucher_inherit
+#: model_terms:ir.ui.view,arch_db:forlife_voucher.view_pos_form_voucher_inherit
 #: model_terms:ir.ui.view,arch_db:forlife_voucher.voucher_form_view
 msgid "Create Voucher"
 msgstr "Tạo Voucher"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_order_line__x_qty_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_sale_order_line__x_qty_voucher
+msgid "Created Voucher Quantity"
+msgstr "SL đã tạo voucher"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__create_uid
@@ -413,16 +423,20 @@ msgid "Please set the infomation of Vourcher!"
 msgstr ""
 
 #. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr "Chi tiết đơn hàng bán lẻ"
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "Đơn bán lẻ"
+
+#. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_product_product__price
-#: model:ir.model.fields,field_description:forlife_voucher.field_product_template__price
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher_line__price
 msgid "Price"
 msgstr "Mệnh giá"
-
-#. module: forlife_voucher
-#: model:ir.model.fields,field_description:forlife_voucher.field_product_category__property_price_account_id
-msgid "Account Price"
-msgstr "Tài khoản chịu giá"
 
 #. module: forlife_voucher
 #. odoo-python
@@ -441,6 +455,11 @@ msgstr "Sản phẩm"
 #: model:ir.model,name:forlife_voucher.model_product_category
 msgid "Product Category"
 msgstr "Danh mục sản phẩm"
+
+#. module: forlife_voucher
+#: model:ir.model,name:forlife_voucher.model_product_product
+msgid "Product Variant"
+msgstr "Biến thể sản phẩm"
 
 #. module: forlife_voucher
 #: model:ir.model.fields,field_description:forlife_voucher.field_program_voucher__product_id

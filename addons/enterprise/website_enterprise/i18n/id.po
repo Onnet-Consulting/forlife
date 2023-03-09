@@ -3,7 +3,6 @@
 # 	* website_enterprise
 # 
 # Translators:
-# Martin Trigaux, 2022
 # Abe Manyo, 2022
 # 
 msgid ""
@@ -30,19 +29,19 @@ msgstr "Appointment"
 #: code:addons/website_enterprise/static/src/js/systray_items/new_content.js:0
 #, python-format
 msgid "Appointment Form"
-msgstr ""
+msgstr "Formulir Appointment"
 
 #. module: website_enterprise
 #: model:website.configurator.feature,name:website_enterprise.feature_module_helpdesk
 msgid "Helpdesk"
-msgstr "Helpdesk"
+msgstr "Mejabantuan"
 
 #. module: website_enterprise
 #: model:website.configurator.feature,description:website_enterprise.feature_module_helpdesk
 msgid "Offer support with a ticketing system"
-msgstr ""
+msgstr "Tawarkan bantuan dengan sistem tiket"
 
 #. module: website_enterprise
 #: model:website.configurator.feature,description:website_enterprise.feature_module_appointment
 msgid "Self-service booking system"
-msgstr ""
+msgstr "Sistem booking self-service"

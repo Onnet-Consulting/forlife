@@ -111,7 +111,7 @@
                 <attribute name="name">portal_remaining_hours</attribute>
                 <attribute name="string">Remaining Hours</attribute>
                 <attribute name="decoration-danger">portal_progress &gt;= 100</attribute>
-                <attribute name="decoration-warning">portal_progress &lt;= 100</attribute>
+                <attribute name="decoration-warning">portal_progress &gt;= 80 and portal_progress &lt;= 100</attribute>
             </xpath>
             <xpath expr="//field[@name='subtask_effective_hours']" position="attributes">
                 <attribute name="name">portal_subtask_effective_hours</attribute>

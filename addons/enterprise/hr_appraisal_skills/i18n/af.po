@@ -53,7 +53,7 @@ msgstr ""
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill_report__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: hr_appraisal_skills
 #: model:ir.model.fields,field_description:hr_appraisal_skills.field_hr_appraisal_skill__create_uid

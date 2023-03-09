@@ -4,7 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Sarah Park, 2022
+# Sarah Park, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-29 09:37+0000\n"
-"Last-Translator: Sarah Park, 2022\n"
+"Last-Translator: Sarah Park, 2023\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,28 +33,28 @@ msgstr "일"
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Average Cycle Time"
-msgstr ""
+msgstr "평균 주기 시간"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Average Delay"
-msgstr ""
+msgstr "평균 지연 일자"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Avg cycle time"
-msgstr ""
+msgstr "평균 주기 시간"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Avg delay"
-msgstr ""
+msgstr "평균 지연 시간"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
@@ -69,7 +69,7 @@ msgstr "현재"
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "KPI"
-msgstr ""
+msgstr "KPI"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
@@ -84,7 +84,7 @@ msgstr "위치"
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Moved Quantity"
-msgstr ""
+msgstr "이동한 수량"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
@@ -132,7 +132,7 @@ msgstr "품목"
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Product quantity"
-msgstr ""
+msgstr "품목 수량"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
@@ -149,42 +149,42 @@ msgstr "수량"
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Stock Moves Analysis by Destination Address "
-msgstr ""
+msgstr "도착지 주소별 재고 이동 분석"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Stock Moves Analysis by Destination Location"
-msgstr ""
+msgstr "도착지 위치별 재고 이동 분석"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Stock Moves Analysis by Product"
-msgstr ""
+msgstr "품목별 재고 이동 분석"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Stock Moves Analysis by Warehouse"
-msgstr ""
+msgstr "창고별 재고 이동 분석"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Top Locations"
-msgstr ""
+msgstr "위치별 순위"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Top Partners"
-msgstr ""
+msgstr "협력사별 순위"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
@@ -198,7 +198,7 @@ msgstr "제품 순위"
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Top Warehouses"
-msgstr ""
+msgstr "창고 순위"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
@@ -213,7 +213,7 @@ msgstr "창고"
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "Weekly Stock Moves"
-msgstr ""
+msgstr "주간 재고 이동"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
@@ -221,7 +221,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "last period"
-msgstr ""
+msgstr "이전 기간"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
@@ -235,11 +235,11 @@ msgstr "전기 대비"
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "stats - current"
-msgstr ""
+msgstr "통계 - 당기"
 
 #. module: spreadsheet_dashboard_stock
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_stock/data/files/inventory_flow_dashboard.json:0
 #, python-format
 msgid "stats - previous"
-msgstr ""
+msgstr "통계 - 전기"

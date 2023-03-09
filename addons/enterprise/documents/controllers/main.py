@@ -36,8 +36,8 @@ class ShareRoute(http.Controller):
         return request.env['ir.binary']._get_stream_from(record, field).get_response()
 
     def _get_downloadable_documents(self, documents):
-        """ to override to filter out documents that cannot be downloaded """
-        return documents
+        """ file requests are not downloadable """
+        return documents.filtered(lambda d: d.type != "empty")
 
     def _make_zip(self, name, documents):
         """returns zip files for the Document Inspector and the portal.
@@ -263,13 +263,13 @@ class ShareRoute(http.Controller):
             env = request.env
             share = env['documents.share'].sudo().browse(share_id)
             if share._get_documents_and_check_access(access_token, document_ids=[], operation='read') is not False:
-                user_id = share.create_uid.id if not document_id else env['documents.document'].sudo().browse(int(document_id)).owner_id.id
-                image = env['res.users'].sudo().browse(user_id).avatar_128
-
-                if not image:
-                    return env['ir.binary']._image_placeholder()
-
-                return base64.b64decode(image)
+                if document_id:
+                    user = env['documents.document'].sudo().browse(int(document_id)).owner_id
+                    if not user:
+                        return env['ir.binary']._placeholder()
+                else:
+                    user = share.create_uid
+                return request.env['ir.binary']._get_stream_from(user, 'avatar_128').get_response()
             else:
                 return request.not_found()
         except Exception:

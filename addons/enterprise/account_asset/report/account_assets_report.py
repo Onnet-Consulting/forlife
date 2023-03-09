@@ -130,10 +130,10 @@ class AssetReportCustomHandler(models.AbstractModel):
                 col['name'] = format_date(self.env, column_group_options['date']['date_to'])
 
         options['custom_columns_subheaders'] = [
-            {"name": "Characteristics", "colspan": 4},
-            {"name": "Assets", "colspan": 4},
-            {"name": "Depreciation", "colspan": 4},
-            {"name": "Book Value", "colspan": 1}
+            {"name": _("Characteristics"), "colspan": 4},
+            {"name": _("Assets"), "colspan": 4},
+            {"name": _("Depreciation"), "colspan": 4},
+            {"name": _("Book Value"), "colspan": 1}
         ]
 
         # Unfold all by default
@@ -254,57 +254,64 @@ class AssetReportCustomHandler(models.AbstractModel):
         if not lines:
             return lines
 
-        rslt_lines = []
-        idx_monetary_columns = [idx_col for idx_col, col in enumerate(options['columns']) if col['figure_type'] == 'monetary']
-        # while iterating, we compare the 'parent_account_id' with the 'current_account_id' of each line,
-        # and sum the monetary amounts into 'group_total', the lines belonging to the same account.account.id are
-        # added to 'group_lines'
-        parent_account_id = lines[0].get('assets_account_id')  # get parent id name
-        group_total = [0] * len(idx_monetary_columns)
-        group_lines = []
+        line_vals_per_account_id = {}
+        for line in lines:
+            parent_account_id = line.get('assets_account_id')
 
-        dummy_extra_line = {'id': '-account.account-1', 'columns': [{'name': 0, 'no_format': 0}] * len(options['columns'])}
-        for line in lines + [dummy_extra_line]:
-            line_amounts = [line['columns'][idx].get('no_format', 0) for idx in idx_monetary_columns]
-            current_parent_account_id = line.get('assets_account_id')
+            model, res_id = report._get_model_info_from_id(line['id'])
+            assert model == 'account.asset'
+
             # replace the line['id'] to add the account.account.id
             line['id'] = report._build_line_id([
-                (None, 'account.account', current_parent_account_id),
-                (None, 'account.asset', report._get_model_info_from_id(line['id'])[-1])
+                (None, 'account.account', parent_account_id),
+                (None, 'account.asset', res_id)
             ])
-            # if True, the current lines belongs to another account.account.id, we know the preceding group is complete
-            # so we can add the grouping line of the preceding group (corresponding to the parent_account_id).
-            if current_parent_account_id != parent_account_id:
-                account = self.env['account.account'].browse(parent_account_id)
-                columns = []
-                for idx_col in range(len(options['columns'])):
-                    if idx_col in idx_monetary_columns:
-                        tot_val = group_total.pop(0)
-                        columns.append({
-                            'name': report.format_value(tot_val, self.env.company.currency_id, figure_type='monetary'),
-                            'no_format': tot_val
-                        })
-                    else:
-                        columns.append({})
-                new_line = {
-                    'id': report._build_line_id([(None, 'account.account', parent_account_id)]),
-                    'name': f"{account.code} {account.name}",
-                    'unfoldable': True,
-                    'unfolded': options.get('unfold_all', False),
-                    'level': 1,
-                    'columns': columns,
-                    'class': 'o_account_asset_column_contrast',
-                }
-                rslt_lines += [new_line] + group_lines
-                # Reset the control variables
-                parent_account_id = current_parent_account_id
-                group_total = [0] * len(idx_monetary_columns)
-                group_lines = []
-            # Add the line amount to the current group_total, set the line's parent_id and add the line to the
-            # current group of lines
-            group_total = [x + y for x, y in zip(group_total, line_amounts)]
-            line['parent_id'] = report._build_line_id([(None, 'account.account', parent_account_id)])
-            group_lines.append(line)
+
+            line_vals_per_account_id.setdefault(parent_account_id, {
+                # We don't assign a name to the line yet, so that we can batch the browsing of account.account objects
+                'id': report._build_line_id([(None, 'account.account', parent_account_id)]),
+                'columns': [], # Filled later
+                'unfoldable': True,
+                'unfolded': options.get('unfold_all', False),
+                'level': 1,
+                'class': 'o_account_asset_column_contrast',
+
+                # This value is stored here for convenience; it will be removed from the result
+                'group_lines': [],
+            })['group_lines'].append(line)
+
+        # Generate the result
+        idx_monetary_columns = [idx_col for idx_col, col in enumerate(options['columns']) if col['figure_type'] == 'monetary']
+        accounts = self.env['account.account'].browse(line_vals_per_account_id.keys())
+        rslt_lines = []
+        for account in accounts:
+            account_line_vals = line_vals_per_account_id[account.id]
+            account_line_vals['name'] = f"{account.code} {account.name}"
+
+            rslt_lines.append(account_line_vals)
+
+            group_totals = {column_index: 0 for column_index in idx_monetary_columns}
+            group_lines = account_line_vals.pop('group_lines')
+            for account_subline in group_lines:
+                # Add this line to the group totals
+                for column_index in idx_monetary_columns:
+                    group_totals[column_index] += account_subline['columns'][column_index].get('no_format', 0)
+
+                # Setup the parent and add the line to the result
+                account_subline['parent_id'] = account_line_vals['id']
+                rslt_lines.append(account_subline)
+
+            # Add totals (columns) to the account line
+            for column_index in range(len(options['columns'])):
+                tot_val = group_totals.get(column_index)
+                if tot_val is None:
+                    account_line_vals['columns'].append({})
+                else:
+                    account_line_vals['columns'].append({
+                        'name': report.format_value(tot_val, self.env.company.currency_id, figure_type='monetary'),
+                        'no_format': tot_val,
+                    })
+
         return rslt_lines
 
     def _query_values(self, options):
@@ -321,7 +328,7 @@ class AssetReportCustomHandler(models.AbstractModel):
                    asset.name AS asset_name,
                    asset.original_value AS asset_original_value,
                    asset.currency_id AS asset_currency_id,
-                   asset.acquisition_date AS asset_date,
+                   MIN(move.date) AS asset_date,
                    asset.disposal_date AS asset_disposal_date,
                    asset.acquisition_date AS asset_acquisition_date,
                    asset.method AS asset_method,

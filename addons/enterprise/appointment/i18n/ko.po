@@ -7,15 +7,15 @@
 # Link Up링크업 <linkup.way@gmail.com>, 2022
 # Linkup <link-up@naver.com>, 2022
 # JH CHOI <hwangtog@gmail.com>, 2022
-# Sarah Park, 2022
+# Sarah Park, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Sarah Park, 2022\n"
+"Last-Translator: Sarah Park, 2023\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,6 +24,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid " (copy)"
@@ -37,13 +38,13 @@ msgstr "# 일정"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__appointment_count_report
 msgid "# Appointments in the last 30 days"
-msgstr ""
+msgstr "# 최근 30일 중의 약속"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__suggested_staff_user_count
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__staff_user_count
 msgid "# Staff Users"
-msgstr ""
+msgstr "# 직원 사용자"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_calendar
@@ -51,12 +52,14 @@ msgid "#{day['today_cls'] and 'Today' or ''}"
 msgstr "#{day['today_cls'] and 'Today' or ''}"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "%s - Let's meet"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "%s with %s"
@@ -70,22 +73,25 @@ msgstr "(시간대 :"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "+3212345678"
-msgstr ""
+msgstr "+3212345678"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar.py:0
 #, python-format
 msgid ", All Day"
 msgstr ", 하루 종일"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_svg.xml:0
 #, python-format
 msgid ""
 ".stgrey0{fill:#E3E3E3}\n"
 "                .stgrey1{fill:#F2F2F2}"
 msgstr ""
+".stgrey0{fill:#E3E3E3}\n"
+"                .stgrey1{fill:#F2F2F2}"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
@@ -93,6 +99,8 @@ msgid ""
 "<br/>\n"
 "                                    <span>Duration</span>"
 msgstr ""
+"<br/>\n"
+"                                    <span>소요시간</span>"
 
 #. module: appointment
 #: model:mail.template,body_html:appointment.appointment_booked_mail_template
@@ -171,6 +179,79 @@ msgid ""
 "</div>\n"
 "            "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"colors\" t-value=\"{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}\"/>\n"
+"    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
+"    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
+"    <p>\n"
+"    <t t-out=\"object.appointment_type_id.name or ''\">Technical Demo</t>에 대한 약속이 <t t-if=\"object.appointment_type_id.category != 'custom'\"> <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>님</t>과 함께 예약 완료되었습니다.\n"
+"    </p>\n"
+"    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+"        <a t-attf-href=\"/calendar/meeting/join?token={{ object.access_token }}\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
+"            참가하기</a>\n"
+"        <a t-attf-href=\"/web?#id={{ object.id }}&amp;view_type=form&amp;model=calendar.event\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
+"            내용 확인</a>\n"
+"    </div>\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
+"            <td width=\"130px;\" style=\"min-width: 130px;\">\n"
+"                <div style=\"border-top-start-radius: 3px; border-top-end-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">수요일</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"str(object.start.day) or ''\">1일</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">2020년 1월</t>\n"
+"                </div>\n"
+"                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-end-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-start-radius: 3px;\">\n"
+"                    <t t-if=\"not object.allday\">\n"
+"                        <div>\n"
+"                            <t t-out=\"format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t>\n"
+"                        </div>\n"
+"                        <t t-if=\"mail_tz\">\n"
+"                            <div style=\"font-size: 10px; font-weight: normal;\">\n"
+"                                (<t t-out=\"mail_tz\"/>)\n"
+"                            </div>\n"
+"                        </t>\n"
+"                    </t>\n"
+"                </div>\n"
+"            </td>\n"
+"            <td width=\"20px;\"/>\n"
+"            <td style=\"padding-top: 5px;\">\n"
+"                <p><strong>일정 세부 내용</strong></p>\n"
+"                <ul>\n"
+"                    <li t-if=\"object.location\">위치: <t t-out=\"object.location or ''\">Bruxelles</t>\n"
+"                        (<a target=\"_blank\" t-attf-href=\"http://maps.google.com/maps?oi=map&amp;q={{ object.location }}\">지도 보기</a>)\n"
+"                    </li>\n"
+"                    <li t-if=\"recurrent\">일시: <t t-out=\"object.recurrence_id.name or ''\">매주, 3가지 일정 진행</t></li>\n"
+"                    <li t-if=\"not object.allday and object.duration\">소요 시간: <t t-out=\"('%dH%02d' % (object.duration,round(object.duration*60)%60)) or ''\">0H30</t></li>\n"
+"                    <li>창석자\n"
+"                    <ul>\n"
+"                        <li t-foreach=\"object.attendee_ids\" t-as=\"attendee\">\n"
+"                            <div t-attf-style=\"display: inline-block; border-radius: 50%; width: 10px; height: 10px; background:{{ colors.get(attendee.state) or 'white' }};\"> </div>\n"
+"                            <t t-if=\"attendee.common_name\">\n"
+"                                <span style=\"margin-left:5px\" t-out=\"attendee.common_name or ''\">Mitchell Admin</span>\n"
+"                            </t>\n"
+"                            <t t-else=\"\">\n"
+"                                <span style=\"margin-left:5px\">귀하</span>\n"
+"                            </t>\n"
+"                        </li>\n"
+"                    </ul></li>\n"
+"                    <li t-if=\"object.videocall_location\">\n"
+"                        참가 방법:\n"
+"                        <t t-if=\"object.get_base_url() in object.videocall_location\"> Odoo Discuss를 통한 참가</t>\n"
+"                        <t t-else=\"\"> 다음을 통한 참가</t><br/>\n"
+"                        <a t-attf-href=\"{{ object.videocall_location }}\" target=\"_blank\" t-out=\"object.videocall_location or ''\">www.mycompany.com/calendar/join_videocall/xyz</a>\n"
+"                    </li>\n"
+"                </ul>\n"
+"                <t t-if=\"not is_html_empty(object.description)\">\n"
+"                    <li>일정 세부 설명:\n"
+"                    <t t-out=\"object.description\"/></li>\n"
+"                </t>\n"
+"            </td>\n"
+"    </tr></table>\n"
+"</div>\n"
+"            "
 
 #. module: appointment
 #: model:mail.template,body_html:appointment.appointment_canceled_mail_template
@@ -243,16 +324,83 @@ msgid ""
 "</div>\n"
 "            "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"colors\" t-value=\"{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}\"/>\n"
+"    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
+"    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
+"    <p>\n"
+"    <t t-out=\"object.appointment_type_id.name or ''\">Technical Demo</t>에 대해 <t t-if=\"object.appointment_type_id.category != 'custom'\"> <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t>님과 예약한 미팅 약속이 취소되었습니다.\n"
+"    </p>\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
+"            <td width=\"130px;\" style=\"min-width: 130px;\">\n"
+"                <div style=\"border-top-start-radius: 3px; border-top-end-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">수요일</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"str(object.start.day) or ''\">1일</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
+"                    </t>2020년 1월</t>\n"
+"                </div>\n"
+"                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-end-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-start-radius: 3px;\">\n"
+"                    <t t-if=\"not object.allday\">\n"
+"                        <div><t t-out=\"format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t></div>\n"
+"                        <t t-if=\"mail_tz\">\n"
+"                            <div style=\"font-size: 10px; font-weight: normal;\">\n"
+"                                (<t t-out=\"mail_tz\"/>)\n"
+"                            </div>\n"
+"                        </t>\n"
+"                    </t>\n"
+"                </div>\n"
+"            </td>\n"
+"            <td width=\"20px;\"/>\n"
+"            <td style=\"padding-top: 5px;\">\n"
+"                <del>\n"
+"                    <p><strong>일정 세부 내용</strong></p>\n"
+"                    <ul>\n"
+"                            <li t-if=\"object.location\">위치: <t t-out=\"object.location or ''\">Bruxelles</t>\n"
+"                                (<a target=\"_blank\" t-attf-href=\"http://maps.google.com/maps?oi=map&amp;q={{ object.location }}\">지도 보기</a>)\n"
+"                            </li>\n"
+"                            <li t-if=\"recurrent\">일시: <t t-out=\"object.recurrence_id.name or ''\">매주, 3가지 일정 진행</t></li>\n"
+"                            <li t-if=\"not object.allday and object.duration\">소요 시간: <t t-out=\"('%dH%02d' % (object.duration,round(object.duration*60)%60)) or ''\">0H30</t></li>\n"
+"                        <li>참석자\n"
+"                        <ul t-foreach=\"object.attendee_ids\" t-as=\"attendee\">\n"
+"                            <li>\n"
+"                                <div t-attf-style=\"display: inline-block; border-radius: 50%; width: 10px; height: 10px; background:{{ colors.get(attendee.state) or 'white' }};\"> </div>\n"
+"                                <t t-if=\"attendee.common_name\">\n"
+"                                    <span style=\"margin-left:5px\" t-out=\"attendee.common_name or ''\"/>\n"
+"                                </t>\n"
+"                                <t t-else=\"\">\n"
+"                                    <span style=\"margin-left:5px\">귀하</span>\n"
+"                                </t>\n"
+"                            </li>\n"
+"                        </ul></li>\n"
+"                        <li t-if=\"object.videocall_location\">\n"
+"                            참석 방법:\n"
+"                            <t t-if=\"object.get_base_url() in object.videocall_location\"> Odoo Discuss를 통한 참가</t>\n"
+"                            <t t-else=\"\"> 다음을 통한 참가</t><br/>\n"
+"                            <a t-attf-href=\"{{ object.videocall_location }}\" target=\"_blank\" t-out=\"object.videocall_location or ''\">www.mycompany.com/calendar/join_videocall/xyz</a>\n"
+"                        </li>\n"
+"                    </ul>\n"
+"                    <t t-if=\"not is_html_empty(object.description)\">\n"
+"                        <li>일정 세부 설명:\n"
+"                        <t t-out=\"object.description\"/></li>\n"
+"                    </t>\n"
+"                </del>\n"
+"            </td>\n"
+"    </tr></table>\n"
+"</div>\n"
+"            "
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form
 msgid "<i class=\"fa fa-info-circle\" title=\"Info\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-info-circle\" title=\"Info\"/>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
 msgid "<i class=\"fa fa-map-marker me-2\" title=\"Location\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-map-marker me-2\" title=\"Location\"/>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -260,6 +408,8 @@ msgid ""
 "<i class=\"fa fa-pencil me-2\" role=\"img\" aria-label=\"Edit\" "
 "title=\"Create custom questions in backend\"/><em>Add Custom Questions</em>"
 msgstr ""
+"<i class=\"fa fa-pencil me-2\" role=\"img\" aria-label=\"Edit\" "
+"title=\"Create custom questions in backend\"/><em>맞춤형 질문 추가</em>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form
@@ -278,12 +428,12 @@ msgstr ""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
 msgid "<span class=\"bg-danger\">Archived</span>"
-msgstr ""
+msgstr "<span class=\"bg-danger\">보관 처리됨</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "<span class=\"o_not_editable\">Online</span>"
-msgstr ""
+msgstr "<span class=\"o_not_editable\">온라인</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -291,6 +441,8 @@ msgid ""
 "<span class=\"text-nowrap\"><i class=\"fa fa-arrow-right mx-2\"/>Back to "
 "edit mode</span>"
 msgstr ""
+"<span class=\"text-nowrap\"><i class=\"fa fa-arrow-right mx-2\"/>편집 모드로 "
+"돌아가기</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
@@ -300,7 +452,7 @@ msgstr "<span> 시간</span>"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "<span>Online</span>"
-msgstr ""
+msgstr "<span>온라인</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
@@ -340,6 +492,7 @@ msgid "<strong>Your appointment has been successfully booked!</strong>"
 msgstr "<strong>일정이 성공적으로 예약되었습니다!</strong>"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar_view.py:0
 #, python-format
 msgid ""
@@ -368,6 +521,13 @@ msgid "Add a function here..."
 msgstr ""
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Add a specific appointment."
+msgstr ""
+
+#. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "Add an intro message here..."
 msgstr ""
@@ -380,7 +540,7 @@ msgstr ""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Add to iCal/Outlook"
-msgstr ""
+msgstr "iCal/아웃룩에 추가"
 
 #. module: appointment
 #: model:res.groups,name:appointment.group_appointment_manager
@@ -388,6 +548,7 @@ msgid "Administrator"
 msgstr "관리자"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "All"
@@ -400,6 +561,7 @@ msgid "All Appointments"
 msgstr "모든 일정"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #: model:ir.model.fields,field_description:appointment.field_appointment_slot__allday
 #, python-format
@@ -422,12 +584,14 @@ msgid "An answer input must either have a text value or a predefined answer."
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar_view.py:0
 #, python-format
 msgid "An appointment type is needed to get the link."
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_slot.py:0
 #, python-format
 msgid "An unique type slot should have a start and end datetime"
@@ -446,7 +610,7 @@ msgstr "답변"
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_answer_input_view_tree
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "Answer Breakdown"
-msgstr ""
+msgstr "답변 세부 분류"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_answer_input_view_form
@@ -459,7 +623,7 @@ msgid "Answers"
 msgstr "답변"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_type__category__anytime
 #, python-format
@@ -472,9 +636,12 @@ msgid "Any User"
 msgstr ""
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
+#, python-format
 msgid "Appointment"
 msgstr "일정"
 
@@ -537,7 +704,7 @@ msgstr ""
 #: model:ir.ui.menu,name:appointment.menu_appointment_type_custom_and_anytime
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_tree_invitation
 msgid "Appointment Invitations"
-msgstr ""
+msgstr "약속 초대"
 
 #. module: appointment
 #: model:ir.model,name:appointment.model_appointment_invite
@@ -572,7 +739,7 @@ msgstr ""
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__name
 msgid "Appointment Title"
-msgstr ""
+msgstr "약속 이름"
 
 #. module: appointment
 #: model:ir.model,name:appointment.model_appointment_type
@@ -591,9 +758,10 @@ msgstr "약속 유형"
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__appointment_type_ids
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_search
 msgid "Appointment Types"
-msgstr ""
+msgstr "약속 유형"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/calendar_event.py:0
 #, python-format
 msgid "Appointment canceled by: %(partners)s"
@@ -641,6 +809,7 @@ msgid "Assignment Method"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_slot.py:0
 #, python-format
 msgid ""
@@ -689,7 +858,10 @@ msgid "CC to"
 msgstr ""
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
 #: model:ir.ui.menu,name:appointment.calendar_appointment_type_menu_action
+#, python-format
 msgid "Calendar"
 msgstr "캘린더"
 
@@ -736,7 +908,7 @@ msgid "Chosen by the Customer"
 msgstr "고객이 선택"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Click in your calendar to pick meeting time proposals."
@@ -769,15 +941,16 @@ msgid "Connect"
 msgstr "연결"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
 msgid "Connect your Calendar"
-msgstr ""
+msgstr "캘린더 연계"
 
 #. module: appointment
 #: model:onboarding.onboarding.step,title:appointment.appointment_onboarding_configure_calendar_provider_step
 msgid "Connect your calendar"
-msgstr ""
+msgstr "캘린더 연계"
 
 #. module: appointment
 #: model:ir.model,name:appointment.model_res_partner
@@ -793,7 +966,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.js:0
 #, python-format
 msgid "Copied !"
@@ -806,6 +979,7 @@ msgid "Copy Link &amp; Close"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
 msgid "Create your first Appointment"
@@ -847,9 +1021,10 @@ msgstr "고객"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "Customer Preview"
-msgstr ""
+msgstr "고객 리뷰"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 #, python-format
@@ -862,6 +1037,7 @@ msgid "Declined"
 msgstr "거절함"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Default slots cannot be applied to the %s appointment type category."
@@ -894,7 +1070,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form_insert_link
 #, python-format
@@ -929,6 +1105,7 @@ msgid "Duration:"
 msgstr "기간 :"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "Email: %s"
@@ -952,12 +1129,12 @@ msgstr "일정 알림"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "Every"
-msgstr ""
+msgstr "매주"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "Extra Message on Confirmation"
-msgstr ""
+msgstr "확인 시 추가 메시지"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_appointment_type__message_confirmation
@@ -983,10 +1160,10 @@ msgstr "출발"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__avatars_display
 msgid "Front-End Display"
-msgstr ""
+msgstr "사용자 화면 보기"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
@@ -994,6 +1171,7 @@ msgid "Get Share Link"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_onboarding_link_view_form
 #, python-format
@@ -1022,7 +1200,7 @@ msgstr ""
 #. module: appointment
 #: model:onboarding.onboarding.step,title:appointment.appointment_onboarding_preview_invite_step
 msgid "Get your link"
-msgstr ""
+msgstr "링크 생성"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -1080,7 +1258,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Insert Appointment Link"
@@ -1145,7 +1323,7 @@ msgstr "모든 국가의 방문자를 허용하려면 비워 두십시오. 그�
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "Keep it empty if the meeting takes place online"
-msgstr ""
+msgstr "온라인 회의인 경우에는 공란으로 두십시오."
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_answer____last_update
@@ -1181,7 +1359,7 @@ msgid "Last Updated on"
 msgstr "최근 갱신 일자"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Link Copied in your clipboard !"
@@ -1199,14 +1377,14 @@ msgid "Link URL"
 msgstr "링크 URL"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/js/appointment_invite_form_renderer.js:0
 #, python-format
 msgid "Link copied to clipboard!"
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_onboarding_link_form_renderer.js:0
 #, python-format
 msgid "Link copied to clipboard."
@@ -1235,7 +1413,7 @@ msgstr "위치 :"
 #. module: appointment
 #: model:onboarding.onboarding.step,done_text:appointment.appointment_onboarding_create_appointment_type_step
 msgid "Looks great! - Click to review"
-msgstr ""
+msgstr "훌륭합니다! 확인하려면 클릭하세요"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_main_attachment_id
@@ -1248,6 +1426,7 @@ msgid "Me"
 msgstr "나"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
@@ -1257,7 +1436,7 @@ msgstr ""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
 msgid "Meetings<br/>scheduled"
-msgstr ""
+msgstr "예정된<br/>약속"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_has_error
@@ -1271,6 +1450,7 @@ msgid "Messages"
 msgstr "메시지"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "Mobile: %s"
@@ -1289,18 +1469,28 @@ msgstr "여러 줄 문자"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_search
 msgid "My Appointments"
-msgstr ""
+msgstr "내 약속"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_search
 msgid "My Links"
-msgstr ""
+msgstr "내 링크"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Name"
 msgstr "이름"
+
+#. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Navigation"
+msgstr "탐색"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_alarm__default_for_new_appointment_type
@@ -1315,7 +1505,7 @@ msgstr ""
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_type__avatars_display__hide
 msgid "No Picture"
-msgstr ""
+msgstr "사진 없음"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__appointment_type_info_msg
@@ -1344,6 +1534,7 @@ msgid "No data yet!"
 msgstr "아직 정보가 없습니다!"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "None"
@@ -1422,6 +1613,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_invite.py:0
 #, python-format
 msgid ""
@@ -1430,6 +1622,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Only one anytime appointment type is allowed for a specific user."
@@ -1441,7 +1634,7 @@ msgid "Options"
 msgstr "옵션"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Our first availability is"
@@ -1450,9 +1643,10 @@ msgstr ""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Outlook"
-msgstr ""
+msgstr "아웃룩"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Past"
@@ -1543,6 +1737,7 @@ msgid "Required Answer"
 msgstr "필수 답변"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Responsible"
@@ -1577,7 +1772,14 @@ msgstr "예약"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointments_list_layout
 msgid "Schedule an Appointment"
-msgstr "약속 일정"
+msgstr "미팅 예약하기"
+
+#. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Schedule an appointment."
+msgstr "미팅 예약하기"
 
 #. module: appointment
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_report
@@ -1601,31 +1803,35 @@ msgid "Scheduling"
 msgstr "예약 실행"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in All"
 msgstr "전체에서 검색"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Description"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Name"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Responsible"
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Select Dates"
@@ -1666,7 +1872,7 @@ msgstr "순서"
 #. module: appointment
 #: model:onboarding.onboarding.step,title:appointment.appointment_onboarding_create_appointment_type_step
 msgid "Set your availabilities"
-msgstr ""
+msgstr "가능 여부 설정"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
@@ -1676,7 +1882,7 @@ msgid "Share"
 msgstr "공유"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
@@ -1685,6 +1891,7 @@ msgid "Share Availabilities"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Share Link"
@@ -1705,7 +1912,7 @@ msgstr ""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_onboarding_link_view_form
 msgid "Share this link to let people book meetings with you or your team."
-msgstr ""
+msgstr "이 링크를 공유하시면 다른 사람들이 귀하나 귀하의 팀과 함께 약속을 예약할 수 있습니다."
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__short_code
@@ -1726,7 +1933,7 @@ msgstr ""
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_type__avatars_display__show
 msgid "Show Users' Pictures"
-msgstr ""
+msgstr "사용자 사진 표시"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_question__question_type__char
@@ -1744,7 +1951,7 @@ msgid "Small description of the appointment type."
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
@@ -1752,14 +1959,14 @@ msgid "Sorry,"
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Sorry, we have no availability for an appointment."
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Sorry, we have no more slots available for this month."
@@ -1784,7 +1991,7 @@ msgstr "시작 시간"
 #: model:onboarding.onboarding.step,done_text:appointment.appointment_onboarding_configure_calendar_provider_step
 #: model:onboarding.onboarding.step,done_text:appointment.appointment_onboarding_preview_invite_step
 msgid "Step Completed! - Click to review"
-msgstr ""
+msgstr "단계 완료! 확인하려면 클릭하세요"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_question__answer_input_ids
@@ -1828,24 +2035,28 @@ msgid "The end time must be later than the start time."
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "The field '%s' does not exist in the targeted model"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_invite.py:0
 #, python-format
 msgid "The following appointment type(s) have no staff assigned: %s."
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_question.py:0
 #, python-format
 msgid "The following question(s) do not have any selectable answers : %s"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid ""
@@ -1854,7 +2065,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Their first availability is"
@@ -1886,6 +2097,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid ""
@@ -1903,6 +2115,8 @@ msgid ""
 "This option toggles the display of avatars of the staff members during the frontend appointment process.\n"
 "        When choosing amongst several users, a selection screen will also be used, if website is installed."
 msgstr ""
+"이 옵션은 약속 진행 중에 사용자 화면에 직원들의 아바타를 표시할 수 있도록 전환할 수 있는 선택 항목입니다.\n"
+"    웹사이트가 설치되어 있으면, 여러 사용자 중에서 선택할 경우 선택 화면도 사용이 가능합니다."
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_slot__weekday__4
@@ -1940,7 +2154,7 @@ msgstr "토큰"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
 msgid "Total Meetings<br/>(Last 30 Days)"
-msgstr ""
+msgstr "전체 약속<br/>(최근 30일)"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
@@ -1958,6 +2172,7 @@ msgid "Until (max)"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Upcoming"
@@ -2035,7 +2250,7 @@ msgstr ""
 #. module: appointment
 #: model:onboarding.onboarding.step,description:appointment.appointment_onboarding_configure_calendar_provider_step
 msgid "With Outlook or Google"
-msgstr ""
+msgstr "아웃룩이나 Google로 연계합니다"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -2045,7 +2260,7 @@ msgstr ""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "Your Name*"
-msgstr ""
+msgstr "이름*"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -2060,7 +2275,7 @@ msgstr "귀하의 약속이 다음 미만입니다 - "
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "and not after"
-msgstr ""
+msgstr "및 다음 기간 이후 불가"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -2070,7 +2285,7 @@ msgstr "at"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "at least"
-msgstr ""
+msgstr "최소"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
@@ -2080,37 +2295,37 @@ msgstr "일"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"During this meeting, we will...\""
-msgstr ""
+msgstr "예: \"오늘 미팅에서, 다음 내용을 다룰 예정입니다\""
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"I feel nauseous...\""
-msgstr ""
+msgstr "예: \"병가 예정입니다\""
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"Technical Demo\""
-msgstr ""
+msgstr "예: \"기술 관련 데모\""
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"Thank you for your trust, we look forward to meeting you!\""
-msgstr ""
+msgstr "예: 말씀 감사드리오며, 미팅 자리에서 만나뵙겠습니다."
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"What are your symptoms ?\""
-msgstr ""
+msgstr "예: 자세한 내용을 알려주시기 바랍니다."
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "has no availability for an appointment."
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "has no more slots available for this month."
@@ -2119,7 +2334,7 @@ msgstr ""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "hours before"
-msgstr ""
+msgstr "시간 전"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -2134,17 +2349,17 @@ msgstr ""
 #. module: appointment
 #: model:onboarding.onboarding.step,description:appointment.appointment_onboarding_create_appointment_type_step
 msgid "to automate appointments"
-msgstr ""
+msgstr "약속을 자동화할 수 있습니다"
 
 #. module: appointment
 #: model:onboarding.onboarding.step,description:appointment.appointment_onboarding_preview_invite_step
 msgid "to schedule appointments"
-msgstr ""
+msgstr "약속에 대해 일정을 예약합니다"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "until"
-msgstr ""
+msgstr "시작하기"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form

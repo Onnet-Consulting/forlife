@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* web_mobile
 # 
+# Translators:
+# Mehjabin Farsana, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:25+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
+"Last-Translator: Mehjabin Farsana, 2022\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,7 +29,7 @@ msgstr ""
 #. module: web_mobile
 #: model:ir.model,name:web_mobile.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Kenalan"
 
 #. module: web_mobile
 #: model:ir.model.fields,field_description:web_mobile.field_res_partner__image_medium

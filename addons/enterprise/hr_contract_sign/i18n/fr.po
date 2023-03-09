@@ -6,6 +6,7 @@
 # Cécile Collart <cco@odoo.com>, 2022
 # Geoffrey_GMF <gmf@odoo.com>, 2022
 # Martin Trigaux, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:42+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,7 +32,7 @@ msgstr "%s et %s sont les signataires."
 #: code:addons/hr_contract_sign/wizard/hr_contract_sign_document_wizard.py:0
 #, python-format
 msgid "%s does not have a work email set."
-msgstr "%s n'a pas d'email professionnelle défini."
+msgstr "%s n'a pas défini d'adresse mail professionnelle."
 
 #. module: hr_contract_sign
 #: code:addons/hr_contract_sign/wizard/hr_contract_sign_document_wizard.py:0
@@ -67,7 +68,7 @@ msgstr "Contrat"
 #. module: hr_contract_sign
 #: model:ir.model,name:hr_contract_sign.model_hr_contract_history
 msgid "Contract history"
-msgstr "Historique des Contrats"
+msgstr "Historique des contrats"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__cc_partner_ids
@@ -87,17 +88,17 @@ msgstr "Créé le"
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.view_hr_contract_sign
 msgid "Discard"
-msgstr "Annuler"
+msgstr "Ignorer"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__display_name
 msgid "Display Name"
-msgstr "Nom affiché"
+msgstr "Afficher le nom"
 
 #. module: hr_contract_sign
 #: model:ir.actions.act_window,name:hr_contract_sign.sign_contract_wizard_action
 msgid "Document Signature"
-msgstr "Signature du Document"
+msgstr "Signature du document"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_plan_activity_type__sign_template_id
@@ -133,7 +134,7 @@ msgstr "Contrat de l'employé"
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__employee_role_id
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_plan_activity_type__employee_role_id
 msgid "Employee Role"
-msgstr "Rôle de l'employé"
+msgstr "Fonction de l'employé"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,help:hr_contract_sign.field_hr_contract_sign_document_wizard__employee_role_id
@@ -142,8 +143,8 @@ msgid ""
 "Employee's role on the templates to sign. The same role must be present in "
 "all the templates"
 msgstr ""
-"Rôle de l'employé sur les modèles à signer. Le même rôle doit être utilisé "
-"dans tous les modèles"
+"Fonction de l'employé sur les modèles à signer. La même fonction doit être "
+"utilisée dans tous les modèles"
 
 #. module: hr_contract_sign
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_contract_sign_document_wizard__employee_ids
@@ -202,8 +203,8 @@ msgid ""
 "No appropriate template could be found, please make sure you configured them"
 " properly."
 msgstr ""
-"Aucun modèle approprié n'a pu être trouvé, veuillez vous assurer de les "
-"avoir correctement configurés."
+"Aucun modèle approprié n'a pu être trouvé, veuillez vous assurer que vous "
+"les avez correctement configurés."
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.view_hr_contract_sign
@@ -214,7 +215,7 @@ msgstr "Aucun modèle disponible"
 #: code:addons/hr_contract_sign/wizard/hr_contract_sign_document_wizard.py:0
 #, python-format
 msgid "Only %s has to sign."
-msgstr "Seul %sdoit signer."
+msgstr "Seul %s doit signer."
 
 #. module: hr_contract_sign
 #: model:sign.template,redirect_url_text:hr_contract_sign.template_sign_termination
@@ -229,7 +230,7 @@ msgstr "Message optionnel..."
 #. module: hr_contract_sign
 #: model:ir.model,name:hr_contract_sign.model_hr_plan_wizard
 msgid "Plan Wizard"
-msgstr "Assistant Plan"
+msgstr "Assistant plan"
 
 #. module: hr_contract_sign
 #: model:ir.model,name:hr_contract_sign.model_hr_plan_activity_type
@@ -268,7 +269,7 @@ msgstr "Envoyer"
 #: model:ir.model.fields,field_description:hr_contract_sign.field_hr_employee__sign_request_count
 #: model:ir.model.fields,field_description:hr_contract_sign.field_res_users__sign_request_count
 msgid "Sign Request Count"
-msgstr "Décompte du Nombre de Requêtes Signées"
+msgstr "Nombre de demandes de signature"
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.view_hr_contract_sign
@@ -294,7 +295,7 @@ msgstr "Signer le document dans le contrat"
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.view_hr_contract_sign
 #, python-format
 msgid "Signature Request"
-msgstr "Signature requise"
+msgstr "Demande de signature"
 
 #. module: hr_contract_sign
 #: code:addons/hr_contract_sign/wizard/hr_contract_sign_document_wizard.py:0
@@ -328,8 +329,8 @@ msgstr "Ecrire un email ou chercher un contact..."
 msgid ""
 "You can't delete a contract linked to a signed document, archive it instead."
 msgstr ""
-"Vous ne pouvez pas supprimer un contrat lié à un document signé, mais plutôt"
-" l'archiver."
+"Vous ne pouvez pas supprimer un contrat lié à un document signé, archivez-le"
+" plutôt."
 
 #. module: hr_contract_sign
 #: model_terms:ir.ui.view,arch_db:hr_contract_sign.hr_contract_history_view_form

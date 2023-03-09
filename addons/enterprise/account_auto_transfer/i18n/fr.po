@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-12 07:57+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -80,7 +81,7 @@ msgstr "Transfert automatisé"
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
 #, python-format
 msgid "Automatic Transfer (%s%% from account %s)"
-msgstr "Transfert automatique (%s%%du compte %s)"
+msgstr "Transfert automatique (%s%% du compte %s)"
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
@@ -94,20 +95,20 @@ msgstr "Transfert automatique (-%s%%)"
 msgid ""
 "Automatic Transfer (entries with analytic account(s): %s and partner(s): %s)"
 msgstr ""
-"Transfert Automatique (pièces avec compte(s) analytique(s) : %s et "
-"partenaire(s): %s)"
+"Transfert automatique (écritures avec compte(s) analytique(s) : %s et "
+"partenaire(s) : %s)"
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
 #, python-format
 msgid "Automatic Transfer (entries with analytic account(s): %s)"
-msgstr "Transfert automatique (entrées avec compte(s) analytique(s): %s)"
+msgstr "Transfert automatique (écritures avec compte(s) analytique(s) : %s)"
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
 #, python-format
 msgid "Automatic Transfer (entries with partner(s): %s)"
-msgstr "Transfert automatique (entrées avec partenaire(s) : %s)"
+msgstr "Transfert automatique (écritures avec partenaire(s) : %s)"
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
@@ -116,22 +117,22 @@ msgid ""
 "Automatic Transfer (from account %s with analytic account(s): %s and "
 "partner(s): %s)"
 msgstr ""
-"Transfert Automatique (depuis le Compte %s avec compte(s) analytique(s): %s "
-"et partenaire(s): %s) "
+"Transfert automatique (depuis le Compte %s avec compte(s) analytique(s) : %s"
+" et partenaire(s) : %s) "
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
 #, python-format
 msgid "Automatic Transfer (from account %s with analytic account(s): %s)"
 msgstr ""
-"Transfert automatique (depuis le compte %s avec un ou des comptes "
-"analytiques: %s)"
+"Transfert automatique (depuis le compte %s avec compte(s) analytique(s) : "
+"%s)"
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
 #, python-format
 msgid "Automatic Transfer (from account %s with partner(s): %s)"
-msgstr "Transfert Automatique (du Compte %s avec le(s) Partenaire(s): %s)"
+msgstr "Transfert automatique (du compte %s avec partenaire(s) : %s)"
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
@@ -158,7 +159,7 @@ msgstr "Société liée à ce journal"
 #. module: account_auto_transfer
 #: model_terms:ir.ui.view,arch_db:account_auto_transfer.view_transfer_model_form
 msgid "Compute Transfer"
-msgstr "Calculer le Transfert"
+msgstr "Calculer le transfert"
 
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model__create_uid
@@ -190,7 +191,7 @@ msgstr "Comptes de destination"
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model__journal_id
 msgid "Destination Journal"
-msgstr "Journal de Destination"
+msgstr "Journal de destination"
 
 #. module: account_auto_transfer
 #: model_terms:ir.ui.view,arch_db:account_auto_transfer.view_transfer_model_form
@@ -206,7 +207,7 @@ msgstr "Désactivé"
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model__display_name
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model_line__display_name
 msgid "Display Name"
-msgstr "Nom affiché"
+msgstr "Afficher le nom"
 
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model__frequency
@@ -216,7 +217,7 @@ msgstr "Fréquence"
 #. module: account_auto_transfer
 #: model:ir.actions.act_window,name:account_auto_transfer.generated_transfers_action
 msgid "Generated Entries"
-msgstr "Entrées générées"
+msgstr "Écritures générées"
 
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model__move_ids
@@ -270,12 +271,12 @@ msgstr "Nombre d'identifiants de mouvement"
 #. module: account_auto_transfer
 #: model_terms:ir.ui.view,arch_db:account_auto_transfer.view_transfer_model_form
 msgid "Move Model"
-msgstr "Déplacer le Modèle"
+msgstr "Modèle de mouvement"
 
 #. module: account_auto_transfer
 #: model_terms:ir.ui.view,arch_db:account_auto_transfer.view_transfer_model_tree
 msgid "Move Models"
-msgstr "Déplacer les Modèles"
+msgstr "Modèles de mouvement"
 
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model__name
@@ -291,7 +292,7 @@ msgstr "Une seule occurrence de compte par modèle de transfert"
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model__account_ids
 #: model_terms:ir.ui.view,arch_db:account_auto_transfer.view_transfer_model_form
 msgid "Origin Accounts"
-msgstr "Comptes d'Origine"
+msgstr "Comptes d'origine"
 
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_bank_statement_line__transfer_model_id
@@ -308,12 +309,12 @@ msgstr "Filtre partenaire"
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model_line__percent
 msgid "Percent"
-msgstr "Pourcent"
+msgstr "Pour cent"
 
 #. module: account_auto_transfer
 #: model_terms:ir.ui.view,arch_db:account_auto_transfer.view_transfer_model_form
 msgid "Percent (%)"
-msgstr "Pourcent (%)"
+msgstr "Pour cent (%)"
 
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model_line__percent_is_readonly
@@ -362,7 +363,7 @@ msgstr "État"
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model__date_stop
 msgid "Stop Date"
-msgstr "Date d'Arrêt"
+msgstr "Date d'arrêt"
 
 #. module: account_auto_transfer
 #: code:addons/account_auto_transfer/models/transfer_model.py:0
@@ -400,7 +401,7 @@ msgstr "Pourcentage total"
 #. module: account_auto_transfer
 #: model:ir.model.fields,field_description:account_auto_transfer.field_account_transfer_model_line__transfer_model_id
 msgid "Transfer Model"
-msgstr "Transférer le Modèle"
+msgstr "Transférer le modèle"
 
 #. module: account_auto_transfer
 #: model_terms:ir.ui.view,arch_db:account_auto_transfer.view_transfer_model_form
@@ -415,4 +416,4 @@ msgstr "Annuel"
 #. module: account_auto_transfer
 #: model_terms:ir.ui.view,arch_db:account_auto_transfer.view_transfer_model_form
 msgid "e.g. Monthly Expense Transfer"
-msgstr "Par exemple, le transfert des dépenses mensuelles"
+msgstr "par ex. le transfert des dépenses mensuelles"

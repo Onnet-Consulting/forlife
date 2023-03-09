@@ -94,7 +94,7 @@ msgstr "Novo"
 #. module: documents_product
 #: model:documents.tag,name:documents_product.documents_product_plans_tag
 msgid "Plans"
-msgstr ""
+msgstr "Planovi"
 
 #. module: documents_product
 #: model:ir.model,name:documents_product.model_product_template

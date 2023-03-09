@@ -23,7 +23,7 @@ _logger = logging.getLogger(__name__)
 PURCHASE_CODE = '0'
 SALE_CODE = '2'
 CREDIT_NOTE_PURCHASE_CODE = '1'
-CREDIT_NOTE_SALE_CODE = '4'
+CREDIT_NOTE_SALE_CODE = '3'
 
 class WinbooksImportWizard(models.TransientModel):
     _name = "account.winbooks.import.wizard"
@@ -318,6 +318,10 @@ class WinbooksImportWizard(models.TransientModel):
                     'code': rec.get('DBKID'),
                     'type': journal_type,
                 }
+                if data['type'] == 'sale':
+                    data['default_account_id'] = self.env['ir.property']._get('property_account_income_categ_id', 'product.category').id
+                if data['type'] == 'purchase':
+                    data['default_account_id'] = self.env['ir.property']._get('property_account_expense_categ_id', 'product.category').id
                 journal = AccountJournal.create(data)
             journal_data[rec.get('DBKID')] = journal.id
         return journal_data
@@ -492,6 +496,20 @@ class WinbooksImportWizard(models.TransientModel):
                 }
                 move_line_data_list.append((0, 0, line_data))
 
+            if (
+                move_data_dict['move_type'] != 'entry'
+                and len(move_line_data_list) == 1
+                and move_line_data_list[0][2]['display_type'] == 'payment_term'
+                and move_line_data_list[0][2]['balance'] == 0
+            ):
+                # add a line so that the payment terms are not deleted during sync
+                line_data = {
+                    'account_id': journal_id.default_account_id.id,
+                    'name': _('Counterpart (generated at import from Winbooks)'),
+                    'balance': 0,
+                }
+                move_line_data_list.append((0, 0, line_data))
+
             # Link all to the move
             move_data_dict['line_ids'] = move_line_data_list
             attachment_key = '%s_%s_%s' % (key[1], key[4], key[0])
@@ -579,20 +597,24 @@ class WinbooksImportWizard(models.TransientModel):
         """
         _logger.info("Import Analytic Account Lines")
         analytic_line_data_list = []
+        analytic_list = None
         for rec in dbf_records:
+            if not analytic_list:
+                # In this winbooks file, there is one column for each analytic plan, named 'ZONANA' + [number of the plan].
+                # These columns contain the analytic account number associated to that plan.
+                # We thus need to create an analytic line for each of these accounts.
+                analytic_list = [k for k in rec.keys() if 'ZONANA' in k]
             data = {
                 'date': rec.get('DATE', False),
                 'name': rec.get('COMMENT'),
                 'amount': abs(rec.get('AMOUNTEUR')),
-                'account_id': analytic_account_data.get(rec.get('ZONANA1')),
                 'general_account_id': account_data.get(rec.get('ACCOUNTGL'))
             }
-            if data.get('account_id'):
-                analytic_line_data_list.append(data)
-            if rec.get('ZONANA2'):
-                new_analytic_line = data.copy()
-                new_analytic_line['account_id'] = analytic_account_data.get(rec.get('ZONANA2'))
-                analytic_line_data_list.append(new_analytic_line)
+            for analytic in analytic_list:
+                if rec.get(analytic):
+                    new_analytic_line = data.copy()
+                    new_analytic_line['account_id'] = analytic_account_data.get(rec.get(analytic))
+                    analytic_line_data_list.append(new_analytic_line)
         self.env['account.analytic.line'].create(analytic_line_data_list)
 
     def _import_vat(self, dbf_records, account_central):

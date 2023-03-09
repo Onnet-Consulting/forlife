@@ -4,11 +4,13 @@
 from odoo import models, api, fields, _
 from odoo.exceptions import ValidationError, UserError
 from odoo.models import MAGIC_COLUMNS
-from odoo.osv.expression import OR
+from odoo.osv.expression import FALSE_DOMAIN, OR, expression
 from odoo.tools import get_lang
-from odoo.tools.misc import format_datetime, format_date
+from odoo.tools.misc import format_datetime, format_date, partition as tools_partition
+from collections.abc import Iterable
 
 from datetime import datetime, date
+from psycopg2.extensions import quote_ident
 import psycopg2
 import itertools
 import ast
@@ -16,6 +18,7 @@ import logging
 import operator as py_operator
 
 _logger = logging.getLogger(__name__)
+ALLOWED_COMPANY_OPERATORS = ['not in', 'in', '=', '!=', 'ilike', 'not ilike', 'like', 'not like']
 
 
 class DataMergeRecord(models.Model):
@@ -51,17 +54,111 @@ class DataMergeRecord(models.Model):
     #############
     ### Searchs
     #############
+
     def _search_company_id(self, operator, value):
-        records = self.with_context(active_test=False).search([])
-        if operator == 'in':
-            records = records.filtered(lambda r: r.company_id.id in value)
-        elif operator in ['=', '!=']:
-            op = py_operator.eq if operator == "=" else py_operator.ne
-            convert_to_compare = lambda r: bool(r) if isinstance(value, bool) else r
-            records = records.filtered(lambda r: op(convert_to_compare(r.company_id.id), value))
-        else:
+        """ Build a subquery to be used in the domain returned by this search method.
+
+            There can be two types of res_model_names regarding the company_id field.
+            Either the corresponding env[res_model_name] records have a company_id field or they don't.
+            In the first case we add a where condition for each distinct res_model_name.
+            In the second case we either return all the records or no records, depending
+            on the (operator, value) pair.
+        """
+        if operator not in ALLOWED_COMPANY_OPERATORS:
             raise NotImplementedError()
-        return [('id', 'in', records.ids)]
+
+        cr = self._cr
+        restrict_model_ids = self.env.context.get('data_merge_model_ids')
+        if restrict_model_ids:
+            cr.execute(
+                """
+                SELECT m.res_model_name,
+                       m.res_model_id
+                  FROM data_merge_model m
+                 WHERE m.id IN %s
+                """,
+                [restrict_model_ids],
+            )
+        else:
+            # SELECT DISTINCT res_model_name FROM data_merge_record
+            # is 7 times slower for 5 millions of data.merge.record
+            cr.execute(
+                """
+                SELECT m.res_model_name,
+                       m.res_model_id
+                  FROM data_merge_model m
+                 WHERE m.id IN (SELECT r.model_id FROM data_merge_record r)
+                """
+            )
+        models_info = cr.fetchall()
+        # Initial select id query to apply ir.rules and build Query object.
+        query = self.env['data_merge.record'].with_context(active_test=False)._search([])
+        if not models_info:
+            # no models => return all records
+            return [('id', 'in', query)]
+
+        models_with_company, models_no_company = tools_partition(
+            lambda r: self.env[r[0]]._fields.get('company_id'),
+            models_info,
+        )
+
+        # Whether a domain leaf (False, operator, value) should be considered as True
+        false_company_domain_is_true = (
+            (operator in ('not ilike', 'not like')) or
+            (operator in ('=', 'ilike', 'like') and not value) or
+            (operator == '!=' and value) or
+            (
+                isinstance(value, Iterable) and
+                (
+                    (operator == 'in' and False in value) or
+                    (operator == 'not in' and False not in value)
+                )
+            )
+        )
+
+        subqueries = []
+        if models_no_company and false_company_domain_is_true:
+            subqueries.append(
+                cr.mogrify(
+                    "SELECT id FROM data_merge_record WHERE res_model_id IN %s",
+                    [tuple(r[1] for r in models_no_company)],
+                ).decode(),
+            )
+
+        template_query = """
+        SELECT dmr.id
+          FROM data_merge_record dmr
+     LEFT JOIN "{model_table}"
+            ON dmr.res_model_id = %s
+           AND dmr.res_id = "{model_table}".id
+            {extra_joins}
+         WHERE {where_clause}
+        """
+        for model_name, model_id in models_with_company:
+            Model = self.env[model_name]
+            # Adapt operator and value for direct SQL query
+            exp = expression([('company_id', operator, value)], Model)
+            from_clause, where_clause, where_params = exp.query.get_sql()
+            assert from_clause.startswith(f'"{Model._table}"')
+
+            subqueries.append(
+                cr.mogrify(
+                    template_query.format(
+                        model_table=Model._table,
+                        where_clause=where_clause,
+                        extra_joins=from_clause[len(f'"{Model._table}"'):]
+                    ),
+                    [model_id] + where_params,
+                ).decode(),
+            )
+        if subqueries:
+            query.add_where("data_merge_record.id IN ({})".format("\nUNION\n".join(subqueries)), [])
+            return [('id', 'in', query)]
+        else:
+            # there was a nonempty models_info but no subqueries
+            # it means that nothing satisfies the domain
+            return FALSE_DOMAIN
+
 
     #############
     ### Computes

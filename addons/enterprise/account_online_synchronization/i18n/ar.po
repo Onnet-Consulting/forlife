@@ -5,7 +5,8 @@
 # Translators:
 # Mustafa Rawi <mustafa@cubexco.com>, 2022
 # Martin Trigaux, 2022
-# Malaz Abuidris <msea@odoo.com>, 2022
+# Mehjabin Farsana, 2022
+# Malaz Abuidris <msea@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-27 15:40+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2022\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2023\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -146,7 +147,7 @@ msgstr "رصيد الحساب الذي أرسله مزود الطرف الثال
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_account_online_link
 msgid "Bank Connection"
-msgstr ""
+msgstr "اتصال البنك"
 
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_account_bank_statement_line
@@ -156,13 +157,13 @@ msgstr "بند كشف الحساب البنكي"
 #. module: account_online_synchronization
 #: model:mail.activity.type,name:account_online_synchronization.bank_sync_activity_update_consent
 msgid "Bank Synchronization: Update consent"
-msgstr ""
+msgstr "مزامنة البنك: تحديث الإذن "
 
 #. module: account_online_synchronization
 #: code:addons/account_online_synchronization/models/account_online.py:0
 #, python-format
 msgid "Bank Synchronization: Update your consent"
-msgstr ""
+msgstr "مزامنة البنك: قم بتحديث الإذن "
 
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_bank_rec_widget
@@ -208,22 +209,22 @@ msgstr "متصل "
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
 msgid "Consent expired"
-msgstr ""
+msgstr "انتهت صلاحية الإذن "
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
 msgid "Consent expires in"
-msgstr ""
+msgstr "تنتهي صلاحية الإذن في "
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
 msgid "Consent expires on"
-msgstr ""
+msgstr "تنتهي صلاحية الإذن في "
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
 msgid "Consent expires today"
-msgstr ""
+msgstr "تنتهي صلاحية الإذن اليوم "
 
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_res_partner
@@ -292,7 +293,7 @@ msgstr "العملة"
 #: model:ir.model.fields,help:account_online_synchronization.field_account_journal__expiring_synchronization_date
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__expiring_synchronization_date
 msgid "Date when the consent for this connection expires"
-msgstr ""
+msgstr "تاريخ انتهاء صلاحية إذن هذا الاتصال "
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal__display_name
@@ -311,12 +312,12 @@ msgstr "خطأ"
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_journal__expiring_synchronization_date
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__expiring_synchronization_date
 msgid "Expiring Synchronization Date"
-msgstr ""
+msgstr "تاريخ انتهاء صلاحية المزامنة "
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_journal__expiring_synchronization_due_day
 msgid "Expiring Synchronization Due Day"
-msgstr ""
+msgstr "التاريخ الذي ستنتهي فيه صلاحية المزامنة "
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_account__account_data
@@ -401,12 +402,12 @@ msgstr "إذا كان محددًا، فقد حدث خطأ في تسليم بعض
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_account__inverse_balance_sign
 msgid "If checked, the balance sign will be inverted"
-msgstr ""
+msgstr "إذا كان محدداً، سيتم عكس علامة الرصيد "
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_account__inverse_transaction_sign
 msgid "If checked, the transaction sign will be inverted"
-msgstr ""
+msgstr "إذا كان محدداً، سيتم عكس علامة المعاملة "
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__auto_sync
@@ -418,7 +419,7 @@ msgstr "سوف نحاول جلب معاملات جديدة لهذا السجل �
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__provider_data
 msgid "Information needed to interact with third party provider"
-msgstr ""
+msgstr "المعلومات المطلوبة للتفاعل مع مزود الطرف الثالث "
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__name
@@ -440,12 +441,12 @@ msgstr "قيمة غير صالحة لمعيار تهيئة proxy_mode "
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__inverse_balance_sign
 msgid "Inverse Balance Sign"
-msgstr ""
+msgstr "علامة عكس الرصيد "
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__inverse_transaction_sign
 msgid "Inverse Transaction Sign"
-msgstr ""
+msgstr "عكس علامة المعاملة "
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_is_follower

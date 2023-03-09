@@ -4,7 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Sergio Zanchetta <primes2h@gmail.com>, 2022
+# Sergio Zanchetta <primes2h@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-06-09 14:09+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Sergio Zanchetta <primes2h@gmail.com>, 2022\n"
+"Last-Translator: Sergio Zanchetta <primes2h@gmail.com>, 2023\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,7 +25,7 @@ msgstr ""
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "ACH Concentration"
-msgstr ""
+msgstr "Accentramento ACH"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -88,7 +88,7 @@ msgstr "Storno ACH"
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "ACH Settlement"
-msgstr ""
+msgstr "Regolamento ACH"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -211,7 +211,7 @@ msgstr ""
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Borrowing fee"
-msgstr ""
+msgstr "Commissione su prestiti"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -248,7 +248,7 @@ msgstr ""
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "CSD Blocked Transactions"
-msgstr ""
+msgstr "Transazioni bloccate CSD"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -319,7 +319,7 @@ msgstr "Prestazioni in denaro"
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Certified Customer Cheque"
-msgstr ""
+msgstr "Assegno a copertura garantita"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -379,7 +379,7 @@ msgstr "Assegno circolare"
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Clean Collection"
-msgstr ""
+msgstr "Incasso semplice"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -433,7 +433,7 @@ msgstr ""
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Consumer Loans"
-msgstr ""
+msgstr "Prestiti al consumo"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -621,7 +621,7 @@ msgstr "Dare"
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Debit Adjustments"
-msgstr "Rettifiche dare"
+msgstr "Rettifiche addebito"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -690,7 +690,7 @@ msgstr ""
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Dishonoured/Unpaid Draft"
-msgstr ""
+msgstr "Tratta non pagata alla scadenza"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -708,13 +708,13 @@ msgstr "Reinvestimento dei dividendi"
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Documentary Collection"
-msgstr ""
+msgstr "Rimessa documentaria"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Documentary Credit"
-msgstr ""
+msgstr "Credito documentario"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -1151,7 +1151,7 @@ msgstr "Prestiti, versamenti e pool bancari"
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Lockbox Transactions"
-msgstr ""
+msgstr "Transazioni cassetta di sicurezza"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -1181,7 +1181,7 @@ msgstr ""
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Merchant Card Transactions"
-msgstr ""
+msgstr "Transazioni con carta commerciante"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -1193,7 +1193,7 @@ msgstr ""
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Miscellaneous Credit Operations"
-msgstr ""
+msgstr "Operazioni di accredito varie"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -1211,7 +1211,7 @@ msgstr "Versamenti vari"
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Miscellaneous Securities Operations"
-msgstr ""
+msgstr "Operazioni in titoli varie"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -1360,7 +1360,7 @@ msgstr ""
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "One-Off Direct Debit"
-msgstr ""
+msgstr "Addebito diretto singolo"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -1417,7 +1417,7 @@ msgstr "Scoperto"
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Overdraft Charge"
-msgstr ""
+msgstr "Commissione su scoperto"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -1441,7 +1441,7 @@ msgstr "Riscatto parziale senza riduzione del valore nominale"
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Partial Redemption with reduction of nominal value"
-msgstr ""
+msgstr "Rimborso parziale con riduzione del valore nominale"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -1558,7 +1558,7 @@ msgstr ""
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Received Cash Concentration Transactions"
-msgstr ""
+msgstr "Transazioni di accentramento della liquidità ricevute"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -1945,7 +1945,7 @@ msgstr ""
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "Trade, Clearing and Settlement"
-msgstr ""
+msgstr "Scambio, compensazione e regolamento"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
@@ -2071,7 +2071,7 @@ msgstr "Ritenuta d'acconto"
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0
 #, python-format
 msgid "YTD Adjustment"
-msgstr ""
+msgstr "Rettifica da inizio esercizio (YTD)"
 
 #. module: account_bank_statement_import_camt
 #: code:addons/account_bank_statement_import_camt/lib/camt.py:0

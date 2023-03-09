@@ -4,7 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2022
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2022\n"
+"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2023\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +24,7 @@ msgstr ""
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "%(user)s decided, as %(role)s, to publish the employee's feedback"
-msgstr ""
+msgstr "%(user)s вирішив, як %(role)s, опублікувати фідбек співробітника"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
@@ -270,7 +270,7 @@ msgstr ""
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "<span class=\"o_stat_text\">Appraisals</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Оцінювання</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -283,6 +283,8 @@ msgid ""
 "<span class=\"text-end\" attrs=\"{'invisible': ['|', ('manager_feedback_published', '=', True), ('can_see_manager_publish', '=', False)]}\">Not Visible to Employee</span>\n"
 "                                            <span class=\"text-end\" attrs=\"{'invisible': ['|', ('manager_feedback_published', '=', False), ('can_see_manager_publish', '=', False)]}\">Visible to Employee</span>"
 msgstr ""
+"<span class=\"text-end\" attrs=\"{'invisible': ['|', ('manager_feedback_published', '=', True), ('can_see_manager_publish', '=', False)]}\">Не видимий для співробітника</span>\n"
+"                                            <span class=\"text-end\" attrs=\"{'invisible': ['|', ('manager_feedback_published', '=', False), ('can_see_manager_publish', '=', False)]}\">Видимий для співробітника</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
@@ -290,6 +292,8 @@ msgid ""
 "<span class=\"text-end\" attrs=\"{'invisible': [('employee_feedback_published', '=', True)]}\">Not Visible to Manager</span>\n"
 "                                            <span class=\"text-end\" attrs=\"{'invisible': [('employee_feedback_published', '=', False)]}\">Visible to Manager</span>"
 msgstr ""
+"<span class=\"text-end\" attrs=\"{'invisible': [('employee_feedback_published', '=', True)]}\">Не видимий для керівника</span>\n"
+"                                            <span class=\"text-end\" attrs=\"{'invisible': [('employee_feedback_published', '=', False)]}\">Видимий для керівника</span>"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_kanban
@@ -427,7 +431,7 @@ msgstr "Шаблон відгуку оцінювання менеджером"
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Appraisal Officer"
-msgstr ""
+msgstr "Керівник оцінювання"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__appraisal_plan_posted
@@ -472,7 +476,7 @@ msgstr "Оцінювання %s"
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Appraisal reopened"
-msgstr ""
+msgstr "Оцінювання заново відкрите"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/res_company.py:0
@@ -691,7 +695,7 @@ msgstr "Створити оцінювання після найму"
 #. module: hr_appraisal
 #: model_terms:ir.actions.act_window,help:hr_appraisal.action_hr_appraisal_goal
 msgid "Create new goals"
-msgstr ""
+msgstr "Створити нові цілі"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__create_uid
@@ -884,7 +888,7 @@ msgstr "Шаблони відгуків"
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Fill appraisal for %s"
-msgstr ""
+msgstr "Заповнити оцінювання для %s"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__date_final_interview
@@ -917,7 +921,7 @@ msgstr "Підписники (Партнери)"
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__activity_type_icon
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal_goal__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "Іконка зі шрифтом Font awesome, напр. fa-tasks"
+msgstr "Іконка з чудовим шрифтом, напр. fa-tasks"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__email_from
@@ -954,17 +958,17 @@ msgstr "Групувати за..."
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_confirm
 msgid "HR: Appraisal Confirmation"
-msgstr ""
+msgstr "HR: Підтвердження оцінювання"
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_request_from_employee
 msgid "HR: Employee Appraisal Request"
-msgstr ""
+msgstr "HR: Запит на оцінювання співробітника"
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_request
 msgid "HR: Manager appraisal request"
-msgstr ""
+msgstr "HR: Запит на оцінювання керівника"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__has_message
@@ -1308,12 +1312,12 @@ msgstr "Кількість повідомлень з помилковою дст
 #. module: hr_appraisal
 #: model:res.groups,name:hr_appraisal.group_hr_appraisal_user
 msgid "Officer : Access all appraisals"
-msgstr ""
+msgstr "Керівник: Отримати доступ до всіх оцінювань"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_employee__ongoing_appraisal_count
 msgid "Ongoing Appraisal Count"
-msgstr ""
+msgstr "Підрахунок оцінювання в процесі"
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal_goal.py:0
@@ -1357,7 +1361,7 @@ msgstr ""
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "Previous Appraisals"
-msgstr ""
+msgstr "Попередні оцінювання"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal__note
@@ -1368,7 +1372,7 @@ msgstr "Власна примітка"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Private note (only accessible to people set as managers)"
-msgstr ""
+msgstr "Приватна нотатка (доступна лише для людей, призначених як менеджери)"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_goal__progression
@@ -1472,17 +1476,21 @@ msgstr "Відіслано по електронній пошті"
 msgid ""
 "Sent automatically to both employee and manager when appraisal is confirmed"
 msgstr ""
+"Автоматично надсилається як працівнику, так і керівнику після підтвердження "
+"оцінки"
 
 #. module: hr_appraisal
 #: model:mail.template,description:hr_appraisal.mail_template_appraisal_request_from_employee
 msgid ""
 "Sent manually to the employee by the manager who wants to do an appraisal"
 msgstr ""
+"Надсилається вручну працівнику керівником, який хоче провести оцінювання"
 
 #. module: hr_appraisal
 #: model:mail.template,description:hr_appraisal.mail_template_appraisal_request
 msgid "Sent manually to the manager by the employee who wants an appraisal"
 msgstr ""
+"Надсилається менеджеру вручну працівником, який хоче отримати оцінювання"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_hr_appraisal_note__sequence
@@ -1567,7 +1575,7 @@ msgstr ""
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
 #, python-format
 msgid "The appraisal's status has been set to Done by %s"
-msgstr ""
+msgstr "Статус оцінки встановлено як Виконано %s"
 
 #. module: hr_appraisal
 #: model:ir.model.fields,help:hr_appraisal.field_hr_appraisal__note
@@ -1620,6 +1628,8 @@ msgid ""
 "The employee's feedback will be published without their consent. Do you "
 "really want to publish it? This action will be logged in the chatter."
 msgstr ""
+"Відгуки співробітників будуть опубліковані без їх згоди. Ви дійсно хочете це"
+" опублікувати? Ця дія буде зареєстрована в чаті."
 
 #. module: hr_appraisal
 #: code:addons/hr_appraisal/models/hr_appraisal.py:0
@@ -1752,7 +1762,7 @@ msgstr ""
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "e.g. John Doe"
-msgstr "наприклад, Степан Бандера"
+msgstr "наприклад, Іван Франко"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_goal_view_form
@@ -1762,12 +1772,12 @@ msgstr "напр., Представте себе вашій новій кома�
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "months after recruitment, then after"
-msgstr ""
+msgstr "місяців після найму, потім після"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
 msgid "months, then every"
-msgstr ""
+msgstr "місяців, потім кожен"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form

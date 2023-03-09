@@ -49,9 +49,8 @@ export const OPTIONS_BY_WIDGET = {
         {name: 'no_create', type: 'boolean', string: _lt("Disable creation"), leaveEmpty: 'unchecked'},
         {name: 'no_open', type: 'boolean', string: _lt("Disable opening"), leaveEmpty: 'unchecked'},
     ],
-    product_configurator: [
+    sol_product_many2one: [
         { name: 'no_create', type: 'boolean', string: _lt("Disable creation"), leaveEmpty: 'unchecked' },
-        { name: 'no_open', type: 'boolean', string: _lt("Disable opening"), leaveEmpty: 'unchecked' },
     ],
     many2many_tags: [
         { name: 'no_create', type: 'boolean', string: _lt("Disable creation"), leaveEmpty: 'unchecked' },

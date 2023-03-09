@@ -99,10 +99,9 @@ registerModel({
                 if (!this.url) {
                     return false;
                 }
-                const youtubeUrlMatch = this.url.match(
+                return Boolean(this.url.match(
                     "youtu(?:.be|be.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]{11})"
-                );
-                return youtubeUrlMatch.length > 1;
+                ));
             },
         }),
         isVideo: attr({

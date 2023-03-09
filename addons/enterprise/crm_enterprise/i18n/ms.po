@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* crm_enterprise
 # 
+# Translators:
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~15.1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-12-07 10:56+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -43,13 +47,13 @@ msgstr ""
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_view_map
 msgid "Customer"
-msgstr ""
+msgstr "Pelanggan"
 
 #. module: crm_enterprise
 #: model:ir.actions.act_window,name:crm_enterprise.crm_lead_action_dashboard
 #: model:ir.ui.menu,name:crm_enterprise.crm_enterprise_dashboard_menu
 msgid "Dashboard"
-msgstr ""
+msgstr "Papan pemuka"
 
 #. module: crm_enterprise
 #: model:ir.model.fields,field_description:crm_enterprise.field_crm_lead__days_to_convert
@@ -102,7 +106,7 @@ msgstr ""
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_view_pivot
 msgid "Leads"
-msgstr ""
+msgstr "Memimpin"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
@@ -120,7 +124,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_dashboard
 msgid "Medium"
-msgstr ""
+msgstr "Sederhana"
 
 #. module: crm_enterprise
 #: model_terms:ir.actions.act_window,help:crm_enterprise.crm_lead_action_dashboard
@@ -134,13 +138,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_dashboard
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_graph
 msgid "Opportunities"
-msgstr ""
+msgstr "Peluang"
 
 #. module: crm_enterprise
 #: model:ir.model.fields.selection,name:crm_enterprise.selection__crm_activity_report__won_status__pending
 #: model:ir.model.fields.selection,name:crm_enterprise.selection__crm_lead__won_status__pending
 msgid "Pending"
-msgstr ""
+msgstr "Yang belum selesai"
 
 #. module: crm_enterprise
 #: model:ir.actions.act_window,name:crm_enterprise.crm_opportunity_action_dashboard
@@ -188,7 +192,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_dashboard
 msgid "days"
-msgstr ""
+msgstr "hari"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_view_graph

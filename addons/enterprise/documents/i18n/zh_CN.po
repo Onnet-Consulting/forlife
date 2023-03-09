@@ -4,19 +4,19 @@
 # 
 # Translators:
 # 稀饭~~ <wangwhai@qq.com>, 2022
-# Martin Trigaux, 2022
-# Emily Jia <eji@odoo.com>, 2022
-# Raymond Yu <cl_yu@hotmail.com>, 2022
 # digitalliuzg8888, 2022
-# Jeffery CHEN <jeffery9@gmail.com>, 2022
+# Martin Trigaux, 2022
+# Raymond Yu <cl_yu@hotmail.com>, 2022
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2022
+# Emily Jia <eji@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:26+0000\n"
+"POT-Creation-Date: 2023-02-02 10:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Jeffery CHEN <jeffery9@gmail.com>, 2022\n"
+"Last-Translator: Emily Jia <eji@odoo.com>, 2023\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,28 +25,28 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.js:0
 #, python-format
 msgid " + Add a tag"
 msgstr " + 添加一个标签"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_model_mixin.js:0
 #, python-format
 msgid "%s Documents"
 msgstr "%s 文档"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_model_mixin.js:0
 #, python-format
 msgid "%s Documents (%s locked)"
 msgstr "%s个文档（%s已锁定）"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "%s file(s) not moved because they are locked by another user"
@@ -68,13 +68,13 @@ msgstr ""
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2017
-msgid "2021"
-msgstr "2021"
+msgid "2022"
+msgstr "2022"
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2018
-msgid "2022"
-msgstr "2022"
+msgid "2023"
+msgstr "2023"
 
 #. module: documents
 #: model_terms:digest.tip,tip_description:documents.digest_tip_documents_0
@@ -82,6 +82,7 @@ msgid "<b class=\"tip_title\">Tip: Become a paperless company</b>"
 msgstr "<b class=\"tip_title\">提示：成为一个无纸化公司</b>"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/controllers/main.py:0
 #, python-format
 msgid ""
@@ -105,7 +106,7 @@ msgid "<b>Bytes</b>"
 msgstr "<b>Bytes</b>"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "<b>Deselect this page</b> as we plan to process all bills first."
@@ -455,7 +456,7 @@ msgid "Access"
 msgstr "访问"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "Access Error"
@@ -477,7 +478,7 @@ msgid "Access Token"
 msgstr "访问令牌"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_action__action
@@ -507,7 +508,8 @@ msgid "Action Needed"
 msgstr "需要采取动作"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/documents/models/folder.py:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: model:ir.ui.menu,name:documents.workflow_rules_menu
@@ -573,7 +575,7 @@ msgid "Add"
 msgstr "添加"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #, python-format
@@ -586,14 +588,14 @@ msgid "Add Url"
 msgstr "添加Url"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #, python-format
 msgid "Add a Link"
 msgstr "添加链接"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
@@ -638,6 +640,7 @@ msgid "Aliased Model"
 msgstr "模型别名"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/controllers/main.py:0
 #, python-format
 msgid "All files uploaded"
@@ -654,6 +657,7 @@ msgid "Allows you to manage your documents."
 msgstr "允许您管理文档。"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Already linked Documents"
@@ -678,14 +682,14 @@ msgstr ""
 "处理收到的邮件的一个简单方法是配置扫描仪以将PDF发送到您的工作区电子邮件。扫描的文档将自动出现在您的工作区中。然后，使用split工具批量处理文档：启动用户定义的动作、请求签名、使用AI转换为供应商账单等。"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/hooks.js:0
 #, python-format
 msgid "An error occured while uploading."
 msgstr "上传时发生错误"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
@@ -695,7 +699,7 @@ msgid "Archive"
 msgstr "存档"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #, python-format
 msgid "Archive original file(s)"
@@ -708,14 +712,14 @@ msgid "Archived"
 msgstr "已归档"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "Are you sure you want to delete this record?"
 msgstr "您确认要删除这些数据吗？"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -839,27 +843,28 @@ msgid "Checksum/SHA1"
 msgstr "校验和/SHA1"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Choose a record to link"
 msgstr "选择一个要链接的记录"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Click on a card to <b>select the document</b>."
 msgstr "单击卡片<b>选择文档</b>。"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Click on a thumbnail to <b>preview the document</b>."
 msgstr "单击缩略图<b>预览文档</b>。"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -868,7 +873,7 @@ msgid ""
 msgstr "单击<b>页面分隔符</b>：我们不想拆分这两个页面，因为它们属于同一个文档。"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #, python-format
 msgid "Close"
@@ -923,7 +928,7 @@ msgid "Contracts"
 msgstr "合同"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #, python-format
@@ -1013,7 +1018,7 @@ msgid "Default values for uploaded documents"
 msgstr "‎上传文档的默认值‎"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/search/documents_search_panel.xml:0
 #: model_terms:ir.ui.view,arch_db:documents.documents_folder_deletion_wizard_view_form
@@ -1044,7 +1049,6 @@ msgid "Description"
 msgstr "说明"
 
 #. module: documents
-#: model_terms:ir.ui.view,arch_db:documents.facet_view_form
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_form
 #: model_terms:ir.ui.view,arch_db:documents.tag_view_form
 msgid "Discard"
@@ -1065,7 +1069,7 @@ msgid "Display Name"
 msgstr "显示名称"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.js:0
 #, python-format
 msgid "Do you really want to unlink this record?"
@@ -1108,6 +1112,7 @@ msgid ""
 msgstr "文档请求 {{ object.name != False and ':'+ object.name or '' }}."
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/document.py:0
 #: code:addons/documents/models/document.py:0
 #: code:addons/documents/models/mail_activity.py:0
@@ -1136,7 +1141,8 @@ msgid "Document: Document Request"
 msgstr "文档：文档请求"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/documents/models/folder.py:0
 #: code:addons/documents/models/res_partner.py:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
@@ -1195,7 +1201,7 @@ msgid "Domain"
 msgstr "域"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: model:ir.model.fields.selection,name:documents.selection__documents_share__action__download
 #: model_terms:ir.ui.view,arch_db:documents.document_view_form
@@ -1214,7 +1220,7 @@ msgid "Download and Upload"
 msgstr "下载并上传"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/helper/documents_drop_zone.xml:0
 #, python-format
 msgid "Drop files here to upload"
@@ -1235,7 +1241,7 @@ msgid "Due type"
 msgstr "到期类型"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #: code:addons/documents/static/src/views/search/documents_search_panel.xml:0
 #, python-format
@@ -1243,7 +1249,7 @@ msgid "Edit"
 msgstr "编辑"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.js:0
 #, python-format
 msgid "Edit the linked record"
@@ -1260,7 +1266,7 @@ msgid "Email cc"
 msgstr "邮件抄送"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #: code:addons/documents/static/src/views/hooks.js:0
 #: model:ir.model.fields.selection,name:documents.selection__documents_document__thumbnail_status__error
@@ -1315,7 +1321,7 @@ msgid "File Size"
 msgstr "文件大小"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/hooks.js:0
 #, python-format
 msgid "File is too large."
@@ -1376,6 +1382,11 @@ msgstr "完美的图标，例如FA任务"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Future Activities"
+msgstr "未来活动"
+
+#. module: documents
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
 #: model_terms:ir.ui.view,arch_db:documents.facet_view_search
 msgid "Group By"
 msgstr "分组"
@@ -1404,7 +1415,7 @@ msgid "Has Message"
 msgstr "有信息"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: model:ir.model.fields,field_description:documents.field_documents_document__previous_attachment_ids
 #, python-format
@@ -1573,12 +1584,17 @@ msgid "Last Updated on"
 msgstr "最后更新时间"
 
 #. module: documents
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Late Activities"
+msgstr "最近的活动"
+
+#. module: documents
 #: model:documents.tag,name:documents.documents_internal_knowledge_legal
 msgid "Legal"
 msgstr "法律"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -1587,21 +1603,21 @@ msgid ""
 msgstr "让我们处理收件箱中的文档。<br/><i>提示：使用标记筛选文档并组织流程。</i>"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Let's process these bills: send to Finance workspace."
 msgstr "让我们处理这些账单：发送到财务工作区。"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Let's process this document, coming from our scanner."
 msgstr "让我们处理这个文档，从我们的扫描仪。"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -1640,7 +1656,7 @@ msgid "Loading"
 msgstr "正在加载"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: model_terms:ir.ui.view,arch_db:documents.document_view_form
 #, python-format
@@ -1751,7 +1767,7 @@ msgid "Move to parent workspace"
 msgstr "移动到上级工作区"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector_field.js:0
 #, python-format
 msgid "Multiple values"
@@ -1790,35 +1806,35 @@ msgid "Name of the share link"
 msgstr "分享链接名称"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.xml:0
 #, python-format
 msgid "New"
 msgstr "新建"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "New File"
 msgstr "新建文件"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "New Group"
 msgstr "新建组"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "New Tag"
 msgstr "新标签"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "New Workspace"
@@ -1845,7 +1861,7 @@ msgid "Next Activity Type"
 msgstr "下一活动类型"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "No document has been selected"
@@ -1862,12 +1878,14 @@ msgid "No shared links"
 msgstr "没有共享链接"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/document.py:0
 #, python-format
 msgid "Not a file"
 msgstr "不是文件"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/document.py:0
 #, python-format
 msgid "Not attached"
@@ -1919,7 +1937,7 @@ msgid "One record limit"
 msgstr "一个记录限制"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
@@ -1935,7 +1953,7 @@ msgid ""
 msgstr "无论是否回复，所有的接收的邮件都将附上一条线索（记录）选配的ID。如果设置了，这个将完全阻止新记录的创建。"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/helper/documents_action_helper.xml:0
 #, python-format
 msgid "Or send emails to"
@@ -2020,7 +2038,7 @@ msgstr ""
 "(模型))"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "Partial transfer"
@@ -2080,7 +2098,7 @@ msgid "Related Workspace"
 msgstr "相关工作区"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "Remaining Pages"
@@ -2092,7 +2110,7 @@ msgid "Remove"
 msgstr "移除"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Replace"
@@ -2104,7 +2122,7 @@ msgid "Replace by"
 msgstr "替代者"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #: model:ir.model.fields.selection,name:documents.selection__documents_document__type__empty
 #: model_terms:ir.ui.view,arch_db:documents.documents_request_form_view
@@ -2123,7 +2141,7 @@ msgid "Request To"
 msgstr "请求"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/components/activity_menu_view/activity_menu_view.xml:0
 #, python-format
 msgid "Request a Document"
@@ -2200,7 +2218,6 @@ msgid "Sales"
 msgstr "销售"
 
 #. module: documents
-#: model_terms:ir.ui.view,arch_db:documents.facet_view_form
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_form
 #: model_terms:ir.ui.view,arch_db:documents.tag_view_form
 msgid "Save"
@@ -2212,19 +2229,14 @@ msgid "Schedule Activity"
 msgstr "安排活动"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #, python-format
 msgid "Select All: Shift + A"
 msgstr "全选：Shift + A"
 
 #. module: documents
-#: model_terms:ir.ui.view,arch_db:documents.document_view_kanban
-msgid "Select document"
-msgstr "选择文档"
-
-#. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Send this letter to the legal department, by assigning the right tags."
@@ -2250,8 +2262,8 @@ msgstr "单号规则"
 
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_finance_2018contracts
-msgid "Set As 2022 Contracts"
-msgstr "设置为 2022 年合同"
+msgid "Set As 2023 Contracts"
+msgstr "设置为2023年联系人"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_rule__partner_id
@@ -2281,7 +2293,7 @@ msgid "Settings"
 msgstr "设置"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #: model_terms:ir.ui.view,arch_db:documents.document_view_form
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
@@ -2295,6 +2307,7 @@ msgid "Share Links"
 msgstr "‎共享链接‎"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/controllers/main.py:0
 #, python-format
 msgid "Share link"
@@ -2306,26 +2319,28 @@ msgid "Share links"
 msgstr "共享链接"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/share.py:0
 #, python-format
 msgid "Share selected files"
 msgstr "分享选择的文件"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/share.py:0
 #, python-format
 msgid "Share selected workspace"
 msgstr "分享限制的工作区"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #, python-format
 msgid "Share this domain"
 msgstr "分享此域"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Share this selection"
@@ -2362,7 +2377,12 @@ msgid "Shares & Emails"
 msgstr "共享和电子邮件"
 
 #. module: documents
-#. openerp-web
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Show all records which has next action date is before today"
+msgstr "显示所有的在今天之前的下一个动作日期的记录"
+
+#. module: documents
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Size"
@@ -2374,7 +2394,7 @@ msgid "Specific Model Linked"
 msgstr "特定模型链接"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
@@ -2383,7 +2403,7 @@ msgid "Split"
 msgstr "拆分"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/components/attachment_viewer/attachment_viewer.xml:0
 #: code:addons/documents/static/src/components/attachment_viewer/attachment_viewer.xml:0
 #, python-format
@@ -2457,7 +2477,7 @@ msgid "Tag categories defined for this workspace"
 msgstr "为此工作区定义的标记类别"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: model:ir.actions.act_window,name:documents.facet_action
 #: model:ir.model.fields,field_description:documents.field_documents_document__tag_ids
@@ -2513,7 +2533,7 @@ msgstr ""
 "基于此别名接收到的邮件，创建记录的所有人。若此字段没有设置，系统将试图根据发送者(From)地址来查找正确的所有者，如果对于那个地址没有系统用户被找到，将使用系统管理员账户。"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/hooks.js:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.js:0
 #, python-format
@@ -2566,7 +2586,7 @@ msgid "Thumbnail Status"
 msgstr "缩略图状态"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/helper/documents_action_helper.xml:0
 #, python-format
 msgid "Tip: configure your scanner to send all documents to this address."
@@ -2587,6 +2607,11 @@ msgstr "待验证"
 #: model:mail.activity.type,name:documents.mail_documents_activity_data_tv
 msgid "To validate"
 msgstr "‎待验证‎"
+
+#. module: documents
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Today Activities"
+msgstr "今天的活动"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_facet__tooltip
@@ -2623,7 +2648,7 @@ msgid "URL"
 msgstr "URL"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Un-archive"
@@ -2635,14 +2660,14 @@ msgid "Unlock"
 msgstr "解锁"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_model_mixin.js:0
 #, python-format
 msgid "Unnamed"
 msgstr "未命名的"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #: model_terms:ir.ui.view,arch_db:documents.share_page
 #, python-format
@@ -2659,7 +2684,7 @@ msgstr ""
 "normal\">将其拖到此处。</span>"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Upload Document"
@@ -2676,6 +2701,7 @@ msgid "Upload by email"
 msgstr "通过邮件上传"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/mail_activity.py:0
 #, python-format
 msgid "Upload file request"
@@ -2714,7 +2740,7 @@ msgid "Videos"
 msgstr "视频"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -2773,7 +2799,7 @@ msgid "Workspaces"
 msgstr "工作空间"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -2804,33 +2830,35 @@ msgid ""
 msgstr "你可以从你的电脑上传一个文件或者复制/粘贴一个 Internet 链接到你的文件."
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/folder.py:0
 #, python-format
 msgid "You cannot create recursive folders."
 msgstr "不能创建递归文件夹。"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/document.py:0
 #, python-format
 msgid "You don't have the right to move documents to that workspace."
 msgstr "您无权将文档移动到该工作区。"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "You don't have the rights to move documents to that workspace"
 msgstr "您无权将文档移动到该工作区"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Youtube Video"
 msgstr "Youtube视频"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
@@ -2838,21 +2866,21 @@ msgid "delete"
 msgstr "删除"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "document"
 msgstr "文档"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "documents"
 msgstr "文档"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "documents selected"
@@ -2864,7 +2892,7 @@ msgid "documents shared by"
 msgstr "文档分享者"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
@@ -2872,7 +2900,7 @@ msgid "download"
 msgstr "下载"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #, python-format
 msgid "dropdown-item"
@@ -2916,14 +2944,14 @@ msgid "e.g. https://www.youtube.com/watch?v=CP96yVnXNrY"
 msgstr "e.g. https://www.youtube.com/watch?v=CP96yVnXNrY"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "fa fa-folder text-odoo"
 msgstr "FA-文件夹文本-奥杜"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "folder_id"
@@ -2935,28 +2963,28 @@ msgid "is_readonly_model"
 msgstr "is_readonly_model"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "name"
 msgstr "名称"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "owner_id"
 msgstr "owner_id"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "partner_id"
 msgstr "partner_id"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
@@ -2964,7 +2992,7 @@ msgid "restore"
 msgstr "恢复"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_page/pdf_page.xml:0
 #: code:addons/documents/static/src/owl/components/pdf_page/pdf_page.xml:0
 #, python-format
@@ -2972,7 +3000,7 @@ msgid "select"
 msgstr "选择"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "selected"
@@ -2984,21 +3012,21 @@ msgid "shared by"
 msgstr "分享者"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/hooks.js:0
 #, python-format
 msgid "status code: %s, message: %s"
 msgstr "状态代码:%s, 消息:%s"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "unnamed"
 msgstr "未命名"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "url"

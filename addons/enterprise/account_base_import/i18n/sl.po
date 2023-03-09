@@ -2,12 +2,20 @@
 # This file contains the translation of the following modules:
 # 	* account_base_import
 # 
+# Translators:
+# matjaz k <matjaz@mentis.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# Vida Potočnik <vida.potocnik@mentis.si>, 2022
+# Martin Trigaux, 2022
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:48+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,10 +41,10 @@ msgstr ""
 #. module: account_base_import
 #: model:ir.model,name:account_base_import.model_account_account
 msgid "Account"
-msgstr ""
+msgstr "Konto"
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Account Winbooks Import module"
@@ -48,7 +56,7 @@ msgid "Accounting Import"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/js/account_import_guide.js:0
 #: model:ir.actions.client,name:account_base_import.action_open_import_guide
 #, python-format
@@ -56,7 +64,7 @@ msgid "Accounting Import Guide"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Accounting Import Options"
@@ -65,15 +73,15 @@ msgstr ""
 #. module: account_base_import
 #: model:ir.model,name:account_base_import.model_base_import_import
 msgid "Base Import"
-msgstr ""
+msgstr "Osnovni uvoz"
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/js/account_setup_import.js:0
 #: model:ir.actions.act_window,name:account_base_import.action_open_coa_setup
 #, python-format
 msgid "Chart of Accounts"
-msgstr ""
+msgstr "Kontni načrti"
 
 #. module: account_base_import
 #: model_terms:ir.ui.view,arch_db:account_base_import.res_config_settings_import_view_form
@@ -81,43 +89,55 @@ msgid "Choose how you want to setup your CoA"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/js/account_setup_import.js:0
 #, python-format
 msgid "Customers"
-msgstr ""
+msgstr "Stranke"
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
+#: code:addons/account_base_import/static/src/xml/account_import.xml:0
+#: code:addons/account_base_import/static/src/xml/account_import.xml:0
+#: code:addons/account_base_import/static/src/xml/account_import.xml:0
+#: code:addons/account_base_import/static/src/xml/account_import.xml:0
+#: code:addons/account_base_import/static/src/xml/account_import.xml:0
+#: code:addons/account_base_import/static/src/xml/account_import.xml:0
+#, python-format
+msgid "Download"
+msgstr "Prenesi"
+
+#. module: account_base_import
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Excel Import"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "FEC"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "FEC Import module"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #: model_terms:ir.ui.view,arch_db:account_base_import.res_config_settings_import_view_form
 #, python-format
 msgid "Import"
-msgstr ""
+msgstr "Uvozi"
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #: model:ir.actions.client,name:account_base_import.action_account_import
 #, python-format
@@ -125,21 +145,21 @@ msgid "Import Chart of Accounts"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Import CoA"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Import Contacts"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #: model:ir.actions.client,name:account_base_import.action_account_move_line_import
@@ -153,28 +173,28 @@ msgid "Import Partners"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Import contacts"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Import customers or suppliers (partners) and their contacts using a"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Import the Chart of Accounts and initial balances using a"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/js/account_import_guide.js:0
 #, python-format
 msgid "Install a module"
@@ -183,17 +203,17 @@ msgstr ""
 #. module: account_base_import
 #: model:ir.model,name:account_base_import.model_account_move_line
 msgid "Journal Item"
-msgstr ""
+msgstr "Postavka"
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/js/account_setup_import.js:0
 #, python-format
 msgid "Journal Items"
-msgstr ""
+msgstr "Postavke"
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid ""
@@ -202,14 +222,14 @@ msgid ""
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Optional, but useful to import open receivables & payables using a"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #: model_terms:ir.ui.view,arch_db:account_base_import.res_config_settings_import_view_form
 #, python-format
@@ -217,13 +237,14 @@ msgid "Review Manually"
 msgstr ""
 
 #. module: account_base_import
+#. odoo-python
 #: code:addons/account_base_import/models/account_account.py:0
 #, python-format
 msgid "The import file must contain the 'code' column"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid ""
@@ -233,28 +254,28 @@ msgid ""
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Use predefined format to import your data faster."
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Use templates to import CSV or Excel for your accounting setup."
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "Winbooks"
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid ""
@@ -263,14 +284,14 @@ msgid ""
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid "or"
-msgstr ""
+msgstr "ali"
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
@@ -279,7 +300,7 @@ msgid "template."
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid ""
@@ -288,7 +309,7 @@ msgid ""
 msgstr ""
 
 #. module: account_base_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_base_import/static/src/xml/account_import.xml:0
 #, python-format
 msgid ""

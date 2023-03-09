@@ -163,7 +163,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:iot.field_iot_box__company_id
 #: model:ir.model.fields,field_description:iot.field_iot_device__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: iot
 #. openerp-web
@@ -305,7 +305,7 @@ msgstr ""
 #. module: iot
 #: model_terms:ir.ui.view,arch_db:iot.iot_device_search
 msgid "Group By"
-msgstr ""
+msgstr "Groepeer deur"
 
 #. module: iot
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__connection__hdmi
@@ -464,7 +464,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:iot.field_iot_device__name
 #: model:ir.model.fields,field_description:iot.field_iot_keyboard_layout__name
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: iot
 #: model:ir.model.fields.selection,name:iot.selection__iot_device__connection__network
@@ -595,7 +595,7 @@ msgstr ""
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_iot_device__connected
 msgid "Status"
-msgstr ""
+msgstr "Stand"
 
 #. module: iot
 #. openerp-web
@@ -644,7 +644,7 @@ msgstr ""
 #. module: iot
 #: model:ir.model.fields,field_description:iot.field_iot_device__type
 msgid "Type"
-msgstr ""
+msgstr "Soort"
 
 #. module: iot
 #: model:ir.model.fields,help:iot.field_iot_device__connection

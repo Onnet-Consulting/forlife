@@ -2,12 +2,23 @@
 # This file contains the translation of the following modules:
 # 	* account_online_synchronization
 # 
+# Translators:
+# Vida Potočnik <vida.potocnik@mentis.si>, 2022
+# laznikd <laznik@mentis.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Boris Kodelja <boris@hbs.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# Martin Trigaux, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-27 15:40+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +34,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__access_token
 msgid "Access Token"
-msgstr ""
+msgstr "Dostopni žeton"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__account_data
@@ -45,7 +56,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal_line__account_number
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__account_number
 msgid "Account Number"
-msgstr ""
+msgstr "Številka računa"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_journal__account_online_account_id
@@ -80,12 +91,12 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "Potreben je ukrep"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "Aktivnosti"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_exception_decoration
@@ -95,7 +106,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "Stanje aktivnosti"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_type_icon
@@ -112,13 +123,13 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "Število prilog"
 
 #. module: account_online_synchronization
 #: code:addons/account_online_synchronization/models/account_journal.py:0
 #, python-format
 msgid "Automated Bank Synchronization"
-msgstr ""
+msgstr "Samodejna bančna sinhronizacija"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__auto_sync
@@ -129,7 +140,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal_line__balance
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__balance
 msgid "Balance"
-msgstr ""
+msgstr "Saldo"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_link_journal_line__balance
@@ -145,7 +156,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_account_bank_statement_line
 msgid "Bank Statement Line"
-msgstr ""
+msgstr "Postavka bančnega izpiska"
 
 #. module: account_online_synchronization
 #: model:mail.activity.type,name:account_online_synchronization.bank_sync_activity_update_consent
@@ -166,12 +177,12 @@ msgstr ""
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.view_account_link_journal_form_wizard
 msgid "Cancel"
-msgstr ""
+msgstr "Prekliči"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__client_id
 msgid "Client"
-msgstr ""
+msgstr "Odjemalec"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_online_link_view_form
@@ -181,13 +192,13 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Podjetja"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__company_id
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__company_id
 msgid "Company"
-msgstr ""
+msgstr "Podjetje"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_online_link_view_form
@@ -222,13 +233,13 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Stik"
 
 #. module: account_online_synchronization
 #: code:addons/account_online_synchronization/models/account_online.py:0
 #, python-format
 msgid "Create a Bank Account"
-msgstr ""
+msgstr "Ustvari bančni račun"
 
 #. module: account_online_synchronization
 #: code:addons/account_online_synchronization/models/account_journal.py:0
@@ -266,7 +277,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__create_uid
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Ustvaril"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal__create_date
@@ -274,13 +285,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__create_date
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Ustvarjeno"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal_line__currency_id
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__currency_id
 msgid "Currency"
-msgstr ""
+msgstr "Valuta"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_journal__expiring_synchronization_date
@@ -294,12 +305,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__display_name
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Prikazani naziv"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields.selection,name:account_online_synchronization.selection__account_online_link__state__error
 msgid "Error"
-msgstr ""
+msgstr "Napaka"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_journal__expiring_synchronization_date
@@ -336,12 +347,12 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "Sledilci"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "Sledilci (partnerji)"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__activity_type_icon
@@ -364,12 +375,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__id
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "Ikona"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__activity_exception_icon
@@ -384,13 +395,13 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "Če je označeno, zahtevajo nova sporočila vašo pozornost."
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__message_has_error
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "Če je označeno, nekatera sporočila vsebujejo napako pri dostavi."
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_account__inverse_balance_sign
@@ -444,14 +455,14 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "Je sledilec"
 
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_account_journal
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal_line__journal_id
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__journal_ids
 msgid "Journal"
-msgstr ""
+msgstr "Dnevnik"
 
 #. module: account_online_synchronization
 #: code:addons/account_online_synchronization/wizard/account_link_journal_wizard.py:0
@@ -465,7 +476,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account____last_update
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Zadnjič spremenjeno"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__last_refresh
@@ -478,7 +489,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__write_uid
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Zadnji posodobil"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal__write_date
@@ -486,7 +497,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__write_date
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Zadnjič posodobljeno"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_online_link_view_form
@@ -496,7 +507,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__last_sync
 msgid "Last synchronization"
-msgstr ""
+msgstr "Zadnja sinhronizacija"
 
 #. module: account_online_synchronization
 #: code:addons/account_online_synchronization/models/account_online.py:0
@@ -522,23 +533,23 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "Glavna priponka"
 
 #. module: account_online_synchronization
 #: code:addons/account_online_synchronization/models/account_online.py:0
 #, python-format
 msgid "Message"
-msgstr ""
+msgstr "Sporočilo"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "Napaka pri dostavi sporočila"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "Sporočila"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__my_activity_date_deadline
@@ -548,7 +559,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__name
 msgid "Name"
-msgstr ""
+msgstr "Naziv"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_calendar_event_id
@@ -558,17 +569,17 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "Rok naslednje aktivnosti"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "Povzetek naslednje aktivnosti"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "Tip naslednje aktivnosti"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
@@ -578,7 +589,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__next_refresh
 msgid "Next synchronization"
-msgstr ""
+msgstr "Naslednja sinhronizacija"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields.selection,name:account_online_synchronization.selection__account_online_link__state__disconnected
@@ -588,27 +599,27 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal__number_added
 msgid "Number Added"
-msgstr ""
+msgstr "Število dodano"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "Število aktivnosti"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "Število napak"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__message_needaction_counter
 msgid "Number of messages which requires an action"
-msgstr ""
+msgstr "Število sporočil, ki zahtevajo dejavnost"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "Število sporočil, ki niso bila pravilno dostavljena."
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_statement_line__online_account_id
@@ -644,7 +655,7 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:account_online_synchronization.action_account_online_link_form
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
 msgid "Online Synchronization"
-msgstr ""
+msgstr "Spletna sinhronizacija"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_bank_statement_line__online_transaction_identifier
@@ -666,7 +677,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
 msgid "Problem during synchronization"
-msgstr ""
+msgstr "Težava med sinhronizacijo"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__provider_data
@@ -681,7 +692,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__refresh_token
 msgid "Refresh Token"
-msgstr ""
+msgstr "Osvežitev žetona"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__client_id
@@ -691,12 +702,12 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_user_id
 msgid "Responsible User"
-msgstr ""
+msgstr "Odgovorni uporabnik"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr ""
+msgstr "Napaka pri dostavi SMS "
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_link_journal_line__account_number
@@ -708,7 +719,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_journal__account_online_link_state
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__state
 msgid "State"
-msgstr ""
+msgstr "Stanje"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__activity_state
@@ -718,6 +729,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"Status na osnovi aktivnosti\n"
+"Zapadel: Rok je že prekoračen\n"
+"Danes: Datum aktivnosti je danes\n"
+"Planirano: Bodoče aktivnosti."
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
@@ -728,7 +743,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.view_account_link_journal_form_wizard
 msgid "Synchronize now"
-msgstr ""
+msgstr "Sinhronizirajte zdaj"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal__account_ids
@@ -784,32 +799,32 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal__transactions
 msgid "Transactions"
-msgstr ""
+msgstr "Transakcije"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "Vrsta dejavnosti izjeme na zapisu. "
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_online_link_view_form
 msgid "Update Credentials"
-msgstr ""
+msgstr "Posodobite poverilnice"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
 msgid "View problem"
-msgstr ""
+msgstr "Poglej težavo"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__website_message_ids
 msgid "Website Messages"
-msgstr ""
+msgstr "Sporočila iz spletne strani"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_online_link__website_message_ids
 msgid "Website communication history"
-msgstr ""
+msgstr "Kronologija komunikacij spletne strani"
 
 #. module: account_online_synchronization
 #: code:addons/account_online_synchronization/wizard/account_link_journal_wizard.py:0
@@ -834,7 +849,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_journal_dashboard_inherit_online_sync
 msgid "day"
-msgstr ""
+msgstr "dan"
 
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_account_online_account

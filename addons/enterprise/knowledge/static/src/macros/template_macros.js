@@ -79,7 +79,9 @@ export class UseAsDescriptionMacro extends AbstractMacro {
                 if (el) {
                     return el;
                 }
-                this.searchInXmlDocNotebookTab(`[name=${this.data.fieldName}`);
+                if (this.data.pageName) {
+                    this.searchInXmlDocNotebookTab(`page[name="${this.data.pageName}"]`);
+                }
                 return null;
             }.bind(this),
             action: 'click',

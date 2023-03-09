@@ -42,6 +42,11 @@ class AccountMove(models.Model):
         if self.l10n_cl_dte_status != "not_sent":
             return None
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
+        if self.company_id.l10n_cl_dte_service_provider == 'SIIDEMO':
+            self.message_post(body=_('This DTE has been generated in DEMO Mode. It is considered as accepted and '
+                                     'it won\'t be sent to SII.'))
+            self.l10n_cl_dte_status = 'accepted'
+            return None
         response = self._send_xml_to_sii_rest(
             self.company_id.l10n_cl_dte_service_provider,
             self.company_id.vat,

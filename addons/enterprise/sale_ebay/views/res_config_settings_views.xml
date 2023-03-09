@@ -61,7 +61,7 @@
                             <span class="o_form_label">eBay Marketplace Account Deletion/Closure Notifications</span>
                             <div class="text-muted">
                                 eBay requires supporting customer account deletion/closure notifications.
-                                Please follow the <a href="https://www.odoo.com/r/MEb">eBay documentation</a>
+                                Please follow the <a href="https://www.odoo.com/documentation/16.0/applications/sales/sales/ebay_connector/setup.html#accept-account-deletion-notifications" target="_blank">eBay documentation</a>
                                 to setup this mechanism.
                             </div>
                             <label for="ebay_account_deletion_endpoint"/>

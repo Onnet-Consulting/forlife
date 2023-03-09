@@ -5,7 +5,7 @@
 # Translators:
 # Foldi Robert <foldirobert@nexterp.ro>, 2022
 # Martin Trigaux, 2022
-# Dorin Hongu <dhongu@gmail.com>, 2022
+# Lyall Kindmurr, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:42+0000\n"
 "PO-Revision-Date: 2022-09-23 08:33+0000\n"
-"Last-Translator: Dorin Hongu <dhongu@gmail.com>, 2022\n"
+"Last-Translator: Lyall Kindmurr, 2023\n"
 "Language-Team: Romanian (https://www.transifex.com/odoo/teams/41243/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -35,7 +35,7 @@ msgstr ""
 #. module: documents_project_sale
 #: model:documents.tag,name:documents_project_sale.documents_folder_facet_1_tag_3
 msgid "Done/Archived"
-msgstr ""
+msgstr "Finalizat/Arhivat"
 
 #. module: documents_project_sale
 #: model:project.task,legend_normal:documents_project_sale.sale_order_1_task_1
@@ -45,7 +45,7 @@ msgstr "În desfășurare"
 #. module: documents_project_sale
 #: model:documents.tag,name:documents_project_sale.documents_folder_facet_1_tag_2
 msgid "In Use"
-msgstr ""
+msgstr "În uz"
 
 #. module: documents_project_sale
 #: model:documents.folder,name:documents_project_sale.documents_folder_template_child_3
@@ -55,7 +55,7 @@ msgstr "Diverse"
 #. module: documents_project_sale
 #: model:documents.tag,name:documents_project_sale.documents_folder_facet_1_tag_1
 msgid "New/Unsorted"
-msgstr ""
+msgstr "Nou/Nesortat"
 
 #. module: documents_project_sale
 #: model:ir.model.fields,help:documents_project_sale.field_product_product__template_folder_id
@@ -64,6 +64,8 @@ msgid ""
 "On sales order confirmation, a workspace will be automatically generated for"
 " the project based on this template."
 msgstr ""
+"La confirmarea comenzii de vânzare, un spațiu de lucru va fi generat automat"
+" pentru proiect, bazat pe acest șablon."
 
 #. module: documents_project_sale
 #: model:documents.folder,name:documents_project_sale.documents_folder_template_child_2
@@ -88,12 +90,12 @@ msgstr "Pregătit"
 #. module: documents_project_sale
 #: model:product.template,name:documents_project_sale.product_1
 msgid "Renovation Architect (Workspace Template)"
-msgstr ""
+msgstr "Arhitect Renovare (Șablon spațiu de lucru)"
 
 #. module: documents_project_sale
 #: model:documents.folder,name:documents_project_sale.documents_folder
 msgid "Renovation Projects"
-msgstr ""
+msgstr "Proiecte Renovare"
 
 #. module: documents_project_sale
 #: model:ir.model,name:documents_project_sale.model_sale_order
@@ -113,10 +115,10 @@ msgstr "Șablon"
 #. module: documents_project_sale
 #: model:product.template,uom_name:documents_project_sale.product_1
 msgid "Units"
-msgstr "buc"
+msgstr "Buc"
 
 #. module: documents_project_sale
 #: model:ir.model.fields,field_description:documents_project_sale.field_product_product__template_folder_id
 #: model:ir.model.fields,field_description:documents_project_sale.field_product_template__template_folder_id
 msgid "Workspace Template"
-msgstr ""
+msgstr "Șablon spațiu de lucru"

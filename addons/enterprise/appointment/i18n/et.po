@@ -17,15 +17,17 @@
 # Algo Kärp <algokarp@gmail.com>, 2022
 # Triine Aavik <triine@avalah.ee>, 2022
 # Patrick-Jordan Kiudorv, 2022
-# Jana Jaakson, 2022
+# Leaanika Randmets, 2022
+# Jana Jaakson, 2023
+# Anna, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Jana Jaakson, 2022\n"
+"Last-Translator: Anna, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,6 +36,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid " (copy)"
@@ -61,12 +64,14 @@ msgid "#{day['today_cls'] and 'Today' or ''}"
 msgstr "#{day['today_cls'] and 'Today' or ''}"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "%s - Let's meet"
-msgstr ""
+msgstr "%s - Saame kokku"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "%s with %s"
@@ -83,19 +88,22 @@ msgid "+3212345678"
 msgstr "+3212345678"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar.py:0
 #, python-format
 msgid ", All Day"
 msgstr ", kogu päev"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_svg.xml:0
 #, python-format
 msgid ""
 ".stgrey0{fill:#E3E3E3}\n"
 "                .stgrey1{fill:#F2F2F2}"
 msgstr ""
+".stgrey0{fill:#E3E3E3}\n"
+"                .stgrey1{fill:#F2F2F2}"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
@@ -103,6 +111,8 @@ msgid ""
 "<br/>\n"
 "                                    <span>Duration</span>"
 msgstr ""
+"<br/>\n"
+"                                    <span>Kestus</span>"
 
 #. module: appointment
 #: model:mail.template,body_html:appointment.appointment_booked_mail_template
@@ -181,6 +191,79 @@ msgid ""
 "</div>\n"
 "            "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"colors\" t-value=\"{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}\"/>\n"
+"    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
+"    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
+"    <p>\n"
+"    Registreeritud kohtumine <t t-out=\"object.appointment_type_id.name or ''\">Technical Demo</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> koos <t t-out=\"object.partner_id.name or ''\">Brandon Freeman´iga</t></t>.\n"
+"    </p>\n"
+"    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
+"        <a t-attf-href=\"/calendar/meeting/join?token={{ object.access_token }}\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
+"            Liitu</a>\n"
+"        <a t-attf-href=\"/web?#id={{ object.id }}&amp;view_type=form&amp;model=calendar.event\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
+"            Vaade</a>\n"
+"    </div>\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
+"            <td width=\"130px;\" style=\"min-width: 130px;\">\n"
+"                <div style=\"border-top-start-radius: 3px; border-top-end-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Kolmapäev</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"str(object.start.day) or ''\">1</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">Jaanuar 2020</t>\n"
+"                </div>\n"
+"                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-end-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-start-radius: 3px;\">\n"
+"                    <t t-if=\"not object.allday\">\n"
+"                        <div>\n"
+"                            <t t-out=\"format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t>\n"
+"                        </div>\n"
+"                        <t t-if=\"mail_tz\">\n"
+"                            <div style=\"font-size: 10px; font-weight: normal;\">\n"
+"                                (<t t-out=\"mail_tz\"/>)\n"
+"                            </div>\n"
+"                        </t>\n"
+"                    </t>\n"
+"                </div>\n"
+"            </td>\n"
+"            <td width=\"20px;\"/>\n"
+"            <td style=\"padding-top: 5px;\">\n"
+"                <p><strong>Ürituse detailid</strong></p>\n"
+"                <ul>\n"
+"                    <li t-if=\"object.location\">Asukoht: <t t-out=\"object.location or ''\">Bruxelles</t>\n"
+"                        (<a target=\"_blank\" t-attf-href=\"http://maps.google.com/maps?oi=map&amp;q={{ object.location }}\">Vaata kaarti</a>)\n"
+"                    </li>\n"
+"                    <li t-if=\"recurrent\">Millal: <t t-out=\"object.recurrence_id.name or ''\">Igal esimesel nädalal, 3 üritust</t></li>\n"
+"                    <li t-if=\"not object.allday and object.duration\">Kestus: <t t-out=\"('%dH%02d' % (object.duration,round(object.duration*60)%60)) or ''\">0H30</t></li>\n"
+"                    <li>Osalejad\n"
+"                    <ul>\n"
+"                        <li t-foreach=\"object.attendee_ids\" t-as=\"attendee\">\n"
+"                            <div t-attf-style=\"display: inline-block; border-radius: 50%; width: 10px; height: 10px; background:{{ colors.get(attendee.state) or 'white' }};\"> </div>\n"
+"                            <t t-if=\"attendee.common_name\">\n"
+"                                <span style=\"margin-left:5px\" t-out=\"attendee.common_name or ''\">Mitchell Admin</span>\n"
+"                            </t>\n"
+"                            <t t-else=\"\">\n"
+"                                <span style=\"margin-left:5px\">Teie</span>\n"
+"                            </t>\n"
+"                        </li>\n"
+"                    </ul></li>\n"
+"                    <li t-if=\"object.videocall_location\">\n"
+"                        Kuidas liituda:\n"
+"                        <t t-if=\"object.get_base_url() in object.videocall_location\"> Liitu Odoo Discuss´iga</t>\n"
+"                        <t t-else=\"\"> Liitu</t><br/>\n"
+"                        <a t-attf-href=\"{{ object.videocall_location }}\" target=\"_blank\" t-out=\"object.videocall_location or ''\">www.mycompany.com/calendar/join_videocall/xyz</a>\n"
+"                    </li>\n"
+"                </ul>\n"
+"                <t t-if=\"not is_html_empty(object.description)\">\n"
+"                    <li>Ürituse kirjeldus:\n"
+"                    <t t-out=\"object.description\"/></li>\n"
+"                </t>\n"
+"            </td>\n"
+"    </tr></table>\n"
+"</div>\n"
+"            "
 
 #. module: appointment
 #: model:mail.template,body_html:appointment.appointment_canceled_mail_template
@@ -253,16 +336,83 @@ msgid ""
 "</div>\n"
 "            "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"colors\" t-value=\"{'needsAction': 'grey', 'accepted': 'green', 'tentative': '#FFFF00', 'declined': 'red'}\"/>\n"
+"    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
+"    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
+"    <p>\n"
+"    Kohtumine <t t-out=\"object.appointment_type_id.name or ''\">Technical Demo</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> koos <t t-out=\"object.partner_id.name or ''\">Brandon Freeman´iga</t></t> on tühistatud.\n"
+"    </p>\n"
+"<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
+"            <td width=\"130px;\" style=\"min-width: 130px;\">\n"
+"                <div style=\"border-top-start-radius: 3px; border-top-end-radius: 3px; font-size: 12px; border-collapse: separate; text-align: center; font-weight: bold; color: #ffffff; min-height: 18px; background-color: #875A7B; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;EEEE&quot;, lang_code=object.env.lang) or ''\">Kolmapäev</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 48px; min-height: auto; font-weight: bold; text-align: center; color: #5F5F5F; background-color: #F8F8F8; border: 1px solid #875A7B;\">\n"
+"                    <t t-out=\"str(object.start.day) or ''\">1</t>\n"
+"                </div>\n"
+"                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">Jaanuar 2020</t>\n"
+"                </div>\n"
+"                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-end-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-start-radius: 3px;\">\n"
+"                    <t t-if=\"not object.allday\">\n"
+"                        <div><t t-out=\"format_time(time=object.start, tz=mail_tz, time_format=&quot;short&quot;, lang_code=object.env.lang) or ''\">8:00</t></div>\n"
+"                        <t t-if=\"mail_tz\">\n"
+"                            <div style=\"font-size: 10px; font-weight: normal;\">\n"
+"                                (<t t-out=\"mail_tz\"/>)\n"
+"                            </div>\n"
+"                        </t>\n"
+"                    </t>\n"
+"                </div>\n"
+"            </td>\n"
+"            <td width=\"20px;\"/>\n"
+"            <td style=\"padding-top: 5px;\">\n"
+"                <del>\n"
+"                    <p><strong>Ürituse detailid</strong></p>\n"
+"                    <ul>\n"
+"                            <li t-if=\"object.location\">Asukoht: <t t-out=\"object.location or ''\">Bruxelles</t>\n"
+"                                (<a target=\"_blank\" t-attf-href=\"http://maps.google.com/maps?oi=map&amp;q={{ object.location }}\">Vaata kaardilt</a>)\n"
+"                            </li>\n"
+"                            <li t-if=\"recurrent\">Millal: <t t-out=\"object.recurrence_id.name or ''\">Igal nädalal, 3 ürituse jaoks</t></li>\n"
+"                            <li t-if=\"not object.allday and object.duration\">Kestus: <t t-out=\"('%dH%02d' % (object.duration,round(object.duration*60)%60)) or ''\">0H30</t></li>\n"
+"                        <li>Osalejad\n"
+"                        <ul t-foreach=\"object.attendee_ids\" t-as=\"attendee\">\n"
+"                            <li>\n"
+"                                <div t-attf-style=\"display: inline-block; border-radius: 50%; width: 10px; height: 10px; background:{{ colors.get(attendee.state) or 'white' }};\"> </div>\n"
+"                                <t t-if=\"attendee.common_name\">\n"
+"                                    <span style=\"margin-left:5px\" t-out=\"attendee.common_name or ''\"/>\n"
+"                                </t>\n"
+"                                <t t-else=\"\">\n"
+"                                    <span style=\"margin-left:5px\">Teie</span>\n"
+"                                </t>\n"
+"                            </li>\n"
+"                        </ul></li>\n"
+"                        <li t-if=\"object.videocall_location\">\n"
+"                            Kuidas liituda:\n"
+"                            <t t-if=\"object.get_base_url() in object.videocall_location\"> Liitu Odoo Discuss´iga</t>\n"
+"                            <t t-else=\"\"> Liitu</t><br/>\n"
+"                            <a t-attf-href=\"{{ object.videocall_location }}\" target=\"_blank\" t-out=\"object.videocall_location or ''\">www.mycompany.com/calendar/join_videocall/xyz</a>\n"
+"                        </li>\n"
+"                    </ul>\n"
+"                    <t t-if=\"not is_html_empty(object.description)\">\n"
+"                        <li>Ürituse kirjeldus:\n"
+"                        <t t-out=\"object.description\"/></li>\n"
+"                    </t>\n"
+"                </del>\n"
+"            </td>\n"
+"    </tr></table>\n"
+"</div>\n"
+"            "
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form
 msgid "<i class=\"fa fa-info-circle\" title=\"Info\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-info-circle\" title=\"Info\"/>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
 msgid "<i class=\"fa fa-map-marker me-2\" title=\"Location\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-map-marker me-2\" title=\"Location\"/>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -270,6 +420,9 @@ msgid ""
 "<i class=\"fa fa-pencil me-2\" role=\"img\" aria-label=\"Edit\" "
 "title=\"Create custom questions in backend\"/><em>Add Custom Questions</em>"
 msgstr ""
+"<i class=\"fa fa-pencil me-2\" role=\"img\" aria-label=\"Edit\" "
+"title=\"Create custom questions in backend\"/><em>Vajadusel lisa küsimused "
+"siia</em>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form
@@ -277,6 +430,8 @@ msgid ""
 "<i class=\"fa fa-warning\"/> Impossible to share a link for an appointment "
 "type that has no user assigned."
 msgstr ""
+"<i class=\"fa fa-warning\"/> Kohtumistüübi jaoks, millele pole kasutajat "
+"määratud, ei saa linki jagada."
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form
@@ -284,16 +439,18 @@ msgid ""
 "<i class=\"fa fa-warning\"/> You need to be part of an appointment type to "
 "be able to share a personal link."
 msgstr ""
+"<i class=\"fa fa-warning\"/> Isikliku lingi jagamiseks peate kuuluma "
+"kohtumistüüpi."
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
 msgid "<span class=\"bg-danger\">Archived</span>"
-msgstr ""
+msgstr "<span class=\"bg-danger\">Arhiveeritud</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "<span class=\"o_not_editable\">Online</span>"
-msgstr ""
+msgstr "<span class=\"o_not_editable\">Online</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -301,16 +458,18 @@ msgid ""
 "<span class=\"text-nowrap\"><i class=\"fa fa-arrow-right mx-2\"/>Back to "
 "edit mode</span>"
 msgstr ""
+"<span class=\"text-nowrap\"><i class=\"fa fa-arrow-right mx-2\"/>Tagasi "
+"muutmise vaatesse</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "<span> hours</span>"
-msgstr "<span> tunnid</span>"
+msgstr "<span> tundi</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "<span>Online</span>"
-msgstr ""
+msgstr "<span>Online</span>"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
@@ -351,6 +510,7 @@ msgid "<strong>Your appointment has been successfully booked!</strong>"
 msgstr "<strong>Teie kohtumine on edukalt broneeritud!</strong>"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar_view.py:0
 #, python-format
 msgid ""
@@ -380,6 +540,13 @@ msgid "Add a function here..."
 msgstr "Lisa funktsioon siin..."
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Add a specific appointment."
+msgstr "Lisa kohtumine"
+
+#. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "Add an intro message here..."
 msgstr "Lisa sissejuhatuse kiri..."
@@ -400,6 +567,7 @@ msgid "Administrator"
 msgstr "Administraator"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "All"
@@ -412,6 +580,7 @@ msgid "All Appointments"
 msgstr "Kõik kohtumised"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #: model:ir.model.fields,field_description:appointment.field_appointment_slot__allday
 #, python-format
@@ -435,12 +604,14 @@ msgstr ""
 "Vastuse sisendil peab olema teksti väärtus või eeldefineeritud vastus."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar_view.py:0
 #, python-format
 msgid "An appointment type is needed to get the link."
-msgstr "Kohtumise tüüp on vajalik, et saada link."
+msgstr "Lingi saamiseks on vajalik Kohtumise tüüp."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_slot.py:0
 #, python-format
 msgid "An unique type slot should have a start and end datetime"
@@ -472,7 +643,7 @@ msgid "Answers"
 msgstr "Vastused"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_type__category__anytime
 #, python-format
@@ -485,9 +656,12 @@ msgid "Any User"
 msgstr "Iga Kasutaja"
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
+#, python-format
 msgid "Appointment"
 msgstr "Kohtumine"
 
@@ -511,7 +685,7 @@ msgstr "Kohtumine broneeritud"
 #. module: appointment
 #: model:mail.template,subject:appointment.appointment_booked_mail_template
 msgid "Appointment Booked: {{ object.appointment_type_id.name }}"
-msgstr ""
+msgstr "Kohtumine broneeritud: {{ object.appointment_type_id.name }}"
 
 #. module: appointment
 #: model:mail.message.subtype,description:appointment.mt_calendar_event_canceled
@@ -523,7 +697,7 @@ msgstr "Kohtumine tühistatud"
 #. module: appointment
 #: model:mail.template,subject:appointment.appointment_canceled_mail_template
 msgid "Appointment Canceled: {{ object.appointment_type_id.name }}"
-msgstr ""
+msgstr "Kohtumine tühistatud: {{ object.appointment_type_id.name }}"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__appointment_duration_formatted
@@ -607,10 +781,11 @@ msgid "Appointment Types"
 msgstr "Kohtumise tüübid"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/calendar_event.py:0
 #, python-format
 msgid "Appointment canceled by: %(partners)s"
-msgstr ""
+msgstr "Kohtumine kustutatud: %(partners)s poolt"
 
 #. module: appointment
 #: model:mail.template,name:appointment.appointment_booked_mail_template
@@ -654,11 +829,12 @@ msgid "Assignment Method"
 msgstr "Määramise meetod"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_slot.py:0
 #, python-format
 msgid ""
 "At least one slot duration is shorter than the meeting duration (%s hours)"
-msgstr ""
+msgstr "Vähemalt ühe aja kestus on koosoleku kestusest lühem (%s tundi)"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_attachment_count
@@ -702,7 +878,10 @@ msgid "CC to"
 msgstr "CC"
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
 #: model:ir.ui.menu,name:appointment.calendar_appointment_type_menu_action
+#, python-format
 msgid "Calendar"
 msgstr "Kalender"
 
@@ -749,7 +928,7 @@ msgid "Chosen by the Customer"
 msgstr "Kliendi poolt valitud"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Click in your calendar to pick meeting time proposals."
@@ -782,6 +961,7 @@ msgid "Connect"
 msgstr "Ühenda"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
 msgid "Connect your Calendar"
@@ -808,7 +988,7 @@ msgstr ""
 "tühistatud olenemata sellest, kas osalevad või mitte"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.js:0
 #, python-format
 msgid "Copied !"
@@ -821,6 +1001,7 @@ msgid "Copy Link &amp; Close"
 msgstr "Kopeeri link &amp; Sulge"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
 msgid "Create your first Appointment"
@@ -865,11 +1046,12 @@ msgid "Customer Preview"
 msgstr "Kliendi eelvaade"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 #, python-format
 msgid "Date"
-msgstr "Date"
+msgstr "Kuupäev"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -877,10 +1059,13 @@ msgid "Declined"
 msgstr "Tagasi lükatud"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Default slots cannot be applied to the %s appointment type category."
 msgstr ""
+"Kohtumise tüübi kategooriale %s ei saa vaikimisi teenindusaegu ei saa "
+"kohaldada."
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_appointment_slot__slot_type
@@ -890,6 +1075,10 @@ msgid ""
 "        The one shot type is only used when an user create a custom appointment type for a client by\n"
 "        defining non-recurring time slot (e.g. 10th of April 2021 from 10 to 11 am) from its calendar."
 msgstr ""
+"Defines the type of slot. The recurring slot is the default type which is used for\n"
+"        appointment type that are used recurringly in type like medical appointment.\n"
+"        The one shot type is only used when an user create a custom appointment type for a client by\n"
+"        defining non-recurring time slot (e.g. 10th of April 2021 from 10 to 11 am) from its calendar."
 
 #. module: appointment
 #: model:appointment.type,name:appointment.appointment_type_2
@@ -911,7 +1100,7 @@ msgstr ""
 "unikaalse vahemiku tüübi korral"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form_insert_link
 #, python-format
@@ -946,6 +1135,7 @@ msgid "Duration:"
 msgstr "Kestus:"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "Email: %s"
@@ -1000,10 +1190,10 @@ msgstr "Kellelt?"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__avatars_display
 msgid "Front-End Display"
-msgstr ""
+msgstr "Front-End Display"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
@@ -1011,6 +1201,7 @@ msgid "Get Share Link"
 msgstr "Link jagamiseks"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_onboarding_link_view_form
 #, python-format
@@ -1105,7 +1296,7 @@ msgstr ""
 "Kui määratud, võetakse arvesse ainult valitud kasutajad sellele vahemikule."
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Insert Appointment Link"
@@ -1210,7 +1401,7 @@ msgid "Last Updated on"
 msgstr "Viimati uuendatud"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Link Copied in your clipboard !"
@@ -1228,14 +1419,14 @@ msgid "Link URL"
 msgstr "Lingi URL"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/js/appointment_invite_form_renderer.js:0
 #, python-format
 msgid "Link copied to clipboard!"
 msgstr "Link kopeeritud lõikelauale!"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_onboarding_link_form_renderer.js:0
 #, python-format
 msgid "Link copied to clipboard."
@@ -1277,16 +1468,17 @@ msgid "Me"
 msgstr "Mina"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
 msgid "Meet With Me"
-msgstr ""
+msgstr "Kohtuge minuga"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
 msgid "Meetings<br/>scheduled"
-msgstr ""
+msgstr "Kohtumised<br/>planeeritud"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_has_error
@@ -1300,6 +1492,7 @@ msgid "Messages"
 msgstr "Sõnumid"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "Mobile: %s"
@@ -1326,10 +1519,20 @@ msgid "My Links"
 msgstr "Minu Lingid"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Name"
 msgstr "Nimi"
+
+#. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Navigation"
+msgstr "Navigeerimine"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_alarm__default_for_new_appointment_type
@@ -1373,6 +1576,7 @@ msgid "No data yet!"
 msgstr "Andmed puuduvad!"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "None"
@@ -1381,7 +1585,7 @@ msgstr "Pole"
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_event__alarm_ids
 msgid "Notifications sent to all attendees to remind of the meeting."
-msgstr "Kõikidele osalejatele saadetud teavitused kohtumise meeldetuletuseks."
+msgstr "Kõikidele osalejatele saadetakse kohtumise meeldetuletus."
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_needaction_counter
@@ -1416,7 +1620,7 @@ msgstr "Onboarding Samm"
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_slot__slot_type__unique
 msgid "One Shot"
-msgstr ""
+msgstr "One Shot"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -1442,7 +1646,7 @@ msgstr "Online kohtumine : ajavahemik"
 #: model:ir.ui.menu,name:appointment.menu_schedule_report_all
 #: model_terms:ir.ui.view,arch_db:appointment.calendar_event_view_search_inherit_appointment
 msgid "Online Appointments"
-msgstr "Online kohtumised"
+msgstr "Veebikohtumised"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form
@@ -1452,14 +1656,18 @@ msgstr ""
 "Ainult tähemärgid, numbrid, alakriipsud ning kaldkriipsud lubatud linkides."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_invite.py:0
 #, python-format
 msgid ""
 "Only letters, numbers, underscores and dashes are allowed in your links. You"
 " need to adapt %s."
 msgstr ""
+"Teie linkides on lubatud ainult tähed, numbrid, alakriipsud ja sidekriipsud."
+" Peate kohandama %s."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Only one anytime appointment type is allowed for a specific user."
@@ -1472,7 +1680,7 @@ msgid "Options"
 msgstr "Seaded"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Our first availability is"
@@ -1484,6 +1692,7 @@ msgid "Outlook"
 msgstr "Outlook"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Past"
@@ -1515,7 +1724,7 @@ msgstr "Eelvaade"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointments_list_layout
 msgid "Preview <span class=\"fa fa-arrow-right\"/>"
-msgstr ""
+msgstr "Eelvaade <span class=\"fa fa-arrow-right\"/>"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_answer__question_id
@@ -1574,6 +1783,7 @@ msgid "Required Answer"
 msgstr "Nõutud vastus"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Responsible"
@@ -1611,6 +1821,13 @@ msgid "Schedule an Appointment"
 msgstr "Planeerige kohtumine"
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Schedule an appointment."
+msgstr "Planeeri kohtumine"
+
+#. module: appointment
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_report
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_reporting
 msgid "Schedule appointments to get statistics"
@@ -1632,31 +1849,35 @@ msgid "Scheduling"
 msgstr "Planeerimine"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in All"
 msgstr "Otsi kõige hulgast"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Description"
 msgstr "Otsi kirjeldusest"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Name"
 msgstr "Otsi Nimi"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Responsible"
 msgstr "Otsi Vastutav"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Select Dates"
@@ -1707,7 +1928,7 @@ msgid "Share"
 msgstr "Jaga"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
@@ -1716,6 +1937,7 @@ msgid "Share Availabilities"
 msgstr "Jaga saadavusi"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Share Link"
@@ -1751,17 +1973,17 @@ msgstr "Lühikood"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__short_code_format_warning
 msgid "Short Code Format Warning"
-msgstr ""
+msgstr "Lühikoodi vormingu hoiatus"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__short_code_unique_warning
 msgid "Short Code Unique Warning"
-msgstr ""
+msgstr "Lühikoodi vormingu hoiatus"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_type__avatars_display__show
 msgid "Show Users' Pictures"
-msgstr ""
+msgstr "Näita kasutajate pilte"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_question__question_type__char
@@ -1771,7 +1993,7 @@ msgstr "Üherealine tekst"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_slot__slot_type
 msgid "Slot type"
-msgstr ""
+msgstr "Pesa tüüp"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_appointment_type__message_intro
@@ -1779,7 +2001,7 @@ msgid "Small description of the appointment type."
 msgstr "Lühike kirjeldus kohtumise tüübi kohta."
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
@@ -1787,14 +2009,14 @@ msgid "Sorry,"
 msgstr "Vabandame,"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Sorry, we have no availability for an appointment."
 msgstr "Vabandame, kuid kohtumise määramine pole saadaval."
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Sorry, we have no more slots available for this month."
@@ -1864,33 +2086,39 @@ msgid "The end time must be later than the start time."
 msgstr "Lõppaeg peab olema hilisem kui algusaeg."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "The field '%s' does not exist in the targeted model"
-msgstr ""
+msgstr "Mudelis ei eksisteeri '%s' välja"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_invite.py:0
 #, python-format
 msgid "The following appointment type(s) have no staff assigned: %s."
-msgstr ""
+msgstr "Järgmiste kohtumistüüpide puhul ei ole töötajaid määratud: %s."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_question.py:0
 #, python-format
 msgid "The following question(s) do not have any selectable answers : %s"
-msgstr ""
+msgstr "Järgmis(t)ele küsimuse(te)le ei ole võimalik vastust valida: %s"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid ""
 "The following users are in restricted slots but they are not part of the "
 "available staff: %s"
 msgstr ""
+"Järgmised kasutajad on piiratud ajaga, kuid nad ei kuulu saadaolevate "
+"töötajate hulka: %s"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Their first availability is"
@@ -1927,11 +2155,14 @@ msgstr ""
 "ning lahtiolekuajad on seadistamata"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid ""
 "This category of appointment type should only have one user but got %s users"
 msgstr ""
+"Sellel kohtumistüübi kategoorial peaks olema ainult üks kasutaja, kuid on %s"
+" kasutajat"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_edit_in_backend
@@ -1944,6 +2175,8 @@ msgid ""
 "This option toggles the display of avatars of the staff members during the frontend appointment process.\n"
 "        When choosing amongst several users, a selection screen will also be used, if website is installed."
 msgstr ""
+"See suvand lülitab töötajate avataride kuvamise kasutajaliidese kohtumisprotsessi ajal sisse.\n"
+"         Kui veebisait on installitud, kasutatakse ka mitme kasutaja hulgast valimisel valikuekraani."
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_slot__weekday__4
@@ -1981,7 +2214,7 @@ msgstr "Token"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
 msgid "Total Meetings<br/>(Last 30 Days)"
-msgstr ""
+msgstr "Kohtumisi kokku<br/>(viimase 30 päeva jooksul)"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
@@ -1999,6 +2232,7 @@ msgid "Until (max)"
 msgstr "Kuni (max)"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Upcoming"
@@ -2022,6 +2256,15 @@ msgid ""
 "\n"
 "            - Anytime: the user will create and share to another user an appointment type covering all their time slots"
 msgstr ""
+"Kasutatakse selle kohtumistüübi kategooria määratlemiseks.\n"
+"\n"
+"         Võib olla üks järgmistest:\n"
+"\n"
+"             - Veebisait: vaikekategooria, inimesed pääsevad veebisaidilt ligi ning neil on võimalus leppida kokku kohtumisi kasutajatega\n"
+"\n"
+"             - Kohandatud: kasutaja loob ja jagab teisele kasutajale kohandatud kohtumistüübi käsitsi valitud ajavahemikega\n"
+"\n"
+"             - Igal ajal: kasutaja loob ja jagab teisele kasutajale kohtumise tüübi, mis hõlmab kõiki nende ajavahemikke"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__staff_user_ids
@@ -2071,27 +2314,27 @@ msgstr "MIllal:"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.staff_user_select
 msgid "With"
-msgstr ""
+msgstr "koos"
 
 #. module: appointment
 #: model:onboarding.onboarding.step,description:appointment.appointment_onboarding_configure_calendar_provider_step
 msgid "With Outlook or Google"
-msgstr ""
+msgstr "Outlook'i või Google'iga"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "Your Email*"
-msgstr ""
+msgstr "Sinu e-post"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "Your Name*"
-msgstr ""
+msgstr "Sinu nimi"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "Your Phone Number*"
-msgstr ""
+msgstr "Sinu telefoni number"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -2101,7 +2344,7 @@ msgstr "Teie kohtumine on vähem kui"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "and not after"
-msgstr ""
+msgstr "ja mitte pärast"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -2111,7 +2354,7 @@ msgstr "kell"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "at least"
-msgstr ""
+msgstr "vähemalt"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
@@ -2121,12 +2364,12 @@ msgstr "päeva pärast"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"During this meeting, we will...\""
-msgstr ""
+msgstr "nt. \"Selle kohtumise ajal me...\""
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"I feel nauseous...\""
-msgstr ""
+msgstr "nt. \"Mul on iiveldus...\""
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
@@ -2136,31 +2379,31 @@ msgstr "nt. \"Tehniline Demo\""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"Thank you for your trust, we look forward to meeting you!\""
-msgstr ""
+msgstr "nt. \"Täname usalduse eest, ootame teiega kohtumist!\""
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"What are your symptoms ?\""
-msgstr ""
+msgstr "nt. Millised sümptomid on teil?"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "has no availability for an appointment."
-msgstr ""
+msgstr "pole kohtumiseks kättesaadav."
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "has no more slots available for this month."
-msgstr ""
+msgstr "sellel kuul pole rohkem vabu kohti."
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "hours before"
-msgstr ""
+msgstr "tundi enne"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -2170,22 +2413,22 @@ msgstr "tunni pärast!"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 msgid "john.smith@example.com"
-msgstr ""
+msgstr "john.smith@example.com"
 
 #. module: appointment
 #: model:onboarding.onboarding.step,description:appointment.appointment_onboarding_create_appointment_type_step
 msgid "to automate appointments"
-msgstr ""
+msgstr "kohtumiste automatiseerimiseks"
 
 #. module: appointment
 #: model:onboarding.onboarding.step,description:appointment.appointment_onboarding_preview_invite_step
 msgid "to schedule appointments"
-msgstr ""
+msgstr "kohtumiste planeerimiseks"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "until"
-msgstr ""
+msgstr "kuni"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -2193,4 +2436,4 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 msgid "with"
-msgstr ""
+msgstr "koos"

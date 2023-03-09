@@ -272,7 +272,7 @@ msgstr ""
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
 #, python-format
 msgid "You are in channel <b>#%s</b>."
-msgstr ""
+msgstr "הנך בערוץ <b>#%s</b>."
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0

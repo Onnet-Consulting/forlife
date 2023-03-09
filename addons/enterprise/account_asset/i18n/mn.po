@@ -5,24 +5,24 @@
 # Translators:
 # Munkhbaatar g <muuguu17@gmail.com>, 2022
 # nurbakhit nurka <nurbakhit@bumanit.mn>, 2022
-# Bayarkhuu Bataa, 2022
 # Batmunkh Ganbat <batmunkh.g@bumanit.mn>, 2022
 # Munkhbilguun Altankhuyag <munkhbilguunaltankhuyag@gmail.com>, 2022
-# tserendavaa tsogtoo <tseegii011929@gmail.com>, 2022
 # Батмөнх Ганбат <batmunkh2522@gmail.com>, 2022
 # hish, 2022
 # Батболд <batbold.ts@gmail.com>, 2022
 # tumenjargal hadbaatar <tumenjargal7903@gmail.com>, 2022
 # Martin Trigaux, 2022
-# Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2022
+# Onii Onii <onii0223@yahoo.com>, 2022
+# Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2023
+# Bayarkhuu Bataa, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2022-12-16 09:00+0000\n"
 "PO-Revision-Date: 2022-09-22 05:44+0000\n"
-"Last-Translator: Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2022\n"
+"Last-Translator: Bayarkhuu Bataa, 2023\n"
 "Language-Team: Mongolian (https://www.transifex.com/odoo/teams/41243/mn/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,12 +31,14 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid " (%s of %s)"
 msgstr " (%s of %s)"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid " (copy)"
@@ -58,6 +60,7 @@ msgid "# Posted Depreciation Entries"
 msgstr "# Батлагдсан элэгдлийн бичилтүүд"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid ""
@@ -68,24 +71,28 @@ msgstr ""
 "тооцоологдоно."
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "%s created from invoice: %s"
 msgstr "%s үүсгэгдсэн нэхэмжлэл нь: %s"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/report/account_assets_report.py:0
 #, python-format
 msgid "%s m"
 msgstr "%s с"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/report/account_assets_report.py:0
 #, python-format
 msgid "%s y"
 msgstr "%s ж"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "%s: Depreciation"
@@ -97,24 +104,28 @@ msgid "(incl."
 msgstr "(багтсан."
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "A deferred expense has been created for this move:"
 msgstr "Энэхүү гүйлгээгээр урьдчилж тооцсон зардлын бүртгэл үүслээ:"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "A deferred revenue has been created for this move:"
 msgstr "Энэхүү гүйлгээгээр урьдчилж тооцсон орлогын бүртгэл үүслээ."
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid "A depreciation entry will be posted on and including the date %s."
 msgstr "Элэгдлийн бичилт нь %s огноонд багтаж батлагдана."
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid ""
@@ -126,6 +137,7 @@ msgstr ""
 "элэгдлийн бичилтүүд нь дараах өөрчлөлтийн улмаас дахин тооцоологдоно."
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid ""
@@ -136,6 +148,7 @@ msgstr ""
 "%s дансанд хөтлөгдөнө <b>%s</b>."
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid ""
@@ -148,24 +161,28 @@ msgstr ""
 "<b>%s</b>."
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "A document linked to %s has been deleted: %s"
 msgstr "%s-тэй холбоотой баримт устгагдсан байна: %s"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "A document linked to this move has been deleted: %s"
 msgstr "Энэ ажил гүйлгээнд холбогдсон баримт устгагдсан байна: %s"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid "A gross increase has been created: %s"
 msgstr "Өртөг нэмэгдүүлэлт хийгдлээ: %s"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "A non deductible tax value of %s was added to %s's initial value of %s"
@@ -313,6 +330,7 @@ msgid "Add an internal note"
 msgstr "Дотоод тэмдэглэл нэмэх"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
@@ -320,6 +338,7 @@ msgid "All the lines should be from the same account"
 msgstr "Бүх мөрүүд ижил данстай байх ёстой"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
@@ -339,12 +358,14 @@ msgstr ""
 " болно"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "An asset has been created for this move:"
 msgstr "Энэхүү гүйлгээгээр үндсэн хөрөнгийн бүртгэл үүслээ."
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
@@ -358,9 +379,9 @@ msgid "Analytic"
 msgstr "Шинжилгээ"
 
 #. module: account_asset
-#: model:ir.model.fields,field_description:account_asset.field_account_asset__analytic_distribution_stored_char
-msgid "Analytic Distribution Stored Char"
-msgstr "Шинжилгээний хуваарилалт хадгалах Char"
+#: model:ir.model.fields,field_description:account_asset.field_account_asset__analytic_precision
+msgid "Analytic Precision"
+msgstr ""
 
 #. module: account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_form
@@ -371,6 +392,7 @@ msgid "Archived"
 msgstr "Архивласан"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #: code:addons/account_asset/models/account_move.py:0
 #: code:addons/account_asset/models/account_move.py:0
@@ -391,12 +413,14 @@ msgid "Asset Account"
 msgstr "Хөрөнгийн данс"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Asset Cancelled"
 msgstr "Хөрөнгө цуцлагдсан"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid ""
@@ -491,30 +515,35 @@ msgid "Asset Values"
 msgstr "Хөрөнгийн утгууд"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Asset created"
 msgstr "Хөрөнгө бүртгэгдсэн"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Asset disposed. %s"
 msgstr "Хөрөнгө данснаас хасагдсан. %s"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Asset paused. %s"
 msgstr "Хөрөнгө царцсан. %s"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Asset sold. %s"
 msgstr "Хөрөнгө зарагдсан. %s"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid "Asset unpaused. %s"
@@ -526,6 +555,8 @@ msgid "Asset/Revenue Recognition"
 msgstr "Хөрөнгө/Урьдчилсан орлого"
 
 #. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/report/account_assets_report.py:0
 #: model:ir.actions.act_window,name:account_asset.action_account_asset_form
 #: model:ir.model.fields,field_description:account_asset.field_account_bank_statement_line__asset_ids
 #: model:ir.model.fields,field_description:account_asset.field_account_move__asset_ids
@@ -533,6 +564,7 @@ msgstr "Хөрөнгө/Урьдчилсан орлого"
 #: model:ir.ui.menu,name:account_asset.menu_action_account_asset_form
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_purchase_tree
 #: model_terms:ir.ui.view,arch_db:account_asset.view_move_form_asset_inherit
+#, python-format
 msgid "Assets"
 msgstr "Хөрөнгө"
 
@@ -587,7 +619,10 @@ msgid "Bills"
 msgstr "Нэхэмжлэл"
 
 #. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/report/account_assets_report.py:0
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__book_value
+#, python-format
 msgid "Book Value"
 msgstr "Үлдэгдэл өртөг"
 
@@ -610,6 +645,13 @@ msgstr "Хөрөнгийг цуцлах"
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__state__cancelled
 msgid "Cancelled"
 msgstr "Цуцлагдсан"
+
+#. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/report/account_assets_report.py:0
+#, python-format
+msgid "Characteristics"
+msgstr "Үзүүлэлтүүд"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__children_ids
@@ -761,7 +803,7 @@ msgstr "Валют"
 #. module: account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_search
 msgid "Current"
-msgstr "Одоогийн"
+msgstr "Ашиглаж буй"
 
 #. module: account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_form
@@ -787,12 +829,14 @@ msgid "Date of the beginning of the depreciation"
 msgstr "Элэгдэж эхлэх огноо"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/report/account_assets_report.py:0
 #, python-format
 msgid "Dec. then Straight"
 msgstr "Шулуунаар бууруулах"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/report/account_assets_report.py:0
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__method__degressive
 #, python-format
@@ -820,6 +864,7 @@ msgid "Def. Revenues"
 msgstr "Хойшлуулсан орлого"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #: model:ir.model.fields.selection,name:account_asset.selection__account_account__asset_type__expense
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__asset_type__expense
@@ -879,6 +924,7 @@ msgid "Deferred Expenses Models"
 msgstr "Хойшлуулсан зардлын загвар"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #: model:ir.model.fields.selection,name:account_asset.selection__account_account__asset_type__sale
 #, python-format
@@ -937,24 +983,28 @@ msgid "Deferred Revenues Models"
 msgstr "Хойшлуулсан орлогын загвар"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "Deferred expense"
 msgstr "Хойшлуулсан зардал"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Deferred expense created"
 msgstr "Хойшлуулсан зардал үүслээ"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "Deferred revenue"
 msgstr "Хойшлуулсан орлого"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Deferred revenue created"
@@ -979,10 +1029,13 @@ msgid "Depreciated Amount"
 msgstr "Элэгдсэн эхний үлдэгдэл"
 
 #. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/report/account_assets_report.py:0
 #: model:ir.model.fields,field_description:account_asset.field_account_bank_statement_line__depreciation_value
 #: model:ir.model.fields,field_description:account_asset.field_account_move__depreciation_value
 #: model:ir.model.fields,field_description:account_asset.field_account_payment__depreciation_value
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_form
+#, python-format
 msgid "Depreciation"
 msgstr "Элэгдэл"
 
@@ -1022,18 +1075,21 @@ msgid "Depreciation Schedule"
 msgstr "Үндсэн хөрөнгийн тайлан"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid "Depreciation board modified %s"
 msgstr "%s элэгдлийн самбар өөрчлөгдсөн"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "Depreciation entry %s posted (%s)"
 msgstr "Элэгдлийн гүйлгээ %s батлагдсан (%s)"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "Depreciation entry %s reversed (%s)"
@@ -1051,6 +1107,7 @@ msgid "Display Name"
 msgstr "Дэлгэрэнгүй нэр"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Disposal"
@@ -1062,19 +1119,22 @@ msgid "Disposal Date"
 msgstr "Устгалын огноо"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Disposal Move"
 msgstr "Устгалын гүйлгээ"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Disposal Moves"
 msgstr "Устгалын гүйлгээ"
 
 #. module: account_asset
-#: code:addons/account_asset/models/account_asset.py:0
+#. odoo-python
+#: code:addons/account_asset/wizard/asset_modify.py:0
 #: model_terms:ir.ui.view,arch_db:account_asset.asset_modify_form
 #, python-format
 msgid "Dispose"
@@ -1106,6 +1166,7 @@ msgid "Duration / Rate"
 msgstr "Хугацаа / Харьцаа"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_expense_form
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_expense_tree
@@ -1206,6 +1267,7 @@ msgid "Gain Value"
 msgstr "Олзын утга"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_form
 #, python-format
@@ -1316,6 +1378,7 @@ msgid "Journal"
 msgstr "Журнал"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Journal Entries"
@@ -1333,6 +1396,7 @@ msgid "Journal Item"
 msgstr "Журналын бичилт"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__original_move_line_ids
 #, python-format
@@ -1340,6 +1404,7 @@ msgid "Journal Items"
 msgstr "Журналын бичилтүүд"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid ""
@@ -1372,6 +1437,7 @@ msgid "Late Activities"
 msgstr "Хоцорсон ажилбар"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/report/account_assets_report.py:0
 #, python-format
 msgid "Linear"
@@ -1434,6 +1500,7 @@ msgid "Modify"
 msgstr "Өөрчлөх"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #: model:ir.model,name:account_asset.model_asset_modify
 #: model_terms:ir.ui.view,arch_db:account_asset.asset_modify_form
@@ -1492,6 +1559,11 @@ msgstr "Хөрөнгийн шинэ үлдэгдэл өртөг"
 #: model:ir.model.fields,help:account_asset.field_asset_modify__salvage_value
 msgid "New salvage amount for the asset"
 msgstr "Хөрөнгийн шинэ элэгдэхгүй үлдэх дүн"
+
+#. module: account_asset
+#: model:ir.model.fields,field_description:account_asset.field_account_asset__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr ""
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__activity_date_deadline
@@ -1618,6 +1690,7 @@ msgid "On Hold"
 msgstr "Царцаасан"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/report/account_assets_report.py:0
 #, python-format
 msgid "Open Asset"
@@ -1635,7 +1708,8 @@ msgid "Parent"
 msgstr "Эцэг"
 
 #. module: account_asset
-#: code:addons/account_asset/models/account_asset.py:0
+#. odoo-python
+#: code:addons/account_asset/wizard/asset_modify.py:0
 #: model_terms:ir.ui.view,arch_db:account_asset.asset_modify_form
 #, python-format
 msgid "Pause"
@@ -1661,7 +1735,14 @@ msgstr "Батлагдсан гүйлгээ"
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__prorata_date
 msgid "Prorata Date"
-msgstr "Авсан өдрийн огноо"
+msgstr "Элэгдэж эхлэх огноо"
+
+#. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/models/account_asset.py:0
+#, python-format
+msgid "Prorata Date can not be empty"
+msgstr "Элэгдэж эхлэх огноо хоосон байж болохгүй"
 
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__asset_type__purchase
@@ -1669,7 +1750,8 @@ msgid "Purchase: Asset"
 msgstr "Худалдан авалт: Хөрөнгө"
 
 #. module: account_asset
-#: code:addons/account_asset/models/account_asset.py:0
+#. odoo-python
+#: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid "Re-evaluate"
 msgstr "Дахин үнэлгээ"
@@ -1701,6 +1783,7 @@ msgid "Related Sales"
 msgstr "Холбогдох борлуулалт"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Reset to running"
@@ -1718,7 +1801,8 @@ msgid "Responsible User"
 msgstr "Эд хариуцагч"
 
 #. module: account_asset
-#: code:addons/account_asset/models/account_asset.py:0
+#. odoo-python
+#: code:addons/account_asset/wizard/asset_modify.py:0
 #: model_terms:ir.ui.view,arch_db:account_asset.asset_modify_form
 #, python-format
 msgid "Resume"
@@ -1730,6 +1814,7 @@ msgid "Resume Depreciation"
 msgstr "Элэгдлүүлж эхлэх"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_revenue_form
 #, python-format
@@ -1770,6 +1855,7 @@ msgid "Revenue Recognition"
 msgstr "Орлого хүлээн зөвшөөрөх"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid ""
@@ -1783,7 +1869,7 @@ msgstr ""
 #. module: account_asset
 #: model:ir.model.fields.selection,name:account_asset.selection__account_asset__state__open
 msgid "Running"
-msgstr "Ажиллаж байгаа"
+msgstr "Ашиглаж буй"
 
 #. module: account_asset
 #: model:ir.model.fields,field_description:account_asset.field_account_asset__message_has_sms_error
@@ -1791,6 +1877,7 @@ msgid "SMS Delivery error"
 msgstr "SMS илгээлтийн алдаа"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Sale"
@@ -1807,6 +1894,7 @@ msgid "Save as Model"
 msgstr "Загвар болгож хадгалах"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Save model"
@@ -1818,7 +1906,8 @@ msgid "Select Invoice Line"
 msgstr "Нэхэмжлэлийн мөр сонгох"
 
 #. module: account_asset
-#: code:addons/account_asset/models/account_asset.py:0
+#. odoo-python
+#: code:addons/account_asset/wizard/asset_modify.py:0
 #: model_terms:ir.ui.view,arch_db:account_asset.asset_modify_form
 #, python-format
 msgid "Sell"
@@ -1832,7 +1921,7 @@ msgstr "Ноорог болгох"
 #. module: account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_form
 msgid "Set to Running"
-msgstr "Ашиглагдаж буй болгох"
+msgstr "Ашиглаж буй болгох"
 
 #. module: account_asset
 #: model_terms:ir.ui.view,arch_db:account_asset.view_account_asset_search
@@ -1842,12 +1931,14 @@ msgstr ""
 "тэмдэглэлүүд"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "Some fields are missing {}"
 msgstr "Зарим талбаруудын утга алга {}"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Some required values are missing"
@@ -1891,6 +1982,7 @@ msgid "The amount of time between two depreciations"
 msgstr "Хоёр элэгдэл хоорондын хугацаа"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid ""
@@ -1927,6 +2019,7 @@ msgstr ""
 "илэрхийлнэ"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "The remaining value on the last depreciation line must be 0"
@@ -1938,7 +2031,16 @@ msgid "There are multiple lines that could be the related to this asset"
 msgstr "Энэ хөрөнгөнд холбоотой хэд хэдэн мөрүүд байна"
 
 #. module: account_asset
-#. openerp-web
+#. odoo-python
+#: code:addons/account_asset/wizard/asset_modify.py:0
+#, python-format
+msgid ""
+"There are unposted depreciations prior to the selected operation date, "
+"please deal with them first."
+msgstr ""
+
+#. module: account_asset
+#. odoo-javascript
 #: code:addons/account_asset/static/src/components/move_reversed/move_reversed.xml:0
 #, python-format
 msgid "This move has been reversed"
@@ -1950,6 +2052,7 @@ msgid "Today Activities"
 msgstr "Өнөөдрийн ажилбар"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/report/account_assets_report.py:0
 #, python-format
 msgid "Total"
@@ -1961,18 +2064,21 @@ msgid "Total Depreciable Value"
 msgstr "Нийт элэгдвэл зохих дүн"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "Turn as a deferred expense"
 msgstr "Хойшлуулсан зардал болгох"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "Turn as a deferred revenue"
 msgstr "Хойшлуулсан орлого болгох"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "Turn as an asset"
@@ -1994,12 +2100,14 @@ msgid "Value at Import"
 msgstr "Элэгдлийн эхний үлдэгдэл"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid "Value decrease for: %(asset)s"
 msgstr "Өртөг хорогдуулалт: %(asset)s"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
@@ -2007,6 +2115,7 @@ msgid "Value increase for: %(asset)s"
 msgstr "Өртөг нэмэгдүүлэлт: %(asset)s"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "Warning for the Original Value of %s"
@@ -2044,6 +2153,7 @@ msgid "Years"
 msgstr "Жил"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid ""
@@ -2054,12 +2164,14 @@ msgstr ""
 " хөрөнгийг нь батлана уу."
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "You cannot archive a record that is not closed"
 msgstr "Та хаагдаагүй хөрөнгийг архивлах боломжгүй"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
@@ -2072,6 +2184,7 @@ msgstr ""
 " үү."
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid ""
@@ -2082,6 +2195,14 @@ msgstr ""
 "бичилтээс хөрөнгө үүсгэх боломжгүй"
 
 #. module: account_asset
+#. odoo-python
+#: code:addons/account_asset/models/account_asset.py:0
+#, python-format
+msgid "You cannot delete a document that is in %s state."
+msgstr "Та %s төлөвтэй баримтыг устгах боломжгүй."
+
+#. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid ""
@@ -2093,19 +2214,15 @@ msgstr ""
 "ажил гүйлгээг цуцлах боломжтой."
 
 #. module: account_asset
-#: code:addons/account_asset/models/account_asset.py:0
-#, python-format
-msgid "You cannot delete a document that is in %s state."
-msgstr "Та %s төлөвтэй баримтыг устгах боломжгүй."
-
-#. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_move.py:0
 #, python-format
 msgid "You cannot reset to draft an entry related to a posted asset"
 msgstr ""
-"Та батлагдсан хөрөнгөтэй холбоотой ажил гүйлгээг ноорог болгох боломжгүй"
+"Та батлагдсан үндсэн хөрөнгөтэй холбоотой ажил гүйлгээг ноороглох боломжгүй"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/wizard/asset_modify.py:0
 #, python-format
 msgid "You cannot resume at a date equal to or before the pause date"
@@ -2151,12 +2268,14 @@ msgid "e.g. Laptop iBook"
 msgstr "ж. Laptop iBook"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "entries"
 msgstr "бичилтүүд"
 
 #. module: account_asset
+#. odoo-python
 #: code:addons/account_asset/models/account_asset.py:0
 #, python-format
 msgid "entry"

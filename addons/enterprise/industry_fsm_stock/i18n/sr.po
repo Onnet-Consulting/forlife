@@ -165,7 +165,7 @@ msgstr "Premeštanje zaliha"
 #: model:ir.model,name:industry_fsm_stock.model_project_task
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__task_id
 msgid "Task"
-msgstr ""
+msgstr "Zadatak"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking__fsm_done

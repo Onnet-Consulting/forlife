@@ -3,8 +3,8 @@
 # 	* hr_referral
 # 
 # Translators:
-# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2022
 # Martin Trigaux, 2022
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:47+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2023\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -45,7 +45,7 @@ msgstr "<b>Відповідальний: </b>"
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_applicant_employee_referral_kanban
 msgid "<i class=\"fa fa-check me-2\" title=\"Hired\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-check me-2\" title=\"Hired\"/>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_applicant_employee_referral_kanban
@@ -85,6 +85,8 @@ msgid ""
 "<span title=\"Buy\"><i class=\"fa fa-shopping-basket me-3\" role=\"img\" "
 "aria-label=\"Buy\"/>Buy</span>"
 msgstr ""
+"<span title=\"Buy\"><i class=\"fa fa-shopping-basket me-3\" role=\"img\" "
+"aria-label=\"Buy\"/>Купити</span>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
@@ -103,7 +105,7 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
 msgid "<span title=\"Send by Mail\">Refer Friend</span>"
-msgstr "<span title=\"Send by Mail\">Звернутися до друга</span>"
+msgstr "<span title=\"Send by Mail\">Рекомендувати друга</span>"
 
 #. module: hr_referral
 #: code:addons/hr_referral/wizard/hr_referral_alert_mail_wizard.py:0
@@ -404,7 +406,7 @@ msgstr "Прямі перенаправлення"
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__dismissed_user_ids
 msgid "Dismissed User"
-msgstr "Ігнорований користувач"
+msgstr "Звільнений користувач"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__display_name
@@ -524,7 +526,7 @@ msgstr "Підписники (Партнери)"
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr "Іконка зі шрифтом Font awesome, напр. fa-tasks"
+msgstr "Іконка з чудовим шрифтом, напр. fa-tasks"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_applicant__friend_id
@@ -1077,7 +1079,7 @@ msgstr "Майстер повідомлень рекомендацій"
 #: model:ir.model.fields,field_description:hr_referral.field_res_company__hr_referral_background
 #: model:ir.model.fields,field_description:hr_referral.field_res_config_settings__hr_referral_background
 msgid "Referral Background"
-msgstr ""
+msgstr "Довідкова інформація"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_referral_link_to_share
@@ -1181,7 +1183,7 @@ msgstr "Перезапустіть залучення"
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.res_config_settings_view__form
 msgid "Restore Default"
-msgstr ""
+msgstr "Відновити значення за замовчуванням"
 
 #. module: hr_referral
 #. openerp-web
@@ -1378,6 +1380,8 @@ msgid ""
 "The % is based on the total of applicant that have been referred by someone "
 "else divided by the total of applicant."
 msgstr ""
+"% базується на поділенні загальної кількості заявників, яких направив хтось "
+"інший, на загальну кількість заявників."
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_friend__image
@@ -1492,7 +1496,7 @@ msgstr "Користувач"
 #. module: hr_referral
 #: model:res.groups,name:hr_referral.group_hr_recruitment_referral_user
 msgid "User : Referral only"
-msgstr ""
+msgstr "Користувач : Лише рекомендації"
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__gift_manager_id
@@ -1545,6 +1549,8 @@ msgid ""
 "You cannot delete these UTM Campaigns as they are linked to the following jobs in Referral:\n"
 "%(job_names)s"
 msgstr ""
+"Ви не можете видалити ці кампанії UTM, оскільки вони пов’язані з наступними вакансіями в Рекомендаціях:\n"
+"%(job_names)s"
 
 #. module: hr_referral
 #: code:addons/hr_referral/models/utm_source.py:0
@@ -1553,6 +1559,8 @@ msgid ""
 "You cannot delete these UTM Sources as they are linked to the following users in Referral:\n"
 "%(employee_names)s"
 msgstr ""
+"Ви не можете видалити ці джерела UTM, оскільки вони пов’язані з такими користувачами в Рекмендаціях:\n"
+"%(employee_names)s"
 
 #. module: hr_referral
 #: code:addons/hr_referral/models/hr_referral_reward.py:0

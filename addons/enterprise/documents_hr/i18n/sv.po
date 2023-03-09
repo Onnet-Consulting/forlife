@@ -8,6 +8,7 @@
 # Martin Trigaux, 2022
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2022
 # Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -15,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:42+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Chrille Hedberg <hedberg.chrille@gmail.com>, 2022\n"
+"Last-Translator: Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023\n"
 "Language-Team: Swedish (https://www.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,6 +42,9 @@ msgid ""
 "                                    Default tags\n"
 "                                </span>"
 msgstr ""
+"<span name=\"documents_hr_tags\" class=\"o_form_label\" invisible=\"1\" attrs=\"{'invisible' : [('documents_hr_settings', '=', False)]}\">\n"
+"                                    Standardtaggar\n"
+"                                </span>"
 
 #. module: documents_hr
 #: model:mail.template,body_html:documents_hr.mail_template_document_folder_link
@@ -65,12 +69,12 @@ msgstr ""
 #. module: documents_hr
 #: model:documents.tag,name:documents_hr.documents_hr_documents_absences
 msgid "Absences"
-msgstr ""
+msgstr "Frånvaro"
 
 #. module: documents_hr
 #: model_terms:ir.ui.view,arch_db:documents_hr.res_config_settings_view_form
 msgid "Centralize your employees' documents (contracts, payslips, etc.)"
-msgstr ""
+msgstr "Centralisera dina anställdas dokument (kontrakt, lönebesked osv.)"
 
 #. module: documents_hr
 #: model:documents.tag,name:documents_hr.documents_hr_documents_Cerification
@@ -100,7 +104,7 @@ msgstr "Dokument"
 #. module: documents_hr
 #: model:ir.model.fields,field_description:documents_hr.field_hr_employee__document_count
 msgid "Document Count"
-msgstr ""
+msgstr "Antal dokument"
 
 #. module: documents_hr
 #: code:addons/documents_hr/models/res_users.py:0
@@ -115,12 +119,12 @@ msgstr "Dokument"
 #. module: documents_hr
 #: model:ir.model.fields,field_description:documents_hr.field_res_company__documents_hr_settings
 msgid "Documents Hr Settings"
-msgstr ""
+msgstr "Dokument HR-inställningar"
 
 #. module: documents_hr
 #: model:ir.model.fields,field_description:documents_hr.field_hr_employee__documents_share_id
 msgid "Documents Share"
-msgstr ""
+msgstr "Dokument Dela"
 
 #. module: documents_hr
 #: model:ir.model,name:documents_hr.model_hr_employee
@@ -138,12 +142,12 @@ msgstr ""
 #. module: documents_hr
 #: model:documents.tag,name:documents_hr.documents_hr_documents_employees
 msgid "Employees Documents"
-msgstr ""
+msgstr "Dokument för anställda"
 
 #. module: documents_hr
 #: model:documents.folder,name:documents_hr.documents_hr_folder
 msgid "HR"
-msgstr ""
+msgstr "HR"
 
 #. module: documents_hr
 #: code:addons/documents_hr/models/hr_employee.py:0
@@ -201,18 +205,20 @@ msgstr "Arbetsyta"
 #. module: documents_hr
 #: code:addons/documents_hr/models/hr_employee.py:0
 #, python-format
-msgid "You must set an address on the employee to use Documents features."
+msgid ""
+"You must set a private address on the Employee in order to use Document's "
+"features."
 msgstr ""
 
 #. module: documents_hr
 #: model:ir.model.fields,field_description:documents_hr.field_res_company__documents_hr_folder
 msgid "hr Workspace"
-msgstr ""
+msgstr "HR Arbetsområde"
 
 #. module: documents_hr
 #: model:ir.model.fields,field_description:documents_hr.field_res_config_settings__documents_hr_folder
 msgid "hr default workspace"
-msgstr ""
+msgstr "Standard HR Arbetsområde"
 
 #. module: documents_hr
 #: model:mail.template,subject:documents_hr.mail_template_document_folder_link

@@ -21,6 +21,9 @@
                 <field name="fiscal_position_id" position="after">
                     <field name="is_rank" readonly="1"/>
                 </field>
+                <field name="pricelist_id" position="after">
+                    <field name="card_rank_program_id" readonly="1"/>
+                </field>
             </field>
         </record>
 

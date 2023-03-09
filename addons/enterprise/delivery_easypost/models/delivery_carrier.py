@@ -173,19 +173,6 @@ class DeliverCarrier(models.Model):
         result = ep.send_shipping(self, pickings.partner_id, pickings.picking_type_id.warehouse_id.partner_id, picking=pickings, is_return=True)
         if result.get('error_message'):
             raise UserError(result['error_message'])
-        rate = result.get('rate')
-        if rate['currency'] == pickings.company_id.currency_id.name:
-            price = rate['rate']
-        else:
-            quote_currency = self.env['res.currency'].search([('name', '=', rate['currency'])], limit=1)
-            price = quote_currency._convert(float(rate['rate']), pickings.company_id.currency_id, self.env.company, fields.Date.context_today(self))
-
-        # return tracking information
-        carrier_tracking_link = ""
-        for track_number, tracker_url in result.get('track_shipments_url').items():
-            carrier_tracking_link += '<a href=' + tracker_url + '>' + track_number + '</a><br/>'
-
-        carrier_tracking_ref = ' + '.join(result.get('track_shipments_url').keys())
 
         requests_session = requests.Session()
         logmessage = _('Return Label<br/>')
@@ -194,7 +181,7 @@ class DeliverCarrier(models.Model):
             try:
                 response = requests_session.get(label_url, timeout=30)
                 response.raise_for_status()
-                labels.append(('%s-%s-%s.%s' % (self.get_return_label_prefix(), 'blablabla', track_number, self.easypost_label_file_type), response.content))
+                labels.append(('%s-%s.%s' % (self.get_return_label_prefix(), track_number, self.easypost_label_file_type), response.content))
             except Exception:
                 logmessage += '<li><a href="%s">%s</a></li>' % (label_url, label_url)
 

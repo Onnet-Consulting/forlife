@@ -587,12 +587,12 @@ msgstr ""
 #: code:addons/social_youtube/static/src/js/stream_post_kanban_record.js:0
 #, python-format
 msgid "YouTube Comments"
-msgstr ""
+msgstr "YouTube komentari"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_stream_post__youtube_comments_count
 msgid "YouTube Comments Count"
-msgstr ""
+msgstr "Brojač YouTube komentara"
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.res_config_settings_view_form

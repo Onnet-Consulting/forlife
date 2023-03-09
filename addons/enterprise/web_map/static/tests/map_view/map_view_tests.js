@@ -2325,27 +2325,17 @@ QUnit.module("Views", (hooks) => {
     //--------------------------------------------------------------------------
 
     QUnit.test("Click on open button switches to form view", async function (assert) {
-        assert.expect(7);
+        assert.expect(5);
 
         serviceRegistry.add(
             "action",
             {
                 start() {
                     return {
-                        switchView(name, info) {
+                        switchView(name, props) {
                             assert.step("switchView");
                             assert.strictEqual(name, "form", "The view switched to should be form");
-                            assert.strictEqual(info.resId, 1, "The record's id should be 1");
-                            assert.strictEqual(
-                                info.mode,
-                                "readonly",
-                                "The mode should be readonly"
-                            );
-                            assert.strictEqual(
-                                info.model,
-                                "project.task",
-                                "The form view should be on the 'project.task' model"
-                            );
+                            assert.deepEqual(props, { resId: 1 }, "Props should be correct");
                         },
                     };
                 },

@@ -295,7 +295,7 @@ class UPSRequest():
 
             # Package and shipment reference text is only allowed for shipments within
             # the USA and within Puerto Rico. This is a UPS limitation.
-            if (p.name and ship_from.country_id.code in ('US') and ship_to.country_id.code in ('US')):
+            if (p.name and not ' ' in p.name and ship_from.country_id.code in ('US') and ship_to.country_id.code in ('US')):
                 reference_number = self.factory_ns2.ReferenceNumberType()
                 reference_number.Code = 'PM'
                 reference_number.Value = p.name

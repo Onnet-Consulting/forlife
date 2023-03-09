@@ -2,12 +2,17 @@
 # This file contains the translation of the following modules:
 # 	* quality
 # 
+# Translators:
+# Niyas Raphy, 2022
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:22+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,7 +44,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_needaction
 #: model:ir.model.fields,field_description:quality.field_quality_point__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "Tindakan Diperlukan"
 
 #. module: quality
 #: model:quality.alert.stage,name:quality.quality_alert_stage_2
@@ -49,31 +54,31 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_point__active
 msgid "Active"
-msgstr ""
+msgstr "Aktif"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_ids
 #: model:ir.model.fields,field_description:quality.field_quality_check__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "Aktiviti"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_exception_decoration
 #: model:ir.model.fields,field_description:quality.field_quality_check__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr ""
+msgstr "Hiasan Pengecualian Aktiviti"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_state
 #: model:ir.model.fields,field_description:quality.field_quality_check__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "Keadaan Aktiviti"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_type_icon
 #: model:ir.model.fields,field_description:quality.field_quality_check__activity_type_icon
 msgid "Activity Type Icon"
-msgstr ""
+msgstr "Ikon Jenis Aktiviti"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_check__additional_note
@@ -88,7 +93,7 @@ msgstr ""
 #. module: quality
 #: model:res.groups,name:quality.group_quality_manager
 msgid "Administrator"
-msgstr ""
+msgstr "Pentadbir"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_stage__done
@@ -113,12 +118,12 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__alias_name
 msgid "Alias Name"
-msgstr ""
+msgstr "Nama Alias"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__alias_domain
 msgid "Alias domain"
-msgstr ""
+msgstr "Domain alias"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__alias_model_id
@@ -128,7 +133,7 @@ msgstr ""
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
 msgid "Archived"
-msgstr ""
+msgstr "Diarkibkan"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_attachment_count
@@ -136,7 +141,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_attachment_count
 #: model:ir.model.fields,field_description:quality.field_quality_point__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "Kiraan Lampiran"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_point__reason
@@ -159,12 +164,12 @@ msgstr ""
 #: code:addons/quality/static/src/tablet_image_field/tablet_image_field.xml:0
 #, python-format
 msgid "Close"
-msgstr ""
+msgstr "Tutup"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__color
 msgid "Color"
-msgstr ""
+msgstr "Warna"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_tag__color
@@ -177,12 +182,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__company_id
 #: model:ir.model.fields,field_description:quality.field_quality_point__company_id
 msgid "Company"
-msgstr ""
+msgstr "Syarikat"
 
 #. module: quality
 #: model:quality.alert.stage,name:quality.quality_alert_stage_1
 msgid "Confirmed"
-msgstr ""
+msgstr "Disahkan"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_check__control_date
@@ -209,7 +214,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_reason__create_uid
 #: model:ir.model.fields,field_description:quality.field_quality_tag__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Dicipta oleh"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__create_date
@@ -221,12 +226,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_reason__create_date
 #: model:ir.model.fields,field_description:quality.field_quality_tag__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Dicipta pada"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Creation Date"
-msgstr ""
+msgstr "Tarikh Penciptaan"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__alias_bounced_content
@@ -266,7 +271,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__description
 msgid "Description"
-msgstr ""
+msgstr "Penerangan"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__display_name
@@ -278,12 +283,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_reason__display_name
 #: model:ir.model.fields,field_description:quality.field_quality_tag__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nama paparan"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Done"
-msgstr ""
+msgstr "Selesai"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__email_cc
@@ -293,7 +298,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields.selection,name:quality.selection__quality_check__quality_state__fail
 msgid "Failed"
-msgstr ""
+msgstr "Gagal"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_stage__folded
@@ -306,7 +311,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_follower_ids
 #: model:ir.model.fields,field_description:quality.field_quality_point__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "Pengikut"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_partner_ids
@@ -325,12 +330,12 @@ msgstr ""
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Future Activities"
-msgstr ""
+msgstr "Aktiviti Masa Depan"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Group By"
-msgstr ""
+msgstr "Kumpulan Oleh"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__has_message
@@ -338,7 +343,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__has_message
 #: model:ir.model.fields,field_description:quality.field_quality_point__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "Mempunyai Mesej"
 
 #. module: quality
 #: model:ir.model.fields.selection,name:quality.selection__quality_alert__priority__2
@@ -355,7 +360,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_reason__id
 #: model:ir.model.fields,field_description:quality.field_quality_tag__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert_team__alias_parent_thread_id
@@ -368,7 +373,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_exception_icon
 #: model:ir.model.fields,field_description:quality.field_quality_check__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "Ikon"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert__activity_exception_icon
@@ -406,7 +411,7 @@ msgstr ""
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "In Progress"
-msgstr ""
+msgstr "Sedang Berlangsung"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
@@ -431,7 +436,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_reason____last_update
 #: model:ir.model.fields,field_description:quality.field_quality_tag____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Terakhir Diubah suai pada"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__write_uid
@@ -443,7 +448,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_reason__write_uid
 #: model:ir.model.fields,field_description:quality.field_quality_tag__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Kemas Kini Terakhir oleh"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__write_date
@@ -455,12 +460,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_reason__write_date
 #: model:ir.model.fields,field_description:quality.field_quality_tag__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Kemas Kini Terakhir pada"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Late Activities"
-msgstr ""
+msgstr "Aktiviti Lewat"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert__email_cc
@@ -480,7 +485,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields.selection,name:quality.selection__quality_alert__priority__1
 msgid "Low"
-msgstr ""
+msgstr "Rendah"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_main_attachment_id
@@ -488,7 +493,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_main_attachment_id
 #: model:ir.model.fields,field_description:quality.field_quality_point__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "Lampiran Utama"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_has_error
@@ -496,7 +501,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_has_error
 #: model:ir.model.fields,field_description:quality.field_quality_point__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "Ralat Penyampaian Mesej"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_ids
@@ -504,7 +509,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_ids
 #: model:ir.model.fields,field_description:quality.field_quality_point__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "Mesej"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__my_activity_date_deadline
@@ -524,7 +529,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_point_test_type__name
 #: model:ir.model.fields,field_description:quality.field_quality_reason__name
 msgid "Name"
-msgstr ""
+msgstr "Nama"
 
 #. module: quality
 #: code:addons/quality/models/quality.py:0
@@ -539,31 +544,31 @@ msgstr ""
 #: model:quality.alert.stage,name:quality.quality_alert_stage_0
 #, python-format
 msgid "New"
-msgstr ""
+msgstr "Baru"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_calendar_event_id
 #: model:ir.model.fields,field_description:quality.field_quality_check__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "Acara Kalendar Aktiviti Seterusnya"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_date_deadline
 #: model:ir.model.fields,field_description:quality.field_quality_check__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "Tarikh Akhir Aktiviti Seterusnya"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_summary
 #: model:ir.model.fields,field_description:quality.field_quality_check__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "Ringkasan Aktiviti Seterusnya"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_type_id
 #: model:ir.model.fields,field_description:quality.field_quality_check__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "Jenis Aktiviti Seterusnya"
 
 #. module: quality
 #: code:addons/quality/models/quality.py:0
@@ -576,19 +581,19 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields.selection,name:quality.selection__quality_alert__priority__0
 msgid "Normal"
-msgstr ""
+msgstr "Biasalah"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_check__note
 #: model:ir.model.fields,field_description:quality.field_quality_point__note
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
 msgid "Note"
-msgstr ""
+msgstr "Nota"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
 msgid "Notes"
-msgstr ""
+msgstr "Nota"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_needaction_counter
@@ -596,7 +601,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_needaction_counter
 #: model:ir.model.fields,field_description:quality.field_quality_point__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "Bilangan Tindakan"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__message_has_error_counter
@@ -631,7 +636,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_tree
 msgid "Operations"
-msgstr ""
+msgstr "Operasi"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert_team__alias_force_thread_id
@@ -649,7 +654,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__alias_user_id
 msgid "Owner"
-msgstr ""
+msgstr "Pemilik"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__alias_parent_model_id
@@ -672,7 +677,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_check__partner_id
 msgid "Partner"
-msgstr ""
+msgstr "Rakan kongsi"
 
 #. module: quality
 #: model:quality.reason,name:quality.reason_parts
@@ -688,12 +693,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_alert__picking_id
 #: model:ir.model.fields,field_description:quality.field_quality_check__picking_id
 msgid "Picking"
-msgstr ""
+msgstr "Memetik"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_check__picture
 msgid "Picture"
-msgstr ""
+msgstr "Gambar"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert_team__alias_contact
@@ -719,7 +724,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__product_id
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Product"
-msgstr ""
+msgstr "Produk"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_point__product_category_ids
@@ -729,12 +734,12 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__product_id
 msgid "Product Variant"
-msgstr ""
+msgstr "Varian Produk"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_point__product_ids
 msgid "Products"
-msgstr ""
+msgstr "Produk"
 
 #. module: quality
 #: model:ir.model,name:quality.model_quality_alert
@@ -755,7 +760,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model,name:quality.model_quality_check
 msgid "Quality Check"
-msgstr ""
+msgstr "Pemeriksaan Kualiti"
 
 #. module: quality
 #: model:ir.model,name:quality.model_quality_point
@@ -798,7 +803,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__name
 #: model:ir.model.fields,field_description:quality.field_quality_point__name
 msgid "Reference"
-msgstr ""
+msgstr "Rujukan"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__user_id
@@ -806,13 +811,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_point__user_id
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Responsible"
-msgstr ""
+msgstr "Bertanggungjawab"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_user_id
 #: model:ir.model.fields,field_description:quality.field_quality_check__activity_user_id
 msgid "Responsible User"
-msgstr ""
+msgstr "Pengguna Bertanggungjawab"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__reason_id
@@ -831,14 +836,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__message_has_sms_error
 #: model:ir.model.fields,field_description:quality.field_quality_point__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr ""
+msgstr "Ralat Penghantaran SMS"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_stage__sequence
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__sequence
 #: model:ir.model.fields,field_description:quality.field_quality_point__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Urutan"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
@@ -854,12 +859,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_alert__stage_id
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Stage"
-msgstr ""
+msgstr "Pentas"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_check__quality_state
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert__activity_state
@@ -874,12 +879,12 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_tag__name
 msgid "Tag Name"
-msgstr ""
+msgstr "Nama Tag"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__tag_ids
 msgid "Tags"
-msgstr ""
+msgstr "Tag"
 
 #. module: quality
 #. openerp-web
@@ -951,7 +956,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__title
 #: model:ir.model.fields,field_description:quality.field_quality_point__title
 msgid "Title"
-msgstr ""
+msgstr "Tajuk"
 
 #. module: quality
 #: model:ir.model.fields.selection,name:quality.selection__quality_check__quality_state__none
@@ -961,19 +966,19 @@ msgstr ""
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Today Activities"
-msgstr ""
+msgstr "Aktiviti Hari Ini"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_tree
 msgid "Type"
-msgstr ""
+msgstr "taip"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert__activity_exception_decoration
 #: model:ir.model.fields,help:quality.field_quality_check__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "Jenis aktiviti pengecualian dalam rekod."
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_tag__color
@@ -983,12 +988,12 @@ msgstr ""
 #. module: quality
 #: model:res.groups,name:quality.group_quality_user
 msgid "User"
-msgstr ""
+msgstr "pengguna"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__partner_id
 msgid "Vendor"
-msgstr ""
+msgstr "Penjual"
 
 #. module: quality
 #: model:ir.model.fields.selection,name:quality.selection__quality_alert__priority__3
@@ -1000,7 +1005,7 @@ msgstr ""
 #: code:addons/quality/static/src/tablet_image_field/tablet_image_field.xml:0
 #, python-format
 msgid "Viewer"
-msgstr ""
+msgstr "Penonton"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__website_message_ids
@@ -1008,7 +1013,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__website_message_ids
 #: model:ir.model.fields,field_description:quality.field_quality_point__website_message_ids
 msgid "Website Messages"
-msgstr ""
+msgstr "Mesej Laman Web"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert__website_message_ids
@@ -1016,7 +1021,7 @@ msgstr ""
 #: model:ir.model.fields,help:quality.field_quality_check__website_message_ids
 #: model:ir.model.fields,help:quality.field_quality_point__website_message_ids
 msgid "Website communication history"
-msgstr ""
+msgstr "Sejarah komunikasi laman web"
 
 #. module: quality
 #: model:quality.reason,name:quality.reason_wo

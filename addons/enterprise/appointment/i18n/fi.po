@@ -22,14 +22,15 @@
 # Martin Trigaux, 2022
 # Jarmo Kortetjärvi <jarmo.kortetjarvi@gmail.com>, 2022
 # Erno Iipponen <erno.iipponen@web-veistamo.fi>, 2022
+# Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Erno Iipponen <erno.iipponen@web-veistamo.fi>, 2022\n"
+"Last-Translator: Ossi Mantylahti <ossi.mantylahti@obs-solutions.fi>, 2023\n"
 "Language-Team: Finnish (https://www.transifex.com/odoo/teams/41243/fi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -38,6 +39,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid " (copy)"
@@ -65,12 +67,14 @@ msgid "#{day['today_cls'] and 'Today' or ''}"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "%s - Let's meet"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "%s with %s"
@@ -87,13 +91,14 @@ msgid "+3212345678"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar.py:0
 #, python-format
 msgid ", All Day"
 msgstr ", Koko päivä"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_svg.xml:0
 #, python-format
 msgid ""
@@ -348,6 +353,7 @@ msgid "<strong>Your appointment has been successfully booked!</strong>"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar_view.py:0
 #, python-format
 msgid ""
@@ -376,6 +382,13 @@ msgid "Add a function here..."
 msgstr ""
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Add a specific appointment."
+msgstr ""
+
+#. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "Add an intro message here..."
 msgstr ""
@@ -396,6 +409,7 @@ msgid "Administrator"
 msgstr "Ylläpitäjä"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "All"
@@ -408,6 +422,7 @@ msgid "All Appointments"
 msgstr "Kaikki tapaamiset"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #: model:ir.model.fields,field_description:appointment.field_appointment_slot__allday
 #, python-format
@@ -430,12 +445,14 @@ msgid "An answer input must either have a text value or a predefined answer."
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar_view.py:0
 #, python-format
 msgid "An appointment type is needed to get the link."
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_slot.py:0
 #, python-format
 msgid "An unique type slot should have a start and end datetime"
@@ -467,7 +484,7 @@ msgid "Answers"
 msgstr "Vastaukset"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_type__category__anytime
 #, python-format
@@ -480,9 +497,12 @@ msgid "Any User"
 msgstr ""
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
+#, python-format
 msgid "Appointment"
 msgstr ""
 
@@ -602,6 +622,7 @@ msgid "Appointment Types"
 msgstr "Tapaamisen tyypit"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/calendar_event.py:0
 #, python-format
 msgid "Appointment canceled by: %(partners)s"
@@ -649,6 +670,7 @@ msgid "Assignment Method"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_slot.py:0
 #, python-format
 msgid ""
@@ -697,7 +719,10 @@ msgid "CC to"
 msgstr ""
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
 #: model:ir.ui.menu,name:appointment.calendar_appointment_type_menu_action
+#, python-format
 msgid "Calendar"
 msgstr "Kalenteri"
 
@@ -744,7 +769,7 @@ msgid "Chosen by the Customer"
 msgstr "Asiakkaan valitsema"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Click in your calendar to pick meeting time proposals."
@@ -777,6 +802,7 @@ msgid "Connect"
 msgstr "Yhdistä"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
 msgid "Connect your Calendar"
@@ -801,7 +827,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.js:0
 #, python-format
 msgid "Copied !"
@@ -814,6 +840,7 @@ msgid "Copy Link &amp; Close"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
 msgid "Create your first Appointment"
@@ -858,6 +885,7 @@ msgid "Customer Preview"
 msgstr "Asiakkaan esikatselu"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 #, python-format
@@ -870,6 +898,7 @@ msgid "Declined"
 msgstr "Hylätty"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Default slots cannot be applied to the %s appointment type category."
@@ -902,7 +931,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form_insert_link
 #, python-format
@@ -937,6 +966,7 @@ msgid "Duration:"
 msgstr "Kesto:"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "Email: %s"
@@ -994,7 +1024,7 @@ msgid "Front-End Display"
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
@@ -1002,6 +1032,7 @@ msgid "Get Share Link"
 msgstr "Jaa linkki"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_onboarding_link_view_form
 #, python-format
@@ -1088,7 +1119,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Insert Appointment Link"
@@ -1193,7 +1224,7 @@ msgid "Last Updated on"
 msgstr "Viimeksi päivitetty"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Link Copied in your clipboard !"
@@ -1211,14 +1242,14 @@ msgid "Link URL"
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/js/appointment_invite_form_renderer.js:0
 #, python-format
 msgid "Link copied to clipboard!"
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_onboarding_link_form_renderer.js:0
 #, python-format
 msgid "Link copied to clipboard."
@@ -1260,6 +1291,7 @@ msgid "Me"
 msgstr "Minä"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
@@ -1283,6 +1315,7 @@ msgid "Messages"
 msgstr "Viestit"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "Mobile: %s"
@@ -1309,10 +1342,20 @@ msgid "My Links"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Name"
 msgstr "Nimi"
+
+#. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Navigation"
+msgstr ""
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_alarm__default_for_new_appointment_type
@@ -1356,6 +1399,7 @@ msgid "No data yet!"
 msgstr "Ei vielä tietoja!"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "None"
@@ -1434,6 +1478,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_invite.py:0
 #, python-format
 msgid ""
@@ -1442,6 +1487,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Only one anytime appointment type is allowed for a specific user."
@@ -1453,7 +1499,7 @@ msgid "Options"
 msgstr "Vaihtoehdot"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Our first availability is"
@@ -1465,6 +1511,7 @@ msgid "Outlook"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Past"
@@ -1473,7 +1520,7 @@ msgstr "Mennyt"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_question__placeholder
 msgid "Placeholder"
-msgstr ""
+msgstr "Paikanpitäjä"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
@@ -1555,6 +1602,7 @@ msgid "Required Answer"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Responsible"
@@ -1592,6 +1640,13 @@ msgid "Schedule an Appointment"
 msgstr "Aikatauluta tapaaminen"
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Schedule an appointment."
+msgstr ""
+
+#. module: appointment
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_report
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_reporting
 msgid "Schedule appointments to get statistics"
@@ -1613,31 +1668,35 @@ msgid "Scheduling"
 msgstr "Aikataulutus"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in All"
 msgstr "Etsi kaikista"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Description"
 msgstr "Hae kuvauksesta"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Name"
 msgstr "Hae nimestä"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Responsible"
 msgstr "Hae vastuullisesta"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Select Dates"
@@ -1688,7 +1747,7 @@ msgid "Share"
 msgstr "Jaa"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
@@ -1697,6 +1756,7 @@ msgid "Share Availabilities"
 msgstr "Jaa saatavuudet"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Share Link"
@@ -1756,7 +1816,7 @@ msgid "Small description of the appointment type."
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
@@ -1764,14 +1824,14 @@ msgid "Sorry,"
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Sorry, we have no availability for an appointment."
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Sorry, we have no more slots available for this month."
@@ -1840,24 +1900,28 @@ msgid "The end time must be later than the start time."
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "The field '%s' does not exist in the targeted model"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_invite.py:0
 #, python-format
 msgid "The following appointment type(s) have no staff assigned: %s."
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_question.py:0
 #, python-format
 msgid "The following question(s) do not have any selectable answers : %s"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid ""
@@ -1866,7 +1930,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Their first availability is"
@@ -1898,6 +1962,7 @@ msgid ""
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid ""
@@ -1970,6 +2035,7 @@ msgid "Until (max)"
 msgstr ""
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Upcoming"
@@ -2115,14 +2181,14 @@ msgid "e.g. \"What are your symptoms ?\""
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "has no availability for an appointment."
 msgstr ""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "has no more slots available for this month."

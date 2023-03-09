@@ -30,6 +30,7 @@ class SignDuplicateTemplatePDF(models.TransientModel):
         })
 
         new_template = self.original_template_id.copy({
+            'name': pdf.name,
             'attachment_id': pdf.id,
             'active': True,
             'favorited_ids': [(4, self.env.user.id)],

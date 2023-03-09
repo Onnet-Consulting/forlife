@@ -68,7 +68,7 @@
             "cells": {
                 "A7": {
                     "style": 1,
-                    "content": "[New Applications](odoo://view/{\"viewType\":\"graph\",\"action\":{\"domain\":[],\"context\":{\"group_by\":[\"stage_id\"],\"graph_measure\":\"count\",\"graph_mode\":\"bar\",\"graph_groupbys\":[\"stage_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"dashboard\"],[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"New Applications\"})",
+                    "content": "[New Applications](odoo://view/{\"viewType\":\"graph\",\"action\":{\"domain\":[],\"context\":{\"group_by\":[\"stage_id\"],\"graph_measure\":\"count\",\"graph_mode\":\"bar\",\"graph_groupbys\":[\"stage_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"New Applications\"})",
                     "border": 1
                 },
                 "A19": {
@@ -123,7 +123,7 @@
                 },
                 "A32": {
                     "style": 1,
-                    "content": "[Top Job Positions](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"job_id\",\"!=\",false]],\"context\":{\"group_by\":[\"job_id\"],\"pivot_measures\":[\"__count\",\"hired\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"job_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"dashboard\"],[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
+                    "content": "[Top Job Positions](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"job_id\",\"!=\",false]],\"context\":{\"group_by\":[\"job_id\"],\"pivot_measures\":[\"__count\",\"hired\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"job_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
                     "border": 1
                 },
                 "A33": {
@@ -173,7 +173,7 @@
                 },
                 "A45": {
                     "style": 1,
-                    "content": "[Top Mediums](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"medium_id\",\"!=\",false]],\"context\":{\"group_by\":[\"medium_id\"],\"pivot_measures\":[\"__count\",\"hired\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"medium_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"dashboard\"],[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
+                    "content": "[Top Mediums](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"medium_id\",\"!=\",false]],\"context\":{\"group_by\":[\"medium_id\"],\"pivot_measures\":[\"__count\",\"hired\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"medium_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
                     "border": 1
                 },
                 "A46": {
@@ -223,7 +223,7 @@
                 },
                 "A58": {
                     "style": 1,
-                    "content": "[Top Companies](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[],\"context\":{\"group_by\":[\"company_id\"],\"pivot_measures\":[\"__count\",\"hired\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"company_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"dashboard\"],[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
+                    "content": "[Top Companies](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[],\"context\":{\"group_by\":[\"company_id\"],\"pivot_measures\":[\"__count\",\"hired\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"company_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
                     "border": 1
                 },
                 "A59": {
@@ -821,7 +821,7 @@
                 },
                 "F7": {
                     "style": 1,
-                    "content": "[Most Hired Job Positions](odoo://view/{\"viewType\":\"graph\",\"action\":{\"domain\":[],\"context\":{\"group_by\":[\"job_id\"],\"graph_measure\":\"count\",\"graph_mode\":\"bar\",\"graph_groupbys\":[\"job_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"dashboard\"],[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
+                    "content": "[Most Hired Job Positions](odoo://view/{\"viewType\":\"graph\",\"action\":{\"domain\":[],\"context\":{\"group_by\":[\"job_id\"],\"graph_measure\":\"count\",\"graph_mode\":\"bar\",\"graph_groupbys\":[\"job_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
                     "border": 1
                 },
                 "F20": {
@@ -866,7 +866,7 @@
                 },
                 "F32": {
                     "style": 1,
-                    "content": "[Top Recruiters](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"user_id\",\"!=\",false]],\"context\":{\"group_by\":[\"user_id\"],\"pivot_measures\":[\"__count\",\"hired\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"user_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"dashboard\"],[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
+                    "content": "[Top Recruiters](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"user_id\",\"!=\",false]],\"context\":{\"group_by\":[\"user_id\"],\"pivot_measures\":[\"__count\",\"hired\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"user_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
                     "border": 1
                 },
                 "F33": {
@@ -916,7 +916,7 @@
                 },
                 "F45": {
                     "style": 1,
-                    "content": "[Top Sources](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"source_id\",\"!=\",false]],\"context\":{\"group_by\":[\"source_id\"],\"pivot_measures\":[\"__count\",\"hired\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"source_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"dashboard\"],[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
+                    "content": "[Top Sources](odoo://view/{\"viewType\":\"pivot\",\"action\":{\"domain\":[[\"source_id\",\"!=\",false]],\"context\":{\"group_by\":[\"source_id\"],\"pivot_measures\":[\"__count\",\"hired\"],\"pivot_column_groupby\":[],\"pivot_row_groupby\":[\"source_id\"]},\"modelName\":\"hr.recruitment.report\",\"views\":[[false,\"graph\"],[false,\"pivot\"],[false,\"search\"]]},\"threshold\":0,\"name\":\"Recruitment Analysis\"})",
                     "border": 1
                 },
                 "F46": {

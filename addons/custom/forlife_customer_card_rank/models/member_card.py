@@ -21,27 +21,28 @@ class MemberCard(models.Model):
     from_date = fields.Date('Time Apply', copy=False, tracking=True)
     to_date = fields.Date('To Date', copy=False, tracking=True)
     time_set_rank = fields.Integer('Time Set Rank', default=180, tracking=True)
-    customer_group_ids = fields.Many2many('res.partner.group', string='Customer Group', default=lambda f: [(4, f.env.ref('forlife_pos_app_member.partner_group_c').ids)])
+    customer_group_id = fields.Many2one('res.partner.group', string='Customer Group', default=lambda f: f.env['res.partner.group'].search([('code', '=', 'C')]).id)
     partner_retail_ids = fields.Many2many('res.partner.retail', string='Customer Retail Types')
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method')
     card_rank_id = fields.Many2one('card.rank', string='Rank', tracking=True)
     min_turnover = fields.Integer('Turnover', tracking=True)
-    original_price = fields.Integer('Original Price')
-    apply_value_from_1 = fields.Integer('Apply Value From1')
-    apply_value_to_1 = fields.Integer('Apply Value To1')
-    value1 = fields.Integer('Value 1')
-    apply_value_from_2 = fields.Integer('Apply Value From2')
-    apply_value_to_2 = fields.Integer('Apply Value To2')
-    value2 = fields.Integer('Value 2')
-    apply_value_from_3 = fields.Integer('Apply Value From3')
-    apply_value_to_3 = fields.Integer('Apply Value To3')
-    value3 = fields.Integer('Value 3')
+    original_price = fields.Float('Original Price')
+    apply_value_from_1 = fields.Float('Apply Value From1')
+    apply_value_to_1 = fields.Float('Apply Value To1')
+    value1 = fields.Float('Value 1')
+    apply_value_from_2 = fields.Float('Apply Value From2')
+    apply_value_to_2 = fields.Float('Apply Value To2')
+    value2 = fields.Float('Value 2')
+    apply_value_from_3 = fields.Float('Apply Value From3')
+    apply_value_to_3 = fields.Float('Apply Value To3')
+    value3 = fields.Float('Value 3')
     active = fields.Boolean('Active', default=True, tracking=True)
     order_ids = fields.Many2many('pos.order', string='Orders')
-    qty_order = fields.Integer('Order', compute='_compute_qty_order')
-    journal_ids = fields.Many2many('account.journal', string='Journal')
-    discount_account_id = fields.Many2one('account.account', string='Discount Account', tracking=True, required=True)
-    value_account_id = fields.Many2one('account.account', string='Value Account', tracking=True, required=True)
+    qty_order_rank = fields.Integer('Order Rank', compute='_compute_qty_order')
+    qty_order_discount = fields.Integer('Order Discount', compute='_compute_qty_order')
+    journal_id = fields.Many2one('account.journal', string='Journal', tracking=True)
+    discount_account_id = fields.Many2one('account.account', string='Discount Account', tracking=True)
+    value_account_id = fields.Many2one('account.account', string='Value Account', tracking=True)
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -49,7 +50,8 @@ class MemberCard(models.Model):
 
     def _compute_qty_order(self):
         for line in self:
-            line.qty_order = len(line.order_ids)
+            line.qty_order_rank = len(line.order_ids)
+            line.qty_order_discount = self.env['pos.order'].search_count([('card_rank_program_id', '=', line.id)])
 
     @api.constrains("from_date", "to_date", 'active', 'min_turnover', 'card_rank_id')
     def validate_time(self):
@@ -116,7 +118,7 @@ class MemberCard(models.Model):
             'default_from_date': self.from_date,
             'default_to_date': self.to_date,
             'default_time_set_rank': self.time_set_rank,
-            'default_customer_group_ids': self.customer_group_ids.ids,
+            'default_customer_group_id': self.customer_group_id.id,
             'default_partner_retail_ids': self.partner_retail_ids.ids,
             'default_payment_method_ids': self.payment_method_ids.ids,
             'default_card_rank_id': self.card_rank_id.id,
@@ -128,7 +130,7 @@ class MemberCard(models.Model):
             'default_apply_value_to_1': self.apply_value_to_1,
             'default_apply_value_to_2': self.apply_value_to_2,
             'default_apply_value_to_3': self.apply_value_to_3,
-            'default_journal_ids': self.journal_ids.ids,
+            'default_journal_id': self.journal_id.id,
             'default_discount_account_id': self.discount_account_id.id,
             'default_value_account_id': self.value_account_id.id,
         })
@@ -143,8 +145,12 @@ class MemberCard(models.Model):
         }
 
     def action_view_pos_order(self):
+        domain = {
+            'order_discount': [('card_rank_program_id', '=', self.id)],
+            'order_rank': [('id', 'in', self.order_ids.ids)],
+        }
         action = self.env['ir.actions.act_window']._for_xml_id('point_of_sale.action_pos_pos_form')
-        action['domain'] = [('id', 'in', self.order_ids.ids)]
+        action['domain'] = domain.get(self._context.get('domain_order')) or [('id', 'in', [])]
         return action
 
     def unlink(self):

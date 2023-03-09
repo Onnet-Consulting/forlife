@@ -21,13 +21,12 @@
         'queue_job',
         'report_xlsx',
         'l10n_vn',
-        'forlife_sap_integration',
+        'forlife_pos_app_member',
     ],
 
     'data': [
         'data/res_company_data.xml',
         'data/res_groups_data.xml',
-        'data/queue_job_data.xml',
         'security/ir.model.access.csv',
         'data/ir_attachment_data.xml',
         'data/salary_record_type_data.xml',

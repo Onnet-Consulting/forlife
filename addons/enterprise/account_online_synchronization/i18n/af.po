@@ -185,13 +185,13 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Maatskappye"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__company_id
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.account_online_link_view_form
@@ -226,7 +226,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Kontak"
 
 #. module: account_online_synchronization
 #: code:addons/account_online_synchronization/models/account_online.py:0
@@ -284,7 +284,7 @@ msgstr "Geskep op"
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal_line__currency_id
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_account__currency_id
 msgid "Currency"
-msgstr ""
+msgstr "Geldeenheid"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,help:account_online_synchronization.field_account_journal__expiring_synchronization_date
@@ -532,7 +532,7 @@ msgstr ""
 #: code:addons/account_online_synchronization/models/account_online.py:0
 #, python-format
 msgid "Message"
-msgstr ""
+msgstr "Boodskap"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_has_error
@@ -552,7 +552,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__name
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__activity_calendar_event_id

@@ -8,9 +8,9 @@
 # Haojun Zou <apollo_zhj@msn.com>, 2022
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2022
 # Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
-# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2022
 # Martin Trigaux, 2022
 # Kristoffer Grundström <lovaren@gmail.com>, 2022
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -18,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:23+0000\n"
 "PO-Revision-Date: 2022-09-22 05:44+0000\n"
-"Last-Translator: Kristoffer Grundström <lovaren@gmail.com>, 2022\n"
+"Last-Translator: Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023\n"
 "Language-Team: Swedish (https://www.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -168,6 +168,8 @@ msgstr "Betalad"
 msgid ""
 "Preset to create journal entries during a invoices and payments matching"
 msgstr ""
+"Förinställ för att skapa journalposter vid matchning av fakturor och "
+"betalningar"
 
 #. module: account_accountant_batch_payment
 #: model_terms:ir.ui.view,arch_db:account_accountant_batch_payment.view_account_batch_payment_search_bank_rec_widget

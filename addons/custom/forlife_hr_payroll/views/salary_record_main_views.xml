@@ -12,34 +12,34 @@
                     <field name="department_id"/>
                     <field name="analytic_account_id"/>
                     <field name="project_code"/>
-                    <field name="x_ttn" optional="show"/>
-                    <field name="x_kq" optional="show"/>
-                    <field name="x_tkdp" optional="show"/>
-                    <field name="x_pvp" optional="show"/>
-                    <field name="x_tthh" optional="show"/>
-                    <field name="x_thl" optional="show"/>
-                    <field name="x_dpfm" optional="show"/>
-                    <field name="x_pds" optional="show"/>
-                    <field name="x_ttl" optional="show"/>
-                    <field name="x_ttpc" optional="show"/>
-                    <field name="x_tu" optional="show"/>
-                    <field name="x_ttbh" optional="show"/>
-                    <field name="x_tk" optional="show"/>
-                    <field name="x_bhxh_level" optional="show"/>
-                    <field name="x_bhxh_bhbnn_tnld_ct" optional="show"/>
-                    <field name="x_bhyt_ct" optional="show"/>
-                    <field name="x_bhtn_ct" optional="show"/>
-                    <field name="x_tbh_ct" optional="show"/>
-                    <field name="x_bhxh_nld" optional="show"/>
-                    <field name="x_bhyt_nld" optional="show"/>
-                    <field name="x_bhtn_nld" optional="show"/>
-                    <field name="x_tbh_nld" optional="show"/>
-                    <field name="x_cdp_ct" optional="show"/>
-                    <field name="x_cdp_nld" optional="show"/>
-                    <field name="x_tncn" optional="show"/>
-                    <field name="x_tt" optional="show"/>
-                    <field name="x_tl" optional="show"/>
-                    <field name="x_slns" optional="show"/>
+                    <field name="x_ttn" optional="show" sum="Total"/>
+                    <field name="x_kq" optional="show" sum="Total"/>
+                    <field name="x_tkdp" optional="show" sum="Total"/>
+                    <field name="x_pvp" optional="show" sum="Total"/>
+                    <field name="x_tthh" optional="show" sum="Total"/>
+                    <field name="x_thl" optional="show" sum="Total"/>
+                    <field name="x_dpfm" optional="show" sum="Total"/>
+                    <field name="x_pds" optional="show" sum="Total"/>
+                    <field name="x_ttl" optional="show" sum="Total"/>
+                    <field name="x_ttpc" optional="show" sum="Total"/>
+                    <field name="x_tu" optional="show" sum="Total"/>
+                    <field name="x_ttbh" optional="show" sum="Total"/>
+                    <field name="x_tk" optional="show" sum="Total"/>
+                    <field name="x_bhxh_level" optional="show" sum="Total"/>
+                    <field name="x_bhxh_bhbnn_tnld_ct" optional="show" sum="Total"/>
+                    <field name="x_bhyt_ct" optional="show" sum="Total"/>
+                    <field name="x_bhtn_ct" optional="show" sum="Total"/>
+                    <field name="x_tbh_ct" optional="show" sum="Total"/>
+                    <field name="x_bhxh_nld" optional="show" sum="Total"/>
+                    <field name="x_bhyt_nld" optional="show" sum="Total"/>
+                    <field name="x_bhtn_nld" optional="show" sum="Total"/>
+                    <field name="x_tbh_nld" optional="show" sum="Total"/>
+                    <field name="x_cdp_ct" optional="show" sum="Total"/>
+                    <field name="x_cdp_nld" optional="show" sum="Total"/>
+                    <field name="x_tncn" optional="show" sum="Total"/>
+                    <field name="x_tt" optional="show" sum="Total"/>
+                    <field name="x_tl" optional="show" sum="Total"/>
+                    <field name="x_slns" optional="show" sum="Total"/>
                 </tree>
             </field>
         </record>

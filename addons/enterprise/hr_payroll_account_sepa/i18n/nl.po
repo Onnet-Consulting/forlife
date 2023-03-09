@@ -66,7 +66,7 @@ msgstr "Aanmaakdatum van het betalingsbestand."
 #: model:ir.model.fields,field_description:hr_payroll_account_sepa.field_hr_payslip_run_sepa_wizard__display_name
 #: model:ir.model.fields,field_description:hr_payroll_account_sepa.field_hr_payslip_sepa_wizard__display_name
 msgid "Display Name"
-msgstr "Schermnaam"
+msgstr "Weergavenaam"
 
 #. module: hr_payroll_account_sepa
 #: model:ir.model,name:hr_payroll_account_sepa.model_hr_employee
@@ -82,7 +82,7 @@ msgstr "Werknemers met ongeldige bankrekeningen"
 #. module: hr_payroll_account_sepa
 #: model:ir.model.fields,help:hr_payroll_account_sepa.field_hr_payslip__sepa_export
 msgid "Export file related to this payslip"
-msgstr "Export bestand gerelateerd aan deze loonstrook"
+msgstr "Exportbestand gerelateerd aan deze loonstrook"
 
 #. module: hr_payroll_account_sepa
 #: model_terms:ir.ui.view,arch_db:hr_payroll_account_sepa.hr_payslip_view_form
@@ -97,7 +97,7 @@ msgstr "Geëxporteerd SEPA .xml bestand"
 #. module: hr_payroll_account_sepa
 #: model:ir.model.fields,help:hr_payroll_account_sepa.field_hr_payslip_run__sepa_export_filename
 msgid "Exported SEPA .xml file name"
-msgstr "Bestandsnaam geëxporteerde SEPA .xml bestand"
+msgstr "Geëxporteerde SEPA .xml bestandsnaam"
 
 #. module: hr_payroll_account_sepa
 #: model:ir.model.fields,field_description:hr_payroll_account_sepa.field_hr_payslip__sepa_export_filename
@@ -119,7 +119,7 @@ msgstr "Anmaakdatum"
 #. module: hr_payroll_account_sepa
 #: model:ir.model,name:hr_payroll_account_sepa.model_hr_payslip_run_sepa_wizard
 msgid "HR Payslip Run SEPA Wizard"
-msgstr "HR loonstrookjes draaien SEPA-wizard"
+msgstr "HR loonstrook run SEPA-wizard"
 
 #. module: hr_payroll_account_sepa
 #: model:ir.model,name:hr_payroll_account_sepa.model_hr_payslip_sepa_wizard
@@ -186,7 +186,7 @@ msgstr "SEPA bestand"
 #: model_terms:ir.ui.view,arch_db:hr_payroll_account_sepa.hr_payslip_run_sepa_view_form
 #: model_terms:ir.ui.view,arch_db:hr_payroll_account_sepa.hr_payslip_sepa_view_form
 msgid "Select a bank journal."
-msgstr "Selecteer een bank dagboek."
+msgstr "Selecteer een bankdagboek."
 
 #. module: hr_payroll_account_sepa
 #: code:addons/hr_payroll_account_sepa/models/hr_payslip.py:0
