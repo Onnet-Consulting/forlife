@@ -10,6 +10,23 @@ import { Gui } from 'point_of_sale.Gui';
 import { round_decimals,round_precision } from 'web.utils';
 import core from 'web.core';
 
+var permutator = (inputArr) => {
+    let result = [];
+    const permute = (arr, m = []) => {
+        if (arr.length === 0) {
+            result.push(m);
+        } else {
+            for (let i = 0; i < arr.length; i++) {
+                let curr = arr.slice();
+                let next = curr.splice(i, 1);
+                permute(curr.slice(), m.concat(next));
+            };
+        };
+    };
+    permute(inputArr);
+    return result;
+}
+
 export class PromotionUsageLine {
     /**
      * @param {number} id of promotion.program
@@ -386,9 +403,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         };
     }
 
-
-    getActivatedComboPrograms() {
-        return Array.from(this.activatedComboPrograms).map(proID => this.pos.promotion_program_by_id[proID]);
+    getActivatedPrograms() {
+        let result = [];
+        result.push(...Array.from(this.activatedComboPrograms).map(proID => this.pos.promotion_program_by_id[proID]));
+        result.push(...Array.from(this.activatedCodePrograms).map(proID => this.pos.promotion_program_by_id[proID]));
+        return result;
     }
 
     getValidProgramsOnOrder() {
@@ -595,6 +614,40 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         };
     }
 
+    _compute_discounted_total_clone(line) {
+        if (!line.promotion_usage_ids) {
+            return 0.0;
+        };
+        let result = line.promotion_usage_ids.reduce((accum, usage) => {return accum + usage.discount_amount;}, 0.0);
+        return result || 0.0;
+    }
+
+    // TODO: Fix tách dòng
+    _get_program_ids_in_usages(line) {
+        return line.promotion_usage_ids.reduce((acc, usage) => {acc.add(usage.program_id); return acc}, new Set())
+    }
+
+    computeBestCombineOfProgram() {
+        var _get_program_ids_in_usages = (line) => line.promotion_usage_ids.reduce((acc, usage) => {acc.push(usage.program_id); return acc}, [])
+        let programs = this.getActivatedPrograms();
+        let programs_combines = permutator(programs);
+        let result = [[], 0];
+        for (let combination of programs_combines) {
+            let clone_order_lines = this.pos.get_order().get_orderlines_to_check().map(obj => ({...obj}));
+            let [discount_lines_1, discount_lines_2, c] = this.computeForListOfProgram(clone_order_lines, combination);
+            let discount_lines = [...Object.values(discount_lines_1).flat(2), ...discount_lines_2];
+            let discounted_total = discount_lines.reduce((acc, line) => {acc += this._compute_discounted_total_clone(line); return acc}, 0);
+            if (discounted_total > result.at(1)) {
+                let usage_programs = discount_lines.reduce((acc, line) => {
+                    _get_program_ids_in_usages(line).forEach(el => acc.add(this.pos.promotion_program_by_id[el])); return acc
+                    }, new Set()
+                );
+                result = [combination.filter(p => usage_programs.has(p)), discounted_total];
+            };
+        };
+        return result;
+    }
+
     /* return {<program_id>: number_of_combo}*/
     verifyComboProgramOnOrder(toVerifyPromotionPrograms) {
         var comboProgramToCheck = new Set();
@@ -605,14 +658,22 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
         };
         for (const program of comboProgramToCheck) {
-            var to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
-            let NumberOfCombo = this._checkNumberOfCombo(program, to_check_order_lines, [] , 0)[2];
-            if (['combo_percent_by_qty', 'combo_fixed_price_by_qty'].includes(program.reward_type) && !(NumberOfCombo >= program.qty_min_required)) {
-                continue;
-            };
-            if (NumberOfCombo >= 1) {
-                comboProgramIsVerified[program.id] = NumberOfCombo;
-            };
+            if (program.promotion_type == 'combo') {
+                var to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
+                let NumberOfCombo = this._checkNumberOfCombo(program, to_check_order_lines, [] , 0)[2];
+                if (['combo_percent_by_qty', 'combo_fixed_price_by_qty'].includes(program.reward_type) && !(NumberOfCombo >= program.qty_min_required)) {
+                    continue;
+                };
+                if (NumberOfCombo >= 1) {
+                    comboProgramIsVerified[program.id] = NumberOfCombo;
+                };
+            }
+            else if (program.promotion_type == 'code') {
+                // pass
+            }
+            else if (program.promotion_type == 'pricelist') {
+                // pass
+            }
         };
         return comboProgramIsVerified;
     }
@@ -759,7 +820,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         }
         return comboLineList;
     }
-    // Compute Order With list of Combo Program
+    // Compute and Apply Order With list of Combo Program
     computeForListOfProgram(orderLines, listOfComboProgram) {
         let to_apply_lines = {};
         let combo_count = {};
