@@ -112,13 +112,13 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                     for(let i = 0; i< order_lines.length; i++){
                         for(let j = 0; j< result.length; j++){
                             if (order_lines[i].id == result[j].id){
-                                order_lines[i].point = -result[j].point * 1000
+                                order_lines[i].set_point(-result[j].point * 1000)
                             }
                         }
                     }
                 }else{
                     for(let i = 0; i< result.length; i++){
-                        order_lines[i].point = - result[i].point * 1000
+                        order_lines[i].set_point(- result[i].point * 1000)
                     }
                 };
             }
