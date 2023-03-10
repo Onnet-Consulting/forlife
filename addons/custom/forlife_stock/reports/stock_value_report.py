@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, _, tools
-from datetime import datetime
-import pytz
-from ..tools import convert_to_utc_datetime
-from ..excel_style import get_style
 import base64
+import pytz
+
 from io import BytesIO
 from xlsxwriter.workbook import Workbook
+from datetime import datetime
+from ..tools import convert_to_utc_datetime
+from ..excel_style import get_style
+
+from odoo.exceptions import ValidationError
+from odoo import api, fields, models, _, tools
 
 
 def read_sql_file(file_path):
@@ -154,8 +157,8 @@ class StockValueReport(models.TransientModel):
             wssheet.write("G8", 'Giá trị', style_excel['style_header_bold_border'])
             wssheet.write("H8", 'Số lượng', style_excel['style_header_bold_border'])
             wssheet.write("I8", 'Giá trị', style_excel['style_header_bold_border'])
-            wssheet.write("J8", 'Đơn giá', style_excel['style_header_bold_border'])
-            wssheet.write("K8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.write("J8", 'Giá xuất đơn vị', style_excel['style_header_bold_border'])
+            wssheet.write("K8", 'Giá trị xuất', style_excel['style_header_bold_border'])
 
         def write_detail_table(wssheet, result):
 
@@ -174,7 +177,7 @@ class StockValueReport(models.TransientModel):
                 incoming_value = item.get('incoming_value', 0)
                 incoming_quantity = item.get('incoming_quantity', 0)
                 odoo_outgoing_quantity = item.get('odoo_outgoing_quantity', 0)
-                odoo_outgoing_value = item.get('odoo_outgoing_quantity', 0)
+                odoo_outgoing_value = item.get('odoo_outgoing_value', 0)
                 real_outgoing_price_unit = item.get('real_outgoing_price_unit', 0)
                 real_outgoing_value = item.get('real_outgoing_value', 0)
                 wssheet.write(row, 0, index + 1, style_excel['style_right_data_int'])
@@ -481,7 +484,6 @@ class StockValueReport(models.TransientModel):
             return col - 1
 
         def get_data():
-            # must be utc time
             self._cr.execute(f"""
                                 SELECT pp.default_code,
                                         pt.name product_name,
@@ -564,4 +566,56 @@ class StockValueReport(models.TransientModel):
         return self.action_download_excel(base64.encodebytes(xlsx_data), _('Outgoing Value Different Report based on Picking Type'))
 
     def action_create_invoice(self):
-        pass
+        self._cr.execute(f"""
+                        SELECT report.product_id,
+                                report.picking_type_id,
+                                report.total_diff,
+                                report.qty_percent,
+                                report.value_diff
+                        FROM outgoing_value_diff_account_report_picking_type(%s, %s, %s) as report""",
+                         (str(self.date_from), str(self.date_to), self.env.company.id))
+        result = self._cr.dictfetchall()
+        if not result:
+            raise ValidationError(_('There is not different of outgoing value!'))
+        move_lines = []
+        product_list = []
+        journal_id = None
+        for item in result:
+            if not item.get('product_id', 0) or not item.get('picking_type_id', 0):
+                continue
+            product_id = self.env['product.product'].browse(item.get('product_id', 0))
+            picking_type_id = self.env['stock.picking.type'].browse(item.get('picking_type_id', 0))
+            accounts_data = product_id.product_tmpl_id.get_product_accounts()
+            journal_id = accounts_data['stock_journal'].id
+            if product_id not in product_list:
+                product_list.append(product_id)
+                # 156x
+                move_lines.append((0, 0, {
+                    'name': f"{product_id.name}",
+                    'product_id': product_id.id,
+                    'product_uom_id': product_id.uom_id.id,
+                    'quantity': 0,
+                    'account_id': accounts_data['stock_valuation'].id,
+                    'credit': abs(item.get('total_diff', 0)) if item.get('total_diff', 0) < 0 else 0,
+                    'debit': abs(item.get('total_diff', 0)) if item.get('total_diff', 0) > 0 else 0,
+                }))
+            # đối ứng
+            move_lines.append((0, 0, {
+                'name': f"{product_id.name} - {picking_type_id.name}",
+                'product_id': product_id.id,
+                'product_uom_id': product_id.uom_id.id,
+                'quantity': 0,
+                'account_id': accounts_data['expense'].id,
+                'credit': abs(item.get('value_diff', 0)) if item.get('value_diff', 0) > 0 else 0,
+                'debit': abs(item.get('value_diff', 0)) if item.get('value_diff', 0) < 0 else 0,
+            }))
+        if move_lines:
+            move_vals = {
+                'state': 'draft',
+                'date': self.date_to,
+                'company_id': self.env.company.id,
+                'line_ids': move_lines,
+                'journal_id': journal_id,
+            }
+            self.env['account.move'].create(move_vals)
+
