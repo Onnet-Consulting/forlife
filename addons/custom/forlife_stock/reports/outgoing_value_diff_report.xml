@@ -17,7 +17,7 @@
                             <field name="date_to"/>
                         </group>
                         <group>
-                            <field name="based_on_account"/>
+                            <field name="based_on_account" invisible="1"/>
                         </group>
                     </group>
 
@@ -29,6 +29,7 @@
                                     class="btn-primary"/>
                             <button name="action_export_outgoing_value_diff_picking_type_report"
                                     string="Export Report based on Picking type" type="object" class="btn-primary"/>
+                            <button name="action_create_invoice" string="Create Invoice" type="object" class="btn-primary"/>
                             <field name="detail_ids" readonly="1">
                                 <tree limit="1000">
                                     <field name="report_id" invisible="1"/>
