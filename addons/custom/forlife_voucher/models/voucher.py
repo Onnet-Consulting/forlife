@@ -59,6 +59,7 @@ class Voucher(models.Model):
     def write(self, values):
         if 'lang' not in self._context:
             self._context['lang'] = self.env.user.lang
+        now = datetime.now()
         if 'end_date' in values and values['end_date']:
             end_date = datetime.strptime(values['end_date'], '%Y-%m-%d %H:%M:%S')
             if end_date > now:
@@ -120,6 +121,7 @@ class Voucher(models.Model):
                             'end_date': end_date_format,
                             'price_residual': vourcher.price_residual,
                             'price_used': vourcher.price_used,
+                            'price_change': 0,
                             'brand_id': vourcher.brand_id.id,
                             'partner': vourcher.partner_id.id,
                             'store_ids': vourcher.store_ids.ids,

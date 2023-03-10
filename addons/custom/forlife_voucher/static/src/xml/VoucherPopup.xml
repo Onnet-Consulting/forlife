@@ -33,7 +33,9 @@
                                         </t>
                                         <td style="border:1px solid black;width:85px;" class="o_table_end_date"><t t-esc="state.data[num].value.end_date"/></td>
                                         <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;" t-att-value="env.pos.format_currency(state.data[num].value.price_residual)"/></td>
-                                        <td style="border:1px solid black;width:85px;"><input class="o_price_used" type="text" t-on-change="_onValueChange" style="width: 100%;text-align: center;" t-att-value="env.pos.format_currency(state.data[num].value.price_residual)"/> </td>
+                                        <td style="border:1px solid black;width:85px;">
+                                                <input class="o_price_used" type="text" t-on-change="_onValueChange" style="width: 100%;text-align: center;" t-att-value="env.pos.format_currency(state.data[num].value.price_change)"/>
+                                        </td>
                                     </t>
                                     <t t-else="">
                                         <td class="o_table_type" style="border:1px solid black;width:85px;"></td>

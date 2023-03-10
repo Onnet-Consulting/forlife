@@ -21,14 +21,16 @@ odoo.define('forlife_voucher.PosPaymentScreenVoucher', function (require) {
                     let result = this.currentOrder.add_paymentline(paymentMethod);
                     var price_used = 0;
                     if(confirm){
-                        for(let i=0; i< data.length; i++){
-                            if (data[i].value){
-                                price_used += data[i].value.price_used
-                                data[i].value.payment_method_id = paymentMethod.id
+                        if(data){
+                            for(let i=0; i< data.length; i++){
+                                if (data[i].value){
+                                    price_used += data[i].value.price_used
+                                    data[i].value.payment_method_id = paymentMethod.id
+                                }
                             }
+                            this.currentOrder.addVoucherline(data)
+                            result.amount = price_used
                         }
-                        this.currentOrder.addVoucherline(data)
-                        result.amount = price_used
                     }
                     if (result){
                         NumberBuffer.reset();

@@ -22,4 +22,5 @@ class PosVoucherLine(models.Model):
     start_date = fields.Datetime('Start date')
     apply_contemp_time = fields.Boolean()
     payment_method_id = fields.Many2one('pos.payment.method')
+    price_change = fields.Monetary()
 
