@@ -19,7 +19,7 @@ class PosOrderLine(models.Model):
     @api.model
     def create(self, vals_list):
         if 'point' in vals_list and vals_list['point']:
-            vals_list['discount_details_lines'] = [
+            vals_list['discount_details_lines'] = vals_list.get('discount_details_lines', []) + [
                 (0, 0, {
                     'type': 'point',
                     'listed_price': vals_list['price_unit'],
