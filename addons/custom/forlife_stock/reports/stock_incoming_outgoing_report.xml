@@ -17,7 +17,7 @@
                             <field name="date_to"/>
                         </group>
                         <group>
-                            <field name="based_on_account"/>
+                            <field name="based_on_account" invisible="1"/>
                         </group>
                     </group>
 
