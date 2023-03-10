@@ -130,6 +130,10 @@ class Voucher(models.Model):
                             'apply_contemp_time': vourcher.apply_contemp_time
                         }
                     })
+                if not vourcher:
+                    data.append({
+                        'value': False,
+                    })
         return data
 
     def _format_time_zone(self, time):
