@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="VoucherPopup" owl="1">
+        <div class="popup" style="max-width: 1150px !important">
+            <header class="title">
+                <t t-esc="props.title"/>
+            </header>
+            <main class="body">
+                <table style="width:100%; border:1px solid black;">
+                            <tr style="width:100%;">
+
+                                <th style="border:1px solid black;text-align: center;width:15%;">Ưu tiên</th>
+                                <th style="border:1px solid black;text-align: center;">Mã Voucher</th>
+                                <th style="border:1px solid black;text-align: center;">Loại Voucher</th>
+                                <th style="border:1px solid black;text-align: center;">Ngày hết hạn</th>
+                                <th style="border:1px solid black;text-align: center;">Giá trị còn lại</th>
+                                <th style="border:1px solid black;text-align: center;">Giá trị sử dụng</th>
+                                <th style="border:1px solid black;text-align: center;">Thông báo</th>
+                                <th style="text-align: center;"></th>
+                            </tr>
+                    <t t-foreach="[...Array(5).keys()]" t-as="num" t-key="num">
+                            <tr style="width:100%;">
+                                <td style="border:1px solid black;"><input type="number" t-att-value-priority="num" style="width: 100%;text-align: center;" class="o_input_priority"/></td>
+                                <td style="border:1px solid black;width:130px;text-align: center;"><input style="width: 100%;text-align: center;" type="text" t-att-value-index="num" class="o_input_code"/></td>
+                                <t t-if="state.data &amp;&amp; state.error">
+                                    <t t-if="state.error[num] &amp;&amp; state.data[num]">
+                                        <t t-if="state.data[num].value != false &amp;&amp; state.error[num].length ==0">
+                                        <t t-if="state.data[num].value.type == 'v'">
+                                            <td class="o_table_type" style="border:1px solid black;width:85px;">V-Giấy</td>
+                                        </t>
+                                        <t t-else="">
+                                            <td class="o_table_type" style="border:1px solid black;width:85px;">E-Điện tử</td>
+                                        </t>
+                                        <td style="border:1px solid black;width:85px;" class="o_table_end_date"><t t-esc="state.data[num].value.end_date"/></td>
+                                        <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;" t-att-value="env.pos.format_currency(state.data[num].value.price_residual)"/></td>
+                                        <td style="border:1px solid black;width:85px;">
+                                                <input class="o_price_used" type="text" t-on-change="_onValueChange" style="width: 100%;text-align: center;" t-att-value="env.pos.format_currency(state.data[num].value.price_change)"/>
+                                        </td>
+                                    </t>
+                                    <t t-else="">
+                                        <td class="o_table_type" style="border:1px solid black;width:85px;"></td>
+                                        <td class="o_table_end_date" style="border:1px solid black;width:85px;"></td>
+                                        <td style="border:1px solid black;width:85px;"><input class="o_price_residual"  type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
+                                        <td style="border:1px solid black;width:85px;"><input class="o_price_used"  type="text" style="width: 100%;text-align: center;"/></td>
+                                    </t>
+                                    </t>
+
+                                </t>
+                                <t t-else="">
+                                    <td class="o_table_type" style="border:1px solid black;width:85px;"></td>
+                                    <td class="o_table_end_date" style="border:1px solid black;width:85px;"></td>
+                                    <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
+                                    <td style="border:1px solid black;width:85px;"><input class="o_price_used" type="text" style="width: 100%;text-align: center;"/></td>
+                                </t>
+                                <t t-if="state.error[num]">
+                                    <td class="o_table_error" style="border:1px solid black;width:85px;color:red;font-size: 12px;"><t t-esc="state.error[num][0]"/></td>
+                                </t>
+                                <t t-else="">
+                                    <td style="border:1px solid black;width:85px;"></td>
+                                </t>
+                                <td style="width:85px;"><a href="#" t-on-click.prevent="_deleteValue" class="o_delete" t-att-id="num">x</a> </td>
+                            </tr>
+                    </t>
+                </table>
+            </main>
+            <footer class="footer">
+
+                <div style="float:left; margin-left:400px;" class="button check highlight" t-on-click="check">
+                    <span>Kiểm tra</span>
+                </div>
+                <div style="margin-right:300px;" class="button confirm highlight" t-on-click="confirm">
+                    <t t-esc="props.confirm"/>
+                </div>
+            </footer>
+        </div>
+    </t>
+</templates>
