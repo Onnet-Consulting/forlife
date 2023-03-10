@@ -3,10 +3,10 @@
 
     <record id="mail_template_warning_opened_pos" model="mail.template">
         <field name="name">Cảnh báo đóng POS</field>
-        <field name="model_id" ref="point_of_sale.model_pos_session"/>
+        <field name="model_id" ref="forlife_point_of_sale.model_store"/>
         <field name="subject">CẢNH BÁO ĐÓNG QUẦY THANH TOÁN TRÊN PHẦN MỀM</field>
-        <field name="partner_to">{{ object.config_id.store_id.contact_id.id }}</field>
-        <field name="email_to">{{ object.config_id.store_id.contact_id.email }}</field>
+        <field name="partner_to">{{ object.contact_id.id }}</field>
+        <field name="email_to">{{ object.contact_id.email }}</field>
         <field name="body_html" type="html">
 <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #FFFFFF; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;"><tbody><tr><td align="center">
 <table border="0" cellpadding="0" cellspacing="0" width="590" style="padding: 16px; background-color: #FFFFFF; color: #454748; border-collapse:separate;">
@@ -16,10 +16,10 @@
             <table border="0" cellpadding="0" cellspacing="0" width="590" style="min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;">
                 <tbody><tr><td valign="top" style="font-size: 13px;">
                     <div>
-                        Dear anh chị cửa hàng <t t-out="object.config_id.name or ''">Cửa hàng xxx</t>,<br/><br/>Cửa hàng <t t-out="object.config_id.name or ''">Cửa hàng xxx</t> có các POS bán hàng sau chưa đóng tính đến thời điểm hiện tại:
+                        Dear anh chị cửa hàng <t t-out="object.name or ''">Cửa hàng xxx</t>,<br/><br/>Cửa hàng <t t-out="object.name or ''">Cửa hàng xxx</t> có các POS bán hàng sau chưa đóng tính đến thời điểm hiện tại:
                         <br/>
-                        <t t-foreach="object.config_id.get_pos_opened()" t-as="pos_config" t-key="key">
-                            <t t-out="pos_config[0]"/> mở ngày <t t-out="pos_config[1]"/>
+                        <t t-foreach="object.get_pos_opened()" t-as="pos_session">
+                            <t t-out="pos_session.config_id.name"/> mở ngày <t t-out="pos_session.start_at"/>
                         </t>
                         <br/><br/>
                         Đề nghị anh/chị kiểm tra lại các POS bán hàng trên.<br/>Nếu chưa hoàn thành POS bán hàng vui lòng bỏ qua email này.
