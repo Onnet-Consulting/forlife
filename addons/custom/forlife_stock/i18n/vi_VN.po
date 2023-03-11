@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-10 07:05+0000\n"
-"PO-Revision-Date: 2023-03-10 07:05+0000\n"
+"POT-Creation-Date: 2023-03-10 11:24+0000\n"
+"PO-Revision-Date: 2023-03-10 11:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -29,6 +29,11 @@ msgstr "Tồn cuối kỳ"
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_value_report_detail__closing_value
 msgid "Closing Value"
 msgstr "Giá trị tồn cuối kỳ"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.outgoing_value_diff_report_view_form
+msgid "Create Invoice"
+msgstr "Tạo bút toán chênh lệch"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_value_report__create_uid
@@ -235,6 +240,13 @@ msgstr "Báo cáo Giá trị kho"
 #: model:ir.model,name:forlife_stock.model_stock_value_report_detail
 msgid "Stock Value Report Detail"
 msgstr "Chi tiết Báo cáo Giá trị kho"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/reports/stock_value_report.py:0
+#, python-format
+msgid "There is not different of outgoing value!"
+msgstr "Không có sự chênh lệch về giá trị xuất kho!"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_value_report__date_to
