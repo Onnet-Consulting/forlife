@@ -150,12 +150,7 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     get_card_rank_discount() {
-        var discount_amount = 0;
-        if (this.card_rank_applied) {
-            let total_price = this.get_quantity() * this.get_unit_price();
-            discount_amount = (total_price - (total_price * this.get_discount() / 100)) * this.card_rank_discount / 100;
-        }
-        return discount_amount;
+        return (this.get_quantity() * this.get_unit_price() * this.card_rank_discount / 100) || 0;
     }
 };
 Registries.Model.extend(Orderline, PosOrderLineCardRank);
