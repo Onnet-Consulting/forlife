@@ -569,10 +569,12 @@ class StockValueReport(models.TransientModel):
         self._cr.execute(f"""
                         SELECT report.product_id,
                                 report.picking_type_id,
-                                report.total_diff,
+                                cast(report.total_diff as int) total_diff,
                                 report.qty_percent,
-                                report.value_diff
-                        FROM outgoing_value_diff_account_report_picking_type(%s, %s, %s) as report""",
+                                cast(report.value_diff as int) value_diff
+                        FROM outgoing_value_diff_account_report_picking_type(%s, %s, %s) as report
+                        WHERE abs(cast(report.value_diff as int)) > 1
+                        """,
                          (str(self.date_from), str(self.date_to), self.env.company.id))
         result = self._cr.dictfetchall()
         if not result:
