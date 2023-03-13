@@ -19,9 +19,9 @@
                         Dear anh chị cửa hàng <t t-out="object.name or ''">Cửa hàng xxx</t>,<br/><br/>Cửa hàng <t t-out="object.name or ''">Cửa hàng xxx</t> có các POS bán hàng sau chưa đóng tính đến thời điểm hiện tại:
                         <br/>
                         <t t-foreach="object.get_pos_opened()" t-as="pos_session">
-                            <t t-out="pos_session.config_id.name"/> mở ngày <t t-out="pos_session.start_at"/>
+                            &emsp;<t t-out="pos_session.config_id.name"/> mở ngày <t t-out="pos_session.start_at"/><br/>
                         </t>
-                        <br/><br/>
+                        <br/>
                         Đề nghị anh/chị kiểm tra lại các POS bán hàng trên.<br/>Nếu chưa hoàn thành POS bán hàng vui lòng bỏ qua email này.
 <br/>
 Nếu đã hoàn thành POS bán hàng vui lòng đăng nhập hệ thống và tiến hành đóng POS để đảm bảo tiến độ cập nhật dữ liệu trên hệ thống.
