@@ -132,7 +132,7 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     action_apply_card_rank(cr_program) {
-        var total_percent_discounted = this.discount + ((this.get_total_discounted() - this.get_point()) / (this.get_quantity() * this.get_unit_price()) * 100);
+        var total_percent_discounted = this.discount + (((this.get_total_discounted() || 0) - (this.get_point() || 0)) / (this.get_quantity() * this.get_unit_price()) * 100);
         for (let line of cr_program.discounts) {
             if (total_percent_discounted > line.from && total_percent_discounted <= line.to) {
                 this.card_rank_discount = line.disc;
