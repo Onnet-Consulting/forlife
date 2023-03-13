@@ -14,7 +14,7 @@ class PosOrder(models.Model):
         res = super(PosOrder, self).action_pos_order_paid()
         self.with_delay().update_partner_card_rank()
         if self.card_rank_program_id:
-            total_amount_discount = sum(self.mapped('lines.discount_details_lines.money_reduced'))
+            total_amount_discount = abs(sum(self.mapped('lines.discount_details_lines').filtered(lambda f: f.type == 'card').mapped('money_reduced')))
             self.with_delay().accounting_card_rank_discount(total_amount_discount) if total_amount_discount else None
         return res
 

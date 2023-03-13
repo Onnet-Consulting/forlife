@@ -27,6 +27,6 @@ class PosOlDiscountDetails(models.Model):
 
     def get_name(self):
         name = '/'
-        if self.program_name:
+        if self.type == 'point':
             name = self.program_name.name
         return name
