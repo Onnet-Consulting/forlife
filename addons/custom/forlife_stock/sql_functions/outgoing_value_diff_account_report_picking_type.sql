@@ -25,6 +25,7 @@ BEGIN
             left join stock_picking_type spt on spt.id = sm.picking_type_id
             where 1=1
             and aml.credit > 0
+            and am.state = 'posted'
             and am.date >= _date_from::date and am.date <= _date_to::date
             and am.company_id = _company_id
             and aml.account_id = (select split_part(value_reference, ',', 2)::integer
