@@ -12,7 +12,7 @@ class PosOlDiscountDetails(models.Model):
         return super().get_money_reduced()
 
     def get_name(self):
-        if self.card_rank_program_id:
+        if self.type == 'card':
             return self.card_rank_program_id.name
         return super().get_name()
     
