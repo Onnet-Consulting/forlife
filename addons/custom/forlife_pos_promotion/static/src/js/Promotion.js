@@ -10,23 +10,6 @@ import { Gui } from 'point_of_sale.Gui';
 import { round_decimals,round_precision } from 'web.utils';
 import core from 'web.core';
 
-var permutator = (inputArr) => {
-    let result = [];
-    const permute = (arr, m = []) => {
-        if (arr.length === 0) {
-            result.push(m);
-        } else {
-            for (let i = 0; i < arr.length; i++) {
-                let curr = arr.slice();
-                let next = curr.splice(i, 1);
-                permute(curr.slice(), m.concat(next));
-            };
-        };
-    };
-    permute(inputArr);
-    return result;
-}
-
 export class PromotionUsageLine {
     /**
      * @param {number} id of promotion.program
@@ -552,6 +535,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         });
     }
 
+    // TODO: Fix: sau tách các dòng đã có khuyến mãi, số tiền tổng khuyến mãi phỉa được tính lại cho chính xác theo tỷ lệ số lượng
     /*
     * recursion function
     * return {number} count of  combo
@@ -627,25 +611,93 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return line.promotion_usage_ids.reduce((acc, usage) => {acc.add(usage.program_id); return acc}, new Set())
     }
 
-    computeBestCombineOfProgram() {
+    arrayIsChild(array, subArray) {
+        if (!subArray) {return false};
+        return subArray.every((element, i, arr) => {return _.isEqual(element, array.at(i));});
+    }
+
+    arrayIsSame(array, subArray) {
+        let i = 0;
+        for (let subEl of subArray) {
+            let currentIndex = array.indexOf(subEl)
+            if (currentIndex < i) {
+                return false;
+            } else {
+                i = currentIndex;
+            }
+        };
+        return true;
+    }
+
+//    checkHasSubArray(master, sub, no) {
+//        return sub.length < no && sub.every((i => v => i = master.indexOf(v, i) + 1)(0));
+//    }
+
+    permutator(inputArr) {
+        let accumValidCombs = [];
+        let max = 0.0;
+        let result = null;
+        const permute = (arr, m = []) => {
+            if (arr.length === 0) {
+                let hasChecked = accumValidCombs.some((comb, i, a) => {
+                        return this.arrayIsChild(m, comb);
+                });
+                if (!hasChecked && accumValidCombs.some((comb) => {return this.arrayIsSame(m, comb) && comb.length >= 5;})) {
+                    hasChecked = true;
+                };
+                if (!hasChecked) {
+                    let [validCombine, disc] = this._computeBestCombineOfProgram([m]);
+                    let check = accumValidCombs.some(c => _.isEqual(validCombine.at(0), c))
+                    if (!check) {
+                        accumValidCombs.push(...validCombine);
+                        if (disc > max) {
+                            max = disc;
+                            result = validCombine.at(0);
+                        };
+                    };
+                };
+            }
+            else {
+                for (let i = 0; i < arr.length; i++) {
+                    let curr = arr.slice();
+                    let next = curr.splice(i, 1);
+                        permute(curr.slice(), m.concat(next));
+                };
+            };
+        };
+        permute(inputArr);
+        return result;
+    }
+
+    computeBestCombineOfProgram(){
+        let programs = this.getActivatedPrograms().map(p => p.id);
+        if (programs.length > 8) {
+            return [];
+        };
+        let programs_combines = this.permutator(programs);
+        return programs_combines;
+    }
+
+    _computeBestCombineOfProgram(programs_combines) {
         var _get_program_ids_in_usages = (line) => line.promotion_usage_ids.reduce((acc, usage) => {acc.push(usage.program_id); return acc}, [])
-        let programs = this.getActivatedPrograms();
-        let programs_combines = permutator(programs);
-        let result = [[], 0];
+        let result = [];
+        let max = 0;
         for (let combination of programs_combines) {
+            combination = combination.map(p => this.pos.promotion_program_by_id[p]);
             let clone_order_lines = this.pos.get_order().get_orderlines_to_check().map(obj => ({...obj}));
             let [discount_lines_1, discount_lines_2, c] = this.computeForListOfProgram(clone_order_lines, combination);
             let discount_lines = [...Object.values(discount_lines_1).flat(2), ...discount_lines_2];
             let discounted_total = discount_lines.reduce((acc, line) => {acc += this._compute_discounted_total_clone(line); return acc}, 0);
-            if (discounted_total > result.at(1)) {
-                let usage_programs = discount_lines.reduce((acc, line) => {
+            let usage_programs = discount_lines.reduce((acc, line) => {
                     _get_program_ids_in_usages(line).forEach(el => acc.add(this.pos.promotion_program_by_id[el])); return acc
                     }, new Set()
                 );
-                result = [combination.filter(p => usage_programs.has(p)), discounted_total];
+            if (discounted_total > max) {
+                result = [combination.filter(p => usage_programs.has(p)).map(p => p.id)];
+                max = discounted_total
             };
         };
-        return result;
+        return [result, max];
     }
 
     /* return {<program_id>: number_of_combo}*/

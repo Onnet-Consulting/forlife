@@ -38,7 +38,8 @@ export class PromotionButton extends PosComponent {
         console.log('onClick', this.env.pos)
         const order = this.env.pos.get_order();
         const potentialPrograms = order.getPotentialProgramsToSelect();
-        const bestCombine = order.computeBestCombineOfProgram()[0];
+        let bestCombine = order.computeBestCombineOfProgram() || [];
+        bestCombine = bestCombine.map(p => this.env.pos.promotion_program_by_id[p])
         if (potentialPrograms.size === 0) {
             await this.showPopup('ErrorPopup', {
                 title: this.env._t('No program available.'),
@@ -49,10 +50,10 @@ export class PromotionButton extends PosComponent {
         const programsList = potentialPrograms.map((pro) => ({
             id: pro.program.id,
             label: pro.program.name,
-            isSelected: bestCombine.includes(pro.program),
-            index: bestCombine.indexOf(pro.program) + 1,
+            isSelected: bestCombine.length > 0 ? bestCombine.includes(pro.program) : false,
+            index: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
             forecastedNumber: pro.number,
-            order_apply: bestCombine.indexOf(pro.program) + 1,
+            order_apply: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
             discounted_amount: 0.0,
             forecasted_discounted_amount: 0.0,
         }));
