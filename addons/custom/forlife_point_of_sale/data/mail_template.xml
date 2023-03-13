@@ -5,7 +5,6 @@
         <field name="name">Cảnh báo đóng POS</field>
         <field name="model_id" ref="forlife_point_of_sale.model_store"/>
         <field name="subject">CẢNH BÁO ĐÓNG QUẦY THANH TOÁN TRÊN PHẦN MỀM</field>
-        <field name="partner_to">{{ object.contact_id.id }}</field>
         <field name="email_to">{{ object.contact_id.email }}</field>
         <field name="body_html" type="html">
 <table border="0" cellpadding="0" cellspacing="0" style="padding-top: 16px; background-color: #FFFFFF; font-family:Verdana, Arial,sans-serif; color: #454748; width: 100%; border-collapse:separate;"><tbody><tr><td align="center">
