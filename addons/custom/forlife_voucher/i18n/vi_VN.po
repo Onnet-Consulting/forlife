@@ -670,3 +670,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_voucher.field_setup_voucher__applicable_object
 msgid "Đối tượng"
 msgstr ""
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_payment_method__account_other_income
+msgid "Account Other Income"
+msgstr "Tài khoản thu nhập khác"
+
+#. module: forlife_voucher
+#: model:ir.model.fields,field_description:forlife_voucher.field_pos_payment_method__account_general
+msgid "Account General"
+msgstr "Tài khoản đối tượng chung"

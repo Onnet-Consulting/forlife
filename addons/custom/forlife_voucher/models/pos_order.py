@@ -45,16 +45,16 @@ class PosOrder(models.Model):
                 (0, 0, {
                     'name': 'Write off giá trị còn lại của Voucher sử dụng 1 lần mã {}'.format(voucher.voucher_id.name),
                     'account_id': voucher.payment_method_id.account_other_income.id,
-                    'debit': voucher.voucher_id.price_residual,
-                    'credit': 0.0,
+                    'debit': 0.0,
+                    'credit': voucher.voucher_id.price_residual,
                     'analytic_distribution': {voucher.voucher_id.derpartment_id.center_expense_id.id: 100} if voucher.voucher_id.derpartment_id.center_expense_id else {}
                 }),
                 # credit line
                 (0, 0, {
                     'name': 'Write off giá trị còn lại của Voucher sử dụng 1 lần mã {}'.format(voucher.voucher_id.name),
                     'account_id': voucher.payment_method_id.account_general.id,
-                    'debit': 0.0,
-                    'credit': voucher.voucher_id.price_residual,
+                    'debit': voucher.voucher_id.price_residual,
+                    'credit': 0.0,
                     'analytic_distribution': {voucher.voucher_id.derpartment_id.center_expense_id.id: 100} if voucher.voucher_id.derpartment_id.center_expense_id else {}
                 }),
             ]

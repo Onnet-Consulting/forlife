@@ -24,27 +24,6 @@ odoo.define('forlife_voucher.voucher', function (require) {
             return this[index];
         }
     }
-    const PosGlobalStateVoucher = (PosGlobalState) => class PosGlobalStateVoucher extends PosGlobalState {
-//      @override
-        push_single_order (order, opts) {
-            opts = opts || {};
-            const self = this;
-
-            const order_id = self.db.add_order(order.export_as_JSON());
-
-            return new Promise((resolve, reject) => {
-                this.env.posMutex.exec(async () => {
-                    const order = self.db.get_order(order_id);
-                    try {
-                        resolve(await self._flush_orders([order], opts));
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-            });
-        }
-
-    }
     const VoucherOrder = (Order) =>
         class extends Order {
             constructor(obj, options) {
@@ -76,5 +55,4 @@ odoo.define('forlife_voucher.voucher', function (require) {
 
     }
 Registries.Model.extend(Order, VoucherOrder);
-Registries.Model.extend(PosGlobalState, PosGlobalStateVoucher);
 });

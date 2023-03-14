@@ -21,7 +21,7 @@
                     <t t-foreach="[...Array(5).keys()]" t-as="num" t-key="num">
                             <tr style="width:100%;">
                                 <td style="border:1px solid black;"><input type="number" t-att-value-priority="num" style="width: 100%;text-align: center;" class="o_input_priority"/></td>
-                                <td style="border:1px solid black;width:130px;text-align: center;"><input style="width: 100%;text-align: center;" type="text" t-att-value-index="num" class="o_input_code"/></td>
+                                <td style="border:1px solid black;width:130px;text-align: center;"><input style="width: 100%;text-align: center;text-transform: uppercase;" type="text" t-att-value-index="num" class="o_input_code"/></td>
                                 <t t-if="state.data &amp;&amp; state.error">
                                     <t t-if="state.error[num] &amp;&amp; state.data[num]">
                                         <t t-if="state.data[num].value != false &amp;&amp; state.error[num].length ==0">
@@ -65,11 +65,14 @@
             </main>
             <footer class="footer">
 
-                <div style="float:left; margin-left:400px;" class="button check highlight" t-on-click="check">
-                    <span>Kiểm tra</span>
+                <div class="button cancel" t-on-click="cancel">
+                    <t t-esc="props.cancel"/>
                 </div>
-                <div style="margin-right:300px;" class="button confirm highlight" t-on-click="confirm">
+                <div class="button confirm highlight" t-on-click="confirm">
                     <t t-esc="props.confirm"/>
+                </div>
+                <div class="button check highlight" t-on-click="check">
+                    <span>Kiểm tra</span>
                 </div>
             </footer>
         </div>

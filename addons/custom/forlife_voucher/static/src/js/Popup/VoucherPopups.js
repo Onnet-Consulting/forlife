@@ -51,6 +51,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         let price_used = $(this).val()
                         data[index].value.price_used = parseInt(price_used.split('.').join('').replace('₫',''))
                         delete data[index].value.price_change
+                        delete data[index].value.price_residual
                     }
                  });
                  $('.o_input_priority').each(function( index ) {
@@ -80,6 +81,12 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             }
         }
 
+        cancel(){
+            this.env.posbus.trigger('close-popup', {
+                    popupId: this.props.id,
+                    response: {confirmed: false, payload: false},
+            });
+        }
 
         _deleteValue(ev){
             this._onValueChange()
@@ -158,6 +165,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
         async check() {
             this.state.trigger = false;
             this.state.error = []
+            var self = this;
             var codes = []
             $('.o_price_used').each(function( index ){
                  $(this).css('color', '#444')
@@ -165,7 +173,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             $('.o_input_code').each(function( index ) {
                 if($(this).val()){
                     codes.push({
-                        value: $(this).val()
+                        value: $.trim($(this).val())
                     })
                 }else{
                     codes.push({
@@ -179,6 +187,11 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 pos_brand = this.env.pos.pos_branch[i].id
             }
             var data = await this.check_voucher(codes)
+            $('.o_input_priority').each(function(index) {
+                if(data[index].value != false){
+                   $(this).val(index+1)
+                }
+            });
             var data_value = []
             for(let i = 0; i < data.length; i ++){
                 if(codes[i].value != false && data[i].value != false){
