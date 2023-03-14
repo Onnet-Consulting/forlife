@@ -111,8 +111,28 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         return result;
     }
 
+    set_discount(discount) {
+        let oldDiscount = this.get_discount();
+        let result = super.set_discount(...arguments);
+        if (oldDiscount !== this.discount) {
+            this.action_reset_card_rank();
+            this.order.check_all_orderline_reseted();
+        }
+        return result;
+    }
+
+    set_point(point) {
+        let oldPoint = this.get_point();
+        let result = super.set_point(...arguments);
+        if (oldPoint !== this.point) {
+            this.action_reset_card_rank();
+            this.order.check_all_orderline_reseted();
+        }
+        return result;
+    }
+
     action_apply_card_rank(cr_program) {
-        var total_percent_discounted = this.discount + (this.get_total_discounted() / (this.get_quantity() * this.get_unit_price()) * 100);
+        var total_percent_discounted = this.discount + (((this.get_total_discounted() || 0) - (this.get_point() || 0)) / (this.get_quantity() * this.get_unit_price()) * 100);
         for (let line of cr_program.discounts) {
             if (total_percent_discounted > line.from && total_percent_discounted <= line.to) {
                 this.card_rank_discount = line.disc;
@@ -130,12 +150,7 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     get_card_rank_discount() {
-        var discount_amount = 0;
-        if (this.card_rank_applied) {
-            let total_price = this.get_quantity() * this.get_unit_price();
-            discount_amount = (total_price - (total_price * this.get_discount() / 100)) * this.card_rank_discount / 100;
-        }
-        return discount_amount;
+        return (this.get_quantity() * this.get_unit_price() * this.card_rank_discount / 100) || 0;
     }
 };
 Registries.Model.extend(Orderline, PosOrderLineCardRank);

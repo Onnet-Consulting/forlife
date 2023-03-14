@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, _, tools
-from datetime import datetime
-import pytz
-from ..tools import convert_to_utc_datetime
-from ..excel_style import get_style
 import base64
+import pytz
+
 from io import BytesIO
 from xlsxwriter.workbook import Workbook
+from datetime import datetime
+from ..tools import convert_to_utc_datetime
+from ..excel_style import get_style
+
+from odoo.exceptions import ValidationError
+from odoo import api, fields, models, _, tools
 
 
 def read_sql_file(file_path):
@@ -24,24 +27,28 @@ class StockValueReport(models.TransientModel):
     date_from = fields.Date('From Date', required=True)
     date_to = fields.Date('To Date', default=fields.Date.context_today, required=True)
     detail_ids = fields.One2many('stock.value.report.detail', 'report_id', 'Detail')
-    based_on_account = fields.Boolean('Based on Account')
+    based_on_account = fields.Boolean('Based on Account', default=True)
 
     # file sql
     def init(self):
         outgoing_value_diff_report = read_sql_file('./forlife_stock/sql_functions/outgoing_value_diff_report.sql')
         outgoing_value_diff_account_report = read_sql_file(
             './forlife_stock/sql_functions/outgoing_value_diff_account_report.sql')
-        # outgoing_value_diff_picking_type_report = read_sql_file(
-        #     './forlife_stock/sql_functions/outgoing_value_diff_picking_type_report.sql')
         stock_incoming_outgoing_report = read_sql_file(
             './forlife_stock/sql_functions/stock_incoming_outgoing_report.sql')
         stock_incoming_outgoing_account_report = read_sql_file(
             './forlife_stock/sql_functions/stock_incoming_outgoing_account_report.sql')
+        outgoing_value_diff_account_report_picking_type = read_sql_file(
+            './forlife_stock/sql_functions/outgoing_value_diff_account_report_picking_type.sql')
         self.env.cr.execute(outgoing_value_diff_report)
         self.env.cr.execute(outgoing_value_diff_account_report)
-        # self.env.cr.execute(outgoing_value_diff_picking_type_report)
         self.env.cr.execute(stock_incoming_outgoing_report)
         self.env.cr.execute(stock_incoming_outgoing_account_report)
+        self.env.cr.execute(outgoing_value_diff_account_report_picking_type)
+
+    def get_name_with_lang(self, name_dict):
+        return name_dict.get(self.env.context.get('lang')) if name_dict.get(
+            self.env.context.get('lang')) else name_dict.get('en_US')
 
     def action_download_excel(self, data, name):
         vals = {
@@ -150,12 +157,10 @@ class StockValueReport(models.TransientModel):
             wssheet.write("G8", 'Giá trị', style_excel['style_header_bold_border'])
             wssheet.write("H8", 'Số lượng', style_excel['style_header_bold_border'])
             wssheet.write("I8", 'Giá trị', style_excel['style_header_bold_border'])
-            wssheet.write("J8", 'Đơn giá', style_excel['style_header_bold_border'])
-            wssheet.write("K8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.write("J8", 'Giá xuất đơn vị', style_excel['style_header_bold_border'])
+            wssheet.write("K8", 'Giá trị xuất', style_excel['style_header_bold_border'])
 
         def write_detail_table(wssheet, result):
-            def get_number_data(result_dict, name):
-                return result_dict.get(name, 0) if int(item.get(name, 0)) != 0 else ''
 
             row = 8
             total_opening_quantity = 0
@@ -172,14 +177,12 @@ class StockValueReport(models.TransientModel):
                 incoming_value = item.get('incoming_value', 0)
                 incoming_quantity = item.get('incoming_quantity', 0)
                 odoo_outgoing_quantity = item.get('odoo_outgoing_quantity', 0)
-                odoo_outgoing_value = item.get('odoo_outgoing_quantity', 0)
+                odoo_outgoing_value = item.get('odoo_outgoing_value', 0)
                 real_outgoing_price_unit = item.get('real_outgoing_price_unit', 0)
                 real_outgoing_value = item.get('real_outgoing_value', 0)
                 wssheet.write(row, 0, index + 1, style_excel['style_right_data_int'])
                 wssheet.write(row, 1, item.get('default_code', ''), style_excel['style_left_data_string_border'])
-                wssheet.write(row, 2,
-                              item.get('name', {}).get(self.env.context.get('lang')) if item.get('name', {}).get(
-                                  self.env.context.get('lang')) else item.get('name', {}).get('en_US'),
+                wssheet.write(row, 2, self.get_name_with_lang(item.get('name', {})),
                               style_excel['style_left_data_string_border'])
                 wssheet.write(row, 3, opening_quantity, style_excel['style_right_data_float'])
                 wssheet.write(row, 4, opening_value, style_excel['style_right_data_float'])
@@ -355,8 +358,6 @@ class StockValueReport(models.TransientModel):
             wssheet.write("K8", 'Số lượng', style_excel['style_header_bold_border'])
 
         def write_detail_table(wssheet, result):
-            def get_number_data(result_dict, name):
-                return result_dict.get(name, 0) if int(item.get(name, 0)) != 0 else ''
 
             row = 8
             total_opening_quantity = 0
@@ -378,9 +379,7 @@ class StockValueReport(models.TransientModel):
                 closing_value = item.get('closing_value', 0)
                 wssheet.write(row, 0, index + 1, style_excel['style_right_data_int'])
                 wssheet.write(row, 1, item.get('default_code', ''), style_excel['style_left_data_string_border'])
-                wssheet.write(row, 2,
-                              item.get('name', {}).get(self.env.context.get('lang')) if item.get('name', {}).get(
-                                  self.env.context.get('lang')) else item.get('name', {}).get('en_US'),
+                wssheet.write(row, 2, self.get_name_with_lang(item.get('name', {})),
                               style_excel['style_left_data_string_border'])
                 wssheet.write(row, 3, opening_quantity, style_excel['style_right_data_float'])
                 wssheet.write(row, 4, opening_value, style_excel['style_right_data_float'])
@@ -460,4 +459,165 @@ class StockValueReport(models.TransientModel):
         return self.action_download_excel(base64.encodebytes(xlsx_data), _('Stock Incoming Outgoing Report'))
 
     def action_export_outgoing_value_diff_picking_type_report(self):
-        pass
+        # define function
+        def write_header(wssheet, picking_type_name):
+            # --------------------------------------Header Table----------------------------------------------
+            wssheet.merge_range("A7:A8", 'STT', style_excel['style_header_bold_border'])
+            wssheet.merge_range("B7:B8", 'Mã sản phẩm', style_excel['style_header_bold_border'])
+            wssheet.merge_range("C7:C8", 'Tên sản phẩm', style_excel['style_header_bold_border'])
+            wssheet.merge_range("D7:D8", 'Tổng chênh lệch trong kỳ', style_excel['style_header_bold_border'])
+
+            # --------------------------------------Dynamic Col----------------------------------------------
+            col = 4
+            for picking_type in picking_type_name:
+                wssheet.merge_range(6, col, 6, col + 1, self.get_name_with_lang(picking_type), style_excel['style_header_bold_border'])
+                wssheet.write(7, col, 'Tỷ lệ', style_excel['style_header_bold_border'])
+                wssheet.write(7, col + 1, 'Giá trị', style_excel['style_header_bold_border'])
+                col += 2
+
+            # --------------------------------------Title---------------------------------------------------
+            wssheet.merge_range(1, 0, 1, col - 1, _('Outgoing Value Different Report based on Picking Type'), style_excel['style_title'])
+            wssheet.write(3, (col - 1) // 2 - 1, 'Kỳ báo cáo', style_excel['style_header_bold'])
+            wssheet.write(3, (col - 1) // 2, f'Từ ngày: {self.date_from.strftime("%d/%m/%Y")}', style_excel['style_left_data_string'])
+            wssheet.write(3, (col - 1) // 2 + 1, f'Đến ngày: {self.date_to.strftime("%d/%m/%Y")}', style_excel['style_left_data_string'])
+
+            return col - 1
+
+        def get_data():
+            self._cr.execute(f"""
+                                SELECT pp.default_code,
+                                        pt.name product_name,
+                                        spt.name picking_type,
+                                        report.total_diff,
+                                        report.qty_percent,
+                                        report.value_diff
+                                FROM outgoing_value_diff_account_report_picking_type(%s, %s, %s) as report
+                                LEFT JOIN product_product pp ON pp.id = report.product_id
+                                LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                                LEFT JOIN stock_picking_type spt ON spt.id = report.picking_type_id""",
+                             (str(self.date_from), str(self.date_to), self.env.company.id))
+            result = self._cr.dictfetchall()
+            self._cr.execute(f"""
+                                SELECT distinct spt.name
+                                FROM outgoing_value_diff_account_report_picking_type(%s, %s, %s) as report
+                                LEFT JOIN stock_picking_type spt ON spt.id = report.picking_type_id""",
+                             (str(self.date_from), str(self.date_to), self.env.company.id))
+            picking_type_name = self._cr.fetchall()
+            return result, [picking_type[0] for picking_type in picking_type_name]
+
+        def write_detail_table(wssheet, result, picking_type_name):
+            row = 8
+            product_code = result[0].get('default_code')
+            for item in result:
+                if item.get('default_code') != product_code:
+                    product_code = item.get('default_code')
+                    row += 1
+                try:
+                    wssheet.write(row, 0, row - 7, style_excel['style_right_data_int'])
+                    wssheet.write(row, 1, item.get('default_code', ''), style_excel['style_left_data_string_border'])
+                    wssheet.write(row, 2, self.get_name_with_lang(item.get('product_name', {})),  style_excel['style_left_data_string_border'])
+                    wssheet.write(row, 3, item.get('total_diff', 0), style_excel['style_right_data_float'])
+                except:
+                    pass
+                if item.get('picking_type', '') not in picking_type_name:
+                    continue
+                wssheet.write(row, picking_type_name.index(item.get('picking_type')) * 2 + 4, item.get('qty_percent', 0), style_excel['style_right_data_float'])
+                wssheet.write(row, picking_type_name.index(item.get('picking_type')) * 2 + 5, item.get('value_diff', 0), style_excel['style_right_data_float'])
+
+            return row
+
+        def write_footer(wssheet, last_row, last_col):
+            # --------------------------------------Footer---------------------------------------------------
+            wssheet.merge_range(last_row + 2, last_col - 1, last_row + 2, last_col, 'Ngày.....tháng.....năm.....',
+                                style_excel['style_header_unbold'])
+            wssheet.merge_range(last_row + 3, last_col - 1, last_row + 3, last_col, 'Người lập phiếu',
+                                style_excel['style_header_bold'])
+            wssheet.merge_range(last_row + 4, last_col - 1, last_row + 4, last_col, '(Kí ghi rõ họ tên)',
+                                style_excel['style_header_unbold'])
+
+            wssheet.merge_range(last_row + 3, 0, last_row + 3, 3, 'Thủ kho',
+                                style_excel['style_header_bold'])
+            wssheet.merge_range(last_row + 4, 0, last_row + 4, 3, '(Kí ghi rõ họ tên)',
+                                style_excel['style_header_unbold'])
+
+        # true action
+        result, picking_type_name = get_data()
+
+        # write data to excel
+        buf = BytesIO()
+        wb = Workbook(buf)
+        style_excel = get_style(wb)
+        wssheet = wb.add_worksheet('Report')
+
+        # --------------------------------------Header----------------------------------------------------
+        last_col = write_header(wssheet, picking_type_name)
+
+        # --------------------------------------Detail Table----------------------------------------------
+        last_row = write_detail_table(wssheet, result, picking_type_name)
+
+        # --------------------------------------Footer----------------------------------------------
+        write_footer(wssheet, last_row, last_col)
+
+
+        wb.close()
+        buf.seek(0)
+        xlsx_data = buf.getvalue()
+
+        return self.action_download_excel(base64.encodebytes(xlsx_data), _('Outgoing Value Different Report based on Picking Type'))
+
+    def action_create_invoice(self):
+        self._cr.execute(f"""
+                        SELECT report.product_id,
+                                report.picking_type_id,
+                                cast(report.total_diff as int) total_diff,
+                                report.qty_percent,
+                                cast(report.value_diff as int) value_diff
+                        FROM outgoing_value_diff_account_report_picking_type(%s, %s, %s) as report
+                        WHERE abs(cast(report.value_diff as int)) > 1
+                        """,
+                         (str(self.date_from), str(self.date_to), self.env.company.id))
+        result = self._cr.dictfetchall()
+        if not result:
+            raise ValidationError(_('There is not different of outgoing value!'))
+        move_lines = []
+        product_list = []
+        journal_id = None
+        for item in result:
+            if not item.get('product_id', 0) or not item.get('picking_type_id', 0):
+                continue
+            product_id = self.env['product.product'].browse(item.get('product_id', 0))
+            picking_type_id = self.env['stock.picking.type'].browse(item.get('picking_type_id', 0))
+            accounts_data = product_id.product_tmpl_id.get_product_accounts()
+            journal_id = accounts_data['stock_journal'].id
+            if product_id not in product_list:
+                product_list.append(product_id)
+                # 156x
+                move_lines.append((0, 0, {
+                    'name': f"{product_id.name}",
+                    'product_id': product_id.id,
+                    'product_uom_id': product_id.uom_id.id,
+                    'quantity': 0,
+                    'account_id': accounts_data['stock_valuation'].id,
+                    'credit': abs(item.get('total_diff', 0)) if item.get('total_diff', 0) < 0 else 0,
+                    'debit': abs(item.get('total_diff', 0)) if item.get('total_diff', 0) > 0 else 0,
+                }))
+            # đối ứng
+            move_lines.append((0, 0, {
+                'name': f"{product_id.name} - {picking_type_id.name}",
+                'product_id': product_id.id,
+                'product_uom_id': product_id.uom_id.id,
+                'quantity': 0,
+                'account_id': accounts_data['expense'].id,
+                'credit': abs(item.get('value_diff', 0)) if item.get('value_diff', 0) > 0 else 0,
+                'debit': abs(item.get('value_diff', 0)) if item.get('value_diff', 0) < 0 else 0,
+            }))
+        if move_lines:
+            move_vals = {
+                'state': 'draft',
+                'date': self.date_to,
+                'company_id': self.env.company.id,
+                'line_ids': move_lines,
+                'journal_id': journal_id,
+            }
+            self.env['account.move'].create(move_vals)
+
