@@ -119,6 +119,12 @@ class PromotionCampaign(models.Model):
         for campaign in self:
             campaign.program_count = len(campaign.program_ids)
 
+    def unlink(self):
+        for campaign in self:
+            if any(pro.total_order_count > 0 for pro in campaign.program_ids):
+                raise UserError(_('Can not unlink program which is already used!'))
+        return super().unlink()
+
     def action_open_programs(self):
         action = self.env["ir.actions.actions"]._for_xml_id("forlife_pos_promotion.promotion_program_action")
         action['domain'] = [('id', 'in', self.program_ids.ids)]
