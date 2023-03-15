@@ -14,10 +14,6 @@
                     </div>
                 </button>
             </xpath>
-
-            <button name="action_pos_order_invoice" position="after">
-                <button name="action_create_voucher" type="object" string="Create Voucher" data-hotkey="v"/>
-            </button>
             <xpath expr="//field[@name='lines']/tree/field[@name='qty']" position="after">
                 <field name="x_qty_voucher" optional="hide"/>
             </xpath>
