@@ -3,7 +3,7 @@
     <t t-name="ComboDetailsPopup" owl="1">
             <div class="popup product-info-popup">
                 <header class="title">
-                    Applied Combo Details
+                    Chi tiết Combo/Sản phẩm được áp dụng
                 </header>
                 <main class="body">
                     <div class="section-product-info-title">
@@ -18,15 +18,16 @@
                         </div>
                     </div>
                     <hr/>
-                    <div style="text-align: left;"><strong>Qty of Combo/Product: <t t-esc="props.qty_of_combo"/></strong></div>
+                    <div style="text-align: left;"><strong>Số lượng Combo/SP: <t t-esc="props.qty_of_combo"/></strong></div>
                     <table style="width:100%;" class="payment-list">
                         <thead>
                             <tr height="50px">
-                                <th>Product</th>
-                                <th>Qty</th>
-                                <th>Pre Price</th>
-                                <th>New Price</th>
-                                <th>Discount Amount</th>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Giá ban đầu</th>
+                                <th>Giá sau giảm</th>
+<!--                                <th>Tiền giảm / đơn vị</th>-->
+                                <th>Tiền giảm</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -36,7 +37,8 @@
                                     <td style="font-weight:normal" t-esc="line.quantity"/>
                                     <td style="font-weight:normal" t-esc="this.env.pos.format_currency(line.pre_price)"/>
                                     <td style="font-weight:normal" t-esc="this.env.pos.format_currency(line.new_price)"/>
-                                    <td style="font-weight:normal" t-esc="this.env.pos.format_currency(line.discount_amount)"/>
+<!--                                    <td style="font-weight:normal" t-esc="this.env.pos.format_currency(line.discount_amount)"/>-->
+                                    <td style="font-weight:normal" t-esc="this.env.pos.format_currency(line.discount_amount*line.quantity)"/>
                                 </tr>
                             </t>
                         </tbody>
@@ -44,7 +46,7 @@
                 </main>
                 <footer class="footer">
                     <div class="button cancel" t-on-click="cancel">
-                        Close
+                        Đóng
                     </div>
                 </footer>
             </div>

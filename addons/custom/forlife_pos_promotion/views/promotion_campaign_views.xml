@@ -15,7 +15,7 @@
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value" readonly="1">
-                                    <field name="program_count"/>
+                                    <field name="active_program_count"/>
                                 </span>
                                 <span class="o_stat_text" >
                                 Active Programs</span>

@@ -90,6 +90,7 @@ class PromotionCampaign(models.Model):
     program_ids = fields.One2many(
         'promotion.program', 'campaign_id', context={'active_test': False})
     program_count = fields.Integer(compute='_compute_program_count')
+    active_program_count = fields.Integer(compute='_compute_program_count')
 
     combo_program_ids = fields.One2many('promotion.program', 'campaign_id', domain=[('promotion_type', '=', 'combo')])
     code_program_ids = fields.One2many('promotion.program', 'campaign_id', domain=[('promotion_type', '=', 'code')])
@@ -117,6 +118,7 @@ class PromotionCampaign(models.Model):
     def _compute_program_count(self):
         for campaign in self:
             campaign.program_count = len(campaign.program_ids)
+            campaign.active_program_count = len(campaign.program_ids.filtered(lambda p: p.active))
 
     def unlink(self):
         for campaign in self:
