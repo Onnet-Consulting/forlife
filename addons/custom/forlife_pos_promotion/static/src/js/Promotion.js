@@ -979,11 +979,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
             // Pricelist Program
             else if (program.promotion_type == 'pricelist') {
-                // TODO: Apply to orderlines for price program
                 let [ols, to_discount_line_vals, qty] = this._checkQtyOfProductForPricelist(program, orderLines);
                 let result = this.applyAPricelistProgramToLineVales(program, to_discount_line_vals, qty);
                 combo_count[program.str_id] = qty;
-                if (to_apply_lines.hasOwnProperty(program.id) && combo_count.hasOwnProperty(program.id)) {
+                if (to_apply_lines.hasOwnProperty(program.str_id) && combo_count.hasOwnProperty(program.str_id)) {
                         to_apply_lines[program.str_id].push(...result);
                     } else {
                         to_apply_lines[program.str_id] = result;
