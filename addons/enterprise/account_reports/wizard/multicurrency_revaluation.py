@@ -69,8 +69,8 @@ class MulticurrencyRevaluationWizard(models.TransientModel):
         preview_columns = [
             {'field': 'account_id', 'label': _("Account")},
             {'field': 'name', 'label': _("Label")},
-            {'field': 'debit', 'label': _("Debit"), 'class': 'text-right text-nowrap'},
-            {'field': 'credit', 'label': _("Credit"), 'class': 'text-right text-nowrap'},
+            {'field': 'debit', 'label': _("Debit"), 'class': 'text-end text-nowrap'},
+            {'field': 'credit', 'label': _("Credit"), 'class': 'text-end text-nowrap'},
         ]
         for record in self:
             preview_vals = [self.env['account.move']._move_dict_to_preview_vals(

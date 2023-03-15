@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="store_view_form_inherit">
+            <field name="name">store.view.form.inherit</field>
+            <field name="model">store</field>
+            <field name="inherit_id" ref="forlife_point_of_sale.store_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_method_ids']" position="after">
+                    <field name="account_intermediary_pos"/>
+                    <field name="other_receivable_account_id"/>
+                    <field name="other_payable_account_id"/>
+                    <field name="default_office_cash_account_id"/>
+                </xpath>
+            </field>
+            
+        </record>
+    </data>
+</odoo>

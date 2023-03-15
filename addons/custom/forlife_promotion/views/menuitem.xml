@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <menuitem id="promotion_root" name="Promotion" sequence="100"/>
+
+        <menuitem id="point_categ_menu" name="Point" parent="forlife_promotion.promotion_root" sequence="5"/>
+
+        <menuitem id="points_promotion_menu" name="Points Promotion" parent="forlife_promotion.point_categ_menu" action="points_promotion_action" sequence="5"/>
+
+        <menuitem id="event_menu" name="Events" parent="forlife_promotion.point_categ_menu" action="event_action" sequence="10"/>
+
+        <menuitem id="promotion_configuration_menu" name="Configuration" parent="forlife_promotion.promotion_root" sequence="1000"/>
+
+    </data>
+</odoo>

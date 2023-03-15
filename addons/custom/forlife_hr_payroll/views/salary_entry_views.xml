@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="salary_entry_view_tree" model="ir.ui.view">
+            <field name="name">salary_entry_view_tree</field>
+            <field name="model">salary.entry</field>
+            <field name="arch" type="xml">
+                <tree string="salary_entry_tree">
+                    <field name="salary_table_id"/>
+                    <field name="salary_field_id"/>
+                    <field name="title" required="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="salary_entry_view_form" model="ir.ui.view">
+            <field name="name">salary_entry_view_form</field>
+            <field name="model">salary.entry</field>
+            <field name="arch" type="xml">
+                <form string="salary_entry_form">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="salary_table_id"/>
+                                <field name="salary_field_id"/>
+                                <field name="title"/>
+                                <field name="groupable_account_ids" widget="many2many_tags"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="salary_entry_filter" model="ir.ui.view">
+            <field name="name">salary_entry_filter</field>
+            <field name="model">salary.entry</field>
+            <field name="arch" type="xml">
+                <search string="Search">
+                    <field name="salary_table_id"/>
+                    <field name="salary_field_id"/>
+                    <field name="title"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="salary_entry_action" model="ir.actions.act_window">
+            <field name="name">Salary Entry</field>
+            <field name="res_model">salary.entry</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

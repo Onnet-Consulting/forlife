@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="ProgramSelectionPopup" owl="1">
+        <div class="popup popup-text popup-med product-configurator-popup">
+            <header class="title">
+                <t t-esc="'Chọn chương trình khuyến mãi'" />
+            </header>
+            <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
+                <ul>
+                    <t t-foreach="props.programs" t-as="program" t-key="program.id">
+                        <li class="program-item" t-att-class="program.forecastedNumber > 0 ? 'selectable' : ''">
+                            <input type="checkbox" name="programs"
+                                   t-att-id="program.id"
+                                   t-att-value="program.id"
+                                   t-on-click="() => this.selectItem(program.id)"
+                                   t-att-checked="'checked' ? program.isSelected : ''"
+                                   t-att-disabled="program.forecastedNumber ==0 ? 'selectable' : ''"
+                            />
+                            <label t-att-for="program.id">
+                                [<t t-esc="program.id"/>]&nbsp;&nbsp;<t t-esc="program.label"/>
+                                <t t-if="program.isSelected and program.order_apply >= 0">
+                                    <div style="display: inline-block" class="badge rounded-pill text-bg-success">
+                                        <span style="padding-right: 20px; font-weight: 700" t-esc="program.index"/>
+                                    </div>
+                                </t>
+                            </label>
+                            <p>
+                                <div t-if="!program.isSelected" class="number-combo">Còn&nbsp;
+                                    <strong t-esc="program.forecastedNumber"/> &nbsp;Combo/SP
+                                </div>
+                                <div t-if="program.isSelected" class="number-combo">Đã áp dụng&nbsp;
+                                    <strong t-esc="program.numberCombo or 0"/> &nbsp;Combo/SP
+                                </div>
+                                <div t-if="program.forecastedNumber > 0"  style="display: inline-block;" class="btn-primary">
+                                    <i title="Chi tiết" class="fa fa-list" t-on-click="() => this.view_combo_details(program.id)"/>
+                                </div>
+                                <t t-if="program.isSelected and program.discounted_amount > 0">
+                                    <div style="display: inline-block" >
+                                    Số tiền đã giảm: <strong t-esc="this.env.pos.format_currency(program.discounted_amount)"/>
+                                    </div>
+                                </t>
+                                <t t-if="!program.isSelected and program.forecasted_discounted_amount > 0">
+                                    <div style="display: inline-block" >
+                                    Dự kiến giảm: <strong t-esc="this.env.pos.format_currency(program.forecasted_discounted_amount)"/>
+                                    </div>
+                                </t>
+                            </p>
+                        </li>
+                    </t>
+                </ul>
+                <hr/>
+                <p style="margin: 0 0 0 40px"><strong style="font-size: 20px;">Tổng giảm đã trên đơn: &nbsp;<t t-esc="this.env.pos.format_currency(state.discount_amount_order)"/></strong></p>
+            <style>
+                .program-item:hover {
+                    background: rgba(0, 0, 0, 0.055);
+                    cursor: pointer;
+                }
+                li:before {
+                    content: None !important;
+                }
+                .selectable {
+                    background-color: rgb(237 248 252);
+                }
+                div .badge {
+                    min-width: 2.7ch;
+                    margin-left: 10px;
+                }
+                div .rounded-pill {
+                    border-radius: 50rem !important;
+                }
+                div .text-bg-success {
+                    text-align: center;
+                    color: #FFF !important;
+                    background-color: RGBA(40, 167, 69, var(--bg-opacity, 1)) !important;
+                }
+                div .number-combo {
+                    display: inline-block;
+                    margin-right: 10px;
+                }
+                label {
+                    padding: 0px 100px 40px 0;
+                }
+                .btn-primary {
+                    color: #017e84;
+                }
+            </style>
+            </main>
+            <footer class="footer">
+                <div class="button highlight confirm" t-on-click="confirm">
+                    Apply
+                </div>
+                    <div class="button cancel" t-on-click="cancel">
+                        Cancel
+                    </div>
+            </footer>
+        </div>
+    </t>
+
+</templates>

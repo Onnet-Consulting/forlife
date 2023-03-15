@@ -455,7 +455,7 @@ msgstr ""
 #. module: social_push_notifications
 #: model:ir.ui.menu,name:social_push_notifications.social_visitor
 msgid "Visitors"
-msgstr ""
+msgstr "Posetioci"
 
 #. module: social_push_notifications
 #: code:addons/social_push_notifications/controllers/main.py:0

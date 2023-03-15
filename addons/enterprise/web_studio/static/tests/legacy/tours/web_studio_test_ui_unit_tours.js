@@ -197,3 +197,230 @@ tour.register(
         }
     ]
 );
+
+tour.register(
+    "web_studio_enter_x2many_auto_inlined_subview_with_multiple_field_matching",
+    {
+        test: true,
+        sequence: 260
+    },
+    [
+        {
+            trigger: "a[data-menu-xmlid='web_studio.studio_test_partner_menu']"
+        },
+        {
+            trigger: ".o_form_view .o_form_editable"
+        },
+        {
+            trigger: ".o_web_studio_navbar_item a"
+        },
+        {
+            trigger: ".o_web_studio_form_view_editor .o_field_widget[name='user_ids']:eq(1) .o_field_x2many_list",
+        },
+        {
+            extra_trigger: ".o-web-studio-edit-x2manys-buttons",
+            trigger: ".o_web_studio_editX2Many[data-type='list']"
+        },
+        {
+            extra_trigger: ".o_web_studio_breadcrumb .breadcrumb-item:contains('Subview List')",
+            trigger: ".o_web_studio_sidebar .o_web_studio_existing_fields_header"
+        },
+        {
+            extra_trigger: ".o_web_studio_existing_fields_section:not(.d-none)",
+            trigger: ".o_web_studio_sidebar .o_web_studio_existing_fields_section .o_web_studio_component[title='User log entries']",
+            run() {
+                $(".o_web_studio_sidebar .o_web_studio_existing_fields_section .o_web_studio_component[title='User log entries']")[0].scrollIntoView();
+            }
+        },
+        {
+            trigger: ".o_web_studio_sidebar .o_web_studio_existing_fields_section .o_web_studio_component[title='User log entries']",
+            run: "drag_and_drop (.o_web_studio_list_view_editor .o_web_studio_hook:eq(1))",
+        },
+        {
+            trigger: ".o_web_studio_list_view_editor th[data-name='log_ids']",
+            run() {
+                const countFields = document.querySelectorAll(".o_web_studio_form_view_editor th[data-name]").length;
+                if (!countFields === 2) {
+                    throw new Error("There should be 2 fields in the form view")
+                }
+            }
+        }
+    ]
+);
+
+tour.register(
+    "web_studio_field_with_group",
+    {
+        test: true,
+        sequence: 260
+    },
+    [
+        {
+            trigger: "a[data-menu-xmlid='web_studio.studio_test_partner_menu']"
+        },
+        {
+            trigger: ".o_list_view"
+        },
+        {
+            trigger: ".o_web_studio_navbar_item a"
+        },
+        {
+            trigger: ".o_web_studio_list_view_editor th[data-name='function']",
+            run() {}
+        },
+        {
+            trigger: ".o_web_studio_sidebar .o_web_studio_existing_fields_header"
+        },
+        {
+            extra_trigger: ".o_web_studio_existing_fields_section:not(.d-none)",
+            trigger: ".o_web_studio_sidebar .o_web_studio_existing_fields_section .o_web_studio_component[title='Website Link']",
+            run() {
+                $(".o_web_studio_sidebar .o_web_studio_existing_fields_section .o_web_studio_component[title='Website Link']")[0].scrollIntoView();
+            }
+        },
+        {
+            trigger: ".o_web_studio_sidebar .o_web_studio_existing_fields_section .o_web_studio_component[title='Website Link']",
+            run: "drag_and_drop (.o_web_studio_list_view_editor th.o_web_studio_hook:eq(2))",
+        },
+        {
+            extra_trigger: ".o_web_studio_list_view_editor th.o_web_studio_hook:not(.o_web_studio_nearest_hook)",
+            trigger: ".o_web_studio_list_view_editor th[data-name='website']",
+            run() {
+                const countFields = document.querySelectorAll(".o_web_studio_list_view_editor th[data-name]").length;
+                if (!countFields === 3) {
+                    throw new Error("There should be 3 fields in the form view")
+                }
+            }
+        }
+    ]
+);
+
+tour.register(
+    "web_studio_elements_with_groups_form",
+    {
+        test: true,
+        sequence: 260
+    },
+    [
+        {
+            trigger: "a[data-menu-xmlid='web_studio.studio_test_partner_menu']"
+        },
+        {
+            trigger: ".o_form_view"
+        },
+        {
+            trigger: ".o_web_studio_navbar_item a"
+        },
+        {
+            trigger: ".o_web_studio_form_view_editor",
+            run() {}
+        },
+        {
+            trigger: ".o_web_studio_sidebar .o_web_studio_existing_fields_header"
+        },
+        {
+            extra_trigger: ".o_web_studio_existing_fields_section:not(.d-none)",
+            trigger: ".o_web_studio_sidebar .o_web_studio_existing_fields_section .o_web_studio_component[title='Website Link']",
+            run() {
+                $(".o_web_studio_sidebar .o_web_studio_existing_fields_section .o_web_studio_component[title='Website Link']")[0].scrollIntoView();
+            }
+        },
+        {
+            trigger: ".o_web_studio_sidebar .o_web_studio_existing_fields_section .o_web_studio_component[title='Website Link']",
+            run: "drag_and_drop (.o_web_studio_form_view_editor .o_inner_group .o_web_studio_hook:eq(1))",
+        },
+        {
+            extra_trigger: ".o_web_studio_form_view_editor .o_web_studio_hook:not(.o_web_studio_nearest_hook)",
+            trigger: ".o_web_studio_form_view_editor .o_field_widget[name='website']",
+            run() {
+                const countFields = document.querySelectorAll(".o_web_studio_form_view_editor .o_field_widget[name]").length;
+                if (!countFields === 2) {
+                    throw new Error("There should be 2 fields in the form view")
+                }
+            }
+        }
+    ]
+);
+
+tour.register(
+    "test_element_group_in_sidebar",
+    {
+        test: true,
+        sequence: 260,
+    },
+    [
+        {
+            trigger: "a[data-menu-xmlid='web_studio.studio_test_partner_menu']",
+        },
+        {
+            trigger: ".o_form_view .o_form_editable",
+        },
+        {
+            trigger: ".o_web_studio_navbar_item a",
+        },
+        {
+            extra_trigger: ".o_web_studio_form_view_editor .o_field_widget[name='display_name']",
+            trigger: ".o_web_studio_form_view_editor .o_field_widget[name='display_name']",
+        },
+        {
+            trigger: ".o_field_many2manytags[name='groups'] .badge",
+            run() {
+                const tag = document.querySelector(".o_field_many2manytags[name='groups'] .badge");
+                if (!tag || !tag.textContent.includes("Test Group")) {
+                    throw new Error("The groups should be displayed in the sidebar");
+                }
+            },
+        },
+    ]
+);
+
+tour.register(
+    "web_studio_custom_selection_field_edit_values",
+    {
+        test: true,
+        sequence: 260
+    },
+    [
+        {
+            trigger: "a[data-menu-xmlid='web_studio.studio_test_partner_menu']"
+        },
+        {
+            extra_trigger: ".o_form_view",
+            trigger: ".o_web_studio_navbar_item a"
+        },
+        {
+            trigger: ".o_web_studio_sidebar .o_web_studio_new_fields .o_web_studio_field_selection",
+            run: "drag_and_drop (.o_web_studio_hook:eq(0))"
+        },
+        {
+            trigger: ".o_web_studio_selection_new_value input",
+            run: "text some value",
+        },
+        {
+            trigger: ".modal-footer .btn-primary"
+        },
+        {
+            trigger: ".o_web_studio_leave"
+        },
+        {
+            extra_trigger: ".o_form_view",
+            trigger: ".o_web_studio_navbar_item a"
+        },
+        {
+            trigger: ".o_web_studio_form_view_editor .o_field_selection"
+        },
+        {
+            trigger: ".o_web_studio_edit_selection_values"
+        },
+        {
+            trigger: ".o_web_studio_selection_new_value input:last",
+            run: "text another value"
+        },
+        {
+            trigger: ".modal-footer .btn-primary"
+        },
+        {
+            trigger: ".o_web_studio_leave"
+        },
+    ]
+);

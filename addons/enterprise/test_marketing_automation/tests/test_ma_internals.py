@@ -131,3 +131,24 @@ class MarketingCampaignTest(TestMACommon):
 
         self.assertEqual(campaign.running_participant_count, 4)
         self.assertEqual(campaign.participant_ids.mapped('res_id'), (test_records[0:3] | test_records[-1]).ids)
+
+    @users('user_markauto')
+    @mute_logger('odoo.addons.base.ir.ir_model', 'odoo.models')
+    def test_archive_ma_campaign(self):
+        """
+        Ensures that campaigns are stopped when archived.
+        """
+        campaign = self.env['marketing.campaign'].create({
+            'name': 'Test Campaign',
+            'model_id': self.env['ir.model']._get('marketing.test.sms').id,
+            'domain': '%s' % [('id', 'in', self.test_records[0].ids)],
+        })
+
+        mailing = self._create_mailing()
+        self._create_activity(campaign, mailing=mailing, interval_number=0)
+
+        campaign.action_start_campaign()
+        self.assertEqual(campaign.state, 'running')
+
+        campaign.active = False
+        self.assertEqual(campaign.state, 'stopped')

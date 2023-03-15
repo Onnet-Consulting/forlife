@@ -5,7 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # Cécile Collart <cco@odoo.com>, 2022
-# Jolien De Paepe, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:49+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Jolien De Paepe, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -126,7 +126,7 @@ msgid ""
 "Gantt must have a 'dependency_inverted_field' attribute once the "
 "'dependency_field' is specified"
 msgstr ""
-"Gant doit avoir un attribut 'dependency_inverted_field' dys que le "
+"Gant doit avoir un attribut 'dependency_inverted_field' dès que le "
 "'dependency_field' est défini"
 
 #. module: web_gantt
@@ -140,27 +140,27 @@ msgstr "La vue Gantt peut uniquement contenir une étiquette de modèles"
 #: code:addons/web_gantt/static/src/js/gantt_model.js:0
 #, python-format
 msgid "Grouping by date is not supported"
-msgstr "Grouper par date n'est pas pris en charge."
+msgstr "Le regroupement par date n'est pas pris en charge."
 
 #. module: web_gantt
 #: code:addons/web_gantt/models/models.py:0
 #, python-format
 msgid "Insufficient fields for Gantt View!"
-msgstr "Champs insuffisants pour Vue Gantt !"
+msgstr "Champs insuffisants pour la vue Gantt !"
 
 #. module: web_gantt
 #: code:addons/web_gantt/models/ir_ui_view.py:0
 #, python-format
 msgid "Invalid attributes (%s) in gantt view. Attributes must be in (%s)"
 msgstr ""
-"Des attributs non valides (%s) dans la vue Gantt. Les attributs doivent être"
-" en (%s)"
+"Des attributs invalides (%s) dans la vue Gantt. Les attributs doivent être "
+"en (%s)"
 
 #. module: web_gantt
 #: code:addons/web_gantt/models/ir_ui_view.py:0
 #, python-format
 msgid "Invalid default_scale '%s' in gantt"
-msgstr "default_scale '%s' non valide dans le gantt"
+msgstr "default_scale '%s' invalide dans Gantt"
 
 #. module: web_gantt
 #. openerp-web
@@ -195,14 +195,14 @@ msgstr "Ouvrir"
 #: code:addons/web_gantt/static/src/js/gantt_controller.js:0
 #, python-format
 msgid "Plan"
-msgstr "Plan"
+msgstr "Planifier"
 
 #. module: web_gantt
 #. openerp-web
 #: code:addons/web_gantt/static/src/xml/web_gantt.xml:0
 #, python-format
 msgid "Plan existing"
-msgstr "Plan existant"
+msgstr "Planifier existant"
 
 #. module: web_gantt
 #. openerp-web
@@ -233,7 +233,7 @@ msgstr "Début :"
 #: code:addons/web_gantt/static/src/xml/web_gantt.xml:0
 #, python-format
 msgid "Stop:"
-msgstr "Stop :"
+msgstr "Arrêt :"
 
 #. module: web_gantt
 #. openerp-web

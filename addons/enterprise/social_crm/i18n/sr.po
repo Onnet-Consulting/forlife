@@ -27,6 +27,8 @@ msgid ""
 "<span class=\"o_stat_text\" attrs=\"{'invisible': [('use_leads', '=', False)]}\">Leads</span>\n"
 "                        <span class=\"o_stat_text\" attrs=\"{'invisible': [('use_leads', '=', True)]}\">Opportunities</span>"
 msgstr ""
+"<span class=\"o_stat_text\" attrs=\"{'invisible': [('use_leads', '=', False)]}\">Lidovi</span>\n"
+"                        <span class=\"o_stat_text\" attrs=\"{'invisible': [('use_leads', '=', True)]}\">Prodajne prilike</span>"
 
 #. module: social_crm
 #: model_terms:ir.ui.view,arch_db:social_crm.social_post_to_lead_description
@@ -51,7 +53,7 @@ msgstr ""
 #. module: social_crm
 #: model_terms:ir.ui.view,arch_db:social_crm.social_post_to_lead_view_form
 msgid "Convert"
-msgstr ""
+msgstr "Konvertuj"
 
 #. module: social_crm
 #: model:ir.actions.act_window,name:social_crm.social_post_to_lead_action
@@ -70,12 +72,12 @@ msgstr ""
 #: code:addons/social_crm/static/src/xml/social_crm_button.xml:0
 #, python-format
 msgid "Create Lead"
-msgstr ""
+msgstr "Kreiraj lid"
 
 #. module: social_crm
 #: model:ir.model.fields.selection,name:social_crm.selection__social_post_to_lead__action__create
 msgid "Create a new customer"
-msgstr ""
+msgstr "Kreiraj novog kupca"
 
 #. module: social_crm
 #: model:ir.model.fields,field_description:social_crm.field_social_post_to_lead__create_uid
@@ -101,12 +103,12 @@ msgstr "Naziv za prikaz"
 #. module: social_crm
 #: model:ir.model.fields.selection,name:social_crm.selection__social_post_to_lead__action__nothing
 msgid "Do not link to a customer"
-msgstr ""
+msgstr "Nemoj povezivati sa kupcem"
 
 #. module: social_crm
 #: model:ir.model.fields.selection,name:social_crm.selection__social_post_to_lead__conversion_source__comment
 msgid "From a comment"
-msgstr ""
+msgstr "Od komentara"
 
 #. module: social_crm
 #: model:ir.model.fields.selection,name:social_crm.selection__social_post_to_lead__conversion_source__stream_post
@@ -146,7 +148,7 @@ msgstr ""
 #. module: social_crm
 #: model:ir.model.fields.selection,name:social_crm.selection__social_post_to_lead__action__exist
 msgid "Link to an existing customer"
-msgstr ""
+msgstr "Poveži sa postojećim kupcem"
 
 #. module: social_crm
 #: model_terms:ir.ui.view,arch_db:social_crm.social_post_view_kanban
@@ -176,7 +178,7 @@ msgstr ""
 #. module: social_crm
 #: model:ir.model.fields,field_description:social_crm.field_social_post_to_lead__action
 msgid "Related Customer"
-msgstr ""
+msgstr "Povezani kupac"
 
 #. module: social_crm
 #: code:addons/social_crm/wizard/social_post_to_lead.py:0

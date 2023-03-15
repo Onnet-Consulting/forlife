@@ -442,3 +442,91 @@ class TestEditView(TestStudioController):
             </field>
         </form>"""
         self.assertViewArchEqual(base_view.get_combined_arch(), expected_arch)
+
+    def test_edit_attribute_studio_groups_tree_column_invisible(self):
+        for view_type, arch, expected_modifiers in [
+            ('tree', """
+                <tree>
+                    <field name="name" groups="base.group_no_one"/>
+                </tree>
+            """, {'column_invisible': True}),
+            ('tree', """
+                <tree>
+                    <header>
+                        <button name="name" groups="base.group_no_one"/>
+                    </header>
+                </tree>
+            """, {'invisible': True}),
+            ('form', """
+                <form>
+                    <field name="child_ids">
+                        <tree>
+                            <field name="name" groups="base.group_no_one"/>
+                        </tree>
+                    </field>
+                </form>
+            """, {'column_invisible': True}),
+            ('tree', """
+                <tree>
+                    <field name="child_ids">
+                        <form>
+                            <field name="name" groups="base.group_no_one"/>
+                        </form>
+                    </field>
+                </tree>
+            """, {'invisible': True}),
+        ]:
+            view = self.env['ir.ui.view'].create({
+                'name': 'foo',
+                'type': view_type,
+                'model': 'res.partner',
+                'arch': arch,
+            })
+            arch = self.env['res.partner'].with_context(studio=True).get_view(view.id)['arch']
+            tree = etree.fromstring(arch)
+            modifiers = json.loads(tree.xpath('//*[@name="name"]')[0].get('modifiers'))
+            for modifier, value in expected_modifiers.items():
+                self.assertEqual(modifiers.get(modifier), value)
+
+    def test_get_view_t_groups(self):
+        """Tests the behavior of <t groups="..."></t> blocks with Studio."""
+        for view_type, arch, expected_modifiers in [
+            # The user has the group of the `<t>` node, the `<t>` node **must remain**, and be visible.
+            ('form', """
+                <form>
+                    <t groups="base.group_user">
+                        <field name="name"/>
+                    </t>
+                </form>
+            """, {}),
+            # The user doesn't have the group of the `<t>` node, the `<t>` node **must remain**, and be invisible.
+            ('form', """
+                <form>
+                    <t groups="base.group_no_one">
+                        <field name="name"/>
+                    </t>
+                </form>
+            """, {'invisible': True}),
+        ]:
+            view = self.env['ir.ui.view'].create({
+                'name': 'foo',
+                'type': view_type,
+                'model': 'res.partner',
+                'arch': arch,
+            })
+            arch = self.env['res.partner'].with_context(studio=True).get_view(view.id)['arch']
+            tree = etree.fromstring(arch)
+            self.assertTrue(tree.xpath('//t'))
+            modifiers = json.loads(tree.xpath('//t')[0].get('modifiers', '{}'))
+            for modifier, value in expected_modifiers.items():
+                self.assertEqual(modifiers.get(modifier), value)
+
+    def test_open_users_form_with_studio(self):
+        """Tests the res.users form view can be loaded with Studio.
+
+        The res.users form is an edge case, because it uses fake fields in its view, which do not exist in the model.
+        Make sure the Studio overrides regarding the loading of the views, including the postprocessing,
+        are able to handle these non-existing fields.
+        """
+        arch = self.env['res.users'].with_context(studio=True).get_view(self.env.ref('base.view_users_form').id)['arch']
+        self.assertTrue(arch)

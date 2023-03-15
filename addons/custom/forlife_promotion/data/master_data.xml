@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--Month-->
+    <data noupdate="1">
+        <record id="month1" model="month.data">
+            <field name="name">January</field>
+            <field name="code">1</field>
+        </record>
+        <record id="month2" model="month.data">
+            <field name="name">February</field>
+            <field name="code">2</field>
+        </record>
+        <record id="month3" model="month.data">
+            <field name="name">March</field>
+            <field name="code">3</field>
+        </record>
+        <record id="month4" model="month.data">
+            <field name="name">April</field>
+            <field name="code">4</field>
+        </record>
+        <record id="month5" model="month.data">
+            <field name="name">May</field>
+            <field name="code">5</field>
+        </record>
+        <record id="month6" model="month.data">
+            <field name="name">June</field>
+            <field name="code">6</field>
+        </record>
+        <record id="month7" model="month.data">
+            <field name="name">July</field>
+            <field name="code">7</field>
+        </record>
+        <record id="month8" model="month.data">
+            <field name="name">August</field>
+            <field name="code">8</field>
+        </record>
+        <record id="month9" model="month.data">
+            <field name="name">September</field>
+            <field name="code">9</field>
+        </record>
+        <record id="month10" model="month.data">
+            <field name="name">October</field>
+            <field name="code">10</field>
+        </record>
+        <record id="month11" model="month.data">
+            <field name="name">November</field>
+            <field name="code">11</field>
+        </record>
+        <record id="month12" model="month.data">
+            <field name="name">December</field>
+            <field name="code">12</field>
+        </record>
+    </data>
+    <!--DayOfMonth-->
+    <data noupdate="1">
+        <record id="dayofmonth1" model="dayofmonth.data">
+            <field name="name">1</field>
+            <field name="code">1</field>
+        </record>
+        <record id="dayofmonth2" model="dayofmonth.data">
+            <field name="name">2</field>
+            <field name="code">2</field>
+        </record>
+        <record id="dayofmonth3" model="dayofmonth.data">
+            <field name="name">3</field>
+            <field name="code">3</field>
+        </record>
+        <record id="dayofmonth4" model="dayofmonth.data">
+            <field name="name">4</field>
+            <field name="code">4</field>
+        </record>
+        <record id="dayofmonth5" model="dayofmonth.data">
+            <field name="name">5</field>
+            <field name="code">5</field>
+        </record>
+        <record id="dayofmonth6" model="dayofmonth.data">
+            <field name="name">6</field>
+            <field name="code">6</field>
+        </record>
+        <record id="dayofmonth7" model="dayofmonth.data">
+            <field name="name">7</field>
+            <field name="code">7</field>
+        </record>
+        <record id="dayofmonth8" model="dayofmonth.data">
+            <field name="name">8</field>
+            <field name="code">8</field>
+        </record>
+        <record id="dayofmonth9" model="dayofmonth.data">
+            <field name="name">9</field>
+            <field name="code">9</field>
+        </record>
+        <record id="dayofmonth10" model="dayofmonth.data">
+            <field name="name">10</field>
+            <field name="code">10</field>
+        </record>
+        <record id="dayofmonth11" model="dayofmonth.data">
+            <field name="name">11</field>
+            <field name="code">11</field>
+        </record>
+        <record id="dayofmonth12" model="dayofmonth.data">
+            <field name="name">12</field>
+            <field name="code">12</field>
+        </record>
+        <record id="dayofmonth13" model="dayofmonth.data">
+            <field name="name">13</field>
+            <field name="code">13</field>
+        </record>
+        <record id="dayofmonth14" model="dayofmonth.data">
+            <field name="name">14</field>
+            <field name="code">14</field>
+        </record>
+        <record id="dayofmonth15" model="dayofmonth.data">
+            <field name="name">15</field>
+            <field name="code">15</field>
+        </record>
+        <record id="dayofmonth16" model="dayofmonth.data">
+            <field name="name">16</field>
+            <field name="code">16</field>
+        </record>
+        <record id="dayofmonth17" model="dayofmonth.data">
+            <field name="name">17</field>
+            <field name="code">17</field>
+        </record>
+        <record id="dayofmonth18" model="dayofmonth.data">
+            <field name="name">18</field>
+            <field name="code">18</field>
+        </record>
+        <record id="dayofmonth19" model="dayofmonth.data">
+            <field name="name">19</field>
+            <field name="code">19</field>
+        </record>
+        <record id="dayofmonth20" model="dayofmonth.data">
+            <field name="name">20</field>
+            <field name="code">20</field>
+        </record>
+        <record id="dayofmonth21" model="dayofmonth.data">
+            <field name="name">21</field>
+            <field name="code">21</field>
+        </record>
+        <record id="dayofmonth22" model="dayofmonth.data">
+            <field name="name">22</field>
+            <field name="code">22</field>
+        </record>
+        <record id="dayofmonth23" model="dayofmonth.data">
+            <field name="name">23</field>
+            <field name="code">23</field>
+        </record>
+        <record id="dayofmonth24" model="dayofmonth.data">
+            <field name="name">24</field>
+            <field name="code">24</field>
+        </record>
+        <record id="dayofmonth25" model="dayofmonth.data">
+            <field name="name">25</field>
+            <field name="code">25</field>
+        </record>
+        <record id="dayofmonth26" model="dayofmonth.data">
+            <field name="name">26</field>
+            <field name="code">26</field>
+        </record>
+        <record id="dayofmonth27" model="dayofmonth.data">
+            <field name="name">27</field>
+            <field name="code">27</field>
+        </record>
+        <record id="dayofmonth28" model="dayofmonth.data">
+            <field name="name">28</field>
+            <field name="code">28</field>
+        </record>
+        <record id="dayofmonth29" model="dayofmonth.data">
+            <field name="name">29</field>
+            <field name="code">29</field>
+        </record>
+        <record id="dayofmonth30" model="dayofmonth.data">
+            <field name="name">30</field>
+            <field name="code">30</field>
+        </record>
+        <record id="dayofmonth31" model="dayofmonth.data">
+            <field name="name">31</field>
+            <field name="code">31</field>
+        </record>
+    </data>
+    <!--DayOfWeek-->
+    <data noupdate="1">
+        <record id="dayofweek0" model="dayofweek.data">
+            <field name="name">Monday</field>
+            <field name="code">1</field>
+        </record>
+        <record id="dayofweek1" model="dayofweek.data">
+            <field name="name">Tuesday</field>
+            <field name="code">2</field>
+        </record>
+        <record id="dayofweek2" model="dayofweek.data">
+            <field name="name">Wednesday</field>
+            <field name="code">3</field>
+        </record>
+        <record id="dayofweek3" model="dayofweek.data">
+            <field name="name">Thursday</field>
+            <field name="code">4</field>
+        </record>
+        <record id="dayofweek4" model="dayofweek.data">
+            <field name="name">Friday</field>
+            <field name="code">5</field>
+        </record>
+        <record id="dayofweek5" model="dayofweek.data">
+            <field name="name">Saturday</field>
+            <field name="code">6</field>
+        </record>
+        <record id="dayofweek6" model="dayofweek.data">
+            <field name="name">Sunday</field>
+            <field name="code">0</field>
+        </record>
+    </data>
+    <!--Hour-->
+    <data noupdate="1">
+        <record id="hour0" model="hour.data">
+            <field name="name">0h-1h</field>
+            <field name="code">0</field>
+        </record>
+        <record id="hour1" model="hour.data">
+            <field name="name">1h-2h</field>
+            <field name="code">1</field>
+        </record>
+        <record id="hour2" model="hour.data">
+            <field name="name">2h-3h</field>
+            <field name="code">2</field>
+        </record>
+        <record id="hour3" model="hour.data">
+            <field name="name">3h-4h</field>
+            <field name="code">3</field>
+        </record>
+        <record id="hour4" model="hour.data">
+            <field name="name">4h-5h</field>
+            <field name="code">4</field>
+        </record>
+        <record id="hour5" model="hour.data">
+            <field name="name">5h-6h</field>
+            <field name="code">5</field>
+        </record>
+        <record id="hour6" model="hour.data">
+            <field name="name">6h-7h</field>
+            <field name="code">6</field>
+        </record>
+        <record id="hour7" model="hour.data">
+            <field name="name">7h-8h</field>
+            <field name="code">7</field>
+        </record>
+        <record id="hour8" model="hour.data">
+            <field name="name">8h-9h</field>
+            <field name="code">8</field>
+        </record>
+        <record id="hour9" model="hour.data">
+            <field name="name">9h-10h</field>
+            <field name="code">9</field>
+        </record>
+        <record id="hour10" model="hour.data">
+            <field name="name">10h-11h</field>
+            <field name="code">10</field>
+        </record>
+        <record id="hour11" model="hour.data">
+            <field name="name">11h-12h</field>
+            <field name="code">11</field>
+        </record>
+        <record id="hour12" model="hour.data">
+            <field name="name">12h-13h</field>
+            <field name="code">12</field>
+        </record>
+        <record id="hour13" model="hour.data">
+            <field name="name">13h-14h</field>
+            <field name="code">13</field>
+        </record>
+        <record id="hour14" model="hour.data">
+            <field name="name">14h-15h</field>
+            <field name="code">14</field>
+        </record>
+        <record id="hour15" model="hour.data">
+            <field name="name">15h-16h</field>
+            <field name="code">15</field>
+        </record>
+        <record id="hour16" model="hour.data">
+            <field name="name">16h-17h</field>
+            <field name="code">16</field>
+        </record>
+        <record id="hour17" model="hour.data">
+            <field name="name">17h-18h</field>
+            <field name="code">17</field>
+        </record>
+        <record id="hour18" model="hour.data">
+            <field name="name">18h-19h</field>
+            <field name="code">18</field>
+        </record>
+        <record id="hour19" model="hour.data">
+            <field name="name">19h-20h</field>
+            <field name="code">19</field>
+        </record>
+        <record id="hour20" model="hour.data">
+            <field name="name">20h-21h</field>
+            <field name="code">20</field>
+        </record>
+        <record id="hour21" model="hour.data">
+            <field name="name">21h-22h</field>
+            <field name="code">21</field>
+        </record>
+        <record id="hour22" model="hour.data">
+            <field name="name">22h-23h</field>
+            <field name="code">22</field>
+        </record>
+        <record id="hour23" model="hour.data">
+            <field name="name">23h-24h</field>
+            <field name="code">23</field>
+        </record>
+    </data>
+</odoo>

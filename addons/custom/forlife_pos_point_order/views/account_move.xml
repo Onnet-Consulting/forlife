@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="account_move_forlife_inherit">
+            <field name="name">account.move.forlife.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet//div[@name='button_box']" position="inside">
+                    <button name="action_related_pos"
+                                    class="oe_stat_button"
+                                    icon="fa-bars"
+                                    type="object"
+                                    string="Pos order">
+                            </button>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_move_filter_inherit" model="ir.ui.view">
+            <field name="name">account.move.select.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_move_filter"/>
+            <field name="arch" type="xml">
+                <filter name="sales" position="before">
+                    <filter string="Reset Point" name="reset_point" domain="[('point_order_type', '=', 'reset_order')]"/>
+                    <filter string="Compensate Point" name="compensate_point" domain="[('point_order_type', '=', 'point compensate')]"/>
+                    <separator/>
+                </filter>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -129,10 +129,10 @@ patch(Tablet.prototype, 'mrp_workorder_hr', {
         return true;
     },
 
-    _onBarcodeScanned(barcode) {
-        const employee = this.data.employee_list.find(e => e.barcode === barcode);
+    async _onBarcodeScanned(barcode) {
+        const employee = await this.orm.call("mrp.workcenter", "get_employee_barcode", [this.workcenterId, barcode])
         if (employee) {
-            this.startEmployee(employee.id);
+            this.startEmployee(employee);
         } else {
             return this._super(barcode);
         }

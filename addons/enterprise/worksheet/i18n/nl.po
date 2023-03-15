@@ -90,7 +90,7 @@ msgstr "Weergavenaam"
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__res_model
 msgid "Host Model"
-msgstr "Host model"
+msgstr "Hostmodel"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__id
@@ -110,12 +110,12 @@ msgstr "Laatst bijgewerkt door"
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__write_date
 msgid "Last Updated on"
-msgstr "Laatst geupdate op"
+msgstr "Laatst bijgewerkt op"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__model_id
 msgid "Model"
-msgstr "Type"
+msgstr "Model"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__name
@@ -161,7 +161,7 @@ msgstr "Er is nog steeds %s gekoppeld aan dit sjabloon. Ontkoppel ze eerst."
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__worksheet_count
 msgid "Worksheet Count"
-msgstr "Werkbon aantal"
+msgstr "Aantal werkbonnen"
 
 #. module: worksheet
 #: model:ir.model,name:worksheet.model_worksheet_template

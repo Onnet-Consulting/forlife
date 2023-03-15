@@ -32,7 +32,25 @@ const KnowledgeArticleLinkModal = Dialog.extend({
     start: function () {
         return this._super.apply(this, arguments).then(() => {
             this.initSelect2();
+            // see "focus" method of select2 lib for details about setTimeout
+            setTimeout(() => {
+                this.getInput().select2('open');
+                $('input.select2-input').focus();
+            }, 0);
         });
+    },
+
+    /**
+     * Dirty hack to de-activate the "focustrap" from Bootstrap.
+     * Indeed, it prevents typing into our "select2" element.
+     * TODO knowledge: remove this and refactor in master to avoid using legacy modals.
+     *
+     */
+    on_attach_callback: function () {
+        const bootstrapModal = Modal.getInstance(this.$modal[0]);
+        if (bootstrapModal) {
+            bootstrapModal._focustrap.deactivate();
+        }
     },
 
     /**

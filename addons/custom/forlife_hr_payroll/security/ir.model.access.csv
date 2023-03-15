@@ -1,0 +1,42 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+payroll_employee_salary_accounting_config,salary.accounting.config payroll_employee,model_salary_accounting_config,payroll_employee,1,0,0,0
+payroll_leader_salary_accounting_config,salary.accounting.config payroll_leader,model_salary_accounting_config,payroll_leader,1,0,0,0
+accounting_salary_accounting_config,salary.accounting.config accounting,model_salary_accounting_config,account.group_account_manager,1,0,0,0
+admin_salary_accounting_config,salary.accounting.config admin,model_salary_accounting_config,base.group_system,1,1,1,1
+payroll_employee_salary_arrears,salary.arrears payroll_employee,model_salary_arrears,payroll_employee,1,1,1,1
+payroll_leader_salary_arrears,salary.arrears payroll_leader,model_salary_arrears,payroll_leader,1,1,1,1
+accounting_salary_arrears,salary.arrears accounting,model_salary_arrears,account.group_account_manager,1,0,0,0
+payroll_employee_salary_backlog,salary.backlog payroll_employee,model_salary_backlog,payroll_employee,1,1,1,1
+payroll_leader_salary_backlog,salary.backlog payroll_leader,model_salary_backlog,payroll_leader,1,1,1,1
+accounting_salary_backlog,salary.backlog accounting,model_salary_backlog,account.group_account_manager,1,0,0,0
+payroll_employee_salary_entry,salary.entry payroll_employee,model_salary_entry,payroll_employee,1,0,0,0
+payroll_leader_salary_entry,salary.entry payroll_leader,model_salary_entry,payroll_leader,1,0,0,0
+accounting_salary_entry,salary.entry accounting,model_salary_entry,account.group_account_manager,1,0,0,0
+base_group_system_salary_entry,salary.entry base.group_user,model_salary_entry,base.group_system,1,1,1,1
+payroll_employee_salary_record,salary.record payroll_employee,model_salary_record,payroll_employee,1,0,1,0
+payroll_leader_salary_record,salary.record payroll_leader,model_salary_record,payroll_leader,1,0,0,0
+accounting_salary_record,salary.record accounting,model_salary_record,account.group_account_manager,1,0,0,0
+payroll_employee_salary_record_main,salary.record.main payroll_employee,model_salary_record_main,payroll_employee,1,1,1,1
+payroll_leader_salary_record_main,salary.record.main payroll_leader,model_salary_record_main,payroll_leader,1,1,1,1
+accounting_salary_record_main,salary.record.main accounting,model_salary_record_main,account.group_account_manager,1,0,0,0
+payroll_employee_salary_record_purpose,salary.record.purpose payroll_employee,model_salary_record_purpose,payroll_employee,1,0,0,0
+payroll_leader_salary_record_purpose,salary.record.purpose payroll_leader,model_salary_record_purpose,payroll_leader,1,0,0,0
+accounting_salary_record_purpose,salary.record.purpose accounting,model_salary_record_purpose,account.group_account_manager,1,0,0,0
+base_group_system_salary_record_purpose,salary.record.purpose base.group_system,model_salary_record_purpose,base.group_system,1,1,1,1
+payroll_employee_salary_record_type,salary.record.type payroll_employee,model_salary_record_type,payroll_employee,1,0,0,0
+payroll_leader_salary_record_type,salary.record.type payroll_leader,model_salary_record_type,payroll_leader,1,0,0,0
+accounting_salary_record_type,salary.record.type accounting,model_salary_record_type,account.group_account_manager,1,0,0,0
+base_group_system_salary_record_type,salary.record.type base.group_syste,model_salary_record_type,base.group_system,1,1,1,1
+payroll_employee_salary_supplementary,salary.supplementary payroll_employee,model_salary_supplementary,payroll_employee,1,1,1,1
+payroll_leader_salary_supplementary,salary.supplementary payroll_leader,model_salary_supplementary,payroll_leader,1,1,1,1
+accounting_salary_supplementary,salary.supplementary accounting,model_salary_supplementary,account.group_account_manager,1,0,0,0
+payroll_employee_salary_total_income,salary.total.income payroll_employee,model_salary_total_income,payroll_employee,1,1,1,1
+payroll_leader_salary_total_income,salary.total.income payroll_leader,model_salary_total_income,payroll_leader,1,1,1,1
+accounting_salary_total_income,salary.total.income accounting,model_salary_total_income,account.group_account_manager,1,0,0,0
+payroll_employee_salary_accounting,salary.accounting payroll_employee,model_salary_accounting,payroll_employee,1,1,1,1
+payroll_leader_salary_accounting,salary.accounting payroll_leader,model_salary_accounting,payroll_leader,1,1,1,1
+accounting_salary_accounting,salary.accounting accounting,model_salary_accounting,account.group_account_manager,1,1,0,0
+payroll_save_change_log,save.change.log,model_save_change_log,base.group_user,1,0,0,0
+base_group_system_payroll_save_change_log,save.change.log,model_save_change_log,base.group_system,1,1,1,1
+error_log_wizard,error.log.wizard,model_error_log_wizard,,1,1,1,0
+payroll_employee_import_salary_record,import.salary.record,model_import_salary_record,payroll_employee,1,1,1,1

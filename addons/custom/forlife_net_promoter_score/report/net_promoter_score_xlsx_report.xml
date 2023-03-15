@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="net_promoter_score_xlsx" model="ir.actions.report">
+        <field name="name">NPS Report XLSX</field>
+        <field name="model">net.promoter.score.report</field>
+        <field name="binding_model_id" ref="model_net_promoter_score_report"/>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">forlife_net_promoter_score.net_promoter_score_xlsx</field>
+        <field name="report_file">forlife_net_promoter_score.net_promoter_score_xlsx</field>
+        <field name="print_report_name">'NPS Report'</field>
+    </record>
+</odoo>

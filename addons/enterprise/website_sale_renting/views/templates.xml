@@ -148,13 +148,13 @@
 
     <template id="suggested_products_list" inherit_id="website_sale.suggested_products_list">
         <xpath expr="//table[@id='suggested_products']//td[hasclass('td-price')]/*[1]" position="before">
-            <span t-if="product.rent_ok and combination_info['rental_duration']" class="h6">from</span>
+            <span t-if="combination_info['is_rental'] and combination_info['rental_duration']" class="h6">from</span>
         </xpath>
         <xpath expr="//table[@id='suggested_products']//td[hasclass('td-price')]/del" position="attributes">
             <attribute name="t-if">not product.rent_ok</attribute>
         </xpath>
         <xpath expr="//table[@id='suggested_products']//td[hasclass('td-price')]/span" position="after">
-            <span t-if="product.rent_ok and combination_info['rental_duration']" class="h6">
+            <span t-if="combination_info['is_rental'] and combination_info['rental_duration']" class="h6">
                 <span>per</span>
                 <span t-if="combination_info['rental_duration'] > 1" t-esc="combination_info['rental_duration']"/>
                 <span t-esc="combination_info['rental_unit']" style="text-transform:lowercase;"/>

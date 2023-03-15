@@ -4,7 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Sarah Park, 2022
+# Sarah Park, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Sarah Park, 2022\n"
+"Last-Translator: Sarah Park, 2023\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -173,7 +173,7 @@ msgstr "업무 유형 아이콘"
 #: code:addons/account_sepa_direct_debit/models/account_batch_payment.py:0
 #, python-format
 msgid "All the payments in the batch must have the same SDD scheme."
-msgstr ""
+msgstr "일괄 지불 시 모든 항목의 SDD 체계는 동일해야 합니다."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__message_attachment_count
@@ -210,7 +210,7 @@ msgstr "이 명령 양식에 서명함으로써 귀하는 (A)를 승인합니다
 #: model:ir.model.fields.selection,name:account_sepa_direct_debit.selection__account_batch_payment__sdd_scheme__core
 #: model:ir.model.fields.selection,name:account_sepa_direct_debit.selection__sdd_mandate__sdd_scheme__core
 msgid "CORE"
-msgstr ""
+msgstr "CORE"
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.account_sepa_direct_debit_mandate_form
@@ -231,7 +231,7 @@ msgstr "마감됨"
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.account_sepa_direct_debit_mandate_form
 msgid "Collections"
-msgstr ""
+msgstr "수금"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model,name:account_sepa_direct_debit.model_res_company
@@ -271,7 +271,7 @@ msgstr "새로운 자동 이체 고객 위임장 만들기"
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_account_payment_form
 msgid "Create it."
-msgstr ""
+msgstr "생성합니다."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__create_uid
@@ -414,7 +414,7 @@ msgstr "회사의 채무자를 식별하는 무료 참조."
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_account_payment_form
 msgid "Good news! A valid Sepa Mandate is available."
-msgstr ""
+msgstr "좋은 소식입니다! Sepa Mandate을 사용할 수 있게 되었습니다."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__has_message
@@ -488,7 +488,7 @@ msgstr "지불 완료된 청구서"
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.view_account_invoice_filter
 msgid "Invoices matching a valid SEPA Direct Debit Mandate"
-msgstr ""
+msgstr "승인된 SEPA 자동이체 위임장에 해당하는 청구서"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__paid_invoice_ids
@@ -582,7 +582,7 @@ msgstr "내 활동 마감일"
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "다음 활동 캘린더 행사"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__activity_date_deadline
@@ -602,7 +602,7 @@ msgstr "다음 업무 유형"
 #. module: account_sepa_direct_debit
 #: model_terms:ir.actions.act_window,help:account_sepa_direct_debit.action_sdd_payments_to_collect
 msgid "No direct debit payment to collect"
-msgstr "자동 이체로 결제 할 수 없음"
+msgstr "결제할 자동이체 내용 없음"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__message_needaction_counter
@@ -617,8 +617,8 @@ msgid ""
 "mandate and still needs their XML file to be generated and sent to the bank "
 "to debit the customer's account."
 msgstr ""
-"이 위임장에 대해 징수 할 자동 이체 결제 건수, 즉 이 위임장으로 인해 생성 및 전기된 지불 건수는 고객의 계정에서 자동 이체되도록 "
-"XML 파일을 생성하여 은행으로 보내야 합니다."
+"이 권한에 의해 결제될 직불 결제 건의 수로서, 다시 말해 해당 권한 덕분에 생성되어 전기된 결제건의 수를 의미하나, 고객의 계정에서 "
+"직접 이체될 수 있도록 하기 위해서는 XML 파일을 생성하여 은행으로 전송하여야 합니다."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__message_has_error_counter
@@ -628,7 +628,7 @@ msgstr "오류 횟수"
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__paid_invoices_nber
 msgid "Number of invoices paid with this mandate."
-msgstr ""
+msgstr "이 권한으로 결제된 청구서 수"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__message_needaction_counter
@@ -649,6 +649,11 @@ msgid ""
 "                    then only have to generate a SEPA Direct Debit (SDD) XML file containing this operation\n"
 "                    and send it to your bank to effectively get paid."
 msgstr ""
+"Odoo에서 청구서가 생성되면\n"
+"                    위임 기능을 활성화한 고객의 경우 청구서 발행일에\n"
+"                    유효성 승인을 거쳐 자동으로 대금결제가 진행되며, 사용자는\n"
+"                    해당 작업을 포함한 SEPA Direct Debit (SDD) XML 파일을 작업에 추가하여 은행으로 전송하기만 하면\n"
+"                    대금 결재를 받을 수 있게 됩니다."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_account_bank_statement_line__sdd_mandate_id
@@ -682,7 +687,7 @@ msgstr "취소되면 임시 상태의 위임만 데이터베이스에서 삭제�
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.sdd_account_payment_form
 msgid "Oops! No valid SEPA mandate for this customer."
-msgstr ""
+msgstr "오류 발생! 해당 고객에 대한 SEPA 위임 내용이 없습니다."
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.account_sdd_res_partner_view
@@ -785,17 +790,17 @@ msgstr "폐지된 SDD 위임장"
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.view_account_payment_search
 msgid "SDD B2B"
-msgstr ""
+msgstr "SDD B2B"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_account_batch_payment__sdd_batch_booking
 msgid "SDD Batch Booking"
-msgstr ""
+msgstr "SDD 일괄 예약"
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.view_account_payment_search
 msgid "SDD CORE"
-msgstr ""
+msgstr "SDD CORE"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model,name:account_sepa_direct_debit.model_sdd_mandate
@@ -810,7 +815,7 @@ msgstr "SDD 위임장"
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_account_payment__sdd_mandate_scheme
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__sdd_scheme
 msgid "SDD Scheme"
-msgstr ""
+msgstr "SDD 기능"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_res_partner__sdd_count
@@ -827,7 +832,7 @@ msgstr "SDD 채권자 식별자"
 #: code:addons/account_sepa_direct_debit/models/account_batch_payment.py:0
 #, python-format
 msgid "SDD scheme is set on the customer mandate."
-msgstr ""
+msgstr "SDD 기능은 고객의 위임 내용에 따라 설정됩니다."
 
 #. module: account_sepa_direct_debit
 #: model:account.payment.method,name:account_sepa_direct_debit.payment_method_sdd
@@ -863,7 +868,7 @@ msgstr "SMS 전송 에러"
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_account_move__sdd_has_usable_mandate
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_account_payment__sdd_has_usable_mandate
 msgid "Sdd Has Usable Mandate"
-msgstr ""
+msgstr "Sdd에 확인 가능한 위임 내용이 있습니다"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_account_bank_statement_line__sdd_mandate_id
@@ -885,7 +890,7 @@ msgstr "서명"
 msgid ""
 "Some draft payments could not be posted because of the lack of any active "
 "mandate."
-msgstr ""
+msgstr "활성화된 위임 권한이 없기 때문에 지불 항목 초안을 게시할 수 없습니다."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__start_date
@@ -913,7 +918,7 @@ msgstr ""
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,field_description:account_sepa_direct_debit.field_sdd_mandate__suitable_journal_ids
 msgid "Suitable Journal"
-msgstr ""
+msgstr "적합한 분개장"
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_account_bank_statement_line__sdd_mandate_scheme
@@ -926,6 +931,9 @@ msgid ""
 "offered exclusively to business payers.\n"
 "Some banks/businesses might not accept B2B SDD."
 msgstr ""
+"B2B 기능은 선택 사항이며,\n"
+"대금 납부자가 사업자인 경우에만 해당됩니다.\n"
+"일부 은행이나 기업에서는 B2B SDD를 허용하지 않을 수 있습니다."
 
 #. module: account_sepa_direct_debit
 #: code:addons/account_sepa_direct_debit/models/account_payment.py:0
@@ -1008,7 +1016,7 @@ msgstr ""
 msgid ""
 "To solve that, you should create a mandate for each of the involved "
 "customers, valid at the moment of the payment date."
-msgstr ""
+msgstr "이를 해결하려면, 지불일 현재 유효한 위임장을 해당되는 고객별로 생성해야 합니다."
 
 #. module: account_sepa_direct_debit
 #: model:ir.model.fields,help:account_sepa_direct_debit.field_sdd_mandate__one_off
@@ -1058,6 +1066,8 @@ msgid ""
 "at date %(date)s for partner %(partner)r. Please create one before encoding "
 "a SEPA Direct Debit payment."
 msgstr ""
+"%(date)s 현재 협력사 %에 대해 사용 가능한 위임장이 존재하지 않기 때문에 지불 항목 %을 생성할 수 없습니다. SEPA "
+"자동이체결제 (Direct Debit payment) 인코딩 전에 생성하시기 바랍니다."
 
 #. module: account_sepa_direct_debit
 #: model_terms:ir.ui.view,arch_db:account_sepa_direct_debit.account_sepa_direct_debit_mandate_form

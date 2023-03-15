@@ -38,7 +38,7 @@ msgstr "Linija porudžbenice"
 #. module: industry_fsm_sale_report
 #: model:ir.model,name:industry_fsm_sale_report.model_project_task
 msgid "Task"
-msgstr ""
+msgstr "Zadatak"
 
 #. module: industry_fsm_sale_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_sale_report.worksheet_custom_page

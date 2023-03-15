@@ -19,6 +19,10 @@ class MoveArticleDialog extends Component {
 
     _onMoveArticleClick() {
         const $input = $(this.input.el);
+        if (!$input.select2('data')){
+            // return if no data selected in select2
+            return;
+        }
         const selected = $input.select2('data').id;
         const params = { article_id: this.props.articleId };
         if (typeof selected === 'number') {

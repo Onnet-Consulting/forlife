@@ -50,7 +50,7 @@ class AccountMoveReversal(models.TransientModel):
             domain.append(('partner_id', 'child_of', self.helpdesk_ticket_id.partner_id.commercial_partner_id.id))
         if self.helpdesk_sale_order_id:
             domain.append(('id', 'in', self.helpdesk_sale_order_id.invoice_ids.ids))
-        if self.helpdesk_sale_order_id.invoice_ids.reversal_move_id.payment_state in ['paid', 'in_payment']:
+        if all(reversal_move.payment_state in ['paid', 'in_payment'] for reversal_move in self.helpdesk_sale_order_id.invoice_ids.reversal_move_id):
             domain.append(('reversal_move_id', '=', False))
         return domain
 

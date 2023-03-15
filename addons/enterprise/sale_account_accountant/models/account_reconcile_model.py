@@ -21,11 +21,7 @@ class AccountReconcileModel(models.Model):
         for model in ('sale.order', 'sale.order.line', 'account.move', 'account.move.line'):
             self.env[model].flush_model()
 
-        st_line_text_values = st_line._get_st_line_strings_for_matching(allowed_fields=(
-            'payment_ref' if self.match_text_location_label else None,
-            'narration' if self.match_text_location_note else None,
-            'ref' if self.match_text_location_reference else None,
-        ))
+        st_line_text_values = self._get_st_line_text_values_for_matching(st_line)
         if not st_line_text_values:
             return
 

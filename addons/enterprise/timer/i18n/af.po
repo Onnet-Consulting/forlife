@@ -148,7 +148,7 @@ msgstr ""
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer__user_id
 msgid "User"
-msgstr ""
+msgstr "Gebruiker"
 
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_mixin__user_timer_id

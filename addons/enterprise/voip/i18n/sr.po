@@ -636,7 +636,7 @@ msgstr ""
 #: code:addons/voip/static/src/components/activity/activity.xml:0
 #, python-format
 msgid "Mobile:"
-msgstr ""
+msgstr "Mobilni:"
 
 #. module: voip
 #. openerp-web
@@ -732,7 +732,7 @@ msgstr ""
 #: code:addons/voip/static/src/components/activity/activity.xml:0
 #, python-format
 msgid "Phone:"
-msgstr ""
+msgstr "Telefon:"
 
 #. module: voip
 #. openerp-web
@@ -1077,7 +1077,7 @@ msgstr "Korisnik"
 #. module: voip
 #: model:ir.model,name:voip.model_res_users_settings
 msgid "User Settings"
-msgstr ""
+msgstr "Podešavanja korisnika"
 
 #. module: voip
 #: model:ir.model,name:voip.model_voip_phonecall

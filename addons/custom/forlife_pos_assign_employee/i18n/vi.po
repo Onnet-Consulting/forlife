@@ -1,0 +1,370 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_pos_assign_employee
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-07 02:08+0000\n"
+"PO-Revision-Date: 2023-02-07 02:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_pos_assign_employee
+#: model_terms:ir.ui.view,arch_db:forlife_pos_assign_employee.message_body
+msgid "-&gt;"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model_terms:ir.ui.view,arch_db:forlife_pos_assign_employee.message_head
+msgid "<strong>Employee on order lines has been updated: </strong>"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__access_warning
+msgid "Access warning"
+msgstr "Cảnh báo truy cập"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#. odoo-javascript
+#: code:addons/forlife_pos_assign_employee/static/src/js/Screens/ProductScreen/ControlButtons/AssignEmployeeButton.js:0
+#, python-format
+msgid "Assign All"
+msgstr "Gán tất cả"
+
+#. module: forlife_pos_assign_employee
+#. odoo-javascript
+#: code:addons/forlife_pos_assign_employee/static/src/js/Screens/ProductScreen/ControlButtons/AssignEmployeeButton.js:0
+#: model_terms:ir.ui.view,arch_db:forlife_pos_assign_employee.pos_order_form_inherit
+#, python-format
+msgid "Assign Employee"
+msgstr "Gán nhân viên"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model,name:forlife_pos_assign_employee.model_assign_employee_order_line_wizard
+msgid "Assign Employee for Order Line Wizard"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#. odoo-javascript
+#. odoo-python
+#: code:addons/forlife_pos_assign_employee/models/pos_order.py:0
+#: code:addons/forlife_pos_assign_employee/static/src/js/Screens/ProductScreen/ControlButtons/AssignEmployeeButton.js:0
+#: model_terms:ir.ui.view,arch_db:forlife_pos_assign_employee.assign_employee_form_wizard
+#, python-format
+msgid "Assign employee"
+msgstr "Gán"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#. odoo-javascript
+#: code:addons/forlife_pos_assign_employee/static/src/js/Popups/AssignEmployeePopup.js:0
+#: code:addons/forlife_pos_assign_employee/static/src/js/Screens/ProductScreen/ControlButtons/AssignEmployeeButton.js:0
+#, python-format
+msgid "Cancel"
+msgstr "Thoát"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_assign_employee_order_line_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_assign_employee_order_line_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__access_url
+msgid "Customer Portal URL"
+msgstr "Đường dẫn cổng thông tin khách hàng"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_assign_employee_order_line_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#. odoo-javascript
+#: code:addons/forlife_pos_assign_employee/static/src/js/Popups/AssignEmployeePopup.js:0
+#: code:addons/forlife_pos_assign_employee/static/src/xml/Screens/ProductScreen/ControlButtons/AssignEmployeeButton.xml:0
+#: code:addons/forlife_pos_assign_employee/static/src/xml/Screens/ProductScreen/ControlButtons/AssignEmployeeButton.xml:0
+#: code:addons/forlife_pos_assign_employee/static/src/xml/Screens/ProductScreen/ControlButtons/AssignEmployeeButton.xml:0
+#: code:addons/forlife_pos_assign_employee/static/src/xml/Screens/ProductScreen/Orderline.xml:0
+#: code:addons/forlife_pos_assign_employee/static/src/xml/Screens/ProductScreen/Orderline.xml:0
+#: code:addons/forlife_pos_assign_employee/static/src/xml/Screens/TicketScreen/OrderlineDetails.xml:0
+#: code:addons/forlife_pos_assign_employee/static/src/xml/Screens/TicketScreen/OrderlineDetails.xml:0
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order_line__employee_id
+#, python-format
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: forlife_pos_assign_employee
+#: model_terms:ir.ui.view,arch_db:forlife_pos_assign_employee.message_body
+msgid "Employee :"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_assign_employee_order_line_wizard__assignable_employees
+msgid "Employees"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#. odoo-javascript
+#: code:addons/forlife_pos_assign_employee/static/src/js/Screens/ProductScreen/ProductScreen.js:0
+#, python-format
+msgid "Empty Order"
+msgstr "Đơn hàng trống"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_assign_employee_order_line_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__message_has_error
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_assign_employee_order_line_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_assign_employee_order_line_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_assign_employee_order_line_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#. odoo-javascript
+#: code:addons/forlife_pos_assign_employee/static/src/js/Screens/ProductScreen/ProductScreen.js:0
+#, python-format
+msgid "Missing employee"
+msgstr "Thiếu thông tin nhân viên"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_assign_employee_order_line_wizard__order_id
+msgid "Order"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_assign_employee_order_line_wizard__order_lines
+msgid "Order Lines"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#. odoo-javascript
+#: code:addons/forlife_pos_assign_employee/static/src/js/Screens/ProductScreen/ProductScreen.js:0
+#, python-format
+msgid "Please assign employee for all order lines"
+msgstr "Vui lòng điền đầy đủ nhân viên vào sản phẩm"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model,name:forlife_pos_assign_employee.model_pos_order_line
+msgid "Point of Sale Order Lines"
+msgstr "Chi tiết đơn hàng bán lẻ"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model,name:forlife_pos_assign_employee.model_pos_order
+msgid "Point of Sale Orders"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model,name:forlife_pos_assign_employee.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Phiên bán hàng"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__access_url
+msgid "Portal Access URL"
+msgstr "URL truy cập cổng thông tin"
+
+#. module: forlife_pos_assign_employee
+#: model_terms:ir.ui.view,arch_db:forlife_pos_assign_employee.message_body
+msgid "Product:"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__access_token
+msgid "Security Token"
+msgstr "Mã bảo mật"
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#. odoo-javascript
+#: code:addons/forlife_pos_assign_employee/static/src/js/Screens/ProductScreen/ProductScreen.js:0
+#, python-format
+msgid ""
+"There must be at least one product in your order before it can be process "
+"payment."
+msgstr ""
+"Bạn phải thêm tối thiểu một sản phẩm vào đơn hàng để thực hiện thanh toán."
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,field_description:forlife_pos_assign_employee.field_pos_order__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: forlife_pos_assign_employee
+#: model:ir.model.fields,help:forlife_pos_assign_employee.field_pos_order__website_message_ids
+msgid "Website communication history"
+msgstr ""

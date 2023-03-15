@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from psycopg2 import IntegrityError, OperationalError
+
 from odoo import api, fields, models, _, _lt, Command
 from odoo.addons.iap.tools import iap_tools
 from odoo.exceptions import AccessError, UserError
@@ -8,6 +10,7 @@ from odoo.tools.misc import clean_context
 import logging
 import re
 import json
+from dateutil.relativedelta import relativedelta
 
 _logger = logging.getLogger(__name__)
 
@@ -221,8 +224,12 @@ class AccountMove(models.Model):
     @api.model
     def _cron_parse(self):
         for rec in self.search([('extract_state', '=', 'waiting_upload')]):
-            rec.retry_ocr()
-            rec.env.cr.commit()
+            try:
+                with self.env.cr.savepoint():
+                    rec.retry_ocr()
+                self.env.cr.commit()
+            except (IntegrityError, OperationalError) as e:
+                _logger.error("Couldn't upload %s with id %d: %s", rec._name, rec.id, str(e))
 
     def get_user_infos(self):
         user_infos = {
@@ -425,8 +432,14 @@ class AccountMove(models.Model):
         # OVERRIDE
         # On the validation of an invoice, send the different corrected fields to iap to improve the ocr algorithm.
         posted = super()._post(soft)
-        self.extract_state = 'to_validate'
-        self.env.ref('account_invoice_extract.ir_cron_ocr_validate')._trigger()
+
+        moves_to_validate = posted.filtered(lambda m: m.extract_state == 'waiting_validation')
+        moves_to_validate.extract_state = 'to_validate'
+
+        if moves_to_validate:
+            ocr_trigger_datetime = fields.Datetime.now() + relativedelta(minutes=self.env.context.get('ocr_trigger_delta', 0))
+            self.env.ref('account_invoice_extract.ir_cron_ocr_validate')._trigger(at=ocr_trigger_datetime)
+
         return posted
 
     def get_boxes(self):
@@ -670,7 +683,7 @@ class AccountMove(models.Model):
         self.ensure_one()
 
         invoice_lines = ocr_results['invoice_lines'] if 'invoice_lines' in ocr_results else []
-        subtotal_ocr = ocr_results['subtotal']['selected_value']['content'] if 'subtotal' in ocr_results else ""
+        subtotal_ocr = ocr_results['subtotal']['selected_value']['content'] if 'subtotal' in ocr_results else 0.0
         supplier_ocr = ocr_results['supplier']['selected_value']['content'] if 'supplier' in ocr_results else ""
         date_ocr = ocr_results['date']['selected_value']['content'] if 'date' in ocr_results else ""
 
@@ -823,7 +836,7 @@ class AccountMove(models.Model):
     def _save_form(self, ocr_results, force_write=False):
         date_ocr = ocr_results['date']['selected_value']['content'] if 'date' in ocr_results else ""
         due_date_ocr = ocr_results['due_date']['selected_value']['content'] if 'due_date' in ocr_results else ""
-        total_ocr = ocr_results['total']['selected_value']['content'] if 'total' in ocr_results else ""
+        total_ocr = ocr_results['total']['selected_value']['content'] if 'total' in ocr_results else 0.0
         invoice_id_ocr = ocr_results['invoice_id']['selected_value']['content'] if 'invoice_id' in ocr_results else ""
         currency_ocr = ocr_results['currency']['selected_value']['content'] if 'currency' in ocr_results else ""
         payment_ref_ocr = ocr_results['payment_ref']['selected_value']['content'] if 'payment_ref' in ocr_results else ""
@@ -911,9 +924,8 @@ class AccountMove(models.Model):
             if self.is_purchase_document() and (not move_form.ref or force_write):
                 move_form.ref = invoice_id_ocr
 
-            if self.is_sale_document():
-                with mute_logger('odoo.tests.common.onchange'):
-                    move_form.name = invoice_id_ocr
+            if self.is_sale_document() and self.quick_edit_mode:
+                move_form.name = invoice_id_ocr
 
             if currency_ocr and (move_form.currency_id == move_form.company_currency_id or force_write):
                 currency = self._get_currency(currency_ocr, move_form.partner_id)

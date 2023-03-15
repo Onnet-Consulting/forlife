@@ -3579,5 +3579,32 @@ QUnit.module('documents_kanban_tests.js', {
 
         assert.verifySteps(["storage get 343"]);
     });
+
+    QUnit.test('documents Kanban: workspace user will be able to share document', async function (assert) {
+        assert.expect(2);
+        pyEnv['documents.folder'].create({
+            name: 'Workspace5', description: '_F1-test-description_', has_write_access: false
+        });
+
+        await createDocumentsView({
+            type: "kanban",
+            resModel: 'documents.document',
+            arch: `
+                <kanban js_class="documents_kanban"><templates><t t-name="kanban-box">
+                    <div>
+                        <i class="fa fa-circle-thin o_record_selector"/>
+                        <field name="name"/>
+                    </div>
+                </t></templates></kanban>`,
+        });
+
+        await click(target, ".o_search_panel_category_value:nth-of-type(4) header");
+        await nextTick();
+        assert.strictEqual(target.querySelector('.o_search_panel_category_value > header.active').textContent.trim(), 'Workspace5',
+            'should have a "Workspace5" selected')
+        assert.notOk(target.querySelector('.o_documents_kanban_share_domain').disabled,
+            "the share button should be enabled when a folder is selected");
+    });
+
 });
 });

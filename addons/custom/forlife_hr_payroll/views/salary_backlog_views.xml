@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="salary_backlog_view_tree" model="ir.ui.view">
+            <field name="name">salary_backlog_view_tree</field>
+            <field name="model">salary.backlog</field>
+            <field name="arch" type="xml">
+                <tree string="salary_backlog_tree">
+                    <field name="salary_record_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="amount" sum="Total"/>
+                    <field name="month"/>
+                    <field name="year"/>
+                    <field name="period"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>

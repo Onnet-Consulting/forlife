@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="salary_arrears_view_tree" model="ir.ui.view">
+            <field name="name">salary_arrears_view_tree</field>
+            <field name="model">salary.arrears</field>
+            <field name="arch" type="xml">
+                <tree string="salary_arrears_tree">
+                    <field name="salary_record_id" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="purpose_id"/>
+                    <field name="employee_id"/>
+                    <field name="department_id"/>
+                    <field name="analytic_account_id"/>
+                    <field name="project_code"/>
+                    <field name="manufacture_order_code"/>
+                    <field name="internal_order_code"/>
+                    <field name="x_kq" optional="show" sum="Total"/>
+                    <field name="x_tkdp" optional="show" sum="Total"/>
+                    <field name="x_pvp" optional="show" sum="Total"/>
+                    <field name="x_tthh" optional="show" sum="Total"/>
+                    <field name="x_thl" optional="show" sum="Total"/>
+                    <field name="x_dpfm" optional="show" sum="Total"/>
+                    <field name="x_pds" optional="show" sum="Total"/>
+                    <field name="x_ttl" optional="show" sum="Total"/>
+                    <field name="x_ttpc" optional="show" sum="Total"/>
+                    <field name="x_tu" optional="show" sum="Total"/>
+                    <field name="x_tk" optional="show" sum="Total"/>
+                    <field name="x_bhxh_cn" optional="show" sum="Total"/>
+                    <field name="x_bhyt_cn" optional="show" sum="Total"/>
+                    <field name="x_bhxh_bhbnn_tnld_cn" optional="show" sum="Total"/>
+                    <field name="x_ttbh" optional="show" sum="Total"/>
+                    <field name="note" optional="show"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>

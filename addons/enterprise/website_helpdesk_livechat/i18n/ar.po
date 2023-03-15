@@ -31,7 +31,7 @@ msgstr ""
 #: code:addons/website_helpdesk_livechat/models/chatbot_script_step.py:0
 #, python-format
 msgid "%(name)s's Ticket"
-msgstr ""
+msgstr "تذكرة %(name)s "
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
@@ -42,16 +42,20 @@ msgid ""
 "                    You can search tickets by typing <b>/helpdesk_search <i>keyword</i></b> or <b><i>ticket number</i></b><br>\n"
 "                    "
 msgstr ""
+"<br><br>\n"
+"                    يمكنك إنشاء تذكرة جديدة عن طريق كتابة عنوان التذكرة <b>/helpdesk <i></i></b>.<br>\n"
+"                    يمكنك البحث عن التذاكر عن طريق كتابة الكلمة المفتاحية <b>/helpdesk_search <i></i></b> أو <b><i>رقم التذكرة</i></b><br>\n"
+"                    "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_done
 msgid "Alright, we should have everything we need"
-msgstr ""
+msgstr "حسناً، لدينا كل ما نحتاج إليه "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_technical_serial_misc
 msgid "Anything else to add?"
-msgstr ""
+msgstr "أهناك ما تود إضافته؟ "
 
 #. module: website_helpdesk_livechat
 #: model:ir.actions.act_window,name:website_helpdesk_livechat.helpdesk_im_livechat_canned_response_action
@@ -62,17 +66,17 @@ msgstr "الردود الجاهزة"
 #. module: website_helpdesk_livechat
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_livechat.im_livechat_canned_response_view_search
 msgid "Canned Responses Search"
-msgstr ""
+msgstr "البحث في الردود الجاهزة "
 
 #. module: website_helpdesk_livechat
 #: model:ir.model,name:website_helpdesk_livechat.model_chatbot_script
 msgid "Chatbot Script"
-msgstr ""
+msgstr "نص Chatbot "
 
 #. module: website_helpdesk_livechat
 #: model:ir.model,name:website_helpdesk_livechat.model_chatbot_script_step
 msgid "Chatbot Script Step"
-msgstr ""
+msgstr "خطوة نَص Chatbot "
 
 #. module: website_helpdesk_livechat
 #: model:ir.model.fields.selection,name:website_helpdesk_livechat.selection__chatbot_script_step__step_type__create_ticket
@@ -90,7 +94,7 @@ msgstr "إنشاء تذكرة جديدة من مكتب المساعدة"
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
 #, python-format
 msgid "Created a new ticket: %s"
-msgstr ""
+msgstr "تم إنشاء تذكرة جديدة: %s "
 
 #. module: website_helpdesk_livechat
 #: model:ir.model,name:website_helpdesk_livechat.model_mail_channel
@@ -100,22 +104,22 @@ msgstr "قناة المناقشة"
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_dispatch
 msgid "First, what is the nature of your issue?"
-msgstr ""
+msgstr "أولاً، ما هي طبيعة مشكلتك؟ "
 
 #. module: website_helpdesk_livechat
 #: model:ir.model.fields,field_description:website_helpdesk_livechat.field_chatbot_script__ticket_count
 msgid "Generated Ticket Count"
-msgstr ""
+msgstr "عدد التذاكر المنشأة "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_customer_ref_yes
 msgid "Great, that will make our lives easier."
-msgstr ""
+msgstr "رائع، سيسهّل علينا ذلك كثيراً. "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script,title:website_helpdesk_livechat.chatbot_script_helpdesk_bot
 msgid "Helpdesk Bot"
-msgstr ""
+msgstr "Bot مكتب المساعدة "
 
 #. module: website_helpdesk_livechat
 #: model:ir.model,name:website_helpdesk_livechat.model_helpdesk_team
@@ -126,27 +130,27 @@ msgstr "فريق مكتب المساعدة"
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_welcome
 msgid "Here we go, help is on the way!"
-msgstr ""
+msgstr "هيا، المساعدة في طريقها إليك! "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.answer,name:website_helpdesk_livechat.chatbot_script_helpdesk_step_dispatch_answer_technical
 msgid "I have a technical issue"
-msgstr ""
+msgstr "لدي مشكلة تقنية "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.answer,name:website_helpdesk_livechat.chatbot_script_helpdesk_step_dispatch_answer_administrative
 msgid "I have an administrative question"
-msgstr ""
+msgstr "لدي سؤال إداري "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_customer_ref_no
 msgid "It's OK, we can also find your contract by other means."
-msgstr ""
+msgstr "لا بأس، يمكننا العثور على عقدك بطرق أخرى أيضاً. "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_email
 msgid "Just a last thing, can we please have your email address?"
-msgstr ""
+msgstr "شيء أخير، أيمكنك كتابة عنوان بريدك الإلكتروني؟ "
 
 #. module: website_helpdesk_livechat
 #: model:ir.model.fields,field_description:website_helpdesk_livechat.field_helpdesk_team__feature_livechat_channel_id
@@ -161,7 +165,7 @@ msgstr "لا"
 #. module: website_helpdesk_livechat
 #: model_terms:ir.actions.act_window,help:website_helpdesk_livechat.helpdesk_im_livechat_canned_response_action
 msgid "No canned reponses found. Let's create one!"
-msgstr ""
+msgstr "لم يتم العثور على أي ردود جاهزة. فلنقم بإنشاء بعضها! "
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
@@ -171,6 +175,9 @@ msgid ""
 "format:<br> <b>/helpdesk_search <i>keyword</i></b> or <b>/helpdesk_search "
 "<i>ticket number</i></b>"
 msgstr ""
+"لم يتم العثور على تذاكر لـ <b>%s</b>. <br> تأكد من أنت تستخدم الصيغة "
+"المناسبة:<br> الكلمة المفتاحية<b>/helpdesk_search <i></i></b> أو رقم تذكرة "
+"<b>/helpdesk_search<i></i></b> "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_ticket
@@ -178,16 +185,18 @@ msgid ""
 "OK, I just created a ticket for you. You should receive an email "
 "confirmation very soon."
 msgstr ""
+"حسنا، لقد قمت بإنشاء تذكرة من أجلك الآن. يجب أن يصلك تأكيد عبر البريد "
+"الإلكتروني في أي لحظة. "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_technical_serial
 msgid "Please write below the serial number of your equipment."
-msgstr ""
+msgstr "رجاءً قم بكتابة الرقم التسلسلي لمعداتك أدناه. "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_customer_ref_input
 msgid "Please write below your customer reference."
-msgstr ""
+msgstr "رجاءً قم بكتابة مرجع العميل الخاص بك أدناه. "
 
 #. module: website_helpdesk_livechat
 #. openerp-web
@@ -211,7 +220,7 @@ msgstr "نوع الخطوة "
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_technical_serial_thanks
 msgid "Thank you, that will help our engineers see what went wrong."
-msgstr ""
+msgstr "شكراً لك، سيساعد ذلك مهندسينا على تحديد المشكلة. "
 
 #. module: website_helpdesk_livechat
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_livechat.chatbot_script_view_form
@@ -224,6 +233,8 @@ msgid ""
 "To start with, do you have a customer reference?\n"
 "They are written on each invoice you received, next to your name."
 msgstr ""
+"بدايةً، ألديك مرجع عميل؟ \n"
+"يكون مكتوباً في أي فاتورة تقوم باستلامها بجانب اسمك. "
 
 #. module: website_helpdesk_livechat
 #: model:ir.model,name:website_helpdesk_livechat.model_res_users
@@ -244,7 +255,7 @@ msgstr "عثرنا على بعض التذاكر المطابقة المتعلق�
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_issue
 msgid "We're all set. Now, what is your issue?"
-msgstr ""
+msgstr "لقد انتيهيت. والآن، ما هي المشكلة؟ "
 
 #. module: website_helpdesk_livechat
 #: model_terms:ir.actions.act_window,help:website_helpdesk_livechat.helpdesk_im_livechat_canned_response_action
@@ -253,6 +264,9 @@ msgid ""
 "responses into your messages. These shortcuts are replaced directly in your "
 "messages so that you can still make changes before sending them."
 msgstr ""
+"مع الردود الجاهزة، يمكنك كتابة <i>:اختصارات</i> لإدراج ردود مكتوبة مسبقاً في"
+" رسائلك. يتم استبدال تلك الاختصارات في رسائلك مباشرة حتى تتمكن من إجراء "
+"التغييرات قبل الإرسال. "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.answer,name:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_customer_ref_answer_yes
@@ -278,3 +292,5 @@ msgid ""
 "You can search tickets by typing <b>/helpdesk_search <i>keyword</i></b> or "
 "<i><b>ticket number</b></i><br>"
 msgstr ""
+"يمكنك البحث عن التذاكر عن طريق الكلمة المفتاحية <b>/helpdesk_search "
+"<i></i></b> أو <i><b>رقم التذكرة</b></i><br> "

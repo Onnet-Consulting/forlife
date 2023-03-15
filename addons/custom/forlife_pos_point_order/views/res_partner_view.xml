@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="res_partner_forlife_inherit">
+            <field name="name">res.partner.forlife.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='vat']" position="after">
+                    <field name="is_member_app_forlife" invisible="1"/>
+                    <field name="is_member_app_format" invisible="1"/>
+                </xpath>
+                <xpath expr="//page[@name='accounting']" position="after">
+                    <page name="history_point_forlife" string="TokyoLife" attrs="{'invisible': [('is_member_app_forlife','=',False)]}">
+                        <button name="%(action_compensate_forlife_point_wizard)d" type="action" class="oe_highlight" string="Compensate"/>
+                        <group>
+                            <group>
+                                <field name="reset_day_of_point_forlife"/>
+                                <field name="is_purchased_of_forlife"/>
+                                <field name="point_forlife_reseted" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="total_points_available_forlife"/>
+                            </group>
+                        </group>
+                        <div>
+                            <label for="history_points_forlife_ids"/>
+                            <field name="history_points_forlife_ids" nolabel="1" colspan="2">
+                                <tree editable="bottom">
+                                    <field name="create_date"/>
+                                    <field name="point_order_type"/>
+                                    <field name="date_order"/>
+                                    <field name="points_fl_order"/>
+                                    <field name="points_used"/>
+                                    <field name="points_back"/>
+                                    <field name="points_store"/>
+                                    <field name="reason"/>
+                                </tree>
+                            </field>
+                        </div>
+                    </page>
+                    <page name="history_point_format" string="Format" attrs="{'invisible': [('is_member_app_format','=',False)]}">
+                        <button name="%(action_compensate_format_point_wizard)d" type="action" class="oe_highlight" string="Compensate"/>
+                        <group>
+                            <group>
+                                <field name="reset_day_of_point_format"/>
+                                <field name="is_purchased_of_format"/>
+                                <field name="point_format_reseted" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="total_points_available_format"/>
+                            </group>
+                        </group>
+                        <div>
+                            <label for="history_points_format_ids"/>
+                            <field name="history_points_format_ids" nolabel="1" colspan="2">
+                                <tree editable="bottom">
+                                    <field name="create_date"/>
+                                    <field name="point_order_type"/>
+                                    <field name="date_order"/>
+                                    <field name="points_fl_order"/>
+                                    <field name="points_used"/>
+                                    <field name="points_back"/>
+                                    <field name="points_store"/>
+                                    <field name="reason"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="partner_id"/>
+                                            <field name="point_order_type"/>
+                                            <field name="pos_order_id"/>
+                                            <field name="store"/>
+                                            <field name="date_order"/>
+                                        </group>
+                                        <group>
+                                            <field name="points_fl_order"/>
+                                            <field name="points_used"/>
+                                            <field name="points_back"/>
+                                            <field name="points_store"/>
+                                            <field name="reason"/>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </div>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

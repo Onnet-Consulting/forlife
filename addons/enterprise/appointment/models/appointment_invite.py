@@ -191,5 +191,5 @@ class AppointmentShare(models.Model):
 
         invites = self.env['appointment.invite'].search([('create_date', '<=', limit_dt)])
 
-        to_remove = invites.filtered(lambda invite: not invite.calendar_event_ids or invite.calendar_event_ids[-1].end < limit_dt)
+        to_remove = invites.filtered(lambda invite: not invite.calendar_event_ids or invite.calendar_event_ids[-1].stop < limit_dt)
         to_remove.unlink()

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="PartnerDetailsEdit" t-inherit="point_of_sale.PartnerDetailsEdit" t-inherit-mode="extension">
+        <xpath expr="//select[@name='country_id']/.." position="after">
+<!--            FIXME: format birthday with locale-->
+            <div class="partner-detail">
+                <span class="label">Birthday</span>
+                <input type="date" class="detail customer-birthday" name="birthday" t-on-change="captureChange"
+                       t-att-value="props.partner.birthday || ''"/>
+            </div>
+            <div class="partner-detail">
+                <span class="label">Gender</span>
+                <t t-set="customer_gender" t-value="props.partner.gender"/>
+                <select class="detail" name="gender" t-on-change="captureChange">
+                    <option value="">None</option>
+                    <option value="male"
+                            t-att-selected="customer_gender ? ((customer_gender === 'male') ? true : undefined) : undefined">Male</option>
+                    <option value="female"
+                            t-att-selected="customer_gender ? ((customer_gender === 'female') ? true : undefined) : undefined">Female</option>
+                    <option value="other"
+                            t-att-selected="customer_gender ? ((customer_gender === 'other') ? true : undefined) : undefined">Other</option>
+                </select>
+            </div>
+            <div class="partner-detail">
+                <span class="label">Group</span>
+                <select class="detail" name="group_id" t-on-change="captureChange">
+                        <option t-att-value="env.pos.default_partner_group.id" t-att-selected="true">
+                            <t t-esc="env.pos.default_partner_group.name"/>
+                        </option>
+                </select>
+            </div>
+        </xpath>
+        <xpath expr="//input[@name='barcode']" position="attributes">
+            <attribute name="readonly">readonly</attribute>
+        </xpath>
+        <xpath expr="//select[@name='state_id']/../span" position="replace">
+            <span class="label">State</span>
+        </xpath>
+    </t>
+
+</templates>

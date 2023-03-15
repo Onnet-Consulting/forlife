@@ -5,7 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # Alexandra Jubert, 2022
-# Jolien De Paepe, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:50+0000\n"
-"Last-Translator: Jolien De Paepe, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +24,7 @@ msgstr ""
 #. module: website_event_track_gantt
 #: model_terms:ir.ui.view,arch_db:website_event_track_gantt.event_track_view_gantt
 msgid "<strong>Proposed By — </strong>"
-msgstr "<strong>Proposé Par — </strong>"
+msgstr "<strong>Proposé par — </strong>"
 
 #. module: website_event_track_gantt
 #: model_terms:ir.ui.view,arch_db:website_event_track_gantt.event_track_view_gantt
@@ -46,7 +46,7 @@ msgstr "Supprimer"
 #. module: website_event_track_gantt
 #: model_terms:ir.ui.view,arch_db:website_event_track_gantt.event_track_view_form_in_gantt
 msgid "Discard"
-msgstr "Annuler"
+msgstr "Ignorer"
 
 #. module: website_event_track_gantt
 #: model:ir.model,name:website_event_track_gantt.model_event_event

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="net_promoter_score_manager" model="res.groups">
+            <field name="name">NPS Manager</field>
+            <field name="category_id" ref="base.module_category_sales_point_of_sale"/>
+        </record>
+
+        <record id="base.group_system" model="res.groups">
+           <field name="implied_ids" eval="[(4, ref('forlife_net_promoter_score.net_promoter_score_manager'))]"/>
+       </record>
+
+    </data>
+</odoo>

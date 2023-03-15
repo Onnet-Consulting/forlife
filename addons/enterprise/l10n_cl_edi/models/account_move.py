@@ -125,8 +125,9 @@ class AccountMove(models.Model):
         # Avoid to post a vendor bill with a inactive currency created from the incoming mail
         for move in self.filtered(
                 lambda x: x.company_id.account_fiscal_country_id.code == "CL" and
-                          x.company_id.l10n_cl_dte_service_provider in ['SII', 'SIITEST'] and
+                          x.company_id.l10n_cl_dte_service_provider in ['SII', 'SIITEST', 'SIIDEMO'] and
                           x.journal_id.l10n_latam_use_documents):
+            msg_demo = _(' in DEMO mode.') if move.company_id.l10n_cl_dte_service_provider == 'SIIDEMO' else '.'
             # check if we have the currency active, in order to receive vendor bills correctly.
             if move.move_type in ['in_invoice', 'in_refund'] and not move.currency_id.active:
                 raise UserError(
@@ -151,7 +152,7 @@ class AccountMove(models.Model):
                 })
                 move.l10n_cl_sii_send_file = attachment.id
                 move.with_context(no_new_invoice=True).message_post(
-                    body=_('DTE has been created'),
+                    body=_('DTE has been created%s', msg_demo),
                     attachment_ids=attachment.ids)
         return res
 
@@ -232,6 +233,11 @@ class AccountMove(models.Model):
             return None
         _logger.info('Sending DTE for invoice with ID %s (name: %s)', self.id, self.name)
         digital_signature = self.company_id._get_digital_signature(user_id=self.env.user.id)
+        if self.company_id.l10n_cl_dte_service_provider == 'SIIDEMO':
+            self.message_post(body=_('This DTE has been generated in DEMO Mode. It is considered as accepted and '
+                                     'it won\'t be sent to SII.'))
+            self.l10n_cl_dte_status = 'accepted'
+            return None
         response = self._send_xml_to_sii(
             self.company_id.l10n_cl_dte_service_provider,
             self.company_id.website,
@@ -303,7 +309,7 @@ class AccountMove(models.Model):
                      response_parsed.findtext('{http://www.sii.cl/XMLSchema}RESP_HDR/NUM_ATENCION')))
 
     def l10n_cl_verify_claim_status(self):
-        if self.company_id.l10n_cl_dte_service_provider == 'SIITEST':
+        if self.company_id.l10n_cl_dte_service_provider in ['SIITEST', 'SIIDEMO']:
             raise UserError(_('This feature is not available in certification/test mode'))
         response = self._get_dte_claim(
             self.company_id.l10n_cl_dte_service_provider,
@@ -384,7 +390,7 @@ class AccountMove(models.Model):
         if not self.l10n_latam_document_type_id._is_doc_type_acceptance():
             raise UserError(_('The document type with code %s cannot be accepted') %
                             self.l10n_latam_document_type_id.code)
-        if self.company_id.l10n_cl_dte_service_provider == 'SIITEST':
+        if self.company_id.l10n_cl_dte_service_provider in ['SIITEST', 'SIIDEMO']:
             self._l10n_cl_send_dte_reception_status('accepted')
             self.l10n_cl_dte_acceptation_status = 'accepted'
             self.message_post(body=_('Claim status was not sending to SII. This feature is not available in '
@@ -420,7 +426,7 @@ class AccountMove(models.Model):
         if not self.l10n_latam_document_type_id._is_doc_type_acceptance():
             raise UserError(_('The document type with code %s cannot be claimed') %
                             self.l10n_latam_document_type_id.code)
-        if self.company_id.l10n_cl_dte_service_provider == 'SIITEST':
+        if self.company_id.l10n_cl_dte_service_provider in ['SIITEST', 'SIIDEMO']:
             self._l10n_cl_send_dte_reception_status('claimed')
             self.write({
                 'l10n_cl_dte_acceptation_status': 'claimed',
@@ -728,13 +734,17 @@ class AccountMove(models.Model):
         return self.env['l10n_latam.document.type'].search(
             [('code', '=', '61'), ('country_id.code', '=', "CL")], limit=1)
 
-    def _l10n_cl_get_comuna_recep(self):
+    def _l10n_cl_get_comuna_recep(self, recep=True):
         if self.partner_id._l10n_cl_is_foreign():
-            return self._format_length(
-                self.partner_id.state_id.name or self.commercial_partner_id.state_id.name or 'N-A', 20)
+            if recep:
+                return self._format_length(
+                    self.partner_id.state_id.name or self.commercial_partner_id.state_id.name or 'N-A', 20)
+            return self._format_length(self.partner_shipping_id.state_id.name or 'N-A', 20)
         if self.l10n_latam_document_type_id._is_doc_type_voucher():
             return 'N-A'
-        return self.partner_id.city or self.commercial_partner_id.city or False
+        if recep:
+            return self._format_length(self.partner_id.city or self.commercial_partner_id.city, 20) or False
+        return self._format_length(self.partner_shipping_id.city, 20) or False
 
     def _l10n_cl_get_set_dte_id(self, xml_content):
         set_dte = xml_content.find('.//ns0:SetDTE', namespaces={'ns0': 'http://www.sii.cl/SiiDte'})
@@ -764,7 +774,7 @@ class AccountMove(models.Model):
         for move in self.search([('l10n_cl_dte_acceptation_status', 'in', ['accepted', 'claimed']),
                                  ('move_type', 'in', ['out_invoice', 'out_refund']),
                                  ('l10n_cl_claim', '=', False)]):
-            if move.company_id.l10n_cl_dte_service_provider == 'SIITEST':
+            if move.company_id.l10n_cl_dte_service_provider in ['SIITEST', 'SIIDEMO']:
                 continue
             move.l10n_cl_verify_claim_status()
             self.env.cr.commit()

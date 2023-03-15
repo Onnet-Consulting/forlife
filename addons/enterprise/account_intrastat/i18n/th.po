@@ -8,9 +8,9 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1+e\n"
+"Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:48+0000\n"
+"POT-Creation-Date: 2022-10-10 13:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
 "Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Thai (https://www.transifex.com/odoo/teams/41243/th/)\n"
@@ -264,8 +264,6 @@ msgstr ""
 
 #. module: account_intrastat
 #: code:addons/account_intrastat/models/account_intrastat_report.py:0
-#: code:addons/account_intrastat/models/account_intrastat_report.py:0
-#: code:addons/account_intrastat/models/account_intrastat_report.py:0
 #, python-format
 msgid "Invalid commodity intrastat code products."
 msgstr ""
@@ -423,9 +421,27 @@ msgid "Triplet code/type/country_id must be unique."
 msgstr ""
 
 #. module: account_intrastat
+#: code:addons/account_intrastat/models/account_intrastat_report.py:0
+#, python-format
+msgid "Undefined supplementary unit products."
+msgstr ""
+
+#. module: account_intrastat
+#: code:addons/account_intrastat/models/account_intrastat_report.py:0
+#, python-format
+msgid "Undefined weight products."
+msgstr ""
+
+#. module: account_intrastat
 #: model:account.report.column,name:account_intrastat.intrastat_report_column_value
 msgid "Value"
 msgstr "ค่า"
+
+#. module: account_intrastat
+#: code:addons/account_intrastat/models/account_intrastat_report.py:0
+#, python-format
+msgid "View Journal Entry"
+msgstr ""
 
 #. module: account_intrastat
 #: model:account.report.column,name:account_intrastat.intrastat_report_column_weight

@@ -99,7 +99,7 @@ class TestSubscriptionController(PaymentHttpCommon, PaymentCommon, TestSubscript
             self.assertEqual(res.status_code, 303)
             self.env.invalidate_all()
             self.assertEqual(self.subscription.stage_category, 'closed', 'The subscription should be closed.')
-            self.assertEqual(self.subscription.end_date, date(2021, 11, 18), 'The end date of the subscription should be updated.')
+            self.assertEqual(self.subscription.end_date, date(2023, 11, 17), 'The end date of the subscription should not be updated.')
 
     def test_prevents_assigning_not_owned_payment_tokens_to_subscriptions(self):
         malicious_user_subscription = self.env['sale.order'].create({
@@ -168,7 +168,6 @@ class TestSubscriptionController(PaymentHttpCommon, PaymentCommon, TestSubscript
             self.env['ir.config_parameter'].sudo().set_param('sale.automatic_invoice', 'False')
             subscription = self._portal_payment_controller_flow()
             subscription.transaction_ids.unlink()
-            subscription.invoice_ids.unlink()
             # set automatic invoice and restart
             self.env['ir.config_parameter'].sudo().set_param('sale.automatic_invoice', 'True')
             self._portal_payment_controller_flow()
@@ -203,14 +202,28 @@ class TestSubscriptionController(PaymentHttpCommon, PaymentCommon, TestSubscript
         self.assertEqual(res.status_code, 200)
         subscription.transaction_ids.provider_id.support_manual_capture = True
         subscription.transaction_ids._set_authorized()
+        subscription.invoice_ids.filtered(lambda am: am.state == 'draft')._post()
         subscription.transaction_ids.token_id = self.payment_method.id
         self.assertEqual(subscription.next_invoice_date, datetime.date.today())
         self.assertEqual(subscription.state, 'sale')
         subscription.transaction_ids._reconcile_after_done()  # Create the payment
         self.assertEqual(subscription.invoice_count, 1, "One invoice should be created")
+        # subscription has a payment_token_id, the invoice is created by the flow.
+        subscription.invoice_ids.invoice_line_ids.account_id.account_type = 'asset_cash'
+        subscription.invoice_ids.auto_post = 'at_date'
+        self.env.ref('account.ir_cron_auto_post_draft_entry').method_direct_trigger()
         self.assertTrue(subscription.next_invoice_date > datetime.date.today(), "the next invoice date should be updated")
-        subscription.with_context(arj=True)._cron_recurring_create_invoice()
-        self.assertEqual(subscription.invoice_count, 1, "Only one invoice should be created")
+        self.env['account.payment.register'] \
+            .with_context(active_model='account.move', active_ids=subscription.invoice_ids.ids) \
+            .create({
+            'currency_id': subscription.currency_id.id,
+            'amount': subscription.amount_total,
+        })._create_payments()
+        self.assertEqual(subscription.invoice_ids.mapped('state'), ['posted'])
+        self.assertTrue(subscription.invoice_ids.payment_state in ['paid', 'in_payment'])
+        subscription._cron_recurring_create_invoice()
+        invoices = subscription.invoice_ids.filtered(lambda am: am.state in ['draft', 'posted']) # avoid counting canceled invoices
+        self.assertEqual(len(invoices), 1, "Only one invoice should be created")
         # test transaction flow when paying from the portal
         self.assertEqual(len(subscription.transaction_ids), 1, "Only one transaction should be created")
         first_transaction_id = subscription.transaction_ids
@@ -226,8 +239,11 @@ class TestSubscriptionController(PaymentHttpCommon, PaymentCommon, TestSubscript
         invoice_transactions = subscription.invoice_ids.transaction_ids
         self.assertEqual(len(invoice_transactions), 1, "Only one transaction should be created")
         last_transaction_id = subscription.transaction_ids - first_transaction_id
+        self.assertEqual(len(subscription.transaction_ids), 2)
         self.assertEqual(last_transaction_id.sale_order_ids, subscription)
         self.assertEqual(last_transaction_id.reference, "test_automatic_invoice_token",
-                             "The reference should come from the prefix")
+                         "The reference should come from the prefix")
         last_transaction_id._set_done()
+        self.assertEqual(subscription.invoice_ids.mapped('state'), ['posted'])
+        self.assertTrue(subscription.invoice_ids.payment_state in ['paid', 'in_payment'])
         return subscription

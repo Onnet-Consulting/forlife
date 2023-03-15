@@ -100,11 +100,7 @@ export class MapController extends Component {
                 domain: [["id", "in", ids]],
             });
         } else {
-            this.action.switchView("form", {
-                resId: ids[0],
-                mode: "readonly",
-                model: this.props.resModel,
-            });
+            this.action.switchView("form", { resId: ids[0] });
         }
     }
 }

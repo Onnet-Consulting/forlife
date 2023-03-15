@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="module_payroll_category" model="ir.module.category">
+        <field name="name">Payroll Workers</field>
+    </record>
+
+    <record id="payroll_employee" model="res.groups">
+        <field name="name">Payroll/ Employee</field>
+        <field name="category_id" ref="module_payroll_category"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+
+    <record id="payroll_leader" model="res.groups">
+        <field name="name">Payroll/ Leader</field>
+        <field name="category_id" ref="module_payroll_category"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

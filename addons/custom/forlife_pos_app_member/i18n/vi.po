@@ -1,0 +1,463 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_pos_app_member
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-03 04:41+0000\n"
+"PO-Revision-Date: 2023-02-03 04:41+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_hr_employee__address_home_id
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_stock_warehouse__partner_id
+msgid "Address"
+msgstr "Địa chỉ"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner_retail__retail_type__app
+msgid "App"
+msgstr ""
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__auto_generate
+msgid "Auto Generate Code"
+msgstr "Tự động sinh"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__barcode
+msgid "Barcode"
+msgstr ""
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_base
+msgid "Base"
+msgstr "Cơ bản"
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_hr_employee_base
+msgid "Basic Employee"
+msgstr "Người dùng cơ bản"
+
+#. module: forlife_pos_app_member
+#. odoo-javascript
+#: code:addons/forlife_pos_app_member/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__birthday
+#, python-format
+msgid "Birthday"
+msgstr "Sinh nhật"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__brand_id
+msgid "Brand"
+msgstr "Thương hiệu"
+
+#. module: forlife_pos_app_member
+#: model_terms:ir.ui.view,arch_db:forlife_pos_app_member.create_warehouse_partner_form
+msgid "Cancel"
+msgstr "Thoát"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_hr_employee__code
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_hr_employee_base__code
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_hr_employee_public__code
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__code
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_res_partner
+msgid "Contact"
+msgstr "Danh bạ"
+
+#. module: forlife_pos_app_member
+#: model_terms:ir.ui.view,arch_db:forlife_pos_app_member.create_warehouse_partner_form
+msgid "Create Partner"
+msgstr "Tạo liên hệ"
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_create_warehouse_partner
+msgid "Create Warehouse Partner Wizard"
+msgstr "Tạo liên hệ cho kho hàng"
+
+#. module: forlife_pos_app_member
+#: model:ir.actions.server,name:forlife_pos_app_member.action_create_home_address_from_list
+#: model_terms:ir.ui.view,arch_db:forlife_pos_app_member.create_warehouse_partner_form
+#: model_terms:ir.ui.view,arch_db:forlife_pos_app_member.hr_employee_form_inherit
+#: model_terms:ir.ui.view,arch_db:forlife_pos_app_member.view_warehouse_inherit
+msgid "Create partner"
+msgstr "Tạo liên hệ"
+
+#. module: forlife_pos_app_member
+#: model:ir.actions.act_window,name:forlife_pos_app_member.create_warehouse_partner_action
+msgid "Create warehouse partner"
+msgstr "Tạo liên hệ kho hàng"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_create_warehouse_partner__create_uid
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__create_uid
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_job__create_uid
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__create_uid
+msgid "Created by"
+msgstr "Tạo bởi"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_create_warehouse_partner__create_date
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__create_date
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_job__create_date
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner_group__partner_type__customer
+#: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner_retail__retail_type__customer
+msgid "Customer"
+msgstr "Khách hàng"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_create_warehouse_partner__display_name
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__display_name
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_job__display_name
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_hr_employee
+#: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner_retail__retail_type__employee
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,help:forlife_pos_app_member.field_hr_employee__address_home_id
+msgid ""
+"Enter here the private address of the employee, not the one linked to your "
+"company."
+msgstr ""
+"Nhập địa chỉ liên hệ riêng tư cho nhân viên tại đây, không phải địa chỉ của "
+"công ty."
+
+#. module: forlife_pos_app_member
+#. odoo-javascript
+#: code:addons/forlife_pos_app_member/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner__gender__female
+#, python-format
+msgid "Female"
+msgstr "Nữ"
+
+#. module: forlife_pos_app_member
+#. odoo-javascript
+#: code:addons/forlife_pos_app_member/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__gender
+#, python-format
+msgid "Gender"
+msgstr "Giới tính"
+
+#. module: forlife_pos_app_member
+#. odoo-javascript
+#: code:addons/forlife_pos_app_member/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__group_id
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__group_id
+#, python-format
+msgid "Group"
+msgstr "Nhóm"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.constraint,message:forlife_pos_app_member.constraint_res_partner_group_unique_code
+msgid "Group code already exists!"
+msgstr "Mã nhóm đã tồn tại"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_create_warehouse_partner__id
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__id
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_job__id
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__id
+msgid "ID"
+msgstr ""
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,help:forlife_pos_app_member.field_res_partner_group__auto_generate
+msgid ""
+"If true, we'll generate partner's reference by group's sequence field.\n"
+" Otherwise, use group's code to add prefix to partner's reference"
+msgstr ""
+"Nếu đúng, sử dụng sequence của nhóm khách hàng để sinh mã tham chiếu cho liên hệ.\n"
+"Nếu không, thêm mã của nhóm vào đầu mã của liên hệ"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner_group__partner_type__internal
+msgid "Internal"
+msgstr "Nội bộ"
+
+#. module: forlife_pos_app_member
+#. odoo-python
+#: code:addons/forlife_pos_app_member/models/res_partner.py:0
+#, python-format
+msgid "Invalid mobile number - %s"
+msgstr "Số điện thoại không hợp lệ - %s"
+
+#. module: forlife_pos_app_member
+#. odoo-python
+#: code:addons/forlife_pos_app_member/models/res_utility.py:0
+#, python-format
+msgid "Invalid phone (mobile) number - %s"
+msgstr "Số điện thoại không hợp lệ - %s"
+
+#. module: forlife_pos_app_member
+#. odoo-python
+#: code:addons/forlife_pos_app_member/models/res_partner.py:0
+#: code:addons/forlife_pos_app_member/wizard/create_warehouse_partner.py:0
+#, python-format
+msgid "Invalid phone number - %s"
+msgstr "Số điện thoại không hợp lệ - %s"
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_res_partner_job
+msgid "Job"
+msgstr "Nghề nghiệp"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.constraint,message:forlife_pos_app_member.constraint_res_partner_job_unique_name
+msgid "Job name already exists!"
+msgstr "Tên nghề nghiệp đã tồn tại"
+
+#. module: forlife_pos_app_member
+#: model:ir.actions.act_window,name:forlife_pos_app_member.res_partner_job_action
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__job_ids
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__job_ids
+#: model:ir.ui.menu,name:forlife_pos_app_member.res_partner_job_menu
+#: model_terms:ir.ui.view,arch_db:forlife_pos_app_member.res_partner_job_tree
+msgid "Jobs"
+msgstr "Nghề nghiệp"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_create_warehouse_partner____last_update
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group____last_update
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_job____last_update
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail____last_update
+msgid "Last Modified on"
+msgstr "Lần chỉnh sửa cuối"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_create_warehouse_partner__write_uid
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__write_uid
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_job__write_uid
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__write_uid
+msgid "Last Updated by"
+msgstr "Lần chỉnh sửa cuối bởi"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_create_warehouse_partner__write_date
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__write_date
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_job__write_date
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__write_date
+msgid "Last Updated on"
+msgstr "Lần cập nhật cuối vào"
+
+#. module: forlife_pos_app_member
+#. odoo-javascript
+#: code:addons/forlife_pos_app_member/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner__gender__male
+#, python-format
+msgid "Male"
+msgstr "Nam"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__name
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_job__name
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: forlife_pos_app_member
+#. odoo-javascript
+#: code:addons/forlife_pos_app_member/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#, python-format
+msgid "None"
+msgstr "Không xác định"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.constraint,message:forlife_pos_app_member.constraint_hr_employee_base_unique_code
+#: model:ir.model.constraint,message:forlife_pos_app_member.constraint_hr_employee_public_unique_code
+#: model:ir.model.constraint,message:forlife_pos_app_member.constraint_hr_employee_unique_code
+msgid "Only one Code   occurrence by employee"
+msgstr "Mã nhân viên phải là duy nhất"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.constraint,message:forlife_pos_app_member.constraint_res_partner_unique_barcode
+msgid "Only one barcode occurrence by partner"
+msgstr "Mã barcode phải là duy nhất"
+
+#. module: forlife_pos_app_member
+#. odoo-javascript
+#: code:addons/forlife_pos_app_member/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner__gender__other
+#, python-format
+msgid "Other"
+msgstr "Khác"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__parsed_mobile
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__parsed_mobile
+msgid "Parsed mobile"
+msgstr ""
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__parsed_phone
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__parsed_phone
+msgid "Parsed phone"
+msgstr ""
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_res_partner_group
+#: model_terms:ir.ui.view,arch_db:forlife_pos_app_member.res_partner_group_form
+msgid "Partner Group"
+msgstr "Nhóm liên hệ"
+
+#. module: forlife_pos_app_member
+#: model:ir.actions.act_window,name:forlife_pos_app_member.res_partner_group_action
+#: model:ir.ui.menu,name:forlife_pos_app_member.res_partner_group_menu
+#: model_terms:ir.ui.view,arch_db:forlife_pos_app_member.res_partner_group_tree
+msgid "Partner Groups"
+msgstr "Nhóm liên hệ"
+
+#. module: forlife_pos_app_member
+#: model:ir.actions.act_window,name:forlife_pos_app_member.res_partner_retail_action
+#: model:ir.model,name:forlife_pos_app_member.model_res_partner_retail
+#: model:ir.ui.menu,name:forlife_pos_app_member.res_partner_retail_menu
+msgid "Partner Retail Type"
+msgstr "Nhóm khách hàng lẻ"
+
+#. module: forlife_pos_app_member
+#. odoo-python
+#: code:addons/forlife_pos_app_member/wizard/create_warehouse_partner.py:0
+#, python-format
+msgid "Partner of warehouse %s already exist"
+msgstr "Liên hệ của kho hàng %s đã tồn tại"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_create_warehouse_partner__phone
+msgid "Phone"
+msgstr "Số điện thoại"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__phone
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__phone
+msgid "Phone #1"
+msgstr "Số điện thoại 1"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__mobile
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__mobile
+msgid "Phone #2"
+msgstr "Số điện thoại 2"
+
+#. module: forlife_pos_app_member
+#. odoo-python
+#: code:addons/forlife_pos_app_member/models/res_partner.py:0
+#, python-format
+msgid "Phone number is required for group %s"
+msgstr "Số điện thoại là bắt buộc cho nhóm khách hàng %s"
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr "Cấu hình điểm bán lẻ"
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Phiên bán hàng"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__ref
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__ref
+msgid "Reference"
+msgstr "Tham chiếu"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__retail_type_ids
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__retail_type_ids
+msgid "Retail types"
+msgstr "Loại khách hàng lẻ"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__sequence_id
+msgid "Sequence"
+msgstr ""
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner__show_customer_type
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_users__show_customer_type
+msgid "Show Customer Type"
+msgstr ""
+
+#. module: forlife_pos_app_member
+#: model:ir.model.constraint,message:forlife_pos_app_member.constraint_res_partner_phone_number_group_uniq
+msgid "The phone number must be unique in each Partner Group !"
+msgstr "Số điện thoại phải là duy nhất trong từng nhóm khách hàng !"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_group__partner_type
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_res_partner_retail__retail_type
+#: model_terms:ir.ui.view,arch_db:forlife_pos_app_member.res_partner_retail_form_view
+msgid "Type"
+msgstr "Loại"
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields,help:forlife_pos_app_member.field_res_partner__barcode
+msgid "Use a barcode to identify this contact."
+msgstr "Sử dụng barcode để xác định liên hệ."
+
+#. module: forlife_pos_app_member
+#: model:ir.model.fields.selection,name:forlife_pos_app_member.selection__res_partner_group__partner_type__vendor
+msgid "Vendor"
+msgstr "Nhà cung cấp"
+
+#. module: forlife_pos_app_member
+#: model:ir.model,name:forlife_pos_app_member.model_stock_warehouse
+#: model:ir.model.fields,field_description:forlife_pos_app_member.field_create_warehouse_partner__warehouse_id
+msgid "Warehouse"
+msgstr "Kho"
+
+#. module: forlife_pos_app_member
+#. odoo-python
+#: code:addons/forlife_pos_app_member/wizard/create_warehouse_partner.py:0
+#, python-format
+msgid "You must call this action from warehouse form view!"
+msgstr "Bạn phải gọi hành động này từ giao diện kho hàng!"
+
+#. module: forlife_pos_app_member
+#. odoo-javascript
+#: code:addons/forlife_pos_app_member/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#, python-format
+msgid "State"
+msgstr "Tỉnh/TP"
+
+#. module: point_of_sale
+#. odoo-javascript
+#: code:addons/point_of_sale/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#, python-format
+msgid "Phone"
+msgstr "Số điện thoại 1"
+
+#. module: point_of_sale
+#. odoo-javascript
+#: code:addons/point_of_sale/static/src/xml/Screens/PartnerListScreen/PartnerDetailsEdit.xml:0
+#, python-format
+msgid "Mobile"
+msgstr "Số điện thoại 2"

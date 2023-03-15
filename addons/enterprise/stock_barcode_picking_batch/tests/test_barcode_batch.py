@@ -217,7 +217,6 @@ class TestBarcodeBatchClientAction(TestBarcodeClientAction):
         self.assertEqual(batch_receipt.user_id.id, self.env.user.id)
         self.assertEqual(picking_receipt_3.user_id.id, self.env.user.id)
 
-
     def test_barcode_batch_delivery_1(self):
         """ Create a batch picking with 2 deliveries (split into 3 locations),
         then open the batch in barcode app and scan each product.
@@ -271,6 +270,77 @@ class TestBarcodeBatchClientAction(TestBarcodeClientAction):
 
         url = self._get_batch_client_action_url(batch_delivery.id)
         self.start_tour(url, 'test_barcode_batch_delivery_1', login='admin', timeout=180)
+
+    def test_barcode_batch_delivery_2_move_entire_package(self):
+        """ Creates a batch picking with 2 deliveries while the delivery picking type use the "move
+        entire package" setting and check lines are correctly displayed as package line when moving
+        the entire package, or as usual barcode line in other cases.
+        """
+        self.clean_access_rights()
+        grp_pack = self.env.ref('stock.group_tracking_lot')
+        self.env.user.write({'groups_id': [(4, grp_pack.id, 0)]})
+        self.picking_type_out.show_entire_packs = True
+
+        # Creates two packages and adds some quantities on hand.
+        pack1 = self.env['stock.quant.package'].create({'name': 'pack1'})
+        pack2 = self.env['stock.quant.package'].create({'name': 'pack2'})
+        self.env['stock.quant'].with_context(inventory_mode=True).create({
+            'product_id': self.product1.id,
+            'inventory_quantity': 10,
+            'package_id': pack1.id,
+            'location_id': self.stock_location.id,
+        }).action_apply_inventory()
+        self.env['stock.quant'].with_context(inventory_mode=True).create({
+            'product_id': self.product2.id,
+            'inventory_quantity': 10,
+            'package_id': pack2.id,
+            'location_id': self.stock_location.id,
+        }).action_apply_inventory()
+        self.env['stock.quant'].with_context(inventory_mode=True).create({
+            'product_id': self.product3.id,
+            'inventory_quantity': 10,
+            'package_id': pack1.id,
+            'location_id': self.stock_location.id,
+        }).action_apply_inventory()
+
+        # Creates two deliveries.
+        picking_form = Form(self.env['stock.picking'])
+        picking_form.picking_type_id = self.picking_type_out
+        with picking_form.move_ids_without_package.new() as move:
+            move.product_id = self.product1
+            move.product_uom_qty = 10
+        with picking_form.move_ids_without_package.new() as move:
+            move.product_id = self.product2
+            move.product_uom_qty = 5
+        with picking_form.move_ids_without_package.new() as move:
+            move.product_id = self.product3
+            move.product_uom_qty = 10
+        delivery_1 = picking_form.save()
+        delivery_1.action_confirm()
+        delivery_1.action_assign()
+
+        picking_form = Form(self.env['stock.picking'])
+        picking_form.picking_type_id = self.picking_type_out
+        with picking_form.move_ids_without_package.new() as move:
+            move.product_id = self.product2
+            move.product_uom_qty = 5
+        delivery_2 = picking_form.save()
+        delivery_2.action_confirm()
+        delivery_2.action_assign()
+
+        # Changes name of pickings to be able to track them on the tour.
+        delivery_1.name = 'delivery_1'
+        delivery_2.name = 'delivery_2'
+
+        # Creates and confirms the batch.
+        batch_form = Form(self.env['stock.picking.batch'])
+        batch_form.picking_ids.add(delivery_1)
+        batch_form.picking_ids.add(delivery_2)
+        batch_delivery = batch_form.save()
+        batch_delivery.action_confirm()
+
+        url = self._get_batch_client_action_url(batch_delivery.id)
+        self.start_tour(url, 'test_barcode_batch_delivery_2_move_entire_package', login='admin', timeout=180)
 
     def test_put_in_pack_from_multiple_pages(self):
         """ A batch picking of 2 internal pickings where prod1 and prod2 are reserved in shelf1 and shelf2,

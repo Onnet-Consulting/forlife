@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="points_product_view_tree" model="ir.ui.view">
+            <field name="name">points_product_view_tree</field>
+            <field name="model">points.product</field>
+            <field name="arch" type="xml">
+                <tree string="points_product_tree">
+                    <field name="product_ids" invisible="1"/>
+                    <field name="name"/>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                    <field name="point_addition"/>
+                    <field name="state" widget="badge" decoration-success="state == 'effective'" decoration-info="state == 'new'"/>
+                    <field name="state_related" invisible="1"/>
+                    <button name="btn_effective" string="Active" class="oe_highlight" type="object" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('state_related', '=', 'finish')]}" groups="forlife_promotion.promotion_manager"/>
+                    <button name="btn_edit" string="Edit" icon="fa-pencil" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('state_related', '=', 'finish')]}" type="object" groups="forlife_promotion.promotion_manager"/>
+                    <button name="unlink" string="Delete" icon="fa-trash" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('state_related', '=', 'finish')]}" type="object" groups="forlife_promotion.promotion_manager"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="points_product_view_form" model="ir.ui.view">
+            <field name="name">points_product_view_form</field>
+            <field name="model">points.product</field>
+            <field name="arch" type="xml">
+                <form string="points_product_form">
+                    <header>
+                        <button name="btn_effective" string="Active" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('state_related', '=', 'finish')]}" type="object" groups="forlife_promotion.promotion_manager"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="point_addition" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                            <group>
+                                <field name="from_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="to_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="product_ids" attrs="{'readonly': [('state', '!=', 'new')]}" context="{'product_exist_list': product_existed}">
+                                <tree edit="0">
+                                    <field name="default_code"/>
+                                    <field name="name"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                    <field name="product_existed" invisible="1"/>
+                    <field name="points_promotion_id" invisible="1"/>
+                    <field name="state_related" invisible="1"/>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

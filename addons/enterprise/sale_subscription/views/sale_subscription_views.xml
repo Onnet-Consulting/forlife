@@ -57,7 +57,7 @@
 
     <record id="action_sale_order_log" model="ir.actions.act_window">
         <field name="name">MRR Analysis</field>
-        <field name="view_mode">tree,graph,form</field>
+        <field name="view_mode">tree,graph</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">sale.order.log</field>
     </record>
@@ -389,12 +389,6 @@
             <field name="next_invoice_date" position="attributes">
                  <attribute name="optional">show</attribute>
             </field>
-            <field name="recurrence_id" position="attributes">
-                <attribute name="attrs">
-                    {'readonly': ['|', ('subscription_management', '=', 'upsell'), ('state', 'not in', ['draft', 'sent'])],
-                    'required': [('subscription_management', '!=', 'upsell')]}
-                </attribute>
-            </field>
             <field name="sale_order_template_id" position="replace">
                 <field name="sale_order_template_id" string="Subscription Plan"
                        attrs="{'invisible': ['|', ('state', 'in', ['sale', 'done']), ('subscription_management', '=', 'upsell')]}"
@@ -456,7 +450,7 @@
                     <!-- company_id invisible to be available in domains -->
                     <field name="company_id" invisible="1"/>
                        <button name="run_cron_manually" string="Trigger Now" type="object" class="btn-primary"
-                       confirm="This will trigger the action on all linked subsccriptions, regardless of possible timed conditions. Are you sure you want to proceed?"/>
+                       confirm="This will trigger the action on all linked subscriptions, regardless of possible timed conditions. Are you sure you want to proceed?"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">

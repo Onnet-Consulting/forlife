@@ -6,7 +6,6 @@
 # דודי מלכה <Dudimalka6@gmail.com>, 2022
 # Martin Trigaux, 2022
 # Yihya Hugirat <hugirat@gmail.com>, 2022
-# Lilach Gilliam <lilach.gilliam@gmail.com>, 2022
 # ZVI BLONDER <ZVIBLONDER@gmail.com>, 2022
 # 
 msgid ""
@@ -204,8 +203,10 @@ msgstr "סביבת עבודה"
 #. module: documents_hr
 #: code:addons/documents_hr/models/hr_employee.py:0
 #, python-format
-msgid "You must set an address on the employee to use Documents features."
-msgstr "עליך להגדיר כתובת של העובד כדי להשתמש בתכונות ניהול המסמכים."
+msgid ""
+"You must set a private address on the Employee in order to use Document's "
+"features."
+msgstr ""
 
 #. module: documents_hr
 #: model:ir.model.fields,field_description:documents_hr.field_res_company__documents_hr_folder

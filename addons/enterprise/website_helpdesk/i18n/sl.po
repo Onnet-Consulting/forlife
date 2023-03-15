@@ -2,12 +2,21 @@
 # This file contains the translation of the following modules:
 # 	* website_helpdesk
 # 
+# Translators:
+# Nejc G <nejc@luxim.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Grega Vavtar <grega@hbs.si>, 2022
+# Martin Trigaux, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.5alpha1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:50+0000\n"
+"Last-Translator: Jasmina Macur <jasmina@hbs.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -91,12 +100,12 @@ msgstr ""
 #. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.navbar_search_date
 msgid "All"
-msgstr ""
+msgstr "Vse"
 
 #. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.navbar_search_tag
 msgid "All Tags"
-msgstr ""
+msgstr "Vse oznake"
 
 #. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.navbar_search_type
@@ -109,6 +118,13 @@ msgstr ""
 #, python-format
 msgid "All results"
 msgstr ""
+
+#. module: website_helpdesk
+#. openerp-web
+#: code:addons/website_helpdesk/static/src/js/website_helpdesk_form_editor.js:0
+#, python-format
+msgid "Attachment"
+msgstr "Priponka"
 
 #. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.navbar_search_date
@@ -133,13 +149,13 @@ msgstr ""
 #. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.footer
 msgid "Contact Us"
-msgstr ""
+msgstr "Kontakt"
 
 #. module: website_helpdesk
 #: code:addons/website_helpdesk/__init__.py:0
 #, python-format
 msgid "Customer Care"
-msgstr ""
+msgstr "Služba za pomoč strankam"
 
 #. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.snippet_options
@@ -147,16 +163,23 @@ msgid "Date Filter"
 msgstr ""
 
 #. module: website_helpdesk
+#. openerp-web
+#: code:addons/website_helpdesk/static/src/js/website_helpdesk_form_editor.js:0
+#, python-format
+msgid "Description"
+msgstr "Opis"
+
+#. module: website_helpdesk
 #: model:ir.model.fields,field_description:website_helpdesk.field_helpdesk_team__website_form_view_id
 msgid "Form"
-msgstr ""
+msgstr "Obrazec"
 
 #. module: website_helpdesk
 #: code:addons/website_helpdesk/models/helpdesk.py:0
 #: code:addons/website_helpdesk/models/website.py:0
 #, python-format
 msgid "Help"
-msgstr ""
+msgstr "Pomoč"
 
 #. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.snippet_options
@@ -167,7 +190,7 @@ msgstr ""
 #: code:addons/website_helpdesk/models/website.py:0
 #, python-format
 msgid "Helpdesk Customer Satisfaction"
-msgstr ""
+msgstr "Zadovoljstvo strank pri tehnični službi"
 
 #. module: website_helpdesk
 #. openerp-web
@@ -176,7 +199,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.team
 #, python-format
 msgid "Helpdesk Team"
-msgstr ""
+msgstr "Skupina za pomoč uporabnikom"
 
 #. module: website_helpdesk
 #: model:ir.model.fields,field_description:website_helpdesk.field_helpdesk_team__is_published
@@ -187,19 +210,19 @@ msgstr ""
 #: code:addons/website_helpdesk/controllers/main.py:0
 #, python-format
 msgid "Last Month"
-msgstr ""
+msgstr "Prejšnji mesec"
 
 #. module: website_helpdesk
 #: code:addons/website_helpdesk/controllers/main.py:0
 #, python-format
 msgid "Last Week"
-msgstr ""
+msgstr "Prejšnji teden"
 
 #. module: website_helpdesk
 #: code:addons/website_helpdesk/controllers/main.py:0
 #, python-format
 msgid "Last Year"
-msgstr ""
+msgstr "Prejšnje leto"
 
 #. module: website_helpdesk
 #. openerp-web
@@ -210,21 +233,34 @@ msgid "No results found. Please try another search."
 msgstr ""
 
 #. module: website_helpdesk
+#: code:addons/website_helpdesk/models/helpdesk.py:0
+#, python-format
+msgid "Redirect to the Website Helpdesk Rating Page"
+msgstr ""
+
+#. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.knowledge_base
 msgid "Search for articles, best practices and more..."
 msgstr ""
 
 #. module: website_helpdesk
+#. openerp-web
+#: code:addons/website_helpdesk/static/src/js/website_helpdesk_form_editor.js:0
+#, python-format
+msgid "Subject"
+msgstr "Zadeva"
+
+#. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.team_form_1
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.ticket_submit_form
 msgid "Submit"
-msgstr ""
+msgstr "Pošlji"
 
 #. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.team_form_1
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.ticket_submit_form
 msgid "Submit a Ticket"
-msgstr ""
+msgstr "Oddaj zahtevek"
 
 #. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.snippet_options
@@ -236,11 +272,13 @@ msgstr ""
 #: model_terms:website.page,arch_db:website_helpdesk.aboutus_page
 msgid "Thank you for submitting your issue, our team will get right on it!"
 msgstr ""
+"Hvala, ker ste oddali svoj zahtevek. Naša ekipa ga bo obravnavala v "
+"najkrajšem možnem času!"
 
 #. module: website_helpdesk
 #: model:ir.model.fields,help:website_helpdesk.field_helpdesk_team__website_url
 msgid "The full URL to access the document through the website."
-msgstr ""
+msgstr "Polna URL povezava za dostop do dokumenta preko spletne strani."
 
 #. module: website_helpdesk
 #: code:addons/website_helpdesk/models/helpdesk.py:0
@@ -256,31 +294,45 @@ msgstr ""
 #. module: website_helpdesk
 #: model:ir.model.fields,field_description:website_helpdesk.field_helpdesk_team__feature_form_url
 msgid "URL to Submit Issue"
-msgstr ""
+msgstr "URL za oddajo vprašanja"
 
 #. module: website_helpdesk
 #: model:ir.model.fields,field_description:website_helpdesk.field_helpdesk_team__website_published
 msgid "Visible on current website"
-msgstr ""
+msgstr "Vidno na trenutni spletni strani"
 
 #. module: website_helpdesk
 #: model:ir.model,name:website_helpdesk.model_website
 #: model:ir.model.fields,field_description:website_helpdesk.field_helpdesk_team__website_id
 msgid "Website"
-msgstr ""
+msgstr "Spletna stran"
 
 #. module: website_helpdesk
 #: model:ir.model.fields,field_description:website_helpdesk.field_helpdesk_team__website_menu_id
 msgid "Website Menu"
-msgstr ""
+msgstr "Meni spletne strani"
 
 #. module: website_helpdesk
 #: model:ir.model.fields,field_description:website_helpdesk.field_helpdesk_team__website_url
 msgid "Website URL"
-msgstr ""
+msgstr "URL spletne strani"
+
+#. module: website_helpdesk
+#. openerp-web
+#: code:addons/website_helpdesk/static/src/js/website_helpdesk_form_editor.js:0
+#, python-format
+msgid "Your Email"
+msgstr "Vaša e-pošta"
+
+#. module: website_helpdesk
+#. openerp-web
+#: code:addons/website_helpdesk/static/src/js/website_helpdesk_form_editor.js:0
+#, python-format
+msgid "Your Name"
+msgstr "Vaše ime"
 
 #. module: website_helpdesk
 #: model_terms:ir.ui.view,arch_db:website_helpdesk.ticket_submited
 #: model_terms:website.page,arch_db:website_helpdesk.aboutus_page
 msgid "Your Ticket Number is"
-msgstr ""
+msgstr "Številka vašega zahtevka je"

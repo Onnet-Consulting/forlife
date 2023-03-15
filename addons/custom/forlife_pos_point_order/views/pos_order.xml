@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="onnet_inherit_view_pos">
+            <field name="name">onnet.inherit.view.pos</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='fiscal_position_id']" position="after">
+                    <field name="point_order"/>
+                    <field name="point_event_order"/>
+                    <field name="total_point"/>
+                    <field name="program_store_point_id"/>
+                    <field name="allow_compensate_point" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='lines']//tree//field[@name='full_product_name']" position="after">
+                    <field name="point_addition"/>
+                    <field name="point_addition_event"/>
+                    <field name="money_is_reduced"/>
+                </xpath>
+                <!--                Hide button-->
+                <!--                <xpath expr="//button[@name='refund']" position="after">-->
+                <!--                    <button name="action_point_addition" type="object" string="Addition Point" class="oe_highlight"/>-->
+                <!--                </xpath>-->
+                <xpath expr="//button[@name='refund']" position="after">
+                    <button name="%(action_view_pos_compensate_point_order)d"
+                            type="action" string="Compensate Point" class="oe_highlight"
+                            groups="forlife_promotion.promotion_manager"
+                            attrs="{'invisible': [('allow_compensate_point', '=', False)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='lines']//form//field[@name='notice']" position="after">
+                    <field name="discount_details_lines" colspan="3">
+                        <tree>
+                            <field name="type"/>
+                            <field name="name"/>
+                            <field name="listed_price"/>
+                            <field name="recipe"/>
+                            <field name="money_reduced"/>
+                            <field name="currency_id" invisible="1"/>
+                        </tree>
+                        <form>
+                            <group>
+                                <group>
+                                    <field name="type"/>
+                                    <field name="name"/>
+                                    <field name="listed_price"/>
+                                </group>
+                                <group>
+                                    <field name="recipe"/>
+                                    <field name="money_reduced"/>
+                                    <field name="currency_id" invisible="1"/>
+                                </group>
+
+                            </group>
+
+                        </form>
+                    </field>
+                </xpath>
+            </field>
+        </record>
+        <!--        <record id="view_pos_order_search_inherit" model="ir.ui.view">-->
+        <!--            <field name="name">pos.order.search.view.inherit</field>-->
+        <!--            <field name="model">pos.order</field>-->
+        <!--            <field name="inherit_id" ref="point_of_sale.view_pos_order_search"/>-->
+        <!--            <field name="arch" type="xml">-->
+        <!--                <field name="config_id" positon="after">-->
+        <!--                    <separator/>-->
+        <!--                    <filter string="Can Compensate Point" name="can_compensate_point"-->
+        <!--                            domain="[('allow_compensate_point','=', True)]"/>-->
+        <!--                </field>-->
+        <!--            </field>-->
+        <!--        </record>-->
+    </data>
+</odoo>

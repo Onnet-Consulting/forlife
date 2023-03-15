@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<t t-name="OrderSummary" t-inherit="point_of_sale.OrderSummary" t-inherit-mode="extension" owl="1">
+    <xpath expr="//div[hasclass('subentry')]" position="before">
+        <div t-if="props.order.card_rank_program" class="subentry">
+            Card Rank Discount:
+            <span class="cr-disc-value">
+                <t t-esc="env.pos.format_currency(props.order.get_total_card_rank_discount())"/>
+            </span>
+        </div>
+    </xpath>
+</t>

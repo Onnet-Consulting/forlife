@@ -247,10 +247,11 @@ class AccountFollowupReport(models.AbstractModel):
         mail_template = options.get('mail_template', followup_line.mail_template_id)
         template_src = None
         if mail_template:
-            template_src = mail_template.body_html
+            template_src = mail_template.with_context(lang=partner.lang or self.env.user.lang).body_html
 
         partner_followup_responsible_id = partner._get_followup_responsible()
         responsible_signature = partner_followup_responsible_id.signature or partner_followup_responsible_id.name
+        self = self.with_context(lang=partner.lang or self.env.user.lang)
         default_body = _("""Dear %s,
 
 
@@ -276,10 +277,11 @@ Best Regards,
         mail_template = options.get('mail_template', followup_line.mail_template_id)
         template_src = None
         if mail_template:
-            template_src = mail_template.subject
+            template_src = mail_template.with_context(lang=partner.lang or self.env.user.lang).subject
 
         partner_name = partner.name
         company_name = self.env.company.name
+        self = self.with_context(lang=partner.lang or self.env.user.lang)
         default_body = _("%s Payment Reminder - %s", company_name, partner_name)
 
         return self._get_rendered_body(partner.id, template_src, default_body, post_process=True)
@@ -346,7 +348,6 @@ Best Regards,
                 partner.with_context(mail_post_autofollow=True, lang=partner.lang or self.env.user.lang).message_post(
                     partner_ids=[to_send_partner.id],
                     body=body_html,
-                    email_from=email,
                     subject=self._get_email_subject(options),
                     subtype_id=self.env.ref('mail.mt_note').id,
                     model_description=_('payment reminder'),
@@ -367,7 +368,7 @@ Best Regards,
         action = self.env.ref('account_followup.action_report_followup')
         tz_date_str = format_date(self.env, fields.Date.today(), lang_code=self.env.user.lang or get_lang(self.env).code)
         followup_letter_name = _("Follow-up %s - %s", partner.display_name, tz_date_str)
-        followup_letter = action._render_qweb_pdf('account_followup.report_followup_print_all', partner.id, data={'options': options or {}})[0]
+        followup_letter = action.with_context(lang=partner.lang or self.env.user.lang)._render_qweb_pdf('account_followup.report_followup_print_all', partner.id, data={'options': options or {}})[0]
         attachment = self.env['ir.attachment'].create({
             'name': followup_letter_name,
             'raw': followup_letter,

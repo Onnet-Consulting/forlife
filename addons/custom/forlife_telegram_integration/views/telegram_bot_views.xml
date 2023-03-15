@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="telegram_bot_view_tree" model="ir.ui.view">
+            <field name="name">telegram_bot_view_tree</field>
+            <field name="model">telegram.bot</field>
+            <field name="arch" type="xml">
+                <tree string="telegram_bot_tree" editable="bottom">
+                    <field name="name"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="telegram_bot_action" model="ir.actions.act_window">
+            <field name="name">Telegram Bot</field>
+            <field name="res_model">telegram.bot</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <menuitem id="telegram_bot_menu" parent="integration_telegram_root_menu" action="telegram_bot_action" sequence="20"/>
+
+    </data>
+</odoo>

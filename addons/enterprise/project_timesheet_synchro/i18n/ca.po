@@ -12,6 +12,7 @@
 # Martin Trigaux, 2022
 # Manel Fernandez Ramirez <manelfera@outlook.com>, 2022
 # CristianCruzParra, 2022
+# Ivan Espinola, 2023
 # 
 msgid ""
 msgstr ""
@@ -19,7 +20,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:49+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
-"Last-Translator: CristianCruzParra, 2022\n"
+"Last-Translator: Ivan Espinola, 2023\n"
 "Language-Team: Catalan (https://www.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -110,6 +111,56 @@ msgid ""
 msgstr ""
 "Connecteu les fulles de temps a Odoo per sincronitzar les vostres activitats"
 " a tots els dispositius."
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not find server. Please check that the url you entered is correct."
+msgstr ""
+"No s'ha pogut trobar el servidor. Comproveu que l'URL que heu introduït "
+"sigui correcte."
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not login. Please check that the information you entered is correct."
+msgstr ""
+"No s'ha pogut iniciar la sessió. Comproveu que la informació que heu "
+"introduït sigui correcta."
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not reach the server. Please check that you have an internet "
+"connection, that the server address and database name you entered is valid, "
+"and that the server is online."
+msgstr ""
+"No s'ha pogut accedir al servidor. Comproveu que teniu una connexió a "
+"Internet, que l'adreça del servidor i el nom de la base de dades que heu "
+"introduït són vàlids i que el servidor està en línia."
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Could not reach the server. Please check that you have an internet "
+"connection, that the server address you entered is valid, and that the "
+"server is online."
+msgstr ""
+"No s'ha pogut accedir al servidor. Comproveu que teniu una connexió a "
+"Internet, que l'adreça del servidor que heu introduït és vàlida i que el "
+"servidor està en línia."
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -283,10 +334,24 @@ msgstr "La setmana vinent no disponible"
 
 #. module: project_timesheet_synchro
 #. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "No default project"
+msgstr "No hi ha cap projecte predeterminat"
+
+#. module: project_timesheet_synchro
+#. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid "No task"
 msgstr "Cap tasca"
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "No task selected"
+msgstr "No s'ha seleccionat cap tasca"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -297,6 +362,13 @@ msgid ""
 msgstr ""
 "Tingueu en compte que això crearà nous projectes i tasques a la vostra "
 "instància d'Odoo"
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "Odoo login failed"
+msgstr "Ha fallat l'inici de sessió a Odoo"
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -493,6 +565,43 @@ msgstr "Tasca"
 
 #. module: project_timesheet_synchro
 #. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"The code on your Odoo server is not up to date and an important update has "
+"been released. You or your system administrator should consider retrieving "
+"it as soon as possible."
+msgstr ""
+"El codi del servidor Odoo no està actualitzat i s'ha publicat una "
+"actualització important. Vostè o l'administrador del sistema haurien de "
+"considerar recuperar-lo al més aviat possible."
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"The server does not support timesheet synchronization. It requires Odoo "
+"Enterprise Edition version 9 or newer."
+msgstr ""
+"El servidor no permet la sincronització de fulls de temps. Requereix Odoo "
+"Enterprise Edition versió 9 o superior."
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"The server does not support timesheet synchronization. You should contact "
+"your administrator in order to install the module \"Synchronization with the"
+" external timesheet application\""
+msgstr ""
+"El servidor no permet la sincronització de fulls de temps. Heu de contactar "
+"amb el vostre administrador per tal d'instal·lar el mòdul \"Sincronització "
+"amb l'aplicació externa de fulls de temps\""
+
+#. module: project_timesheet_synchro
+#. openerp-web
 #: code:addons/project_timesheet_synchro/static/src/xml/project_timesheet.xml:0
 #, python-format
 msgid ""
@@ -533,6 +642,18 @@ msgstr "Temps dedicat (hhmm)"
 #, python-format
 msgid "Time unit"
 msgstr "Unitat de temps"
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid ""
+"Timesheet Synchronization is available in Odoo Enterprise Edition. You "
+"should consider upgrading your Odoo version if you would like to use it."
+msgstr ""
+"La sincronització del full de temps està disponible a l'edició Odoo "
+"Enterprise. Hauríeu de considerar actualitzar la vostra versió d'Odoo si "
+"voleu utilitzar-la."
 
 #. module: project_timesheet_synchro
 #. openerp-web
@@ -595,6 +716,13 @@ msgstr "Setmana"
 #, python-format
 msgid "Work Summary"
 msgstr "Resum del treball"
+
+#. module: project_timesheet_synchro
+#. openerp-web
+#: code:addons/project_timesheet_synchro/static/src/js/project_timesheet.js:0
+#, python-format
+msgid "Working time per week"
+msgstr "Temps de treball setmanal"
 
 #. module: project_timesheet_synchro
 #. openerp-web

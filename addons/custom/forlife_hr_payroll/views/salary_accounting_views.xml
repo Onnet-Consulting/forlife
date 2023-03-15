@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="salary_accounting_view_tree" model="ir.ui.view">
+            <field name="name">salary_accounting_view_tree</field>
+            <field name="model">salary.accounting</field>
+            <field name="arch" type="xml">
+                <tree string="salary_accounting_tree">
+                    <field name="salary_record_id" invisible="1"/>
+                    <field name="account_id"/>
+                    <field name="partner_id"/>
+                    <field name="title"/>
+                    <field name="entry_id"/>
+                    <field name="debit" sum="Total"/>
+                    <field name="credit" sum="Total"/>
+                    <field name="analytic_account_id"/>
+                    <field name="manufacture_order_code"/>
+                    <field name="project_code"/>
+                    <field name="internal_order_code"/>
+                    <field name="move_id" options='{"no_open": True, "no_create": True}'/>
+                    <field name="reverse_move_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="salary_accounting_view_search" model="ir.ui.view">
+            <field name="name">name</field>
+            <field name="model">salary.accounting</field>
+            <field name="arch" type="xml">
+                <search string="Accounting">
+                    <group expand="0" string="Group By...">
+                        <filter string="Entry" name="entry_group" domain="[]" context="{'group_by':'entry_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_view_accounting" model="ir.actions.act_window">
+            <field name="name">Salary Accounting</field>
+            <field name="res_model">salary.accounting</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="salary_accounting_view_tree"/>
+            <field name="search_view_id" ref="salary_accounting_view_search"/>
+            <field name="context">{'search_default_entry_group': 1}</field>
+        </record>
+    </data>
+</odoo>
