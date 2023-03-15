@@ -4,6 +4,35 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
+PICKING_TYPE = [
+    ('all', _('All')),
+    ('retail', _('Retail')),
+    ('wholesale', _('Wholesale')),
+    ('ecom', _('Sale Online'))
+]
+
+TITLES = [
+    'STT',
+    'Kho',
+    'Mã SP',
+    'Tên SP',
+    'Size',
+    'Màu',
+    'Đơn vị',
+    'Giá',
+    'Số lượng',
+    'Chiết khấu',
+    'Thành tiền',
+    'Thành tiền có thuế',
+    'Nhóm hàng',
+    'Dòng hàng',
+    'Kết cấu',
+    'Mã loại SP',
+    'Kênh bán',
+]
+
+COLUMN_WIDTHS = [5, 20, 30, 10, 20, 8, 20, 20, 30]
+
 
 class ReportNum1(models.TransientModel):
     _name = 'report.num1'
@@ -16,6 +45,7 @@ class ReportNum1(models.TransientModel):
     all_warehouses = fields.Boolean(string='All warehouses', default=False)
     product_ids = fields.Many2many('product.product', string='Products')
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
+    picking_type = fields.Selection(PICKING_TYPE, 'Picking_type', required=True, default='all')
 
     @api.constrains('from_date', 'to_date')
     def check_dates(self):
@@ -69,19 +99,21 @@ where po.company_id = %s
         params = self._get_query_params()
         self._cr.execute(query, params)
         data = self._cr.dictfetchall()
-        return data
+        return {
+            'titles': TITLES,
+            'data': data,
+        }
 
     def generate_xlsx_report(self, workbook):
         data = self.get_data()
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet(self._description)
-        titles = ['STT', 'Mã SP', 'Tên SP', 'Đơn vị', 'Giá', 'Số lượng', 'Chiết khấu', 'Thành tiền', 'Thành tiền có thuế']
-        column_widths = [5, 20, 30, 10, 20, 8, 20, 20, 30]
-        for idx, title in enumerate(titles):
+
+        for idx, title in enumerate(data.get('titles')):
             sheet.write(0, idx, title, formats.get('title_format'))
-            sheet.set_column(idx, idx, column_widths[idx])
+            sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
         row = 1
-        for value in data:
+        for value in data.get('data'):
             sheet.write(row, 0, value['num'], formats.get('int_number_format'))
             sheet.write(row, 1, value['product_barcode'], formats.get('normal_format'))
             sheet.write(row, 2, value['product_name'], formats.get('normal_format'))

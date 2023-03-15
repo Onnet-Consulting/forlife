@@ -2,8 +2,9 @@
 
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
-from odoo.tools.misc import xlsxwriter
-import io
+
+TITLES = ['Mã SP', 'Tên SP', 'Đơn vị', 'Tổng tồn']
+COLUMN_WIDTHS = [20, 30, 20, 20]
 
 
 class ReportNum3(models.TransientModel):
@@ -160,17 +161,20 @@ order by pp.id
         data = self._cr.dictfetchall()
         data = self.format_data(data)
         warehouse_data = self.get_warehouse_data()
-        return {"data": data, **warehouse_data}
+        return {
+            'titles': TITLES + warehouse_data['warehouse_names'],
+            "data": data,
+            **warehouse_data
+        }
 
     def generate_xlsx_report(self, workbook):
         data = self.get_data()
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet(self._description)
-        titles = ['Mã SP', 'Tên SP', 'Đơn vị', 'Tổng tồn'] + data['warehouse_names']
-        column_widths = [20, 30, 20, 20] + [20] * len(data['warehouse_names'])
-        for idx, title in enumerate(titles):
+        columns = COLUMN_WIDTHS + [20] * len(data['warehouse_names'])
+        for idx, title in enumerate(TITLES):
             sheet.write(0, idx, title, formats.get('title_format'))
-            sheet.set_column(idx, idx, column_widths[idx])
+            sheet.set_column(idx, idx, columns[idx])
         row = 1
         for value in data['data']:
             sheet.write(row, 0, value['product_barcode'], formats.get('normal_format'))

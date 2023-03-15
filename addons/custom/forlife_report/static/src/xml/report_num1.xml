@@ -10,15 +10,9 @@
         <table>
             <thead>
                 <tr>
-                    <th>STT</th>
-                    <th>Mã SP</th>
-                    <th>Tên SP</th>
-                    <th>Đơn vị</th>
-                    <th>Giá</th>
-                    <th>Số lượng</th>
-                    <th>Chiết khấu</th>
-                    <th>Thành tiền</th>
-                    <th>Thành tiền có thuế</th>
+                    <t t-foreach="widget.titles" t-as="title">
+                        <th><t t-esc="title"/></th>
+                    </t>
                 </tr>
             </thead>
             <tbody>

@@ -28,6 +28,11 @@
                                    widget="many2many_tags"/>
                         </group>
                     </group>
+                    <group>
+                        <group>
+                            <field name="picking_type"/>
+                        </group>
+                    </group>
                 </sheet>
                 <footer>
                     <button name="print_xlsx" type="object" string="Download Excel" class="btn-primary"/>

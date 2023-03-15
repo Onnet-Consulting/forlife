@@ -12,9 +12,9 @@
         <table style="width:65%">
             <thead>
                 <tr>
-                    <th>Mã SP</th>
-                    <th>Tên SP</th>
-                    <th>Tồn</th>
+                    <t t-foreach="widget.titles" t-as="title">
+                        <th><t t-esc="title"/></th>
+                    </t>
                 </tr>
             </thead>
             <tbody>

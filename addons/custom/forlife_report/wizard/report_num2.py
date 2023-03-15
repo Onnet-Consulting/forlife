@@ -2,6 +2,9 @@
 
 from odoo import api, fields, models, _
 
+TITLES = ['Mã SP', 'Tên SP', 'Tồn']
+COLUMN_WIDTHS = [20, 30, 20]
+
 
 class ReportNum2(models.TransientModel):
     _name = 'report.num2'
@@ -95,7 +98,8 @@ from stock_product stp
             else:
                 detail_data_by_product_id[product_id].append(detail_data)
         return {
-            "product_data": list(data_by_product_id.values()),
+            'titles': TITLES,
+            "data": list(data_by_product_id.values()),
             "detail_data_by_product_id": detail_data_by_product_id
         }
 
@@ -103,13 +107,11 @@ from stock_product stp
         data = self.get_data()
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet(self._description)
-        titles = ['Mã SP', 'Tên SP', 'Tồn']
-        column_widths = [20, 30, 20]
-        for idx, title in enumerate(titles):
+        for idx, title in enumerate(TITLES):
             sheet.write(0, idx, title, formats.get('title_format'))
-            sheet.set_column(idx, idx, column_widths[idx])
+            sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
         row = 1
-        for value in data['product_data']:
+        for value in data['data']:
             sheet.write(row, 0, value['product_barcode'], formats.get('normal_format'))
             sheet.write(row, 1, value['product_name'], formats.get('normal_format'))
             sheet.write(row, 2, value['quantity'], formats.get('int_number_format'))

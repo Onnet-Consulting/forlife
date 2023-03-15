@@ -16,11 +16,8 @@ odoo.define('forlife_report.report_num2', function (require) {
         },
 
         parse_data: function (data) {
-            this.data = data.product_data;
             this.detail_data_by_product_id = data.detail_data_by_product_id;
-            this.total_records = this.data.length;
-            this.total_page = Math.ceil(this.total_records / this.record_per_page);
-            this.options = this.build_options(1);
+            this._super(...arguments);
         },
 
         show_detail: function (e) {

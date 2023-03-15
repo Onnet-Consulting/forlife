@@ -10,12 +10,8 @@
         <table>
             <thead>
                 <tr>
-                    <th>Mã SP</th>
-                    <th>Tên SP</th>
-                    <th>Đơn vị</th>
-                    <th>Tổng tồn</th>
-                    <t t-foreach="widget.warehouse_names" t-as="wh_name">
-                        <th><t t-esc="wh_name"/></th>
+                    <t t-foreach="widget.titles" t-as="title">
+                        <th><t t-esc="title"/></th>
                     </t>
                 </tr>
             </thead>
