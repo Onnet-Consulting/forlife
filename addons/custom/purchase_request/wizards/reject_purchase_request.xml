@@ -9,7 +9,7 @@
                         <field name="rejection_reason" />
                     </group>
                     <footer>
-                        <button name="reject_confirm_action" string="Submit" type="object" class="btn-primary"/>
+                        <button name="reject_confirm_action_purchase_request" string="Submit" type="object" class="btn-primary"/>
                         <button string="Cancel" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>

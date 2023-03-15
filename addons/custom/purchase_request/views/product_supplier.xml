@@ -11,6 +11,9 @@
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="product_uom"/>
                 </xpath>
+                <xpath expr="//field[@name='product_uom']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
 
             </field>
         </record>

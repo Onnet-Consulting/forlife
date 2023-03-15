@@ -5,6 +5,17 @@ from odoo.tools import float_compare
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
+    department_id = fields.Many2one('hr.department', string="Department")
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super().fields_get(allfields=allfields, attributes=attributes)
+        if res.get('detailed_type') and res.get('detailed_type').get("selection"):
+            detailed_type = res.get('detailed_type').get("selection")
+            for value in detailed_type:
+                if value and value[0] == 'consu':
+                    detailed_type.remove(value)
+        return res
+
     def _prepare_sellers(self, partner_id=False, uom_id=False, params=False):
         if partner_id and uom_id:
             return self.seller_ids.filtered(
@@ -26,7 +37,8 @@ class ProductProduct(models.Model):
             # Set quantity in UoM of seller
             quantity_uom_seller = quantity
             if quantity_uom_seller and uom_id and uom_id != seller.product_uom:
-                quantity_uom_seller = uom_id._compute_quantity(quantity_uom_seller, seller.product_uom)
+                continue
+                # quantity_uom_seller = uom_id._compute_quantity(quantity_uom_seller, seller.product_uom)
 
             if seller.date_start and seller.date_start > date:
                 continue

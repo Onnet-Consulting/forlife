@@ -40,6 +40,21 @@ msgid "Asset code"
 msgstr "Mã tài sản"
 
 #. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__asset_name
+msgid "Asset name"
+msgstr "Tên tài sản"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__product_type
+msgid "Type"
+msgstr "Loại sản phẩm"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__price_tax
+msgid "Tax (%)"
+msgstr "Thuế (%)"
+
+#. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_cost_center__code
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_event__code
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__code
@@ -55,7 +70,7 @@ msgstr "Công ty"
 
 #. module: forlife_purchase
 #: model:ir.actions.act_window,name:forlife_purchase.cost_center_action
-#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__cost_center_id
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__account_analytic_id
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.cost_center_tree
 msgid "Cost Center"
 msgstr "Trung tâm chi phí"
@@ -162,14 +177,34 @@ msgid "Free Good"
 msgstr "Hàng tặng"
 
 #. module: forlife_purchase
-#: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__purchase_type__goods
+#: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__purchase_type__product
 msgid "Goods"
 msgstr "Hàng hóa"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__has_contract
 msgid "Have a contract?"
-msgstr "Có hợp đồng?"
+msgstr "Hợp đồng khung?"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__date_order
+msgid "Order Date"
+msgstr "Ngày đặt hàng"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__production_id
+msgid "Production Order"
+msgstr "Lệnh sản xuất"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__has_contract_commerce
+msgid "Commerce Contract"
+msgstr "Hợp đồng thương mại?"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__invoice_status
+msgid "Billing Status"
+msgstr "Trạng thái hóa đơn"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__has_invoice
@@ -295,17 +330,12 @@ msgstr "Đơn vị quy đổi"
 #. module: forlife_purchase
 #: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__purchase_type__service
 msgid "Service"
-msgstr "Sịch vụ"
+msgstr "Dịch vụ"
 
 #. module: forlife_purchase
 #: model:ir.model,name:forlife_purchase.model_stock_move
 msgid "Stock Move"
 msgstr "Dịch chuyển kho"
-
-#. module: forlife_purchase
-#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__total_discount
-msgid "Total Discount"
-msgstr "Tổng chiết khấu"
 
 #. module: forlife_purchase
 #: model:ir.model,name:forlife_purchase.model_stock_picking

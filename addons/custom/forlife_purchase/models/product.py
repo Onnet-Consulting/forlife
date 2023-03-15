@@ -7,6 +7,7 @@ class ProductTemplate(models.Model):
     _inherit = "product.template"
 
     detailed_type = fields.Selection(selection_add=[('asset', 'Asset')], ondelete={'asset': 'set default'})
+    type = fields.Selection(selection_add=[('asset', 'Asset')])
     barcode_country = fields.Many2one('forlife.barcode', string="Origin")
     barcode = fields.Char(
         'Barcode', copy=False, index='btree_not_null',

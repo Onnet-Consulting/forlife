@@ -2,4 +2,11 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_purchase_request,purchase request,model_purchase_request,,1,1,1,1
 access_purchase_request_line,purchase request,model_purchase_request_line,,1,1,1,1
 access_reject_purchase_request,reject purchase request,model_reject_purchase_request,,1,1,1,1
+access_reject_asset_transfer,reject_asset_transfer,model_reject_asset_transfer,,1,1,1,1
 access_approval_logs,approval_logs,model_approval_logs,base.group_user,1,1,1,1
+
+access_purchase_request,purchase_request,model_purchase_request,purchase_request.admin_purchase_request_group,1,1,1,1
+access_purchase_request,purchase_request,model_purchase_request,purchase_request.user_purchase_request_group,1,1,1,1
+access_production_order,production_order,model_production_order,base.group_user,1,1,1,1
+access_production_order_line,production_order_line,model_production_order_line,base.group_user,1,1,1,1
+access_cancel_purchase_request,cancel_purchase_request,model_cancel_purchase_request,,1,1,1,1
