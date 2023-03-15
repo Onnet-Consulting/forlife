@@ -173,7 +173,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             $('.o_input_code').each(function( index ) {
                 if($(this).val()){
                     codes.push({
-                        value: $.trim($(this).val())
+                        value: $.trim($(this).val()).toUpperCase()
                     })
                 }else{
                     codes.push({
