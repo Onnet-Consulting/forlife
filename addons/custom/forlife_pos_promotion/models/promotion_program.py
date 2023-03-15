@@ -32,6 +32,7 @@ class PromotionProgram(models.Model):
 
     campaign_id = fields.Many2one('promotion.campaign', name='Campaign', ondelete='restrict')
 
+    active = fields.Boolean(default=True)
     name = fields.Char('Program Name', required=True)
     code = fields.Char('Code')
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)

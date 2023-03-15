@@ -11,7 +11,6 @@ from odoo.tools.convert import safe_eval
 class PromotionConfiguration(models.AbstractModel):
     _name = 'promotion.configuration'
 
-    active = fields.Boolean(default=True)
     sequence = fields.Integer(default=10)
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
