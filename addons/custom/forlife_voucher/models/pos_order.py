@@ -30,7 +30,7 @@ class PosOrder(models.Model):
                             v.voucher_id.state = 'off value'
                             v.voucher_id.price_residual = 0
                     v.voucher_id.order_use_ids = [(4, pos.id)]
-
+            pos.action_create_voucher()
         return pos_id
 
     def generate_account_journal(self, voucher):
