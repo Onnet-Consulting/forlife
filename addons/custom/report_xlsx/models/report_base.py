@@ -57,6 +57,7 @@ class ReportBase(models.AbstractModel):
         datetime_format = {
             'num_format': "dd/mm/yy hh:mm:ss",
         }
+        align_right = {'align': 'right'}
         datetime_format.update(normal_format)
         float_number_format = {}
         center_format = copy.copy(normal_format)
@@ -76,6 +77,7 @@ class ReportBase(models.AbstractModel):
         center_format = workbook.add_format(center_format)
         header_format = workbook.add_format(header_format)
 
+        float_number_format.update(align_right)
         float_number_format = workbook.add_format(float_number_format)
         float_number_format.set_num_format('#,##0.00')
         int_number_format = workbook.add_format(int_number_format)

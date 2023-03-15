@@ -7,20 +7,28 @@
     </t>
     <t t-name="ReportNum1MainTemplate">
         <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
-        <table>
+        <table class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped">
             <t t-call="ReportTitle"/>
             <tbody>
                 <t t-foreach="options.data" t-as="line">
                     <tr>
                         <td><t t-esc="line.num"/></td>
+                        <td><t t-esc="line.warehouse"/></td>
                         <td><t t-esc="line.product_barcode"/></td>
                         <td><t t-esc="line.product_name"/></td>
+                        <td><t t-esc="line.product_size"/></td>
+                        <td><t t-esc="line.product_color"/></td>
                         <td><t t-esc="line.uom_name"/></td>
                         <td><t t-esc="format_decimal(line.price_unit, 2)"/></td>
                         <td><t t-esc="format_decimal(line.qty)"/></td>
-                        <td><t t-esc="format_decimal(line.discount_percent, 2)"/></td>
+                        <td><t t-esc="format_decimal(line.discount, 2)"/></td>
                         <td><t t-esc="format_decimal(line.amount_without_tax, 2)"/></td>
                         <td><t t-esc="format_decimal(line.amount_with_tax, 2)"/></td>
+                        <td><t t-esc="line.nhom_hang"/></td>
+                        <td><t t-esc="line.dong_hang"/></td>
+                        <td><t t-esc="line.ket_cau"/></td>
+                        <td><t t-esc="line.ma_loai_sp"/></td>
+                        <td><t t-esc="line.kenh_ban"/></td>
                     </tr>
                 </t>
             </tbody>

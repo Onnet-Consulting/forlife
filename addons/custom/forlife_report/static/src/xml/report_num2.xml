@@ -9,7 +9,7 @@
         </xpath>
     </t>
     <t t-name="ReportNum2MainTemplate">
-        <table style="width:65%">
+        <table style="width:65%" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped">
             <t t-call="ReportTitle"/>
             <tbody>
                 <t t-foreach="options.data" t-as="line">
