@@ -2,8 +2,8 @@
 
 from odoo import api, fields, models, _
 
-TITLES = ['Mã SP', 'Tên SP', 'Tồn']
-COLUMN_WIDTHS = [20, 30, 20]
+TITLES = ['Mã SP', 'Tên SP', 'Size', 'Màu', 'Tồn', 'Giá niêm yết', 'Giá khuyến mãi']
+COLUMN_WIDTHS = [20, 30, 20, 20, 20, 25, 25]
 
 
 class ReportNum2(models.TransientModel):
@@ -38,7 +38,11 @@ class ReportNum2(models.TransientModel):
 with stock_product as
          (select sqt.product_id    as product_id,
                  sw.id             as warehouse_id,
-                 sum(sqt.quantity) as quantity
+                 ''                as product_size,
+                 ''                as product_color,
+                 sum(sqt.quantity) as quantity,
+                 ''                as list_price,
+                 ''                as discount_price
 
           from stock_quant sqt
                    left join product_product pp on sqt.product_id = pp.id
@@ -47,6 +51,10 @@ with stock_product as
                              on sl.parent_path like concat('%%/', sw.view_location_id, '/%%')
           where {where_query}
           group by sqt.product_id,
+                   product_size,
+                   product_color,
+                   list_price,
+                   discount_price,
                    sw.id
          )
 select pp.id                                                                   as product_id,
@@ -107,12 +115,18 @@ from stock_product stp
         data = self.get_data()
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet(self._description)
+        sheet.set_row(0, 25)
+        sheet.write(0, 0, self._description, formats.get('header_format'))
         for idx, title in enumerate(TITLES):
-            sheet.write(0, idx, title, formats.get('title_format'))
+            sheet.write(2, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
-        row = 1
+        row = 3
         for value in data['data']:
-            sheet.write(row, 0, value['product_barcode'], formats.get('normal_format'))
-            sheet.write(row, 1, value['product_name'], formats.get('normal_format'))
-            sheet.write(row, 2, value['quantity'], formats.get('int_number_format'))
+            sheet.write(row, 0, value.get('product_barcode'), formats.get('normal_format'))
+            sheet.write(row, 1, value.get('product_name'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('product_size'), formats.get('normal_format'))
+            sheet.write(row, 3, value.get('product_color'), formats.get('normal_format'))
+            sheet.write(row, 4, value.get('quantity'), formats.get('center_format'))
+            sheet.write(row, 5, value.get('list_price'), formats.get('normal_format'))
+            sheet.write(row, 6, value.get('discount_price'), formats.get('normal_format'))
             row += 1

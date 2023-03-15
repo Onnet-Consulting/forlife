@@ -123,14 +123,14 @@ where po.company_id = %s
         sheet.set_row(0, 25)
         sheet.write(0, 0, self._description, formats.get('header_format'))
         sheet.write(2, 0, _('From date: %s') % self.from_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
-        sheet.write(3, 0, _('From date: %s') % self.to_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
+        sheet.write(3, 0, _('To date: %s') % self.to_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
         sheet.write(4, 0, _('Picking type: %s') % next((t[1] for t in self._fields.get('picking_type').selection if t[0] == self.picking_type), ''), formats.get('normal_format'))
         for idx, title in enumerate(data.get('titles')):
             sheet.write(6, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
         row = 7
         for value in data.get('data'):
-            sheet.write(row, 0, value.get('num'), formats.get('int_number_format'))
+            sheet.write(row, 0, value.get('num'), formats.get('center_format'))
             sheet.write(row, 1, value.get('warehouse'), formats.get('normal_format'))
             sheet.write(row, 2, value.get('product_barcode'), formats.get('normal_format'))
             sheet.write(row, 3, value.get('product_name'), formats.get('normal_format'))
@@ -138,7 +138,7 @@ where po.company_id = %s
             sheet.write(row, 5, value.get('product_color'), formats.get('normal_format'))
             sheet.write(row, 6, value.get('uom_name'), formats.get('normal_format'))
             sheet.write(row, 7, value.get('price_unit'), formats.get('float_number_format'))
-            sheet.write(row, 8, value.get('qty'), formats.get('int_number_format'))
+            sheet.write(row, 8, value.get('qty'), formats.get('center_format'))
             sheet.write(row, 9, value.get('discount'), formats.get('float_number_format'))
             sheet.write(row, 10, value.get('amount_without_tax'), formats.get('float_number_format'))
             sheet.write(row, 11, value.get('amount_with_tax'), formats.get('float_number_format'))

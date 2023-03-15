@@ -172,10 +172,17 @@ order by pp.id
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet(self._description)
         columns = COLUMN_WIDTHS + [20] * len(data['warehouse_names'])
-        for idx, title in enumerate(TITLES):
-            sheet.write(0, idx, title, formats.get('title_format'))
+        sheet.set_row(0, 25)
+        sheet.write(0, 0, self._description, formats.get('header_format'))
+        row = 2
+        if self.from_date:
+            sheet.write(2, 0, _('From date: %s') % self.from_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
+            row += 1
+        sheet.write(row, 0, _('To date: %s') % self.to_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
+        for idx, title in enumerate(TITLES + data['warehouse_names']):
+            sheet.write(row + 2, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, columns[idx])
-        row = 1
+        row = row + 3
         for value in data['data']:
             sheet.write(row, 0, value['product_barcode'], formats.get('normal_format'))
             sheet.write(row, 1, value['product_name'], formats.get('normal_format'))
