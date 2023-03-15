@@ -8,13 +8,7 @@
 
     <t t-name="ReportNum3MainTemplate">
         <table>
-            <thead>
-                <tr>
-                    <t t-foreach="widget.titles" t-as="title">
-                        <th><t t-esc="title"/></th>
-                    </t>
-                </tr>
-            </thead>
+            <t t-call="ReportTitle"/>
             <tbody>
                 <t t-foreach="options.data" t-as="line">
                     <tr>

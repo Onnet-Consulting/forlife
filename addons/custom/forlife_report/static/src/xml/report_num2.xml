@@ -10,13 +10,7 @@
     </t>
     <t t-name="ReportNum2MainTemplate">
         <table style="width:65%">
-            <thead>
-                <tr>
-                    <t t-foreach="widget.titles" t-as="title">
-                        <th><t t-esc="title"/></th>
-                    </t>
-                </tr>
-            </thead>
+            <t t-call="ReportTitle"/>
             <tbody>
                 <t t-foreach="options.data" t-as="line">
                     <tr class="line_stock_detail" t-att-id="line.product_id">
