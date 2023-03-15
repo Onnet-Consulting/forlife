@@ -18,7 +18,7 @@ class Voucher(models.Model):
     program_voucher_id = fields.Many2one('program.voucher', 'Program name')
     purpose_id = fields.Many2one('setup.voucher', 'Purpose', required=True)
     currency_id = fields.Many2one('res.currency', compute='_compute_currency_field')  # related currency of program voucher
-    type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True)
+    type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Loại', required=True)
     state = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string='State', required=True,
                              tracking=True, default='new')
     price = fields.Monetary('Mệnh giá')
@@ -113,6 +113,7 @@ class Voucher(models.Model):
                     start_date = self._format_time_zone(vourcher.start_date)
                     end_date = self._format_time_zone(vourcher.end_date)
                     end_date_format = datetime.strptime(end_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
+                    end_date_format = f"{end_date_format.day}/{end_date_format.month}/{end_date_format.year} {end_date_format.hour}:{end_date_format.minute}:{end_date_format.second}"
                     start_date_format = datetime.strptime(start_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
                     data.append({
                         'value': {

@@ -12,7 +12,7 @@ class PosVoucherLine(models.Model):
     type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True, related='voucher_id.type')
     end_date = fields.Datetime('Ngày hết hạn', related='voucher_id.end_date')
     price_used = fields.Monetary('Giá trị đã dùng')
-    price_residual = fields.Monetary('Giá trị còn lại')
+    price_residual = fields.Monetary('Giá trị còn lại', related='voucher_id.price_residual')
     currency_id = fields.Many2one('res.currency', related='voucher_id.currency_id')
     brand_id = fields.Many2one('res.brand')
     partner = fields.Many2one('res.partner')

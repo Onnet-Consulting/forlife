@@ -16,11 +16,15 @@ odoo.define('forlife_voucher.PosPaymentScreenVoucher', function (require) {
                 if(paymentMethod.is_voucher){
                     const {confirmed, payload: data} = await this.showPopup('VoucherPopup', {
                         confirm: this.env._t('Xác nhận'),
-                        title: this.env._t('Voucher')
+                        title: this.env._t('Voucher'),
+                        cancel: this.env._t('Hủy')
                     });
+                    if(!confirmed){
+                        return;
+                    }
                     let result = this.currentOrder.add_paymentline(paymentMethod);
                     var price_used = 0;
-                    if(confirm){
+                    if(confirmed){
                         if(data){
                             for(let i=0; i< data.length; i++){
                                 if (data[i].value){
