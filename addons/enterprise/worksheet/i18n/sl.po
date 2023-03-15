@@ -2,12 +2,22 @@
 # This file contains the translation of the following modules:
 # 	* worksheet
 # 
+# Translators:
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# Boris Kodelja <boris@hbs.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# laznikd <laznik@mentis.si>, 2022
+# Martin Trigaux, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.5alpha1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:50+0000\n"
+"Last-Translator: Jasmina Macur <jasmina@hbs.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,7 +29,7 @@ msgstr ""
 #: code:addons/worksheet/models/worksheet_template.py:0
 #, python-format
 msgid "%s (copy)"
-msgstr ""
+msgstr "%s (kopija)"
 
 #. module: worksheet
 #: model_terms:ir.ui.view,arch_db:worksheet.worksheet_template_view_form
@@ -29,45 +39,45 @@ msgstr ""
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__action_id
 msgid "Action"
-msgstr ""
+msgstr "Dejanje"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__active
 msgid "Active"
-msgstr ""
+msgstr "Aktivno"
 
 #. module: worksheet
 #: code:addons/worksheet/models/worksheet_template.py:0
 #: model_terms:ir.ui.view,arch_db:worksheet.worksheet_template_view_form
 #, python-format
 msgid "Analysis"
-msgstr ""
+msgstr "Analiza"
 
 #. module: worksheet
 #: model_terms:ir.ui.view,arch_db:worksheet.worksheet_template_view_form
 #: model_terms:ir.ui.view,arch_db:worksheet.worksheet_template_view_search
 msgid "Archived"
-msgstr ""
+msgstr "Arhivirano"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__color
 msgid "Color"
-msgstr ""
+msgstr "Barva"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__company_ids
 msgid "Companies"
-msgstr ""
+msgstr "Podjetja"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Ustvaril"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Ustvarjeno"
 
 #. module: worksheet
 #. openerp-web
@@ -79,7 +89,7 @@ msgstr ""
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Prikazani naziv"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__res_model
@@ -89,32 +99,32 @@ msgstr ""
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Zadnjič spremenjeno"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Zadnji posodobil"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Zadnjič posodobljeno"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__model_id
 msgid "Model"
-msgstr ""
+msgstr "Model"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__name
 msgid "Name"
-msgstr ""
+msgstr "Naziv"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__report_view_id
@@ -124,7 +134,7 @@ msgstr ""
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Zaporedje"
 
 #. module: worksheet
 #: code:addons/worksheet/models/worksheet_template.py:0
@@ -153,12 +163,12 @@ msgstr ""
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__worksheet_count
 msgid "Worksheet Count"
-msgstr ""
+msgstr "Štetje poročil"
 
 #. module: worksheet
 #: model:ir.model,name:worksheet.model_worksheet_template
 msgid "Worksheet Template"
-msgstr ""
+msgstr "Predloga poročila"
 
 #. module: worksheet
 #: model_terms:ir.ui.view,arch_db:worksheet.worksheet_template_view_search
@@ -168,7 +178,7 @@ msgstr ""
 #. module: worksheet
 #: model_terms:ir.ui.view,arch_db:worksheet.worksheet_template_view_list
 msgid "Worksheets"
-msgstr ""
+msgstr "Poročila"
 
 #. module: worksheet
 #: model_terms:ir.ui.view,arch_db:worksheet.worksheet_template_view_form

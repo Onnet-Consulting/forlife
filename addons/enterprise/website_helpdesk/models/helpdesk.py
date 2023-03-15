@@ -98,7 +98,7 @@ class HelpdeskTeam(models.Model):
                     'name': xmlid,
                     'key': xmlid
                 })
-                self.env['ir.model.data'].create({
+                self.env['ir.model.data'].sudo().create({
                     'module': 'website_helpdesk',
                     'name': xmlid.split('.')[1],
                     'model': 'ir.ui.view',

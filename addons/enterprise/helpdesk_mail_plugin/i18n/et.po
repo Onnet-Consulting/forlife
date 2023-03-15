@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Eneli Õigus <enelioigus@gmail.com>, 2022
+# Leaanika Randmets, 2022
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-14 11:00+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Eneli Õigus <enelioigus@gmail.com>, 2022\n"
+"Last-Translator: Leaanika Randmets, 2022\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,49 +32,49 @@ msgstr "Lahendatud"
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_gmail.xml:0
 #, python-format
 msgid "Could not create the ticket"
-msgstr ""
+msgstr "Ei saanud piletit luua"
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_gmail.xml:0
 #, python-format
 msgid "Email already logged on the ticket"
-msgstr ""
+msgstr "E-kiri on juba logitud piletile"
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_outlook.xml:0
 #, python-format
 msgid "Log Email Into Ticket"
-msgstr ""
+msgstr "Logi e-kiri piletile"
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_gmail.xml:0
 #, python-format
 msgid "Log the email on the ticket"
-msgstr ""
+msgstr "Logi e-kiri piletile"
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_outlook.xml:0
 #, python-format
 msgid "No tickets found for this contact."
-msgstr ""
+msgstr "Sellel kontakil puuduvad piletid."
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_outlook.xml:0
 #, python-format
 msgid "Save Contact to create new Tickets."
-msgstr ""
+msgstr "Salvesta kontakt, et luua uusi pileteid."
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_gmail.xml:0
 #, python-format
 msgid "Save the contact to create new tickets."
-msgstr ""
+msgstr "Salvesta kontakt, et luua uusi pileteid."
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
@@ -81,12 +82,12 @@ msgstr ""
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_outlook.xml:0
 #, python-format
 msgid "The Contact needs to exist to create Ticket."
-msgstr ""
+msgstr "Kontakt peab olema loodud, et saaks luua piletit."
 
 #. module: helpdesk_mail_plugin
 #: model:ir.actions.act_window,name:helpdesk_mail_plugin.helpdesk_ticket_action_form_edit
 msgid "Ticket: redirect to form in edit mode"
-msgstr ""
+msgstr "Pilet: suuna muutmisvormile"
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
@@ -101,11 +102,11 @@ msgstr "Kasutajatoe piletid"
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_outlook.xml:0
 #, python-format
 msgid "Tickets (%(count)s)"
-msgstr ""
+msgstr "Piletid (%(count)s)"
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_gmail.xml:0
 #, python-format
 msgid "Tickets (%s)"
-msgstr ""
+msgstr "Piletid (%s)"

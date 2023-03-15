@@ -62,6 +62,12 @@ class PromotionProgram(models.Model):
     limit_usage = fields.Boolean(string='Limit Usage')
     max_usage = fields.Integer()
 
+    limit_usage_per_order = fields.Boolean(string='Limit usage per Order', help='Based on qty of combo/product')
+    max_usage_per_order = fields.Integer(string='Max usage per Order', help='Based on qty of combo/product')
+
+    limit_usage_per_customer = fields.Boolean(string='Limit usage per Customer', help='Based on qty of combo/product')
+    max_usage_per_customer = fields.Integer(string='Max usage per Customer', help='Based on qty of combo/product')
+
     state = fields.Selection(related='campaign_id.state', store=True, readonly=True)
 
     promotion_type = fields.Selection([
@@ -87,7 +93,7 @@ class PromotionProgram(models.Model):
     with_code = fields.Boolean('Use a code', default=False)
     combo_code = fields.Char('Combo Code')
     combo_name = fields.Char('Combo Name')
-    apply_multi_program = fields.Boolean()
+    qty_per_combo = fields.Float(compute='_compute_qty_per_combo')
     # Code
     discount_based_on = fields.Selection([
         ('unit_price', 'Unit Price'),
@@ -103,6 +109,9 @@ class PromotionProgram(models.Model):
     # Cart
     order_amount_min = fields.Float()
     # Pricelist
+
+    pricelist_item_ids = fields.One2many('promotion.pricelist.item', 'program_id', string='Pricelist Item')
+    pricelist_item_count = fields.Integer(compute='_compute_pricelist_item_count')
 
     # Rewards
     reward_type = fields.Selection(REWARD_TYPE, string='Reward Type')
@@ -127,6 +136,10 @@ class PromotionProgram(models.Model):
     disc_max_amount = fields.Float('Max Discount Amount')
 
     show_gen_code = fields.Boolean('Show Gencode button', compute='_show_gen_code')
+
+    registering_tax = fields.Boolean('Register Tax')
+    tax_from_date = fields.Date('Registered Tax From')
+    tax_to_date = fields.Date('Registered Tax To')
 
     @api.constrains('combo_line_ids')
     def _check_duplicate_product_in_combo(self):
@@ -189,6 +202,14 @@ class PromotionProgram(models.Model):
             usages = self.env['promotion.usage.line'].search([('program_id', '=', program.id)])
             program.total_order_count = len(usages.mapped('order_id'))
             program.order_ids = usages.mapped('order_id')
+
+    def _compute_pricelist_item_count(self):
+        for pro in self:
+            pro.pricelist_item_count = len(pro.pricelist_item_ids)
+
+    def _compute_qty_per_combo(self):
+        for pro in self:
+            pro.qty_per_combo = sum(pro.combo_line_ids.mapped('quantity')) or 0.0
 
     def _qty_min_required(self):
         for program in self:
@@ -275,4 +296,17 @@ class PromotionProgram(models.Model):
             ],
             'type': 'ir.actions.act_window',
             'domain': [('id', 'in', self.order_ids.ids)],
+        }
+
+    def action_open_pricelist_items(self):
+        return {
+            'name': _('Product Pricelist Items'),
+            'res_model': 'promotion.pricelist.item',
+            'view_mode': 'tree',
+            'views': [
+                (self.env.ref('forlife_pos_promotion.promotion_pricelist_item_tree_view').id, 'tree'),
+            ],
+            'type': 'ir.actions.act_window',
+            'domain': [('id', 'in', self.pricelist_item_ids.ids)],
+            'context': {'default_program_id': self.id}
         }

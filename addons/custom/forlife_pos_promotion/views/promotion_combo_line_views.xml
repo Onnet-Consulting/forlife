@@ -7,7 +7,7 @@
             <tree editable="bottom" create="1">
                 <field name="quantity"/>
                 <field name="product_ids" widget="many2many_tags"/>
-                <field name="product_categ_ids" widget="many2many_tags"/>
+<!--                <field name="product_categ_ids" widget="many2many_tags"/>-->
                 <field name="product_count" />
                 <button name="open_products"
                     type="object"
@@ -27,7 +27,7 @@
                 <group>
                     <group>
                         <field name="product_ids" widget="man2many_tags"/>
-                        <field name="product_categ_ids" widget="man2many_tags"/>
+<!--                        <field name="product_categ_ids" widget="man2many_tags"/>-->
                     </group>
                     <group>
                         <field name="quantity"/>

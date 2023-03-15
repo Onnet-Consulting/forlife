@@ -214,7 +214,7 @@ msgstr "Ingenico (BENELUX)"
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_res_config_settings__ingenico_payment_terminal
 msgid "Ingenico Payment Terminal"
-msgstr "Ingenico支付终端的付款"
+msgstr "Ingenico支付终端的支付"
 
 #. module: pos_iot
 #. openerp-web
@@ -322,7 +322,7 @@ msgstr "POS配置"
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_payment_method
 msgid "Point of Sale Payment Methods"
-msgstr "POS付款方式"
+msgstr "POS支付方式"
 
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_session

@@ -389,8 +389,8 @@ class CashFlowReportCustomHandler(models.AbstractModel):
         if not payment_move_ids:
             return []
 
-        reconciled_account_ids = {}
-        reconciled_percentage_per_move = {}
+        reconciled_account_ids = {column_group_key: set() for column_group_key in options['column_groups']}
+        reconciled_percentage_per_move = {column_group_key: {} for column_group_key in options['column_groups']}
 
         queries = []
         params = []
@@ -448,12 +448,10 @@ class CashFlowReportCustomHandler(models.AbstractModel):
         self._cr.execute(' UNION ALL '.join(queries), params)
 
         for aml_data in self._cr.dictfetchall():
-            reconciled_percentage_per_move.setdefault(aml_data['column_group_key'], {})
             reconciled_percentage_per_move[aml_data['column_group_key']].setdefault(aml_data['move_id'], {})
             reconciled_percentage_per_move[aml_data['column_group_key']][aml_data['move_id']].setdefault(aml_data['account_id'], [0.0, 0.0])
             reconciled_percentage_per_move[aml_data['column_group_key']][aml_data['move_id']][aml_data['account_id']][0] += aml_data['balance']
 
-            reconciled_account_ids.setdefault(aml_data['column_group_key'], set())
             reconciled_account_ids[aml_data['column_group_key']].add(aml_data['account_id'])
 
         if not reconciled_percentage_per_move:
@@ -477,7 +475,7 @@ class CashFlowReportCustomHandler(models.AbstractModel):
                 GROUP BY account_move_line.move_id, account_move_line.account_id
             ''')
 
-            params += [column['column_group_key'], tuple(reconciled_percentage_per_move[column['column_group_key']].keys()), tuple(reconciled_account_ids[column['column_group_key']])]
+            params += [column['column_group_key'], tuple(reconciled_percentage_per_move[column['column_group_key']].keys()) or (None,), tuple(reconciled_account_ids[column['column_group_key']]) or (None,)]
 
         self._cr.execute(' UNION ALL '.join(queries), params)
 
@@ -517,7 +515,7 @@ class CashFlowReportCustomHandler(models.AbstractModel):
                 GROUP BY account_move_line.move_id, account_move_line.account_id, account_account.code, account_name, account_account.account_type, account_account_account_tag.account_account_tag_id
             ''')
 
-            params += [column['column_group_key'], tuple(reconciled_percentage_per_move[column['column_group_key']].keys())]
+            params += [column['column_group_key'], tuple(reconciled_percentage_per_move[column['column_group_key']].keys()) or (None,)]
 
         self._cr.execute(' UNION ALL '.join(queries), params)
 

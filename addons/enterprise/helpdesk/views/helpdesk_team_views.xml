@@ -519,7 +519,7 @@
                                                 </span>
                                             </a>
                                         </div>
-                                        <div class="mb4" groups="helpdesk.group_use_sla" attrs="{'invisible': [('use_sla', '=', False)]}">
+                                        <div class="mb4" groups="helpdesk.group_use_sla" attrs="{'invisible': ['|', ('use_sla', '=', False), ('success_rate', '&lt;', 0.0)]}">
                                             <a name="action_view_success_rate" type="object" title="Ratio of tickets whose SLA has successfully been reached on time compared to the total number of tickets closed in the past 7 days." class="justify-content-between flex-nowrap d-inline-flex w-100">
                                                 <span>Success Rate</span>
                                                 <span class="ms-3">

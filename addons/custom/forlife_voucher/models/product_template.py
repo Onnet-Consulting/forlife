@@ -1,5 +1,6 @@
 from odoo import api, fields, models
 
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
@@ -8,6 +9,6 @@ class ProductTemplate(models.Model):
 
     @api.onchange('program_voucher_id')
     def onchange_program_id(self):
-        product_include = self.search([('program_voucher_id','=',self.program_voucher_id.id)])
+        product_include = self.search([('program_voucher_id', '=', self.program_voucher_id.id)])
         if product_include:
             product_include.program_voucher_id = False

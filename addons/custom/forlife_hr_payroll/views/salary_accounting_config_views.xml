@@ -14,6 +14,8 @@
                     <field name="credit_account_id"/>
                     <field name="debit_partner_id" context="{'salary_accounting_config': 1}"/>
                     <field name="credit_partner_id" context="{'salary_accounting_config': 1}"/>
+                    <field name="debit_partner_by_employee"/>
+                    <field name="credit_partner_by_employee"/>
                 </tree>
             </field>
         </record>
@@ -33,8 +35,12 @@
                             <group>
                                 <field name="debit_account_id"/>
                                 <field name="credit_account_id"/>
-                                <field name="debit_partner_id" context="{'salary_accounting_config': 1}"/>
-                                <field name="credit_partner_id" context="{'salary_accounting_config': 1}"/>
+                                <field name="debit_partner_id" context="{'salary_accounting_config': 1}"
+                                       attrs="{'invisible': [('debit_partner_by_employee', '=', True)]}"/>
+                                <field name="credit_partner_id" context="{'salary_accounting_config': 1}"
+                                       attrs="{'invisible': [('credit_partner_by_employee', '=', True)]}"/>
+                                <field name="debit_partner_by_employee"/>
+                                <field name="credit_partner_by_employee"/>
                             </group>
                         </group>
                     </sheet>

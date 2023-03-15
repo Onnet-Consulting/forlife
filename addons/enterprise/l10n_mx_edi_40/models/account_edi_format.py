@@ -24,7 +24,7 @@ class AccountEdiFormat(models.Model):
             'supplier_name': self._l10n_mx_edi_clean_to_legal_name(move.company_id.name),
             'customer_name': self._l10n_mx_edi_clean_to_legal_name(move.commercial_partner_id.name),
         }
-        if customer.country_code not in [False, 'MX'] and not vals['fiscal_regime']:
+        if customer.country_code not in [False, 'MX']:
             vals['fiscal_regime'] = '616'
         return vals
 

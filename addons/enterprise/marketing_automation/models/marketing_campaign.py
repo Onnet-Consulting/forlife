@@ -181,6 +181,11 @@ class MarketingCampaign(models.Model):
                              "Either update your activity actions to match the new Target Model or delete them.")
             }}
 
+    def write(self, vals):
+        if not vals.get('active', True):
+            vals['state'] = 'stopped'
+        return super().write(vals)
+
     def action_set_synchronized(self):
         self.write({'last_sync_date': Datetime.now()})
         self.mapped('marketing_activity_ids').write({'require_sync': False})

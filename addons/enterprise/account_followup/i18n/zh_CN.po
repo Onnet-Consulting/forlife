@@ -4,18 +4,18 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Emily Jia <eji@odoo.com>, 2022
 # 稀饭~~ <wangwhai@qq.com>, 2022
-# Jeffery CHEN <jeffery9@gmail.com>, 2022
 # Raymond Yu <cl_yu@hotmail.com>, 2022
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2022
+# Emily Jia <eji@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 09:41+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Raymond Yu <cl_yu@hotmail.com>, 2022\n"
+"Last-Translator: Emily Jia <eji@odoo.com>, 2023\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,12 +24,14 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup.py:0
 #, python-format
 msgid "%s (copy)"
 msgstr "%s (副本)"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "%s Payment Reminder - %s"
@@ -51,7 +53,7 @@ msgid ""
 "- Other: Other address for the company (e.g. subsidiary, ...)"
 msgstr ""
 "- 联系人：用于整理给定公司的员工（如CEO和CFO等）。\n"
-"- 发票地址：所有发票的首选地址。当您为此公司的订单开具发票时，默认选中此选项。\n"
+"- 结算地址：所有结算的首选地址。当您为此公司的订单开具结算时，默认选中此选项。\n"
 "- 交货地址：所有交货的首选地址。交付属于此公司的订单时默认选中此选项。\n"
 "- 私人地址：私人地址仅对授权用户可见，且包含敏感信息（员工住址...…）。\n"
 "- 其他地址：公司的其他地址（如子公司...…）"
@@ -255,7 +257,7 @@ msgstr ""
 "                        请采取适当措施，以便在接下来的8天内进行此付款。\n"
 "                    </p>\n"
 "                    <p>\n"
-"                        如果出现我们不知道的发票支付问题，请随时联系我们的会计部门，以便我们快速解决问题。\n"
+"                        如果出现我们不知道的结算支付问题，请随时联系我们的会计部门，以便我们快速解决问题。\n"
 "                    </p>\n"
 "                    <p>\n"
 "                        到期付款的详细信息打印在下面。\n"
@@ -306,7 +308,6 @@ msgstr "客户经理"
 #. module: account_followup
 #: model:ir.actions.server,name:account_followup.ir_cron_auto_post_draft_entry_ir_actions_server
 #: model:ir.cron,cron_name:account_followup.ir_cron_auto_post_draft_entry
-#: model:ir.cron,name:account_followup.ir_cron_auto_post_draft_entry
 msgid "Account Report Followup; Execute followup"
 msgstr "账户报告跟进;执行催款"
 
@@ -354,6 +355,12 @@ msgid "Assigned to me"
 msgstr "分配给我"
 
 #. module: account_followup
+#: model:ir.model.fields,field_description:account_followup.field_account_followup_followup_line__join_invoices
+#: model:ir.model.fields,field_description:account_followup.field_account_followup_manual_reminder__join_invoices
+msgid "Attach Invoices"
+msgstr "附加结算单"
+
+#. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_account_followup_manual_reminder__attachment_ids
 msgid "Attachment"
 msgstr "附件"
@@ -382,6 +389,7 @@ msgid "Cancel"
 msgstr "取消"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "Communication"
@@ -441,6 +449,7 @@ msgid "Customers Statement"
 msgstr "客户对账单"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_form_view
 #, python-format
@@ -465,6 +474,7 @@ msgid "Days of the follow-up lines must be different per company"
 msgstr "跟进线路的天数必须因公司而异"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid ""
@@ -477,27 +487,25 @@ msgid ""
 "\n"
 "Best Regards,\n"
 "\n"
-"%s\n"
-"\n"
 msgstr ""
-"亲爱的 %s，\n"
+"尊敬的%s：\n"
 "\n"
-"如果我们有错误，则例外，似乎以下金额仍未支付。请采取适当措施，以便在接下来的8天内进行此付款。\n"
 "\n"
-"您的付款是否在此邮件发送后进行，请忽略此消息。不要犹豫，联系我们的会计部门。\n"
+"除非我们有错误，否则似乎以下金额仍未支付。请采取适当措施，在8天内完成付款。\n"
 "\n"
-"此致敬意\n"
+"如果您在此邮件发送后完成付款，请忽略此邮件。如有疑问，请联系我们的会计部门。\n"
 "\n"
-" %s\n"
+"谨上！\n"
 "\n"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid ""
 "Dear client, we kindly remind you that you still have unpaid invoices. "
 "Please check them and take appropriate action. %s"
-msgstr "尊敬的%s客户，我们恳请您，您仍然有未付的发票。请检查它们并采取适当的措施。"
+msgstr "尊敬的%s客户，我们恳请您，您仍然有未付的结算。请检查它们并采取适当的措施。"
 
 #. module: account_followup
 #: model_terms:ir.actions.act_window,help:account_followup.action_account_followup_line_definition_form
@@ -519,7 +527,7 @@ msgid ""
 msgstr ""
 "确定将分配给活动的人员：\n"
 "- 后续负责（默认）\n"
-"- 销售人员：发票上定义的销售人员\n"
+"- 销售人员：结算上定义的销售人员\n"
 "- 客户经理：客户定义的销售人员"
 
 #. module: account_followup
@@ -529,6 +537,7 @@ msgid "Display Name"
 msgstr "显示名称"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "Due Date"
@@ -570,6 +579,7 @@ msgid "Extra Recipients"
 msgstr "额外收件人"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/chart_template.py:0
 #, python-format
 msgid "First Reminder"
@@ -581,6 +591,7 @@ msgid "Follow up"
 msgstr "跟进"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "Follow-up %s - %s"
@@ -604,6 +615,7 @@ msgid "Follow-up Level"
 msgstr "催款等级"
 
 #. module: account_followup
+#: model:ir.actions.act_window,name:account_followup.action_account_followup_line_definition_form
 #: model:ir.ui.menu,name:account_followup.account_followup_menu
 msgid "Follow-up Levels"
 msgstr "催款等级"
@@ -642,6 +654,7 @@ msgid "Follow-up Steps"
 msgstr "催款步骤"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "Follow-up letter generated"
@@ -694,7 +707,7 @@ msgstr "需要动作"
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_form_view
 msgid "Invoice No."
-msgstr "发票编号"
+msgstr "结算编号"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_account_move_line__invoice_date
@@ -710,12 +723,6 @@ msgstr "结算单"
 #: model:ir.model.fields,field_description:account_followup.field_account_followup_manual_reminder__is_mail_template_editor
 msgid "Is Editor"
 msgstr "编辑"
-
-#. module: account_followup
-#: model:ir.model.fields,field_description:account_followup.field_account_followup_followup_line__join_invoices
-#: model:ir.model.fields,field_description:account_followup.field_account_followup_manual_reminder__join_invoices
-msgid "Attach Invoices"
-msgstr "附加结算单"
 
 #. module: account_followup
 #: model:ir.model,name:account_followup.model_account_move_line
@@ -779,6 +786,7 @@ msgid "Next Action Date"
 msgstr "下一动作日期"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/res_partner.py:0
 #, python-format
 msgid "Next Reminder Date set to %s"
@@ -835,6 +843,7 @@ msgid "Options"
 msgstr "选项"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model:ir.model.fields,field_description:account_followup.field_account_move_line__invoice_origin
 #, python-format
@@ -847,6 +856,7 @@ msgid "Overdue Invoices"
 msgstr "逾期结算单"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/res_partner.py:0
 #, python-format
 msgid "Overdue Payments for %s"
@@ -858,11 +868,7 @@ msgid "Partner"
 msgstr "业务伙伴"
 
 #. module: account_followup
-#: model:ir.actions.act_window,name:account_followup.action_account_followup_line_definition_form
-msgid "Payment Follow-ups"
-msgstr "付款催收"
-
-#. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model:mail.template,name:account_followup.email_template_followup_1
 #, python-format
@@ -1001,11 +1007,6 @@ msgid "Summary"
 msgstr "摘要"
 
 #. module: account_followup
-#: model_terms:ir.ui.view,arch_db:account_followup.view_account_followup_followup_line_form
-msgid "Templates"
-msgstr "模板"
-
-#. module: account_followup
 #: model:ir.model.fields,help:account_followup.field_res_partner__followup_next_action_date
 #: model:ir.model.fields,help:account_followup.field_res_users__followup_next_action_date
 msgid "The date before which no follow-up action should be taken."
@@ -1022,7 +1023,7 @@ msgid ""
 "The number of days after the due date of the invoice to wait before sending "
 "the reminder. Can be negative if you want to send the reminder before the "
 "invoice due date."
-msgstr "发票到期日后在发送提醒之前要等待的天数。如果要在发票到期日之前发送提醒，则可能为负数。"
+msgstr "结算到期日后在发送提醒之前要等待的天数。如果要在结算到期日之前发送提醒，则可能为负数。"
 
 #. module: account_followup
 #: model_terms:ir.ui.view,arch_db:account_followup.customer_statements_tree_view
@@ -1035,6 +1036,7 @@ msgid "Total Amount"
 msgstr "金额总计"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__total_due
@@ -1044,6 +1046,7 @@ msgid "Total Due"
 msgstr "截止合计"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__total_overdue
 #: model:ir.model.fields,field_description:account_followup.field_res_users__total_overdue
@@ -1055,13 +1058,13 @@ msgstr "逾期 总计"
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__unpaid_invoice_ids
 #: model:ir.model.fields,field_description:account_followup.field_res_users__unpaid_invoice_ids
 msgid "Unpaid Invoice"
-msgstr "未付发票"
+msgstr "未付结算"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__unpaid_invoices_count
 #: model:ir.model.fields,field_description:account_followup.field_res_users__unpaid_invoices_count
 msgid "Unpaid Invoices Count"
-msgstr "未付发票计数"
+msgstr "未付结算计数"
 
 #. module: account_followup
 #: model:ir.model.fields,field_description:account_followup.field_res_partner__unreconciled_aml_ids
@@ -1091,6 +1094,7 @@ msgid "Write your message here..."
 msgstr "在这里写下您的留言..."
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid ""
@@ -1099,6 +1103,7 @@ msgid ""
 msgstr "您正在尝试发送电子邮件，但没有后续联系人设置了任何电子邮件地址"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid ""
@@ -1117,6 +1122,7 @@ msgid "e.g. First Reminder Email"
 msgstr "例如：第一封提醒邮件"
 
 #. module: account_followup
+#. odoo-python
 #: code:addons/account_followup/models/account_followup_report.py:0
 #, python-format
 msgid "payment reminder"

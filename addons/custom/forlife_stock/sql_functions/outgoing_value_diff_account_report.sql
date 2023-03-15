@@ -20,20 +20,16 @@ BEGIN
     RETURN Query (
         WITH opening as (
             -- đầu kỳ
-            select sm.product_id,
-                    sum(case when spt.code = 'incoming' then coalesce(sm.quantity_done, 0)
-                            when spt.code = 'outgoing' then coalesce(-sm.quantity_done, 0)
-                                end) as quantity,
-                    sum(aml.balance) as total_value
+            select aml.product_id,
+                    sum(aml.quantity) as quantity,
+                    sum(aml.debit - aml.credit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
-            left join stock_move sm on sm.id = am.stock_move_id and am.stock_move_id is not null
-            left join product_product pp on pp.id = sm.product_id
-            left join stock_picking_type spt on spt.id = sm.picking_type_id
-            where sm.state = 'done'
-            and sm.date < _date_from::timestamp
-            and sm.company_id = _company_id
-            and spt.code in ('incoming', 'outgoing')
+            left join product_product pp on pp.id = aml.product_id
+            where 1=1
+            and am.state = 'posted'
+            and am.date < _date_from::date
+            and am.company_id = _company_id
             and aml.account_id = (select split_part(value_reference, ',', 2)::integer
                                 from ir_property
                                 where name = 'property_stock_valuation_account_id'
@@ -41,22 +37,21 @@ BEGIN
                                                                     join product_template pt on pp.product_tmpl_id = pt.id
                                                                     where pp.id = aml.product_id)
                                                                     and company_id = _company_id)
-            group by sm.product_id
+            group by aml.product_id
         ),
         incoming as (
             -- nhập trong kỳ
-            select sm.product_id,
-                    sum(sm.quantity_done) as quantity,
-                    sum(aml.balance) as total_value
+            select aml.product_id,
+                    sum(aml.quantity) as quantity,
+                    sum(aml.debit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
-            left join stock_move sm on sm.id = am.stock_move_id and am.stock_move_id is not null
-            left join product_product pp on pp.id = sm.product_id
-            left join stock_picking_type spt on spt.id = sm.picking_type_id
-            where sm.state = 'done'
-            and sm.date >= _date_from::timestamp and sm.date <= _date_to::timestamp
-            and sm.company_id = _company_id
-            and spt.code in ('incoming')
+            left join product_product pp on pp.id = aml.product_id
+            where 1=1
+            and aml.debit > 0
+            and am.state = 'posted'
+            and am.date >= _date_from::date and am.date <= _date_to::date
+            and am.company_id = _company_id
             and aml.account_id = (select split_part(value_reference, ',', 2)::integer
                                 from ir_property
                                 where name = 'property_stock_valuation_account_id'
@@ -64,22 +59,21 @@ BEGIN
                                                                     join product_template pt on pp.product_tmpl_id = pt.id
                                                                     where pp.id = aml.product_id)
                                                                     and company_id = _company_id)
-            group by sm.product_id
+            group by aml.product_id
         ),
         outgoing as (
             -- xuất trong kỳ
-            select sm.product_id,
-                    sum(sm.quantity_done) as quantity,
-                    sum(aml.balance) as total_value
+            select aml.product_id,
+                    sum(-aml.quantity) as quantity,
+                    sum(aml.credit) as total_value
             from account_move_line aml
             left join account_move am on am.id = aml.move_id
-            left join stock_move sm on sm.id = am.stock_move_id and am.stock_move_id is not null
-            left join product_product pp on pp.id = sm.product_id
-            left join stock_picking_type spt on spt.id = sm.picking_type_id
-            where sm.state = 'done'
-            and sm.date >= _date_from::timestamp and sm.date <= _date_to::timestamp
-            and sm.company_id = _company_id
-            and spt.code in ('outgoing')
+            left join product_product pp on pp.id = aml.product_id
+            where 1=1
+            and aml.credit > 0
+            and am.state = 'posted'
+            and am.date >= _date_from::date and am.date <= _date_to::date
+            and am.company_id = _company_id
             and aml.account_id = (select split_part(value_reference, ',', 2)::integer
                                 from ir_property
                                 where name = 'property_stock_valuation_account_id'
@@ -87,7 +81,7 @@ BEGIN
                                                                     join product_template pt on pp.product_tmpl_id = pt.id
                                                                     where pp.id = aml.product_id)
                                                                     and company_id = _company_id)
-            group by sm.product_id
+            group by aml.product_id
         )
 
         SELECT data.*,

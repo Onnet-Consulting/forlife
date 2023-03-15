@@ -25,7 +25,7 @@ class StockValueReportDetail(models.TransientModel):
 
     def _compute_diff_outgoing_value(self):
         for item in self:
-            item.diff_outgoing_value = item.odoo_outgoing_value - item.real_outgoing_value
+            item.diff_outgoing_value = item.odoo_outgoing_value - item.real_outgoing_value if item.real_outgoing_value != 0 else 0
 
     def _compute_product_code(self):
         for item in self:

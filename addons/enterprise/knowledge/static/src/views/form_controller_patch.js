@@ -151,23 +151,32 @@ const FormControllerPatch = {
                 if (this._evalModifier(record, readonlyModifier) || this._evalModifier(record, invisibleModifier)) {
                     continue loopFieldNames;
                 }
-                // Parse the xmlDoc recursively through parents to evaluate
-                // eventual invisible modifiers.
-                const xmlFieldParent = xmlDoc.querySelector(`field[name="${fieldName}"]`).parentElement;
-                let xmlInvisibleParent = xmlFieldParent.closest('[modifiers*="invisible"]');
-                while (xmlInvisibleParent) {
-                    const invisibleParentModifier = JSON.parse(xmlInvisibleParent.getAttribute('modifiers')).invisible;
-                    if (this._evalModifier(record, invisibleParentModifier)) {
-                        continue loopFieldNames;
+                // Parse the xmlDoc to find all instances of the field that are
+                // not descendants of another field and whose parents are
+                // visible (relative to the current record's context)
+                const xmlFields = Array.from(xmlDoc.querySelectorAll(`field[name="${fieldName}"]`));
+                const directXmlFields = xmlFields.filter((field) => {
+                    return !(field.parentElement.closest('field'));
+                });
+                loopDirectXmlFields: for (const xmlField of directXmlFields) {
+                    const xmlFieldParent = xmlField.parentElement;
+                    let xmlInvisibleParent = xmlFieldParent.closest('[modifiers*="invisible"]');
+                    while (xmlInvisibleParent) {
+                        const invisibleParentModifier = JSON.parse(xmlInvisibleParent.getAttribute('modifiers')).invisible;
+                        if (this._evalModifier(record, invisibleParentModifier)) {
+                            continue loopDirectXmlFields;
+                        }
+                        xmlInvisibleParent = xmlInvisibleParent.parentElement &&
+                            xmlInvisibleParent.parentElement.closest('[modifiers*="invisible"]');
                     }
-                    xmlInvisibleParent = xmlInvisibleParent.parentElement &&
-                        xmlInvisibleParent.parentElement.closest('[modifiers*="invisible"]');
+                    const page = xmlField.closest('page');
+                    commandsRecordInfo.fieldInfo = {
+                        name: fieldName,
+                        string: fields[fieldName].string,
+                        pageName: page ? page.getAttribute('name') : undefined,
+                    };
+                    break loopFieldNames;
                 }
-                commandsRecordInfo.fieldInfo = {
-                    name: fieldName,
-                    string: fields[fieldName].string,
-                };
-                break;
             }
         }
         if (commandsRecordInfo.fieldInfo.name) {

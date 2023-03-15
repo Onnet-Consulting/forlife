@@ -111,7 +111,7 @@ class GeneralLedgerCustomHandler(models.AbstractModel):
 
         # Call the generic tax report
         generic_tax_report = self.env.ref('account.generic_tax_report')
-        tax_report_options = generic_tax_report._get_options({**options, 'forced_domain': [('tax_line_id.type_tax_use', '=', tax_type)]})
+        tax_report_options = generic_tax_report._get_options({**options, 'report_id': generic_tax_report.id, 'forced_domain': [('tax_line_id.type_tax_use', '=', tax_type)]})
         tax_report_lines = generic_tax_report._get_lines(tax_report_options)
         tax_type_parent_line_id = generic_tax_report._get_generic_line_id(None, None, markup=tax_type)
 
@@ -218,6 +218,9 @@ class GeneralLedgerCustomHandler(models.AbstractModel):
         # 1) Get sums for all accounts.
         # ============================================
         for column_group_key, options_group in options_by_column_group.items():
+            if not options.get('general_ledger_strict_range'):
+                options_group = self._get_options_sum_balance(options_group)
+
             # Sum is computed including the initial balance of the accounts configured to do so, unless a special option key is used
             # (this is required for trial balance, which is based on general ledger)
             sum_date_scope = 'strict_range' if options_group.get('general_ledger_strict_range') else 'normal'
@@ -300,7 +303,7 @@ class GeneralLedgerCustomHandler(models.AbstractModel):
         fiscalyear_dates = self.env.company.compute_fiscalyear_dates(fields.Date.from_string(options['date']['date_from']))
 
         # Trial balance uses the options key, general ledger does not
-        new_date_to = fiscalyear_dates['date_to'] if options.get('include_current_year_in_unaff_earnings') else fiscalyear_dates['date_from'] - timedelta(days=1)
+        new_date_to = fields.Date.from_string(new_options['date']['date_to']) if options.get('include_current_year_in_unaff_earnings') else fiscalyear_dates['date_from'] - timedelta(days=1)
 
         new_options['date'] = {
             'mode': 'single',
@@ -480,12 +483,52 @@ class GeneralLedgerCustomHandler(models.AbstractModel):
         new_options = options.copy()
         date_to = new_options['comparison']['periods'][-1]['date_from'] if new_options.get('comparison', {}).get('periods') else new_options['date']['date_from']
         new_date_to = fields.Date.from_string(date_to) - timedelta(days=1)
-        fiscalyear_dates = self.env.company.compute_fiscalyear_dates(new_date_to)
+
+        # Date from computation
+        # We have two case:
+        # 1) We are choosing a date that starts at the beginning of a fiscal year and we want the initial period to be
+        # the previous fiscal year
+        # 2) We are choosing a date that starts in the middle of a fiscal year and in that case we want the initial period
+        # to be the beginning of the fiscal year
+        date_from = fields.Date.from_string(new_options['date']['date_from'])
+        current_fiscalyear_dates = self.env.company.compute_fiscalyear_dates(date_from)
+
+        if date_from == current_fiscalyear_dates['date_from']:
+            # We want the previous fiscal year
+            previous_fiscalyear_dates = self.env.company.compute_fiscalyear_dates(date_from - timedelta(days=1))
+            new_date_from = previous_fiscalyear_dates['date_from']
+            include_current_year_in_unaff_earnings = True
+        else:
+            # We want the current fiscal year
+            new_date_from = current_fiscalyear_dates['date_from']
+            include_current_year_in_unaff_earnings = False
+
         new_options['date'] = {
             'mode': 'range',
+            'date_from': fields.Date.to_string(new_date_from),
             'date_to': fields.Date.to_string(new_date_to),
-            'date_from': fields.Date.to_string(fiscalyear_dates['date_from']),
         }
+        new_options['include_current_year_in_unaff_earnings'] = include_current_year_in_unaff_earnings
+
+        return new_options
+
+    def _get_options_sum_balance(self, options):
+        new_options = options.copy()
+
+        if not options.get('general_ledger_strict_range'):
+            # Date from
+            date_from = fields.Date.from_string(new_options['date']['date_from'])
+            current_fiscalyear_dates = self.env.company.compute_fiscalyear_dates(date_from)
+            new_date_from = current_fiscalyear_dates['date_from']
+
+            new_date_to = new_options['date']['date_to']
+
+            new_options['date'] = {
+                'mode': 'range',
+                'date_from': fields.Date.to_string(new_date_from),
+                'date_to': new_date_to,
+            }
+
         return new_options
 
     ####################################################

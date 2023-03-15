@@ -118,7 +118,7 @@ class TestAccountFollowupReports(AccountTestInvoicingCommon):
             # Today > due date + delay second followup level but first followup level not processed yet
             self.assertPartnerFollowup(self.partner_a, 'in_need_of_action', self.first_followup_line)
 
-            self.partner_a._execute_followup_partner()
+            self.partner_a._execute_followup_partner(options={'snailmail': False})
             # Due date exceeded but first followup level processed
             # followup_next_action_date set in 20 days (delay 2nd level - delay 1st level = 10 - (-10) = 20)
             self.assertPartnerFollowup(self.partner_a, 'with_overdue_invoices', self.second_followup_line)

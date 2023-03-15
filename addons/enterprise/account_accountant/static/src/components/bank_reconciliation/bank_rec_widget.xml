@@ -7,14 +7,11 @@
         </xpath>
         <xpath expr="//t[@t-component='props.Renderer']" position="after">
             <div class="o_bank_rec_right_div">
-                <t t-if="!!state.selectedStLineId">
-                    <!-- Use the datapoint as a key to ensure the form view is rerendered when the model is reloaded -->
-                    <View t-props="bankRecFormViewProps" t-key="this.recordById(state.selectedStLineId).id"/>
+                <t t-if="state.selectedStLineId">
+                    <View t-props="this.prepareFormProps()" t-key="state.selectedStLineId"/>
                 </t>
+                <BankRecTutorial t-else="" t-props="tutorialProps"/>
             </div>
-        </xpath>
-        <xpath expr="//t[@t-component='props.Renderer']" position="attributes">
-            <attribute name="selectedStLineId">state.selectedStLineId</attribute>
         </xpath>
     </t>
 
@@ -22,31 +19,35 @@
         <xpath expr="//div[@role='article']" position="attributes">
             <attribute name="t-att-tabindex"/>
         </xpath>
+        <xpath expr="//div[@t-ref='root']" position="inside">
+            <span class="position-absolute top-0 end-0 p-2" t-if="stLineState.isLoading">
+                <i class="fa fa-circle-o-notch fa-spin"/>
+            </span>
+        </xpath>
     </t>
 
     <t t-name="account.BankRecKanbanRenderer" t-inherit="web.KanbanRenderer" t-inherit-mode="primary" owl="1">
         <xpath expr="//div[@t-ref='root']" position="attributes">
             <attribute name="class" add="o_bank_rec_kanban_div" separator=" "/>
         </xpath>
-        <xpath expr="//div/t/t[2]/KanbanRecord" position="attributes">
-            <attribute name="selectedStLineId">props.selectedStLineId</attribute>
-        </xpath>
     </t>
 
     <t t-name="account.BankRecKanbanRenderer.Buttons" t-inherit="web.KanbanView.Buttons" t-inherit-mode="primary" owl="1">
         <xpath expr="//div" position="inside">
-            <BankRecWidgetGlobalInfo journal_id="default_journal_id"/>
+            <t t-if="state.currentJournalId">
+                <BankRecWidgetGlobalInfo t-key="state.currentJournalId"/>
+            </t>
         </xpath>
     </t>
 
     <t t-name="account_accountant.BankRecWidgetGlobalInfo" owl="1">
-        <div t-if="data and data.balance_amount" class="text-nowrap d-flex ms-2">
+        <div t-if="state.data.balance_amount" class="text-nowrap d-flex ms-2">
             <span class="text-900"
                   style="font-size: 18px;">Balance: </span>
             <span class="btn btn-secondary p-0"
                   style="font-size: 18px;"
                   t-on-click.stop="openReport"
-                  t-esc="data.balance_amount"/>
+                  t-esc="state.data.balance_amount"/>
         </div>
     </t>
 
@@ -201,7 +202,7 @@
                                                               t-att-move-id="line.source_aml_move_id.id"
                                                               t-esc="line.source_aml_move_name.value"
                                                               t-on-click="() => this.showMove(line.source_aml_move_id.id)"/>
-                                                        <span class="mr4">:</span>
+                                                        <span class="mr4" t-if="line.name.value">:</span>
                                                     </t>
                                                     <span t-esc="line.name.value" field="name"/>
                                                 </div>
@@ -335,25 +336,25 @@
     </t>
 
     <t t-name="account_accountant.FormChatterContainer" owl="1">
-        <ChatterContainer threadModel="this.props.record.fields[this.props.m2oField].relation" threadId="this.props.record.data[this.props.m2oField][0]"/>
+        <ChatterContainer
+            threadModel="this.props.record.fields[this.props.m2oField].relation"
+            threadId="this.props.record.data[this.props.m2oField][0]"/>
     </t>
 
     <t t-name="account_accountant.FormEmbeddedListView" owl="1">
         <t t-if="props.record.id">
-            <View t-props="bankRecListViewProps" bankRecRecord="props.record"/>
+            <View t-props="bankRecListViewProps"/>
         </t>
-    </t>
-
-    <t t-name="account_accountant.BankRecWidgetFormInnerTabAmlsController" t-inherit="web.ListView" t-inherit-mode="primary" owl="1">
-        <xpath expr="//t[@t-component='props.Renderer']" position="attributes">
-            <attribute name="bankRecRecord">props.bankRecRecord</attribute>
-        </xpath>
     </t>
 
     <t t-name="account_accountant.BankRecWidgetHTML" owl="1">
         <div t-on-click="handleButtonsClicks">
             <t t-out="props.value"/>
         </div>
+    </t>
+
+    <t t-name="account_accountant.BankRecWidgetViewSwitcher" owl="1">
+        <button class="btn btn-sm btn-secondary" t-on-click.stop="() => this.switchView()"><t t-out="buttonLabel"/></button>
     </t>
 
 </templates>

@@ -3,7 +3,6 @@
 # 	* documents_account
 # 
 # Translators:
-# Aveli Kannel <aveli@avalah.ee>, 2022
 # Algo Kärp <algokarp@gmail.com>, 2022
 # Piia Paurson <piia@avalah.ee>, 2022
 # Martin Trigaux, 2022
@@ -63,7 +62,7 @@ msgstr "Sellele andmikule on seadistus juba olemas"
 #. module: documents_account
 #: model:ir.model.fields,field_description:documents_account.field_res_config_settings__documents_account_settings
 msgid "Accounting "
-msgstr "Raamatupidamine"
+msgstr "Raamatupidamine "
 
 #. module: documents_account
 #: model:ir.model.fields,field_description:documents_account.field_res_company__account_folder
@@ -187,7 +186,7 @@ msgstr "Dokumentide kontoseadistused"
 #. module: documents_account
 #: model:ir.model,name:documents_account.model_account_reports_export_wizard_format
 msgid "Export format for accounting's reports"
-msgstr ""
+msgstr "Ekspordi format raamatupidamisaruannete jaoks"
 
 #. module: documents_account
 #: model:ir.model,name:documents_account.model_account_reports_export_wizard
@@ -306,7 +305,7 @@ msgstr "Sobitamise taotlus"
 #: model:ir.model.fields,field_description:documents_account.field_account_move__suspense_statement_line_id
 #: model:ir.model.fields,field_description:documents_account.field_account_payment__suspense_statement_line_id
 msgid "Request document from a bank statement line"
-msgstr ""
+msgstr "Pangakonto väljavõtte realt dokumendi taotlemine"
 
 #. module: documents_account
 #. openerp-web
@@ -329,7 +328,7 @@ msgstr "Maksu väljavõte"
 #. module: documents_account
 #: model_terms:ir.ui.view,arch_db:documents_account.view_account_move_form_inherit_documents_account
 msgid "This invoice has been initiated by a bank transaction."
-msgstr ""
+msgstr "See arve on algatatud pangatehinguga."
 
 #. module: documents_account
 #: model:ir.model.fields.selection,name:documents_account.selection__documents_workflow_rule__create_model__account_move_in_refund
@@ -375,4 +374,4 @@ msgstr "konto vaikimisi kaust"
 #. module: documents_account
 #: model_terms:ir.ui.view,arch_db:documents_account.view_account_move_form_inherit_documents_account
 msgid "to mark this invoice as paid."
-msgstr "märgi see arve makstuks"
+msgstr "märgi see arve makstuks."

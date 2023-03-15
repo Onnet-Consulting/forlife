@@ -229,9 +229,6 @@ class AccountJournal(models.Model):
         BankStatement = self.env['account.bank.statement']
         BankStatementLine = self.env['account.bank.statement.line']
 
-        ir_actions_report_sudo = self.env['ir.actions.report'].sudo()
-        statement_report = self.env.ref('account.action_report_account_statement').sudo()
-
         # Filter out already imported transactions and create statements
         statement_ids = []
         statement_line_ids = []
@@ -246,7 +243,7 @@ class AccountJournal(models.Model):
                     filtered_st_lines.append(line_vals)
                 else:
                     ignored_statement_lines_import_ids.append(line_vals['unique_import_id'])
-                    if 'balance_start' in st_vals:
+                    if st_vals.get('balance_start') is not None:
                         st_vals['balance_start'] += float(line_vals['amount'])
 
             if len(filtered_st_lines) > 0:
@@ -262,15 +259,7 @@ class AccountJournal(models.Model):
 
                 # Create the report.
                 if statement.is_complete:
-                    content, _content_type = ir_actions_report_sudo._render_qweb_pdf(statement_report, res_ids=statement.ids)
-                    statement.attachment_ids |= self.env['ir.attachment'].create({
-                        'name': _("Bank Statement %s.pdf", statement.name) if statement.name else _("Bank Statement.pdf"),
-                        'type': 'binary',
-                        'mimetype': 'application/pdf',
-                        'raw': content,
-                        'res_model': statement._name,
-                        'res_id': statement.id,
-                    })
+                    statement.action_generate_attachment()
 
         if len(statement_line_ids) == 0:
             raise UserError(_('You already have imported that file.'))

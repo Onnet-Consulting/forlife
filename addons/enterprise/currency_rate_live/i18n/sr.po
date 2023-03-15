@@ -8,9 +8,9 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server saas~15.4+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-09 14:10+0000\n"
+"POT-Creation-Date: 2023-02-02 10:51+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
 "Last-Translator: Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2022\n"
 "Language-Team: Serbian (https://www.transifex.com/odoo/teams/41243/sr/)\n"
@@ -26,6 +26,8 @@ msgid ""
 "<i title=\"Update now\" role=\"img\" aria-label=\"Update now\" class=\"fa "
 "fa-fw fa-refresh\"/>"
 msgstr ""
+"<i title=\"Update now\" role=\"img\" aria-label=\"Update now\" class=\"fa "
+"fa-fw fa-refresh\"/>"
 
 #. module: currency_rate_live
 #: model:ir.model.fields.selection,name:currency_rate_live.selection__res_company__currency_provider__boc
@@ -60,7 +62,6 @@ msgstr "Podešavanje konfiguracije"
 #. module: currency_rate_live
 #: model:ir.actions.server,name:currency_rate_live.ir_cron_currency_update_ir_actions_server
 #: model:ir.cron,cron_name:currency_rate_live.ir_cron_currency_update
-#: model:ir.cron,name:currency_rate_live.ir_cron_currency_update
 msgid "Currency: rate update"
 msgstr ""
 
@@ -103,11 +104,16 @@ msgstr ""
 #. module: currency_rate_live
 #: model:ir.model.fields.selection,name:currency_rate_live.selection__res_company__currency_interval_unit__monthly
 msgid "Monthly"
-msgstr ""
+msgstr "Mesečno"
 
 #. module: currency_rate_live
 #: model:ir.model.fields.selection,name:currency_rate_live.selection__res_company__currency_provider__bnr
 msgid "National Bank Of Romania"
+msgstr ""
+
+#. module: currency_rate_live
+#: model:ir.model.fields.selection,name:currency_rate_live.selection__res_company__currency_provider__nbp
+msgid "National Bank of Poland"
 msgstr ""
 
 #. module: currency_rate_live
@@ -143,6 +149,7 @@ msgid "UAE Central Bank"
 msgstr ""
 
 #. module: currency_rate_live
+#. odoo-python
 #: code:addons/currency_rate_live/models/res_config_settings.py:0
 #, python-format
 msgid ""
@@ -156,6 +163,7 @@ msgid "Weekly"
 msgstr ""
 
 #. module: currency_rate_live
+#. odoo-python
 #: code:addons/currency_rate_live/models/res_config_settings.py:0
 #, python-format
 msgid ""

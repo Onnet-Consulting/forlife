@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Thi Huong Nguyen, 2023
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Thi Huong Nguyen, 2023\n"
 "Language-Team: Vietnamese (https://www.transifex.com/odoo/teams/41243/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,7 +29,7 @@ msgstr "Đảo bút toán kế toán"
 #: code:addons/helpdesk_account/controllers/portal.py:0
 #, python-format
 msgid "Credit Note"
-msgstr "Công nợ âm"
+msgstr "Giấy báo Có"
 
 #. module: helpdesk_account
 #: code:addons/helpdesk_account/controllers/portal.py:0
@@ -37,7 +38,7 @@ msgstr "Công nợ âm"
 #: model_terms:ir.ui.view,arch_db:helpdesk_account.helpdesk_ticket_view_form_inherit_helpdesk_invoicing
 #, python-format
 msgid "Credit Notes"
-msgstr "Công nợ âm"
+msgstr "Giấy báo Có"
 
 #. module: helpdesk_account
 #: model:ir.model.fields,field_description:helpdesk_account.field_helpdesk_ticket__invoices_count
@@ -75,7 +76,7 @@ msgstr "Dịch chuyển"
 #: model:ir.actions.act_window,name:helpdesk_account.helpdesk_ticket_action_refund
 #: model_terms:ir.ui.view,arch_db:helpdesk_account.helpdesk_ticket_view_form_inherit_helpdesk_invoicing
 msgid "Refund"
-msgstr "Giảm công nợ"
+msgstr "Hoàn tiền"
 
 #. module: helpdesk_account
 #: code:addons/helpdesk_account/wizard/account_move_reversal.py:0

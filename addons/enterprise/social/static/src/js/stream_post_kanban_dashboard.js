@@ -26,7 +26,7 @@ export class StreamPostDashboard extends Component {
     _onRelinkAccount(event) {
         const mediaId = event.currentTarget.dataset.mediaId;
         if (this.props.isSocialManager) {
-            this.orm.call('social_media', 'action_add_account', mediaId).then((action) => {
+            this.orm.call('social.media', 'action_add_account', mediaId).then((action) => {
                 document.location = action.url;
             });
         } else {

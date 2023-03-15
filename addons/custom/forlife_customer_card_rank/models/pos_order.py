@@ -8,10 +8,14 @@ class PosOrder(models.Model):
     _inherit = 'pos.order'
 
     is_rank = fields.Boolean('Is Rank', default=False)
+    card_rank_program_id = fields.Many2one('member.card', 'Card Rank Program', ondelete='restrict')
 
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
         self.with_delay().update_partner_card_rank()
+        if self.card_rank_program_id:
+            total_amount_discount = abs(sum(self.mapped('lines.discount_details_lines').filtered(lambda f: f.type == 'card').mapped('money_reduced')))
+            self.with_delay().accounting_card_rank_discount(total_amount_discount) if total_amount_discount else None
         return res
 
     def update_partner_card_rank(self):
@@ -36,7 +40,7 @@ class PosOrder(models.Model):
         new_rank = partner_card_rank.card_rank_id
         is_rank = False
         for program in member_cards:
-            if partner_card_rank.customer_id.group_id.id in program.customer_group_ids.ids and\
+            if partner_card_rank.customer_id.group_id.id == program.customer_group_id.id and \
                     (self.partner_id.retail_type_ids and any(retail_type in program.partner_retail_ids for retail_type in self.partner_id.retail_type_ids)):
                 is_rank = True
                 value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
@@ -74,3 +78,61 @@ class PosOrder(models.Model):
         program.sudo().write({
             'order_ids': [(4, self.id)]
         })
+
+    @api.model
+    def _order_fields(self, ui_order):
+        res = super()._order_fields(ui_order)
+        if 'card_rank_program_id' not in res and ui_order.get('card_rank_program'):
+            res.update({'card_rank_program_id': ui_order.get('card_rank_program').get('id')})
+        return res
+
+    def accounting_card_rank_discount(self, total_amount_discount):
+        values = self._prepare_cr_discount_account_move()
+        values['line_ids'] = self._prepare_cr_discount_account_move_line(total_amount_discount)
+        res = self.env['account.move'].create(values)
+        return res.action_post() if res else False
+
+    def _prepare_cr_discount_account_move(self):
+        return {
+            'pos_order_id': self.id,
+            'ref': self.name,
+            'date': self.date_order,
+            'journal_id': self.card_rank_program_id.journal_id.id,
+        }
+
+    def _prepare_cr_discount_account_move_line(self, total_amount_discount):
+        if self.card_rank_program_id.is_register and self.card_rank_program_id.register_from_date <= self.date_order.date() and self.card_rank_program_id.register_to_date >= self.date_order.date():
+            debit_account = self.card_rank_program_id.discount_account_id.id
+        else:
+            debit_account = self.card_rank_program_id.value_account_id.id
+        return [
+            (0, 0, {
+                'account_id': debit_account,
+                'debit': total_amount_discount,
+                'analytic_account_id': self.config_id.store_id.analytic_account_id.id,
+            }),
+            (0, 0, {
+                'account_id': self.partner_id.property_account_receivable_id.id,
+                'credit': total_amount_discount,
+                'partner_id': self.config_id.store_id.contact_id.id,
+            }),
+        ]
+
+
+class PosOrderLine(models.Model):
+    _inherit = 'pos.order.line'
+
+    card_rank_applied = fields.Boolean('Card Rank Applied', default=False)
+    card_rank_discount = fields.Float('Card Rank Discount', default=0)
+
+    @api.model
+    def create(self, vals_list):
+        if vals_list.get('card_rank_discount') and vals_list.get('card_rank_applied'):
+            vals_list['discount_details_lines'] = vals_list.get('discount_details_lines', []) + [
+                (0, 0, {
+                    'type': 'card',
+                    'listed_price': vals_list['price_unit'],
+                    'recipe': vals_list['card_rank_discount'],
+                })
+            ]
+        return super(PosOrderLine, self).create(vals_list)

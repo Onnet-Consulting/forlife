@@ -56,7 +56,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:social_instagram.field_social_post__instagram_access_token
 #: model:ir.model.fields,field_description:social_instagram.field_social_post_template__instagram_access_token
 msgid "Access Token"
-msgstr ""
+msgstr "Token za pristup"
 
 #. module: social_instagram
 #: code:addons/social_instagram/models/social_post.py:0
@@ -160,7 +160,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:social_instagram.field_social_stream_post__instagram_comments_count
 #, python-format
 msgid "Instagram Comments"
-msgstr ""
+msgstr "Instagram komentari"
 
 #. module: social_instagram
 #: model_terms:ir.ui.view,arch_db:social_instagram.res_config_settings_view_form

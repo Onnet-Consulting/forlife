@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* hr_work_entry_contract_enterprise
 # 
+# Translators:
+# Mehjabin Farsana, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~14.5+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-14 10:59+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
+"Last-Translator: Mehjabin Farsana, 2022\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -28,7 +32,7 @@ msgstr ""
 #. module: hr_work_entry_contract_enterprise
 #: model:ir.ui.menu,name:hr_work_entry_contract_enterprise.menu_hr_payroll_configuration
 msgid "Configuration"
-msgstr ""
+msgstr "Konfigurasi"
 
 #. module: hr_work_entry_contract_enterprise
 #: model:ir.ui.menu,name:hr_work_entry_contract_enterprise.menu_work_entry_conflicts

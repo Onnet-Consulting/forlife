@@ -49,9 +49,11 @@
                 </Receptor>
             <t t-if="move.l10n_latam_document_type_id._is_doc_type_export()">
                 <Transporte>
-                    <DirDest/>
-                    <CmnaDest/>
-                    <CiudadDest t-esc="format_length(move.partner_id.city or move.commercial_partner_id.city or '', 20)"/>
+                <t t-if="move.partner_shipping_id not in (move.partner_id | move.commercial_partner_id)">
+                    <DirDest t-esc="format_length(move.partner_shipping_id.street or '' + ' ' + move.partner_shipping_id.street2 or '', 70)"/>
+                    <CmnaDest t-esc="move._l10n_cl_get_comuna_recep(recep=False)"/>
+                    <CiudadDest t-esc="format_length(move.partner_shipping_id.city or '', 20)"/>
+                </t>
                     <Aduana>
                         <CodModVenta>01</CodModVenta>
                         <TotClauVenta t-esc="float_repr(amounts['total_amount'], 0) if not move.l10n_latam_document_type_id._is_doc_type_export() else float_repr(amounts['total_amount'], 2)"/>

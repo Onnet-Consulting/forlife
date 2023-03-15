@@ -39,6 +39,12 @@ msgstr ""
 #. module: account_saft
 #: code:addons/account_saft/models/account_general_ledger.py:0
 #, python-format
+msgid "Please define a `Phone` or `Mobile` for your company."
+msgstr ""
+
+#. module: account_saft
+#: code:addons/account_saft/models/account_general_ledger.py:0
+#, python-format
 msgid ""
 "Please define at least one address (Zip/City) for the following partners: "
 "%s."

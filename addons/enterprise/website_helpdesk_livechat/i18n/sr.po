@@ -24,13 +24,13 @@ msgstr ""
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
 #, python-format
 msgid " This channel is private. People must be invited to join it."
-msgstr ""
+msgstr "Ovaj kanal je privatan. Ljudi moraju biti pozvani da mu se pridruže."
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/chatbot_script_step.py:0
 #, python-format
 msgid "%(name)s's Ticket"
-msgstr ""
+msgstr "%(name)s's Tiket"
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
@@ -41,32 +41,36 @@ msgid ""
 "                    You can search tickets by typing <b>/helpdesk_search <i>keyword</i></b> or <b><i>ticket number</i></b><br>\n"
 "                    "
 msgstr ""
+"<br><br>\n"
+"                    Možete da kreirate novi tiket tako što ćete kucati <b>/helpdesk <i>naslov tiketa</i></b>.<br>\n"
+"                    Možete pretražiti tikete tako što ćete kucati <b>/helpdesk_search <i>ključna reč</i></b> ili <b><i>broj tiketa</i></b><br>\n"
+"                    "
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_done
 msgid "Alright, we should have everything we need"
-msgstr ""
+msgstr "U redu, trebalo bi da imamo sve što nam treba"
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_technical_serial_misc
 msgid "Anything else to add?"
-msgstr ""
+msgstr "Dodali biste još nešto?"
 
 #. module: website_helpdesk_livechat
 #: model:ir.actions.act_window,name:website_helpdesk_livechat.helpdesk_im_livechat_canned_response_action
 #: model:ir.ui.menu,name:website_helpdesk_livechat.helpdesk_team_canned_response_menu
 msgid "Canned Responses"
-msgstr ""
+msgstr "Pripremljeni odgovori"
 
 #. module: website_helpdesk_livechat
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_livechat.im_livechat_canned_response_view_search
 msgid "Canned Responses Search"
-msgstr ""
+msgstr "Pretraga pripremljenih odgovora"
 
 #. module: website_helpdesk_livechat
 #: model:ir.model,name:website_helpdesk_livechat.model_chatbot_script
 msgid "Chatbot Script"
-msgstr ""
+msgstr "Chatbot skripta"
 
 #. module: website_helpdesk_livechat
 #: model:ir.model,name:website_helpdesk_livechat.model_chatbot_script_step
@@ -76,20 +80,20 @@ msgstr "Korak skripte za Chatbot"
 #. module: website_helpdesk_livechat
 #: model:ir.model.fields.selection,name:website_helpdesk_livechat.selection__chatbot_script_step__step_type__create_ticket
 msgid "Create Ticket"
-msgstr ""
+msgstr "Kreiraj tiket"
 
 #. module: website_helpdesk_livechat
 #. openerp-web
 #: code:addons/website_helpdesk_livechat/static/src/models/messaging_initializer.js:0
 #, python-format
 msgid "Create a new helpdesk ticket"
-msgstr ""
+msgstr "Kreiraj novi tiket za podršku"
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
 #, python-format
 msgid "Created a new ticket: %s"
-msgstr ""
+msgstr "Kreirao/la je novi tiket: %s"
 
 #. module: website_helpdesk_livechat
 #: model:ir.model,name:website_helpdesk_livechat.model_mail_channel
@@ -99,58 +103,59 @@ msgstr "Kanal diskusije"
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_dispatch
 msgid "First, what is the nature of your issue?"
-msgstr ""
+msgstr "Prvo, kakva je priroda vašeg problema?"
 
 #. module: website_helpdesk_livechat
 #: model:ir.model.fields,field_description:website_helpdesk_livechat.field_chatbot_script__ticket_count
 msgid "Generated Ticket Count"
-msgstr ""
+msgstr "Brojač generisanih tiketa"
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_customer_ref_yes
 msgid "Great, that will make our lives easier."
-msgstr ""
+msgstr "Odlično, to će nam olakšati život."
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script,title:website_helpdesk_livechat.chatbot_script_helpdesk_bot
 msgid "Helpdesk Bot"
-msgstr ""
+msgstr "Bot Podrške"
 
 #. module: website_helpdesk_livechat
 #: model:ir.model,name:website_helpdesk_livechat.model_helpdesk_team
 #: model:ir.model.fields,field_description:website_helpdesk_livechat.field_chatbot_script_step__helpdesk_team_id
 msgid "Helpdesk Team"
-msgstr "Helpdesk ti"
+msgstr "Tim Podrške"
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_welcome
 msgid "Here we go, help is on the way!"
-msgstr ""
+msgstr "Krećemo, pomoć je na putu!"
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.answer,name:website_helpdesk_livechat.chatbot_script_helpdesk_step_dispatch_answer_technical
 msgid "I have a technical issue"
-msgstr ""
+msgstr "Imam tehnički problem"
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.answer,name:website_helpdesk_livechat.chatbot_script_helpdesk_step_dispatch_answer_administrative
 msgid "I have an administrative question"
-msgstr ""
+msgstr "Imam administrativno pitanje"
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_customer_ref_no
 msgid "It's OK, we can also find your contract by other means."
-msgstr ""
+msgstr "U redu je, možemo da pronađemo vaš ugovor i na drugi način."
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_email
 msgid "Just a last thing, can we please have your email address?"
 msgstr ""
+"Samo još jedna stvar na kraju, možemo li da dobijemo vašu email adresu?"
 
 #. module: website_helpdesk_livechat
 #: model:ir.model.fields,field_description:website_helpdesk_livechat.field_helpdesk_team__feature_livechat_channel_id
 msgid "Live Chat Channel"
-msgstr ""
+msgstr "Live Chat kanal"
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.answer,name:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_customer_ref_answer_no
@@ -160,7 +165,7 @@ msgstr "Ne"
 #. module: website_helpdesk_livechat
 #: model_terms:ir.actions.act_window,help:website_helpdesk_livechat.helpdesk_im_livechat_canned_response_action
 msgid "No canned reponses found. Let's create one!"
-msgstr ""
+msgstr "Nema pronađenih pripremljenih odgovora. Hajde da kreiramo jedan!"
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
@@ -170,6 +175,9 @@ msgid ""
 "format:<br> <b>/helpdesk_search <i>keyword</i></b> or <b>/helpdesk_search "
 "<i>ticket number</i></b>"
 msgstr ""
+"Nema pronađenih tiketa za <b>%s</b>. <br> Budite sigurni da koristite "
+"ispravan format:<br> <b>/helpdesk_search <i>ključna reč</i></b> ili "
+"<b>/helpdesk_search <i>broj tiketa</i></b>"
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_ticket
@@ -177,40 +185,43 @@ msgid ""
 "OK, I just created a ticket for you. You should receive an email "
 "confirmation very soon."
 msgstr ""
+"OK, upravo sam napravio tiket za vas. Trebalo bi da dobijete email potvrdu "
+"vrlo brzo."
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_technical_serial
 msgid "Please write below the serial number of your equipment."
-msgstr ""
+msgstr "Molimo upišite ispod serijski broj vaše opreme."
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_customer_ref_input
 msgid "Please write below your customer reference."
-msgstr ""
+msgstr "Molimo vas da ispod upišete vašu referencu kupca."
 
 #. module: website_helpdesk_livechat
 #. openerp-web
 #: code:addons/website_helpdesk_livechat/static/src/models/messaging_initializer.js:0
 #, python-format
 msgid "Search for a helpdesk ticket"
-msgstr ""
+msgstr "Pronađi tiket podrške"
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
 #, python-format
 msgid "Something is missing or wrong in command"
-msgstr ""
+msgstr "Nešto nedostaje ili nije u redu u komandi"
 
 #. module: website_helpdesk_livechat
 #: model:ir.model.fields,field_description:website_helpdesk_livechat.field_chatbot_script_step__step_type
 msgid "Step Type"
-msgstr ""
+msgstr "Vrsta koraka"
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_technical_serial_thanks
 msgid "Thank you, that will help our engineers see what went wrong."
 msgstr ""
+"Hvala vam, to će pomoći našim inženjerima da vide šta je pošlo po zlu."
 
 #. module: website_helpdesk_livechat
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_livechat.chatbot_script_view_form
@@ -223,6 +234,8 @@ msgid ""
 "To start with, do you have a customer reference?\n"
 "They are written on each invoice you received, next to your name."
 msgstr ""
+"Za početak, imate li referencu kupca?\n"
+"Ona je napisana na svakoj fakturi koju ste dobili, pored vašeg imena."
 
 #. module: website_helpdesk_livechat
 #: model:ir.model,name:website_helpdesk_livechat.model_res_users
@@ -232,18 +245,18 @@ msgstr "Korisnik"
 #. module: website_helpdesk_livechat
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_livechat.helpdesk_team_view_form_inherit_website_helpdesk_livechat
 msgid "View Channels"
-msgstr ""
+msgstr "Pogledaj kanale"
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
 #, python-format
 msgid "We found some matched ticket(s) related to the search query: %s"
-msgstr ""
+msgstr "Pronašli smo određeni tiket(e) u vezi sa upitom za pretragu: %s"
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.step,message:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_issue
 msgid "We're all set. Now, what is your issue?"
-msgstr ""
+msgstr "Sve je spremno. Šta je vaš problem?"
 
 #. module: website_helpdesk_livechat
 #: model_terms:ir.actions.act_window,help:website_helpdesk_livechat.helpdesk_im_livechat_canned_response_action
@@ -252,6 +265,10 @@ msgid ""
 "responses into your messages. These shortcuts are replaced directly in your "
 "messages so that you can still make changes before sending them."
 msgstr ""
+"Sa pripremljenim odgovorima, možete da unesete <i>:shortcuts</i> da biste "
+"umetnuli unapred napisane odgovore u svoje poruke. Ove prečice se zamenjuju "
+"direktno u vašim porukama tako da i dalje možete da unosite izmene pre nego "
+"što ih pošaljete."
 
 #. module: website_helpdesk_livechat
 #: model:chatbot.script.answer,name:website_helpdesk_livechat.chatbot_script_helpdesk_step_administrative_customer_ref_answer_yes
@@ -262,13 +279,13 @@ msgstr "Da"
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
 #, python-format
 msgid "You are in a private conversation with <b>%(mentions)s</b>."
-msgstr ""
+msgstr "Vi ste u privatnoj konverzaciji sa <b>%(mentions)s</b>."
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
 #, python-format
 msgid "You are in channel <b>#%s</b>."
-msgstr ""
+msgstr "Vi ste na kanalu <b>#%s</b>."
 
 #. module: website_helpdesk_livechat
 #: code:addons/website_helpdesk_livechat/models/helpdesk.py:0
@@ -277,3 +294,5 @@ msgid ""
 "You can search tickets by typing <b>/helpdesk_search <i>keyword</i></b> or "
 "<i><b>ticket number</b></i><br>"
 msgstr ""
+"Možete pronaći tikete tako što ćete ukucati <b>/helpdesk_search <i>ključnu "
+"reč</i></b> ili <i><b>broj tiketa</b></i><br>"

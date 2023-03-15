@@ -8,6 +8,7 @@ import {
     nextTick,
     makeDeferred,
 } from "@web/../tests/helpers/utils";
+import { createWebClient, doAction } from "@web/../tests/webclient/helpers";
 import { session } from "@web/session";
 import { registry } from "@web/core/registry";
 
@@ -46,6 +47,12 @@ QUnit.module("Studio Approval", (hooks) => {
                             display_name: "second record",
                             int_field: 27,
                             bar: true,
+                        },
+                        {
+                            id: 3,
+                            display_name: "another record",
+                            int_field: 21,
+                            bar: false,
                         },
                     ],
                 },
@@ -308,5 +315,59 @@ QUnit.module("Studio Approval", (hooks) => {
         await click(target, ".o_popover button.o_web_approval_cancel");
         await click(target, ".o_popover button.o_web_approval_reject");
         assert.verifySteps(["approve_rule", "delete_approval", "reject_rule"]);
+    });
+    QUnit.test("approval widget basic flow with domain rule", async function (assert) {
+        assert.expect(3);
+
+        serverData.views = {
+            "partner,false,form": `
+            <form>
+                <button type="object=" name="someMethod" string="Apply Method" studio_approval="True"/>
+            </form>`,
+            "partner,false,list": '<tree><field name="display_name"/></tree>',
+            "partner,false,search": "<search></search>",
+        };
+
+        serverData.actions = {
+            1: {
+                id: 1,
+                name: "Partner",
+                res_model: "partner",
+                type: "ir.actions.act_window",
+                views: [
+                    [false, "list"],
+                    [false, "form"],
+                ],
+            },
+        };
+
+        let index = 0;
+        const recordIds = [1, 2, 3];
+        const mockRPC = (route, args) => {
+            const rule = {
+                id: index,
+                group_id: [1, "Internal User"],
+                domain: false,
+                can_validate: true,
+                message: false,
+                exclusive_user: false,
+            };
+            if (args.method === "get_approval_spec") {
+                assert.strictEqual(recordIds[index++], args.kwargs.res_id);
+                const spec = {
+                    rules: [rule],
+                    entries: [],
+                    groups: [[1, "Internal User"]],
+                };
+                return Promise.resolve(spec);
+            }
+        };
+        const webClient = await createWebClient({ serverData, mockRPC });
+        await doAction(webClient, 1);
+        await click(target.querySelector(".o_data_row .o_data_cell"));
+        await click(target.querySelector(".o_pager_next"));
+        await click(target, 'button[name="someMethod"] .o_web_studio_approval');
+        await click(target.querySelector(".o_pager_next"));
+        await click(target, 'button[name="someMethod"] .o_web_studio_approval');
     });
 });

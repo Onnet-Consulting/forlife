@@ -214,8 +214,6 @@ QUnit.module("spreadsheet > pivot_autofill", {}, () => {
     });
 
     QUnit.test("Autofill pivot values with date in cols", async function (assert) {
-        assert.expect(3);
-
         const { model } = await createSpreadsheetWithPivot({
             arch: /*xml*/ `
                 <pivot>
@@ -225,22 +223,32 @@ QUnit.module("spreadsheet > pivot_autofill", {}, () => {
                 </pivot>`,
         });
         assert.strictEqual(
+            getCellFormula(model, "B1"),
+            '=ODOO.PIVOT.HEADER(1,"date:day","04/14/2016")'
+        );
+        assert.strictEqual(
             getPivotAutofillValue(model, "B1", { direction: "right", steps: 1 }),
-            getCellFormula(model, "B1").replace("01/20/2016", "01/21/2016")
+            '=ODOO.PIVOT.HEADER(1,"date:day","04/15/2016")'
+        );
+        assert.strictEqual(
+            getCellFormula(model, "B2"),
+            '=ODOO.PIVOT.HEADER(1,"date:day","04/14/2016","measure","probability")'
         );
         assert.strictEqual(
             getPivotAutofillValue(model, "B2", { direction: "right", steps: 1 }),
-            getCellFormula(model, "B2").replace("01/20/2016", "01/21/2016")
+            '=ODOO.PIVOT.HEADER(1,"date:day","04/15/2016","measure","probability")'
+        );
+        assert.strictEqual(
+            getCellFormula(model, "B3"),
+            '=ODOO.PIVOT(1,"probability","foo",1,"date:day","04/14/2016")'
         );
         assert.strictEqual(
             getPivotAutofillValue(model, "B3", { direction: "right", steps: 1 }),
-            getCellFormula(model, "B3").replace("01/20/2016", "01/21/2016")
+            '=ODOO.PIVOT(1,"probability","foo",1,"date:day","04/15/2016")'
         );
     });
 
     QUnit.test("Autofill pivot values with date (day)", async function (assert) {
-        assert.expect(1);
-
         const { model } = await createSpreadsheetWithPivot({
             arch: /*xml*/ `
                 <pivot>
@@ -250,8 +258,12 @@ QUnit.module("spreadsheet > pivot_autofill", {}, () => {
                 </pivot>`,
         });
         assert.strictEqual(
+            getCellFormula(model, "A3"),
+            '=ODOO.PIVOT.HEADER(1,"date:day","04/14/2016")'
+        );
+        assert.strictEqual(
             getPivotAutofillValue(model, "A3", { direction: "bottom", steps: 1 }),
-            getCellFormula(model, "A3").replace("01/20/2016", "01/21/2016")
+            '=ODOO.PIVOT.HEADER(1,"date:day","04/15/2016")'
         );
     });
 

@@ -3,7 +3,7 @@
 
 from odoo import api, fields, models, _
 from odoo.tools import pycompat, float_repr
-from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 from odoo.tools.sql import column_exists, create_column
 
 from datetime import datetime
@@ -38,10 +38,16 @@ class ResPartner(models.Model):
 
     @api.constrains('l10n_de_datev_identifier')
     def _check_datev_identifier(self):
-        for partner in self.filtered(lambda p: p.l10n_de_datev_identifier != 0):
-            if self.search([('id', '!=', partner.id),
-                            ('l10n_de_datev_identifier', '=', partner.l10n_de_datev_identifier)], limit=1):
-                raise UserError(_('You have already defined a partner with the same Datev identifier. '))
+        self.flush_model(['l10n_de_datev_identifier'])
+        self.env.cr.execute("""
+            SELECT COUNT(id), l10n_de_datev_identifier FROM res_partner
+            WHERE l10n_de_datev_identifier != 0
+            GROUP BY l10n_de_datev_identifier
+            HAVING COUNT(id) > 1
+        """)
+
+        if self.env.cr.dictfetchone():
+            raise ValidationError(_('You have already defined a partner with the same Datev identifier. '))
 
 
 class AccountMoveL10NDe(models.Model):
@@ -344,7 +350,7 @@ class GeneralLedgerCustomHandler(models.AbstractModel):
         param_start = self.env['ir.config_parameter'].sudo().get_param('l10n_de.datev_start_count', "100000000")[:9]
         param_start_vendors = self.env['ir.config_parameter'].sudo().get_param('l10n_de.datev_start_count_vendors', "700000000")[:9]
 
-        # The gegentokonto should be 1 length higher than the account length, so we have to substract 1 to the params length
+        # The gegenkonto should be 1 length higher than the account length, so we have to substract 1 to the params length
         return max(param_start.isdigit() and len(param_start) or 9, param_start_vendors.isdigit() and len(param_start_vendors) or 9, 5) - 1
 
     def _l10n_de_datev_find_partner_account(self, account, partner):
@@ -361,16 +367,20 @@ class GeneralLedgerCustomHandler(models.AbstractModel):
             fname = "property_account_receivable_id"         if account.account_type == 'asset_receivable' else "property_account_payable_id"
             prop = self.env['ir.property']._get(fname, "res.partner", partner.id)
             if prop == account:
-                return str(account.code).ljust(len_param - 1, '0')
-            if account.account_type == 'asset_receivable':
-                param_start = self.env['ir.config_parameter'].sudo().get_param('l10n_de.datev_start_count', "100000000")[:9]
-                start_count = param_start.isdigit() and int(param_start) or 100000000
-            else:
-                param_start_vendors = self.env['ir.config_parameter'].sudo().get_param('l10n_de.datev_start_count_vendors', "700000000")[:9]
-                start_count = param_start_vendors.isdigit() and int(param_start_vendors) or 700000000
-            start_count = int(str(start_count).ljust(len_param, '0'))
-            return partner.l10n_de_datev_identifier or start_count + partner.id
+                return str(account.code).ljust(len_param - 1, '0') if account else ''
+            return self._l10n_de_datev_get_account_identifier(account, partner)
         return str(account.code).ljust(len_param - 1, '0') if account else ''
+
+    def _l10n_de_datev_get_account_identifier(self, account, partner):
+        len_param = self._l10n_de_datev_get_account_length() + 1
+        if account.account_type == 'asset_receivable':
+            param_start = self.env['ir.config_parameter'].sudo().get_param('l10n_de.datev_start_count', "100000000")[:9]
+            start_count = param_start.isdigit() and int(param_start) or 100000000
+        else:
+            param_start_vendors = self.env['ir.config_parameter'].sudo().get_param('l10n_de.datev_start_count_vendors', "700000000")[:9]
+            start_count = param_start_vendors.isdigit() and int(param_start_vendors) or 700000000
+        start_count = int(str(start_count).ljust(len_param, '0'))
+        return partner.l10n_de_datev_identifier or start_count + partner.id
 
     # Source: http://www.datev.de/dnlexom/client/app/index.html#/document/1036228/D103622800029
     def _l10n_de_datev_get_csv(self, options, moves):

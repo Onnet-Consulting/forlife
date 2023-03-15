@@ -15,11 +15,15 @@ export class PromotionButton extends PosComponent {
     async _applyPromotionProgram(selectedProgramsList) {
         const order = this.env.pos.get_order();
         let order_lines = order.get_orderlines_to_check();
-        let [newLines, remainingOrderLines, combo_count] = order.computeForListOfCombo(order_lines, selectedProgramsList);
+        let [newLines, remainingOrderLines, combo_count] = order.computeForListOfProgram(order_lines, selectedProgramsList);
         remainingOrderLines.forEach(line => {
-            line.set_quantity(line.get_quantity());
-            if (line.quantity === 0) {
-                order.orderlines.remove(line)
+            let qty = line.get_quantity();
+            let qty_orig = parseFloat(line.quantityStr);
+            if (qty != qty_orig) {
+                line.set_quantity(line.get_quantity());
+            };
+            if (line.quantity == 0) {
+                order.remove_orderline(line);
             };
         });
 
@@ -28,12 +32,15 @@ export class PromotionButton extends PosComponent {
             let options = order._getNewLineValuesAfterDiscount(newLine);
             order.orderlines.add(order._createLineFromVals(options));
         };
+        console.log(order);
     }
 
     async onClick() {
         console.log('onClick', this.env.pos)
         const order = this.env.pos.get_order();
         const potentialPrograms = order.getPotentialProgramsToSelect();
+        let bestCombine = order.computeBestCombineOfProgram() || [];
+        bestCombine = bestCombine.map(p => this.env.pos.get_program_by_id(p))
         if (potentialPrograms.size === 0) {
             await this.showPopup('ErrorPopup', {
                 title: this.env._t('No program available.'),
@@ -41,15 +48,13 @@ export class PromotionButton extends PosComponent {
             });
             return false;
         };
-        let hasNonMultiProgram = order._checkHasNoMultiComboApplied();
-        let hasComboApplied = order._checkHasComboApplied();
         const programsList = potentialPrograms.map((pro) => ({
-            id: pro.program.id,
-            label: pro.program.name,
-            isSelected: false,
+            id: pro.program.str_id,
+            label: pro.program.display_name,
+            isSelected: bestCombine.length > 0 ? bestCombine.includes(pro.program) : false,
+            index: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
             forecastedNumber: pro.number,
-            order_apply: -1,
-            apply_multi_program: pro.program.apply_multi_program,
+            order_apply: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
             discounted_amount: 0.0,
             forecasted_discounted_amount: 0.0,
         }));
@@ -58,8 +63,6 @@ export class PromotionButton extends PosComponent {
             title: this.env._t('Please select some program'),
             programs: programsList,
             discount_total: 0,
-            hasNonMultiProgram: hasNonMultiProgram,
-            hasComboApplied: hasComboApplied
         });
         if (confirmed) {
             return this._applyPromotionProgram(payload);
@@ -73,7 +76,7 @@ PromotionButton.template = 'PromotionButton';
 ProductScreen.addControlButton({
     component: PromotionButton,
     condition: function() {
-        return this.env.pos.get_order().getActivatedComboPrograms().length > 0;
+        return this.env.pos.get_order().getActivatedPrograms().length > 0;
     }
 });
 

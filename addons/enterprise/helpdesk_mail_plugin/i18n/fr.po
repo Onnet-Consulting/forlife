@@ -6,6 +6,7 @@
 # Martin Trigaux, 2022
 # Cécile Collart <cco@odoo.com>, 2022
 # Alexandra Jubert, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-09-14 11:00+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Alexandra Jubert, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,7 +27,7 @@ msgstr ""
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_outlook.xml:0
 #, python-format
 msgid "Closed"
-msgstr "Clôturés"
+msgstr "Clôturé"
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
@@ -54,7 +55,7 @@ msgstr "Enregistrer l'email sur le ticket"
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_gmail.xml:0
 #, python-format
 msgid "Log the email on the ticket"
-msgstr "Enregistrez l'email sur le ticket"
+msgstr "Enregistrer l'email sur le ticket"
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
@@ -68,14 +69,14 @@ msgstr "Aucun ticket trouvé pour ce contact."
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_outlook.xml:0
 #, python-format
 msgid "Save Contact to create new Tickets."
-msgstr "Enregistrez le contact pour créer de nouveaux tickets."
+msgstr "Sauvegardez le contact pour créer de nouveaux tickets."
 
 #. module: helpdesk_mail_plugin
 #. openerp-web
 #: code:addons/helpdesk_mail_plugin/static/src/to_translate/translations_gmail.xml:0
 #, python-format
 msgid "Save the contact to create new tickets."
-msgstr "Enregistrez le contact pour créer de nouveaux tickets."
+msgstr "Sauvegardez le contact pour créer de nouveaux tickets."
 
 #. module: helpdesk_mail_plugin
 #. openerp-web

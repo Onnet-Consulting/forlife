@@ -1,9 +1,21 @@
 /** @odoo-module */
 import { registry } from "@web/core/registry";
+import { omit } from "@web/core/utils/objects";
 import { kanbanView } from "@web/views/kanban/kanban_view";
 import { KanbanEditorRenderer } from "@web_studio/client_action/view_editors/kanban/kanban_editor_renderer";
 import { makeModelErrorResilient } from "@web_studio/client_action/view_editors/utils";
 
+class EditorArchParser extends kanbanView.ArchParser {
+    parse(arch, models, modelName) {
+        const parsed = super.parse(...arguments);
+        const noFetchFields = Object.entries(parsed.fieldNodes).filter(
+            ([fname, field]) => field.rawAttrs && field.rawAttrs.studio_no_fetch
+        ).map(f => f[0]);
+        parsed.fieldNodes = omit(parsed.fieldNodes, ...noFetchFields);
+        parsed.activeFields = omit(parsed.activeFields, ...noFetchFields);
+        return parsed;
+    }
+}
 class OneRecordModel extends kanbanView.Model {
     async load() {
         this.progressAttributes = false;
@@ -45,6 +57,7 @@ class OneRecordModel extends kanbanView.Model {
 
 const kanbanEditor = {
     ...kanbanView,
+    ArchParser: EditorArchParser,
     Renderer: KanbanEditorRenderer,
     Model: OneRecordModel,
     props(genericProps, editor, config) {

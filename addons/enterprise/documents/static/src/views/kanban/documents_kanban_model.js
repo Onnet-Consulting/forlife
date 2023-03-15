@@ -11,7 +11,7 @@ export class DocumentsKanbanRecord extends DocumentsRecordMixin(KanbanModel.Reco
         if (this.data.type === "empty") {
             // In case the file is actually empty we open the input to replace the file
             ev.stopPropagation();
-            ev.currentTarget.querySelector(".o_kanban_replace_document").click();
+            ev.target.querySelector(".o_kanban_replace_document").click();
         } else if (this.isViewable()) {
             ev.stopPropagation();
             ev.preventDefault();

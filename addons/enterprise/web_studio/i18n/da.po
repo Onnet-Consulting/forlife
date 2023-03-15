@@ -15,9 +15,9 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-23 08:22+0000\n"
+"POT-Creation-Date: 2022-12-15 13:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
 "Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Danish (https://www.transifex.com/odoo/teams/41243/da/)\n"
@@ -28,6 +28,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid ""
@@ -58,6 +59,7 @@ msgstr ""
 "            "
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid ""
@@ -72,6 +74,7 @@ msgstr ""
 "            "
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid ""
@@ -86,6 +89,7 @@ msgstr ""
 "            "
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid ""
@@ -100,33 +104,35 @@ msgstr ""
 "            "
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
 msgid " to "
 msgstr "til"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/report.py:0
 #, python-format
 msgid "%s Report"
 msgstr "%s Rapport"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "(id)"
 msgstr "(id)"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "(t-if=\""
 msgstr "(t-if=\""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid ""
@@ -137,6 +143,7 @@ msgstr ""
 "dette filter.</p></div>"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid ""
@@ -151,7 +158,7 @@ msgstr ""
 "            "
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "A field with the same name already exists."
@@ -179,13 +186,14 @@ msgid "Abstract"
 msgstr "Resumé"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Access Control"
 msgstr ""
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid "Access Control Lists"
@@ -197,14 +205,14 @@ msgid "Access Groups"
 msgstr "Adgangsgrupper"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Access records from cell"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Access records from graph"
@@ -230,7 +238,7 @@ msgid "Action Window View"
 msgstr "Visning af handlingsvindue"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_infos.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -238,7 +246,7 @@ msgid "Action to approve:"
 msgstr "Handling at godkende:"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor_sidebar.xml:0
 #, python-format
 msgid "Action's title"
@@ -254,7 +262,7 @@ msgstr ""
 " eller automatisk markering som når et dokument uploades"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/new_view_dialogs/map_new_view_dialog.xml:0
 #: code:addons/web_studio/static/src/client_action/editor/new_view_dialogs/new_view_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
@@ -263,6 +271,7 @@ msgid "Activate View"
 msgstr "Aktivér visning"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: model:ir.model.fields,field_description:web_studio.field_studio_approval_rule__active
 #: model_terms:ir.ui.view,arch_db:web_studio.studio_approval_rule_search_view
@@ -271,7 +280,7 @@ msgid "Active"
 msgstr "Aktiv"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #: model:ir.model,name:web_studio.model_mail_activity
 #, python-format
@@ -284,14 +293,14 @@ msgid "Activity Type"
 msgstr "Aktivitetstype"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_adapter.js:0
 #, python-format
 msgid "Activity view unavailable on this model"
 msgstr "Aktivitets visning utilgængelig for denne model"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -299,84 +308,84 @@ msgid "Add"
 msgstr "Tilføj"
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/form_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/form/chatter_container.xml:0
 #, python-format
 msgid "Add Chatter Widget"
 msgstr "Tilføj Chatter widget"
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/form_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/form/form_editor_renderer/form_editor_renderer_components.xml:0
 #, python-format
 msgid "Add Picture"
 msgstr "Tilføj Billede"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editors/new_buttonbox_dialog.js:0
 #, python-format
 msgid "Add a Button"
 msgstr "Tilføj en knap"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Add a description..."
 msgstr "Tilføj en beskrivelse"
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/form_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/form/form_editor_renderer/form_editor_renderer_components.xml:0
 #, python-format
 msgid "Add a pipeline status bar"
 msgstr "Tilføj en pipeline statusbar"
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/kanban_record_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/kanban/kanban_editor_compiler.js:0
 #, python-format
 msgid "Add a priority"
 msgstr "Tilføj en prioritet"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Add an approval rule"
 msgstr "Tilføj en godkendelses regel"
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/kanban_record_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/kanban/kanban_editor_compiler.js:0
 #, python-format
 msgid "Add an avatar"
 msgstr "Tilføj en avatar"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Add details to your records with an embedded list view"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Add in the print menu"
 msgstr "Tilføj i printmenuen"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #, python-format
 msgid "Add new value"
 msgstr "Tilføj ny værdi"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #, python-format
@@ -384,49 +393,49 @@ msgid "Add selection"
 msgstr "Tilføj valgte"
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/kanban_record_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/kanban/kanban_editor_compiler.js:0
 #, python-format
 msgid "Add tags"
 msgstr "Tilføj tags"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Additional Fields"
 msgstr "Yderligere Felter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Address Block"
 msgstr "Adresse blok"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Aggregate"
 msgstr "Aggregat"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Alignment"
 msgstr "Justering"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "All Day"
 msgstr "Hele dagen"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid ""
@@ -436,21 +445,21 @@ msgstr ""
 "applikation</b>."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Amount total"
 msgstr "Beløb i alt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Amount untaxed"
 msgstr "Beløb ex. moms"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_infos.xml:0
 #, python-format
 msgid "Approval"
@@ -462,7 +471,7 @@ msgid "Approval Entries"
 msgstr "Godkendelse Indtastninger"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Approval Group"
@@ -480,13 +489,14 @@ msgid "Approval Rules"
 msgstr "Godkendelse Regler"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Approvals"
 msgstr "Godkendelser"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
@@ -495,7 +505,7 @@ msgstr ""
 "Godkendelser kan kun udføres på en metode eller en handling, ikke begge."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_infos.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -514,7 +524,7 @@ msgid "Approved as"
 msgstr "Godkendt som"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_infos.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -527,13 +537,14 @@ msgid "Approved/rejected by"
 msgstr "Godkendt/afvist af"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Archive deprecated records"
 msgstr "Arkiver forældede datasæt"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #: model_terms:ir.ui.view,arch_db:web_studio.studio_approval_rule_form_view
@@ -543,35 +554,35 @@ msgid "Archived"
 msgstr "Arkiveret"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Archiving"
 msgstr "Arkivering"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_manager.js:0
 #, python-format
 msgid "Are you sure you want to remove the selection values?"
 msgstr "Er du sikker på du vil fjerne de valgte værdier?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Are you sure you want to remove this %s from the view?"
 msgstr "Er du sikker på du vil fjerne dette %s fra visningen?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/navbar/home_menu_customizer/home_menu_customizer.js:0
 #, python-format
 msgid "Are you sure you want to reset the background image?"
 msgstr "Er du sikker på du vil nulstille baggrundsbilledet?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid ""
@@ -582,7 +593,7 @@ msgstr ""
 "Alle tilpasninger udført med Studio på denne visning vil gå tabt."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_adapter.js:0
 #: code:addons/web_studio/static/src/legacy/action_editor_main.js:0
 #, python-format
@@ -594,14 +605,14 @@ msgstr ""
 "Alle tilpasninger udført med studio på denne visning vil gå tabt."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "As expression"
 msgstr "Som udtryk"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -609,35 +620,35 @@ msgid "Ascending"
 msgstr "Stigende"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Assign a responsible to each record"
 msgstr "Tildel en ansvarlig for hvert datasæt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Assign dates and visualize records in a calendar"
 msgstr "Fastsæt datoer og visualiser datasæt i en kalender"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Attach a picture to a record"
 msgstr "Vedhæft et billede til datasættet"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Auto-complete with"
 msgstr "Auto-fuldfør med"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/search_renderer.xml:0
 #, python-format
 msgid "Autocompletion Fields"
@@ -649,27 +660,28 @@ msgid "Automated Action"
 msgstr "Automatiseret handling"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid "Automated Actions"
 msgstr "Automatiske aktioner"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Automations"
 msgstr "Automatiseringer"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Average"
 msgstr "Gennemsnit"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_infos.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -677,14 +689,14 @@ msgid "Awaiting approval"
 msgstr "Afventer godkendelse"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Backward"
 msgstr "Baglæns"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Bar"
@@ -696,27 +708,28 @@ msgid "Base"
 msgstr "Basis"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/report_kanban_view.js:0
 #, python-format
 msgid "Blank"
 msgstr "Blank"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks_registry.js:0
 #, python-format
 msgid "Block"
 msgstr "Blokér"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "Blocked"
 msgstr "Blokeret"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -724,56 +737,56 @@ msgid "Bold"
 msgstr "Fed"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Bordered"
 msgstr "Afgrænset"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Borderless"
 msgstr "Kantløs"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/report_kanban_view.js:0
 #, python-format
 msgid "Business header/footer"
 msgstr "Forretnings sidehoved-/fod"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/report_editor_sidebar.js:0
 #, python-format
 msgid "By default: "
 msgstr "Per standard:"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Calendar"
 msgstr "Kalender"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Can Create"
 msgstr "Kan oprette"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Can Delete"
 msgstr "Kan slette"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Can Edit"
@@ -785,10 +798,11 @@ msgid "Can be approved"
 msgstr "Kan godkendes"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/new_view_dialogs/map_new_view_dialog.xml:0
 #: code:addons/web_studio/static/src/client_action/editor/new_view_dialogs/new_view_dialog.xml:0
 #: code:addons/web_studio/static/src/client_action/studio_home_menu/icon_creator_dialog/icon_creator_dialog.xml:0
+#: code:addons/web_studio/static/src/client_action/view_editors/components/field_selector_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/js/common/field_selector_dialog.js:0
 #: code:addons/web_studio/static/src/legacy/js/common/new_field_dialog.js:0
 #: code:addons/web_studio/static/src/legacy/js/edit_menu.js:0
@@ -802,42 +816,42 @@ msgid "Cancel"
 msgstr "Annullér"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Categorize records with custom tags"
 msgstr "Kategoriser datasæt med tilpassede tags"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/navbar/home_menu_customizer/home_menu_customizer.xml:0
 #, python-format
 msgid "Change Background"
 msgstr "Skift baggrund"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Change Image"
 msgstr "Skift billede"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "Change the <b>background</b>, make it yours."
 msgstr "Skift <b>baggrunden</b>, gør den til din egen."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Chatter"
 msgstr "Chatter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Checkbox"
@@ -849,35 +863,35 @@ msgid "Checked if it has been edited with Studio."
 msgstr "Afkrydset hvis det er redigeret med Studio."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #, python-format
 msgid "Choose an app name"
 msgstr "Vælg et appnavn"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #, python-format
 msgid "Choose your first object name"
 msgstr "Vælg dit første objekt navn"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Churn"
 msgstr "Churn"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Class"
 msgstr "Class"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #, python-format
@@ -885,21 +899,21 @@ msgid "Clear"
 msgstr "Ryd"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "Click here."
 msgstr "Klik her."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "Click to edit messaging features on your model."
 msgstr "Klik for at redigere besked funktioner på din model."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/studio_approval.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -907,7 +921,7 @@ msgid "Click to see all approval rules."
 msgstr "Klik for at se alle godkendelsesregler."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_infos.xml:0
 #: code:addons/web_studio/static/src/client_action/navbar/navbar.xml:0
 #: code:addons/web_studio/static/src/legacy/js/common/new_field_dialog.js:0
@@ -918,21 +932,22 @@ msgid "Close"
 msgstr "Luk"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Cohort"
 msgstr "Gruppe"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Collapse First Level"
 msgstr "Kollaps første niveau"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
@@ -942,42 +957,42 @@ msgid "Color"
 msgstr "Farve"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Colors"
 msgstr "Farver"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks_registry.js:0
 #, python-format
 msgid "Column"
 msgstr "Kolonne"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Column Title"
 msgstr "Kolonne titel"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Column grouping"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Columns"
 msgstr "Kolonner"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Compact"
@@ -989,7 +1004,8 @@ msgid "Companies"
 msgstr "Virksomheder"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
@@ -997,21 +1013,21 @@ msgid "Company"
 msgstr "Virksomhed"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Components"
 msgstr "Komponenter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Condition"
 msgstr "Betingelse"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
@@ -1025,6 +1041,7 @@ msgid "Conditional Rule"
 msgstr "Betinget Regel"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #: code:addons/web_studio/models/ir_ui_menu.py:0
 #, python-format
@@ -1032,7 +1049,7 @@ msgid "Configuration"
 msgstr "Konfiguration"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/edit_menu.js:0
 #: code:addons/web_studio/static/src/legacy/js/new_model.js:0
 #, python-format
@@ -1040,8 +1057,9 @@ msgid "Configure Model"
 msgstr "Konfigurer Model"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/studio_home_menu/icon_creator_dialog/icon_creator_dialog.xml:0
+#: code:addons/web_studio/static/src/client_action/view_editors/components/field_selector_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/js/common/field_selector_dialog.js:0
 #: code:addons/web_studio/static/src/legacy/js/common/new_field_dialog.js:0
 #: code:addons/web_studio/static/src/legacy/js/common/new_field_dialog.js:0
@@ -1054,20 +1072,21 @@ msgid "Confirm"
 msgstr "Bekræft"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/navbar/home_menu_customizer/home_menu_customizer.js:0
 #, python-format
 msgid "Confirmation"
 msgstr "Bekræftelse"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "Contact"
 msgstr "Kontakt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/new_view_dialogs/map_new_view_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -1075,28 +1094,28 @@ msgid "Contact Field"
 msgstr "Kontakt Felt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/new_view_dialogs/map_new_view_dialog.js:0
 #, python-format
 msgid "Contact Field Required"
 msgstr "Kontakt Felt Påkrævet"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Contact details"
 msgstr "Kontakt detaljer"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Context"
 msgstr "Kontekst"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid ""
@@ -1106,42 +1125,42 @@ msgstr ""
 "objekter."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/navbar/home_menu_customizer/home_menu_customizer.js:0
 #, python-format
 msgid "Could not change the background"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/edit_menu.js:0
 #, python-format
 msgid "Create Menu"
 msgstr "Opret menu"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/new_model.js:0
 #, python-format
 msgid "Create Model"
 msgstr "Opret Model"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/edit_menu.js:0
 #, python-format
 msgid "Create a new Menu"
 msgstr "Opret en ny menu"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/new_model.js:0
 #, python-format
 msgid "Create a new Model"
 msgstr "Opret en ny Model"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid ""
@@ -1151,21 +1170,21 @@ msgstr ""
 "Fantasi, osv.)"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #, python-format
 msgid "Create your App"
 msgstr "Opret din app"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #, python-format
 msgid "Create your app"
 msgstr "Lav din app"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #, python-format
 msgid "Create your first Menu"
@@ -1186,7 +1205,7 @@ msgid "Created on"
 msgstr "Oprettet den"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_adapter.js:0
 #, python-format
 msgid "Creating this type of view is not currently supported in Studio."
@@ -1194,7 +1213,8 @@ msgstr ""
 "Oprettelsen af denne type visning understøttes ikke i øjeblikket af Studio."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
@@ -1202,6 +1222,7 @@ msgid "Currency"
 msgstr "Valuta"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_menu.py:0
 #, python-format
 msgid "Custom Configuration"
@@ -1223,7 +1244,7 @@ msgid "Custom Reports"
 msgstr "Tilpasset rapporter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Custom Sorting"
@@ -1235,7 +1256,7 @@ msgid "Custom Views"
 msgstr "Tilpasset visninger"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
@@ -1243,6 +1264,7 @@ msgid "Custom color"
 msgstr "Tilpasset farve"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "Custom field names cannot contain double underscores."
@@ -1274,28 +1296,22 @@ msgid "Customization made with Studio will be permanently lost"
 msgstr "Tilpasninger udført med Studio vil blive slettet permanent"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/navbar/home_menu_customizer/home_menu_customizer.xml:0
 #, python-format
 msgid "Customizations"
 msgstr "Tilpasninger"
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
-#, python-format
-msgid "Dashboard"
-msgstr "Dashboard"
-
-#. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Data table"
 msgstr "Data tabel"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
@@ -1304,28 +1320,28 @@ msgid "Date"
 msgstr "Dato"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Date & Calendar"
 msgstr "Dato & Kalender"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Date & Time"
 msgstr "Dato & tidspunkt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Date range & Gantt"
 msgstr "Dato interval & Gantt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
@@ -1334,35 +1350,35 @@ msgid "Day"
 msgstr "Dag"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Day Precision"
 msgstr "Dag præcision"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Decimal"
 msgstr "Decimal"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Default"
 msgstr "Standard"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Default Display Mode"
 msgstr "Standard visnings tilstand"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -1370,14 +1386,14 @@ msgid "Default Group by"
 msgstr "Gruppér som standard efter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Default Scale"
 msgstr "Standard skala"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_manager.js:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: model:ir.model,name:web_studio.model_ir_default
@@ -1386,14 +1402,14 @@ msgid "Default Values"
 msgstr "Standardværdier"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Default value"
 msgstr "Standardværdi"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #, python-format
@@ -1401,20 +1417,21 @@ msgid "Default view"
 msgstr "Standardvisning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Define start/end dates and visualize records in a Gantt chart"
 msgstr "Definer start/slut datoer og visualiser datasæt i en Gantt oversigt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Delay Field"
 msgstr "Forsinkelse felt"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #: model_terms:ir.ui.view,arch_db:web_studio.act_report_xml_view_kanban
 #, python-format
@@ -1422,7 +1439,7 @@ msgid "Delete"
 msgstr "Slet"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #, python-format
@@ -1430,7 +1447,7 @@ msgid "Delete Menu Item"
 msgstr "Fjern menu genstand"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -1438,7 +1455,8 @@ msgid "Descending"
 msgstr "Faldende"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
@@ -1447,7 +1465,7 @@ msgid "Description"
 msgstr "Beskrivelse"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/icon_creator/icon_creator.xml:0
 #: code:addons/web_studio/static/src/client_action/icon_creator/icon_creator.xml:0
 #, python-format
@@ -1455,14 +1473,15 @@ msgid "Design your Icon"
 msgstr "Design dit ikon"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #, python-format
 msgid "Disable"
 msgstr "Deaktivér"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
@@ -1473,14 +1492,15 @@ msgid "Disable creation"
 msgstr "Deaktiver oprettelse"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Disable opening"
 msgstr "Deaktiver åbning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Display"
@@ -1494,42 +1514,42 @@ msgid "Display Name"
 msgstr "Vis navn"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Display Total row"
 msgstr "Vis samlet række"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Display Unavailability"
 msgstr "Vis utilgængelighed"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Display count"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Display horizontally"
 msgstr "Vis horisontalt"
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/kanban_record_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/kanban/kanban_editor_record.js:0
 #, python-format
 msgid "Do you want to add a dropdown with colors?"
 msgstr "Vil du tilføje en dropdown med farver?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: model:ir.model.fields,field_description:web_studio.field_studio_approval_rule__domain
@@ -1538,13 +1558,14 @@ msgid "Domain"
 msgstr "Domæne"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "Done"
 msgstr "Udført"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid ""
@@ -1553,20 +1574,21 @@ msgstr ""
 "Træk & slip <b>et andet felt</b>. Lad os prøve med et <i>valg felt</i>."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #, python-format
 msgid "Drag a menu to the right to create a sub-menu"
 msgstr "Træk en menu til højre for at oprette en undermenu"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/report_editor.js:0
 #, python-format
 msgid "Drag building block here"
 msgstr "Træk byggeklodser hertil"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
@@ -1574,7 +1596,7 @@ msgid "Dropdown Menu"
 msgstr "Dropdown Menu"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #: model_terms:ir.ui.view,arch_db:web_studio.act_report_xml_view_kanban
@@ -1588,34 +1610,35 @@ msgid "Duplicate"
 msgstr "Duplikér"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
 msgid "Edit"
 msgstr "Rediger"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/studio_home_menu/icon_creator_dialog/icon_creator_dialog.js:0
 #, python-format
 msgid "Edit Application Icon"
 msgstr "Rediger applikations ikon"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_manager.xml:0
 #, python-format
 msgid "Edit Form View"
 msgstr "Redigér formularvisning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_manager.xml:0
 #, python-format
 msgid "Edit List View"
 msgstr "Redigér listevisning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/edit_menu.js:0
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #, python-format
@@ -1623,7 +1646,7 @@ msgid "Edit Menu"
 msgstr "Redigér menu"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #, python-format
@@ -1631,21 +1654,21 @@ msgid "Edit Menu Item"
 msgstr "Rediger menu genstand"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/common/new_field_dialog.js:0
 #, python-format
 msgid "Edit Value"
 msgstr "Redigér værdi"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Edit Values"
 msgstr "Rediger værdier"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #, python-format
@@ -1653,27 +1676,28 @@ msgid "Edit selection"
 msgstr "Rediger valg"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Editable"
 msgstr "Redigérbar"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Else"
 msgstr "Ellers"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "Email"
 msgstr "E-mail"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Email Alias"
@@ -1690,34 +1714,35 @@ msgid "Email Thread"
 msgstr "E-mail-tråd"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor_sidebar.xml:0
 #, python-format
 msgid "Empty List Message"
 msgstr "Tom liste besked"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Enable Mass Editing"
 msgstr "Aktiver Masse Redigering"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Enable Routing"
 msgstr "Aktiver Rute"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Enable SMS"
 msgstr "Aktiver SMS"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
@@ -1731,28 +1756,28 @@ msgid "Entries"
 msgstr "Poster"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/common/abstract_editor_manager.js:0
 #, python-format
 msgid "Error"
 msgstr "Fejl"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Esc expression"
 msgstr "Esc udtryk"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Existing Fields"
 msgstr "Eksisterende felter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #: code:addons/web_studio/static/src/legacy/js/edit_menu.js:0
 #, python-format
@@ -1760,80 +1785,80 @@ msgid "Existing Model"
 msgstr "Eksisterende Model"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/navbar/home_menu_customizer/home_menu_customizer.xml:0
 #, python-format
 msgid "Export"
 msgstr "Eksporter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/report_kanban_view.js:0
 #, python-format
 msgid "External"
 msgstr "Ekstern"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Fadeout Speed"
 msgstr "Fadeout hastighed"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Fast"
 msgstr "Hurtig"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/search_renderer.xml:0
 #, python-format
 msgid "Favourites"
 msgstr "Favoritter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/components/field_selector_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #: code:addons/web_studio/static/src/legacy/xml/field_selector_dialog.xml:0
-#: code:addons/web_studio/static/src/legacy/xml/kanban_editor.xml:0
 #, python-format
 msgid "Field"
 msgstr "Felt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Field & Label"
 msgstr "Felt og mærkat"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Field Column"
 msgstr "Felt kolonne"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/common/new_field_dialog.js:0
 #, python-format
 msgid "Field Properties"
 msgstr "Felt egenskaber"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Field expression"
 msgstr "Felt udtryk"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Field in Cell"
@@ -1845,7 +1870,7 @@ msgid "Fields"
 msgstr "Felter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #: model_terms:ir.ui.view,arch_db:web_studio.act_report_xml_view_kanban
 #, python-format
@@ -1853,20 +1878,22 @@ msgid "File"
 msgstr "Fil"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid "Filename for %s"
 msgstr "Filnavn for %s"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Filter"
 msgstr "Filter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
@@ -1874,7 +1901,7 @@ msgid "Filter Rules"
 msgstr "Filtrer regler"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/search_renderer.xml:0
 #: model:ir.model,name:web_studio.model_ir_filters
 #, python-format
@@ -1882,84 +1909,85 @@ msgid "Filters"
 msgstr "Filtre"
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/form_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/form/form_editor_renderer/form_editor_renderer_components.js:0
 #, python-format
 msgid "First Status"
 msgstr "Første status"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "First dimension"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Font style"
 msgstr "Skrifttype"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Foreach expression"
 msgstr "Foreach udtryk"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
+#: code:addons/web_studio/static/src/client_action/view_editors/components/field_content_overlay.js:0
 #, python-format
 msgid "Form"
 msgstr "Formular"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Forward"
 msgstr "Fremad"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Gantt"
 msgstr "Gantt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #, python-format
 msgid "General Views"
 msgstr "Generelle visninger"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/new_view_dialogs/new_view_dialog.js:0
 #, python-format
 msgid "Generate %s View"
 msgstr "Generér %s visning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Get contact, phone and email fields on records"
 msgstr "Indhent kontakt, telefon og email felter i datasæt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "Go on, you are almost done!"
 msgstr "Fortsæt, du er næsten færdig!"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "Good job! To add more <b>fields</b>, come back to the <i>Add tab</i>."
@@ -1968,6 +1996,7 @@ msgstr ""
 "fanen</i>."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #: model:ir.model.fields.selection,name:web_studio.selection__mail_activity_type__category__grant_approval
 #: model:mail.activity.type,name:web_studio.mail_activity_data_approve
@@ -1976,14 +2005,14 @@ msgid "Grant Approval"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Graph"
 msgstr "Graf"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/search_renderer.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/search_renderer.xml:0
 #, python-format
@@ -1991,14 +2020,14 @@ msgid "Graph View"
 msgstr "Graf visning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Great !"
 msgstr "Fantastisk !"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/search_renderer.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/search_renderer.xml:0
 #, python-format
@@ -2013,6 +2042,7 @@ msgid "Group"
 msgstr "Gruppe"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #: model_terms:ir.ui.view,arch_db:web_studio.studio_approval_entry_search_view
 #: model_terms:ir.ui.view,arch_db:web_studio.studio_approval_rule_search_view
@@ -2021,13 +2051,14 @@ msgid "Group By"
 msgstr "Sortér efter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/search_renderer.xml:0
 #, python-format
 msgid "Group by"
 msgstr "Gruppér efter"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid "Groups used in approval rules must have an external identifier."
@@ -2040,7 +2071,7 @@ msgid "HTTP Routing"
 msgstr "HTTP Routing"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -2048,63 +2079,63 @@ msgid "Half Day"
 msgstr "Halv dag"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Half Hour"
 msgstr "Halv time"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Heading1"
 msgstr "Titel1"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Heading2"
 msgstr "Titel2"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Heading3"
 msgstr "Titel3"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Heading4"
 msgstr "Titel4"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Heading5"
 msgstr "Titel5"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Heading6"
 msgstr "Titel6"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Help Tooltip"
 msgstr "Hjælp værktøjstip"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid ""
@@ -2115,34 +2146,35 @@ msgstr ""
 "notat, osv.)."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Hide Address"
 msgstr "Skjul Adresse"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Hide Name"
 msgstr "Skjul Navn"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Hide by default"
 msgstr "Gem per standard"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "High Priority"
 msgstr "Høj Prioritet"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #, python-format
@@ -2155,14 +2187,14 @@ msgid "Home Menu Background Image"
 msgstr "Hjemme menu baggrundsbillede"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Hour"
 msgstr "Time"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "How do you want to <b>name</b> your app? Library, Academy, …?"
@@ -2170,7 +2202,7 @@ msgstr ""
 "Hvordan vil du <b>navngive</b> din applikation? Bibliotek, Akademi, ...?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "How do you want to name your first <b>menu</b>? My books, My courses?"
@@ -2178,14 +2210,14 @@ msgstr ""
 "Hvordan vil du navngive din første <b>menu</b>? Mine bøger, Mine kurser?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Html"
 msgstr "Html"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid ""
@@ -2195,7 +2227,7 @@ msgstr ""
 "udfordringen?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: model:ir.model.fields,field_description:web_studio.field_studio_approval_entry__id
 #: model:ir.model.fields,field_description:web_studio.field_studio_approval_request__id
@@ -2205,7 +2237,7 @@ msgid "ID"
 msgstr "ID"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_buttonbox_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -2229,6 +2261,7 @@ msgstr ""
 " godkende andre regler for det samme datasæt"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
@@ -2239,7 +2272,8 @@ msgstr ""
 "Hvis du ikke vil oprette en ny model, bør en eksisterende model være valgt."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
@@ -2248,7 +2282,7 @@ msgid "Image"
 msgstr "Billede"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/navbar/home_menu_customizer/home_menu_customizer.xml:0
 #: model_terms:ir.ui.view,arch_db:web_studio.simplified_form_view_import_module
 #, python-format
@@ -2256,6 +2290,7 @@ msgid "Import"
 msgstr "Importer"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
@@ -2263,7 +2298,7 @@ msgid "In Progress"
 msgstr "I gang"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_manager.js:0
 #, python-format
 msgid ""
@@ -2285,7 +2320,7 @@ msgstr ""
 "konfigurations undermenuer"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks_registry.js:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -2293,34 +2328,35 @@ msgid "Inline"
 msgstr "Inline"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Integer"
 msgstr "Heltal"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/report_kanban_view.js:0
 #, python-format
 msgid "Internal"
 msgstr "Intern"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Interval"
 msgstr "Interval"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
 msgid "Invalid studio_approval %s in button"
 msgstr "Ugyldig studio_approval %s i knap"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Invisible"
@@ -2332,7 +2368,7 @@ msgid "Is Studio"
 msgstr "Er Studio"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #, python-format
@@ -2340,27 +2376,28 @@ msgid "Is default view"
 msgstr "Er standard visning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Italic"
 msgstr "Kursiv"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Kanban"
 msgstr "Kanban"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "Kanban State"
 msgstr "Kanban status"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_buttonbox_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
@@ -2375,7 +2412,7 @@ msgid "Label"
 msgstr "Tekst"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Large"
@@ -2403,7 +2440,7 @@ msgid "Last Updated on"
 msgstr "Sidst opdateret den"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid ""
@@ -2414,7 +2451,7 @@ msgstr ""
 "app</b>."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: model:ir.model.fields,field_description:web_studio.field_studio_approval_rule__exclusive_user
 #, python-format
@@ -2422,21 +2459,21 @@ msgid "Limit approver to this rule"
 msgstr "Begræns godkender til denne regel"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/sidebar_common.xml:0
 #, python-format
 msgid "Limit visibility to groups"
 msgstr "Begræns synlighed til grupper"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Line"
 msgstr "Linje"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
@@ -2449,14 +2486,15 @@ msgid "Linked Activity"
 msgstr "Forbundet aktivitet"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
+#: code:addons/web_studio/static/src/client_action/view_editors/components/field_content_overlay.js:0
 #, python-format
 msgid "List"
 msgstr "Liste"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/search_renderer.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/search_renderer.xml:0
 #, python-format
@@ -2464,7 +2502,7 @@ msgid "List View"
 msgstr "Liste visning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/report_editor.xml:0
 #, python-format
@@ -2472,63 +2510,63 @@ msgid "Loading..."
 msgstr "Indlæser..."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Manually sort records in the list view"
 msgstr "Sorter manuelt datasæt fra listevisningen"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Many2many"
 msgstr "Many2many"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Many2one"
 msgstr "Many2one"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Map"
 msgstr "Kort"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Margins"
 msgstr "Avancer"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Measure"
 msgstr "Mål"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Measure Field"
 msgstr "Måling felt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Measures"
 msgstr "Mål"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -2541,7 +2579,7 @@ msgid "Menu"
 msgstr "Menu"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: model:ir.model.fields,field_description:web_studio.field_studio_approval_rule__message
 #, python-format
@@ -2557,21 +2595,21 @@ msgid "Method"
 msgstr "Metode"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/report_kanban_view.js:0
 #, python-format
 msgid "Minimal header/footer"
 msgstr "Minimal sidehoved-/fod"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Mode"
 msgstr "Tilstand"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #: model:ir.model.fields,field_description:web_studio.field_studio_approval_rule__model_id
@@ -2618,76 +2656,77 @@ msgid "Module file (.zip)"
 msgstr "Modulfil (.zip)"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Monetary"
 msgstr "Monetær"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Monetary value"
 msgstr "Monetær værdi"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Month"
 msgstr "Måned"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Month Precision"
 msgstr "Måned præcision"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/sidebar_common.xml:0
 #, python-format
 msgid "More"
 msgstr "Flere"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Multiline Text"
 msgstr "Multilinje tekst"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #, python-format
 msgid "Multiple Records Views"
 msgstr "Flere datasæt visninger"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
 msgid "My %s"
 msgstr "Min %s"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_buttonbox_dialog.xml:0
 #, python-format
 msgid "My Button"
 msgstr "Min knap"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #, python-format
 msgid "My Menu"
 msgstr "Min menu"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_model.xml:0
 #, python-format
 msgid "My Model"
@@ -2699,7 +2738,8 @@ msgid "My entries"
 msgstr "Mine indtastninger"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/new_model.xml:0
@@ -2712,54 +2752,57 @@ msgid "Name"
 msgstr "Navn"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "New"
 msgstr "Ny"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid "New Approval Entry"
 msgstr "Ny Godkendelse"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/components/field_selector_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/field_selector_dialog.xml:0
-#: code:addons/web_studio/static/src/legacy/xml/kanban_editor.xml:0
 #, python-format
 msgid "New Field"
 msgstr "Nyt felt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "New Fields"
 msgstr "Nye felter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editors/search_editor.js:0
 #, python-format
 msgid "New Filter"
 msgstr "Nyt filter"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "New Lines"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/edit_menu.js:0
 #, python-format
 msgid "New Menu"
 msgstr "Ny menu"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #: code:addons/web_studio/static/src/legacy/js/edit_menu.js:0
 #: code:addons/web_studio/static/src/legacy/xml/new_model.xml:0
@@ -2768,21 +2811,21 @@ msgid "New Model"
 msgstr "Ny Model"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "New record at the bottom"
 msgstr "Nyt datasæt i bunden"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "New record on top"
 msgstr "Nyt datasæt i toppen"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
@@ -2793,7 +2836,7 @@ msgid "Next"
 msgstr "Næste"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid ""
@@ -2804,13 +2847,14 @@ msgstr ""
 "<b>slip</b> det i din visning til højre."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "No"
 msgstr "Nej"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid "No approval found for this rule, record and user combination."
@@ -2818,34 +2862,36 @@ msgstr ""
 "Ingen godkendelse fundet for denne regel, datasæt, og bruger kombination."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/report_kanban_view.js:0
 #, python-format
 msgid "No header/footer"
 msgstr "Ingen sidehoved-/fod"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_manager.js:0
 #, python-format
 msgid "No related many2one fields found"
 msgstr "Ingen relateret many2one felter fundet"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/report.py:0
 #, python-format
 msgid "No view found for the given report!"
 msgstr "Ingen visning fundet for den pågældende rapport!"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Normal"
 msgstr "Normal"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #: code:addons/web_studio/static/src/client_action/navbar/navbar.xml:0
@@ -2854,14 +2900,14 @@ msgid "Notes"
 msgstr "Notater"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "Now you’re on your own. Enjoy your <b>super power</b>."
 msgstr "Nu må du stå på egne ben. Nyd dine <b>superkræfter</b>."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "Now, customize your icon. Make it yours."
@@ -2873,40 +2919,42 @@ msgid "Number of Entries"
 msgstr "Antal poster"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #, python-format
 msgid "Odoo Studio"
 msgstr "Odoo Studio"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/systray_item/systray_item.xml:0
 #, python-format
 msgid "Odoo Studio Icon"
 msgstr "Odoo Studio ikon"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Offset"
 msgstr "Offset"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "One2many"
 msgstr "One2many"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid "Only %s members can approve this rule."
 msgstr "Kun %s medlemmer kan godkende denne regel."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid ""
@@ -2917,7 +2965,7 @@ msgstr ""
 "eller tildel en ekstern ID til denne gruppe manuelt."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Only members of this group will be able to approve or reject the rule."
@@ -2926,28 +2974,28 @@ msgstr ""
 "reglen."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Optional"
 msgstr "Valgfri"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Options"
 msgstr "Valgmuligheder"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Order"
 msgstr "Ordre"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Other"
@@ -2964,20 +3012,21 @@ msgid "Paper Format Config"
 msgstr "Papirformat konfiguration"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Paper format"
 msgstr "Papirformat"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/edit_menu.js:0
 #, python-format
 msgid "Parent Menu"
 msgstr "Overordnet menu"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
@@ -2985,68 +3034,77 @@ msgid "Partner"
 msgstr "Kontakt"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "Phone"
 msgstr "Telefon"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Picture"
 msgstr "Billede"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Pie"
 msgstr "Kage"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Pipeline stages"
 msgstr "Pipeline stadier"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Pivot"
 msgstr "Pivot"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Placeholder"
 msgstr "Pladsholder"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Placeholder Text"
 msgstr "Pladsholder tekst"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Please specify a field name for the selected model."
 msgstr "Specificér venligst et felt navn for den valgte model."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid "Please specify a field."
 msgstr "Specificér venligst et felt."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/kanban/kanban_editor_record.xml:0
+#, python-format
+msgid "Preview is not available"
+msgstr ""
+
+#. module: web_studio
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.xml:0
@@ -3056,27 +3114,28 @@ msgid "Previous"
 msgstr "Forrige"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_manager.xml:0
 #, python-format
 msgid "Print"
 msgstr "Udskriv"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Printed Report Name"
 msgstr "Printet rapport navn"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Priority"
 msgstr "Prioritet"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid ""
@@ -3087,28 +3146,28 @@ msgstr ""
 "dette være nyttesløst)."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Properties"
 msgstr "Egenskaber"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Pull Right"
 msgstr "Træk højre"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Quarter Hour"
 msgstr "Kvarter Time"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -3116,7 +3175,7 @@ msgid "Quick Create"
 msgstr "Opret hurtigt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Quick Create Field"
@@ -3128,27 +3187,28 @@ msgid "Qweb"
 msgstr "Qweb"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Rainbow Effect"
 msgstr "Regnbueeffekt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Rainbow Man"
 msgstr "Regnbue mand"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Read only"
 msgstr "Læs kun"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "Ready"
@@ -3166,7 +3226,7 @@ msgid "Record ID"
 msgstr "Datasæt ID"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.xml:0
 #, python-format
 msgid "Redo"
@@ -3178,7 +3238,7 @@ msgid "Reference"
 msgstr "Reference"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_infos.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -3196,7 +3256,7 @@ msgid "Rejected as"
 msgstr "Afvist som"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_infos.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -3204,14 +3264,14 @@ msgid "Rejected on"
 msgstr "Afvist på den"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Related End Date"
 msgstr "Relateret slutdato"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -3219,49 +3279,49 @@ msgid "Related Field"
 msgstr "Relateret felt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Related Start Date"
 msgstr "Relateret startdato"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Related expression"
 msgstr "Relateret udtryk"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #, python-format
 msgid "Relation:"
 msgstr "Relation:"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Reload from attachment"
 msgstr "Genindlæs fra vedhæftning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/sidebar_common.xml:0
 #, python-format
 msgid "Remove from View"
 msgstr "Fjern fra visning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Remove rule"
 msgstr "Fjern regel"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #, python-format
@@ -3269,7 +3329,7 @@ msgid "Remove selection"
 msgstr "Fjern markering"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Report"
@@ -3281,14 +3341,15 @@ msgid "Report Action"
 msgstr "Rapporter handling"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #, python-format
 msgid "Reporting Views"
 msgstr "Rapportering Visninger"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
@@ -3296,28 +3357,29 @@ msgid "Reports"
 msgstr "Rapporter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Required"
 msgstr "Obligatorisk"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/navbar/home_menu_customizer/home_menu_customizer.xml:0
 #, python-format
 msgid "Reset Default Background"
 msgstr "Nultil standard baggrund"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Reset Image"
 msgstr "Nulstil billede"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
@@ -3327,7 +3389,7 @@ msgid "Responsible"
 msgstr "Ansvarlig"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -3335,21 +3397,21 @@ msgid "Restore Default View"
 msgstr "Nulstil standard visning"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Restrict a record to a specific company"
 msgstr "Begræns et datasæt til en specifik virksomhed"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Retention"
 msgstr "Tilbageholdelse"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_infos.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -3357,14 +3419,14 @@ msgid "Revoke"
 msgstr "Tilbagekald"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Row grouping - First level"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Row grouping - Second level"
@@ -3376,6 +3438,7 @@ msgid "Rule"
 msgstr "Regel"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid ""
@@ -3387,6 +3450,7 @@ msgstr ""
 "stedet."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid ""
@@ -3398,70 +3462,70 @@ msgstr ""
 "oprette en ny i stedet."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "Save."
 msgstr "Gem."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Search"
 msgstr "Søg"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Search..."
 msgstr "Søg..."
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/form_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/form/form_editor_renderer/form_editor_renderer_components.js:0
 #, python-format
 msgid "Second Status"
 msgstr "Anden status"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Second dimension"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/common/field_selector_dialog.js:0
 #, python-format
 msgid "Select a Field"
 msgstr "Vælg et felt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_buttonbox_dialog.xml:0
 #, python-format
 msgid "Select a related field"
 msgstr "Vælg et relateret felt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editors/new_buttonbox_dialog.js:0
 #, python-format
 msgid "Select a related field."
 msgstr "Vælg et relateret felt."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #, python-format
 msgid "Select a related field:"
 msgstr "Vælg et relateret felt:"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/new_view_dialogs/map_new_view_dialog.xml:0
 #, python-format
 msgid ""
@@ -3471,34 +3535,35 @@ msgstr ""
 " datasæt."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Selection"
 msgstr "Udvælgelse"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Send a"
 msgstr "Send en"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Send messages, log notes and schedule activities"
 msgstr "Send beskeder, log noter, og planlæg aktiviteter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Separator"
 msgstr "Separator"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
@@ -3511,21 +3576,21 @@ msgid "Server Action"
 msgstr "Server handling"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Set Cover Image"
 msgstr "Angiv coverbillede"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Set a price or cost on records"
 msgstr "Angiv en pris eller omkostning i datasæt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid ""
@@ -3536,49 +3601,49 @@ msgstr ""
 "adresse; det vil automatisk oprette et dokument for dig. Sejt, ik?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Set approval rules"
 msgstr "Angiv godkendelses regler"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #, python-format
 msgid "Set as Default"
 msgstr "Angiv som standard"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Set expression"
 msgstr "Angiv udtryk"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Show Invisible Elements"
 msgstr "Vis Usynlige Elementer"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Show by default"
 msgstr "Vis per standard"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Signature"
 msgstr "Signatur"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
@@ -3586,14 +3651,14 @@ msgid "Size"
 msgstr "Størrelse"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Slow"
 msgstr "Langsom"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
@@ -3601,48 +3666,49 @@ msgid "Small"
 msgstr "Lille"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Sort By"
 msgstr "Sorter Efter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Sort by"
 msgstr "Sorter efter"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Sorting"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Source"
 msgstr "Kilde"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #, python-format
 msgid "Specify all possible values"
 msgstr "Specificer samtlige mulige værdier"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Stacked graph"
 msgstr ""
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
@@ -3650,19 +3716,21 @@ msgid "Stage"
 msgstr "Fase"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #, python-format
 msgid "Stage Name"
 msgstr "Fase navn"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Stage and visualize records in a custom pipeline"
 msgstr "Iscenesæt og visualiser datasæt i en tilpasset pipeline"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
@@ -3670,7 +3738,7 @@ msgid "Start Date"
 msgstr "Start dato"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/new_view_dialogs/new_view_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
@@ -3680,7 +3748,7 @@ msgid "Start Date Field"
 msgstr "Startdato felt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/new_view_dialogs/new_view_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
@@ -3690,14 +3758,14 @@ msgid "Stop Date Field"
 msgstr "Slutdato felt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Striped"
 msgstr "Stribet"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/action_editor_main.js:0
 #: model:ir.model.fields,field_description:web_studio.field_ir_model_data__studio
 #, python-format
@@ -3758,7 +3826,7 @@ msgid "Studio Mixin"
 msgstr "Studio Mixin"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/edit_menu.xml:0
 #, python-format
@@ -3766,21 +3834,28 @@ msgid "Submenu label"
 msgstr "Undermenu mærkat"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Subtotal & Total"
 msgstr "Subtotal & Total"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
+#, python-format
+msgid "Subtotal & Total can only be used in these models: "
+msgstr ""
+
+#. module: web_studio
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Subview %s"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.xml:0
 #, python-format
@@ -3788,35 +3863,36 @@ msgid "Suggested features for your new model"
 msgstr "Foreslåede funktioner til din nye model"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Sum"
 msgstr "Sum"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks_registry.js:0
 #, python-format
 msgid "Table"
 msgstr "Tabel"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Table style"
 msgstr "Tabel stil"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
 #, python-format
 msgid "Tabs"
 msgstr "Faner"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
@@ -3825,27 +3901,28 @@ msgid "Tags"
 msgstr "Tags"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Taxes amount by groups"
 msgstr "Skattemængde per grupper"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Technical Name"
 msgstr "Teknisk navn"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
 msgid "Template '%s' not found"
 msgstr "Skabelon '%s' ikke fudnet"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #: code:addons/web_studio/static/src/legacy/js/views/view_components.js:0
@@ -3854,21 +3931,21 @@ msgid "Text"
 msgstr "Tekst"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Text decoration"
 msgstr "Tekst dekoration"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Text in Cell"
 msgstr "Tekst i celle"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid ""
@@ -3877,7 +3954,7 @@ msgid ""
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid ""
@@ -3886,13 +3963,14 @@ msgid ""
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #, python-format
 msgid "The fastest way to create a web application."
 msgstr "Den hurtigste måde at oprette en web applikation."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #: code:addons/web_studio/controllers/main.py:0
 #: code:addons/web_studio/controllers/main.py:0
@@ -3902,7 +3980,7 @@ msgid "The field %s does not exist."
 msgstr "Feltet %s eksisterer ikke."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_hook.js:0
 #: code:addons/web_studio/static/src/legacy/js/views/controllers/form_controller.js:0
 #, python-format
@@ -3910,25 +3988,28 @@ msgid "The following approvals are missing:"
 msgstr "De følgerne godkendelser mangler:"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "The following fields are currently not in the view."
 msgstr ""
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid "The icon has not a correct format"
 msgstr "Ikonet har ikke en korrekt format"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid "The icon is not linked to an attachment"
 msgstr "Ikonet er ikke forbundet til en vedhæftning"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #: code:addons/web_studio/controllers/main.py:0
 #: code:addons/web_studio/controllers/main.py:0
@@ -3938,13 +4019,14 @@ msgid "The model %s does not exist."
 msgstr "Modellen %s eksisterer ikke."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid "The model %s doesn't support adding fields."
 msgstr "Modellen %s understøtter ikke tilføjelsen af felter."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid ""
@@ -3955,26 +4037,28 @@ msgstr ""
 "53 anslag."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid "The operation  type \"%s\" is not supported"
 msgstr "Operationstypen \"%s\" er ikke understøttet"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "The record field name is missing"
 msgstr "Datasæt felt navn mangler"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid "The related field of a button has to be a many2one to %s."
 msgstr "Det relaterede felt tilhørende en knap har for mange many2one til %s."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/common/abstract_editor_manager.js:0
 #, python-format
 msgid ""
@@ -3985,7 +4069,7 @@ msgstr ""
 "fordi et felt blev slettet, men stadig bruges andetsteds."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid ""
@@ -3996,6 +4080,7 @@ msgstr ""
 "andre regler fra samme datasæt."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/main.py:0
 #, python-format
 msgid ""
@@ -4006,27 +4091,28 @@ msgstr ""
 "Er du sikker på du vil fjerne de valgte værdier fra de datasæt?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_manager.xml:0
 #, python-format
 msgid "There are no many2one fields related to the current model."
 msgstr "Der er ingen many2many felter relateret til den aktuelle model."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid "There is no method %s on the model %s (%s)"
 msgstr "Der er ingen metode %s på modellen %s (%s)"
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/form_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/form/form_editor_renderer/form_editor_renderer_components.js:0
 #, python-format
 msgid "Third Status"
 msgstr "Tredje status"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/navbar/navbar.js:0
 #: code:addons/web_studio/static/src/client_action/studio_home_menu/studio_home_menu.js:0
 #, python-format
@@ -4034,6 +4120,7 @@ msgid "This action is not editable by Studio"
 msgstr "Denne handling kan ikke redigeres af Studio"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid ""
@@ -4044,7 +4131,7 @@ msgstr ""
 "En anden bruger påkrævet for yderligere godkendelse af denne handling."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/sidebar_common.xml:0
 #, python-format
 msgid ""
@@ -4055,7 +4142,7 @@ msgstr ""
 "forhold."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid ""
@@ -4064,7 +4151,7 @@ msgid ""
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/common/abstract_editor_manager.js:0
 #, python-format
 msgid "This operation caused an error, probably because a xpath was broken"
@@ -4072,7 +4159,7 @@ msgstr ""
 "Denne drift forårsagede en fejl, formentlig fordi en xpath blev ødelagt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/report_editor.js:0
 #, python-format
 msgid ""
@@ -4083,13 +4170,14 @@ msgid ""
 msgstr ""
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid "This rule has already been approved/rejected."
 msgstr "Denne regel er allerede blevet godkendt/afvist."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/approval_infos.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -4099,49 +4187,49 @@ msgstr ""
 "handling."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "This user will be assigned a next activity when approval is requested."
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Three Columns"
 msgstr "Tre kolonner"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Timeline"
 msgstr "Tidslinje"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/action_editor.xml:0
 #, python-format
 msgid "Timeline Views"
 msgstr "Tidslinje visninger"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Title Block"
 msgstr "Titel blok"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "To <b>customize a field</b>, click on its <i>label</i>."
 msgstr "For at <b>tilpasse et felt</b>, klik på dets <i>mærkat</i>."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_manager.xml:0
 #, python-format
 msgid ""
@@ -4152,13 +4240,14 @@ msgstr ""
 "oprette dens many2one modpart på den model du vil relatere den til."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/report.py:0
 #, python-format
 msgid "To edit this document please create a record first"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/systray_item/systray_item.xml:0
 #: code:addons/web_studio/static/src/systray_item/systray_item.xml:0
 #, python-format
@@ -4166,47 +4255,49 @@ msgid "Toggle Studio"
 msgstr "(De)aktiver Studio"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
 msgid "Total"
 msgstr "I alt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "Two Columns"
 msgstr "To kolonner"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Type"
 msgstr "Type"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
 msgid "Type down your notes here..."
 msgstr "Nedfæld dine noter her..."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Underline"
 msgstr "Understreg"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.xml:0
 #, python-format
 msgid "Undo"
 msgstr "Fortryd"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/views/view_editor_sidebar.js:0
 #, python-format
 msgid "Use colors"
@@ -4218,14 +4309,14 @@ msgid "User"
 msgstr "Bruger"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "User assignment"
 msgstr "Bruger tildeling"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/studio_approval.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -4233,7 +4324,15 @@ msgid "User avatar placeholder"
 msgstr "Bruger avatar pladsholder"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-python
+#: code:addons/web_studio/models/studio_approval.py:0
+#, python-format
+msgid "User is not a member of the selected group."
+msgstr ""
+
+#. module: web_studio
+#. odoo-javascript
+#. odoo-python
 #: code:addons/web_studio/models/ir_model.py:0
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #, python-format
@@ -4241,7 +4340,7 @@ msgid "Value"
 msgstr "Værdi"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/new_field_dialog.xml:0
@@ -4251,7 +4350,7 @@ msgid "Value of list"
 msgstr "Værdi af liste"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: model:ir.model,name:web_studio.model_ir_ui_view
 #, python-format
@@ -4259,28 +4358,28 @@ msgid "View"
 msgstr "Vis"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_menu/editor_menu.js:0
 #, python-format
 msgid "Views"
 msgstr "Visninger"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Visible for"
 msgstr "Synlig for"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Visible if"
 msgstr "Synlig hvis"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/approval/studio_approval.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/approval_component.xml:0
 #, python-format
@@ -4288,42 +4387,42 @@ msgid "Waiting for approval"
 msgstr "Afventer godkendelse"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "Want more fun? Let’s create more <b>views</b>."
 msgstr "Vil du har mere sjov? Lad os lave flere <b>visninger</b>."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "Want to customize the background? Let’s activate <b>Odoo Studio</b>."
 msgstr "Ønsker du at tilpasse baggrunden? Lad os aktivere <b>Odoo Studio</b>."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Week"
 msgstr "Uge"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Week Precision"
 msgstr "Uge præcision"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #, python-format
 msgid "Welcome to"
 msgstr "Velkommen til"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid "What about a <b>Kanban view</b>?"
@@ -4340,14 +4439,14 @@ msgid "Whether this model is abstract"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/report_kanban_view.js:0
 #, python-format
 msgid "Which type of report do you want to create?"
 msgstr "Hvilken type rapport vil du oprette?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -4355,14 +4454,14 @@ msgid "Widget"
 msgstr "Widget"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "Width"
 msgstr "Bredde"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/tours/web_studio.js:0
 #, python-format
 msgid ""
@@ -4373,41 +4472,42 @@ msgstr ""
 "til at åbne <b>Odoo Studio</b> og tilpas enhver skærm."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/model_configurator/model_configurator.js:0
 #, python-format
 msgid "Write additional notes or comments"
 msgstr "Skriv yderligere noter eller kommentarer"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/sidebar_common.xml:0
 #, python-format
 msgid "XML"
 msgstr "XML"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "Year"
 msgstr "År"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid "You can only display a user or a partner"
 msgstr "Du kan kun vise en bruger eller partner"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid "You cannot cancel an approval you didn't set yourself."
 msgstr "Du kan ikke annullere en godkendelse du ikke selv har angivet."
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/editor/editor_adapter.js:0
 #: code:addons/web_studio/static/src/legacy/action_editor_main.js:0
 #, python-format
@@ -4417,6 +4517,7 @@ msgstr ""
 "aktiv."
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/controllers/report.py:0
 #, python-format
 msgid "You cannot modify this view, it is part of the generic layout"
@@ -4425,7 +4526,7 @@ msgstr ""
 "layout"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/edit_menu.js:0
 #, python-format
 msgid ""
@@ -4436,59 +4537,50 @@ msgstr ""
 "Prøv at afinstallere applikationen i stedet."
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/kanban_record_editor.js:0
+#. odoo-javascript
+#: code:addons/web_studio/static/src/client_action/view_editors/kanban/kanban_editor_record.js:0
 #, python-format
 msgid "You first need to create a many2many field in the form view."
 msgstr "Du skal først oprette et many2many felt i formular visningen."
 
 #. module: web_studio
-#. openerp-web
-#: code:addons/web_studio/static/src/legacy/js/views/view_editors/kanban_record_editor.js:0
-#, python-format
-msgid ""
-"You first need to create a many2one field to Partner or User in the form "
-"view."
-msgstr ""
-"Du skal først oprette et many2one felt for Partner eller Bruger i formular "
-"visningen."
-
-#. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/studio_approval.py:0
 #, python-format
 msgid "You just like to break things, don't you?"
 msgstr "Du kan bare li' at ødelægge ting, ka' du ik'?"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/common/new_field_dialog.js:0
 #, python-format
 msgid "You must have at least one option set"
 msgstr ""
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
+#: code:addons/web_studio/static/src/legacy/js/common/new_field_dialog.js:0
 #: code:addons/web_studio/static/src/legacy/js/common/new_field_dialog.js:0
 #, python-format
 msgid "You must select a related field"
 msgstr "Du skal vælge et relateret felt"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/common/new_field_dialog.js:0
 #, python-format
 msgid "You must select a relation"
 msgstr "Du skal vælge en relation"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/sidebar_common.xml:0
 #, python-format
 msgid "You need to be part of these groups to see this field:"
 msgstr "Du skal være en del af disse grupper for at se dette felt:"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/js/reports/sidebar_components/report_building_blocks.js:0
 #, python-format
 msgid ""
@@ -4498,14 +4590,14 @@ msgstr ""
 "artikler"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "bottom"
 msgstr "bund"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -4513,28 +4605,28 @@ msgid "day"
 msgstr "dag"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #, python-format
 msgid "e.g. Properties"
 msgstr "f.eks. Egenskaber"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/app_creator/app_creator.xml:0
 #, python-format
 msgid "e.g. Real Estate"
 msgstr "f.eks. Ejendom"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "left"
 msgstr "venstre"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -4542,14 +4634,14 @@ msgid "month"
 msgstr "måned"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/icon_creator/icon_creator.xml:0
 #, python-format
 msgid "or"
 msgstr "eller"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
@@ -4557,7 +4649,7 @@ msgid "px"
 msgstr "px"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
@@ -4565,48 +4657,49 @@ msgid "reset color"
 msgstr "nulstil farve"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "right"
 msgstr "højre"
 
 #. module: web_studio
+#. odoo-python
 #: code:addons/web_studio/models/ir_ui_view.py:0
 #, python-format
 msgid "studio_approval attribute can only be set in form views"
 msgstr "studio_approval egenskab kan kun angives i formular visninger"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "test email"
 msgstr "test email"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/report_editor_sidebar.xml:0
 #, python-format
 msgid "top"
 msgstr "top"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/icon_creator/icon_creator.xml:0
 #, python-format
 msgid "upload it"
 msgstr "upload det"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/client_action/icon_creator/icon_creator.xml:0
 #, python-format
 msgid "upload one"
 msgstr "upload en"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
@@ -4614,14 +4707,14 @@ msgid "week"
 msgstr "uge"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format
 msgid "x_studio_"
 msgstr "x_studio_"
 
 #. module: web_studio
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #: code:addons/web_studio/static/src/legacy/xml/view_editor_sidebar.xml:0
 #, python-format

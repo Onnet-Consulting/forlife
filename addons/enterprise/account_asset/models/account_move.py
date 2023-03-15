@@ -37,6 +37,9 @@ class AccountMove(models.Model):
     # -------------------------------------------------------------------------
     @api.depends('asset_id', 'depreciation_value', 'asset_id.total_depreciable_value', 'asset_id.already_depreciated_amount_import')
     def _compute_depreciation_cumulative_value(self):
+        self.asset_depreciated_value = 0
+        self.asset_remaining_value = 0
+
         for asset in self.asset_id:
             depreciated = 0
             remaining = asset.total_depreciable_value - asset.already_depreciated_amount_import
@@ -110,7 +113,7 @@ class AccountMove(models.Model):
 
         # look for any asset to create, in case we just posted a bill on an account
         # configured to automatically create assets
-        posted._auto_create_asset()
+        posted.sudo()._auto_create_asset()
         # check if we are reversing a move and delete assets of original move if it's the case
         posted._delete_reversed_entry_assets()
 
@@ -256,7 +259,7 @@ class AccountMove(models.Model):
             'account_id': asset.account_depreciation_id.id,
             'debit': 0.0 if float_compare(amount, 0.0, precision_digits=prec) > 0 else -amount,
             'credit': amount if float_compare(amount, 0.0, precision_digits=prec) > 0 else 0.0,
-            'analytic_distribution': analytic_distribution if asset.asset_type == 'sale' else {},
+            'analytic_distribution': analytic_distribution,
             'currency_id': current_currency.id,
             'amount_currency': -amount_currency,
         }
@@ -266,7 +269,7 @@ class AccountMove(models.Model):
             'account_id': asset.account_depreciation_expense_id.id,
             'credit': 0.0 if float_compare(amount, 0.0, precision_digits=prec) > 0 else -amount,
             'debit': amount if float_compare(amount, 0.0, precision_digits=prec) > 0 else 0.0,
-            'analytic_distribution': analytic_distribution if asset.asset_type in ('purchase', 'expense') else {},
+            'analytic_distribution': analytic_distribution,
             'currency_id': current_currency.id,
             'amount_currency': amount_currency,
         }
@@ -359,6 +362,11 @@ class AccountMoveLine(models.Model):
 
     asset_ids = fields.Many2many('account.asset', 'asset_move_line_rel', 'line_id', 'asset_id', string='Related Assets', copy=False)
     non_deductible_tax_value = fields.Monetary(compute='_compute_non_deductible_tax_value', currency_field='company_currency_id')
+
+    def _get_computed_taxes(self):
+        if self.move_id.asset_id:
+            return self.tax_ids
+        return super()._get_computed_taxes()
 
     def _turn_as_asset(self, asset_type, view_name, view):
         ctx = self.env.context.copy()

@@ -14,6 +14,7 @@ class PosSession(models.Model):
                 'promotion.program',
                 'promotion.combo.line',
                 'promotion.reward.line',
+                'promotion.pricelist.item',
                 'month.data',
                 'dayofmonth.data',
                 'dayofweek.data',
@@ -68,9 +69,13 @@ class PosSession(models.Model):
                     'discount_apply_on',
                     'limit_usage',
                     'max_usage',
+                    'limit_usage_per_order',
+                    'max_usage_per_order',
+                    'limit_usage_per_customer',
+                    'max_usage_per_customer',
+                    'qty_per_combo',
                     'promotion_type',
                     'with_code',
-                    'apply_multi_program',
                     'discount_based_on',
                     'valid_product_ids',
                     'valid_customer_ids',
@@ -105,6 +110,14 @@ class PosSession(models.Model):
             }
         }
 
+    def _loader_params_promotion_pricelist_item(self,):
+        return {
+            'search_params': {
+                'domain': [('program_id', 'in', self.config_id._get_promotion_program_ids().ids)],
+                'fields': ['program_id', 'product_id', 'fixed_price']
+            }
+        }
+
     def _get_pos_ui_promotion_program(self, params):
         return self.env['promotion.program'].search_read(**params['search_params'])
 
@@ -113,6 +126,9 @@ class PosSession(models.Model):
 
     def _get_pos_ui_promotion_reward_line(self, params):
         return self.env['promotion.reward.line'].search_read(**params['search_params'])
+
+    def _get_pos_ui_promotion_pricelist_item(self, params):
+        return self.env['promotion.pricelist.item'].search_read(**params['search_params'])
 
     def _get_pos_ui_month_data(self, params):
         return self.env['month.data'].search_read(**params['search_params'])

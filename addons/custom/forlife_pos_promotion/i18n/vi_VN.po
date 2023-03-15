@@ -133,11 +133,6 @@ msgid "Apply Discount"
 msgstr "Áp dụng KM"
 
 #. module: forlife_pos_promotion
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__apply_multi_program
-msgid "Apply Multi Program"
-msgstr "Được áp dụng đồng thời"
-
-#. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_search
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form

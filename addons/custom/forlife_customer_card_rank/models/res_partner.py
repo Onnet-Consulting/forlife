@@ -12,12 +12,14 @@ class ResPartner(models.Model):
     card_rank_ids = fields.One2many('partner.card.rank', inverse_name='customer_id', string='Card Rank')
     card_rank_format = fields.Html('Card Rank Format', compute='_compute_card_rank')
     card_rank_tokyolife = fields.Html('Card Rank TokyoLife', compute='_compute_card_rank')
+    card_rank_by_brand = fields.Json('Card Rank By Brand', compute='_compute_card_rank')
 
     def _compute_card_rank(self):
         for line in self:
             data = line.card_rank_ids.generate_card_rank_data()
             line.card_rank_format = data.get(f'{self.env.ref("forlife_point_of_sale.brand_format").code}-{str(line.id)}', no_data)
             line.card_rank_tokyolife = data.get(f'{self.env.ref("forlife_point_of_sale.brand_tokyolife").code}-{str(line.id)}', no_data)
+            line.card_rank_by_brand = {r.brand_id.id: [r.card_rank_id.id, r.card_rank_id.name] for r in line.card_rank_ids}
 
     def btn_change_card_rank(self):
         partner_card_rank = self.validate_brand_info()

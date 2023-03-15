@@ -2,13 +2,15 @@
 <odoo>
     <data>
 
-       <menuitem id="member_card_categ_menu" name="Member Card" parent="forlife_promotion.promotion_root" sequence="10"/>
+        <menuitem id="member_card_categ_menu" name="Member Card" parent="forlife_promotion.promotion_root" sequence="10"/>
 
-       <menuitem id="member_card_format_menu" name="Format" parent="member_card_categ_menu" action="member_card_format_action" sequence="5"/>
+        <menuitem id="member_card_format_menu" name="Format" parent="member_card_categ_menu" action="member_card_format_action" sequence="5"/>
 
-       <menuitem id="member_card_tokyolife_menu" name="TokyoLife" parent="member_card_categ_menu" action="member_card_tokyolife_action" sequence="10"/>
+        <menuitem id="member_card_tokyolife_menu" name="TokyoLife" parent="member_card_categ_menu" action="member_card_tokyolife_action" sequence="10"/>
 
-       <menuitem id="card_rank_menu" name="Card Rank" parent="forlife_promotion.promotion_configuration_menu" action="card_rank_action" sequence="5"/>
+        <menuitem id="partner_card_rank_menu" parent="member_card_categ_menu" action="partner_card_rank_action" sequence="100"/>
+
+        <menuitem id="card_rank_menu" name="Card Rank" parent="forlife_promotion.promotion_configuration_menu" action="card_rank_action" sequence="5"/>
 
     </data>
 </odoo>
