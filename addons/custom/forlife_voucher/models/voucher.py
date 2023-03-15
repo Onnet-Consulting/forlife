@@ -113,7 +113,8 @@ class Voucher(models.Model):
                     start_date = self._format_time_zone(vourcher.start_date)
                     end_date = self._format_time_zone(vourcher.end_date)
                     end_date_format = datetime.strptime(end_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
-                    end_date_format = f"{end_date_format.day}/{end_date_format.month}/{end_date_format.year} {end_date_format.hour}:{end_date_format.minute}:{end_date_format.second}"
+                    minute = end_date_format.minute if end_date_format.minute != 0 else '00'
+                    end_date_format = f"{end_date_format.day}/{end_date_format.month}/{end_date_format.year} {end_date_format.hour}:{minute}:{end_date_format.second}"
                     start_date_format = datetime.strptime(start_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
                     data.append({
                         'value': {
