@@ -8,17 +8,17 @@
                 <main class="body">
                     <div class="section-product-info-title">
                         <div class="column flex-start">
-                            <strong t-esc="props.program.name"/>
+                            <strong t-esc="props.program.display_name"/>
                             <span><t t-if="props.program.combo_code" t-esc="props.program.combo_code"/></span>
                         </div>
-                        <div class="column flex-end">
+                        <div t-if="props.program.promotion_type != 'pricelist'" class="column flex-end">
                             <strong>
                                 <t t-esc="props.qty_per_combo"/> &nbsp;SP / Combo
                             </strong>
                         </div>
                     </div>
                     <hr/>
-                    <div style="text-align: left;"><strong>Qty of Combo: <t t-esc="props.qty_of_combo"/></strong></div>
+                    <div style="text-align: left;"><strong>Qty of Combo/Product: <t t-esc="props.qty_of_combo"/></strong></div>
                     <table style="width:100%;" class="payment-list">
                         <thead>
                             <tr height="50px">

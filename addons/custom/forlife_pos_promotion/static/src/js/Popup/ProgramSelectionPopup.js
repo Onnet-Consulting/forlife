@@ -51,12 +51,12 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                     body: 'Không có sản phẩm nào được áp dụng!'
                 });
             };
-            let program = this.env.pos.promotion_program_by_id[program_id];
+            let program = this.env.pos.get_program_by_id(program_id);
             let qty_per_combo = program.comboFormula.reduce((total, line) => total + line.quantity, 0);
             let qty_of_combo = this.combo_details[program_id].reduce((total, line) => total + line.quantity, 0);
             let details = [];
             this.combo_details[program_id].forEach((line) => {
-                let usage = line.promotion_usage_ids.find(l => l.program_id == program_id)
+                let usage = line.promotion_usage_ids.find(l => l.str_id == program_id)
                 if (usage) {
                     details.push({
                         product: this.env.pos.db.get_product_by_id(line.product.id),
