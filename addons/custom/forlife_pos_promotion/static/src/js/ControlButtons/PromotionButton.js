@@ -32,6 +32,7 @@ export class PromotionButton extends PosComponent {
             let options = order._getNewLineValuesAfterDiscount(newLine);
             order.orderlines.add(order._createLineFromVals(options));
         };
+        console.log(order);
     }
 
     async onClick() {
@@ -39,7 +40,7 @@ export class PromotionButton extends PosComponent {
         const order = this.env.pos.get_order();
         const potentialPrograms = order.getPotentialProgramsToSelect();
         let bestCombine = order.computeBestCombineOfProgram() || [];
-        bestCombine = bestCombine.map(p => this.env.pos.promotion_program_by_id[p])
+        bestCombine = bestCombine.map(p => this.env.pos.get_program_by_id(p))
         if (potentialPrograms.size === 0) {
             await this.showPopup('ErrorPopup', {
                 title: this.env._t('No program available.'),
@@ -48,8 +49,8 @@ export class PromotionButton extends PosComponent {
             return false;
         };
         const programsList = potentialPrograms.map((pro) => ({
-            id: pro.program.id,
-            label: pro.program.name,
+            id: pro.program.str_id,
+            label: pro.program.display_name,
             isSelected: bestCombine.length > 0 ? bestCombine.includes(pro.program) : false,
             index: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
             forecastedNumber: pro.number,
