@@ -14,7 +14,7 @@ class PosOrder(models.Model):
         res = super(PosOrder, self).action_pos_order_paid()
         self.with_delay().update_partner_card_rank()
         if self.card_rank_program_id:
-            total_amount_discount = sum(self.mapped('lines.discount_details_lines.money_reduced'))
+            total_amount_discount = abs(sum(self.mapped('lines.discount_details_lines').filtered(lambda f: f.type == 'card').mapped('money_reduced')))
             self.with_delay().accounting_card_rank_discount(total_amount_discount) if total_amount_discount else None
         return res
 
@@ -95,7 +95,7 @@ class PosOrder(models.Model):
     def _prepare_cr_discount_account_move(self):
         return {
             'pos_order_id': self.id,
-            'ref': self.session_id.name,
+            'ref': self.name,
             'date': self.date_order,
             'journal_id': self.card_rank_program_id.journal_id.id,
         }
@@ -128,7 +128,7 @@ class PosOrderLine(models.Model):
     @api.model
     def create(self, vals_list):
         if vals_list.get('card_rank_discount') and vals_list.get('card_rank_applied'):
-            vals_list['discount_details_lines'] = [
+            vals_list['discount_details_lines'] = vals_list.get('discount_details_lines', []) + [
                 (0, 0, {
                     'type': 'card',
                     'listed_price': vals_list['price_unit'],

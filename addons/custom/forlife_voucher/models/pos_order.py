@@ -6,6 +6,68 @@ from odoo import models, fields, _, api
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
+    pos_voucher_line_ids = fields.One2many('pos.voucher.line','pos_order_id', string='Vouchers')
+
+    @api.model
+    def _process_order(self, order, draft, existing_order):
+        pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
+        if not existing_order:
+            pos = self.env['pos.order'].browse(pos_id)
+            if len(pos.pos_voucher_line_ids) > 0:
+                for v in pos.pos_voucher_line_ids:
+                    v.voucher_id.price_used = v.voucher_id.price_used + v.price_used
+                    v.voucher_id._compute_price_residual()
+                    if v.voucher_id.apply_many_times:
+                        if v.voucher_id.price_residual > 0:
+                            v.voucher_id.state = 'valid'
+                        if v.voucher_id.price_residual == 0:
+                            v.voucher_id.state = 'off value'
+                    else:
+                        if v.voucher_id.price_residual == 0:
+                            v.voucher_id.state = 'off value'
+                        if v.voucher_id.price_residual > 0:
+                            pos.generate_account_journal(voucher=v)
+                            v.voucher_id.state = 'off value'
+                            v.voucher_id.price_residual = 0
+                    v.voucher_id.order_use_ids = [(4, pos.id)]
+            pos.action_create_voucher()
+        return pos_id
+
+    def generate_account_journal(self, voucher):
+        move_vals = {
+            'ref': self.name,
+            'date': self.date_order,
+            'journal_id': voucher.payment_method_id.journal_id.id,
+            'company_id': self.company_id.id,
+            'move_type': 'entry',
+            'pos_order_id': self.id,
+            'line_ids': [
+                (0, 0, {
+                    'name': 'Write off giá trị còn lại của Voucher sử dụng 1 lần mã {}'.format(voucher.voucher_id.name),
+                    'account_id': voucher.payment_method_id.account_other_income.id,
+                    'debit': 0.0,
+                    'credit': voucher.voucher_id.price_residual,
+                    'analytic_distribution': {voucher.voucher_id.derpartment_id.center_expense_id.id: 100} if voucher.voucher_id.derpartment_id.center_expense_id else {}
+                }),
+                # credit line
+                (0, 0, {
+                    'name': 'Write off giá trị còn lại của Voucher sử dụng 1 lần mã {}'.format(voucher.voucher_id.name),
+                    'account_id': voucher.payment_method_id.account_general.id,
+                    'debit': voucher.voucher_id.price_residual,
+                    'credit': 0.0,
+                    'analytic_distribution': {voucher.voucher_id.derpartment_id.center_expense_id.id: 100} if voucher.voucher_id.derpartment_id.center_expense_id else {}
+                }),
+            ]
+        }
+        move = self.env['account.move'].create(move_vals)._post()
+        return True
+
+    @api.model
+    def _order_fields(self, ui_order):
+        res = super(PosOrder, self)._order_fields(ui_order)
+        res['pos_voucher_line_ids'] = [v for v in ui_order['voucherlines']] if ui_order['voucherlines'] else False
+        return res
+
     def action_view_voucher(self):
         action = self.env['ir.actions.act_window']._for_xml_id('forlife_voucher.forlife_voucher_action')
         action['domain'] = [('order_pos', '=', self.id)]
@@ -21,11 +83,20 @@ class PosOrder(models.Model):
     def _prepare_invoice_lines(self):
         res = super(PosOrder, self)._prepare_invoice_lines()
         for line in self.lines:
-            if not line.pack_lot_ids or not line.product_id.categ_id.property_price_account_id or line.product_id.price - line.price_unit <= 0:
+            if not line.product_id.categ_id.property_price_account_id or line.product_id.price - line.price_unit <= 0:
                 continue
-            imei = line.pack_lot_ids.mapped('lot_name')
-            quantity = self.env['voucher.voucher'].search_count(
-                [('order_pos', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
+            if line.product_id.program_voucher_id.type == 'v':
+                imei = []
+                move_line_ids = self.env['stock.move.line'].search([('move_id.sale_line_id', '=', line.id)])
+                for move_line_id in move_line_ids:
+                    imei.append(move_line_id.lot_id.name)
+                quantity = self.env['voucher.voucher'].search_count(
+                    [('order_pos', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
+            elif line.product_id.program_voucher_id.type == 'e' and line.product_id.program_voucher_id.purpose_id.ref.upper() == 'B':
+                quantity = self.env['voucher.voucher'].search_count(
+                    [('order_pos', '=', self.id), ('program_voucher_id', '=', line.product_id.program_voucher_id.id)])
+            else:
+                quantity = 0
             if quantity == 0:
                 continue
             # xác định line tương ứng để cập nhật lại giá voucher bằng mệnh giá

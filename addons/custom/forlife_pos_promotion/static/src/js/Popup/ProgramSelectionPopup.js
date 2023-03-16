@@ -84,7 +84,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
         }
 
         selectItem(itemId) {
-            let program_by_id = this.env.pos.promotion_program_by_id;
+            let program_by_id = this.env.pos.get_program_by_id.bind(this.env.pos);
             this.combo_details = {};
             if (itemId !== undefined) {
                 let current_program = this.state.programs.find((p) => p.id == itemId);
@@ -96,7 +96,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 
             let selectedPrograms = this.state.programs.filter(p => p.isSelected)
                                     .sort((x, y) => x.index - y.index)
-                                    .map(pro => program_by_id[pro.id]);
+                                    .map(pro => program_by_id(pro.id));
 
             // Reset discounted_amount = 0.0 for programs not selected
             let not_selected_programs = this.state.programs.filter(p => !p.isSelected);
@@ -110,7 +110,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             // Tính số tiền đã giảm cho mỗi chương trình đã áp dụng, và cấp số lượng combo đã áp dụng
             for (let [program_id, lines] of Object.entries(newLinesToApply)) {
                 let total_amount_disc = lines.reduce((acc, line) => {
-                    let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount;}, 0.0);
+                    let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0);
                     return acc + amountPerLine
                 }, 0.0);
                 this.state.programs.find(p => p.id == program_id).discounted_amount = total_amount_disc;
@@ -127,7 +127,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             // Tính số tiền và combo còn có thế áp dụng cho những chương trình chưa áp dụng
             const remainingLinesClone = this.env.pos.get_order()._get_clone_order_lines(remainingLines);
 
-            let notSelectPrograms = not_selected_programs.map(p => program_by_id[p.id]);
+            let notSelectPrograms = not_selected_programs.map(p => program_by_id(p.id));
             for (let notSelectProgram of notSelectPrograms) {
                 // This step to copy without reference
                 let remaining_clone_order_lines = JSON.parse(JSON.stringify(remainingLinesClone));
@@ -145,7 +145,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 });
                 for (let [program_id, lines] of Object.entries(newLinesToApplyNoSelected)) {
                     let forecasted_discounted_amount = lines.reduce((acc, line) => {
-                        let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount;}, 0.0);
+                        let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0);
                         return acc + amountPerLine
                     }, 0.0);
                     this.state.programs.find(p => p.id == program_id).forecasted_discounted_amount = forecasted_discounted_amount;
@@ -160,7 +160,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
         getPayload() {
             return this.state.programs.filter(p => p.isSelected)
                                         .sort((p1, p2) => p1.index - p2.index)
-                                        .map(p => this.env.pos.promotion_program_by_id[p.id])
+                                        .map(p => this.env.pos.get_program_by_id(p.id))
         }
     }
     ProgramSelectionPopup.template = 'ProgramSelectionPopup';
