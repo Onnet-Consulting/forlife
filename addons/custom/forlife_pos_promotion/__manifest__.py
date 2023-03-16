@@ -39,6 +39,7 @@
             'forlife_pos_promotion/static/src/xml/Popup/ComboDetailsPopup.xml',
 
             'forlife_pos_promotion/static/src/css/detail-product-popup.css',
+            'forlife_pos_promotion/static/src/css/program-selection-popup.css',
 
         ],
     },

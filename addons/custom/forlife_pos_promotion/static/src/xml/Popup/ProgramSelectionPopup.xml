@@ -51,49 +51,6 @@
                         </li>
                     </t>
                 </ul>
-            <style>
-                .pos .modal-dialog .popup-med-custom {
-                    max-width: 750px;
-                    max-height: 700px;
-                    height: auto;
-                }
-                .pos .popup-med-custom .body {
-                    max-height: 500px;
-                    overflow-y: scroll;
-                }
-                .program-item:hover {
-                    background: rgba(0, 0, 0, 0.055);
-                    cursor: pointer;
-                }
-                li:before {
-                    content: None !important;
-                }
-                .selectable {
-                    background-color: rgb(237 248 252);
-                }
-                div .badge {
-                    min-width: 2.7ch;
-                    margin-left: 10px;
-                }
-                div .rounded-pill {
-                    border-radius: 50rem !important;
-                }
-                div .text-bg-success {
-                    text-align: center;
-                    color: #FFF !important;
-                    background-color: RGBA(40, 167, 69, var(--bg-opacity, 1)) !important;
-                }
-                div .number-combo {
-                    display: inline-block;
-                    margin-right: 10px;
-                }
-                label {
-                    padding: 0px 100px 40px 0;
-                }
-                .btn-primary {
-                    color: #017e84;
-                }
-            </style>
             </main>
             <footer class="footer">
                 <div class="button highlight confirm" t-on-click="confirm">
