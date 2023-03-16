@@ -5,10 +5,10 @@ from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 PICKING_TYPE = [
-    ('all', _('All')),
-    ('retail', _('Retail')),
-    ('wholesale', _('Wholesale')),
-    ('ecom', _('Sale Online'))
+    ('all', 'Tất cả'),
+    ('retail', 'Bán lẻ'),
+    ('wholesale', 'Bán buôn'),
+    ('ecom', 'Bán Online')
 ]
 
 TITLES = [
@@ -23,7 +23,6 @@ TITLES = [
     'Số lượng',
     'Chiết khấu',
     'Thành tiền',
-    'Thành tiền có thuế',
     'Nhóm hàng',
     'Dòng hàng',
     'Kết cấu',
@@ -31,7 +30,7 @@ TITLES = [
     'Kênh bán',
 ]
 
-COLUMN_WIDTHS = [5, 20, 20, 30, 15, 15, 10, 20, 8, 20, 20, 30, 20, 20, 20, 20, 20]
+COLUMN_WIDTHS = [5, 20, 20, 30, 15, 15, 10, 20, 8, 20, 25, 20, 20, 20, 20, 20]
 
 
 class ReportNum1(models.TransientModel):
@@ -64,52 +63,48 @@ class ReportNum1(models.TransientModel):
         tz_offset = self.tz_offset
 
         query = f"""
-select row_number() over (order by pt.name)                                      as num,
-       wh.name                                                                        as warehouse,
-       pol.product_id                                                            as product_id,
-       pp.barcode                                                                as product_barcode,
-       coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
-       ''                                                                        as product_size,
-       ''                                                                        as product_color,
-       coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as uom_name,
-       pol.price_unit                                                            as price_unit,
-       pol.qty                                                                   as qty,
-       (pol.price_unit * pol.qty) * pol.discount / 100.0          as discount,
-       pol.price_subtotal                                                        as amount_without_tax,
-       pol.price_subtotal_incl                                                   as amount_with_tax,
-       ''                                                                        as nhom_hang,
-       ''                                                                        as dong_hang,
-       ''                                                                        as ket_cau,
-       ''                                                                        as ma_loai_sp,
-       ''                                                                        as kenh_ban
-from pos_order_line pol
-         left join product_product pp on pol.product_id = pp.id
-         left join product_template pt on pp.product_tmpl_id = pt.id
-         left join uom_uom uom on pt.uom_id = uom.id
-         left join pos_order po on pol.order_id = po.id
-         left join pos_session ps on ps.id = po.session_id
-         left join pos_config pc on ps.config_id = pc.id
-         left join store on store.id = pc.store_id
-         left join stock_warehouse wh on wh.id = store.warehouse_id
-where po.company_id = %s
-  and po.state in ('paid', 'done', 'invoiced')
-  and {format_date_query("po.date_order", tz_offset)} >= %s
-  and {format_date_query("po.date_order", tz_offset)} <= %s
-        """
+                select row_number() over (order by pt.name)                                   as num,
+                    wh.code                                                                   as warehouse,
+                    pol.product_id                                                            as product_id,
+                    pp.barcode                                                                as product_barcode,
+                    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
+                    ''                                                                        as product_size,
+                    ''                                                                        as product_color,
+                    coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as uom_name,
+                    pol.price_unit                                                            as price_unit,
+                    pol.qty                                                                   as qty,
+                    (pol.price_unit * pol.qty) * pol.discount / 100.0                         as discount,
+                    pol.price_subtotal_incl                                                   as amount_with_tax,
+                    split_part(cate.complete_name, ' / ', 2)                                  as product_group,
+                    split_part(cate.complete_name, ' / ', 3)                                  as product_line,
+                    split_part(cate.complete_name, ' / ', 4)                                  as texture_name,
+                    aa.code                                                                   as product_type_code,
+                    ''                                                                        as sale_channel
+                from pos_order_line pol
+                    left join product_product pp on pol.product_id = pp.id
+                    left join product_template pt on pp.product_tmpl_id = pt.id
+                    left join uom_uom uom on pt.uom_id = uom.id
+                    left join pos_order po on pol.order_id = po.id
+                    left join pos_session ps on ps.id = po.session_id
+                    left join pos_config pc on ps.config_id = pc.id
+                    left join store on store.id = pc.store_id
+                    left join stock_warehouse wh on wh.id = store.warehouse_id
+                    left join product_category cate on cate.id = pt.categ_id
+                    left join ir_property ir on ir.res_id = concat('product.category,', pt.categ_id)
+                    left join account_account aa on concat('account.account,',aa.id) = ir.value_reference
+                where po.company_id = {self.company_id.id}
+                    and ir.name='property_stock_valuation_account_id'
+                    and ir.company_id = {self.company_id.id}
+                    and po.state in ('paid', 'done', 'invoiced')
+                    and {format_date_query("po.date_order", tz_offset)} >= '{self.from_date}'
+                    and {format_date_query("po.date_order", tz_offset)} <= '{self.to_date}'
+                """
         return query
-
-    def _get_query_params(self):
-        self.ensure_one()
-        from_date = self.from_date
-        to_date = self.to_date
-        params = [self.company_id.id, from_date, to_date]
-        return params
 
     def get_data(self):
         self.ensure_one()
         query = self._get_query()
-        params = self._get_query_params()
-        self._cr.execute(query, params)
+        self._cr.execute(query)
         data = self._cr.dictfetchall()
         return {
             'titles': TITLES,
@@ -140,11 +135,10 @@ where po.company_id = %s
             sheet.write(row, 7, value.get('price_unit'), formats.get('float_number_format'))
             sheet.write(row, 8, value.get('qty'), formats.get('center_format'))
             sheet.write(row, 9, value.get('discount'), formats.get('float_number_format'))
-            sheet.write(row, 10, value.get('amount_without_tax'), formats.get('float_number_format'))
-            sheet.write(row, 11, value.get('amount_with_tax'), formats.get('float_number_format'))
-            sheet.write(row, 12, value.get('nhom_hang'), formats.get('normal_format'))
-            sheet.write(row, 13, value.get('dong_hang'), formats.get('normal_format'))
-            sheet.write(row, 14, value.get('ket_cau'), formats.get('normal_format'))
-            sheet.write(row, 15, value.get('ma_loai_sp'), formats.get('normal_format'))
-            sheet.write(row, 16, value.get('kenh_ban'), formats.get('normal_format'))
+            sheet.write(row, 10, value.get('amount_with_tax'), formats.get('float_number_format'))
+            sheet.write(row, 11, value.get('product_group'), formats.get('normal_format'))
+            sheet.write(row, 12, value.get('product_line'), formats.get('normal_format'))
+            sheet.write(row, 13, value.get('texture_name'), formats.get('normal_format'))
+            sheet.write(row, 14, value.get('product_type_code'), formats.get('normal_format'))
+            sheet.write(row, 15, value.get('sale_channel'), formats.get('normal_format'))
             row += 1

@@ -22,13 +22,12 @@
                         <td style="text-align: right;"><t t-esc="format_decimal(line.price_unit, 2)"/></td>
                         <td style="text-align: center;"><t t-esc="format_decimal(line.qty)"/></td>
                         <td style="text-align: right;"><t t-esc="format_decimal(line.discount, 2)"/></td>
-                        <td style="text-align: right;"><t t-esc="format_decimal(line.amount_without_tax, 2)"/></td>
                         <td style="text-align: right;"><t t-esc="format_decimal(line.amount_with_tax, 2)"/></td>
-                        <td><t t-esc="line.nhom_hang"/></td>
-                        <td><t t-esc="line.dong_hang"/></td>
-                        <td><t t-esc="line.ket_cau"/></td>
-                        <td><t t-esc="line.ma_loai_sp"/></td>
-                        <td><t t-esc="line.kenh_ban"/></td>
+                        <td><t t-esc="line.product_group"/></td>
+                        <td><t t-esc="line.product_line"/></td>
+                        <td><t t-esc="line.texture_name"/></td>
+                        <td><t t-esc="line.product_type_code"/></td>
+                        <td><t t-esc="line.sale_channel"/></td>
                     </tr>
                 </t>
             </tbody>
