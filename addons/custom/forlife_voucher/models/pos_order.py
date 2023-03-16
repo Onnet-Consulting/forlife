@@ -30,7 +30,6 @@ class PosOrder(models.Model):
                             v.voucher_id.state = 'off value'
                             v.voucher_id.price_residual = 0
                     v.voucher_id.order_use_ids = [(4, pos.id)]
-            pos.action_create_voucher()
         return pos_id
 
     def generate_account_journal(self, voucher):
@@ -82,6 +81,7 @@ class PosOrder(models.Model):
 
     def _prepare_invoice_lines(self):
         res = super(PosOrder, self)._prepare_invoice_lines()
+        self.action_create_voucher()
         for line in self.lines:
             if not line.product_id.categ_id.property_price_account_id or line.product_id.price - line.price_unit <= 0:
                 continue
@@ -93,8 +93,7 @@ class PosOrder(models.Model):
                 quantity = self.env['voucher.voucher'].search_count(
                     [('order_pos', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
             elif line.product_id.program_voucher_id.type == 'e' and line.product_id.program_voucher_id.purpose_id.ref.upper() == 'B':
-                quantity = self.env['voucher.voucher'].search_count(
-                    [('order_pos', '=', self.id), ('program_voucher_id', '=', line.product_id.program_voucher_id.id)])
+                quantity = line.qty
             else:
                 quantity = 0
             if quantity == 0:
