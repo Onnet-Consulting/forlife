@@ -86,10 +86,7 @@ class PosOrder(models.Model):
             if not line.product_id.categ_id.property_price_account_id or line.product_id.price - line.price_unit <= 0:
                 continue
             if line.product_id.program_voucher_id.type == 'v':
-                imei = []
-                move_line_ids = self.env['stock.move.line'].search([('move_id.sale_line_id', '=', line.id)])
-                for move_line_id in move_line_ids:
-                    imei.append(move_line_id.lot_id.name)
+                imei = line.pack_lot_ids.mapped('lot_name')
                 quantity = self.env['voucher.voucher'].search_count(
                     [('order_pos', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
             elif line.product_id.program_voucher_id.type == 'e' and line.product_id.program_voucher_id.purpose_id.ref.upper() == 'B':
