@@ -25,8 +25,7 @@ class SaleOrder(models.Model):
                     quantity = self.env['voucher.voucher'].search_count(
                         [('sale_id', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
                 elif line.product_id.program_voucher_id.type == 'e' and line.product_id.program_voucher_id.purpose_id.ref.upper() == 'B':
-                    quantity = self.env['voucher.voucher'].search_count(
-                        [('sale_id', '=', self.id), ('program_voucher_id', '=', line.product_id.program_voucher_id.id)])
+                    quantity = line.qty_invoiced
                 else:
                     quantity = 0
                 if not quantity:
