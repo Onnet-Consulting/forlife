@@ -8,20 +8,25 @@
       pip install pyodbc 
    ```
 
-2. (Optional): install mssql-cli (an interactive command line query tool for SQL Server)
+2. Config SQL Server params in Odoo: *Settings/ General Settings/ SQL Server Integration (MSSQL)* <br/><br/>
+![img](static/img/config.png)
+
+3. (Optional): install mssql-cli (an interactive command line query tool for SQL Server)
 
 ```shell
    source ven/bin/active
    pip install mssql-cli
-```
+```s
 
 
-3. (Optional): install mssql server by docker
+4. (Optional): install mssql server by docker
     1. [MSSQL docker image](https://hub.docker.com/_/microsoft-mssql-server)
     2. Run mssql server
    ```shell
-      docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=admin123@()[]"  -p 1433:1433 -d mcr.microsoft.com/mssql/server:2019-latest
+      docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=admin123@()[]"  -p 1433:1433 -d --restart unless-stopped mcr.microsoft.com/mssql/server:2019-latest
    ```
+
+
 
 # Connect to DB
 

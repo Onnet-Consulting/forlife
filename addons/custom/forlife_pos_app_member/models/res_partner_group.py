@@ -8,12 +8,13 @@ class ResPartnerGroup(models.Model):
     _description = 'Partner Group'
 
     name = fields.Char(string='Name', required=True)
-    code = fields.Char(string='Code')
+    code = fields.Char(string='Code', required=True)
     partner_type = fields.Selection([('customer', 'Customer'), ('vendor', 'Vendor'), ('internal', 'Internal')],
                                     string='Type', default='customer', required=True)
     auto_generate = fields.Boolean(string='Auto Generate Code', default=True,
                                    help="If true, we'll generate partner's reference by group's sequence field.\n "
-                                        "Otherwise, use group's code to add prefix to partner's reference", required=True)
+                                        "Otherwise, use group's code to add prefix to partner's reference",
+                                   required=True)
     sequence_id = fields.Many2one('ir.sequence', string='Sequence')
 
     _sql_constraints = [
