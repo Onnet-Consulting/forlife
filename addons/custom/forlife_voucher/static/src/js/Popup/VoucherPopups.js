@@ -52,6 +52,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         data[index].value.price_used = parseInt(price_used.split('.').join('').replace('₫',''))
                         delete data[index].value.price_change
                         delete data[index].value.price_residual
+                        delete data[index].value.end_date_not_format
                     }
                  });
                  $('.o_input_priority').each(function( index ) {
@@ -230,6 +231,9 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         }
                         if(this.env.pos.selectedOrder.creation_date < new Date(data[i].value.start_date)){
                             error.push("Mã voucher chưa đến thời gian sử dụng!")
+                        }
+                        if(this.env.pos.selectedOrder.creation_date > new Date(data[i].value.end_date_not_format)){
+                            error.push("Mã voucher đã hết thời gian sử dụng!")
                         }
                 }
                 this.state.error.push(error)
