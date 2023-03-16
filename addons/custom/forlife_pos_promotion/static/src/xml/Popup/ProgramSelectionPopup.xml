@@ -7,6 +7,8 @@
                 <t t-esc="'Chọn chương trình khuyến mãi'" />
             </header>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
+                <p style="margin: 0 0 0 40px"><strong style="font-size: 20px;">Tổng giảm đã trên đơn: &nbsp;<t t-esc="this.env.pos.format_currency(state.discount_amount_order)"/></strong></p>
+                <hr/>
                 <ul>
                     <t t-foreach="props.programs" t-as="program" t-key="program.id">
                         <li class="program-item" t-att-class="program.forecastedNumber > 0 ? 'selectable' : ''">
@@ -50,7 +52,6 @@
                     </t>
                 </ul>
                 <hr/>
-                <p style="margin: 0 0 0 40px"><strong style="font-size: 20px;">Tổng giảm đã trên đơn: &nbsp;<t t-esc="this.env.pos.format_currency(state.discount_amount_order)"/></strong></p>
             <style>
                 .program-item:hover {
                     background: rgba(0, 0, 0, 0.055);

@@ -17,7 +17,7 @@ class PromotionComboLine(models.Model):
     product_count = fields.Integer(compute='_compute_valid_product_ids', string='Product Counts')
 
     _sql_constraints = [
-        ('quantity', 'CHECK (quantity > 0)', 'Quantity must be positive'),
+        ('combo_line_quantity_check', 'CHECK (quantity > 0)', 'Quantity must be positive'),
     ]
 
     def _get_valid_product_domain(self):
