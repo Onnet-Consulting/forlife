@@ -408,7 +408,7 @@ msgstr "Các ngày trong tuần"
 #: code:addons/forlife_pos_promotion/models/pos_order_line.py:0
 #, python-format
 msgid "Discount "
-msgstr "Giảm giá"
+msgstr "Giảm "
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__disc_amount
