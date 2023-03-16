@@ -61,25 +61,25 @@ class ReportNum1(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-
-        query = f"""
-                select row_number() over (order by pt.name)                                   as num,
-                    wh.code                                                                   as warehouse,
-                    pol.product_id                                                            as product_id,
-                    pp.barcode                                                                as product_barcode,
-                    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
-                    ''                                                                        as product_size,
-                    ''                                                                        as product_color,
-                    coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as uom_name,
-                    pol.price_unit                                                            as price_unit,
-                    pol.qty                                                                   as qty,
-                    (pol.price_unit * pol.qty) * pol.discount / 100.0                         as discount,
-                    pol.price_subtotal_incl                                                   as amount_with_tax,
-                    split_part(cate.complete_name, ' / ', 2)                                  as product_group,
-                    split_part(cate.complete_name, ' / ', 3)                                  as product_line,
-                    split_part(cate.complete_name, ' / ', 4)                                  as texture_name,
-                    aa.code                                                                   as product_type_code,
-                    ''                                                                        as sale_channel
+        query = []
+        if self.picking_type in ('all', 'retail'):
+            query.append(f"""
+                select
+                    wh.code                                                                                             as warehouse,
+                    pp.barcode                                                                                          as product_barcode,
+                    replace(coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')::text, '"', '')     as product_name,
+                    ''                                                                                                  as product_size,
+                    ''                                                                                                  as product_color,
+                    replace(coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')::text, '"', '')   as uom_name,
+                    pol.price_unit                                                                                      as price_unit,
+                    sum(pol.qty)                                                                                        as qty,
+                    sum((pol.price_unit * pol.qty) * pol.discount / 100.0)                                              as discount,
+                    sum(pol.price_subtotal_incl)                                                                        as amount_with_tax,
+                    split_part(cate.complete_name, ' / ', 2)                                                            as product_group,
+                    split_part(cate.complete_name, ' / ', 3)                                                            as product_line,
+                    split_part(cate.complete_name, ' / ', 4)                                                            as texture_name,
+                    aa.code                                                                                             as product_type_code,
+                    ''                                                                                                  as sale_channel
                 from pos_order_line pol
                     left join product_product pp on pol.product_id = pp.id
                     left join product_template pt on pp.product_tmpl_id = pt.id
@@ -98,8 +98,75 @@ class ReportNum1(models.TransientModel):
                     and po.state in ('paid', 'done', 'invoiced')
                     and {format_date_query("po.date_order", tz_offset)} >= '{self.from_date}'
                     and {format_date_query("po.date_order", tz_offset)} <= '{self.to_date}'
+                group by 
+                    warehouse, product_barcode, product_name, product_size, product_color, uom_name,
+                    price_unit, product_group, product_line, texture_name, product_type_code, sale_channel
+                having sum(pol.qty) > 0
+                """)
+        if self.picking_type in ('all', 'wholesale'):
+            query.append(f"""
+                select
+                    ''                                                                                                as warehouse,
+                    pp.barcode                                                                                        as product_barcode,
+                    replace(coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')::text, '"', '')   as product_name,
+                    ''                                                                                                as product_size,
+                    ''                                                                                                as product_color,
+                    replace(coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')::text, '"', '') as uom_name,
+                    aml.price_unit                                                                                    as price_unit,
+                    sum(aml.quantity)                                                                                 as qty,
+                    sum((aml.price_unit * aml.quantity) * aml.discount / 100.0)                                       as discount,
+                    sum(aml.price_subtotal)                                                                           as amount_with_tax,
+                    split_part(cate.complete_name, ' / ', 2)                                                          as product_group,
+                    split_part(cate.complete_name, ' / ', 3)                                                          as product_line,
+                    split_part(cate.complete_name, ' / ', 4)                                                          as texture_name,
+                    aa.code                                                                                           as product_type_code,
+                            ''                                                                                        as sale_channel
+                from account_move_line aml
+                    left join product_product pp on aml.product_id = pp.id
+                    left join product_template pt on pp.product_tmpl_id = pt.id
+                    left join uom_uom uom on aml.product_uom_id = uom.id
+                    left join account_move am on aml.move_id = am.id
+                    left join product_category cate on cate.id = pt.categ_id
+                    left join account_account aa on aa.id = aml.account_id
+                    join sale_order_line_invoice_rel sol_rel on aml.id = sol_rel.invoice_line_id
+                where am.state = 'posted'
+                    and {format_date_query("am.invoice_date", tz_offset)} >= '{self.from_date}'
+                    and {format_date_query("am.invoice_date", tz_offset)} <= '{self.to_date}'
+                group by 
+                    warehouse, product_barcode, product_name, product_size, product_color, uom_name,
+                    price_unit, product_group, product_line, texture_name, product_type_code, sale_channel
+                having sum(aml.quantity) > 0
+                """)
+        if self.picking_type in ('all', 'ecom'):
+            pass
+        querys = f"""
+            WITH result_table AS (
+                {' UNION ALL '.join(query)}
+            )
+            select 
+                row_number() over (order by product_name) as num,
+                warehouse,
+                product_barcode,
+                product_name,
+                product_size,
+                product_color,
+                uom_name,
+                price_unit,
+                sum(qty)                                  as qty,
+                sum(discount)                             as discount,
+                sum(amount_with_tax)                      as amount_with_tax,
+                product_group,
+                product_line,
+                texture_name,
+                product_type_code,
+                sale_channel
+            from result_table
+            group by 
+                warehouse, product_barcode, product_name, product_size, product_color, uom_name,
+                price_unit, product_group, product_line, texture_name, product_type_code, sale_channel
+            order by product_name
                 """
-        return query
+        return querys
 
     def get_data(self):
         self.ensure_one()

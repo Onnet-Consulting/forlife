@@ -1,0 +1,385 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-16 07:57+0000\n"
+"PO-Revision-Date: 2023-03-16 07:57+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_report
+#. odoo-python
+#: code:addons/forlife_report/wizard/report_num1.py:0
+#: model:ir.model.fields.selection,name:forlife_report.selection__report_num1__picking_type__all
+#, python-format
+msgid "All"
+msgstr "Tất cả"
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__all_products
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__all_products
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__all_products
+msgid "All products"
+msgstr "Tất cả sản phẩm"
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__all_warehouses
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__all_warehouses
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__all_warehouses
+msgid "All warehouses"
+msgstr "Tất cả kho"
+
+#. module: forlife_report
+#: model:ir.actions.client,name:forlife_report.available_report_client_action
+#: model:ir.ui.menu,name:forlife_report.available_report_menu
+msgid "Available Reports"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/js/report_base.js:0
+#, python-format
+msgid "Base Report"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num1_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num2_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num3_form
+msgid "Cancel"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_base__company_id
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__company_id
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__company_id
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__company_id
+msgid "Company"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__create_uid
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__create_uid
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__create_date
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__create_date
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__display_name
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__display_name
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num1_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num2_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num3_form
+msgid "Download Excel"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-python
+#: code:addons/forlife_report/wizard/report_num1.py:0
+#, python-format
+msgid "From Date must be less than or equal To Date"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__from_date
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__from_date
+msgid "From date"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-python
+#: code:addons/forlife_report/wizard/report_num1.py:0
+#: code:addons/forlife_report/wizard/report_num3.py:0
+#, python-format
+msgid "From date: %s"
+msgstr "Từ ngày: %s"
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__id
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__id
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__id
+msgid "ID"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#, python-format
+msgid "Inventory"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_num2.xml:0
+#, python-format
+msgid "Kho"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1____last_update
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2____last_update
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__write_uid
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__write_uid
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__write_date
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__write_date
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#, python-format
+msgid "Module"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#, python-format
+msgid "Name"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#, python-format
+msgid "Next"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__picking_type
+msgid "Picking type"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-python
+#: code:addons/forlife_report/wizard/report_num1.py:0
+#, python-format
+msgid "Picking type: %s"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#, python-format
+msgid "Previous"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__product_ids
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__product_ids
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__product_ids
+msgid "Products"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.ui.menu,name:forlife_report.report_menu
+msgid "Report"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model,name:forlife_report.model_report_base
+msgid "Report Base"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num1_action
+#: model:ir.model,name:forlife_report.model_report_num1
+#: model:ir.ui.menu,name:forlife_report.report_num1_menu
+msgid "Report revenue by product"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num3_window_action
+#: model:ir.model,name:forlife_report.model_report_num3
+#: model:ir.ui.menu,name:forlife_report.report_num3_menu
+msgid "Report stock in time range by warehouse"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.actions.act_window,name:forlife_report.report_num2_window_action
+#: model:ir.model,name:forlife_report.model_report_num2
+#: model:ir.ui.menu,name:forlife_report.report_num2_menu
+msgid "Report stock with sale price by warehouse"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-python
+#: code:addons/forlife_report/wizard/report_num1.py:0
+#: model:ir.model.fields.selection,name:forlife_report.selection__report_num1__picking_type__retail
+#, python-format
+msgid "Retail"
+msgstr "Bán lẻ"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num1_form
+msgid "Revenue by Product"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.actions.client,name:forlife_report.report_num_1_client_action
+msgid "Revenue by Products"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/js/report_num1.js:0
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#, python-format
+msgid "Revenue by product"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-python
+#: code:addons/forlife_report/wizard/report_num1.py:0
+#: model:ir.model.fields.selection,name:forlife_report.selection__report_num1__picking_type__ecom
+#, python-format
+msgid "Sale Online"
+msgstr "Bán Online"
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#: model:ir.ui.menu,name:forlife_report.report_menu_sale
+#, python-format
+msgid "Sales"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.actions.client,name:forlife_report.report_num_3_client_action
+msgid "Stock in time range"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/js/report_num3.js:0
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num3_form
+#, python-format
+msgid "Stock in time range by warehouse"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/js/report_num2.js:0
+#: model:ir.actions.client,name:forlife_report.report_num_2_client_action
+#, python-format
+msgid "Stock with sale price"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num2_form
+#, python-format
+msgid "Stock with sale price by warehouse"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_base__tz
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__tz
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__tz
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__tz
+msgid "Timezone"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_base__tz_offset
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__tz_offset
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__tz_offset
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__tz_offset
+msgid "Timezone offset"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,help:forlife_report.field_report_base__tz_offset
+#: model:ir.model.fields,help:forlife_report.field_report_num1__tz_offset
+#: model:ir.model.fields,help:forlife_report.field_report_num2__tz_offset
+#: model:ir.model.fields,help:forlife_report.field_report_num3__tz_offset
+msgid "Timezone offset in hours"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,help:forlife_report.field_report_base__tz
+#: model:ir.model.fields,help:forlife_report.field_report_num1__tz
+#: model:ir.model.fields,help:forlife_report.field_report_num2__tz
+#: model:ir.model.fields,help:forlife_report.field_report_num3__tz
+msgid "Timezone used for selecting datetime data from DB"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__to_date
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__to_date
+msgid "To date"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-python
+#: code:addons/forlife_report/wizard/report_num1.py:0
+#: code:addons/forlife_report/wizard/report_num3.py:0
+#, python-format
+msgid "To date: %s"
+msgstr "Đến ngày %s"
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_num2.xml:0
+#, python-format
+msgid "Tồn"
+msgstr ""
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num1_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num2_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num3_form
+msgid "View"
+msgstr ""
+
+#. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__warehouse_ids
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__warehouse_ids
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__warehouse_ids
+msgid "Warehouses"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-python
+#: code:addons/forlife_report/wizard/report_num1.py:0
+#: model:ir.model.fields.selection,name:forlife_report.selection__report_num1__picking_type__wholesale
+#, python-format
+msgid "Wholesale"
+msgstr "Bán buôn"
