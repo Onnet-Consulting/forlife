@@ -49,7 +49,15 @@ class BravoCharField(BravoField, fields.Char):
 class BravoIntegerField(BravoField, fields.Integer):
     def compute_value(self, record):
         res = super(BravoIntegerField, self).compute_value(record)
-        return res or 0
+        key, value = res.popitem()
+        return {key: value or 0}
+
+    def compute_update_value(self, value, model=Default):
+        res = super(BravoIntegerField, self).compute_update_value(value, model=model)
+        if not res:
+            return 0
+        key, value = res.popitem()
+        return {key: value or 0}
 
 
 class BravoDecimalField(BravoField, fields.Float):

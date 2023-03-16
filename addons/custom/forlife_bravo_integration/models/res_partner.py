@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models
-from ..fields import BravoCharField, BravoMany2oneField
+from ..fields import BravoCharField, BravoMany2oneField, BravoIntegerField
 
 
 class ResPartner(models.Model):
@@ -15,7 +15,7 @@ class ResPartner(models.Model):
     br_4 = BravoCharField(odoo_name="email", bravo_name="Email")
     br_5 = BravoCharField(odoo_name="vat", bravo_name="TaxRegNo")
     br_6 = BravoCharField(odoo_name="contact_address_complete", bravo_name="Address")
-    br_7 = BravoCharField(bravo_default=0, bravo_name="IsGroup")
+    br_7 = BravoIntegerField(bravo_default=0, bravo_name="IsGroup")
     br_8 = BravoMany2oneField('res.partner.group', odoo_name='group_id', bravo_name='ParentCode', field_detail='code')
 
     def get_bravo_filter_domain(self):
@@ -31,4 +31,4 @@ class ResPartnerGroup(models.Model):
 
     br_1 = BravoCharField(odoo_name="code", bravo_name="Code", identity=True)
     br_2 = BravoCharField(odoo_name="name", bravo_name="Name")
-    br_7 = BravoCharField(bravo_default=1, bravo_name="IsGroup")
+    br_3 = BravoIntegerField(bravo_default=1, bravo_name="IsGroup")
