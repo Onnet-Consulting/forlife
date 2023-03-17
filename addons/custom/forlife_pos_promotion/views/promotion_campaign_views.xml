@@ -80,7 +80,7 @@
         <field name="name">promotion.campaign.view.tree</field>
         <field name="model">promotion.campaign</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree default_order="state desc">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="state"/>
