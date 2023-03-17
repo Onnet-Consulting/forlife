@@ -846,6 +846,13 @@ msgid "No program found."
 msgstr ""
 
 #. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Promotion.js:0
+#, python-format
+msgid "Not found an available Promotion Program needed Code to be activated"
+msgstr "Không tìm thấy chương trình KM nào cần kích hoạt bằng mã KM"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__use_count
 msgid "Number of Order Usage"
 msgstr "Số đơn đã dùng"
@@ -1241,9 +1248,23 @@ msgid "Str"
 msgstr ""
 
 #. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Promotion.js:0
+#, python-format
+msgid "Successfully activate a promotion code."
+msgstr "Mã KM đã được kích hoạt thành công."
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__currency_symbol
 msgid "Symbol"
 msgstr ""
+
+#. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Promotion.js:0
+#, python-format
+msgid "That coupon code has already been scanned and activated."
+msgstr "Mã khuyến mãi đã được nhập và kích hoạt trước đó!"
 
 #. module: forlife_pos_promotion
 #. odoo-javascript
@@ -1265,8 +1286,8 @@ msgstr "Không có mã KM nào được tạo."
 #. odoo-python
 #: code:addons/forlife_pos_promotion/models/pos_config.py:0
 #, python-format
-msgid "This coupon is expired (%s)."
-msgstr "Mã khuyến mãi này hết hạn (%s)."
+msgid "This coupon is expired or over maximum usages: (%s)."
+msgstr "Mã khuyến mãi này hết hạn hoặc vượt quá giới hạn sử dụng: (%s)."
 
 #. module: forlife_pos_promotion
 #. odoo-python
