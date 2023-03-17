@@ -100,8 +100,8 @@
                 <filter string="In Progress" domain="[('state','=','in_progress')]" name="in_progress"/>
                 <separator/>
                 <group expand="0" string="Group By">
-                    <filter string="State" name="user" domain="[]" context="{'group_by':'state'}"/>
-                    <filter string="Brand" name="user" domain="[]" context="{'group_by':'brand_id'}"/>
+                    <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="Brand" name="brand" domain="[]" context="{'group_by':'brand_id'}"/>
                 </group>
             </search>
         </field>
