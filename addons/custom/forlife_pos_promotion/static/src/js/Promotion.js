@@ -664,7 +664,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return result || 0.0;
     }
 
-    // TODO: Fix tách dòng
     _get_program_ids_in_usages(line) {
         return line.promotion_usage_ids.reduce((acc, usage) => {acc.add(usage.program_id); return acc}, new Set())
     }
@@ -757,8 +756,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 max = discounted_total
             };
         };
-        console.log('[result, max]', [result, max])
-
         return [result, max];
     }
 

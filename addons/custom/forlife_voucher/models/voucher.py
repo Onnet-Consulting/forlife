@@ -120,6 +120,7 @@ class Voucher(models.Model):
                         'value': {
                             'voucher_id': vourcher.id,
                             'type': vourcher.type,
+                            'end_date_not_format': end_date,
                             'end_date': end_date_format,
                             'price_residual': vourcher.price_residual,
                             'price_used': vourcher.price_used,

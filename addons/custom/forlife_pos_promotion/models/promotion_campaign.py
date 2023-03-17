@@ -11,7 +11,6 @@ from odoo.tools.convert import safe_eval
 class PromotionConfiguration(models.AbstractModel):
     _name = 'promotion.configuration'
 
-    active = fields.Boolean(default=True)
     sequence = fields.Integer(default=10)
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
@@ -91,6 +90,7 @@ class PromotionCampaign(models.Model):
     program_ids = fields.One2many(
         'promotion.program', 'campaign_id', context={'active_test': False})
     program_count = fields.Integer(compute='_compute_program_count')
+    active_program_count = fields.Integer(compute='_compute_program_count')
 
     combo_program_ids = fields.One2many('promotion.program', 'campaign_id', domain=[('promotion_type', '=', 'combo')])
     code_program_ids = fields.One2many('promotion.program', 'campaign_id', domain=[('promotion_type', '=', 'code')])
@@ -118,6 +118,13 @@ class PromotionCampaign(models.Model):
     def _compute_program_count(self):
         for campaign in self:
             campaign.program_count = len(campaign.program_ids)
+            campaign.active_program_count = len(campaign.program_ids.filtered(lambda p: p.active))
+
+    def unlink(self):
+        for campaign in self:
+            if any(pro.total_order_count > 0 for pro in campaign.program_ids):
+                raise UserError(_('Can not unlink program which is already used!'))
+        return super().unlink()
 
     def action_open_programs(self):
         action = self.env["ir.actions.actions"]._for_xml_id("forlife_pos_promotion.promotion_program_action")

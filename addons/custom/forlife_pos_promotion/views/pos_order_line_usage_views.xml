@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pos_order_Line_usage_tree" model="ir.ui.view">
+        <field name="name">pos_promotion_usage_line_tree</field>
+        <field name="model">promotion.usage.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="program_id"/>
+                <field name="code_id"/>
+                <field name="original_price"/>
+                <field name="new_price"/>
+                <field name="qty"/>
+                <field name="discount_total" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                <field name="registering_tax"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="pos_order_Line_usage_form" model="ir.ui.view">
+        <field name="name">pos_promotion_usage_line_form</field>
+        <field name="model">promotion.usage.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="program_id"/>
+                    <field name="code_id"/>
+                    <field name="original_price"/>
+                    <field name="new_price"/>
+                    <field name="qty"/>
+                    <field name="discount_total" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                    <field name="registering_tax"/>
+                </group>
+            </form>
+        </field>
+    </record>
+</odoo>
