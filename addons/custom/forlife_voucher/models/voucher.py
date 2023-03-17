@@ -60,10 +60,11 @@ class Voucher(models.Model):
         if 'lang' not in self._context:
             self._context['lang'] = self.env.user.lang
         now = datetime.now()
-        if 'end_date' in values and values['end_date']:
-            end_date = datetime.strptime(values['end_date'], '%Y-%m-%d %H:%M:%S')
-            if end_date > now:
-                values['state'] = 'new'
+        for rec in self:
+            if rec.status_latest and 'end_date' in values and values['end_date']:
+                end_date = datetime.strptime(values['end_date'], '%Y-%m-%d %H:%M:%S')
+                if now < end_date != rec.end_date:
+                    values['state'] = rec.status_latest
         return super(Voucher, self).write(values)
 
     @api.depends('program_voucher_id')
