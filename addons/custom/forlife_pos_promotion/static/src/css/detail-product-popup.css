@@ -1,0 +1,71 @@
+.discounted-product-info-popup {
+    max-width: 800px !important;
+}
+
+.discounted-product-info-popup .body {
+    max-height: 500px;
+    overflow: auto;
+}
+
+.discounted-product-info-popup .section-product-info-title {
+    display: flex;
+    justify-content: space-between;
+}
+
+.discounted-product-info-popup .section-product-info-title  div:first-child{
+    max-width: 60%;
+}
+
+.discounted-product-info-popup .column {
+    display: flex;
+    flex-direction: column;
+}
+
+.discounted-product-info-popup .flex-start {
+    align-items: flex-start;
+}
+
+.discounted-product-info-popup .flex-end {
+    align-items: flex-end;
+}
+
+.discounted-product-info-popup .section-title-line {
+    font-size: 14px;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+.discounted-product-info-popup table {
+    text-align: left;
+}
+
+@media screen and (max-width: 768px) {
+    .discounted-product-info-popup .body {
+        max-height: 70vh;
+    }
+
+    .discounted-product-info-popup .section-product-info-title  div:first-child{
+        max-width: 100%;
+    }
+
+    .discounted-product-info-popup .section-product-info-title {
+        flex-direction: column;
+    }
+
+    .discounted-product-info-popup .flex-end {
+        align-items: unset;
+    }
+
+    .discounted-product-info-popup .mobile-line {
+        display: flex;
+    }
+
+    .discounted-product-info-popup .mobile-line td {
+        margin: 0 15px;
+    }
+
+    .discounted-product-info-popup .button.cancel {
+        float: unset;
+        margin: 10px auto;
+    }
+}

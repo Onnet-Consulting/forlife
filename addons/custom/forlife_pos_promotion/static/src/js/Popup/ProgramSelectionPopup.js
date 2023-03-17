@@ -12,7 +12,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
         setup() {
             super.setup();
             this.state = useState({
-                programs: this.props.programs || [],
+                programs: (this.props.programs || []).sort((p1, p2) => p2.isSelected - p1.isSelected),
                 discount_total: this.props.discount_total || 0.0,
                 discount_amount_order: this.props.discount_amount_order || 0,
             });

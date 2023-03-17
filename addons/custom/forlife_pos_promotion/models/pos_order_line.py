@@ -11,13 +11,15 @@ class PosPromotionLine(models.Model):
     order_line_id = fields.Many2one('pos.order.line', readonly=True)
     order_id = fields.Many2one(related='order_line_id.order_id', store=True)
     program_id = fields.Many2one('promotion.program', readonly=True, ondelete='restrict')
-    discount_amount = fields.Float('Discount Amount', readonly=True)
+    currency_id = fields.Many2one(related='order_id.currency_id')
+    discount_amount = fields.Float('Discount Price', readonly=True)
     code_id = fields.Many2one('promotion.code', readonly=True, ondelete='restrict')
     pro_priceitem_id = fields.Many2one('promotion.pricelist.item', readonly=True, ondelete='restrict')
     str_id = fields.Char(readonly=True)
     original_price = fields.Float('Original Price', readonly=True)
     new_price = fields.Float('New Price', readonly=True)
     qty = fields.Float('Quantity', related='order_line_id.qty', digits='Product Unit of Measure')
+    discount_total = fields.Monetary('Discount Amount', readonly=True, compute='_compute_discount_total')
 
     registering_tax = fields.Boolean(readonly=True)
 
@@ -29,6 +31,10 @@ class PosPromotionLine(models.Model):
                     + _(' of ') + line.program_id.name
             res += [(line.id, name)]
         return res
+
+    def _compute_discount_total(self):
+        for line in self:
+            line.discount_total = line.qty*line.discount_amount
 
 
 class PosOrderLine(models.Model):
