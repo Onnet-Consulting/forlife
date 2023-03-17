@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-16 03:07+0000\n"
-"PO-Revision-Date: 2023-03-16 03:07+0000\n"
+"POT-Creation-Date: 2023-03-17 02:41+0000\n"
+"PO-Revision-Date: 2023-03-17 02:41+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -172,6 +172,7 @@ msgstr "Dựa trên số lượng sản phẩm hoặc combo"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__brand_id
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_configuration__brand_id
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__brand_id
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_search
 msgid "Brand"
 msgstr "Thương hiệu"
 
@@ -626,6 +627,11 @@ msgid "Generate Codes"
 msgstr "Tạo mã KM"
 
 #. module: forlife_pos_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_search
+msgid "Group By"
+msgstr "Nhóm theo"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__has_cart
 msgid "Has Cart"
 msgstr ""
@@ -669,6 +675,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/forlife_pos_promotion/models/promotion_campaign.py:0
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_campaign__state__in_progress
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_search
 #, python-format
 msgid "In Progress"
 msgstr "Đang chạy"
@@ -1217,6 +1224,7 @@ msgstr "Sản phẩm chỉ định"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__state
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__state
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_search
 msgid "State"
 msgstr "Trạng thái"
 

@@ -97,7 +97,12 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
+                <filter string="In Progress" domain="[('state','=','in_progress')]" name="in_progress"/>
                 <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="user" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="Brand" name="user" domain="[]" context="{'group_by':'brand_id'}"/>
+                </group>
             </search>
         </field>
     </record>
@@ -107,6 +112,7 @@
         <field name="res_model">promotion.campaign</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
+<!--        <field name="context">{'search_default_in_progress': 1}</field>-->
         <field name="help" type="html">
             <div class="o_loyalty_not_found container">
                 <h1>No program found.</h1>
