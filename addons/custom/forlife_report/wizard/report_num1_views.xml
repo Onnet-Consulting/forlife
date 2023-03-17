@@ -24,7 +24,7 @@
                         <group>
                             <field name="all_warehouses"/>
                             <field name="warehouse_ids"
-                                   attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_products', '=', False)]}"
+                                   attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"
                                    widget="many2many_tags"/>
                         </group>
                     </group>

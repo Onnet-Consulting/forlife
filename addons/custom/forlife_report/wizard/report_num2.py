@@ -15,6 +15,25 @@ class ReportNum2(models.TransientModel):
     all_warehouses = fields.Boolean(string='All warehouses', default=False)
     product_ids = fields.Many2many('product.product', string='Products', domain=[('type', '=', 'product')])
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
+    product_brand_ids = fields.Many2many('product.category', 'num2_product_brand_rel', 'num2_id', 'brand_id', string='Brand', domain="[('parent_id', '=', False)]")
+    product_group_ids = fields.Many2many('product.category', 'num2_product_group_rel', 'num2_id', 'product_group_id', string='Product Group')
+    product_line_ids = fields.Many2many('product.category', 'num2_product_line_rel', 'num2_id', 'product_line_id', string='Product Line')
+    product_texture_ids = fields.Many2many('product.category', 'num2_product_texture_rel', 'num2_id', 'product_texture_id', string='Product Texture')
+
+    @api.onchange('product_brand_ids')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id in self.product_brand_ids.ids)
+        return {'domain': {'product_group_ids': [('parent_id', 'in', self.product_brand_ids.ids)]}}
+
+    @api.onchange('product_group_ids')
+    def onchange_product_group(self):
+        self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id in self.product_group_ids.ids)
+        return {'domain': {'product_line_ids': [('parent_id', 'in', self.product_group_ids.ids)]}}
+
+    @api.onchange('product_line_ids')
+    def onchange_product_line(self):
+        self.product_texture_ids = self.product_texture_ids.filtered(lambda f: f.parent_id in self.product_line_ids.ids)
+        return {'domain': {'product_texture_ids': [('parent_id', 'in', self.product_line_ids.ids)]}}
 
     def view_report(self):
         self.ensure_one()
