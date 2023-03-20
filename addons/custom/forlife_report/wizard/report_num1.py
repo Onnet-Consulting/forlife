@@ -225,9 +225,9 @@ order by product_name
     def generate_xlsx_report(self, workbook):
         data = self.get_data()
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet(self._description)
+        sheet = workbook.add_worksheet('Báo cáo doanh thu theo sản phẩm')
         sheet.set_row(0, 25)
-        sheet.write(0, 0, self._description, formats.get('header_format'))
+        sheet.write(0, 0, 'Báo cáo doanh thu theo sản phẩm', formats.get('header_format'))
         sheet.write(2, 0, _('From date: %s') % self.from_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
         sheet.write(3, 0, _('To date: %s') % self.to_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
         sheet.write(4, 0, _('Picking type: %s') % next((t[1] for t in self._fields.get('picking_type').selection if t[0] == self.picking_type), ''), formats.get('normal_format'))

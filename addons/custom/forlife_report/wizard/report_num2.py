@@ -54,7 +54,7 @@ class ReportNum2(models.TransientModel):
             where_query += f" and {product_conditions}\n"
         product_cate_join = ''
         if any([self.product_brand_ids.ids, self.product_group_ids.ids, self.product_line_ids.ids, self.product_texture_ids.ids]):
-            product_cate_join = 'left join product_cate_info pci on pci.product_id = pp.id'
+            product_cate_join = 'left join product_cate_info pci on pci.product_id = pp.id\n'
             if self.product_brand_ids:
                 where_query += f" and pci.brand_id = any (array{self.product_brand_ids.ids})\n"
             if self.product_group_ids:
@@ -65,7 +65,7 @@ class ReportNum2(models.TransientModel):
                 where_query += f" and pci.texture_id = any (array{self.product_texture_ids.ids})\n"
 
         query = f"""
-with product_cate_info as 
+with product_cate_info as -- lấy ID của Thương hiệu, nhóm hàng, dòng hàng, kết cấu theo ID sản phẩm
     (select 
         pp.id     		 as product_id,
         texture.id 		 as texture_id,
@@ -153,9 +153,9 @@ from stock_product stp
     def generate_xlsx_report(self, workbook):
         data = self.get_data()
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet(self._description)
+        sheet = workbook.add_worksheet('Báo cáo tồn kho - giá bán')
         sheet.set_row(0, 25)
-        sheet.write(0, 0, self._description, formats.get('header_format'))
+        sheet.write(0, 0, 'Báo cáo tồn kho - giá bán', formats.get('header_format'))
         for idx, title in enumerate(TITLES):
             sheet.write(2, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])

@@ -3,8 +3,9 @@
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
-TITLES = ['Mã SP', 'Tên SP', 'Đơn vị', 'Tổng tồn']
-COLUMN_WIDTHS = [20, 30, 20, 20]
+TITLES = ['STT', 'Thương hiệu', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Mùa hàng', 'Giới tính',
+          'Mã SP', 'Tên SP', 'Đơn vị', 'Màu sắc', 'Kích cỡ', 'Tổng tồn', 'Hàng treo']
+COLUMN_WIDTHS = [8, 20, 20, 20, 20, 20, 20, 20, 30, 20, 20, 20, 20, 20]
 
 
 class ReportNum3(models.TransientModel):
@@ -18,6 +19,25 @@ class ReportNum3(models.TransientModel):
     all_warehouses = fields.Boolean(string='All warehouses', default=True)
     product_ids = fields.Many2many('product.product', string='Products', domain=[('type', '=', 'product')])
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
+    product_brand_ids = fields.Many2many('product.category', 'num3_product_brand_rel', 'num3_id', 'brand_id', string='Brand', domain="[('parent_id', '=', False)]")
+    product_group_ids = fields.Many2many('product.category', 'num3_product_group_rel', 'num3_id', 'product_group_id', string='Product Group')
+    product_line_ids = fields.Many2many('product.category', 'num3_product_line_rel', 'num3_id', 'product_line_id', string='Product Line')
+    product_texture_ids = fields.Many2many('product.category', 'num3_product_texture_rel', 'num3_id', 'product_texture_id', string='Product Texture')
+
+    @api.onchange('product_brand_ids')
+    def onchange_product_brand(self):
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id in self.product_brand_ids.ids)
+        return {'domain': {'product_group_ids': [('parent_id', 'in', self.product_brand_ids.ids)]}}
+
+    @api.onchange('product_group_ids')
+    def onchange_product_group(self):
+        self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id in self.product_group_ids.ids)
+        return {'domain': {'product_line_ids': [('parent_id', 'in', self.product_group_ids.ids)]}}
+
+    @api.onchange('product_line_ids')
+    def onchange_product_line(self):
+        self.product_texture_ids = self.product_texture_ids.filtered(lambda f: f.parent_id in self.product_line_ids.ids)
+        return {'domain': {'product_texture_ids': [('parent_id', 'in', self.product_line_ids.ids)]}}
 
     def view_report(self):
         self.ensure_one()
@@ -57,55 +77,102 @@ class ReportNum3(models.TransientModel):
             where_query += f"""and {format_date_query("sm.date", tz_offset)} >= %s\n"""
         if self.to_date:
             where_query += f"""and {format_date_query("sm.date", tz_offset)} <= %s\n"""
+        if any([self.product_brand_ids.ids, self.product_group_ids.ids, self.product_line_ids.ids, self.product_texture_ids.ids]):
+            product_cate_join = 'left join product_cate_info pci on pci.product_id = pp.id\n'
+            if self.product_brand_ids:
+                where_query += f" and pci.brand_id = any (array{self.product_brand_ids.ids})\n"
+            if self.product_group_ids:
+                where_query += f" and pci.product_group_id = any (array{self.product_group_ids.ids})\n"
+            if self.product_line_ids:
+                where_query += f" and pci.product_line_id = any (array{self.product_line_ids.ids})\n"
+            if self.product_texture_ids:
+                where_query += f" and pci.texture_id = any (array{self.product_texture_ids.ids})\n"
 
         query = f"""
-with stock as (select sm.product_id          as product_id,
-                      coalesce(src_wh.id, 0) as src_warehouse_id,
-                      coalesce(des_wh.id, 0) as dest_warehouse_id,
-                      sum(sm.product_qty)    as qty
-               from stock_move sm
-                        left join stock_location des_lc on sm.location_dest_id = des_lc.id
-                        left join product_product pp on sm.product_id = pp.id
-                        left join product_template pt on pp.product_tmpl_id = pt.id
-                        left join stock_warehouse des_wh
-                                  on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
-                        left join stock_location src_lc on sm.location_id = src_lc.id
-                        left join stock_warehouse src_wh
-                                  on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
-               where {where_query}
-               group by sm.product_id, src_wh.id, des_wh.id),
-     source_stock as (select product_id,
-                             src_warehouse_id as warehouse_id,
-                             sum(qty)         as qty
-                      from stock
-                      where src_warehouse_id != 0
-                      group by product_id, src_warehouse_id),
-     agg_source_stock as (select product_id,
-                                 json_object_agg(warehouse_id, qty) as qty_by_wh
-                          from source_stock
-                          group by product_id),
-     destination_stock as (select product_id,
-                                  dest_warehouse_id as warehouse_id,
-                                  sum(qty)          as qty
-                           from stock
-                           where dest_warehouse_id != 0
-                           group by product_id, dest_warehouse_id),
-     agg_destination_stock as (select product_id,
-                                      json_object_agg(warehouse_id, qty) as qty_by_wh
-                               from destination_stock
-                               group by product_id)
-
-select coalesce(aggs.product_id, aggd.product_id)                                as product_id,
+with product_cate_info as 
+    (select 
+        pp.id     		                                                          as product_id,
+        texture.id 		                                                          as texture_id,
+        product_line.id                                                           as product_line_id,
+        product_group.id                                                          as product_group_id,
+        brand.id 		                                                          as brand_id,
+        texture.complete_name                                                     as complete_name,
+        pp.barcode                                                                as product_barcode,
+        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
+        coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as uom_name
+    from product_product pp 
+        left join product_template pt on pt.id = pp.product_tmpl_id
+        left join uom_uom uom on pt.uom_id = uom.id
+        join product_category texture on texture.id = pt.categ_id
+        join product_category product_line on product_line.id = texture.parent_id
+        join product_category product_group on product_group.id = product_line.parent_id
+        join product_category brand on brand.id = product_group.parent_id
+    ),
+stock as 
+    (select 
+        sm.product_id          as product_id,
+        coalesce(src_wh.id, 0) as src_warehouse_id,
+        coalesce(des_wh.id, 0) as dest_warehouse_id,
+        sum(sm.product_qty)    as qty
+    from stock_move sm
+        left join stock_location des_lc on sm.location_dest_id = des_lc.id
+        left join product_product pp on sm.product_id = pp.id
+        left join product_template pt on pp.product_tmpl_id = pt.id
+        left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
+        left join stock_location src_lc on sm.location_id = src_lc.id
+        left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
+    where {where_query}
+    group by sm.product_id, src_wh.id, des_wh.id
+    ),
+source_stock as 
+    (select product_id,
+        src_warehouse_id as warehouse_id,
+        sum(qty)         as qty
+    from stock
+    where src_warehouse_id != 0
+    group by product_id, src_warehouse_id
+    ),
+agg_source_stock as 
+    (select product_id,
+        json_object_agg(warehouse_id, qty) as qty_by_wh
+    from source_stock
+    group by product_id
+    ),
+destination_stock as 
+    (select product_id,
+        dest_warehouse_id as warehouse_id,
+        sum(qty)          as qty
+    from stock
+    where dest_warehouse_id != 0
+    group by product_id, dest_warehouse_id
+    ),
+agg_destination_stock as 
+    (select product_id,
+        json_object_agg(warehouse_id, qty) as qty_by_wh
+    from destination_stock
+    group by product_id
+    )
+select row_number() over (order by pp.id)                                 as num,
+       coalesce(aggs.product_id, aggd.product_id)                                as product_id,
        pp.barcode                                                                as product_barcode,
        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
        coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as uom_name,
        aggs.qty_by_wh                                                            as source_qty_by_wh,
-       aggd.qty_by_wh                                                            as destination_qty_by_wh
+       aggd.qty_by_wh                                                            as destination_qty_by_wh,
+       ''                                                                        as brand,
+       ''                                                                        as product_group,
+       ''                                                                        as product_line,
+       ''                                                                        as texture,
+       ''                                                                        as season,
+       ''                                                                        as gender,
+       ''                                                                        as color,
+       ''                                                                        as size,
+       ''                                                                        as total_pending
 from agg_source_stock aggs
-         full join agg_destination_stock aggd on aggs.product_id = aggd.product_id
-         left join product_product pp on coalesce(aggs.product_id, aggd.product_id) = pp.id
-         left join product_template pt on pp.product_tmpl_id = pt.id
-         left join uom_uom uom on pt.uom_id = uom.id
+     full join agg_destination_stock aggd on aggs.product_id = aggd.product_id
+     left join product_product pp on coalesce(aggs.product_id, aggd.product_id) = pp.id
+     left join product_template pt on pp.product_tmpl_id = pt.id
+     left join uom_uom uom on pt.uom_id = uom.id
 order by pp.id
 
         """
@@ -170,10 +237,10 @@ order by pp.id
     def generate_xlsx_report(self, workbook):
         data = self.get_data()
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet(self._description)
+        sheet = workbook.add_worksheet('Báo cáo tồn kho - chi nhánh')
         columns = COLUMN_WIDTHS + [20] * len(data['warehouse_names'])
         sheet.set_row(0, 25)
-        sheet.write(0, 0, self._description, formats.get('header_format'))
+        sheet.write(0, 0, 'Báo cáo tồn kho - chi nhánh', formats.get('header_format'))
         row = 2
         if self.from_date:
             sheet.write(2, 0, _('From date: %s') % self.from_date.strftime('%d/%m/%Y'), formats.get('normal_format'))

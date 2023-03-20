@@ -12,10 +12,20 @@
             <tbody>
                 <t t-foreach="options.data" t-as="line">
                     <tr>
+                        <td><t t-esc="line.num"/></td>
+                        <td><t t-esc="line.brand"/></td>
+                        <td><t t-esc="line.product_group"/></td>
+                        <td><t t-esc="line.product_line"/></td>
+                        <td><t t-esc="line.texture"/></td>
+                        <td><t t-esc="line.season"/></td>
+                        <td><t t-esc="line.gender"/></td>
                         <td><t t-esc="line.product_barcode"/></td>
                         <td><t t-esc="line.product_name"/></td>
                         <td><t t-esc="line.uom_name"/></td>
+                        <td><t t-esc="line.color"/></td>
+                        <td><t t-esc="line.size"/></td>
                         <td><t t-esc="line.total_qty"/></td>
+                        <td><t t-esc="line.total_pending"/></td>
                         <t t-foreach="widget.warehouse_ids" t-as="wh_id">
                             <td><t t-esc="line.product_qty_by_warehouse[wh_id] or ''"/></td>
                         </t>
