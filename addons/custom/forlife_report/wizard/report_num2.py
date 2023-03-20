@@ -2,8 +2,8 @@
 
 from odoo import api, fields, models, _
 
-TITLES = ['Mã SP', 'Tên SP', 'Size', 'Màu', 'Tồn', 'Giá niêm yết', 'Giá khuyến mãi']
-COLUMN_WIDTHS = [20, 30, 20, 20, 20, 25, 25]
+TITLES = ['Mã SP', 'Tên SP', 'Size', 'Màu', 'Tồn', 'Giá niêm yết', 'Giá khuyến mãi', 'Chi tiết']
+COLUMN_WIDTHS = [20, 30, 20, 20, 20, 25, 25, 30]
 
 
 class ReportNum2(models.TransientModel):
@@ -52,40 +52,60 @@ class ReportNum2(models.TransientModel):
         if not self.all_products and self.warehouse_ids:
             product_conditions = "sqt.product_id = any (%s)"
             where_query += f" and {product_conditions}\n"
+        product_cate_join = ''
+        if any([self.product_brand_ids.ids, self.product_group_ids.ids, self.product_line_ids.ids, self.product_texture_ids.ids]):
+            product_cate_join = 'left join product_cate_info pci on pci.product_id = pp.id'
+            if self.product_brand_ids:
+                where_query += f" and pci.brand_id = any (array{self.product_brand_ids.ids})\n"
+            if self.product_group_ids:
+                where_query += f" and pci.product_group_id = any (array{self.product_group_ids.ids})\n"
+            if self.product_line_ids:
+                where_query += f" and pci.product_line_id = any (array{self.product_line_ids.ids})\n"
+            if self.product_texture_ids:
+                where_query += f" and pci.texture_id = any (array{self.product_texture_ids.ids})\n"
 
         query = f"""
-with stock_product as
-         (select sqt.product_id    as product_id,
-                 sw.id             as warehouse_id,
-                 ''                as product_size,
-                 ''                as product_color,
-                 sum(sqt.quantity) as quantity,
-                 ''                as list_price,
-                 ''                as discount_price
-
-          from stock_quant sqt
-                   left join product_product pp on sqt.product_id = pp.id
-                   left join stock_location sl on sqt.location_id = sl.id
-                   left join stock_warehouse sw
-                             on sl.parent_path like concat('%%/', sw.view_location_id, '/%%')
-          where {where_query}
-          group by sqt.product_id,
-                   product_size,
-                   product_color,
-                   list_price,
-                   discount_price,
-                   sw.id
-         )
-select pp.id                                                                   as product_id,
-       pp.barcode                                                              as product_barcode,
-       coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
-       sw.id                                                                   as warehouse_id,
-       sw.name                                                                 as warehouse_name,
-       stp.quantity                                                            as quantity
+with product_cate_info as 
+    (select 
+        pp.id     		 as product_id,
+        texture.id 		 as texture_id,
+        product_line.id  as product_line_id,
+        product_group.id as product_group_id,
+        brand.id 		 as brand_id
+    from product_product pp 
+    left join product_template pt on pt.id = pp.product_tmpl_id
+    join product_category texture on texture.id = pt.categ_id
+    join product_category product_line on product_line.id = texture.parent_id
+    join product_category product_group on product_group.id = product_line.parent_id
+    join product_category brand on brand.id = product_group.parent_id
+    ),
+stock_product as
+    (select
+        sqt.product_id    as product_id,
+        sw.id             as warehouse_id,
+        sum(sqt.quantity) as quantity
+    from stock_quant sqt
+           left join product_product pp on sqt.product_id = pp.id
+           left join stock_location sl on sqt.location_id = sl.id
+           left join stock_warehouse sw on sl.parent_path like concat('%%/', sw.view_location_id, '/%%')
+           {product_cate_join}
+    where {where_query}
+    group by sqt.product_id, sw.id
+    )
+select  pp.id                                                                   as product_id,
+        pp.barcode                                                              as product_barcode,
+        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
+        sw.id                                                                   as warehouse_id,
+        sw.name                                                                 as warehouse_name,
+        stp.quantity                                                            as quantity,
+        ''                                                                      as product_size,
+        ''                                                                      as product_color,
+        ''                                                                      as list_price,
+        ''                                                                      as discount_price
 from stock_product stp
-         left join product_product pp on pp.id = stp.product_id
-         left join product_template pt on pp.product_tmpl_id = pt.id
-         left join stock_warehouse sw on sw.id = stp.warehouse_id
+        left join product_product pp on pp.id = stp.product_id
+        left join product_template pt on pp.product_tmpl_id = pt.id
+        left join stock_warehouse sw on sw.id = stp.warehouse_id
         """
 
         return query
@@ -125,7 +145,7 @@ from stock_product stp
             else:
                 detail_data_by_product_id[product_id].append(detail_data)
         return {
-            'titles': TITLES,
+            'titles': TITLES[:-1],
             "data": list(data_by_product_id.values()),
             "detail_data_by_product_id": detail_data_by_product_id
         }
@@ -148,4 +168,6 @@ from stock_product stp
             sheet.write(row, 4, value.get('quantity'), formats.get('center_format'))
             sheet.write(row, 5, value.get('list_price'), formats.get('normal_format'))
             sheet.write(row, 6, value.get('discount_price'), formats.get('normal_format'))
+            detail = ', '.join(['%s: %d' % (v['warehouse_name'], v['quantity']) for v in data['detail_data_by_product_id'][value['product_id']]])
+            sheet.write(row, 7, detail, formats.get('normal_format'))
             row += 1

@@ -64,9 +64,9 @@ class ReportNum1(models.TransientModel):
         query = []
         product_condition = ''
         warehouse_condition = ''
-        if not self.all_products:
+        if not self.all_products and self.product_ids:
             product_condition = 'and pp.id in (%s)' % ','.join(map(str, self.product_ids.ids))
-        if not self.all_warehouses:
+        if not self.all_warehouses and self.warehouse_ids:
             warehouse_condition = 'and wh.id in (%s)' % ','.join(map(str, self.warehouse_ids.ids))
         if self.picking_type in ('all', 'retail'):
             query.append(f"""
@@ -150,7 +150,7 @@ WITH account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho b
     from product_category cate
         left join ir_property ir on ir.res_id = concat('product.category,', cate.id)
         left join account_account aa on concat('account.account,',aa.id) = ir.value_reference
-    where  ir.name='property_stock_valuation_account_id' and ir.company_id = 1
+    where  ir.name='property_stock_valuation_account_id' and ir.company_id = {self.company_id.id}
     order by cate.id 
 ),
 product_data_by_id as ( -- lấy tên sản phẩm đã convert, đơn vị tính đã conver, categ_id bằng product.product ID
