@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="warehouse_for_pos" model="stock.location.type">
+            <field name="code">01</field>
+            <field name="name">Kho hàng phục vụ POS</field>
+        </record>
+
+        <record id="warehouse_error" model="stock.location.type">
+            <field name="code">02</field>
+            <field name="name">Kho hàng lỗi</field>
+        </record>
+
+        <record id="sell_ecommerce" model="stock.location.type">
+            <field name="code">03</field>
+            <field name="name">Bán thương mại điện tử</field>
+        </record>
+    </data>
+</odoo>

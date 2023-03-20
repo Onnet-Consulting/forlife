@@ -1,0 +1,22 @@
+<odoo>
+    <record id="forlife_stock_warehouse_type_tree" model="ir.ui.view">
+        <field name="name">forlife.event.tree</field>
+        <field name="model">stock.warehouse.type</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Forlife Stock Warehouse Type" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+    <record id="forlife_stock_warehouse_type_tree_action" model="ir.actions.act_window">
+        <field name="name">Stock Warehouse Type</field>
+        <field name="res_model">stock.warehouse.type</field>
+        <field name="view_mode">tree</field>
+    </record>
+    <menuitem id="tock_warehouse_type"
+              parent="stock.menu_warehouse_config"
+              action="forlife_purchase.forlife_stock_warehouse_type_tree_action"
+              name="Stock Warehouse Type" sequence="1"/>
+</odoo>

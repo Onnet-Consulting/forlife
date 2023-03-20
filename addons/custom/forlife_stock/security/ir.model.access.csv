@@ -1,3 +1,11 @@
-"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-"access_stock_value_report","access_stock_value_report","model_stock_value_report",,1,1,1,1
-"access_stock_value_report_detail","access_stock_value_report_detail","model_stock_value_report_detail",,1,1,1,1
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stock_transfer_request,stock_transfer_request,model_stock_transfer_request,,1,1,1,1
+access_transfer_request_line,transfer_request_line,model_transfer_request_line,,1,1,1,1
+access_stock_transfer,stock_transfer,model_stock_transfer,,1,1,1,1
+access_stock_transfer_line,stock_transfer_line,model_stock_transfer_line,,1,1,1,1
+access_stock_location_type,stock_location_type,model_stock_location_type,base.group_user,1,1,1,
+access_approval_logs_stock,approval_logs_stock,model_approval_logs_stock,base.group_user,1,1,1,1
+access_hr_asset_transfer,hr_asset_transfer,model_hr_asset_transfer,base.group_user,1,1,1,1
+access_hr_asset_transfer_line,hr_asset_transfer_line,model_hr_asset_transfer_line,base.group_user,1,1,1,1
+
+access_reject_stock_transfer_request,reject_stock_transfer_request,model_reject_stock_transfer_request,,1,1,1,1

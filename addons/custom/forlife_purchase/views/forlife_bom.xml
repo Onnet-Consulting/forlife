@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="forlife_bom_tree" model="ir.ui.view">
+            <field name="name">forlife.bom.tree</field>
+            <field name="model">forlife.bom</field>
+            <field name="arch" type="xml">
+                <tree string="">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="quantity"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="forlife_bom_form" model="ir.ui.view">
+            <field name="name">forlife.bom.form</field>
+            <field name="model">forlife.bom</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="code"/>
+                                <field name="name"/>
+                                <field name="quantity"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Materials" name="materials">
+                                <field name="forlife_bom_material_ids" mode="tree"
+                                       attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">
+                                    <tree editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="description"/>
+                                        <field name="quantity"/>
+                                        <field name="uom_id"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Service Costs" name="service_costs">
+                                <field name="forlife_bom_service_cost_ids" mode="tree"
+                                       attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">
+                                    <tree editable="bottom">
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="product_id"/>
+                                        <field name="description"/>
+                                        <field name="prices" widget="monetary"
+                                               options="{'currency_field': 'currency_id'}"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="forlife_bom_action" model="ir.actions.act_window">
+            <field name="name">BOM</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">forlife.bom</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

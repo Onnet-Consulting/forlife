@@ -1,0 +1,9 @@
+.approval_logs_note {
+    padding: 4px 5px;
+    border: 1px solid #D4D4D4;
+    margin-top: 5px;
+}
+.approval_logs_main_text {
+    color: black !important;
+    font-weight: 500 !important;
+}
