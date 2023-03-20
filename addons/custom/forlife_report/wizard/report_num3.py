@@ -13,7 +13,6 @@ class ReportNum3(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report stock in time range by warehouse'
 
-    from_date = fields.Date(string='From date')
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     all_products = fields.Boolean(string='All products', default=False)
     all_warehouses = fields.Boolean(string='All warehouses', default=True)
@@ -51,8 +50,6 @@ class ReportNum3(models.TransientModel):
             params.extend([self.warehouse_ids.ids] * 2)
         if not self.all_products and self.product_ids:
             params.append(self.product_ids.ids)
-        if self.from_date:
-            params.append(self.from_date)
         if self.to_date:
             params.append(self.to_date)
         return params
@@ -73,10 +70,9 @@ class ReportNum3(models.TransientModel):
         if not self.all_products and self.product_ids:
             product_conditions = "sm.product_id = any (%s)"
             where_query += f"and {product_conditions}\n"
-        if self.from_date:
-            where_query += f"""and {format_date_query("sm.date", tz_offset)} >= %s\n"""
         if self.to_date:
             where_query += f"""and {format_date_query("sm.date", tz_offset)} <= %s\n"""
+        product_cate_join = ''
         if any([self.product_brand_ids.ids, self.product_group_ids.ids, self.product_line_ids.ids, self.product_texture_ids.ids]):
             product_cate_join = 'left join product_cate_info pci on pci.product_id = pp.id\n'
             if self.product_brand_ids:
@@ -121,6 +117,7 @@ stock as
         left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
         left join stock_location src_lc on sm.location_id = src_lc.id
         left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
+        {product_cate_join}
     where {where_query}
     group by sm.product_id, src_wh.id, des_wh.id
     ),
@@ -152,29 +149,32 @@ agg_destination_stock as
     from destination_stock
     group by product_id
     )
-select row_number() over (order by pp.id)                                 as num,
-       coalesce(aggs.product_id, aggd.product_id)                                as product_id,
-       pp.barcode                                                                as product_barcode,
-       coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
-       coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as uom_name,
-       aggs.qty_by_wh                                                            as source_qty_by_wh,
-       aggd.qty_by_wh                                                            as destination_qty_by_wh,
-       ''                                                                        as brand,
-       ''                                                                        as product_group,
-       ''                                                                        as product_line,
-       ''                                                                        as texture,
-       ''                                                                        as season,
-       ''                                                                        as gender,
-       ''                                                                        as color,
-       ''                                                                        as size,
-       ''                                                                        as total_pending
+select row_number() over ()                                               as num,
+       coalesce(aggs.product_id, aggd.product_id)                         as product_id,
+       (select product_barcode from product_cate_info
+        where product_id = coalesce(aggs.product_id, aggd.product_id))    as product_barcode,
+       (select product_name from product_cate_info
+        where product_id = coalesce(aggs.product_id, aggd.product_id))    as product_name,
+       (select uom_name from product_cate_info
+        where product_id = coalesce(aggs.product_id, aggd.product_id))    as uom_name,
+       aggs.qty_by_wh                                                     as source_qty_by_wh,
+       aggd.qty_by_wh                                                     as destination_qty_by_wh,
+       (select split_part(complete_name, ' / ', 1) from product_cate_info
+        where product_id = coalesce(aggs.product_id, aggd.product_id))    as brand,
+       (select split_part(complete_name, ' / ', 2) from product_cate_info
+        where product_id = coalesce(aggs.product_id, aggd.product_id))    as product_group,
+       (select split_part(complete_name, ' / ', 3) from product_cate_info
+        where product_id = coalesce(aggs.product_id, aggd.product_id))    as product_line,
+       (select split_part(complete_name, ' / ', 4) from product_cate_info
+        where product_id = coalesce(aggs.product_id, aggd.product_id))    as texture,
+       ''                                                                 as season,
+       ''                                                                 as gender,
+       ''                                                                 as color,
+       ''                                                                 as size,
+       ''                                                                 as total_pending
 from agg_source_stock aggs
      full join agg_destination_stock aggd on aggs.product_id = aggd.product_id
-     left join product_product pp on coalesce(aggs.product_id, aggd.product_id) = pp.id
-     left join product_template pt on pp.product_tmpl_id = pt.id
-     left join uom_uom uom on pt.uom_id = uom.id
-order by pp.id
-
+order by num
         """
         return query
 
@@ -241,21 +241,27 @@ order by pp.id
         columns = COLUMN_WIDTHS + [20] * len(data['warehouse_names'])
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo tồn kho - chi nhánh', formats.get('header_format'))
-        row = 2
-        if self.from_date:
-            sheet.write(2, 0, _('From date: %s') % self.from_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
-            row += 1
-        sheet.write(row, 0, _('To date: %s') % self.to_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
+        sheet.write(2, 0, _('To date: %s') % self.to_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
         for idx, title in enumerate(TITLES + data['warehouse_names']):
-            sheet.write(row + 2, idx, title, formats.get('title_format'))
+            sheet.write(4, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, columns[idx])
-        row = row + 3
+        row = 5
         for value in data['data']:
-            sheet.write(row, 0, value['product_barcode'], formats.get('normal_format'))
-            sheet.write(row, 1, value['product_name'], formats.get('normal_format'))
-            sheet.write(row, 2, value['uom_name'], formats.get('normal_format'))
-            sheet.write(row, 3, value['total_qty'], formats.get('float_number_format'))
-            col = 4
+            sheet.write(row, 0, value['num'], formats.get('center_format'))
+            sheet.write(row, 1, value['brand'], formats.get('normal_format'))
+            sheet.write(row, 2, value['product_group'], formats.get('normal_format'))
+            sheet.write(row, 3, value['product_line'], formats.get('normal_format'))
+            sheet.write(row, 4, value['texture'], formats.get('normal_format'))
+            sheet.write(row, 5, value['season'], formats.get('normal_format'))
+            sheet.write(row, 6, value['gender'], formats.get('normal_format'))
+            sheet.write(row, 7, value['product_barcode'], formats.get('normal_format'))
+            sheet.write(row, 8, value['product_name'], formats.get('normal_format'))
+            sheet.write(row, 9, value['uom_name'], formats.get('normal_format'))
+            sheet.write(row, 10, value['color'], formats.get('normal_format'))
+            sheet.write(row, 11, value['size'], formats.get('normal_format'))
+            sheet.write(row, 12, value['total_qty'], formats.get('float_number_format'))
+            sheet.write(row, 13, value['total_pending'], formats.get('float_number_format'))
+            col = 14
             for i in data['warehouse_ids']:
                 sheet.write(row, col, value['product_qty_by_warehouse'].get(i), formats.get('float_number_format'))
                 col += 1

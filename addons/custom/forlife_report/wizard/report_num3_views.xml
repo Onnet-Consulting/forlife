@@ -8,23 +8,16 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="from_date"/>
-                        </group>
-                        <group>
                             <field name="to_date"/>
+                            <field name="all_warehouses"/>
+                            <field name="warehouse_ids"
+                                   attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"
+                                   widget="many2many_tags"/>
                         </group>
-                    </group>
-                    <group>
                         <group>
                             <field name="all_products"/>
                             <field name="product_ids"
                                    attrs="{'invisible': [('all_products', '=', True)], 'required': [('all_products', '=', False)]}"
-                                   widget="many2many_tags"/>
-                        </group>
-                        <group>
-                            <field name="all_warehouses"/>
-                            <field name="warehouse_ids"
-                                   attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"
                                    widget="many2many_tags"/>
                         </group>
                     </group>
