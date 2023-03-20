@@ -68,5 +68,6 @@ class PartnerCardRankLine(models.Model):
     real_date = fields.Datetime('Real Date', default=fields.Datetime.now)
     value_orders = fields.Integer('Value Orders')
     value_to_upper = fields.Integer('Value to upper')
+    value_up_rank = fields.Integer('Value up rank')
     old_card_rank_id = fields.Many2one('card.rank', string='Old Rank', required=True, default=lambda self: self.env['card.rank'].search([], order='priority asc', limit=1))
     new_card_rank_id = fields.Many2one('card.rank', string='New Rank', required=True)
