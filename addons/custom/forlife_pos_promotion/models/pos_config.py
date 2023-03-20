@@ -49,9 +49,19 @@ class PosConfig(models.Model):
             return {
                 'successful': False,
                 'payload': {
-                    'error_message': _('This coupon is expired (%s).', code),
+                    'error_message': _('This coupon is expired or over maximum usages: (%s).', code),
                 },
             }
+
+        if code_id.program_id.limit_usage_per_customer:
+            history = self.get_history_program_usages(partner_id, [code_id.program_id.id])
+            if history.get(code_id.program_id.id) >= code_id.program_id.max_usage_per_customer:
+                return {
+                    'successful': False,
+                    'payload': {
+                        'error_message': _('This coupon is expired or over maximum usages: (%s).', code),
+                    },
+                }
         return {
             'successful': True,
             'payload': {
