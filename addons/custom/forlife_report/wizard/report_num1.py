@@ -57,17 +57,13 @@ class ReportNum1(models.TransientModel):
         action = self.env.ref('forlife_report.report_num_1_client_action').read()[0]
         return action
 
-    def _get_query(self):
+    def _get_query(self, product_ids, warehouse_ids):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
         query = []
-        product_condition = ''
-        warehouse_condition = ''
-        if not self.all_products and self.product_ids:
-            product_condition = 'and pp.id in (%s)' % ','.join(map(str, self.product_ids.ids))
-        if not self.all_warehouses and self.warehouse_ids:
-            warehouse_condition = 'and wh.id in (%s)' % ','.join(map(str, self.warehouse_ids.ids))
+        product_condition = 'and pp.id in (%s)' % ','.join(map(str, product_ids)) if product_ids else ''
+        warehouse_condition = 'and wh.id in (%s)' % ','.join(map(str, warehouse_ids)) if warehouse_ids else ''
         if self.picking_type in ('all', 'retail'):
             query.append(f"""
 select
@@ -214,7 +210,9 @@ order by product_name
 
     def get_data(self):
         self.ensure_one()
-        query = self._get_query()
+        product_ids = self.env['product.product'].search([]).ids if self.all_products else self.product_ids.ids
+        warehouse_ids = self.env['stock.warehouse'].search([]).ids if self.all_warehouses else self.warehouse_ids.ids
+        query = self._get_query(product_ids, warehouse_ids)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         return {
@@ -228,13 +226,13 @@ order by product_name
         sheet = workbook.add_worksheet('Báo cáo doanh thu theo sản phẩm')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo doanh thu theo sản phẩm', formats.get('header_format'))
-        sheet.write(2, 0, _('From date: %s') % self.from_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
-        sheet.write(3, 0, _('To date: %s') % self.to_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
-        sheet.write(4, 0, _('Picking type: %s') % next((t[1] for t in self._fields.get('picking_type').selection if t[0] == self.picking_type), ''), formats.get('normal_format'))
+        sheet.write(2, 0, 'Từ ngày: %s' % self.from_date.strftime('%d/%m/%Y'), formats.get('italic_format'))
+        sheet.write(2, 2, 'Đến ngày: %s' % self.to_date.strftime('%d/%m/%Y'), formats.get('italic_format'))
+        sheet.write(2, 4, 'Loại phiếu: %s' % next((t[1] for t in self._fields.get('picking_type').selection if t[0] == self.picking_type), ''), formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
-            sheet.write(6, idx, title, formats.get('title_format'))
+            sheet.write(4, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
-        row = 7
+        row = 5
         for value in data.get('data'):
             sheet.write(row, 0, value.get('num'), formats.get('center_format'))
             sheet.write(row, 1, value.get('warehouse'), formats.get('normal_format'))

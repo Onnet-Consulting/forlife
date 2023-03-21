@@ -17,6 +17,7 @@
     'depends': [
         'base', 'stock',
         'report_xlsx',
+        'forlife_base',
     ],
 
     'data': [

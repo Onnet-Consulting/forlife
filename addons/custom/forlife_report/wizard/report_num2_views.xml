@@ -21,7 +21,7 @@
                         </group>
                     </group>
                     <group>
-                        <field name="product_brand_ids" widget="many2many_tags"/>
+                        <field name="product_brand_id" required="1"/>
                         <field name="product_group_ids" widget="many2many_tags"/>
                         <field name="product_line_ids" widget="many2many_tags"/>
                         <field name="product_texture_ids" widget="many2many_tags"/>

@@ -4,25 +4,27 @@
         <field name="name">form</field>
         <field name="model">report.num3</field>
         <field name="arch" type="xml">
-            <form string="Stock in time range by warehouse">
+            <form string="Stock in time range by brand/area">
                 <sheet>
                     <group>
                         <group>
-                            <field name="to_date"/>
-                            <field name="all_warehouses"/>
-                            <field name="warehouse_ids"
-                                   attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"
-                                   widget="many2many_tags"/>
+                            <field name="report_by"/>
+                            <field name="all_products"/>
+                            <field name="all_warehouses" attrs="{'invisible': [('report_by', '=', 'area')]}"/>
+                            <field name="all_areas" attrs="{'invisible': [('report_by', '=', 'brand')]}"/>
                         </group>
                         <group>
-                            <field name="all_products"/>
-                            <field name="product_ids"
-                                   attrs="{'invisible': [('all_products', '=', True)], 'required': [('all_products', '=', False)]}"
-                                   widget="many2many_tags"/>
+                            <field name="to_date"/>
+                            <field name="defective_inventory"/>
+                            <field name="order_inventory"/>
                         </group>
                     </group>
                     <group>
-                        <field name="product_brand_ids" widget="many2many_tags"/>
+                        <field name="product_ids" attrs="{'invisible': [('all_products', '=', True)], 'required': [('all_products', '=', False)]}" widget="many2many_tags"/>
+                        <field name="warehouse_ids" widget="many2many_tags"
+                               attrs="{'invisible': ['|', ('all_warehouses', '=', True), ('report_by', '=', 'area')], 'required': [('all_warehouses', '=', False), ('report_by', '=', 'brand')]}"/>
+                        <field name="area_ids" widget="many2many_tags" attrs="{'invisible': ['|', ('all_areas', '=', True), ('report_by', '=', 'brand')]}"/>
+                        <field name="product_brand_id" required="1" class="oe_inline"/>
                         <field name="product_group_ids" widget="many2many_tags"/>
                         <field name="product_line_ids" widget="many2many_tags"/>
                         <field name="product_texture_ids" widget="many2many_tags"/>
@@ -38,7 +40,7 @@
     </record>
 
     <record id="report_num3_window_action" model="ir.actions.act_window">
-        <field name="name">Report stock in time range by warehouse</field>
+        <field name="name">Report stock in time range by brand/area</field>
         <field name="res_model">report.num3</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

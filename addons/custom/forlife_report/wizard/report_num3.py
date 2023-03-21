@@ -2,10 +2,11 @@
 
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
+from odoo.exceptions import ValidationError
 
-TITLES = ['STT', 'Thương hiệu', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Mùa hàng', 'Giới tính',
-          'Mã SP', 'Tên SP', 'Đơn vị', 'Màu sắc', 'Kích cỡ', 'Tổng tồn', 'Hàng treo']
-COLUMN_WIDTHS = [8, 20, 20, 20, 20, 20, 20, 20, 30, 20, 20, 20, 20, 20]
+TITLES = ['STT', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Mùa hàng', 'Giới tính', 'Mã SP',
+          'Tên SP', 'Đơn vị', 'Màu sắc', 'Kích cỡ', 'Nhãn hiệu', 'Tổng tồn', 'Hàng treo']
+COLUMN_WIDTHS = [8, 20, 20, 20, 20, 20, 20, 30, 20, 20, 20, 20, 20, 20]
 
 
 class ReportNum3(models.TransientModel):
@@ -14,19 +15,24 @@ class ReportNum3(models.TransientModel):
     _description = 'Report stock in time range by warehouse'
 
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
+    report_by = fields.Selection([('brand', _('Brand')), ('area', _('Area'))], 'Report by', required=True, default='brand')
     all_products = fields.Boolean(string='All products', default=False)
     all_warehouses = fields.Boolean(string='All warehouses', default=True)
+    all_areas = fields.Boolean(string='All areas', default=True)
+    defective_inventory = fields.Boolean(string='Skip defective inventory')
+    order_inventory = fields.Boolean(string='Skip order inventory')
     product_ids = fields.Many2many('product.product', string='Products', domain=[('type', '=', 'product')])
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
-    product_brand_ids = fields.Many2many('product.category', 'num3_product_brand_rel', 'num3_id', 'brand_id', string='Brand', domain="[('parent_id', '=', False)]")
+    area_ids = fields.Many2many('res.location.province', string='Areas')
+    product_brand_id = fields.Many2one('product.category', string='Brand', domain="[('parent_id', '=', False)]")
     product_group_ids = fields.Many2many('product.category', 'num3_product_group_rel', 'num3_id', 'product_group_id', string='Product Group')
     product_line_ids = fields.Many2many('product.category', 'num3_product_line_rel', 'num3_id', 'product_line_id', string='Product Line')
     product_texture_ids = fields.Many2many('product.category', 'num3_product_texture_rel', 'num3_id', 'product_texture_id', string='Product Texture')
 
-    @api.onchange('product_brand_ids')
+    @api.onchange('product_brand_id')
     def onchange_product_brand(self):
-        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id in self.product_brand_ids.ids)
-        return {'domain': {'product_group_ids': [('parent_id', 'in', self.product_brand_ids.ids)]}}
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id == self.product_brand_id.id)
+        return {'domain': {'product_group_ids': [('parent_id', '=', self.product_brand_id.id)]}}
 
     @api.onchange('product_group_ids')
     def onchange_product_group(self):
@@ -43,18 +49,7 @@ class ReportNum3(models.TransientModel):
         action = self.env.ref('forlife_report.report_num_3_client_action').read()[0]
         return action
 
-    def _get_query_params(self):
-        self.ensure_one()
-        params = [self.company_id.id]
-        if not self.all_warehouses and self.warehouse_ids:
-            params.extend([self.warehouse_ids.ids] * 2)
-        if not self.all_products and self.product_ids:
-            params.append(self.product_ids.ids)
-        if self.to_date:
-            params.append(self.to_date)
-        return params
-
-    def _get_query(self):
+    def _get_query(self, product_ids, warehouse_ids):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
@@ -63,29 +58,60 @@ class ReportNum3(models.TransientModel):
             sm.company_id = %s
             and sm.state = 'done'
             and pt.type = 'product'\n
-        """
-        if not self.all_warehouses and self.warehouse_ids:
-            warehouse_conditions = "(src_wh.id = any (%s) or des_wh.id = any (%s))"
-            where_query += f"and {warehouse_conditions}\n"
-        if not self.all_products and self.product_ids:
-            product_conditions = "sm.product_id = any (%s)"
-            where_query += f"and {product_conditions}\n"
+        """ % self.company_id.id
+        if warehouse_ids:
+            where_query += f"and (src_wh.id = any (array{warehouse_ids.ids}) or des_wh.id = any (array{warehouse_ids.ids}))\n"
+        if product_ids:
+            where_query += f"and sm.product_id = any (array{product_ids})\n"
         if self.to_date:
-            where_query += f"""and {format_date_query("sm.date", tz_offset)} <= %s\n"""
-        product_cate_join = ''
-        if any([self.product_brand_ids.ids, self.product_group_ids.ids, self.product_line_ids.ids, self.product_texture_ids.ids]):
-            product_cate_join = 'left join product_cate_info pci on pci.product_id = pp.id\n'
-            if self.product_brand_ids:
-                where_query += f" and pci.brand_id = any (array{self.product_brand_ids.ids})\n"
-            if self.product_group_ids:
-                where_query += f" and pci.product_group_id = any (array{self.product_group_ids.ids})\n"
-            if self.product_line_ids:
-                where_query += f" and pci.product_line_id = any (array{self.product_line_ids.ids})\n"
-            if self.product_texture_ids:
-                where_query += f" and pci.texture_id = any (array{self.product_texture_ids.ids})\n"
+            where_query += f"""and {format_date_query("sm.date", tz_offset)} <= '{str(self.to_date)}'\n"""
+        where_query += f" and pci.brand_id = {self.product_brand_id.id}\n"
+        if self.product_group_ids:
+            where_query += f" and pci.product_group_id = any (array{self.product_group_ids.ids})\n"
+        if self.product_line_ids:
+            where_query += f" and pci.product_line_id = any (array{self.product_line_ids.ids})\n"
+        if self.product_texture_ids:
+            where_query += f" and pci.texture_id = any (array{self.product_texture_ids.ids})\n"
+
+        if self.report_by == 'area':
+            stock_query = f"""select 
+        sm.product_id          as product_id,
+        coalesce(srlp.id, 0) as src_warehouse_id,
+        coalesce(drlp.id, 0) as dest_warehouse_id,
+        sum(sm.product_qty)    as qty
+    from stock_move sm
+        left join stock_location des_lc on sm.location_dest_id = des_lc.id
+        left join product_product pp on sm.product_id = pp.id
+        left join product_template pt on pp.product_tmpl_id = pt.id
+        left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
+        left join res_location_province drlp on drlp.id = des_wh.loc_province_id
+        left join stock_location src_lc on sm.location_id = src_lc.id
+        left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
+        left join res_location_province srlp on srlp.id = src_wh.loc_province_id
+        left join product_cate_info pci on pci.product_id = pp.id
+    where {where_query}
+    group by sm.product_id, srlp.id, drlp.id
+            """
+        else:
+            stock_query = f"""select 
+        sm.product_id          as product_id,
+        coalesce(src_wh.id, 0) as src_warehouse_id,
+        coalesce(des_wh.id, 0) as dest_warehouse_id,
+        sum(sm.product_qty)    as qty
+    from stock_move sm
+        left join stock_location des_lc on sm.location_dest_id = des_lc.id
+        left join product_product pp on sm.product_id = pp.id
+        left join product_template pt on pp.product_tmpl_id = pt.id
+        left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
+        left join stock_location src_lc on sm.location_id = src_lc.id
+        left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
+        left join product_cate_info pci on pci.product_id = pp.id
+    where {where_query}
+    group by sm.product_id, src_wh.id, des_wh.id            
+                """
 
         query = f"""
-with product_cate_info as 
+with product_cate_info as -- lấy ID của Thương hiệu, nhóm hàng, dòng hàng, kết cấu, tên sản phẩm, tên ĐVT, barcode theo ID sản phẩm
     (select 
         pp.id     		                                                          as product_id,
         texture.id 		                                                          as texture_id,
@@ -103,23 +129,10 @@ with product_cate_info as
         join product_category product_line on product_line.id = texture.parent_id
         join product_category product_group on product_group.id = product_line.parent_id
         join product_category brand on brand.id = product_group.parent_id
+    where pp.id = any (array{product_ids})
     ),
 stock as 
-    (select 
-        sm.product_id          as product_id,
-        coalesce(src_wh.id, 0) as src_warehouse_id,
-        coalesce(des_wh.id, 0) as dest_warehouse_id,
-        sum(sm.product_qty)    as qty
-    from stock_move sm
-        left join stock_location des_lc on sm.location_dest_id = des_lc.id
-        left join product_product pp on sm.product_id = pp.id
-        left join product_template pt on pp.product_tmpl_id = pt.id
-        left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
-        left join stock_location src_lc on sm.location_id = src_lc.id
-        left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
-        {product_cate_join}
-    where {where_query}
-    group by sm.product_id, src_wh.id, des_wh.id
+    ({stock_query}
     ),
 source_stock as 
     (select product_id,
@@ -159,8 +172,6 @@ select row_number() over ()                                               as num
         where product_id = coalesce(aggs.product_id, aggd.product_id))    as uom_name,
        aggs.qty_by_wh                                                     as source_qty_by_wh,
        aggd.qty_by_wh                                                     as destination_qty_by_wh,
-       (select split_part(complete_name, ' / ', 1) from product_cate_info
-        where product_id = coalesce(aggs.product_id, aggd.product_id))    as brand,
        (select split_part(complete_name, ' / ', 2) from product_cate_info
         where product_id = coalesce(aggs.product_id, aggd.product_id))    as product_group,
        (select split_part(complete_name, ' / ', 3) from product_cate_info
@@ -171,24 +182,19 @@ select row_number() over ()                                               as num
        ''                                                                 as gender,
        ''                                                                 as color,
        ''                                                                 as size,
+       ''                                                                 as label,
        ''                                                                 as total_pending
 from agg_source_stock aggs
      full join agg_destination_stock aggd on aggs.product_id = aggd.product_id
 order by num
-        """
+            """
         return query
 
-    def get_warehouse_data(self):
-        query = """
-            select id,name from stock_warehouse where company_id = %s
-        """
-        params = [self.company_id.id]
-        if not self.all_warehouses and self.warehouse_ids:
-            query += "\n and id = any (%s)"
-            params.append([self.warehouse_ids.ids])
-
-        self._cr.execute(query, params)
-        data = self._cr.dictfetchall()
+    def get_warehouse_data(self, warehouse_ids):
+        if self.report_by == 'area':
+            data = warehouse_ids.mapped('loc_province_id')
+        else:
+            data = warehouse_ids
         warehouse_ids = []
         warehouse_names = []
         warehouse_name_by_id = {}
@@ -222,12 +228,20 @@ order by num
 
     def get_data(self):
         self.ensure_one()
-        query = self._get_query()
-        params = self._get_query_params()
-        self._cr.execute(query, params)
+        stock_wh = self.env['stock.warehouse']
+        product_ids = self.env['product.product'].search([]).ids if self.all_products else self.product_ids.ids
+        if self.report_by == 'area':
+            warehouse_ids = stock_wh.search([('loc_province_id', '!=', False)]) if self.all_areas else (stock_wh.search(
+                [('loc_province_id', 'in', self.areas_ids.ids)]) if self.areas_ids else stock_wh.search([('loc_province_id', '=', False)]))
+            if not warehouse_ids:
+                raise ValidationError(_('Location not found !'))
+        else:
+            warehouse_ids = stock_wh.search([]) if self.all_warehouses else self.warehouse_ids
+        query = self._get_query(product_ids, warehouse_ids)
+        self._cr.execute(query)
         data = self._cr.dictfetchall()
         data = self.format_data(data)
-        warehouse_data = self.get_warehouse_data()
+        warehouse_data = self.get_warehouse_data(warehouse_ids)
         return {
             'titles': TITLES + warehouse_data['warehouse_names'],
             "data": data,
@@ -237,28 +251,30 @@ order by num
     def generate_xlsx_report(self, workbook):
         data = self.get_data()
         formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet('Báo cáo tồn kho - chi nhánh')
+        sheet = workbook.add_worksheet('Báo cáo tồn kho')
         columns = COLUMN_WIDTHS + [20] * len(data['warehouse_names'])
         sheet.set_row(0, 25)
-        sheet.write(0, 0, 'Báo cáo tồn kho - chi nhánh', formats.get('header_format'))
-        sheet.write(2, 0, _('To date: %s') % self.to_date.strftime('%d/%m/%Y'), formats.get('normal_format'))
+        report_by = 'khu vực' if self.report_by == 'area' else 'chi nhánh'
+        sheet.write(0, 0, 'Báo cáo tồn kho theo %s' % report_by, formats.get('header_format'))
+        sheet.write(2, 0, 'Đến ngày: %s' % self.to_date.strftime('%d/%m/%Y'), formats.get('italic_format'))
+        sheet.write(2, 2, 'Thương hiệu: %s' % self.product_brand_id.name, formats.get('italic_format'))
         for idx, title in enumerate(TITLES + data['warehouse_names']):
             sheet.write(4, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, columns[idx])
         row = 5
         for value in data['data']:
             sheet.write(row, 0, value['num'], formats.get('center_format'))
-            sheet.write(row, 1, value['brand'], formats.get('normal_format'))
-            sheet.write(row, 2, value['product_group'], formats.get('normal_format'))
-            sheet.write(row, 3, value['product_line'], formats.get('normal_format'))
-            sheet.write(row, 4, value['texture'], formats.get('normal_format'))
-            sheet.write(row, 5, value['season'], formats.get('normal_format'))
-            sheet.write(row, 6, value['gender'], formats.get('normal_format'))
-            sheet.write(row, 7, value['product_barcode'], formats.get('normal_format'))
-            sheet.write(row, 8, value['product_name'], formats.get('normal_format'))
-            sheet.write(row, 9, value['uom_name'], formats.get('normal_format'))
-            sheet.write(row, 10, value['color'], formats.get('normal_format'))
-            sheet.write(row, 11, value['size'], formats.get('normal_format'))
+            sheet.write(row, 1, value['product_group'], formats.get('normal_format'))
+            sheet.write(row, 2, value['product_line'], formats.get('normal_format'))
+            sheet.write(row, 3, value['texture'], formats.get('normal_format'))
+            sheet.write(row, 4, value['season'], formats.get('normal_format'))
+            sheet.write(row, 5, value['gender'], formats.get('normal_format'))
+            sheet.write(row, 6, value['product_barcode'], formats.get('normal_format'))
+            sheet.write(row, 7, value['product_name'], formats.get('normal_format'))
+            sheet.write(row, 8, value['uom_name'], formats.get('normal_format'))
+            sheet.write(row, 9, value['color'], formats.get('normal_format'))
+            sheet.write(row, 10, value['size'], formats.get('normal_format'))
+            sheet.write(row, 11, value['label'], formats.get('normal_format'))
             sheet.write(row, 12, value['total_qty'], formats.get('float_number_format'))
             sheet.write(row, 13, value['total_pending'], formats.get('float_number_format'))
             col = 14

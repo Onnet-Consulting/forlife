@@ -8,7 +8,7 @@ odoo.define('forlife_report.report_num3', function (require) {
 
     let ReportNum3Action = ReportBaseAction.extend({
         reportTemplate: 'ReportNum3Template',
-        reportTitle: _t("Stock in time range by warehouse"),
+        reportTitle: _t("Stock in time range by brand/area"),
 
         parse_data: function (data) {
             this.warehouse_name_by_id = data.warehouse_name_by_id;

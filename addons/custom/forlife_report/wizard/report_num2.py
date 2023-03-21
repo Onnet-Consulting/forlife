@@ -15,15 +15,15 @@ class ReportNum2(models.TransientModel):
     all_warehouses = fields.Boolean(string='All warehouses', default=False)
     product_ids = fields.Many2many('product.product', string='Products', domain=[('type', '=', 'product')])
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
-    product_brand_ids = fields.Many2many('product.category', 'num2_product_brand_rel', 'num2_id', 'brand_id', string='Brand', domain="[('parent_id', '=', False)]")
+    product_brand_id = fields.Many2one('product.category', string='Brand', domain="[('parent_id', '=', False)]")
     product_group_ids = fields.Many2many('product.category', 'num2_product_group_rel', 'num2_id', 'product_group_id', string='Product Group')
     product_line_ids = fields.Many2many('product.category', 'num2_product_line_rel', 'num2_id', 'product_line_id', string='Product Line')
     product_texture_ids = fields.Many2many('product.category', 'num2_product_texture_rel', 'num2_id', 'product_texture_id', string='Product Texture')
 
-    @api.onchange('product_brand_ids')
+    @api.onchange('product_brand_id')
     def onchange_product_brand(self):
-        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id in self.product_brand_ids.ids)
-        return {'domain': {'product_group_ids': [('parent_id', 'in', self.product_brand_ids.ids)]}}
+        self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id == self.product_brand_id.id)
+        return {'domain': {'product_group_ids': [('parent_id', '=', self.product_brand_id.id)]}}
 
     @api.onchange('product_group_ids')
     def onchange_product_group(self):
@@ -40,23 +40,23 @@ class ReportNum2(models.TransientModel):
         action = self.env.ref('forlife_report.report_num_2_client_action').read()[0]
         return action
 
-    def _get_query(self):
+    def _get_query(self, product_ids, warehouse_ids):
         self.ensure_one()
         user_lang_code = self.env.user.lang
 
         where_query = "sqt.company_id = %s and sw.id is not null\n"
-        if not self.all_warehouses and self.warehouse_ids:
-            location_conditions = ["sl.parent_path like %s"] * len(self.warehouse_ids)
+        if warehouse_ids:
+            location_conditions = ["sl.parent_path like %s"] * len(warehouse_ids)
             location_conditions = ' or '.join(location_conditions)
             where_query += f" and ({location_conditions})\n"
-        if not self.all_products and self.warehouse_ids:
+        if product_ids:
             product_conditions = "sqt.product_id = any (%s)"
             where_query += f" and {product_conditions}\n"
         product_cate_join = ''
-        if any([self.product_brand_ids.ids, self.product_group_ids.ids, self.product_line_ids.ids, self.product_texture_ids.ids]):
+        if any([self.product_brand_id.id, self.product_group_ids.ids, self.product_line_ids.ids, self.product_texture_ids.ids]):
             product_cate_join = 'left join product_cate_info pci on pci.product_id = pp.id\n'
-            if self.product_brand_ids:
-                where_query += f" and pci.brand_id = any (array{self.product_brand_ids.ids})\n"
+            if self.product_brand_id:
+                where_query += f" and pci.brand_id = {self.product_brand_id.id}\n"
             if self.product_group_ids:
                 where_query += f" and pci.product_group_id = any (array{self.product_group_ids.ids})\n"
             if self.product_line_ids:
@@ -110,21 +110,23 @@ from stock_product stp
 
         return query
 
-    def _get_query_params(self):
+    def _get_query_params(self, product_ids, warehouse_ids):
         self.ensure_one()
         params = [self.company_id.id]
-        if not self.all_warehouses and self.warehouse_ids:
+        if warehouse_ids:
             params.extend(
-                [f'%/{view_location_id}/%' for view_location_id in self.warehouse_ids.mapped('view_location_id').ids])
+                [f'%/{view_location_id}/%' for view_location_id in warehouse_ids.mapped('view_location_id').ids])
 
-        if not self.all_products and self.product_ids:
-            params.append(self.product_ids.ids)
+        if product_ids:
+            params.append(product_ids)
         return params
 
     def get_data(self):
         self.ensure_one()
-        query = self._get_query()
-        params = self._get_query_params()
+        product_ids = self.env['product.product'].search([]).ids if self.all_products else self.product_ids.ids
+        warehouse_ids = self.env['stock.warehouse'].search([]) if self.all_warehouses else self.warehouse_ids
+        query = self._get_query(product_ids, warehouse_ids)
+        params = self._get_query_params(product_ids, warehouse_ids)
         self._cr.execute(query, params)
         data = self._cr.dictfetchall()
         data_by_product_id = {}
@@ -156,10 +158,11 @@ from stock_product stp
         sheet = workbook.add_worksheet('Báo cáo tồn kho - giá bán')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo tồn kho - giá bán', formats.get('header_format'))
+        sheet.write(2, 0, 'Thương hiệu: %s' % self.product_brand_id.name, formats.get('normal_format'))
         for idx, title in enumerate(TITLES):
-            sheet.write(2, idx, title, formats.get('title_format'))
+            sheet.write(4, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
-        row = 3
+        row = 5
         for value in data['data']:
             sheet.write(row, 0, value.get('product_barcode'), formats.get('normal_format'))
             sheet.write(row, 1, value.get('product_name'), formats.get('normal_format'))
