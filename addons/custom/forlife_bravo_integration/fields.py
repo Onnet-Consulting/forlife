@@ -116,6 +116,27 @@ class BravoMany2oneField(BravoField, fields.Many2one):
         return {key: field_value or NONE_VALUE}
 
 
+class BravoSelectionField(BravoField, fields.Selection):
+    mapping_selection = None
+    selection = [(1, 1)]
+
+    def __int__(self, mapping_selection=Default, **kwargs):
+        super(BravoField, self).__int__(mapping_selection=mapping_selection, **kwargs)
+
+    def compute_value(self, record):
+        res = super(BravoSelectionField, self).compute_value(record)
+        key, value = res.popitem()
+        return {key: self.mapping_selection.get(value) or NONE_VALUE}
+
+    def compute_update_value(self, value, model=Default):
+        res = super(BravoSelectionField, self).compute_update_value(value)
+        if not res:
+            return res
+        key, value = res.popitem()
+        field_value = self.mapping_selection.get(value)
+        return {key: field_value or NONE_VALUE}
+
+
 class BravoHeaderField(BravoField, fields.Many2one):
     header_fields = None
 
