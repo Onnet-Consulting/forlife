@@ -9,21 +9,19 @@
                     <field name="state" widget="statusbar" options="{'clickable': '1'}"/>
                 </header>
                 <sheet>
-                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="action_open_programs" icon="fa-tags"
                                 context="{'default_campaign_id': active_id}"
                         >
                             <div class="o_form_field o_stat_info">
                                 <span class="o_stat_value" readonly="1">
-                                    <field name="program_count"/>
+                                    <field name="active_program_count"/>
                                 </span>
                                 <span class="o_stat_text" >
                                 Active Programs</span>
                             </div>
                         </button>
                     </div>
-                    <field name="active" invisible="1"/>
                     <div class="oe_title">
                         <label for="name" string="Program Name"/>
                         <h1>
@@ -82,13 +80,12 @@
         <field name="name">promotion.campaign.view.tree</field>
         <field name="model">promotion.campaign</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree default_order="state desc">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="state"/>
                 <field name="from_date"/>
                 <field name="to_date"/>
-                <field name="active"/>
                 <field name="company_id" groups="base.group_multi_company"/>
             </tree>
         </field>
@@ -100,8 +97,12 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
+                <filter string="In Progress" domain="[('state','=','in_progress')]" name="in_progress"/>
                 <separator/>
-                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="Brand" name="brand" domain="[]" context="{'group_by':'brand_id'}"/>
+                </group>
             </search>
         </field>
     </record>
@@ -111,6 +112,7 @@
         <field name="res_model">promotion.campaign</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[]</field>
+<!--        <field name="context">{'search_default_in_progress': 1}</field>-->
         <field name="help" type="html">
             <div class="o_loyalty_not_found container">
                 <h1>No program found.</h1>

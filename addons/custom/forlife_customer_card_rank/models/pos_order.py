@@ -49,20 +49,20 @@ class PosOrder(models.Model):
                 else:
                     total_value_to_up = value_to_upper_order + sum(partner_card_rank.line_ids.filtered(lambda f: f.order_id).mapped('value_to_upper'))
                 if new_rank.priority >= program.card_rank_id.priority:
-                    self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id)
+                    self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id, total_value_to_up)
                     partner_card_rank.sudo().write({'accumulated_sales': total_value_to_up})
                     self.save_order_to_program(program)
                     break
                 else:
                     if total_value_to_up >= program.min_turnover:
-                        self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id)
+                        self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id, total_value_to_up)
                         partner_card_rank.sudo().write({'accumulated_sales': total_value_to_up})
                         self.save_order_to_program(program)
                         break
         if is_rank:
             self.sudo().write({'is_rank': True})
 
-    def create_partner_card_rank_detail(self, partner_card_rank_id, value_to_upper, old_rank_id, new_rank_id):
+    def create_partner_card_rank_detail(self, partner_card_rank_id, value_to_upper, old_rank_id, new_rank_id, total_value_to_up):
         self.env['partner.card.rank.line'].sudo().create({
             'partner_card_rank_id': partner_card_rank_id,
             'order_id': self.id,
@@ -72,6 +72,7 @@ class PosOrder(models.Model):
             'value_to_upper': value_to_upper,
             'old_card_rank_id': old_rank_id,
             'new_card_rank_id': new_rank_id,
+            'value_up_rank': total_value_to_up if old_rank_id != new_rank_id else 0,
         })
 
     def save_order_to_program(self, program):

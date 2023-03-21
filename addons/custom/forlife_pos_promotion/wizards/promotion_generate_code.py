@@ -62,7 +62,8 @@ class PromotionGenerateCode(models.Model):
             'program_id': self.program_id.id,
             'amount': amount,
             'partner_id': partner.id if self.mode == 'selected' else False,
-            'expiration_date': self.valid_until,
+            'expiration_date': self.valid_until or self.program_id.to_date or False,
+            'max_usage': self.max_usage
         }
 
     @api.onchange('program_id')

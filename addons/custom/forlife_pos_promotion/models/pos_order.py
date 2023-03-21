@@ -8,7 +8,7 @@ class PosOrder(models.Model):
 
     @api.model
     def _process_order(self, order, draft, existing_order):
-        date_order = fields.Datetime.from_string(order['data']['creation_date'].replace('T', ' ')[:19])
+        date_order = fields.Date.from_string(order['data']['creation_date'].replace('T', ' ')[:19])
         for line in order['data']['lines']:
             for usage in line[2]['promotion_usage_ids']:
                 program = self.env['promotion.program'].browse(usage[2].get('program_id'))

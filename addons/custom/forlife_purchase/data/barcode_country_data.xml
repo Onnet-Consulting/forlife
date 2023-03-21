@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="barcode_ca" model="forlife.barcode">
+        <field name="country_id" ref="base.ca"/>
+        <field name="barcode">0</field>
+    </record>
+
+    <record id="barcode_usa" model="forlife.barcode">
+        <field name="country_id" ref="base.us"/>
+        <field name="barcode">1</field>
+    </record>
+
+    <record id="barcode_fr" model="forlife.barcode">
+        <field name="country_id" ref="base.fr"/>
+        <field name="barcode">30–37</field>
+    </record>
+
+    <record id="barcode_bg" model="forlife.barcode">
+        <field name="country_id" ref="base.bg"/>
+        <field name="barcode">380</field>
+    </record>
+
+    <record id="barcode_si" model="forlife.barcode">
+        <field name="country_id" ref="base.si"/>
+        <field name="barcode">383</field>
+    </record>
+
+    <record id="barcode_hr" model="forlife.barcode">
+        <field name="country_id" ref="base.hr"/>
+        <field name="barcode">385</field>
+    </record>
+
+    <record id="barcode_ba" model="forlife.barcode">
+        <field name="country_id" ref="base.ba"/>
+        <field name="barcode">387</field>
+    </record>
+
+    <record id="barcode_me" model="forlife.barcode">
+        <field name="country_id" ref="base.me"/>
+        <field name="barcode">389</field>
+    </record>
+
+    <record id="barcode_xk" model="forlife.barcode">
+        <field name="country_id" ref="base.xk"/>
+        <field name="barcode">390</field>
+    </record>
+
+    <record id="barcode_de" model="forlife.barcode">
+        <field name="country_id" ref="base.de"/>
+        <field name="barcode">40–44</field>
+    </record>
+
+    <record id="barcode_ru" model="forlife.barcode">
+        <field name="country_id" ref="base.ru"/>
+        <field name="barcode">46</field>
+    </record>
+
+    <record id="barcode_kg" model="forlife.barcode">
+        <field name="country_id" ref="base.kg"/>
+        <field name="barcode">470</field>
+    </record>
+
+    <record id="barcode_tw" model="forlife.barcode">
+        <field name="country_id" ref="base.tw"/>
+        <field name="barcode">471</field>
+    </record>
+
+    <record id="barcode_ee" model="forlife.barcode">
+        <field name="country_id" ref="base.ee"/>
+        <field name="barcode">474</field>
+    </record>
+
+    <record id="barcode_lv" model="forlife.barcode">
+        <field name="country_id" ref="base.lv"/>
+        <field name="barcode">475</field>
+    </record>
+    <record id="barcode_az" model="forlife.barcode">
+        <field name="country_id" ref="base.az"/>
+        <field name="barcode">476</field>
+    </record>
+
+    <record id="barcode_lt" model="forlife.barcode">
+        <field name="country_id" ref="base.lt"/>
+        <field name="barcode">477</field>
+    </record>
+    <record id="barcode_uz" model="forlife.barcode">
+        <field name="country_id" ref="base.uz"/>
+        <field name="barcode">478</field>
+    </record>
+
+    <record id="barcode_lk" model="forlife.barcode">
+        <field name="country_id" ref="base.lk"/>
+        <field name="barcode">479</field>
+    </record>
+    <record id="barcode_ph" model="forlife.barcode">
+        <field name="country_id" ref="base.ph"/>
+        <field name="barcode">480</field>
+    </record>
+
+    <record id="barcode_by" model="forlife.barcode">
+        <field name="country_id" ref="base.by"/>
+        <field name="barcode">481</field>
+    </record>
+    <record id="barcode_ua" model="forlife.barcode">
+        <field name="country_id" ref="base.ua"/>
+        <field name="barcode">482</field>
+    </record>
+
+    <record id="barcode_tm" model="forlife.barcode">
+        <field name="country_id" ref="base.tm"/>
+        <field name="barcode">483</field>
+    </record>
+    <record id="barcode_md" model="forlife.barcode">
+        <field name="country_id" ref="base.md"/>
+        <field name="barcode">484</field>
+    </record>
+
+    <record id="barcode_am" model="forlife.barcode">
+        <field name="country_id" ref="base.am"/>
+        <field name="barcode">485</field>
+    </record>
+    <record id="barcode_ge" model="forlife.barcode">
+        <field name="country_id" ref="base.ge"/>
+        <field name="barcode">486</field>
+    </record>
+
+    <record id="barcode_kz" model="forlife.barcode">
+        <field name="country_id" ref="base.kz"/>
+        <field name="barcode">487</field>
+    </record>
+    <record id="barcode_tj" model="forlife.barcode">
+        <field name="country_id" ref="base.tj"/>
+        <field name="barcode">488</field>
+    </record>
+
+    <record id="barcode_hk" model="forlife.barcode">
+        <field name="country_id" ref="base.hk"/>
+        <field name="barcode">489</field>
+    </record>
+    <record id="barcode_jp" model="forlife.barcode">
+        <field name="country_id" ref="base.jp"/>
+        <field name="barcode">45, 49</field>
+    </record>
+
+    <record id="barcode_uk" model="forlife.barcode">
+        <field name="country_id" ref="base.uk"/>
+        <field name="barcode">50</field>
+    </record>
+    <record id="barcode_gr" model="forlife.barcode">
+        <field name="country_id" ref="base.gr"/>
+        <field name="barcode">520, 521</field>
+    </record>
+
+    <record id="barcode_lb" model="forlife.barcode">
+        <field name="country_id" ref="base.lb"/>
+        <field name="barcode">528</field>
+    </record>
+
+    <record id="barcode_cy" model="forlife.barcode">
+        <field name="country_id" ref="base.cy"/>
+        <field name="barcode">529</field>
+    </record>
+
+    <record id="barcode_al" model="forlife.barcode">
+        <field name="country_id" ref="base.al"/>
+        <field name="barcode">530</field>
+    </record>
+    <record id="barcode_mk" model="forlife.barcode">
+        <field name="country_id" ref="base.mk"/>
+        <field name="barcode">531</field>
+    </record>
+
+    <record id="barcode_mt" model="forlife.barcode">
+        <field name="country_id" ref="base.mt"/>
+        <field name="barcode">535</field>
+    </record>
+    <record id="barcode_ie" model="forlife.barcode">
+        <field name="country_id" ref="base.ie"/>
+        <field name="barcode">539</field>
+    </record>
+
+    <record id="barcode_be" model="forlife.barcode">
+        <field name="country_id" ref="base.be"/>
+        <field name="barcode">54</field>
+    </record>
+
+    <record id="barcode_pt" model="forlife.barcode">
+        <field name="country_id" ref="base.pt"/>
+        <field name="barcode">560</field>
+    </record>
+    <record id="barcode_sb" model="forlife.barcode">
+        <field name="country_id" ref="base.sb"/>
+        <field name="barcode">569</field>
+    </record>
+
+    <record id="barcode_dk" model="forlife.barcode">
+        <field name="country_id" ref="base.dk"/>
+        <field name="barcode">570</field>
+    </record>
+    <record id="barcode_pl" model="forlife.barcode">
+        <field name="country_id" ref="base.pl"/>
+        <field name="barcode">590</field>
+    </record>
+
+    <record id="barcode_ro" model="forlife.barcode">
+        <field name="country_id" ref="base.ro"/>
+        <field name="barcode">594</field>
+    </record>
+
+    <record id="barcode_hu" model="forlife.barcode">
+        <field name="country_id" ref="base.hu"/>
+        <field name="barcode">599</field>
+    </record>
+    <record id="barcode_za" model="forlife.barcode">
+        <field name="country_id" ref="base.za"/>
+        <field name="barcode">600–601</field>
+    </record>
+
+    <record id="barcode_bj" model="forlife.barcode">
+        <field name="country_id" ref="base.bj"/>
+        <field name="barcode">602</field>
+    </record>
+    <record id="barcode_gh" model="forlife.barcode">
+        <field name="country_id" ref="base.gh"/>
+        <field name="barcode">603</field>
+    </record>
+
+    <record id="barcode_sn" model="forlife.barcode">
+        <field name="country_id" ref="base.sn"/>
+        <field name="barcode">604</field>
+    </record>
+
+    <record id="barcode_bh" model="forlife.barcode">
+        <field name="country_id" ref="base.bh"/>
+        <field name="barcode">608</field>
+    </record>
+    <record id="barcode_mu" model="forlife.barcode">
+        <field name="country_id" ref="base.mu"/>
+        <field name="barcode">609</field>
+    </record>
+
+    <record id="barcode_ma" model="forlife.barcode">
+        <field name="country_id" ref="base.ma"/>
+        <field name="barcode">611</field>
+    </record>
+    <record id="barcode_dz" model="forlife.barcode">
+        <field name="country_id" ref="base.dz"/>
+        <field name="barcode">613</field>
+    </record>
+
+    <record id="barcode_ng" model="forlife.barcode">
+        <field name="country_id" ref="base.ng"/>
+        <field name="barcode">615</field>
+    </record>
+
+    <record id="barcode_ke" model="forlife.barcode">
+        <field name="country_id" ref="base.ke"/>
+        <field name="barcode">616</field>
+    </record>
+    <record id="barcode_ci" model="forlife.barcode">
+        <field name="country_id" ref="base.ci"/>
+        <field name="barcode">618</field>
+    </record>
+
+    <record id="barcode_tn" model="forlife.barcode">
+        <field name="country_id" ref="base.tn"/>
+        <field name="barcode">619</field>
+    </record>
+    <record id="barcode_tz" model="forlife.barcode">
+        <field name="country_id" ref="base.tz"/>
+        <field name="barcode">620</field>
+    </record>
+
+    <record id="barcode_sy" model="forlife.barcode">
+        <field name="country_id" ref="base.sy"/>
+        <field name="barcode">621</field>
+    </record>
+
+    <record id="barcode_eg" model="forlife.barcode">
+        <field name="country_id" ref="base.eg"/>
+        <field name="barcode">622</field>
+    </record>
+    <record id="barcode_bn" model="forlife.barcode">
+        <field name="country_id" ref="base.bn"/>
+        <field name="barcode">623</field>
+    </record>
+
+    <record id="barcode_ly" model="forlife.barcode">
+        <field name="country_id" ref="base.ly"/>
+        <field name="barcode">624</field>
+    </record>
+    <record id="barcode_jo" model="forlife.barcode">
+        <field name="country_id" ref="base.jo"/>
+        <field name="barcode">625</field>
+    </record>
+
+    <record id="barcode_ir" model="forlife.barcode">
+        <field name="country_id" ref="base.ir"/>
+        <field name="barcode">626</field>
+    </record>
+    <record id="barcode_kw" model="forlife.barcode">
+        <field name="country_id" ref="base.kw"/>
+        <field name="barcode">627</field>
+    </record>
+
+    <record id="barcode_sa" model="forlife.barcode">
+        <field name="country_id" ref="base.sa"/>
+        <field name="barcode">628</field>
+    </record>
+
+    <record id="barcode_ae" model="forlife.barcode">
+        <field name="country_id" ref="base.ae"/>
+        <field name="barcode">629</field>
+    </record>
+    <record id="barcode_fi" model="forlife.barcode">
+        <field name="country_id" ref="base.fi"/>
+        <field name="barcode">64</field>
+    </record>
+
+    <record id="barcode_cn" model="forlife.barcode">
+        <field name="country_id" ref="base.cn"/>
+        <field name="barcode">69</field>
+    </record>
+
+    <record id="barcode_no" model="forlife.barcode">
+        <field name="country_id" ref="base.no"/>
+        <field name="barcode">70</field>
+    </record>
+
+    <record id="barcode_il" model="forlife.barcode">
+        <field name="country_id" ref="base.il"/>
+        <field name="barcode">729</field>
+    </record>
+
+    <record id="barcode_se" model="forlife.barcode">
+        <field name="country_id" ref="base.se"/>
+        <field name="barcode">73</field>
+    </record>
+
+    <record id="barcode_gt" model="forlife.barcode">
+        <field name="country_id" ref="base.gt"/>
+        <field name="barcode">740</field>
+    </record>
+
+    <record id="barcode_sv" model="forlife.barcode">
+        <field name="country_id" ref="base.sv"/>
+        <field name="barcode">741</field>
+    </record>
+
+    <record id="barcode_hn" model="forlife.barcode">
+        <field name="country_id" ref="base.hn"/>
+        <field name="barcode">742</field>
+    </record>
+
+    <record id="barcode_ni" model="forlife.barcode">
+        <field name="country_id" ref="base.ni"/>
+        <field name="barcode">743</field>
+    </record>
+
+    <record id="barcode_cr" model="forlife.barcode">
+        <field name="country_id" ref="base.cr"/>
+        <field name="barcode">744</field>
+    </record>
+
+    <record id="barcode_pa" model="forlife.barcode">
+        <field name="country_id" ref="base.pa"/>
+        <field name="barcode">745</field>
+    </record>
+
+    <record id="barcode_do" model="forlife.barcode">
+        <field name="country_id" ref="base.do"/>
+        <field name="barcode">746</field>
+    </record>
+
+    <record id="barcode_mx" model="forlife.barcode">
+        <field name="country_id" ref="base.mx"/>
+        <field name="barcode">750</field>
+    </record>
+
+    <record id="barcode_ca" model="forlife.barcode">
+        <field name="country_id" ref="base.ca"/>
+        <field name="barcode">754–755</field>
+    </record>
+
+    <record id="barcode_ve" model="forlife.barcode">
+        <field name="country_id" ref="base.ve"/>
+        <field name="barcode">759</field>
+    </record>
+
+    <record id="barcode_li" model="forlife.barcode">
+        <field name="country_id" ref="base.li"/>
+        <field name="barcode">760–769</field>
+    </record>
+
+    <record id="barcode_co" model="forlife.barcode">
+        <field name="country_id" ref="base.co"/>
+        <field name="barcode">770-771</field>
+    </record>
+
+    <record id="barcode_uy" model="forlife.barcode">
+        <field name="country_id" ref="base.uy"/>
+        <field name="barcode">773</field>
+    </record>
+
+    <record id="barcode_pe" model="forlife.barcode">
+        <field name="country_id" ref="base.pe"/>
+        <field name="barcode">775</field>
+    </record>
+
+    <record id="barcode_bo" model="forlife.barcode">
+        <field name="country_id" ref="base.bo"/>
+        <field name="barcode">777</field>
+    </record>
+
+    <record id="barcode_ar" model="forlife.barcode">
+        <field name="country_id" ref="base.ar"/>
+        <field name="barcode">779</field>
+    </record>
+
+    <record id="barcode_cl" model="forlife.barcode">
+        <field name="country_id" ref="base.cl"/>
+        <field name="barcode">780</field>
+    </record>
+
+    <record id="barcode_py" model="forlife.barcode">
+        <field name="country_id" ref="base.py"/>
+        <field name="barcode">784</field>
+    </record>
+
+    <record id="barcode_ec" model="forlife.barcode">
+        <field name="country_id" ref="base.ec"/>
+        <field name="barcode">786</field>
+    </record>
+
+    <record id="barcode_br" model="forlife.barcode">
+        <field name="country_id" ref="base.br"/>
+        <field name="barcode">789-790</field>
+    </record>
+
+    <record id="barcode_it" model="forlife.barcode">
+        <field name="country_id" ref="base.it"/>
+        <field name="barcode">800–839</field>
+    </record>
+
+    <record id="barcode_br" model="forlife.barcode">
+        <field name="country_id" ref="base.br"/>
+        <field name="barcode">840–849</field>
+    </record>
+
+    <record id="barcode_cu" model="forlife.barcode">
+        <field name="country_id" ref="base.cu"/>
+        <field name="barcode">850</field>
+    </record>
+
+    <record id="barcode_sk" model="forlife.barcode">
+        <field name="country_id" ref="base.sk"/>
+        <field name="barcode">858</field>
+    </record>
+
+    <record id="barcode_cf" model="forlife.barcode">
+        <field name="country_id" ref="base.cf"/>
+        <field name="barcode">859</field>
+    </record>
+
+    <record id="barcode_rs" model="forlife.barcode">
+        <field name="country_id" ref="base.rs"/>
+        <field name="barcode">860</field>
+    </record>
+
+    <record id="barcode_mn" model="forlife.barcode">
+        <field name="country_id" ref="base.mn"/>
+        <field name="barcode">865</field>
+    </record>
+
+    <record id="barcode_kp" model="forlife.barcode">
+        <field name="country_id" ref="base.kp"/>
+        <field name="barcode">867</field>
+    </record>
+
+    <record id="barcode_tr" model="forlife.barcode">
+        <field name="country_id" ref="base.tr"/>
+        <field name="barcode">868–869</field>
+    </record>
+
+    <record id="barcode_nl" model="forlife.barcode">
+        <field name="country_id" ref="base.nl"/>
+        <field name="barcode">87</field>
+    </record>
+
+    <record id="barcode_ss" model="forlife.barcode">
+        <field name="country_id" ref="base.ss"/>
+        <field name="barcode">880</field>
+    </record>
+
+    <record id="barcode_th" model="forlife.barcode">
+        <field name="country_id" ref="base.th"/>
+        <field name="barcode">885</field>
+    </record>
+
+    <record id="barcode_sg" model="forlife.barcode">
+        <field name="country_id" ref="base.sg"/>
+        <field name="barcode">888</field>
+    </record>
+
+    <record id="barcode_in" model="forlife.barcode">
+        <field name="country_id" ref="base.in"/>
+        <field name="barcode">890</field>
+    </record>
+
+    <record id="barcode_vn" model="forlife.barcode">
+        <field name="country_id" ref="base.vn"/>
+        <field name="barcode">893</field>
+    </record>
+
+    <record id="barcode_pk" model="forlife.barcode">
+        <field name="country_id" ref="base.pk"/>
+        <field name="barcode">896</field>
+    </record>
+
+    <record id="barcode_id" model="forlife.barcode">
+        <field name="country_id" ref="base.id"/>
+        <field name="barcode">899</field>
+    </record>
+
+    <record id="barcode_at" model="forlife.barcode">
+        <field name="country_id" ref="base.at"/>
+        <field name="barcode">90–91</field>
+    </record>
+
+    <record id="barcode_au" model="forlife.barcode">
+        <field name="country_id" ref="base.au"/>
+        <field name="barcode">93</field>
+    </record>
+
+    <record id="barcode_nz" model="forlife.barcode">
+        <field name="country_id" ref="base.nz"/>
+        <field name="barcode">94</field>
+    </record>
+
+    <record id="barcode_my" model="forlife.barcode">
+        <field name="country_id" ref="base.my"/>
+        <field name="barcode">955</field>
+    </record>
+
+    <record id="barcode_mo" model="forlife.barcode">
+        <field name="country_id" ref="base.mo"/>
+        <field name="barcode">958</field>
+    </record>
+</odoo>

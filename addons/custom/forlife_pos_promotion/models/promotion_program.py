@@ -32,6 +32,7 @@ class PromotionProgram(models.Model):
 
     campaign_id = fields.Many2one('promotion.campaign', name='Campaign', ondelete='restrict')
 
+    active = fields.Boolean(default=True)
     name = fields.Char('Program Name', required=True)
     code = fields.Char('Code')
     company_id = fields.Many2one('res.company', 'Company', default=lambda self: self.env.company)
@@ -40,7 +41,7 @@ class PromotionProgram(models.Model):
         precompute=True)
     currency_symbol = fields.Char(related='currency_id.symbol')
 
-    brand_id = fields.Many2one(related='campaign_id.brand_id', string='Brand')
+    brand_id = fields.Many2one(related='campaign_id.brand_id', string='Brand', store=True)
     store_ids = fields.Many2many(related='campaign_id.store_ids', string='Stores')
     from_date = fields.Datetime(related='campaign_id.from_date', string='From Date', default=fields.Datetime.now)
     to_date = fields.Datetime(related='campaign_id.to_date', string='To Date')
@@ -141,7 +142,7 @@ class PromotionProgram(models.Model):
     tax_from_date = fields.Date('Registered Tax From')
     tax_to_date = fields.Date('Registered Tax To')
 
-    @api.constrains('combo_line_ids')
+    @api.constrains('promotion_type', 'combo_line_ids')
     def _check_duplicate_product_in_combo(self):
         for program in self:
             if program.promotion_type == 'combo' and program.combo_line_ids:
@@ -155,6 +156,7 @@ class PromotionProgram(models.Model):
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
+        ('check_dates_tax_register', 'CHECK (tax_from_date <= tax_to_date)', 'End date may not be before the starting date.'),
         ('disc_amount', 'CHECK (disc_amount >= 0.0 )', 'Discount Amount must be positive'),
         ('disc_percent', 'CHECK (disc_percent >= 0 and disc_percent <= 100)', 'Discount Percent must be between 0.0 and 100.0'),
         ('disc_fixed_price', 'CHECK (disc_fixed_price >= 0.0)', 'Discount Fixed Price must be positive'),

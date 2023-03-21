@@ -10,6 +10,9 @@ import { Gui } from 'point_of_sale.Gui';
 import { round_decimals,round_precision } from 'web.utils';
 import core from 'web.core';
 
+const _t = core._t;
+
+
 export class PromotionUsageLine {
     /**
      * @param {number} id of promotion.program
@@ -303,21 +306,21 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     /**
      * @override
      */
-    set_partner(partner) {
+    async set_partner(partner) {
         const oldPartner = this.get_partner();
         super.set_partner(partner);
         if (oldPartner !== this.get_partner()) {
-            this.get_history_program_usages();
+            await this.get_history_program_usages();
             this.activatedInputCodes = [];
             this._updateActivatedPromotionPrograms();
         };
     }
 
-    get_history_program_usages() {
+    async get_history_program_usages() {
         var self = this;
         const customer = this.get_partner();
         let programs = Object.keys(this.pos.promotion_program_by_id);
-        this.pos.env.services.rpc({
+        await this.pos.env.services.rpc({
             model: 'pos.config',
             method: 'get_history_program_usages',
             args: [
@@ -329,7 +332,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         }).then((result) => {
             self.historyProgramUsages = result || {};
         });
-        return true;
     }
 
     _programIsApplicableAutomatically(program) {
@@ -664,7 +666,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return result || 0.0;
     }
 
-    // TODO: Fix tách dòng
     _get_program_ids_in_usages(line) {
         return line.promotion_usage_ids.reduce((acc, usage) => {acc.add(usage.program_id); return acc}, new Set())
     }
@@ -757,8 +758,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 max = discounted_total
             };
         };
-        console.log('[result, max]', [result, max])
-
         return [result, max];
     }
 
@@ -995,11 +994,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     async _activatePromotionCode(code) {
 
         if (!this.pos.promotionPrograms.some(p => p.promotion_type == 'code' || p.with_code == true)) {
-            return 'Not found an available Promotion Program needed Code to be activated';
+            return _t('Not found an available Promotion Program needed Code to be activated');
         };
 
         if (this.activatedInputCodes.find((c) => c.code === code)) {
-            return 'That coupon code has already been scanned and activated.';
+            return _t('That coupon code has already been scanned and activated.');
         };
 
         const customer = this.get_partner();
@@ -1051,7 +1050,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (res !== true) {
             Gui.showNotification(res);
         } else {
-            Gui.showNotification(_.str.sprintf('Successfully activate a promotion code.'),3000);
+            Gui.showNotification(_t('Successfully activate a promotion code.'),3000);
         };
     }
 
