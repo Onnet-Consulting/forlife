@@ -1,0 +1,43 @@
+.pos .order .orderline .product-name{
+    padding:0;
+    display:inline-block;
+    font-weight: bold;
+    width:80%;
+    overflow:hidden;
+    text-overflow: ellipsis;
+    font-size: 18px;
+}
+.pos .order .orderline .price{
+    padding:0;
+    font-weight: bold;
+    float:right;
+    font-size: 18px;
+}
+
+.title-change-refund > td{
+    font-style: italic;
+}
+
+.tbl-change-refund-product{
+    width: 100%;
+}
+
+.row-input-change-refund > td{
+    padding-bottom: 5px;
+}
+
+.input-change-refund{
+    width: 70%;
+}
+
+.row-input-change-refund .reason{
+    width: 100%;
+}
+
+.title-change-refund .set-width{
+    width: 16%;
+}
+
+.title-change-refund .set-width-gg{
+    width: 20%;
+}
