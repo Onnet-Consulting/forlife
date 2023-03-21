@@ -5,31 +5,44 @@ from ..fields import BravoField, BravoCharField, BravoDatetimeField, BravoDateFi
     BravoMany2oneField, BravoIntegerField, BravoDecimalField
 from odoo.exceptions import ValidationError
 
-# special fields - don't declare them in Odoo
-DEFAULT_VALUE = {
-    'PushDate': 'GETUTCDATE()',
-    'Active': 1,
-}
-INSERT_DEFAULT_VALUE = {**DEFAULT_VALUE}
-
-UPDATE_DEFAULT_VALUE = {**DEFAULT_VALUE}
-
-DELETE_DEFAULT_VALUE = {
-    **DEFAULT_VALUE,
-    'Active': 0
-}
-
 
 class BravoModel(models.AbstractModel):
     _name = 'bravo.model'
     _inherit = ['mssql.server']
 
     @api.model
+    def get_update_default_value(self):
+        # special fields - don't declare them in Odoo
+        return {
+            'PushDate': 'GETUTCDATE()',
+            'Active': 1,
+        }
+
+    @api.model
+    def get_insert_default_value(self):
+        # special fields - don't declare them in Odoo
+        return {
+            'PushDate': 'GETUTCDATE()',
+            'Active': 1,
+        }
+
+    @api.model
+    def get_delete_default_value(self):
+        # special fields - don't declare them in Odoo
+        return {
+            'PushDate': 'GETUTCDATE()',
+            'Active': 0,
+        }
+
+    @api.model
     def get_bravo_filter_domain(self):
         return []
 
     def filter_bravo_records(self):
-        return self.filtered_domain(self.get_bravo_filter_domain())
+        bravo_filter_domain = self.get_bravo_filter_domain()
+        if not bravo_filter_domain:
+            return self
+        return self.filtered_domain(bravo_filter_domain)
 
     def get_bravo_insert_values(self):
         records = self.filter_bravo_records()
@@ -84,7 +97,8 @@ class BravoModel(models.AbstractModel):
             for fname in column_names:
                 params.append(rec_value.get(fname))
 
-        for fname, fvalue in INSERT_DEFAULT_VALUE.items():
+        insert_default_value = self.get_insert_default_value()
+        for fname, fvalue in insert_default_value.items():
             insert_column_names.append(fname)
             single_record_values_placeholder.append(str(fvalue))
 
@@ -127,7 +141,8 @@ class BravoModel(models.AbstractModel):
         for key, value in updated_values.items():
             set_query_placeholder.append(f"{key}=?")
             set_query_params.append(value)
-        for key, value in UPDATE_DEFAULT_VALUE.items():
+        update_default_value = self.get_update_default_value()
+        for key, value in update_default_value.items():
             set_query_placeholder.append(f"{key}={value}")
         set_query_placeholder = ','.join(set_query_placeholder)
 
@@ -171,7 +186,8 @@ class BravoModel(models.AbstractModel):
 
         set_query_params = []
         set_query_placeholder = []
-        for key, value in DELETE_DEFAULT_VALUE.items():
+        delete_default_value = self.get_delete_default_value()
+        for key, value in delete_default_value.items():
             set_query_placeholder.append(f"{key}={value}")
         set_query_placeholder = ','.join(set_query_placeholder)
 
@@ -349,4 +365,3 @@ class BravoLineModel(models.AbstractModel):
 
     def get_update_sql(self, values):
         update_table = self._bravo_update_table
-
