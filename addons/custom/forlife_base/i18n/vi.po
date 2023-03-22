@@ -70,6 +70,11 @@ msgid "Code"
 msgstr "Mã"
 
 #. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_attribute__code
+msgid "Code"
+msgstr "Mã giá trị"
+
+#. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__warehouse_code_internal
 msgid "Code Internal"
 msgstr "Mã nội bộ"
