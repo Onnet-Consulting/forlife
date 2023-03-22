@@ -5,6 +5,7 @@ import PosComponent from 'point_of_sale.PosComponent';
 import ProductScreen from 'point_of_sale.ProductScreen';
 import Registries from 'point_of_sale.Registries';
 import { useListener } from "@web/core/utils/hooks";
+import { round_decimals,round_precision } from 'web.utils';
 
 export class PromotionButton extends PosComponent {
     setup() {
@@ -31,6 +32,48 @@ export class PromotionButton extends PosComponent {
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);
             order.orderlines.add(order._createLineFromVals(options));
+        }
+        for (let newLine of newLines) {
+            if (newLine.hasOwnProperty('reward_products')) {
+                if (newLine.reward_products.reward_product_ids) {
+                    var quantity_reward = newLine.reward_products.qty;
+                    order.orderlines.forEach(line => {
+                        if (line.product.id in newLine.reward_products.reward_product_ids) {
+                            if (line.quantity >= quantity_reward && line.price > 0 && quantity_reward) {
+                                line.price = round_decimals(line.price * (line.quantity - quantity_reward ) / line.quantity, this.env.pos.currency.decimal_places);
+                                quantity_reward = 0;
+                            } else if (line.quantity < newLine.reward_products.qty && line.price > 0 && quantity_reward) {
+                                line.price = round_decimals(0, this.env.pos.currency.decimal_places);
+                                quantity_reward -= line.quantity;
+                            }
+                        }
+                    });
+
+                    if (quantity_reward) {
+                        let product = this.env.pos.db.get_product_by_id([...newLine.reward_products.reward_product_ids][0]);
+                        order.orderlines.add(order._createLineFromVals({
+                            product: product,
+                            price: round_decimals(0, this.env.pos.currency.decimal_places),
+                            tax_ids: product.tax_ids,
+                            quantity: quantity_reward,
+                            is_reward_line: true,
+                            merge: false,
+                        }));
+                    }
+                } else {
+                    var quantity_reward = newLine.reward_products.qty;
+                    order.orderlines.sort((a,b) => a.product.lst_price - b.product.lst_price).forEach(line => {
+                        if (line.quantity >= quantity_reward && line.price > 0 && quantity_reward) {
+                            line.price = round_decimals(line.price * (line.quantity - quantity_reward ) / line.quantity, this.env.pos.currency.decimal_places);
+                            quantity_reward = 0;
+                        } else if (line.quantity < newLine.reward_products.qty && line.price > 0 && quantity_reward) {
+                            line.price = round_decimals(0, this.env.pos.currency.decimal_places);
+                            quantity_reward -= line.quantity;
+                        }
+                    })
+                }
+
+            }
         };
         console.log(order);
     }
@@ -57,6 +100,8 @@ export class PromotionButton extends PosComponent {
             order_apply: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
             discounted_amount: 0.0,
             forecasted_discounted_amount: 0.0,
+            reward_type: pro.program.reward_type,
+            reward_product_ids: pro.program.reward_product_ids
         }));
 
         const { confirmed, payload } = await this.showPopup('ProgramSelectionPopup', {
