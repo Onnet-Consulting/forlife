@@ -15,7 +15,7 @@ class ReportNum3(models.TransientModel):
     _description = 'Report stock in time range by warehouse'
 
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
-    report_by = fields.Selection([('brand', _('Brand')), ('area', _('Area'))], 'Report by', required=True, default='brand')
+    report_by = fields.Selection([('branch', _('Branch')), ('area', _('Area'))], 'Report by', required=True, default='branch')
     all_products = fields.Boolean(string='All products', default=False)
     all_warehouses = fields.Boolean(string='All warehouses', default=True)
     all_areas = fields.Boolean(string='All areas', default=True)
@@ -234,7 +234,7 @@ order by num
             warehouse_ids = stock_wh.search([('loc_province_id', '!=', False)]) if self.all_areas else (stock_wh.search(
                 [('loc_province_id', 'in', self.areas_ids.ids)]) if self.areas_ids else stock_wh.search([('loc_province_id', '=', False)]))
             if not warehouse_ids:
-                raise ValidationError(_('Location not found !'))
+                raise ValidationError(_('Warehouse not found !'))
         else:
             warehouse_ids = stock_wh.search([]) if self.all_warehouses else self.warehouse_ids
         query = self._get_query(product_ids, warehouse_ids)
