@@ -34,3 +34,12 @@ access_res_state_district_system,res_state_district system,model_res_state_distr
 
 access_product_category_sequece_level_user,product_category_sequece_level user,model_product_category_sequece_level,base.group_user,1,0,0,0
 access_product_category_sequece_level_system,product_category_sequece_level system,model_product_category_sequece_level,base.group_system,1,1,1,1
+
+access_asset_location_user,asset_location user,model_asset_location,base.group_user,1,0,0,0
+access_asset_location_system,asset_location system,model_asset_location,base.group_system,1,1,1,1
+
+access_occasion_code_user,occasion_code user,model_occasion_code,base.group_user,1,0,0,0
+access_occasion_code_system,occasion_code system,model_occasion_code,base.group_system,1,1,1,1
+
+access_occasion_group_user,occasion_group user,model_occasion_group,base.group_user,1,0,0,0
+access_occasion_group_system,occasion_group system,model_occasion_group,base.group_system,1,1,1,1
