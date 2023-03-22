@@ -158,9 +158,16 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
          * @override
          */
         getPayload() {
+            self = this;
+            let computePro = function(p) {
+                var program = self.env.pos.get_program_by_id(p.id);
+                var reward_product_id = jQuery("#reward_product_selected_"+p.id).val();
+                program.reward_product_ids = new Set([parseInt(reward_product_id)]);
+                return program;
+            }
             return this.state.programs.filter(p => p.isSelected)
                                         .sort((p1, p2) => p1.index - p2.index)
-                                        .map(p => this.env.pos.get_program_by_id(p.id))
+                                        .map(computePro)
         }
     }
     ProgramSelectionPopup.template = 'ProgramSelectionPopup';
