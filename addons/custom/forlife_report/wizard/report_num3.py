@@ -76,8 +76,8 @@ class ReportNum3(models.TransientModel):
         if self.report_by == 'area':
             stock_query = f"""select 
         sm.product_id          as product_id,
-        coalesce(srlp.id, 0) as src_warehouse_id,
-        coalesce(drlp.id, 0) as dest_warehouse_id,
+        coalesce(srlp.id, case when coalesce(src_wh.id, 0) <> 0 then -1 else 0 end) as src_warehouse_id,
+        coalesce(drlp.id, case when coalesce(des_wh.id, 0) <> 0 then -1 else 0 end) as dest_warehouse_id,
         sum(sm.product_qty)    as qty
     from stock_move sm
         left join stock_location des_lc on sm.location_dest_id = des_lc.id
@@ -90,7 +90,7 @@ class ReportNum3(models.TransientModel):
         left join res_location_province srlp on srlp.id = src_wh.loc_province_id
         left join product_cate_info pci on pci.product_id = pp.id
     where {where_query}
-    group by sm.product_id, srlp.id, drlp.id
+    group by sm.product_id, src_warehouse_id, dest_warehouse_id
             """
         else:
             stock_query = f"""select 
@@ -232,7 +232,7 @@ order by num
         product_ids = self.env['product.product'].search([]).ids if self.all_products else self.product_ids.ids
         if self.report_by == 'area':
             warehouse_ids = stock_wh.search([('loc_province_id', '!=', False)]) if self.all_areas else (stock_wh.search(
-                [('loc_province_id', 'in', self.areas_ids.ids)]) if self.areas_ids else stock_wh.search([('loc_province_id', '=', False)]))
+                [('loc_province_id', 'in', self.area_ids.ids)]) if self.area_ids else stock_wh.search([('loc_province_id', '=', False)]))
             if not warehouse_ids:
                 raise ValidationError(_('Warehouse not found !'))
         else:
