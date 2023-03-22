@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="reason_type_1" model="forlife.reason.type">
+            <field name="code">01</field>
+            <field name="name">Xuất chi phí quản lý</field>
+        </record>
+
+        <record id="reason_type_2" model="forlife.reason.type">
+            <field name="code">02</field>
+            <field name="name">Xuất chi phí bán hàng</field>
+        </record>
+
+        <record id="reason_type_3" model="forlife.reason.type">
+            <field name="code">03</field>
+            <field name="name">Xuất chi phí sản xuất</field>
+        </record>
+
+        <record id="reason_type_4" model="forlife.reason.type">
+            <field name="code">04</field>
+            <field name="name">Xuất cân đối tồn kho</field>
+        </record>
+    </data>
+</odoo>

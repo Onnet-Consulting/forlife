@@ -22,63 +22,62 @@
                 </xpath>
                 <xpath expr="//div[@name='date_planned_div']" position="after">
                     <field name="invoice_status"></field>
-                    <field name="state" attrs="{'invisible': [('purchase_type', '!=', 'product')]}"></field>
                     <field name="has_contract"></field>
                     <field name="has_contract_commerce"></field>
                 </xpath>
                 <xpath expr="//div[@name='reminder']" position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
-                <xpath expr="//notebook[1]" position="after">
-                    <notebook colspan="4">
-                        <page string="Approval Logs" name="approval_logs">
-                            <field name="approval_logs_ids" mode="kanban" context="{'default_res_model': 'purchase.order'}">
-                                <kanban>
-                                    <field name="request_approved_date"/>
-                                    <field name="approval_user_id"/>
-                                    <field name="function"/>
-                                    <field name="note"/>
-                                    <field name="state"/>
-                                    <templates>
-                                        <t t-name="kanban-box">
-                                            <div t-attf-class="oe_kanban_card">
-                                                <div class="o_kanban_record_top">
-                                                    <div class="o_kanban_record_headings mt4 text-muted">
-                                                        <field name="state"/>
-                                                    </div>
-                                                    <div class="text-muted">
-                                                        <field name="request_approved_date"/>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="approval_logs_main_text">
-                                                        <field name="function"/>
-                                                    </div>
-                                                    <div class="approval_logs_main_text">
-                                                        <field name="approval_user_id"/>
-                                                    </div>
-                                                    <div class="approval_logs_note">
-                                                        <div>Note:</div>
-                                                        <field name="note"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </t>
-                                    </templates>
-                                </kanban>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <field name="approval_user_id" readonly="1" force_save="1"/>
-                                            <field name="request_approved_date" readonly="1" force_save="1"/>
-                                            <field name="note"/>
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
-                        </page>
-                    </notebook>
-                </xpath>
+<!--                <xpath expr="//notebook[1]" position="after">-->
+<!--                    <notebook colspan="4">-->
+<!--                        <page string="Approval Logs" name="approval_logs">-->
+<!--                            <field name="approval_logs_ids" mode="kanban" context="{'default_res_model': 'purchase.order'}">-->
+<!--                                <kanban>-->
+<!--                                    <field name="request_approved_date"/>-->
+<!--                                    <field name="approval_user_id"/>-->
+<!--                                    <field name="function"/>-->
+<!--                                    <field name="note"/>-->
+<!--                                    <field name="state"/>-->
+<!--                                    <templates>-->
+<!--                                        <t t-name="kanban-box">-->
+<!--                                            <div t-attf-class="oe_kanban_card">-->
+<!--                                                <div class="o_kanban_record_top">-->
+<!--                                                    <div class="o_kanban_record_headings mt4 text-muted">-->
+<!--                                                        <field name="state"/>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="text-muted">-->
+<!--                                                        <field name="request_approved_date"/>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                                <div>-->
+<!--                                                    <div class="approval_logs_main_text">-->
+<!--                                                        <field name="function"/>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="approval_logs_main_text">-->
+<!--                                                        <field name="approval_user_id"/>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="approval_logs_note">-->
+<!--                                                        <div>Note:</div>-->
+<!--                                                        <field name="note"/>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </t>-->
+<!--                                    </templates>-->
+<!--                                </kanban>-->
+<!--                                <form>-->
+<!--                                    <sheet>-->
+<!--                                        <group>-->
+<!--                                            <field name="approval_user_id" readonly="1" force_save="1"/>-->
+<!--                                            <field name="request_approved_date" readonly="1" force_save="1"/>-->
+<!--                                            <field name="note"/>-->
+<!--                                        </group>-->
+<!--                                    </sheet>-->
+<!--                                </form>-->
+<!--                            </field>-->
+<!--                        </page>-->
+<!--                    </notebook>-->
+<!--                </xpath>-->
             </field>
         </record>
     </data>

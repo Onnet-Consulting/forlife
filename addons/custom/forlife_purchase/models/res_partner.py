@@ -23,4 +23,4 @@ class ResPartner(models.Model):
          ], string='Gender',
         default='male')
     date_of_birth = fields.Date(string='Date Of Birth')
-
+    is_passersby = fields.Boolean(defaul=False)

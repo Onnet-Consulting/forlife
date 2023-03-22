@@ -98,15 +98,17 @@
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'reject', 'approved', 'close'))]}"
                                    context="{'default_request_date': request_date,'default_state': state}"
                             >
-                                <tree editable="bottom" decoration-muted="is_no_more_quantity == True">
+                                <tree editable="bottom" decoration-muted="is_no_more_quantity == True" class="width-hh width-first">
+                                    <field name="is_close"/>
                                     <field name="product_id" domain="[('detailed_type', '!=', 'consu')]"/>
                                     <field name="state" invisible="1"/>
-<!--                                    <field name="description" optional="show"/>-->
+                                    <field name="description" optional="show"/>
                                     <field name="product_type" optional="show"/>
                                     <field name="asset_description" attrs="{'readonly': [('product_type', 'not in', ('service', 'asset'))]}"/>
                                     <field name="purchase_quantity" optional="show"/>
-                                    <field name="exchange_quantity" optional="show"/>
                                     <field name="purchase_uom" optional="show"/>
+                                    <field name="exchange_quantity" optional="show"/>
+                                    <field name="product_uom" optional="show"/>
                                     <field name="vendor_code" optional="show" context="{'form': 'purchase_request_from_view'}"/>
                                     <field name="production_id" optional="show"/>
                                     <field name="request_date" optional="show" readonly="1"/>
@@ -117,54 +119,54 @@
                             </field>
                         </page>
                     </notebook>
-                    <notebook colspan="4">
-                        <page string="Approval Logs" name="approval_logs">
-                            <field name="approval_logs_ids" mode="kanban" context="{'default_res_model': 'purchase.request'}">
-                                <kanban>
-                                    <field name="request_approved_date"/>
-                                    <field name="approval_user_id"/>
-                                    <field name="function"/>
-                                    <field name="note"/>
-                                    <field name="state"/>
-                                    <templates>
-                                        <t t-name="kanban-box">
-                                            <div t-attf-class="oe_kanban_card">
-                                                <div class="o_kanban_record_top">
-                                                    <div class="o_kanban_record_headings mt4 text-muted">
-                                                        <field name="state"/>
-                                                    </div>
-                                                    <div class="text-muted">
-                                                        <field name="request_approved_date"/>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="approval_logs_main_text">
-                                                        <field name="function"/>
-                                                    </div>
-                                                    <div class="approval_logs_main_text">
-                                                        <field name="approval_user_id"/>
-                                                    </div>
-                                                    <div class="approval_logs_note">
-                                                        <div>Note:</div>
-                                                        <field name="note"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </t>
-                                    </templates>
-                                </kanban>
-                                <form>
-                                    <sheet>
-                                        <group>
-                                            <field name="approval_user_id" readonly="1" force_save="1"/>
-                                            <field name="request_approved_date" readonly="1" force_save="1"/>
-                                            <field name="note"/>
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
-                        </page>
-                    </notebook>
+<!--                    <notebook colspan="4">-->
+<!--                        <page string="Approval Logs" name="approval_logs">-->
+<!--                            <field name="approval_logs_ids" mode="kanban" context="{'default_res_model': 'purchase.request'}">-->
+<!--                                <kanban>-->
+<!--                                    <field name="request_approved_date"/>-->
+<!--                                    <field name="approval_user_id"/>-->
+<!--                                    <field name="function"/>-->
+<!--                                    <field name="note"/>-->
+<!--                                    <field name="state"/>-->
+<!--                                    <templates>-->
+<!--                                        <t t-name="kanban-box">-->
+<!--                                            <div t-attf-class="oe_kanban_card">-->
+<!--                                                <div class="o_kanban_record_top">-->
+<!--                                                    <div class="o_kanban_record_headings mt4 text-muted">-->
+<!--                                                        <field name="state"/>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="text-muted">-->
+<!--                                                        <field name="request_approved_date"/>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                                <div>-->
+<!--                                                    <div class="approval_logs_main_text">-->
+<!--                                                        <field name="function"/>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="approval_logs_main_text">-->
+<!--                                                        <field name="approval_user_id"/>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="approval_logs_note">-->
+<!--                                                        <div>Note:</div>-->
+<!--                                                        <field name="note"/>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </t>-->
+<!--                                    </templates>-->
+<!--                                </kanban>-->
+<!--                                <form>-->
+<!--                                    <sheet>-->
+<!--                                        <group>-->
+<!--                                            <field name="approval_user_id" readonly="1" force_save="1"/>-->
+<!--                                            <field name="request_approved_date" readonly="1" force_save="1"/>-->
+<!--                                            <field name="note"/>-->
+<!--                                        </group>-->
+<!--                                    </sheet>-->
+<!--                                </form>-->
+<!--                            </field>-->
+<!--                        </page>-->
+<!--                    </notebook>-->
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>

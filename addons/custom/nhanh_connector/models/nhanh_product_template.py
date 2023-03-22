@@ -17,9 +17,9 @@ class ProductNhanh(models.Model):
     ## Nếu tạo sản phẩm từ Odoo == True else == False
     check_data_odoo = fields.Boolean(string='Check dữ liệu từ odoo or Nhanh', default=True)
     width_product = fields.Float('Width')
-    height_product = fields.Float('Width')
+    height_product = fields.Float('Height')
 
-    _sql_constraints = [('code_product_unique', 'unique(code_product)', "The product code must be unique!")]
+
 
     @api.model
     def create(self, vals):
@@ -32,9 +32,15 @@ class ProductNhanh(models.Model):
             nhanh_configs = constant.get_nhanh_configs(self)
             if 'nhanh_connector.nhanh_app_id' in nhanh_configs or 'nhanh_connector.nhanh_business_id' in nhanh_configs \
                     or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
+                category = False
+                if res.categ_id and res.categ_id.nhanh_product_category_id:
+                    category = res.categ_id.nhanh_product_category_id
+                elif res.categ_id and not res.categ_id.nhanh_product_category_id:
+                    raise ValidationError(_("You cannot select a category that is not on the express system!"))
                 data = '[{"id": "' + str(res.id) + '","name":"' + str(
                     res.name) + '","code":"' + str(res.code_product) + '", "barcode": "' + str(
-                    res.barcode) + '", "price": "' + str(res.list_price) + '"}]'
+                    res.barcode if res.barcode else None ) + '", "price": "' + str(int(res.list_price)) + '", "shippingWeight": "' + str(
+                    int(res.weight)) + '", "status": "' + 'New' + '", "categoryId": "' + str(category) + '"}]'
                 try:
                     res_server = self.post_data_nhanh(data)
                     status_nhanh = 1
@@ -46,7 +52,7 @@ class ProductNhanh(models.Model):
                         else:
                             value = []
                             for item in res_json['data']['ids']:
-                                value.append(item)
+                                value.append(res_json['data']['ids'].get(item))
                             res.write(
                                 {
                                     'nhanh_id': int(value[0])
@@ -58,29 +64,42 @@ class ProductNhanh(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        self.synchronized_price_nhanh(vals)
+        if self.check_data_odoo:
+            category = False
+            if self.categ_id and self.categ_id.nhanh_product_category_id:
+                category = self.categ_id.nhanh_product_category_id
+            elif self.categ_id and not self.categ_id.nhanh_product_category_id:
+                raise ValidationError(_("You cannot select a category that is not on the express system!"))
+            data = '[{"id": "' + str(self.id) + '","idNhanh":"' + str(self.nhanh_id) + '", "price": "' + str(int(
+                self.list_price)) + '", "name": "' + str(self.name) + '", "shippingWeight": "' + str(
+                int(self.weight)) + '", "status": "' + 'Active' + '", "categoryId": "' + str(category) + '"}]'
+            self.synchronized_price_nhanh(data)
         return res
 
-    def synchronized_price_nhanh(self, value):
-        if 'list_price' in value.keys():
-            nhanh_configs = constant.get_nhanh_configs(self)
-            if 'nhanh_connector.nhanh_app_id' in nhanh_configs or 'nhanh_connector.nhanh_business_id' in nhanh_configs \
-                    or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
-                data = '[{"id": "' + str(self.id) + '","idNhanh":"' + str(self.nhanh_id) + '", "price": "' + str(
-                    value.get('list_price')) + '", "name": "' + str(self.name) + '"}]'
-                status_nhanh = 1
-                try:
-                    res_server = self.post_data_nhanh(data)
-                    res_json = res_server.json()
-                except Exception as ex:
-                    status_nhanh = 0
-                    _logger.info(f'Get orders from NhanhVn error {ex}')
-                if status_nhanh == 1:
-                    if res_json['code'] == 0:
-                        _logger.info(f'Get order error {res_json["messages"]}')
-                        return False
-                    else:
-                        pass
+    def unlink(self):
+        data = '[{"id": "' + str(self.id) + '","idNhanh":"' + str(self.nhanh_id) + '", "status": "' + 'Inactive' + '"}]'
+        self.synchronized_price_nhanh(data)
+        res = super().unlink()
+
+        return res
+
+    def synchronized_price_nhanh(self, data):
+        nhanh_configs = constant.get_nhanh_configs(self)
+        if 'nhanh_connector.nhanh_app_id' in nhanh_configs or 'nhanh_connector.nhanh_business_id' in nhanh_configs \
+                or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
+            status_nhanh = 1
+            try:
+                res_server = self.post_data_nhanh(data)
+                res_json = res_server.json()
+            except Exception as ex:
+                status_nhanh = 0
+                _logger.info(f'Get orders from NhanhVn error {ex}')
+            if status_nhanh == 1:
+                if res_json['code'] == 0:
+                    _logger.info(f'Get order error {res_json["messages"]}')
+                    return False
+                else:
+                    pass
         return True
 
     def post_data_nhanh(self, data):

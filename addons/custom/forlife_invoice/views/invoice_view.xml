@@ -9,6 +9,8 @@
                 <xpath expr="//field[@name='ref']" position="after">
                     <field name="invoice_description"/>
                     <field name="invoice_reference"/>
+                    <field name="purchase_order_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="purchase_type"/>
                     <field name="journal_id" options="{'no_create': True, 'no_open': True}"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_bank_id']" position="after">

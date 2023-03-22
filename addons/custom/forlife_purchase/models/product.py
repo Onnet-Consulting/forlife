@@ -19,10 +19,16 @@ class ProductTemplate(models.Model):
     warning_date = fields.Date('Warning Date')
     pos_ok = fields.Boolean('Available on POS')
 
+    @api.model
+    def default_get(self, default_fields):
+        res = super().default_get(default_fields)
+        res['detailed_type'] = 'product'
+        return res
+
     @api.depends('barcode_country')
     def _compute_barcode_product(self):
         for r in self:
-            if r.detailed_type in ('service', 'product'):
+            if r.barcode_country and r.detailed_type in ('service', 'product'):
                 year_cr = datetime.datetime.now().year
                 cr = self.env.cr
                 query = '''
@@ -46,14 +52,13 @@ class ProductProduct(models.Model):
 
     @api.model
     def search(self, args, offset=0, limit=None, order=None, count=False):
-        if self.env.context and self.env.context.get('prod_filter', False) and self.env.context.get('supplier_id', False):
+        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False):
             sql = """
             select id from product_product
             where product_tmpl_id in
                 ( select distinct(product_tmpl_id)
                 from product_supplierinfo
-                where  partner_id  in 
-                (select id from res_partner where name = %s))
+                where  partner_id = %s)
             union 
             select id from product_product
             where product_tmpl_id not in 
@@ -65,3 +70,30 @@ class ProductProduct(models.Model):
             args.append(('id', 'in', ids))
             order = 'default_code'
         return super(ProductProduct, self).search(args, offset=offset, limit=limit, order=order, count=count)
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False):
+            sql = """
+            select id from product_product
+            where product_tmpl_id in
+                ( select distinct(product_tmpl_id)
+                from product_supplierinfo
+                where  partner_id = %s)
+            union 
+            select id from product_product
+            where product_tmpl_id not in 
+                ( select distinct(product_tmpl_id)
+                from product_supplierinfo)
+            """ % (self.env.context.get('supplier_id'))
+            self._cr.execute(sql)
+            ids = [x[0] for x in self._cr.fetchall()]
+            batches = self.env['product.product'].search([('id', 'in', ids)])
+            return batches.name_get()
+        return super(ProductProduct, self).name_search(
+            name, args, operator=operator, limit=limit)
+
+    def name_get(self):
+        if self.env.context.get('show_product_code'):
+            return [(record.id, record.code_product or record.name) for record in self]
+        return super().name_get()

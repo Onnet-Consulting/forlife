@@ -24,6 +24,7 @@ class PurchaseOrder(models.Model):
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Contract?')
     has_invoice = fields.Boolean(string='Finance Bill?')
+    exchange_rate = fields.Float(string='Exchange Rate', default=1)
 
 
     # apply_manual_currency_exchange = fields.Boolean(string='Apply Manual Exchange', compute='_compute_active_manual_currency_rate')
@@ -31,7 +32,7 @@ class PurchaseOrder(models.Model):
     active_manual_currency_rate = fields.Boolean('active Manual Currency', compute='_compute_active_manual_currency_rate')
     production_id = fields.Many2one('forlife.production', string='Production Order Code')
 
-    prod_filter = fields.Boolean(string='Filter Products by Supplier', default=True)
+    # prod_filter = fields.Boolean(string='Filter Products by Supplier', compute='_compute_')
     # total_discount = fields.Monetary(string='Total Discount', store=True, readonly=True,
     #                                  compute='_amount_all', tracking=True)
 
@@ -45,6 +46,9 @@ class PurchaseOrder(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
+    exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id')
+    cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id')
+    is_passersby = fields.Boolean(default=False)
 
     def action_confirm(self):
         for record in self:
@@ -112,6 +116,13 @@ class PurchaseOrder(models.Model):
     #         })
     #     return result
 
+    @api.onchange('partner_id')
+    def onchange_partner(self):
+        if self.partner_id.is_passersby:
+            self.is_passersby = True
+        else:
+            self.is_passersby = False
+
     @api.onchange('company_id', 'currency_id')
     def onchange_currency_id(self):
         if self.company_id or self.currency_id:
@@ -121,6 +132,24 @@ class PurchaseOrder(models.Model):
                 self.active_manual_currency_rate = False
         else:
             self.active_manual_currency_rate = False
+
+    @api.onchange('order_line')
+    def onchange_order_line(self):
+        self.exchange_rate_line = [(5, 0)]
+        self.cost_line = [(5, 0)]
+        for line in self.order_line:
+            self.env['purchase.order.exchange.rate'].create({
+                'product_id': line.product_id.id,
+                'name': line.name,
+                'usd_amount': line.price_subtotal,
+                'purchase_order_id': self.id
+            })
+            self.env['purchase.order.cost.line'].create({
+                'product_id': line.product_id.id,
+                'name': line.name,
+                'usd_amount': line.price_subtotal,
+                'purchase_order_id': self.id
+            })
 
     @api.onchange('purchase_type')
     def onchange_purchase_type(self):
@@ -201,6 +230,7 @@ class PurchaseOrder(models.Model):
             ref_invoice_vals.update({
                 'ref': ', '.join(refs)[:2000],
                 'invoice_origin': ', '.join(origins),
+                'is_check': True,
                 'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
             })
             new_invoice_vals_list.append(ref_invoice_vals)
@@ -218,9 +248,9 @@ class PurchaseOrder(models.Model):
 
         return self.action_view_invoice(moves)
 
+
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
-
 
     @api.depends('product_qty', 'price_unit', 'taxes_id', 'free_good', 'discount', 'discount_percent')
     def _compute_amount(self):
@@ -248,6 +278,7 @@ class PurchaseOrderLine(models.Model):
     discount = fields.Float(string='Discount (Amount)', digits='Discount', default=0.0)
     free_good = fields.Boolean(string='Free Goods')
     warehouses_id = fields.Many2one('stock.warehouse', string="Whs")
+    location_id = fields.Many2one('stock.location', string="Địa điểm kho")
     production_id = fields.Many2one('forlife.production', string='Production Order Code')
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     request_line_id = fields.Many2one('purchase.request', string='Purchase Request')
@@ -255,6 +286,8 @@ class PurchaseOrderLine(models.Model):
     vendor_price = fields.Float(string='Vendor Price')
     readonly_discount = fields.Boolean(default=False)
     readonly_discount_percent = fields.Boolean(default=False)
+    billed = fields.Float(string='Billed')
+    request_purchases = fields.Char(string='Purchases', readonly=1)
 
     _sql_constraints = [
         (
@@ -426,10 +459,11 @@ class PurchaseOrderLine(models.Model):
         self.product_uom = self.product_id.uom_id
         self.purchase_uom = self.product_id.uom_id
 
-    @api.constrains('exchange_quantity','purchase_quantity')
+    @api.constrains('exchange_quantity', 'purchase_quantity')
     def _constrains_exchange_quantity_and_purchase_quantity(self):
         for rec in self:
             if rec.exchange_quantity < 0:
                 raise ValidationError(_('The number of exchanges is not filled with negative numbers !!'))
             elif rec.purchase_quantity < 0:
                 raise ValidationError(_('Purchase quantity cannot be negative !!'))
+
