@@ -75,6 +75,10 @@
                     <td>Inventory</td>
                     <td>Stock in time range by branch/area</td>
                 </tr>
+                <tr>
+                    <td>Inventory</td>
+                    <td>Report stock by product</td>
+                </tr>
             </tbody>
         </table>
     </t>
