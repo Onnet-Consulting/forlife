@@ -16,7 +16,6 @@
         'security/purchase_security.xml',
         'wizards/reject_purchase_request.xml',
         'wizards/cancel_purchase_request.xml',
-        'wizards/reject_asset_transfer.xml',
         'data/mail_template.xml',
         'data/base_automation.xml',
         'report/purchase_request_report_template.xml',
@@ -26,6 +25,7 @@
         'views/product_supplier.xml',
         'views/production_order_view.xml',
         'views/product_product_view.xml',
+        'views/purchase_material.xml',
         'views/menus.xml',
         'views/purchase_views.xml'
     ],

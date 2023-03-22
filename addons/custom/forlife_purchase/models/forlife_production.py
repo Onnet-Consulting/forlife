@@ -10,7 +10,10 @@ class ForlifeProduction(models.Model):
 
     # name = fields.Char("Name")
     code = fields.Char("Production Order Code")
+    name = fields.Char("Production Order Name")
+    user_id = fields.Many2one('res.users', string="User Created", default=lambda self: self.env.user)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
+    create_date = fields.Date(string="Create Date", default=fields.Date.context_today)
     forlife_production_finished_product_ids = fields.One2many('forlife.production.finished.product',
                                                               'forlife_production_id', string='Finished Products')
     forlife_production_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id',
@@ -32,7 +35,12 @@ class ForlifeProductionFinishedProduct(models.Model):
 
     forlife_production_id = fields.Many2one('forlife.production', ondelete='cascade')
     product_id = fields.Many2one('product.product')
-    description = fields.Char()
+    uom_id = fields.Many2one('uom.uom', string='Unit')
+    produce_qty = fields.Float(tring='Produce Quantity')
+    unit_price = fields.Float(string='Price')
+    stock_qty = fields.Float(string='Stock Quantity')
+    remaining_qty = fields.Float(string='Remaining Quantity')
+    description = fields.Char(String='Description')
     forlife_bom_ids = fields.Many2many('forlife.bom', string='Declare BOM')
 
 

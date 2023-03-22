@@ -12,7 +12,6 @@
     ],
     "data": [
         'views/invoice_view.xml',
-        'views/invoice_tscd_view.xml',
         'views/menus.xml',
     ],
     "assets": {

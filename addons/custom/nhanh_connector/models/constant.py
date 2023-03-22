@@ -41,7 +41,7 @@ def get_nhanh_configs(self):
     '''
     Get nhanh config from ir_config_parameter table
     '''
-    params = self.env['ir.config_parameter'].search([('key', 'ilike', 'nhanh_connector.nhanh_')]).read(['key', 'value'])
+    params = self.env['ir.config_parameter'].sudo().search([('key', 'ilike', 'nhanh_connector.nhanh_')]).read(['key', 'value'])
     nhanh_configs = {}
     for param in params:
         nhanh_configs[param['key']] = param['value']

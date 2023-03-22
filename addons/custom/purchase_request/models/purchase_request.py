@@ -34,7 +34,7 @@ class PurchaseRequest(models.Model):
                    ('close', 'Close'),
                    ], tracking=True)
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company.id)
-    approval_logs_ids = fields.One2many('approval.logs', 'purchase_request_id')
+    # approval_logs_ids = fields.One2many('approval.logs', 'purchase_request_id')
 
 
 
@@ -69,16 +69,16 @@ class PurchaseRequest(models.Model):
         #     if u.id != self._uid:
         #         template.write({'email_to': u.id})
         # template.send_mail(self.id, force_send=True)
-        for rec in self:
-            rec.write({
-                'approval_logs_ids': [(0, 0, {
-                    'res_model': rec._name,
-                    'request_approved_date': date.today(),
-                    'approval_user_id': rec.env.user.id,
-                    'note': 'Approve',
-                    'state': 'approved',
-                })],
-            })
+        # for rec in self:
+        #     rec.write({
+        #         'approval_logs_ids': [(0, 0, {
+        #             'res_model': rec._name,
+        #             'request_approved_date': date.today(),
+        #             'approval_user_id': rec.env.user.id,
+        #             'note': 'Approve',
+        #             'state': 'approved',
+        #         })],
+        #     })
         self.write({'state': 'approved'})
 
     def close_action(self):
@@ -93,7 +93,7 @@ class PurchaseRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Download Template for Purchase Request'),
-            'template': '/purchase_request/static/src/xlsx/template_pr.xlsx?download=true'
+            'template': '/purchase_request/static/src/xlsx/template_PR.xlsx?download=true'
         }]
 
     def orders_smart_button(self):
@@ -146,7 +146,7 @@ class PurchaseRequest(models.Model):
         return super(PurchaseRequest, self).unlink()
 
     def create_purchase_orders(self):
-        order_lines_ids = self.filtered(lambda r: r.state != 'close').order_lines.ids
+        order_lines_ids = self.filtered(lambda r: r.state != 'close').order_lines.filtered(lambda r: r.is_close == False).ids
         order_lines_groups = self.env['purchase.request.line'].read_group(domain=[('id', 'in', order_lines_ids)],
                                     fields=['product_id', 'vendor_code', 'product_type'],
                                     groupby=['vendor_code', 'product_type'], lazy=False)
@@ -161,8 +161,10 @@ class PurchaseRequest(models.Model):
             vendor_id = vendor_code[0] if vendor_code else False
             purchase_request_lines = self.env['purchase.request.line'].search(domain)
             po_line_data = []
+            po_ex_line_data = []
+            po_cost_line_data = []
             for line in purchase_request_lines:
-                if line.is_no_more_quantity:
+                if line.is_no_more_quantity or line.is_close:
                     continue
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
@@ -172,6 +174,17 @@ class PurchaseRequest(models.Model):
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                     # 'product_uom': line.purchase_uom.id,
                     'purchase_uom': line.purchase_uom.id,
+                    'request_purchases': self.name,
+                }))
+                po_ex_line_data.append((0, 0, {
+                    'purchase_order_id': line.id,
+                    'product_id': line.product_id.id,
+                    'name': line.product_id.name,
+                }))
+                po_cost_line_data.append((0, 0, {
+                    'purchase_order_id': line.id,
+                    'product_id': line.product_id.id,
+                    'name': line.product_id.name,
                 }))
             if po_line_data:
                 po_data = {
@@ -179,10 +192,12 @@ class PurchaseRequest(models.Model):
                     'purchase_type': product_type,
                     'purchase_request_ids': [(6, 0, purchase_request_lines.mapped('request_id').ids)],
                     'order_line': po_line_data,
+                    'exchange_rate_line': po_ex_line_data,
+                    'cost_line': po_cost_line_data,
                 }
                 purchase_order |= purchase_order.create(po_data)
         if not purchase_order:
-            raise ValidationError('Sản phẩm đã được lấy hết!')
+            raise ValidationError('Sản phẩm đã được lấy hết hoặc đã đóng!')
 
         return {
             'name': 'Purchase Orders',
@@ -211,6 +226,7 @@ class PurchaseRequestLine(models.Model):
     _name = "purchase.request.line"
     _description = "Purchase Request Line"
 
+    is_close = fields.Boolean('Đóng dữ liệu')
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     asset_description = fields.Char(string="Asset description")
@@ -222,6 +238,7 @@ class PurchaseRequestLine(models.Model):
     request_date = fields.Date(string='Request date')
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure')
     purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase')
+    product_uom = fields.Many2one('uom.uom', string='UOM Product', related='product_id.uom_id')
     exchange_quantity = fields.Float('Exchange Quantity')
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
     order_quantity = fields.Integer('Quantity Order', compute='_compute_order_quantity', store=1)
@@ -257,7 +274,7 @@ class PurchaseRequestLine(models.Model):
     def _constraint_unique(self):
         for rec in self:
             if rec.exchange_quantity <= 0:
-                raise ValidationError('Exchange quantity must be greater than 0 !')
+                raise ValidationError('Exchange quantity must be greater than 0!')
 
 
 class ApprovalLogs(models.Model):
