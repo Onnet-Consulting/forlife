@@ -52,8 +52,8 @@ class SaleOrder(models.Model):
               f"&businessId={constant.get_params(self)['businessId']}&accessToken={constant.get_params(self)['accessToken']}" \
               f"&data={query_params['data']}"
         # Get all orders from previous day to today from Nhanh.vn
-        res_server = requests.post(url)
         try:
+            res_server = requests.post(url)
             res = res_server.json()
         except Exception as ex:
             _logger.info(f'Get orders from NhanhVn error {ex}')
@@ -68,40 +68,46 @@ class SaleOrder(models.Model):
             nhanh_order_keys = list(nhanh_orders.keys())
             _logger.info(f'List order id from NhanhVN: {nhanh_order_keys}')
             # Get all odoo orders which don't exist in nhanhvn
-            odoo_orders = order_model.sudo().search([('id', 'not in', nhanh_order_keys)]).read(
+            odoo_orders = order_model.sudo().search([('nhanh_id', 'in', nhanh_order_keys)]).read(
                 ['nhanh_id'])
             odoo_order_ids = [str(x['nhanh_id']) for x in odoo_orders if x['nhanh_id'] != 0]
             # odoo_order_ids = ['217639118', '217639271', '217652613', '218324611']
             _logger.info(f'List order id from Odoo: {odoo_order_ids}')
             # Delete in nhanh_orders if it existed in odoo_orders
-            list(map(nhanh_orders.pop, odoo_order_ids))
+            for item in odoo_order_ids:
+                if item in nhanh_orders:
+                    nhanh_orders.pop(item)
+            list(nhanh_orders)
             # _logger.info(nhanh_orders)
             for k, v in nhanh_orders.items():
                 # Add customer if not existed
-                partner = partner_model.sudo().search([('phone', '=', v['customerMobile'])])
-                _logger.info("Partner is ", partner)
+                partner = partner_model.sudo().search([('code_current_customers', '=', 'code_current_customers_nhanhvn')], limit=1)
                 if not partner:
                     partner_value = {
-                        'phone': v['customerMobile'],
-                        'name': v['customerName'],
-                        'email': v['customerEmail'],
-                        'contact_address_complete': v['customerAddress'],
+                        'code_current_customers': 'code_current_customers_nhanhvn',
+                        'name': 'Current customers Nhanh.Vn',
                     }
                     partner = partner_model.sudo().create(partner_value)
                 order_line = []
                 uom = self.env.ref('uom.product_uom_unit').id
+
                 for item in v['products']:
-                    product = self.env['product.template'].search([('nhanh_id', '=', item.get('productId'))])
+                    product = self.search_product(('nhanh_id', '=', item.get('productId')))
+                    if not product and item.get('productBarcode'):
+                        product = self.search_product(('barcode', '=', item.get('productBarcode')))
+                    if not product and item.get('productCode'):
+                        product = self.search_product(('code_product', '=', item.get('productCode')))
                     if not product:
                          product = self.env['product.template'].create({
+                            'detailed_type': 'asset',
                             'nhanh_id': item.get('productId'),
                             'check_data_odoo': False,
                             'name': item.get('productName'),
                             'barcode': item.get('productBarcode'),
                             'code_product': item.get('productCode'),
                             'list_price': item.get('price'),
-                             'uom_id': uom,
-                             'weight': item.get('shippingWeight')
+                            'uom_id': uom,
+                            'weight': item.get('shippingWeight', 0),
 
                         })
                     product_product = self.env['product.product'].search([('product_tmpl_id', '=', product.id)], limit=1)
@@ -129,6 +135,9 @@ class SaleOrder(models.Model):
                     'nhanh_sale_channel_id': v['saleChannel'],
                     'source_record': True,
                     'state': status,
+                    'code_coupon': v['couponCode'],
+                    'name_customer': v['customerName'],
+                    'note': v['privateDescription'],
                     'order_line': order_line
                 }
                 order_model.sudo().create(value)
@@ -155,9 +164,9 @@ class SaleOrder(models.Model):
         list_number_phone = list(self.env['res.partner'].search([]).mapped('phone'))
         url = self.get_link_nhanh('customer', 'search', query_params['data'])
         if url:
-            res_server = requests.post(url)
             status_post = 1
             try:
+                res_server = requests.post(url)
                 res = res_server.json()
             except Exception as ex:
                 status_post = 0
@@ -171,15 +180,27 @@ class SaleOrder(models.Model):
                     for item in res.get('data').get('customers'):
                         if res.get('data').get('customers').get(item).get('mobile') not in list_number_phone:
                             value_data = res.get('data').get('customers').get(item)
+
                             self.env['res.partner'].create({
                                 'source_record': True,
                                 'name': value_data.get('name'),
-                                'phone': value_data.get('mobile')
+                                'phone': value_data.get('mobile'),
+                                'email': value_data.get('email'),
+                                'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get('gender') == '2' else False,
+                                'contact_address_complete': value_data.get('address'),
+                                'street': value_data.get('address'),
+                                'vat': value_data.get('taxCode'),
+                                'date_of_birth': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else False,
+                                'type_customer': 'retail_customers' if value_data.get(
+                                    'type') == 1 else 'wholesalers' if value_data.get(
+                                    'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
                             })
         ## End
 
     @api.model
     def start_sync_product_from_nhanh(self):
+        # Cập nhật danh mục trước khi tạo product
+        self.data_product_category_nhanh()
         ## Danh sách sản phẩm
         _logger.info("----------------Start Sync orders from NhanhVn --------------------")
 
@@ -210,18 +231,28 @@ class SaleOrder(models.Model):
             else:
                 for item in res.get('data').get('products'):
                     value_data = res.get('data').get('products').get(item)
+                    category = False
                     if value_data and value_data.get('code'):
-                        product = self.env['product.template'].search([('code_product', '=', res.get('data').get('products').get(item).get('code'))])
+                        if value_data.get('categoryId'):
+                            category = self.env['product.category'].search([('nhanh_product_category_id', '=', value_data.get('categoryId'))])
+                        product = self.search_product(('nhanh_id', '=', value_data.get('idNhanh')))
+                        if not product and res.get('data').get('products').get(item).get('barcode'):
+                           product = self.search_product(('barcode', '=', value_data.get('barcode')))
+                        if not product and value_data.get('code'):
+                           product = self.search_product(('code_product', '=', value_data.get('code')))
                         if not product:
-                            value_data = res.get('data').get('products').get(item)
-                            self.env['product.template'].create({
+                            dic_data_product = {
+                                'nhanh_id': value_data.get('idNhanh'),
                                 'check_data_odoo': False,
                                 'name': value_data.get('name'),
                                 'barcode': value_data.get('barcode'),
                                 'code_product': value_data.get('code'),
                                 'list_price': value_data.get('price'),
-                                'detailed_type': 'asset'
-                            })
+                                'detailed_type': 'asset',
+                            }
+                            if category:
+                                dic_data_product.update({'categ_id': category.id})
+                            self.env['product.template'].create(dic_data_product)
                     else:
                         _logger.info(f'Get orders from NhanhVn error')
         ## End
@@ -288,3 +319,6 @@ class SaleOrder(models.Model):
               f"&businessId={constant.get_params(self)['businessId']}&accessToken={constant.get_params(self)['accessToken']}" \
               f"&data={data}"
         return url
+
+    def search_product(self, domain_product):
+        return self.env['product.template'].search([domain_product])

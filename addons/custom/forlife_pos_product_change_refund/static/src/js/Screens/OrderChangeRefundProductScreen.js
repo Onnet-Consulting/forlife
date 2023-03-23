@@ -124,6 +124,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 this._setOrder(clickedOrder);
         }
         _onCreateNewOrder() {
+            this.trigger('close-temp-screen');
             this.env.pos.add_new_order();
             this.showScreen('ProductScreen');
         }
@@ -615,10 +616,6 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 this.props.resolve({ confirmed: false, payload: false });
                 this.trigger('close-temp-screen');
             }
-        }
-        createNewOrder() {
-            this.env.pos.add_new_order();
-            this.showScreen('point_of_sale.ProductScreen');
         }
     }
     OrderChangeRefundProductScreen.template = 'OrderChangeRefundProductScreen';

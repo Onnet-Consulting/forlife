@@ -14,16 +14,18 @@ class StockTransfer(models.Model):
     name = fields.code = fields.Char(string="Reference", default="New", copy=False)
     location_id = fields.Many2one('stock.location', string="Whs From", required=1)
     location_dest_id = fields.Many2one('stock.location', string="Whs To", required=1)
+    work_from = fields.Many2one('forlife.production', string="LSX From")
+    work_to = fields.Many2one('forlife.production',string="LSX To")
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
     employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id, required=1)
     reference_document_id = fields.Many2one('stock.transfer.request', string="Transfer Request")
     production_order_id = fields.Many2one('production.order', string="Production Order")
-    request_date = fields.Datetime(string="Request Date", default=datetime.now(), required=1)
+    create_date = fields.Datetime(string='Create Date', default=lambda self: fields.datetime.now())
     document_type = fields.Selection(
         string="Type",
         selection=[('same_branch', 'Same Branch'),
                    ('difference_branch', 'Difference Branch'),
-                   ('excess_arising_lack_arise', 'Excess Arising/Lack Arise')], default='same_branch', required=1)
+                   ('excess_arising_lack_arise', 'Excess Arising/Lack Arise')], default='same_branch', required=1, compute='_compute_document_type')
     method_transfer = fields.Selection(
         string="Method",
         selection=[('transfer_between_warehouse', 'Transfer Between Warehouse'),
@@ -40,7 +42,21 @@ class StockTransfer(models.Model):
                    ('cancel', 'Cancel')], default='draft')
     is_diff_transfer = fields.Boolean(string="Diff Transfer", default=False)
     stock_transfer_line = fields.One2many('stock.transfer.line', 'stock_transfer_id', copy=True)
-    approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
+    total_package = fields.Float(string='Total Package (Number)')
+    total_weight = fields.Float(string='Total Weight (Kg)')
+    # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
+
+    @api.onchange('work_from')
+    def _onchange_work_from(self):
+        self.stock_transfer_line.write({
+            'work_from': self.work_from.id,
+        })
+
+    @api.onchange('work_to')
+    def _onchange_work_to(self):
+        self.stock_transfer_line.write({
+            'work_to': self.work_to.id,
+        })
 
     def action_draft(self):
         for record in self:
@@ -51,112 +67,221 @@ class StockTransfer(models.Model):
             record.write({'state': 'wait_approve'})
 
     def action_out_approve(self):
-        for record in self:
-            record.write({'state': 'out_approve'})
+        self.ensure_one()  # vì cần bật popup khi người dùng chọn không đủ số lượng
+        if any(line.qty_out == 0 for line in self.stock_transfer_line):
+            view = self.env.ref('forlife_stock.stock_transfer_popup_out_confirm_view_form')
+            return {
+                'name': 'Điều chuyển ngay?',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'stock.transfer.popup.confirm',
+                'views': [(view.id, 'form')],
+                'view_id': view.id,
+                'target': 'new',
+                'context': dict(self.env.context, default_stock_transfer_id=self.id),
+            }
+        self._action_out_approve()
+
+    def _action_out_approve(self):
+        self.ensure_one()
+        self._validate_product_quantity()
+        stock_transfer_line_less = self.stock_transfer_line.filtered(lambda r: r.qty_out < r.qty_plan)
+        if stock_transfer_line_less:
+            self._out_approve_less_quantity(stock_transfer_line_less)
+        self.write({'state': 'out_approve'})
+
+    def _validate_product_quantity(self):
+        self.ensure_one()
+        location = self.location_id
+        for line in self.stock_transfer_line:
+            line.validate_product_quantity(location)
+
+    def _out_approve_with_confirm(self):
+        self.ensure_one()
+        for line in self.stock_transfer_line.filtered(lambda r: r.qty_out == 0):
+            line.write({
+                'qty_out': line.qty_plan
+            })
+        self._action_out_approve()
+
+    def _out_approve_less_quantity(self, stock_transfer_line_less):
+        self.ensure_one()
+        for line in stock_transfer_line_less:
+            self.env['stock.transfer'].create({
+                'employee_id': self.employee_id.id,
+                'document_type': 'excess_arising_lack_arise',
+                'stock_request_id': self.stock_request_id.id,
+                'is_diff_transfer': True,
+                'location_id': self.location_id.id,
+                'location_dest_id': self.location_dest_id.id,
+                'work_from': self.work_from.id,
+                'work_to': self.work_to.id,
+                'state': 'approved',
+                'stock_transfer_line': [(0, 0, {
+                    'product_id': line.product_id.id,
+                    'uom_id': line.uom_id.id,
+                    'qty_plan': line.qty_plan - line.qty_out,
+                    'qty_out': line.qty_plan - line.qty_out,
+                    'work_from': line.work_from.id,
+                    'work_to': line.work_to.id,
+                })]
+            })
+            line.write({
+                'qty_plan': line.qty_out
+            })
+
+    def _in_approve_with_confirm(self):
+        self.ensure_one()
+        for line in self.stock_transfer_line.filtered(lambda r: r.qty_in == 0):
+            line.write({
+                'qty_in': line.qty_out
+            })
+        self._action_in_approve()
 
     def action_in_approve(self):
-        for record in self:
-            record.write({'state': 'in_approve'})
-        self.create_stock_picking()
+        self.ensure_one()  # vì cần bật popup khi người dùng chọn không đủ số lượng
+        if any(line.qty_in == 0 for line in self.stock_transfer_line):
+            view = self.env.ref('forlife_stock.stock_transfer_popup_in_confirm_view_form')
+            return {
+                'name': 'Điều chuyển ngay?',
+                'type': 'ir.actions.act_window',
+                'view_mode': 'form',
+                'res_model': 'stock.transfer.popup.confirm',
+                'views': [(view.id, 'form')],
+                'view_id': view.id,
+                'target': 'new',
+                'context': dict(self.env.context, default_stock_transfer_id=self.id),
+            }
+        self._action_in_approve()
 
-    def create_stock_picking(self):
-        for record in self:
-            location_id = record.location_id
-            location_warehouse_id = location_id.warehouse_id.id
-            location_dest_id = record.location_dest_id
-            stock_picking_type = self.env.ref('stock.picking_type_internal')
-            data = []
-            diff_transfer_data = []
-            for line in record.stock_transfer_line:
-                product = line.product_id
-                product_quantity = min(line.qty_in, line.qty_out)
-                result = product.with_context(default_detailed_type='product', location=location_id.id)._compute_quantities_dict(
-                    self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'),
-                    self._context.get('from_date'), self._context.get('to_date'))
-                qty_available = result[product.id].get('qty_available', 0)
-                if qty_available < product_quantity:
-                    raise ValidationError('Số lượng tồn kho không đủ để điều chuyển!')
-                data.append((0, 0, {
+    def _action_in_approve(self):
+        self.ensure_one()
+        self.write({'state': 'done'})
+        return self._action_in_approve_in_process()
+
+    def _create_stock_picking(self, data, location_id, location_dest_id, stock_picking_type):
+        for data_line in data:
+            data_line[2].update({'location_id': location_id.id, 'location_dest_id': location_dest_id.id})
+        stock_picking = self.env['stock.picking'].create({
+            'transfer_id': self.id,
+            'picking_type_id': stock_picking_type.id,
+            'location_id': location_id.id,
+            'location_dest_id': location_dest_id.id,
+            'move_ids_without_package': data,
+        })
+        stock_picking.button_validate()
+
+    def _create_stock_picking_with_ho(self, data, location_id, location_dest_id, stock_picking_type):
+        location_ho = self.env.ref('forlife_stock.ho_location_stock')
+        to_data = data
+        for data_line in to_data:
+            data_line[2].update({'location_id': location_id.id, 'location_dest_id': location_ho.id})
+        stock_picking_to_ho = self.env['stock.picking'].create({
+            'transfer_id': self.id,
+            'picking_type_id': stock_picking_type.id,
+            'location_id': location_id.id,
+            'location_dest_id': location_ho.id,
+            'move_ids_without_package': to_data,
+        })
+        stock_picking_to_ho.button_validate()
+
+        from_data = data
+        for data_line in from_data:
+            data_line[2].update({'location_id': location_ho.id, 'location_dest_id': location_dest_id.id})
+        stock_picking_from_ho = self.env['stock.picking'].create({
+            'transfer_id': self.id,
+            'picking_type_id': stock_picking_type.id,
+            'location_id': location_ho.id,
+            'location_dest_id': location_dest_id.id,
+            'move_ids_without_package': from_data,
+        })
+        stock_picking_from_ho.button_validate()
+
+    def _action_in_approve_in_process(self):
+        location_id = self.location_id
+        location_dest_id = self.location_dest_id
+        stock_picking_type = self.env.ref('stock.picking_type_internal')
+        data = []
+        diff_transfer = self.env['stock.transfer']
+        for line in self.stock_transfer_line:
+            product = line.product_id
+            product_quantity = min(line.qty_in, line.qty_out)
+            data.append((0, 0, {
+                'product_id': product.id,
+                'name': product.display_name,
+                'date': datetime.now(),
+                'product_uom': line.uom_id.id,
+                'product_uom_qty': product_quantity,
+                'quantity_done': product_quantity,
+            }))
+            if line.qty_in > line.qty_out:
+                diff_transfer_data = [(0, 0, {
                     'product_id': product.id,
-                    'name': product.display_name,
-                    'date': datetime.now(),
-                    'product_uom': line.uom_id.id,
-                    'product_uom_qty': product_quantity,
-                    'quantity_done': product_quantity,
-                }))
-                if line.qty_in > line.qty_out:
-                    diff_transfer_data.append((0, 0, {
-                        'product_id': product.id,
-                        'uom_id': line.uom_id.id,
-                        'qty_plan': line.qty_in - line.qty_out,
-                        'qty_out': 0,
-                        'qty_in': line.qty_in - line.qty_out,
-                    }))
-                elif line.qty_in < line.qty_out:
-                    diff_transfer_data.append((0, 0, {
-                        'product_id': product.id,
-                        'uom_id': line.uom_id.id,
-                        'qty_plan': line.qty_out - line.qty_in,
-                        'qty_out': line.qty_out - line.qty_in,
-                        'qty_in': 0,
-                    }))
-            if location_id.warehouse_id.state_id.id == location_dest_id.warehouse_id.state_id.id:
-                for data_line in data:
-                    data_line[2].update({'location_id': location_id.id, 'location_dest_id': location_dest_id.id})
-                stock_picking = self.env['stock.picking'].create({
-                    'transfer_id': record.id,
-                    'picking_type_id': stock_picking_type.id,
-                    'location_id': location_id.id,
-                    'location_dest_id': location_dest_id.id,
-                    'move_ids_without_package': data,
+                    'uom_id': line.uom_id.id,
+                    'qty_plan': abs(line.qty_plan - product_quantity),
+                    'qty_in': line.qty_in - line.qty_out,
+                    'qty_out': line.qty_in - line.qty_out,
+                })]
+                diff_transfer |= self._create_diff_transfer(diff_transfer_data, state='in_approve')
+                line.write({
+                    'qty_plan': product_quantity,
+                    'qty_out': product_quantity,
+                    'qty_in': product_quantity,
                 })
-                stock_picking.button_validate()
-            else:
-                location_ho = self.env.ref('forlife_stock.ho_location_stock')
-                to_data = data
-                for data_line in to_data:
-                    data_line[2].update({'location_id': location_id.id, 'location_dest_id': location_ho.id})
-                stock_picking_to_ho = self.env['stock.picking'].create({
-                    'transfer_id': record.id,
-                    'picking_type_id': stock_picking_type.id,
-                    'location_id': location_id.id,
-                    'location_dest_id': location_ho.id,
-                    'move_ids_without_package': to_data,
+            elif line.qty_in < line.qty_out:
+                diff_transfer_data = [(0, 0, {
+                    'product_id': product.id,
+                    'uom_id': line.uom_id.id,
+                    'qty_plan': abs(line.qty_plan - product_quantity),
+                    'qty_in': line.qty_out - line.qty_in,
+                    'qty_out': line.qty_out - line.qty_in,
+                })]
+                diff_transfer |= self._create_diff_transfer(diff_transfer_data, state='out_approve')
+                line.write({
+                    'qty_plan': product_quantity,
+                    'qty_out': product_quantity,
+                    'qty_in': product_quantity,
                 })
-                stock_picking_to_ho.button_validate()
+        if location_id.warehouse_id.state_id.id == location_dest_id.warehouse_id.state_id.id:
+            self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type)
+        else:
+            self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type)
+        if diff_transfer:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'type': 'warning',
+                    'message': 'Có phiếu dở dang đã được tạo cần xác nhận!',
+                    'next': {'type': 'ir.actions.act_window_close'},
+                }
+            }
 
-                from_data = data
-                for data_line in from_data:
-                    data_line[2].update({'location_id': location_ho.id, 'location_dest_id': location_dest_id.id})
-                stock_picking_from_ho = self.env['stock.picking'].create({
-                    'transfer_id': record.id,
-                    'picking_type_id': stock_picking_type.id,
-                    'location_id': location_ho.id,
-                    'location_dest_id': location_dest_id.id,
-                    'move_ids_without_package': from_data,
-                })
-                stock_picking_from_ho.button_validate()
-            if diff_transfer_data:
-                self.env['stock.transfer'].create({
-                    'employee_id': record.employee_id.id,
-                    'document_type': 'excess_arising_lack_arise',
-                    'stock_request_id': record.stock_request_id.id,
-                    'is_diff_transfer': True,
-                    'location_id': record.location_id.id,
-                    'location_dest_id': record.location_dest_id.id,
-                    'stock_transfer_line': diff_transfer_data,
-                    'production_order_id': record.production_order_id.id,
-                })
+    def _create_diff_transfer(self, data, state='draft'):
+        self.ensure_one()
+        return self.env['stock.transfer'].create({
+            'employee_id': self.employee_id.id,
+            'document_type': 'excess_arising_lack_arise',
+            'stock_request_id': self.stock_request_id.id,
+            'is_diff_transfer': True,
+            'location_id': self.location_id.id,
+            'location_dest_id': self.location_dest_id.id,
+            'work_from': self.work_from.id,
+            'work_to': self.work_to.id,
+            'stock_transfer_line': data,
+            'production_order_id': self.production_order_id.id,
+            'state': state,
+        })
 
     def action_approve(self):
         for record in self:
             record.write({'state': 'approved',
-                         'approval_logs_ids': [(0, 0, {
-                             'request_approved_date': date.today(),
-                             'approval_user_id': record.env.user.id,
-                             'note': 'Approved',
-                             'state': 'approved',
-                         })],
+                         # 'approval_logs_ids': [(0, 0, {
+                         #     'request_approved_date': date.today(),
+                         #     'approval_user_id': record.env.user.id,
+                         #     'note': 'Approved',
+                         #     'state': 'approved',
+                         # })],
             })
 
     def action_reject(self):
@@ -170,12 +295,12 @@ class StockTransfer(models.Model):
     def action_done(self):
         for record in self:
             record.write({'state': 'done',
-                         'approval_logs_ids': [(0, 0, {
-                             'request_approved_date': date.today(),
-                             'approval_user_id': record.env.user.id,
-                             'note': 'Done',
-                             'state': 'done',
-                         })],
+                         # 'approval_logs_ids': [(0, 0, {
+                         #     'request_approved_date': date.today(),
+                         #     'approval_user_id': record.env.user.id,
+                         #     'note': 'Done',
+                         #     'state': 'done',
+                         # })],
             })
 
     @api.model
@@ -189,6 +314,14 @@ class StockTransfer(models.Model):
             raise ValidationError("You only delete a record in draft or cancel status !!")
         return super(StockTransfer, self).unlink()
 
+    @api.depends('location_id', 'location_dest_id')
+    def _compute_document_type(self):
+        for rec in self:
+            if rec.location_id.id == rec.location_dest_id.id:
+                rec.document_type = 'same_branch'
+            else:
+                rec.document_type = 'difference_branch'
+
 
 class StockTransferLine(models.Model):
     _name = 'stock.transfer.line'
@@ -196,13 +329,15 @@ class StockTransferLine(models.Model):
 
     product_id = fields.Many2one('product.product', string="Product", required=True)
     uom_id = fields.Many2one('uom.uom', string='Unit', store=True)
-    qty_plan = fields.Integer(default=0, string='Quantity Plan')
-    qty_out = fields.Integer(default=0, string='Quantity Out')
-    qty_in = fields.Integer(default=0, string='Quantity In')
+    qty_plan = fields.Integer(string='Quantity Plan')
+    qty_out = fields.Integer(string='Quantity Out')
+    qty_in = fields.Integer(string='Quantity In')
     quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
 
     stock_transfer_id = fields.Many2one('stock.transfer', string="Stock Transfer")
+    work_from = fields.Many2one('forlife.production', string="LSX From")
+    work_to = fields.Many2one('forlife.production', string="LSX To")
     product_str_id = fields.Many2one('transfer.request.line')
     is_from_button = fields.Boolean(default=False)
     qty_plan_tsq = fields.Integer(default=0, string='Quantity Plan Tsq')
@@ -215,6 +350,8 @@ class StockTransferLine(models.Model):
     @api.constrains('qty_in', 'qty_out')
     def constrains_qty_in(self):
         for rec in self:
+            # if rec.qty_in == 0 or rec.qty_out == 0:
+            #     raise ValidationError(_('You have not re-entered the actual inventory quantity. If you continue, the system will automatically default to the approved quantity !!'))
             if rec.qty_in > rec.qty_plan:
                 raise ValidationError(_('The number of inputs is greater than or equal to the number of adjustments !!'))
             if rec.qty_out > rec.qty_plan:
@@ -231,6 +368,23 @@ class StockTransferLine(models.Model):
             if rec.is_from_button and (rec.qty_plan > rec.qty_plan_tsq):
                 raise ValidationError(
                     _('Quantity plan cannot be larger than the quantity plan of the ticket !!'))
+
+    def validate_product_quantity(self, location=False, is_diff_transfer=False):
+        self.ensure_one()
+        product = self.product_id
+        stock_transfer_line = self.sudo().search([('id', '!=', self.id), ('product_id', '=', product.id), ('stock_transfer_id.location_id', '=', location.id), ('stock_transfer_id.state', 'in', ['out_approve', 'in_approve'])])
+        product_quantity = self.qty_out + sum([line.qty_out for line in stock_transfer_line])
+        result = product.with_context(default_detailed_type='product',
+            location=location.id)._compute_quantities_dict(
+            self._context.get('lot_id'), self._context.get('owner_id'), self._context.get('package_id'),
+            self._context.get('from_date'), self._context.get('to_date'))
+        qty_available = result[product.id].get('qty_available', 0)
+        if qty_available < product_quantity:
+            if is_diff_transfer:
+                raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để tạo phiếu dở dang!' % product.name)
+            else:
+                raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để điều chuyển!' % product.name)
+
 
 class ApprovalLogsStock(models.Model):
     _name = 'approval.logs.stock'
@@ -260,3 +414,18 @@ class ApprovalLogsStock(models.Model):
                    ('done', 'Done'),
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel')])
+
+
+class StockTransferPopupConfirm(models.TransientModel):
+    _name = 'stock.transfer.popup.confirm'
+    _description = 'Stock Transfer Popup Confirm'
+
+    stock_transfer_id = fields.Many2one('stock.transfer')
+
+    def process_out(self):
+        self.ensure_one()
+        self.stock_transfer_id._out_approve_with_confirm()
+
+    def process_in(self):
+        self.ensure_one()
+        self.stock_transfer_id._in_approve_with_confirm()

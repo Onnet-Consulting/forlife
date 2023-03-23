@@ -4,3 +4,4 @@ from . import purchase_order
 from . import product_supplierinfo
 from . import purchase_res_partner
 from . import production_order
+from . import purchase_material

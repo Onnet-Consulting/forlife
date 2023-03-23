@@ -18,7 +18,9 @@
                 <field name="location_id"/>
                 <field name="location_dest_id"/>
                 <field name="is_diff_transfer"/>
-                <field name="request_date"/>
+                <field name="work_from"/>
+                <field name="work_to"/>
+                <field name="create_date"/>
                 <field name="state" widget="badge"/>
             </tree>
         </field>
@@ -55,74 +57,81 @@
                     <group>
                         <group>
                             <field name="employee_id" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
-                            <field name="document_type" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
-                            <field name="method_transfer" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                            <field name="document_type" invisible="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                            <field name="method_transfer" invisible="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                             <field name="location_id" domain="[('usage', '=', 'internal')]" string="Whs From" required="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                             <field name="location_dest_id" domain="[('usage', '=', 'internal')]" string="Whs To" required="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                         </group>
                         <group>
-                            <field name="request_date" options='{"date_format": "dd/MM/yyyy"}' attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                            <field name="create_date" options='{"date_format": "dd/MM/yyyy"}' attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
 <!--                            <field name="reference_document_id"/>-->
                             <field name="stock_request_id" string="Transfer Request" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                             <!-- <field name="production_order_id" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/> -->
+                            <field name="work_from" string="LSX From" required="0" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                            <field name="work_to" string="LSX To" required="0" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                            <field name="total_package" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                            <field name="total_weight" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Product">
-                            <field name="stock_transfer_line" widget="section_and_note_one2many" mode="tree" context="{'default_stock_request_id': stock_request_id}"
+                            <field name="stock_transfer_line" widget="section_and_note_one2many" mode="tree" context="{'default_stock_request_id': stock_request_id, 'default_work_from': work_from, 'default_work_to': work_to}"
                                    required="1">
-                                <tree editable="bottom">
+                                <tree editable="bottom" class="width-hh width-first">
                                     <field name="is_from_button" invisible="1"/>
-                                    <field name="product_id" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
-                                    <field name="qty_plan" attrs="{'readonly': [('parent.state', 'in', ('wait_approve'))]}"/>
-                                    <field name="uom_id" force_save="1" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
-                                    <field name="qty_in" attrs="{'readonly': [('parent.state', 'in', ('wait_approve'))]}"/>
+                                    <field name="product_str_id" invisible="1"/>
+                                    <field name="product_id"  domain="[('detailed_type', '!=', ('consu','asset','service'))]" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                                    <field name="qty_plan" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve'))]}"/>
+                                    <field name="uom_id" force_save="1" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                                     <field name="qty_out" attrs="{'readonly': [('parent.state', 'in', ('wait_approve'))]}"/>
+                                    <field name="qty_in" attrs="{'readonly': [('parent.state', 'in', ('wait_approve'))]}"/>
                                     <field name="quantity_remaining" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                                    <field name="work_from" required="0" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                                    <field name="work_to" required="0" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                                     <field name="stock_request_id" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                                 </tree>
                             </field>
                         </page>
                     </notebook>
-                    <notebook colspan="4">
-                        <page string="Approval Logs" name="approval_logs">
-                            <field name="approval_logs_ids" mode="kanban" readonly="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}">
-                                <kanban>
-                                    <field name="request_approved_date"/>
-                                    <field name="approval_user_id"/>
-                                    <field name="function"/>
-                                    <field name="note"/>
-                                    <field name="state"/>
-                                    <templates>
-                                        <t t-name="kanban-box">
-                                            <div t-attf-class="oe_kanban_card">
-                                                <div class="o_kanban_record_top">
-                                                    <div class="o_kanban_record_headings mt4 text-muted">
-                                                        <field name="state"/>
-                                                    </div>
-                                                    <div class="text-muted">
-                                                        <field name="request_approved_date"/>
-                                                    </div>
-                                                </div>
-                                                <div>
-                                                    <div class="approval_logs_main_text">
-                                                        <field name="function"/>
-                                                    </div>
-                                                    <div class="approval_logs_main_text">
-                                                        <field name="approval_user_id"/>
-                                                    </div>
-                                                    <div class="approval_logs_note">
-                                                        <div>Note:</div>
-                                                        <field name="note"/>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </t>
-                                    </templates>
-                                </kanban>
-                            </field>
-                        </page>
-                    </notebook>
+<!--                    <notebook colspan="4">-->
+<!--                        <page string="Approval Logs" name="approval_logs">-->
+<!--                            <field name="approval_logs_ids" mode="kanban" readonly="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}">-->
+<!--                                <kanban>-->
+<!--                                    <field name="request_approved_date"/>-->
+<!--                                    <field name="approval_user_id"/>-->
+<!--                                    <field name="function"/>-->
+<!--                                    <field name="note"/>-->
+<!--                                    <field name="state"/>-->
+<!--                                    <templates>-->
+<!--                                        <t t-name="kanban-box">-->
+<!--                                            <div t-attf-class="oe_kanban_card">-->
+<!--                                                <div class="o_kanban_record_top">-->
+<!--                                                    <div class="o_kanban_record_headings mt4 text-muted">-->
+<!--                                                        <field name="state"/>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="text-muted">-->
+<!--                                                        <field name="request_approved_date"/>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                                <div>-->
+<!--                                                    <div class="approval_logs_main_text">-->
+<!--                                                        <field name="function"/>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="approval_logs_main_text">-->
+<!--                                                        <field name="approval_user_id"/>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="approval_logs_note">-->
+<!--                                                        <div>Note:</div>-->
+<!--                                                        <field name="note"/>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </t>-->
+<!--                                    </templates>-->
+<!--                                </kanban>-->
+<!--                            </field>-->
+<!--                        </page>-->
+<!--                    </notebook>-->
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>
@@ -139,7 +148,7 @@
             <search string="Groups">
                 <field name="location_id"/>
                 <field name="location_dest_id"/>
-                <field name="request_date"/>
+                <field name="create_date"/>
                 <field name="state" widget="badge"/>
             </search>
         </field>
@@ -148,5 +157,36 @@
         <field name="name">Stock Transfer</field>
         <field name="res_model">stock.transfer</field>
         <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="stock_transfer_popup_out_confirm_view_form" model="ir.ui.view">
+        <field name="name">stock.transfer.popup.out.confirm.view.form</field>
+        <field name="model">stock.transfer.popup.confirm</field>
+        <field name="arch" type="xml">
+            <form>
+                <p>Bạn chưa nhập lại số lượng xuất kho thực tế. Nếu tiếp tục, hệ thống sẽ tự động mặc định bằng số lượng đã được duyệt.</p>
+                <field name="stock_transfer_id" invisible="1" force_save="1"/>
+
+                <footer>
+                    <button name="process_out" string="Apply" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="stock_transfer_popup_in_confirm_view_form" model="ir.ui.view">
+        <field name="name">stock.transfer.popup.in.confirm.view.form</field>
+        <field name="model">stock.transfer.popup.confirm</field>
+        <field name="arch" type="xml">
+            <form>
+                <p>Bạn chưa nhập lại số lượng nhập kho thực tế. Nếu tiếp tục, hệ thống sẽ tự động mặc định bằng số lượng xuất kho đã được duyệt.</p>
+                <field name="stock_transfer_id" invisible="1" force_save="1"/>
+
+                <footer>
+                    <button name="process_in" string="Apply" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
     </record>
 </odoo>
