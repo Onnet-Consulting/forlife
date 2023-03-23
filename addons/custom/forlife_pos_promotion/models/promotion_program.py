@@ -309,6 +309,6 @@ class PromotionProgram(models.Model):
                 (self.env.ref('forlife_pos_promotion.promotion_pricelist_item_tree_view').id, 'tree'),
             ],
             'type': 'ir.actions.act_window',
-            'domain': [('id', 'in', self.pricelist_item_ids.ids)],
+            'domain': [('program_id', '=', self.id)],
             'context': {'default_program_id': self.id}
         }
