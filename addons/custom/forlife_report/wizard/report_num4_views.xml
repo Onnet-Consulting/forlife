@@ -4,7 +4,7 @@
         <field name="name">form</field>
         <field name="model">report.num4</field>
         <field name="arch" type="xml">
-            <form string="Stock in time range by branch/area">
+            <form string="Report stock by product">
                 <sheet>
                     <group>
                         <group>

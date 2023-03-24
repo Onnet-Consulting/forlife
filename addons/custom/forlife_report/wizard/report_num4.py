@@ -2,13 +2,12 @@
 
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
-from odoo.exceptions import ValidationError
 
 TITLES = ['STT', 'Mã Hàng', 'Tên Hàng', 'Nhóm hàng', 'Màu', 'Size', 'Bộ sưu tập', 'Kết cấu', 'Dòng hàng', 'SL cuối kỳ']
 COLUMN_WIDTHS = [8, 20, 30, 20, 15, 10, 30, 20, 20, 20]
 
 
-class ReportNum3(models.TransientModel):
+class ReportNum4(models.TransientModel):
     _name = 'report.num4'
     _inherit = 'report.base'
     _description = 'Report stock by product'

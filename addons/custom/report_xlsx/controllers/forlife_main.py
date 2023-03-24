@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo.addons.web.controllers.main import content_disposition
-from odoo.http import Controller, request, route
+from odoo.http import Controller, request, route, content_disposition
 
 
 class ReportController(Controller):

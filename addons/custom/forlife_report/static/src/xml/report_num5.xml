@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum5Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum5MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum5MainTemplate">
+        <div style="color: red;">There are <t t-esc="widget.total_records"/>
+            records found</div>
+        <table class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                <t t-set="num" t-value="1"/>
+                <t t-foreach="options.data" t-as="line">
+                    <tr class="show-employee-detail" t-att-id="line.employee_id">
+                        <td><t t-esc="num"/></td>
+                        <td><t t-esc="line.employee_code"/></td>
+                        <td><t t-esc="line.employee_name"/></td>
+                        <t t-foreach="widget.column_add" t-as="column">
+                            <td><t t-esc="format_decimal(line[column])"/></td>
+                        </t>
+                        <td><t t-esc="format_decimal(line.total_amount)"/></td>
+                    </tr>
+                    <t t-set="num" t-value="num + 1"/>
+                </t>
+            </tbody>
+        </table>
+        <br/>
+        <div id="employee-detail">
+        </div>
+        <br/>
+        <div id="order-detail">
+        </div>
+    </t>
+
+    <t t-name="ReportEmployeeDetailTemplate">
+        <button>Invoice list</button>
+        <button class="oe_right">Export Excel</button>
+        <table class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped">
+            <t t-call="DetailReportTitle"/>
+            <tbody>
+                <t t-set="num" t-value="1"/>
+                <t t-foreach="data_detail" t-as="line">
+                    <tr class="show-order-detail" t-att-id="line.key_invoice">
+                        <td><t t-esc="num"/></td>
+                        <td><t t-esc="line.date"/></td>
+                        <td><t t-esc="line.pos_reference"/></td>
+                        <td><t t-esc="line.customer_code"/></td>
+                        <td><t t-esc="line.customer_phone"/></td>
+                        <td><t t-esc="line.customer_name"/></td>
+                        <td><t t-esc="line.employee_name"/></td>
+                        <td><t t-esc="line.sl"/></td>
+                        <td><t t-esc="line.tt"/></td>
+                        <td><t t-esc="line.money_reduced"/></td>
+                        <td><t t-esc="line.gg_bill"/></td>
+                        <td><t t-esc="line.money_real"/></td>
+                        <td><t t-esc="line.refund"/></td>
+                        <td><t t-esc="line.note"/></td>
+                    </tr>
+                    <t t-set="num" t-value="num + 1"/>
+                </t>
+            </tbody>
+        </table>
+    </t>
+
+    <t t-name="ReportOrderDetailTemplate">
+        <t t-if="titles">
+            <button>Order detail</button>
+            <button class="oe_right">Export Excel</button>
+            <table class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped">
+                <t t-call="DetailReportTitle"/>
+                <tbody>
+                    <t t-set="num" t-value="1"/>
+                    <t t-foreach="data_detail" t-as="line">
+                        <tr>
+                            <td><t t-esc="num"/></td>
+                            <td><t t-esc="line.product_code"/></td>
+                            <td><t t-esc="line.product_name"/></td>
+                            <td><t t-esc="line.uom_name"/></td>
+                            <td><t t-esc="line.qty"/></td>
+                            <td><t t-esc="line.lst_price"/></td>
+                            <t t-if="line.price_subtotal">
+                                <td><t t-esc="(line.money_reduced / line.price_subtotal * 100)"/></td>
+                            </t>
+                            <t t-else="">
+                                <td>0</td>
+                            </t>
+                            <td><t t-esc="line.money_reduced"/></td>
+                            <td><t t-esc="line.price_subtotal"/></td>
+                        </tr>
+                        <t t-set="num" t-value="num + 1"/>
+                    </t>
+                </tbody>
+            </table>
+        </t>
+    </t>
+</template>

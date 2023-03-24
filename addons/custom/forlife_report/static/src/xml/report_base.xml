@@ -21,6 +21,18 @@
         </thead>
     </t>
 
+    <t t-name="DetailReportTitle">
+        <thead>
+            <tr>
+                <t t-foreach="titles" t-as="title">
+                    <th>
+                        <t t-esc="title"/>
+                    </th>
+                </t>
+            </tr>
+        </thead>
+    </t>
+
     <t t-name="ReportPager">
         <div class="pagination">
             <span class="o_current_page_num report_hidden">

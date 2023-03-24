@@ -15,9 +15,12 @@
     'version': '16.0.1.0.0',
 
     'depends': [
-        'base', 'stock',
+        'base',
+        'web',
+        'stock',
         'report_xlsx',
         'forlife_base',
+        'forlife_point_of_sale',
     ],
 
     'data': [
@@ -28,6 +31,7 @@
         'wizard/report_num2_views.xml',
         'wizard/report_num3_views.xml',
         'wizard/report_num4_views.xml',
+        'wizard/report_num5_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
