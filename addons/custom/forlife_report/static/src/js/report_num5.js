@@ -10,6 +10,7 @@ odoo.define('forlife_report.report_num5', function (require) {
     let ReportNum5Action = ReportBaseAction.extend({
         reportTemplate: 'ReportNum5Template',
         reportTitle: _t("Report revenue by employee"),
+        record_per_page: 10,
 
         events: _.extend({}, ReportBaseAction.prototype.events, {
             'click .show-employee-detail': 'show_employee_detail',
