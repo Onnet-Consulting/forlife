@@ -110,3 +110,35 @@ table.available-report-list {
     border-collapse: separate;
     margin-top: 10px;
 }
+
+.oe_tab {
+    border-radius: 4px;
+    background: #b0c4debd;
+    border: none;
+}
+
+.button_export_right {
+    float: right;
+    border-block-color: green;
+    border-radius: 5px;
+    color: red;
+    border: #0b7b6c;
+    font-weight: bold;
+    background: lightblue;
+}
+
+.report_table > thead {
+    vertical-align: bottom;
+    background-color: #0d305ad1;
+    color: white;
+}
+
+.oe_report_max_height {
+    max-height: 300px;
+    overflow: scroll
+}
+
+.active_line {
+    color: #000000 !important;
+    background: #f4a460a8 !important
+}

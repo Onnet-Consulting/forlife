@@ -5,7 +5,9 @@
             <div class="title">
                 <t t-esc="widget.reportTitle"/>
             </div>
-            <t t-call="ReportPager"/>
+            <t t-if="widget.reportPager">
+                <t t-call="ReportPager"/>
+            </t>
         </div>
     </t>
 
@@ -60,7 +62,6 @@
         <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
         <div id="report-template">
             <t t-call="ReportHeader"/>
-            <t t-esc="format_kaka"/>
             <div id="main-content">
             </div>
         </div>
@@ -90,6 +91,10 @@
                 <tr>
                     <td>Inventory</td>
                     <td>Report stock by product</td>
+                </tr>
+                <tr>
+                    <td>Sales</td>
+                    <td>Revenue by employee</td>
                 </tr>
             </tbody>
         </table>

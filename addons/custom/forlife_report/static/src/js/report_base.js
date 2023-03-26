@@ -26,6 +26,7 @@ odoo.define('forlife_report.report_base', function (require) {
         },
         reportTemplate: 'ReportBase',
         reportTitle: _t("Base Report"),
+        reportPager: true,
         record_per_page: 80,
         readDataTimeout: 300,
 
