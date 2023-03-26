@@ -64,7 +64,7 @@
                                    mode="tree,kanban" colspan="4" nolabel="1">
                             </field>
                         </page>
-                        <page string="Pricelist Programs" name="program_ids" colspan="4">
+                        <page string="Chương trình làm giá" name="program_ids" colspan="4">
                             <field name="pricelist_program_ids"
                                    context="{'active_test':False, 'default_promotion_type': 'pricelist'}"
                                    mode="tree,kanban" colspan="4" nolabel="1">
