@@ -13,7 +13,8 @@ class StockTransferRequest(models.Model):
     _description = 'Forlife Stock Transfer'
 
     name = fields.code = fields.Char(string="Name", default="New", copy=False)
-    request_date = fields.Datetime(string="Request Date")
+    request_date = fields.Datetime(string="Request Date",default=lambda self: fields.datetime.now())
+    date_planned = fields.Datetime(string='Expected Arrival', required=True)
     request_employee_id = fields.Many2one('hr.employee', string="Employee")
     department_id = fields.Many2one('hr.department', string="Department")
     state = fields.Selection(
@@ -28,7 +29,7 @@ class StockTransferRequest(models.Model):
     request_lines = fields.One2many('transfer.request.line', 'request_id')
     stock_transfer_ids = fields.One2many('stock.transfer', 'stock_request_id', string="Stock Transfer", copy=True)
     rejection_reason = fields.Text()
-    approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_request_id')
+    # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_request_id')
     created_stock_transfer = fields.Boolean(default=False)
     count_stock_transfer = fields.Integer(compute="compute_count_stock_transfer", copy=False)
     is_no_more_quantity = fields.Boolean(compute='compute_is_no_more_quantity', store=1)
@@ -44,12 +45,12 @@ class StockTransferRequest(models.Model):
     def action_wait_confirm(self):
         for record in self:
             record.write({'state': 'wait_confirm',
-                          'approval_logs_ids': [(0, 0, {
-                              'request_approved_date': date.today(),
-                              'approval_user_id': record.env.user.id,
-                              'note': 'Wait Confirm',
-                              'state_request': 'wait_confirm',
-                          })],
+                          # 'approval_logs_ids': [(0, 0, {
+                          #     'request_approved_date': date.today(),
+                          #     'approval_user_id': record.env.user.id,
+                          #     'note': 'Wait Confirm',
+                          #     'state_request': 'wait_confirm',
+                          # })],
                           })
 
     def action_draft(self):
@@ -129,12 +130,12 @@ class StockTransferRequest(models.Model):
         for record in self:
             record.write({'state': 'cancel'})
 
-    @api.onchange('request_lines')
-    def onchange_request_lines(self):
-        for record in self.request_lines:
-            if record.location_id and record.location_dest_id:
-                if record.location_id.id == record.location_dest_id.id:
-                    raise ValidationError(_("Source Warehouse And Destination Warehouse must not overlap"))
+    # @api.onchange('request_lines')
+    # def onchange_request_lines(self):
+    #     for record in self.request_lines:
+    #         if record.location_id and record.location_dest_id:
+    #             if record.location_id.id == record.location_dest_id.id:
+    #                 raise ValidationError(_("Source Warehouse And Destination Warehouse must not overlap"))
 
     @api.constrains('request_lines')
     def constrains_request_lines(self):

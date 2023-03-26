@@ -12,18 +12,30 @@
                         <td>SL được đổi/trả</td>
                         <td>Hạn đổi/trả</td>
                     </tr>
-                    <tr class="row-input-change-refund">
-                        <td><input class="input-change-refund"/></td>
-                        <td><input class="input-change-refund"/></td>
-                        <td><input class="input-change-refund"/></td>
-                        <td><input class="input-change-refund"/></td>
-                        <td><t t-esc="props.line.quantity_canbe_refund"/></td>
-                        <td><t t-esc="props.line.expire_change_refund_date"/></td>
-                    </tr>
-                    <tr class="row-input-change-refund">
-                        <td>Lý do đổi/trả: </td>
-                        <td colspan="5"><input class="reason"/></td>
-                    </tr>
+                    <t t-if="!props.line.is_new_line">
+                        <tr class="row-input-change-refund">
+                            <td><input class="input-change-refund"/></td>
+                            <td></td>
+                            <td><input class="input-change-refund"/></td>
+                            <td><input class="input-change-refund"/></td>
+                            <td><t t-esc="props.line.quantity_canbe_refund"/></td>
+                            <td><t t-esc="props.line.expire_change_refund_date"/></td>
+                        </tr>
+                        <tr class="row-input-change-refund">
+                            <td>Lý do đổi/trả: </td>
+                            <td colspan="5"><input class="reason"/></td>
+                        </tr>
+                    </t>
+                    <t t-if="props.line.is_new_line">
+                        <tr class="row-input-change-refund">
+                            <td></td>
+                            <td><input class="input-change-refund"/></td>
+                            <td><input class="input-change-refund"/></td>
+                            <td><input class="input-change-refund"/></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </t>
                 </table>
             </t>
         </xpath>

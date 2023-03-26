@@ -29,6 +29,37 @@
                                statusbar_visible="draft,confirm,approved,reject,cancel,close" readonly="1"/>
                     </header>
                 </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Product Exchange Rate">
+                        <field name="exchange_rate_line" widget="section_and_note_one2many">
+                            <tree editable="bottom" class="width-hh width-first" create="0" delete="0">
+                                <field name="product_id" readonly="1"/>
+                                <field name="name" readonly="1"/>
+                                <field name="usd_amount" readonly="1"/>
+                                <field name="vnd_amount" readonly="1"/>
+                                <field name="import_tax"/>
+                                <field name="tax_amount" readonly="1"/>
+                                <field name="total_vnd_amount" readonly="1"/>
+                                <field name="total_tax_amount" readonly="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Product Cost">
+                        <field name="cost_line" widget="section_and_note_one2many">
+                            <tree editable="bottom" class="width-hh width-first" create="0" delete="0">
+                                <field name="product_id" readonly="1"/>
+                                <field name="name" readonly="1"/>
+                                <field name="usd_amount" readonly="1"/>
+                                <field name="vnd_amount"/>
+                                <field name="hidden_amount" invisible="1"/>
+                                <field name="allocate"/>
+                                <field name="amt_allocate" readonly="1"/>
+                                <field name="total_vnd_amount" readonly="1"/>
+                                <field name="total_amt_allocate" readonly="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
 <!--                <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="replace">-->
 <!--                    <group>-->
 <!--                        <group class="oe_subtotal_footer oe_right">-->
@@ -44,11 +75,12 @@
 <!--                    </group>-->
 <!--                </xpath>-->
                 <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="prod_filter" invisible="1"/>
+                    <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type"/>
                     <field name="purchase_code"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
+                    <field name="exchange_rate"/>
                     <field name="active_manual_currency_rate" invisible="1"/>
 <!--                    <field name="apply_manual_currency_exchange" invisible="1"/>-->
                     <field name="manual_currency_exchange_rate"
@@ -60,8 +92,14 @@
                     <field name="has_contract"/>
                     <field name="has_invoice"/>
                 </xpath>
+                <xpath expr="//field[@name='state']" position="after">
+                    <field name="inventory_status"/>
+                </xpath>
+                <xpath expr="//field[@name='date_order']" position="replace">
+                    <field name="date_order" string="Order Date"/>
+                </xpath>
                 <xpath expr="//field[@name='order_line']//tree" position="replace">
-                    <tree editable="bottom" class="width-hh">
+                    <tree editable="bottom" class="width-hh width-first">
                         <control>
                             <create name="add_product_control" string="Add a product"/>
                             <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
@@ -74,7 +112,7 @@
                         <field name="product_uom_category_id" invisible="1"/>
                         <field name="invoice_lines" invisible="1"/>
                         <field name="sequence" widget="handle"/>
-                        <field name="product_id" context="{'supplier_id': parent.partner_id, 'prod_filter': parent.prod_filter}"
+                        <field name="product_id" context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
                                domain="[('detailed_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
                         <field name="name"/>
                         <field name="product_type" string="Type"/>
@@ -89,10 +127,10 @@
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="product_qty" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}" force_save="1"/>
                         <field name="vendor_price"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}" readonly="1" force_save="1"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.is_passersby', '=', False)]}" force_save="1"/>
                         <field name="price_unit" attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}" force_save="1"/>
                         <field name="product_uom" readonly="1"/>
-                        <field name="warehouses_id"
+                        <field name="location_id"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="taxes_id" widget="many2many_tags"
                                domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id), ('country_id', '=', parent.tax_country_id)]"
@@ -105,7 +143,8 @@
     <!--                           sum="discounted subtotal" optional="hide"/>-->
                         <field name="event_id" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"
                                />
-                        <field name="production_id" string="Manufacturing Order" attrs="{'column_invisible': [('parent.purchase_type', '=', 'service')]}"/>
+                        <field name="production_id" string="Manufacturing Order"/>
+                        <field name="billed"/>
                         <field name="account_analytic_id" string="Cost Center"/>
                         <field name="readonly_discount" invisible="1"/>
                         <field name="readonly_discount_percent" invisible="1"/>
@@ -124,6 +163,7 @@
                         <field name="price_subtotal" widget="monetary"/>
                         <field name="price_total" invisible="1"/>
                         <field name="price_tax" invisible="1"/>
+                        <field name="request_purchases"/>
                     </tree>
                 </xpath>
                 <xpath expr="//field[@name='notes']" position="attributes">
@@ -142,6 +182,7 @@
                     <field name="custom_state" decoration-success="custom_state == 'approved'" widget="badge"/>
                 </xpath>
                 <xpath expr="//field[@name='invoice_status']" position="before">
+                     <field name="inventory_status"/>
                      <field name="date_order"/>
                 </xpath>
             </field>

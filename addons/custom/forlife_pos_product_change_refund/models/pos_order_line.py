@@ -14,6 +14,7 @@ class PosOrderLine(models.Model):
     def _compute_expire_change_refund_date(self):
         for r in self:
             r.expire_change_refund_date = r.order_id.date_order.date() + timedelta(days=r.product_id.number_days_change_refund)
+
     def _compute_quantity_canbe_refund(self):
         for r in self:
             r.quantity_canbe_refund = r.qty + r.quantity_refunded

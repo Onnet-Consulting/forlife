@@ -41,5 +41,14 @@
                 <menuitem 
                     id="res_state_district_menu" action="res_state_district_action" 
                     parent="menu_master_data_config" sequence="11"/>
+                <menuitem
+                    id="res_state_asset_location_menu" action="res_asset_location_action"
+                    parent="menu_master_data_config" sequence="12"/>
+                <menuitem
+                    id="res_occasion_code_menu" action="res_occasion_code_action"
+                    parent="account.menu_finance_configuration" sequence="15"/>
+                <menuitem
+                    id="res_occasion_gr_menu" action="res_occasion_gr_action"
+                    parent="account.menu_finance_configuration" sequence="16"/>
     </data>
 </odoo>

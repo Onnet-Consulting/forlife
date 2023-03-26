@@ -11,12 +11,15 @@
         'base',
         'hr',
         'contacts',
-        'purchase'
+        'purchase',
+        'account'
     ],
     'installable': True,
     'auto_install': True,
     'data': [
         'security/ir.model.access.csv',
+        'views/asset_location_view.xml',
+        'views/occasion.xml',
         'data/mail_activity_type_data.xml',
         'data/res_partner_data.xml',
         'data/product_category_data.xml',

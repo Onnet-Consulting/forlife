@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <tree string="Production Order">
                 <field name="sequence" widget="handle"/>
-                <field name="product_tmpl_id"/>
+                <field name="product_id"/>
                 <field name="code"/>
                 <field name="type"/>
                 <field name="product_qty"/>
@@ -23,7 +23,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="product_tmpl_id"/>
+                            <field name="product_id" domain="[('detailed_type', '=', 'product'), ('active', '=', True)]"/>
                             <field name="product_qty"/>
                         </group>
                         <group>
@@ -36,8 +36,8 @@
                             <field name="order_line_ids" widget="section_and_note_one2many">
                                 <tree string="Components" editable="bottom">
                                     <field name="sequence" widget="handle"/>
-                                    <field name="product_id"/>
-                                    <field name="attachments_count" class="text-start" string=" "/>
+                                    <field name="product_id" domain="[('detailed_type', '=', 'product'), ('active', '=', True)]"/>
+                                    <field name="uom_id"/>
                                     <field name="product_qty"/>
                                 </tree>
                             </field>

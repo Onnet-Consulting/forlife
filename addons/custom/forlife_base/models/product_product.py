@@ -5,6 +5,12 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
 
+class ProducAttribute(models.Model):
+    _inherit = "product.attribute"
+
+    code = fields.Char(string="Code")
+
+
 class ProducProduct(models.Model):
     _inherit = "product.product"
 
