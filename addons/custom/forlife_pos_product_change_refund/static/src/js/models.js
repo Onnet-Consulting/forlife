@@ -9,6 +9,13 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
         get_partner_phone(){
             return this.partner ? this.partner.phone : "";
         }
+        add_orderline(line){
+            if(line.order.is_change_or_refund_product){
+                line.is_new_line = true
+            }
+            super.add_orderline(...arguments);
+        }
+
     }
     Registries.Model.extend(Order, OrderGetPhone);
 

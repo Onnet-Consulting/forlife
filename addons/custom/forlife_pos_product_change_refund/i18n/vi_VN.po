@@ -34,3 +34,19 @@ msgstr "Số điện thoại"
 msgid "Search Orders..."
 msgstr "Tìm kiếm đơn hàng"
 
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order_line__quantity_canbe_refund
+msgid "Quantity can be refund"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order_line__quantity_refunded
+msgid "Quantity refunded"
+msgstr "Số lượng đã trả"
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_product__number_days_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_template__number_days_change_refund
+msgid "Number days change/refurd"
+msgstr "Hạn đổi trả"
+
