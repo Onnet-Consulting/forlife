@@ -48,12 +48,11 @@ class ResStateDistrict(models.Model):
 class StockWarehouse(models.Model):
     _inherit = 'stock.warehouse'
 
-    warehouse_code = fields.Char(string="Code")
     warehouse_code_internal = fields.Char(string="Code Internal")
     name_internal = fields.Char(string="Name Internal")
     short_name_internal = fields.Char(string="Short Name Internal")
     warehouse_type_id = fields.Many2one('stock.warehouse.type', string="Type of Warehouse", copy=False)
-    brand_id = fields.Many2one('res.forlife.brand', string="Brand", copy=False)
+    brand_id = fields.Many2one('res.brand', string="Brand", copy=False)
     square = fields.Char(string="Square", copy=False)
     phone = fields.Char(string="Phone", copy=False)
     sale_province_id = fields.Many2one("res.sale.province", string="Sale Province", copy=False)
