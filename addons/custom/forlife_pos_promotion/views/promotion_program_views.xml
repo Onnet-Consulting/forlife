@@ -162,7 +162,7 @@
                                    attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"
                                    widget="many2many_tags"/>
                             <field name="reward_quantity"
-                                   attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"/>
+                                   attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest'))]}"/>
                         </group>
                         <group/>
                         <group>

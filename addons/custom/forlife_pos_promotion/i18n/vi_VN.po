@@ -950,12 +950,12 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__pricelist_program_ids
 msgid "Pricelist Program"
-msgstr "Chương trình sale-off"
+msgstr "Chương trình làm giá"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_form
 msgid "Pricelist Programs"
-msgstr "Chương trình sale-off"
+msgstr "Chương trình làm giá"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__pro_priceitem_id
@@ -988,7 +988,7 @@ msgstr "Miền sản phẩm"
 #: code:addons/forlife_pos_promotion/models/promotion_program.py:0
 #, python-format
 msgid "Product Pricelist Items"
-msgstr ""
+msgstr "Chi tiết bảng giá KM"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_combo_line__product_ids
