@@ -15,7 +15,7 @@ class PosOrder(models.Model):
     def search_change_order_ids(self, config_id, brand_id, store_id, domain, limit, offset, search_details):
         """Search for all orders that satisfy the given domain, limit and offset."""
         store_id = self.env['store'].sudo().search([('id', '=', store_id)], limit=1)
-        default_domain = [('brand_id', '=', brand_id), '&', ('config_id', '=', config_id), '!', '|', ('state', '=', 'draft'), ('state', '=', 'cancelled')]
+        default_domain = [('brand_id', '=', brand_id), '!', '|', ('state', '=', 'draft'), ('state', '=', 'cancelled')]
         if store_id.number_month != 0 and search_details.get('fieldName', False) == 'PHONE':
             start_date = fields.Date.today() - relativedelta(months=store_id.number_month)
             end_date = fields.Date.today()
@@ -30,7 +30,7 @@ class PosOrder(models.Model):
     def search_refund_order_ids(self, config_id, brand_id, store_id, domain, limit, offset, search_details):
         """Search for all orders that satisfy the given domain, limit and offset."""
         store_id = self.env['store'].sudo().search([('id', '=', store_id)], limit=1)
-        default_domain = [('brand_id', '=', brand_id), ('config_id.store_id', '=', store_id.id), '&', ('config_id', '=', config_id), '!', '|', ('state', '=', 'draft'), ('state', '=', 'cancelled')]
+        default_domain = [('brand_id', '=', brand_id), ('config_id.store_id', '=', store_id.id), '!', '|', ('state', '=', 'draft'), ('state', '=', 'cancelled')]
         if store_id.number_month != 0 and search_details.get('fieldName', False) == 'PHONE':
             start_date = fields.Date.today() - relativedelta(months=store_id.number_month)
             end_date = fields.Date.today()
