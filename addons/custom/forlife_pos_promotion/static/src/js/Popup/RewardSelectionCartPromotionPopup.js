@@ -22,6 +22,12 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             this.error_msg = '';
         }
 
+        pricePerUnit(reward) {
+            let unit = this.env.pos.db.get_product_by_id(reward.line.product.id).get_unit().name;
+            let unitPrice = this.env.pos.format_currency(reward.line.price);
+            return ` ${unit} với ${unitPrice} / ${unit}`
+        }
+
         _get_selected_programs() {
             return this.state.programOptions.filter(p => p.isSelected).reduce((tmp, p) => {tmp.push(p.program); return tmp}, [])
         }
