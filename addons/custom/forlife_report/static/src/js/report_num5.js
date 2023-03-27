@@ -15,9 +15,7 @@ odoo.define('forlife_report.report_num5', function (require) {
         events: {
             'click .show-employee-detail': 'show_employee_detail',
             'click .show-order-detail': 'show_order_detail',
-            'click .export_all': 'action_export_all',
-            'click .export_employee_detail': 'action_export_employee_detail',
-            'click .export_order_detail': 'action_export_order_detail',
+            'click .export_data': 'action_export_data',
         },
 
         parse_data: function (data) {
@@ -25,6 +23,7 @@ odoo.define('forlife_report.report_num5', function (require) {
             this.order_detail = data.order_detail;
             this.column_add = data.column_add;
             this.report_type_id = 'all_employee';
+            this.report_filename = 'Doanh thu theo nhân viên.xlsx';
             this._super(...arguments);
         },
 
@@ -35,6 +34,7 @@ odoo.define('forlife_report.report_num5', function (require) {
                 "titles": this.employee_detail.title,
                 "data_detail": invoice_data,
                 "report_type_id": 'order_detail',
+                "report_filename": 'Danh sách hóa đơn.xlsx',
             }))
             this.$('#order-detail').html(QWeb.render("ReportOrderDetailTemplate", {
                 "titles": false,
@@ -57,6 +57,7 @@ odoo.define('forlife_report.report_num5', function (require) {
                 "titles": this.order_detail.title,
                 "data_detail": order_data,
                 "report_type_id": 'employee_detail',
+                "report_filename": 'Chi tiết giao dịch.xlsx',
             }))
             let element_rm = document.getElementsByClassName("show-order-detail");
             if (element_rm.length > 0) {
@@ -68,16 +69,8 @@ odoo.define('forlife_report.report_num5', function (require) {
             element.classList.add('active_line');
         },
 
-        action_export_all: function (e){
-            this.export_data_by_id(e.currentTarget.getAttribute('button-id'), 'Doanh thu theo nhân viên.xlsx');
-        },
-
-        action_export_employee_detail: function (e){
-            this.export_data_by_id(e.currentTarget.getAttribute('button-id'), 'Danh sách hóa đơn.xlsx');
-        },
-
-        action_export_order_detail: function (e){
-            this.export_data_by_id(e.currentTarget.getAttribute('button-id'), 'Chi tiết giao dịch.xlsx');
+        action_export_data: function (e){
+            this.export_data_by_id(e.currentTarget.getAttribute('button-id'), e.currentTarget.getAttribute('filename'));
         },
     })
 
