@@ -8,12 +8,12 @@
 
     <t t-name="ReportNum5MainTemplate">
         <div class="row">
-            <div class="col-9" style="color: red;">There are <t t-esc="widget.total_records"/>
-                records found
+            <div class="col-9" style="color: red;">Có <t t-esc="widget.total_records"/>
+                bản ghi được tìm thấy
             </div>
             <div class="col-3">
-                <button type="button" class="button_export_right export_data" aria-label="Export Excel" title="Export Excel"
-                        t-att-button-id="widget.report_type_id" t-att-filename="widget.report_filename">Export Excel</button>
+                <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel"
+                        t-att-button-id="widget.report_type_id" t-att-filename="widget.report_filename">Xuất Excel</button>
             </div>
         </div>
         <div class="oe_report_max_height">
@@ -47,7 +47,7 @@
 
     <t t-name="ReportEmployeeDetailTemplate">
         <button class="oe_tab">Invoice list</button>
-        <button type="button" class="button_export_right export_data" aria-label="Export Excel" title="Export Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Export Excel</button>
+        <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Xuất Excel</button>
         <div class="oe_report_max_height">
             <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
                 <t t-call="DetailReportTitle"/>
@@ -80,7 +80,7 @@
     <t t-name="ReportOrderDetailTemplate">
         <t t-if="titles">
             <button class="oe_tab">Order detail</button>
-            <button type="button" class="button_export_right export_data" aria-label="Export Excel" title="Export Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Export Excel</button>
+            <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Xuất Excel</button>
             <div class="oe_report_max_height">
                 <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
                     <t t-call="DetailReportTitle"/>
