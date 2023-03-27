@@ -48,7 +48,7 @@ class ResStateDistrict(models.Model):
 class StockWarehouse(models.Model):
     _inherit = 'stock.warehouse'
 
-    warehouse_code = fields.Char(string="Code")
+    # warehouse_code = fields.Char(string="Code")
     warehouse_code_internal = fields.Char(string="Code Internal")
     name_internal = fields.Char(string="Name Internal")
     short_name_internal = fields.Char(string="Short Name Internal")
