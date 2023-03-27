@@ -24,9 +24,9 @@
             <field name="model">product.attribute</field>
             <field name="inherit_id" ref="product.product_attribute_view_form"/>
             <field name="arch" type="xml">
-                <field name="name" position="after">
+                <xpath expr="//page[@name='attribute_values']/field/tree/field[@name='name']" position="before">
                     <field name="code"/>
-                </field>
+                </xpath>
             </field>
         </record>
 

@@ -22,8 +22,8 @@ class ProductTemplate(models.Model):
 
     @api.model
     def create(self, vals_list):
-        if 'program_voucher_id' in vals and vals_list['program_voucher_id']:
-            product_include = self.search([('program_voucher_id', '=', vals['program_voucher_id'])])
+        if 'program_voucher_id' in vals_list and vals_list['program_voucher_id']:
+            product_include = self.search([('program_voucher_id', '=', vals_list['program_voucher_id'])])
             if product_include:
                 product_include.program_voucher_id = False
         return super(ProductTemplate, self).create(vals_list)

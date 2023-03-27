@@ -13,8 +13,14 @@ class PromotionPricelistItem(models.Model):
 
     active = fields.Boolean(default=True)
     program_id = fields.Many2one('promotion.program', string='Promotion Program', ondelete='cascade')
-    product_id = fields.Many2one('product.product', string='Product', domain="[('available_in_pos', '=', True)]")
+    product_id = fields.Many2one('product.product', string='Product', domain="[('available_in_pos', '=', True)]", required=True)
     fixed_price = fields.Float('Fix price')
+
+    @api.constrains('program_id', 'program_id')
+    def check_unique_product_id(self):
+        for line in self:
+            if len(line.program_id.pricelist_item_ids.filtered(lambda l: l.product_id.id == line.product_id.id)) > 1:
+                raise UserError(_('Product %s is already defined in this program!') % line.product_id.name)
 
     def name_get(self):
         res = []
