@@ -38,6 +38,8 @@ export class PromotionButton extends PosComponent {
     async onClick() {
         console.log('onClick', this.env.pos)
         const order = this.env.pos.get_order();
+        // Reset Cart Program first
+        order._resetCartPromotionPrograms();
         const potentialPrograms = order.getPotentialProgramsToSelect();
         let bestCombine = order.computeBestCombineOfProgram() || [];
         bestCombine = bestCombine.map(p => this.env.pos.get_program_by_id(p))
