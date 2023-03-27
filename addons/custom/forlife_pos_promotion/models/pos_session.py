@@ -81,6 +81,7 @@ class PosSession(models.Model):
                     'valid_customer_ids',
                     'min_quantity',
                     'order_amount_min',
+                    'incl_reward_in_order',
                     'reward_type',
                     'qty_min_required',
                     'reward_quantity',
