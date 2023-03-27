@@ -6,7 +6,6 @@ class Location(models.Model):
 
     stock_location_type_id = fields.Many2one('stock.location.type', string="Stock Location Type")
     code_location = fields.Char(string="Code Location", compute="compute_code_location", store=True)
-    code = fields.Char('')
 
     @api.depends('warehouse_id', 'stock_location_type_id')
     def compute_code_location(self):
