@@ -24,6 +24,7 @@ odoo.define('forlife_report.report_num5', function (require) {
             this.employee_detail = data.employee_detail;
             this.order_detail = data.order_detail;
             this.column_add = data.column_add;
+            this.report_type_id = 'all_employee';
             this._super(...arguments);
         },
 
@@ -32,7 +33,8 @@ odoo.define('forlife_report.report_num5', function (require) {
             let invoice_data = this.employee_detail.value_invoice_by_employee_id[this.employee_id];
             this.$('#employee-detail').html(QWeb.render("ReportEmployeeDetailTemplate", {
                 "titles": this.employee_detail.title,
-                "data_detail": invoice_data
+                "data_detail": invoice_data,
+                "report_type_id": 'order_detail',
             }))
             this.$('#order-detail').html(QWeb.render("ReportOrderDetailTemplate", {
                 "titles": false,
@@ -53,7 +55,8 @@ odoo.define('forlife_report.report_num5', function (require) {
             let order_data = this.order_detail.detail_invoice_by_order_key[this.invoice_key];
             this.$('#order-detail').html(QWeb.render("ReportOrderDetailTemplate", {
                 "titles": this.order_detail.title,
-                "data_detail": order_data
+                "data_detail": order_data,
+                "report_type_id": 'employee_detail',
             }))
             let element_rm = document.getElementsByClassName("show-order-detail");
             if (element_rm.length > 0) {
@@ -66,34 +69,15 @@ odoo.define('forlife_report.report_num5', function (require) {
         },
 
         action_export_all: function (e){
-            this.export_data_by_id('all_employee', 'Doanh thu theo nhân viên.xlsx');
+            this.export_data_by_id(e.currentTarget.getAttribute('button-id'), 'Doanh thu theo nhân viên.xlsx');
         },
 
         action_export_employee_detail: function (e){
-            this.export_data_by_id('employee_detail', 'Danh sách hóa đơn.xlsx');
+            this.export_data_by_id(e.currentTarget.getAttribute('button-id'), 'Danh sách hóa đơn.xlsx');
         },
 
         action_export_order_detail: function (e){
-            this.export_data_by_id('order_detail', 'Chi tiết giao dịch.xlsx');
-        },
-
-        export_data_by_id: function (id, filename){
-            var downloadLink;
-            var dataType = 'application/vnd.ms-excel; charset=utf-8;';
-            var tableSelect = document.getElementById(id);
-            var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
-            downloadLink = document.createElement("a");
-            document.body.appendChild(downloadLink);
-            if(navigator.msSaveOrOpenBlob){
-                var blob = new Blob(['\ufeff', tableHTML], {
-                    type: dataType
-                });
-                navigator.msSaveOrOpenBlob( blob, filename);
-            }else{
-                downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
-                downloadLink.download = filename;
-                downloadLink.click();
-            }
+            this.export_data_by_id(e.currentTarget.getAttribute('button-id'), 'Chi tiết giao dịch.xlsx');
         },
     })
 

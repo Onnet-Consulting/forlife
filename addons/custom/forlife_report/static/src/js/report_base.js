@@ -106,6 +106,22 @@ odoo.define('forlife_report.report_base', function (require) {
                 "options": self.options
             }))
         },
+
+        export_data_by_id: function (id, filename) {
+            var downloadLink;
+            var dataType = 'application/vnd.ms-excel;';
+            var tableSelect = document.getElementById(id);
+            if (!tableSelect) {
+                alert(_.str.sprintf(_t("Data not found by id '%s'"), id));
+            } else {
+                var data = tableSelect.outerText.replace(/ /g, '%20');
+                downloadLink = document.createElement("a");
+                document.body.appendChild(downloadLink);
+                downloadLink.href = 'data:' + dataType + ',' + data;
+                downloadLink.download = filename;
+                downloadLink.click();
+            }
+        },
     });
 
     const AvailableReportAction = AbstractAction.extend({

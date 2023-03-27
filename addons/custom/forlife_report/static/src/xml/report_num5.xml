@@ -11,10 +11,10 @@
             <div class="col-9" style="color: red;">There are <t t-esc="widget.total_records"/>
                 records found
             </div>
-            <div class="col-3"><button type="button" class="button_export_right export_all" aria-label="Export Excel" title="Export Excel">Export Excel</button></div>
+            <div class="col-3"><button type="button" class="button_export_right export_all" aria-label="Export Excel" title="Export Excel" t-att-button-id="widget.report_type_id">Export Excel</button></div>
         </div>
         <div class="oe_report_max_height">
-            <table id="all_employee" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
                 <t t-call="ReportTitle"/>
                 <tbody>
                     <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
@@ -44,9 +44,9 @@
 
     <t t-name="ReportEmployeeDetailTemplate">
         <button class="oe_tab">Invoice list</button>
-        <button type="button" class="button_export_right export_employee_detail" aria-label="Export Excel" title="Export Excel">Export Excel</button>
+        <button type="button" class="button_export_right export_employee_detail" aria-label="Export Excel" title="Export Excel" t-att-button-id="report_type_id">Export Excel</button>
         <div class="oe_report_max_height">
-            <table id="employee_detail" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
                 <t t-call="DetailReportTitle"/>
                 <tbody>
                     <t t-set="num" t-value="1"/>
@@ -77,9 +77,9 @@
     <t t-name="ReportOrderDetailTemplate">
         <t t-if="titles">
             <button class="oe_tab">Order detail</button>
-            <button type="button" class="button_export_right export_order_detail" aria-label="Export Excel" title="Export Excel">Export Excel</button>
+            <button type="button" class="button_export_right export_order_detail" aria-label="Export Excel" title="Export Excel" t-att-button-id="report_type_id">Export Excel</button>
             <div class="oe_report_max_height">
-                <table id="order_detail" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
                     <t t-call="DetailReportTitle"/>
                     <tbody>
                         <t t-set="num" t-value="1"/>
