@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num6_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num6</field>
+        <field name="arch" type="xml">
+            <form string="Report sale and stock" create="0">
+                <sheet>
+                    <button name="view_report" type="object" string="View" class="btn-primary oe_right"/>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="brand_id"/>
+                        </group>
+                        <group>
+                            <label for="start_time" string="Time slot"/>
+                            <div>from
+                                <field name="start_time" widget="float_time" class="oe_inline" required="1"/>
+                                to
+                                <field name="end_time" widget="float_time" class="oe_inline" required="1"/>
+                            </div>
+                            <field name="all_warehouses"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="warehouse_ids" widget="many2many_tags" attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num6_window_action" model="ir.actions.act_window">
+        <field name="name">Report sale and stock</field>
+        <field name="res_model">report.num6</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num6_menu"
+              action="report_num6_window_action"
+              parent="report_menu_sale"
+              sequence="6"/>
+</odoo>

@@ -23,6 +23,7 @@ odoo.define('forlife_report.report_base', function (require) {
         events: {
             'click button.o_pager_next': 'next_page',
             'click button.o_pager_previous': 'previous_page',
+            'click .export_data': 'action_export_data',
         },
         reportTemplate: 'ReportBase',
         reportTitle: _t("Base Report"),
@@ -97,6 +98,10 @@ odoo.define('forlife_report.report_base', function (require) {
             if (previous_page <= 0) previous_page = this.total_page;
             this.options = this.build_options(previous_page);
             this.render();
+        },
+
+        action_export_data: function (e){
+            this.export_data_by_id(e.currentTarget.getAttribute('button-id'), e.currentTarget.getAttribute('filename'));
         },
 
         render: function () {

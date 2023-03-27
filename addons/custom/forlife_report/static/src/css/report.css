@@ -133,12 +133,16 @@ table.available-report-list {
     color: white;
 }
 
-.oe_report_max_height {
+.oe_max_height_300 {
     max-height: 300px;
-    overflow: scroll
+    overflow: scroll;
+}
+.oe_max_height_700 {
+    max-height: 700px;
+    overflow: scroll;
 }
 
 .active_line {
     color: #000000 !important;
-    background: #f4a460a8 !important
+    background: #f4a460a8 !important;
 }

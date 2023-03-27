@@ -16,7 +16,7 @@
                         t-att-button-id="widget.report_type_id" t-att-filename="widget.report_filename">Xuất Excel</button>
             </div>
         </div>
-        <div class="oe_report_max_height">
+        <div class="oe_max_height_300">
             <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
                 <t t-call="ReportTitle"/>
                 <tbody>
@@ -48,7 +48,7 @@
     <t t-name="ReportEmployeeDetailTemplate">
         <button class="oe_tab">Invoice list</button>
         <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Xuất Excel</button>
-        <div class="oe_report_max_height">
+        <div class="oe_max_height_300">
             <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
                 <t t-call="DetailReportTitle"/>
                 <tbody>
@@ -81,7 +81,7 @@
         <t t-if="titles">
             <button class="oe_tab">Order detail</button>
             <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Xuất Excel</button>
-            <div class="oe_report_max_height">
+            <div class="oe_max_height_300">
                 <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
                     <t t-call="DetailReportTitle"/>
                     <tbody>

@@ -9,22 +9,24 @@
         </xpath>
     </t>
     <t t-name="ReportNum2MainTemplate">
-        <table style="width:65%" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped">
-            <t t-call="ReportTitle"/>
-            <tbody>
-                <t t-foreach="options.data" t-as="line">
-                    <tr class="line_stock_detail" t-att-id="line.product_id">
-                        <td><t t-esc="line.product_barcode"/></td>
-                        <td class="product_name"><t t-esc="line.product_name"/></td>
-                        <td><t t-esc="line.product_size"/></td>
-                        <td><t t-esc="line.product_color"/></td>
-                        <td><t t-esc="line.quantity"/></td>
-                        <td><t t-esc="line.list_price"/></td>
-                        <td><t t-esc="line.discount_price"/></td>
-                    </tr>
-                </t>
-            </tbody>
-        </table>
+        <div class="oe_max_height_700">
+            <table class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="ReportTitle"/>
+                <tbody>
+                    <t t-foreach="options.data" t-as="line">
+                        <tr class="line_stock_detail" t-att-id="line.product_id">
+                            <td><t t-esc="line.product_barcode"/></td>
+                            <td class="product_name"><t t-esc="line.product_name"/></td>
+                            <td><t t-esc="line.product_size"/></td>
+                            <td><t t-esc="line.product_color"/></td>
+                            <td><t t-esc="line.quantity"/></td>
+                            <td><t t-esc="line.list_price"/></td>
+                            <td><t t-esc="line.discount_price"/></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
         <div id="product-detail">
         </div>
     </t>

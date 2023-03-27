@@ -10,7 +10,6 @@ odoo.define('forlife_report.report_num2', function (require) {
     let ReportNum2Action = ReportBaseAction.extend({
         reportTemplate: 'ReportNum2Template',
         reportTitle: _t("Stock with sale price"),
-        record_per_page: 25,
 
         events: _.extend({}, ReportBaseAction.prototype.events, {
             'click .line_stock_detail': 'show_detail',
@@ -30,7 +29,15 @@ odoo.define('forlife_report.report_num2', function (require) {
                     product_name,
                     "lines": product_data
                 }
-            }))
+            }));
+            let element_rm = document.getElementsByClassName("line_stock_detail");
+            if (element_rm.length > 0){
+                for (let line of element_rm){
+                    line.classList.remove("active_line")
+                }
+            }
+            let element = document.getElementById(product_id);
+            element.classList.add('active_line');
         },
     })
 
