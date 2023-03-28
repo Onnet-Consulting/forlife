@@ -109,7 +109,7 @@ odoo.define('forlife_report.report_base', function (require) {
             this.$('.o_content').html(QWeb.render(this.reportTemplate, {
                 "widget": this,
                 "options": self.options
-            }))
+            }));
         },
 
         export_data_by_id: function (id, filename) {
@@ -141,7 +141,7 @@ odoo.define('forlife_report.report_base', function (require) {
             this.$('.o_content').html(QWeb.render(this.reportTemplate, {
                 "widget": this,
                 "options": self.options
-            }))
+            }));
         },
     })
 
