@@ -4,9 +4,6 @@ from odoo import api, fields, models
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
-    product_sku = fields.Char('SKU')
-    date_off = fields.Date('Ngày hết hạn')
-    warning_message = fields.Integer('Cảnh báo trước')
     description_color = fields.Char('Mô tả màu')
     material_composition = fields.Char('Thành phần chất liệu')
     cloth_code = fields.Char('Mã vải')
