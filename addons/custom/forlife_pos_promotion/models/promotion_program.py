@@ -109,6 +109,7 @@ class PromotionProgram(models.Model):
 
     # Cart
     order_amount_min = fields.Float()
+    incl_reward_in_order = fields.Boolean(string='Include Reward in Order')
     # Pricelist
 
     pricelist_item_ids = fields.One2many('promotion.pricelist.item', 'program_id', string='Pricelist Item')

@@ -92,6 +92,7 @@ msgstr "Mã nội bộ"
 #: model:ir.model.constraint,message:forlife_base.constraint_stock_warehouse_status_unique_code
 #: model:ir.model.constraint,message:forlife_base.constraint_stock_warehouse_type_unique_code
 #: model:ir.model.constraint,message:forlife_base.constraint_supplier_product_type_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_product_attribute_value_unique_code
 msgid "Code must be unique!"
 msgstr "Mã phải là duy nhất!"
 
