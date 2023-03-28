@@ -17,8 +17,8 @@ class ReportNum7(models.TransientModel):
 
     name = fields.Char(default=REPORT_TITLE)
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
-    from_date = fields.Date('From Date', required=True)
-    to_date = fields.Date('To Date', required=True)
+    from_date = fields.Date('From date', required=True)
+    to_date = fields.Date('To date', required=True)
     all_warehouses = fields.Boolean(string='All warehouses', default=False)
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
     employee_ids = fields.Many2many('hr.employee', string='Employee KD')
