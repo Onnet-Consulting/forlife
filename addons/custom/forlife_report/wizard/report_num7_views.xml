@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num7_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num7</field>
+        <field name="arch" type="xml">
+            <form string="Report sale and stock" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="brand_id"/>
+                            <field name="all_warehouses"/>
+                            <field name="warehouse_ids" widget="many2many_tags"
+                                   attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"/>
+                             <!--fixme domain="[('brand_id', '=', brand_id)]" -->
+                        </group>
+                        <group>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                            <field name="employee_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num7_window_action" model="ir.actions.act_window">
+        <field name="name">Report in-store revenue by product line</field>
+        <field name="res_model">report.num7</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num7_menu"
+              action="report_num7_window_action"
+              parent="report_menu_sale"
+              sequence="7"/>
+</odoo>

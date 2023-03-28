@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <template xml:space="preserve">
-    <t t-name="ReportNum6Template" t-inherit="ReportBase" t-inherit-mode="primary">
+    <t t-name="ReportNum7Template" t-inherit="ReportBase" t-inherit-mode="primary">
         <xpath expr="//div[@id='main-content']" position="inside">
-            <t t-call="ReportNum6MainTemplate"/>
+            <t t-call="ReportNum7MainTemplate"/>
         </xpath>
     </t>
 
-    <t t-name="ReportNum6MainTemplate">
+    <t t-name="ReportNum7MainTemplate">
         <div class="row">
             <div class="col-9" style="color: red;">Có <t t-esc="widget.total_records"/>
                 bản ghi được tìm thấy
@@ -25,16 +25,10 @@
                     <t t-foreach="options.data" t-as="line">
                         <tr>
                             <td><t t-esc="num"/></td>
-                            <td><t t-esc="line.product_group"/></td>
                             <td><t t-esc="line.product_line"/></td>
-                            <td><t t-esc="line.product_barcode"/></td>
-                            <td><t t-esc="line.product_name"/></td>
-                            <td><t t-esc="line.product_size"/></td>
-                            <td><t t-esc="line.product_color"/></td>
-                            <td><t t-esc="line.gender"/></td>
-                            <td><t t-esc="format_decimal(line.sale_qty, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.stock_qty, 0)"/></td>
-                            <td><t t-esc="line.employee_name"/></td>
+                            <td><t t-esc="format_decimal(line.qty, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.revenue, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.percent_revenue, 2)"/></td>
                         </tr>
                         <t t-set="num" t-value="num + 1"/>
                     </t>

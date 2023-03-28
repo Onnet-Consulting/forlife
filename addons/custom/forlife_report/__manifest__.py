@@ -33,6 +33,7 @@
         'wizard/report_num4_views.xml',
         'wizard/report_num5_views.xml',
         'wizard/report_num6_views.xml',
+        'wizard/report_num7_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

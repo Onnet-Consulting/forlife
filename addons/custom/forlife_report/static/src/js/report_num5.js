@@ -33,6 +33,7 @@ odoo.define('forlife_report.report_num5', function (require) {
                 "data_detail": invoice_data,
                 "report_type_id": 'order_detail',
                 "report_filename": 'Danh sách hóa đơn.xlsx',
+                "format_decimal": this.func.format_decimal,
             }));
             this.$('#order-detail').html(QWeb.render("ReportOrderDetailTemplate", {
                 "titles": false,
@@ -56,6 +57,7 @@ odoo.define('forlife_report.report_num5', function (require) {
                 "data_detail": order_data,
                 "report_type_id": 'employee_detail',
                 "report_filename": 'Chi tiết giao dịch.xlsx',
+                "format_decimal": this.func.format_decimal,
             }));
             let element_rm = document.getElementsByClassName("show-order-detail");
             if (element_rm.length > 0) {

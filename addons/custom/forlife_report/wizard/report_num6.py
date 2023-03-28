@@ -6,7 +6,7 @@ from odoo.exceptions import ValidationError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-TITLES = ['STT', 'Dòng hàng', 'Nhóm hàng', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Giới tính', 'Tổng bán', 'Tổng tồn', 'Nhân viên']
+TITLES = ['STT', 'Nhóm hàng', 'Dòng hàng', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Giới tính', 'Tổng bán', 'Tổng tồn', 'Nhân viên']
 REPORT_TITLE = 'Bán - trưng hàng'
 
 
@@ -122,7 +122,7 @@ from products pr
 
     def get_data(self):
         self.ensure_one()
-        warehouse_ids = self.env['stock.warehouse'].search([]) if self.all_warehouses else self.warehouse_ids #todo: ('brand_id', '=', self.brand_id.id)
+        warehouse_ids = self.env['stock.warehouse'].search([]) if self.all_warehouses else self.warehouse_ids # todo: ('brand_id', '=', self.brand_id.id)
         if not warehouse_ids:
             raise ValidationError(_('Warehouse not found !'))
         query = self._get_query(warehouse_ids)

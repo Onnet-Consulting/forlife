@@ -62,12 +62,12 @@
                             <td><t t-esc="line.customer_phone"/></td>
                             <td><t t-esc="line.customer_name"/></td>
                             <td><t t-esc="line.employee_name"/></td>
-                            <td><t t-esc="line.sl"/></td>
-                            <td><t t-esc="line.tt"/></td>
-                            <td><t t-esc="line.money_reduced"/></td>
-                            <td><t t-esc="line.gg_bill"/></td>
-                            <td><t t-esc="line.money_real"/></td>
-                            <td><t t-esc="line.refund"/></td>
+                            <td><t t-esc="format_decimal(line.sl)"/></td>
+                            <td><t t-esc="format_decimal(line.tt, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.gg_bill, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.money_real, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.refund, 0)"/></td>
                             <td><t t-esc="line.note"/></td>
                         </tr>
                         <t t-set="num" t-value="num + 1"/>
@@ -92,16 +92,16 @@
                                 <td><t t-esc="line.product_code"/></td>
                                 <td><t t-esc="line.product_name"/></td>
                                 <td><t t-esc="line.uom_name"/></td>
-                                <td><t t-esc="line.qty"/></td>
-                                <td><t t-esc="line.lst_price"/></td>
+                                <td><t t-esc="format_decimal(line.qty, 0)"/></td>
+                                <td><t t-esc="format_decimal(line.lst_price, 0)"/></td>
                                 <t t-if="line.price_subtotal">
                                     <td><t t-esc="(line.money_reduced / line.price_subtotal * 100)"/></td>
                                 </t>
                                 <t t-else="">
                                     <td>0</td>
                                 </t>
-                                <td><t t-esc="line.money_reduced"/></td>
-                                <td><t t-esc="line.price_subtotal"/></td>
+                                <td><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
+                                <td><t t-esc="format_decimal(line.price_subtotal, 0)"/></td>
                             </tr>
                             <t t-set="num" t-value="num + 1"/>
                         </t>
