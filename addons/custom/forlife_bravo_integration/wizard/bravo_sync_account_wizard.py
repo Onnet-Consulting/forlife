@@ -15,12 +15,14 @@ class BravoSyncAccountWizard(models.TransientModel):
     company_ids = fields.Many2many('res.company', 'bravo_sync_account_compan_rel', 'sync_id', 'cid',
                                    string='Companies', default=lambda self: self.env.companies.ids)
 
+    # TODO: reload form after click this button
     def sync(self):
         self.ensure_one()
         self.install_coa()
         self.insert_accounts()
         self.archive_vn_template_accounts()
 
+    # TODO: reload form after click this button
     def sync_updated(self):
         self.ensure_one()
         self.insert_missing_accounts()
