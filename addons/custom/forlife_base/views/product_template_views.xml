@@ -4,15 +4,10 @@
         <record model="ir.ui.view" id="product_data_view_inherit">
             <field name="name">product_data_view_inherit</field>
             <field name="model">product.template</field>
-            <field name="inherit_id" ref="forlife_product.product_template_form_view_forlife"/>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
             <field name="arch" type="xml">
-                <page name="tolerance" position="after">
-                    <page name="orther_infomations_data" string="Thông tin dữ liệu">
-                        <group>
+                <xpath expr="//page[@name='general_information']//group" position="inside">
                             <group>
-                                <field name="product_sku"/>
-                                <field name="date_off"/>
-                                <field name="warning_message"/>
                                 <field name="description_color"/>
                                 <field name="material_composition"/>
                                 <field name="cloth_code"/>
@@ -47,10 +42,7 @@
                                 <field name="type_id"/>
                                 <field name="note"/>
                             </group>
-
-                        </group>
-                    </page>
-                </page>
+                </xpath>
             </field>
         </record>
     </data>
