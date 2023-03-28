@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models
-from ..fields import BravoCharField, BravoMany2oneField, BravoIntegerField
+from ..fields import BravoCharField, BravoMany2oneField, BravoIntegerField, BravoDecimalField
 
 
 class ResPartner(models.Model):
@@ -17,6 +17,7 @@ class ResPartner(models.Model):
     br_6 = BravoCharField(odoo_name="contact_address_complete", bravo_name="Address")
     br_7 = BravoIntegerField(bravo_default=0, bravo_name="IsGroup")
     br_8 = BravoMany2oneField('res.partner.group', odoo_name='group_id', bravo_name='ParentCode', field_detail='code')
+    br_9 = BravoDecimalField(odoo_name='credit_limit', bravo_name='CreditLimit')
 
     def get_bravo_filter_domain(self):
         partner_group_c = self.env.ref('forlife_pos_app_member.partner_group_c').id
