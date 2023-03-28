@@ -28,6 +28,19 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             return ` ${unit} với ${unitPrice} / ${unit}`
         }
 
+        getDiscountPrice(reward) {
+            let program = this.state.program.program;
+            let newPrice;
+            if (program.reward_type == 'cart_discount_percent') {
+                newPrice = reward.line.price * (1 - program.disc_percent/100);
+            } else if (program.reward_type == 'cart_discount_fixed_price') {
+                newPrice = program.disc_fixed_price;
+            } else if (program.reward_type == 'cart_get_x_free') {
+                newPrice = 0.0;
+            };
+            return `  ${this.env.pos.format_currency(newPrice)}`;
+        }
+
         _get_selected_programs() {
             return this.state.programOptions.filter(p => p.isSelected).reduce((tmp, p) => {tmp.push(p.program); return tmp}, [])
         }

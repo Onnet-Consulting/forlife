@@ -24,15 +24,14 @@
                             <label t-att-for="reward.line.cid">
                                 <t t-esc="reward.line.product.display_name"/>
                             </label>
-<!--                            <span class="price">-->
-<!--                                <t t-esc="totalPrice" />-->
-<!--                            </span>-->
                             <ul class="info-list">
                                 <li class="info">
                                     <strong>
                                         <t t-esc="reward.line.quantity" />
                                     </strong>
                                     <span><t t-esc="this.pricePerUnit(reward)"/></span>
+                                    <i class="fa fa-light fa-arrow-right"/>
+                                    <span><t t-esc="this.getDiscountPrice(reward)"/></span>
                                 </li>
                             </ul>
                             <div t-if="reward.isSelected" style="margin: 0 0 0 20px;">
