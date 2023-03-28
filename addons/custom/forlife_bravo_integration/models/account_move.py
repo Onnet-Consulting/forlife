@@ -39,13 +39,16 @@ class BravoAccountMove(models.AbstractModel):
 
     move_id = fields.Many2one('account.move', required=True)
 
+    def get_bravo_table(self):
+        return self._bravo_table
+
     def get_bravo_insert_sql(self):
         self.ensure_one()
         column_names, values = self.get_bravo_insert_values()
         if not values:
             return False
         queries = []
-        insert_table = self._bravo_table
+        insert_table = self.get_bravo_table()
         params = []
         insert_column_names = column_names.copy()
         single_record_values_placeholder = ['?'] * len(column_names)

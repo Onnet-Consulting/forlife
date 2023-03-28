@@ -70,11 +70,17 @@ class BravoSyncAccountWizard(models.TransientModel):
     def get_odoo_missing_accounts(self, company):
         odoo_account_codes = self.env['account.account'].sudo().search([('company_id', '=', company.id)]).mapped('code')
         accounts = []
-        query = """
-            SELECT Code, Name
-            FROM %s
-            where Code not in (%s)
-        """ % (BRAVO_ACCOUNT_TABLE, ','.join(['?'] * len(odoo_account_codes)))
+        if not odoo_account_codes:
+            query = """
+                SELECT Code, Name
+                FROM %s
+            """ % BRAVO_ACCOUNT_TABLE
+        else:
+            query = """
+                SELECT Code, Name
+                FROM %s
+                Where Code not in (%s)
+            """ % (BRAVO_ACCOUNT_TABLE, ','.join(['?'] * len(odoo_account_codes)))
         data = self._execute_read(query, params=odoo_account_codes)
         field_names = ['code', 'name']
         for chunk_data in data:

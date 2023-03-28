@@ -10,6 +10,9 @@ class BravoModel(models.AbstractModel):
     _name = 'bravo.model'
     _inherit = ['mssql.server']
 
+    def get_bravo_table(self):
+        return self._bravo_table
+
     @api.model
     def get_update_default_value(self):
         # special fields - don't declare them in Odoo
@@ -88,7 +91,7 @@ class BravoModel(models.AbstractModel):
 
         if not values:
             return False
-        insert_table = self._bravo_table
+        insert_table = self.get_bravo_table()
         params = []
         insert_column_names = column_names.copy()
         single_record_values_placeholder = ['?'] * len(column_names)
@@ -134,7 +137,7 @@ class BravoModel(models.AbstractModel):
 
         if not updated_values or not identity_key_values:
             return False
-        update_table_name = self._bravo_table
+        update_table_name = self.get_bravo_table()
 
         set_query_params = []
         set_query_placeholder = []
@@ -182,7 +185,7 @@ class BravoModel(models.AbstractModel):
 
         if not identity_key_values:
             return False
-        update_table_name = self._bravo_table
+        update_table_name = self.get_bravo_table()
 
         set_query_params = []
         set_query_placeholder = []

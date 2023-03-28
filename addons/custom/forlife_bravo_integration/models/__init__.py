@@ -8,3 +8,4 @@ from . import account_analytic_account
 from . import hr_employee
 from . import sale_order
 from . import purchase_order
+from . import product_category
