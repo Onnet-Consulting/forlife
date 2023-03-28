@@ -13,7 +13,8 @@
         'contacts',
         'purchase',
         'account',
-        'forlife_product'
+        'forlife_product',
+        'forlife_point_of_sale'
     ],
     'installable': True,
     'auto_install': True,
