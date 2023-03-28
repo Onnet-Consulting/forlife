@@ -78,6 +78,7 @@ odoo.define('forlife_report.report_base', function (require) {
 
         parse_data: function (data) {
             this.data = data.data;
+            this.reportTitle = data.reportTitle;
             this.titles = data.titles;
             this.total_records = this.data.length;
             this.total_page = Math.ceil(this.total_records / this.record_per_page);

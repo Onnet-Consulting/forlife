@@ -9,7 +9,6 @@ odoo.define('forlife_report.report_num2', function (require) {
 
     let ReportNum2Action = ReportBaseAction.extend({
         reportTemplate: 'ReportNum2Template',
-        reportTitle: _t("Stock with sale price"),
 
         events: _.extend({}, ReportBaseAction.prototype.events, {
             'click .line_stock_detail': 'show_detail',

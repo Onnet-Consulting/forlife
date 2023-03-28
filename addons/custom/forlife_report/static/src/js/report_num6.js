@@ -8,7 +8,6 @@ odoo.define('forlife_report.report_num6', function (require) {
 
     let ReportNum6Action = ReportBaseAction.extend({
         reportTemplate: 'ReportNum6Template',
-        reportTitle: _t("Report sale and stock"),
         reportPager: false,
 
         parse_data: function (data) {

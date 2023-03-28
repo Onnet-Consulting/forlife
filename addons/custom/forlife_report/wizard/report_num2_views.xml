@@ -4,8 +4,12 @@
         <field name="name">form</field>
         <field name="model">report.num2</field>
         <field name="arch" type="xml">
-            <form string="Stock with sale price by warehouse">
+            <form string="Stock with sale price by warehouse" create="0">
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
                     <group>
                         <group>
                             <field name="all_products"/>
@@ -27,11 +31,6 @@
                         <field name="product_texture_ids" widget="many2many_tags"/>
                     </group>
                 </sheet>
-                <footer>
-                    <button name="print_xlsx" type="object" string="Download Excel" class="btn-primary"/>
-                    <button name="view_report" type="object" string="View" class="btn-primary"/>
-                    <button special="cancel" string="Cancel" class="btn-secondary"/>
-                </footer>
             </form>
         </field>
     </record>
@@ -40,7 +39,7 @@
         <field name="name">Report stock with sale price by warehouse</field>
         <field name="res_model">report.num2</field>
         <field name="view_mode">form</field>
-        <field name="target">new</field>
+        <field name="target">inline</field>
     </record>
 
     <menuitem id="report_num2_menu"

@@ -106,14 +106,6 @@ msgid "Bán lẻ"
 msgstr ""
 
 #. module: forlife_report
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num1_form
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num2_form
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num3_form
-#: model_terms:ir.ui.view,arch_db:forlife_report.report_num4_form
-msgid "Cancel"
-msgstr "Hủy"
-
-#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_net_promoter_score_report__company_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_base__company_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num1__company_id
@@ -287,6 +279,10 @@ msgstr "Phân hệ"
 #. module: forlife_report
 #. odoo-javascript
 #: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__name
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__name
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__name
+#: model:ir.model.fields,field_description:forlife_report.field_report_num4__name
 #: model:ir.model.fields,field_description:forlife_report.field_report_num5__name
 #: model:ir.model.fields,field_description:forlife_report.field_report_num6__name
 #, python-format
@@ -366,13 +362,10 @@ msgid "Report by"
 msgstr "Xem theo"
 
 #. module: forlife_report
-#. odoo-javascript
-#: code:addons/forlife_report/static/src/js/report_num5.js:0
 #: model:ir.actions.act_window,name:forlife_report.report_num5_window_action
 #: model:ir.model,name:forlife_report.model_report_num5
 #: model:ir.ui.menu,name:forlife_report.report_num5_menu
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num5_form
-#, python-format
 msgid "Report revenue by employee"
 msgstr "Báo cáo doanh thu theo nhân viên"
 
@@ -384,24 +377,18 @@ msgid "Report revenue by product"
 msgstr "Báo cáo doanh thu theo sản phẩm"
 
 #. module: forlife_report
-#. odoo-javascript
-#: code:addons/forlife_report/static/src/js/report_num6.js:0
 #: model:ir.actions.act_window,name:forlife_report.report_num6_window_action
 #: model:ir.model,name:forlife_report.model_report_num6
 #: model:ir.ui.menu,name:forlife_report.report_num6_menu
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num6_form
-#, python-format
 msgid "Report sale and stock"
 msgstr "Báo cáo bán - trưng hàng"
 
 #. module: forlife_report
-#. odoo-javascript
-#: code:addons/forlife_report/static/src/xml/report_base.xml:0
 #: model:ir.actions.act_window,name:forlife_report.report_num4_window_action
 #: model:ir.model,name:forlife_report.model_report_num4
 #: model:ir.ui.menu,name:forlife_report.report_num4_menu
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num4_form
-#, python-format
 msgid "Report stock by product"
 msgstr "Báo cáo tồn kho theo sản phẩm"
 
@@ -443,7 +430,6 @@ msgstr "Doanh thu theo nhân viên"
 
 #. module: forlife_report
 #. odoo-javascript
-#: code:addons/forlife_report/static/src/js/report_num1.js:0
 #: code:addons/forlife_report/static/src/xml/report_base.xml:0
 #, python-format
 msgid "Revenue by product"
@@ -484,7 +470,7 @@ msgstr "Giờ bắt đầu"
 
 #. module: forlife_report
 #. odoo-javascript
-#: code:addons/forlife_report/static/src/js/report_num4.js:0
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
 #: model:ir.actions.client,name:forlife_report.report_num_4_client_action
 #, python-format
 msgid "Stock by product"
@@ -497,7 +483,6 @@ msgstr "Tồn kho theo chi nhánh/khu vực"
 
 #. module: forlife_report
 #. odoo-javascript
-#: code:addons/forlife_report/static/src/js/report_num3.js:0
 #: code:addons/forlife_report/static/src/xml/report_base.xml:0
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num3_form
 #, python-format
@@ -505,10 +490,7 @@ msgid "Stock in time range by branch/area"
 msgstr "Tồn kho theo chi nhánh/khu vực"
 
 #. module: forlife_report
-#. odoo-javascript
-#: code:addons/forlife_report/static/src/js/report_num2.js:0
 #: model:ir.actions.client,name:forlife_report.report_num_2_client_action
-#, python-format
 msgid "Stock with sale price"
 msgstr "Tồn kho theo giá bán"
 

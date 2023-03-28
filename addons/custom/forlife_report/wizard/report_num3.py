@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 TITLES = ['STT', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Mùa hàng', 'Giới tính', 'Mã SP',
           'Tên SP', 'Đơn vị', 'Màu sắc', 'Kích cỡ', 'Nhãn hiệu', 'Tổng tồn', 'Hàng treo']
 COLUMN_WIDTHS = [8, 20, 20, 20, 20, 20, 20, 30, 20, 20, 20, 20, 20, 20]
+REPORT_TITLE = 'Tồn kho theo chi nhánh/khu vực'
 
 
 class ReportNum3(models.TransientModel):
@@ -14,6 +15,7 @@ class ReportNum3(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report stock in time range by warehouse'
 
+    name = fields.Char(default=REPORT_TITLE)
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     report_by = fields.Selection([('branch', _('Branch')), ('area', _('Area'))], 'Report by', required=True, default='branch')
     all_products = fields.Boolean(string='All products', default=False)
@@ -243,6 +245,7 @@ order by num
         data = self.format_data(data)
         warehouse_data = self.get_warehouse_data(warehouse_ids)
         return {
+            'reportTitle': REPORT_TITLE,
             'titles': TITLES + warehouse_data['warehouse_names'],
             "data": data,
             **warehouse_data

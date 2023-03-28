@@ -8,7 +8,6 @@ odoo.define('forlife_report.report_num1', function (require) {
 
     let ReportNum1Action = ReportBaseAction.extend({
         reportTemplate: 'ReportNum1Template',
-        reportTitle: _t("Revenue by product"),
     })
 
     core.action_registry.add('report_num1_action', ReportNum1Action)

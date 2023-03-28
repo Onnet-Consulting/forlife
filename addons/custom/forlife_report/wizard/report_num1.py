@@ -31,6 +31,7 @@ TITLES = [
 ]
 
 COLUMN_WIDTHS = [5, 20, 20, 30, 15, 15, 10, 20, 8, 20, 25, 20, 20, 20, 20, 20]
+REPORT_TITLE = 'Doanh thu theo sản phẩm'
 
 
 class ReportNum1(models.TransientModel):
@@ -38,6 +39,7 @@ class ReportNum1(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report revenue by product'
 
+    name = fields.Char(default=REPORT_TITLE)
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
     all_products = fields.Boolean(string='All products', default=False)
@@ -216,6 +218,7 @@ order by product_name
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         return {
+            'reportTitle': REPORT_TITLE,
             'titles': TITLES,
             'data': data,
         }

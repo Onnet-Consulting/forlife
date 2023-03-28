@@ -12,6 +12,7 @@ EMPLOYEE_DETAIL_TITLE = [
 ORDER_DETAIL_TITLE = [
     'STT', 'Mã SP', 'Tên SP', 'Đơn vị', 'Số lượng', 'Giá bán', '% Giảm giá', 'Tiền giảm giá', 'Thành tiền'
 ]
+REPORT_TITLE = 'Doanh thu theo nhân viên'
 
 
 class ReportNum5(models.TransientModel):
@@ -19,7 +20,7 @@ class ReportNum5(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report revenue by employee'
 
-    name = fields.Char(default='Báo cáo doanh thu theo nhân viên')
+    name = fields.Char(default=REPORT_TITLE)
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     store_id = fields.Many2one('store', string='Store', required=True)
     employee_id = fields.Many2one('hr.employee', string='Employee')
@@ -212,6 +213,7 @@ from employee_list employee
             value['total_amount'] = total_amount
             res.append(value)
         return {
+            'reportTitle': REPORT_TITLE,
             'titles': titles,
             'data': res,
             'column_add': column_add,

@@ -6,7 +6,9 @@
         <field name="arch" type="xml">
             <form string="Report revenue by employee" create="0">
                 <sheet>
-                    <button name="view_report" type="object" string="View" class="btn-primary oe_right"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
                     <group>
                         <group>
                             <field name="brand_id"/>

@@ -4,6 +4,7 @@ from odoo import api, fields, models, _
 
 TITLES = ['Mã SP', 'Tên SP', 'Size', 'Màu', 'Tồn', 'Giá niêm yết', 'Giá khuyến mãi', 'Chi tiết']
 COLUMN_WIDTHS = [20, 30, 20, 20, 20, 25, 25, 30]
+REPORT_TITLE = 'Tồn kho theo giá bán'
 
 
 class ReportNum2(models.TransientModel):
@@ -11,6 +12,7 @@ class ReportNum2(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report stock with sale price by warehouse'
 
+    name = fields.Char(default=REPORT_TITLE)
     all_products = fields.Boolean(string='All products', default=False)
     all_warehouses = fields.Boolean(string='All warehouses', default=False)
     product_ids = fields.Many2many('product.product', string='Products', domain=[('type', '=', 'product')])
@@ -147,6 +149,7 @@ from stock_product stp
             else:
                 detail_data_by_product_id[product_id].append(detail_data)
         return {
+            'reportTitle': REPORT_TITLE,
             'titles': TITLES[:-1],
             "data": list(data_by_product_id.values()),
             "detail_data_by_product_id": detail_data_by_product_id
