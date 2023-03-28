@@ -6,7 +6,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
     const { _lt } = require('@web/core/l10n/translation');
     const { parse } = require('web.field_utils');
 
-    const { useState } = owl;
+    const { useState, onWillUnmount, onWillDestroy } = owl;
 
     class RewardSelectionCartPromotionPopup extends AbstractAwaitablePopup {
 
@@ -20,6 +20,25 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 hasError: false
             });
             this.error_msg = '';
+
+            onWillUnmount(() => {
+                this.state.reward_line_vals.forEach(line => {
+                    if (line.quantity <= 0) {
+                        line.quantity = 0;
+                        line.isSelected = false;
+                    };
+                });
+                if (this.selectedQty() > 0) {
+                    this.state.program.isSelected = true;
+                } else {
+                    this.state.program.isSelected = false;
+                }
+            });
+
+        }
+
+        selectedQty() {
+            return this.state.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
         }
 
         pricePerUnit(reward) {
@@ -45,6 +64,10 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             return this.state.programOptions.filter(p => p.isSelected).reduce((tmp, p) => {tmp.push(p.program); return tmp}, [])
         }
 
+        _currentProgram() {
+            return this.state.program.program
+        }
+
         _prepareRewardData(programOptions) {
             let orderlines = this.env.pos.get_order().get_orderlines();
             let reward_data = {}
@@ -58,6 +81,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
         }
 
         _check_valid_rewards() {
+            let program = this._currentProgram()
             let order = this.env.pos.get_order();
             let orderLines = order._get_clone_order_lines(order.get_orderlines());
             let selections = this._prepareRewardData(this.state.programOptions);
@@ -81,27 +105,49 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                     break;
                 };
             };
+            let current_selected_qty = this.state.reward_line_vals.filter(l => l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0)
+
+            if (current_selected_qty > program.reward_quantity) {
+                valid = false;
+            }
             return valid
         }
 
-        onChangeQty(cid, target) {
-            let order = this.env.pos.get_order();
-            let orderLines = order._get_clone_order_lines(order.get_orderlines())
-            let currentLine = this.state.reward_line_vals.find(l=> l.line.cid === cid);
-            let selected_qty = 0;
-            this.state.programOptions.filter(p=>p.isSelected).forEach(option => {
-                selected_qty += option.reward_line_vals.filter(l => l.line.cid == cid).reduce((tmp, l) => tmp + l.quantity, 0)
-            })
-            let qty_remaining = currentLine.line.quantity - selected_qty
-            currentLine.max_qty = qty_remaining;
+        onChangeQty(reward, target) {
+            let currentLine = reward;
             let quantity_input = parse.float(target.value);
+            currentLine.quantity = quantity_input;
+
+            if (quantity_input < 0) {
+                this.state.hasError = true;
+                this.error_msg = 'Số lượng sản phẩm phải là số dương!';
+            } else {
+                this.state.hasError = false;
+                this.error_msg = '';
+            }
+
+            let program = this._currentProgram()
+            let selected_qty_of_line = 0; // một dòng có thể đang được chọn áp dụng cho nhiều CT Hóa đơn nếu SL > 1
+            this.state.programOptions.filter(p=> p.isSelected && p.id != program.id).forEach(option => {
+                selected_qty_of_line += option.reward_line_vals.filter(l => l.line.cid == reward.line.cid).reduce((tmp, l) => tmp + l.quantity, 0)
+            })
+
+            let qty_remaining = currentLine.line.quantity - selected_qty_of_line;
+            if (qty_remaining > program.reward_quantity) {
+                qty_remaining = program.reward_quantity;
+            };
+
+            // Set maximum qty of input
+            currentLine.max_qty = qty_remaining;
+
             let quantity = quantity_input > qty_remaining ? qty_remaining : quantity_input;
 
             this.state.program.isSelected = true;
-            currentLine.quantity = quantity;
             if (!this._check_valid_rewards()) {
                 currentLine.quantity = 0;
                 this.state.program.isSelected = false;
+            } else {
+                currentLine.quantity = quantity;
             }
         }
 
@@ -109,9 +155,21 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             let order = this.env.pos.get_order();
             let currentLine = this.state.reward_line_vals.find(l => l.line.cid === cid);
             currentLine.isSelected = !currentLine.isSelected;
+            if (currentLine.isSelected && currentLine.quantity == 0) {
+                currentLine.quantity = 1;
+            };
+            if (currentLine.isSelected && !this._check_valid_rewards()) {
+                currentLine.quantity = 0;
+            };
         }
 
         confirm() {
+            this.state.reward_line_vals.forEach(l => {
+                if (l.quantity <= 0) {
+                    l.isSelected = false;
+                    l.quantity = 0;
+                }
+            });
             const valid = this._check_valid_rewards()
             if (valid) {
                 if (this.state.reward_line_vals.some(l => l.isSelected && l.quantity > 0)) {
@@ -119,6 +177,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 } else {
                     this.state.program.isSelected = false;
                 };
+                this.state.hasError = false;
                 return super.confirm();
             } else {
                 this.state.hasError = true;

@@ -5,7 +5,7 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
     const Registries = require('point_of_sale.Registries');
     const { _lt } = require('@web/core/l10n/translation');
 
-    const { useState } = owl;
+    const { useState, onWillStart, onMounted } = owl;
 
     class CartPromotionPopup extends AbstractAwaitablePopup {
 

@@ -10,6 +10,8 @@
             <p t-if="state.hasError" style="color: red; background-color: antiquewhite;">
                 <t t-esc="error_msg" />
             </p>
+            <div><span style="font-weight: normal">Tối đa: </span><strong t-esc="this.state.program.program.reward_quantity"/> sản phẩm</div>
+            <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQty()"/> sản phẩm</div>
             <hr/>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
                 <ul>
@@ -39,7 +41,7 @@
                                     <input type="number"
                                            id="quantity" name="SL"
                                            t-att-value="reward.quantity" min="1" t-att-max="reward.max_qty"
-                                           t-on-change="(ev) => this.onChangeQty(reward.line.cid, ev.target)"
+                                           t-on-change="(ev) => this.onChangeQty(reward, ev.target)"
                                     />
 
                                 </div>
