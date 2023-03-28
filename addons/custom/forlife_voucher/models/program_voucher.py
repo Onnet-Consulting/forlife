@@ -34,9 +34,13 @@ class ProgramVoucher(models.Model):
 
     product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse', domain=[('voucher','=',True)])
 
+    product_apply_ids = fields.Many2many('product.template', string='Products Apply')
+
     product_ids = fields.One2many('product.template', 'program_voucher_id')
 
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
+
+    is_full_price_applies = fields.Boolean('Áp dụng nguyên giá')
 
     @api.depends('product_ids')
     def compute_product(self):
@@ -120,14 +124,16 @@ class ProgramVoucher(models.Model):
                                 'state':'new',
                                 'partner_id': p.id,
                                 'price': rec.price,
-                                'price_used':0,
+                                'price_used': 0,
                                 'price_residual': rec.price - 0,
                                 'derpartment_id': self.derpartment_id.id,
                                 'end_date':self.end_date,
                                 'apply_many_times': self.apply_many_times,
                                 'apply_contemp_time':self.apply_contemp_time,
                                 'product_voucher_id': self.product_id.id,
-                                'purpose_id': self.purpose_id.id
+                                'purpose_id': self.purpose_id.id,
+                                'product_apply_ids': [(6, False, self.product_apply_ids.ids)],
+                                'is_full_price_applies': self.is_full_price_applies
                             })
                 if not rec.partner_ids:
                     for i in range(rec.count):
@@ -146,7 +152,9 @@ class ProgramVoucher(models.Model):
                             'apply_many_times': self.apply_many_times,
                             'apply_contemp_time': self.apply_contemp_time,
                             'product_voucher_id': self.product_id.id,
-                            'purpose_id':self.purpose_id.id
+                            'purpose_id':self.purpose_id.id,
+                            'product_apply_ids': [(6, False, self.product_apply_ids.ids)],
+                            'is_full_price_applies': self.is_full_price_applies
                         })
         else:
             raise UserError(_("Vui lòng thêm dòng thông tin cho vourcher!"))

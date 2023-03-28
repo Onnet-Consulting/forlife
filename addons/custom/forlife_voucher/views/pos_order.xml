@@ -16,6 +16,7 @@
             </xpath>
             <xpath expr="//field[@name='lines']/tree/field[@name='qty']" position="after">
                 <field name="x_qty_voucher" optional="hide"/>
+                <field name="is_voucher_conditional"/>
             </xpath>
             <xpath expr="//page[@name='payments']" position="after">
                 <page string="Voucher" name="voucher">

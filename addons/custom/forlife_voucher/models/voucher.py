@@ -46,12 +46,13 @@ class Voucher(models.Model):
     phone_number = fields.Char(copy=False, string='Phone')
 
     product_voucher_id = fields.Many2one('product.template', 'Product Voucher')
-
+    product_apply_ids = fields.Many2many('product.template', string='Sản phẩm áp dụng')
     derpartment_id = fields.Many2one('hr.department', 'Department Code', required=True)
     brand_id = fields.Many2one('res.brand', 'Brand', required=True)
     store_ids = fields.Many2many('store', string='Cửa hàng áp dụng')
+    is_full_price_applies = fields.Boolean('Áp dụng nguyên giá')
 
-    @api.depends('price_used','price')
+    @api.depends('price_used', 'price')
     def _compute_price_residual(self):
         for rec in self:
             rec.price_residual = rec.price - rec.price_used
@@ -131,7 +132,9 @@ class Voucher(models.Model):
                             'store_ids': vourcher.store_ids.ids,
                             'state': vourcher.state,
                             'start_date': start_date_format,
-                            'apply_contemp_time': vourcher.apply_contemp_time
+                            'apply_contemp_time': vourcher.apply_contemp_time,
+                            'product_apply_ids': vourcher.product_apply_ids.ids,
+                            'is_full_price_applies': vourcher.is_full_price_applies
                         }
                     })
                 if not vourcher:
