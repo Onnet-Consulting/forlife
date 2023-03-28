@@ -51,7 +51,6 @@ class StockWarehouse(models.Model):
     warehouse_code_internal = fields.Char(string="Code Internal")
     name_internal = fields.Char(string="Name Internal")
     short_name_internal = fields.Char(string="Short Name Internal")
-    warehouse_type_id = fields.Many2one('stock.warehouse.type', string="Type of Warehouse", copy=False)
     brand_id = fields.Many2one('res.brand', string="Brand", copy=False)
     square = fields.Char(string="Square", copy=False)
     phone = fields.Char(string="Phone", copy=False)

@@ -17,7 +17,6 @@
                     <page string="Information" name="general_info">
                         <group>
                             <group>
-                                <field name="warehouse_type_id"/>
                                 <field name="brand_id"/>
                                 <field name="square"/>
                                 <field name="phone"/>
