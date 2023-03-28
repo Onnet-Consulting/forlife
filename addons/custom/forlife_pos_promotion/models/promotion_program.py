@@ -112,7 +112,8 @@ class PromotionProgram(models.Model):
     incl_reward_in_order = fields.Boolean(string='Include Reward in Order')
     # Pricelist
 
-    pricelist_item_ids = fields.One2many('promotion.pricelist.item', 'program_id', string='Pricelist Item')
+    pricelist_item_ids = fields.One2many(
+        'promotion.pricelist.item', 'program_id', string='Pricelist Item', context={'active_test': False})
     pricelist_item_count = fields.Integer(compute='_compute_pricelist_item_count')
 
     # Rewards
@@ -311,5 +312,5 @@ class PromotionProgram(models.Model):
             ],
             'type': 'ir.actions.act_window',
             'domain': [('program_id', '=', self.id)],
-            'context': {'default_program_id': self.id}
+            'context': {'default_program_id': self.id, 'search_default_active': 1}
         }
