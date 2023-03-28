@@ -3,7 +3,6 @@ from . import res_config_settings
 from . import res_partner
 from . import stock_warehouse
 from . import account_move
-from . import res_company
 from . import product_product
 from . import account_analytic_account
 from . import hr_employee

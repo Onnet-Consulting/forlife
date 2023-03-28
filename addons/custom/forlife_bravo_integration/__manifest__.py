@@ -23,6 +23,7 @@
         'queue_job',
         'forlife_base',
         'forlife_pos_app_member',
+        'forlife_purchase',
     ],
     'auto_install': True,
 
