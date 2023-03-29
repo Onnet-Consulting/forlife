@@ -251,7 +251,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         let check_product = false;
                         for(let j = 0; j< this.env.pos.selectedOrder.orderlines.length; j++){
                             if(data[i].value.product_apply_ids.length > 0 && data[i].value.product_apply_ids.includes(this.env.pos.selectedOrder.orderlines[j].product.product_tmpl_id) == true){
-                                if(data[i].value.is_full_price_applies == true && this.env.pos.selectedOrder.orderlines[j].point){
+                                if(data[i].value.is_full_price_applies == true && 'point' in this.env.pos.selectedOrder.orderlines[j] && this.env.pos.selectedOrder.orderlines[j].point > 0){
                                     error_continue.push("Sản phẩm "+ this.env.pos.selectedOrder.orderlines[j].product.display_name +" nếu muốn sử dụng voucher sẽ cần được xóa chương trình khuyến mại trên giỏ hàng!")
                                 }
                                 check_product = true
@@ -282,6 +282,8 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             }
             var so_tien_da_tra = {};
             var gia_tri_con_lai_ban_dau =0;
+            var total_dua = this.env.pos.selectedOrder.get_due();
+            var price_dua = 0;
             for(let i = 0; i < data.length; i ++){
                 if(codes[i].value != false && data[i].value != false){
                    gia_tri_con_lai_ban_dau = data[i].value.price_residual
@@ -311,6 +313,16 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change
                 }
             }
+//            for(let i=0;i<data.length;i++){
+//                if(data[i].value != false){
+//                    price_dua += data[i].value.price_change
+//                    if(price_dua >= total_dua){
+//                        price_dua += data[i].value.price_change
+//                        data[i].value.price_change = price_dua - total_dua
+//                        break
+//                    }
+//                }
+//            }
             this.state.data = data;
         }
     }
