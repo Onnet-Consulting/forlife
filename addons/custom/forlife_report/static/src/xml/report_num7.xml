@@ -7,15 +7,7 @@
     </t>
 
     <t t-name="ReportNum7MainTemplate">
-        <div class="row">
-            <div class="col-9" style="color: red;">Có <t t-esc="widget.total_records"/>
-                bản ghi được tìm thấy
-            </div>
-            <div class="col-3">
-                <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel"
-                        t-att-button-id="widget.report_type_id" t-att-filename="widget.report_filename">Xuất Excel</button>
-            </div>
-        </div>
+        <t t-call="ButtonExportExcel"/>
         <div class="oe_max_height_700">
             <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
                 <t t-call="ReportTitle"/>

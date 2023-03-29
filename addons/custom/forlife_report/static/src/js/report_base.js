@@ -24,6 +24,7 @@ odoo.define('forlife_report.report_base', function (require) {
             'click button.o_pager_next': 'next_page',
             'click button.o_pager_previous': 'previous_page',
             'click .export_data': 'action_export_data',
+            'click .btn_back': 'action_back',
         },
         reportTemplate: 'ReportBase',
         reportTitle: _t("Base Report"),
@@ -79,6 +80,8 @@ odoo.define('forlife_report.report_base', function (require) {
         parse_data: function (data) {
             this.data = data.data;
             this.reportTitle = data.reportTitle;
+            this.report_filename = data.reportTitle + '.xlsx';
+            this.report_type_id = 'all_data';
             this.titles = data.titles;
             this.total_records = this.data.length;
             this.total_page = Math.ceil(this.total_records / this.record_per_page);
@@ -128,6 +131,9 @@ odoo.define('forlife_report.report_base', function (require) {
                 downloadLink.click();
             }
         },
+        action_back: function (){
+            window.history.back();
+        }
     });
 
     const AvailableReportAction = AbstractAction.extend({

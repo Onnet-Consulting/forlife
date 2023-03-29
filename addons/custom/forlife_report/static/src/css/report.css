@@ -56,6 +56,7 @@
 
 #report-template .header .title {
     font-size: 25px;
+    text-align: center;
 }
 
 #report-template .header .pagination {
@@ -125,6 +126,7 @@ table.available-report-list {
     border: #0b7b6c;
     font-weight: bold;
     background: lightblue;
+    font-size: medium;
 }
 
 .report_table > thead {
@@ -135,14 +137,24 @@ table.available-report-list {
 
 .oe_max_height_300 {
     max-height: 300px;
+    margin-top: 7px;
     overflow: scroll;
 }
 .oe_max_height_700 {
     max-height: 700px;
     overflow: scroll;
+    margin-top: 7px;
 }
 
 .active_line {
     color: #000000 !important;
-    background: #f4a460a8 !important;
+    background: rgba(56, 142, 60, 0.4) !important;
+}
+
+.btn_back {
+    color: #ff0533;
+}
+
+.btn_back:hover {
+    color: #00e1ff;
 }

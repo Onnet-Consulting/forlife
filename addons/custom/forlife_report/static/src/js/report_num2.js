@@ -2,7 +2,6 @@ odoo.define('forlife_report.report_num2', function (require) {
     'use strict';
 
     const core = require('web.core');
-    const _t = core._t;
     const ReportBaseAction = require('forlife_report.report_base');
     const QWeb = core.qweb;
 

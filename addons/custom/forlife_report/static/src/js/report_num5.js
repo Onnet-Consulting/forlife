@@ -21,7 +21,6 @@ odoo.define('forlife_report.report_num5', function (require) {
             this.order_detail = data.order_detail;
             this.column_add = data.column_add;
             this.report_type_id = 'all_employee';
-            this.report_filename = 'Doanh thu theo nhân viên.xlsx';
             this._super(...arguments);
         },
 

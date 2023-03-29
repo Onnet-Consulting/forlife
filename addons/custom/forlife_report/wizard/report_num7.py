@@ -3,8 +3,6 @@
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 TITLES = ['STT', 'Dòng hàng', 'Số lượng', 'Doanh thu', '% danh thu']
 REPORT_TITLE = 'Doanh thu tại cửa hàng theo dòng hàng'
