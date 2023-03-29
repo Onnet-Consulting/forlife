@@ -32,15 +32,10 @@ class ProductNhanh(models.Model):
             nhanh_configs = constant.get_nhanh_configs(self)
             if 'nhanh_connector.nhanh_app_id' in nhanh_configs or 'nhanh_connector.nhanh_business_id' in nhanh_configs \
                     or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
-                category = False
-                if res.categ_id and res.categ_id.nhanh_product_category_id:
-                    category = res.categ_id.nhanh_product_category_id
-                elif res.categ_id and not res.categ_id.nhanh_product_category_id:
-                    raise ValidationError(_("You cannot select a category that is not on the express system!"))
                 data = '[{"id": "' + str(res.id) + '","name":"' + str(
                     res.name) + '","code":"' + str(res.code_product) + '", "barcode": "' + str(
                     res.barcode if res.barcode else None ) + '", "price": "' + str(int(res.list_price)) + '", "shippingWeight": "' + str(
-                    int(res.weight)) + '", "status": "' + 'New' + '", "categoryId": "' + str(category) + '"}]'
+                    int(res.weight)) + '", "status": "' + 'New' + '"}]'
                 try:
                     res_server = self.post_data_nhanh(data)
                     status_nhanh = 1
@@ -64,15 +59,11 @@ class ProductNhanh(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if self.check_data_odoo:
-            category = False
-            if self.categ_id and self.categ_id.nhanh_product_category_id:
-                category = self.categ_id.nhanh_product_category_id
-            elif self.categ_id and not self.categ_id.nhanh_product_category_id:
-                raise ValidationError(_("You cannot select a category that is not on the express system!"))
-            data = '[{"id": "' + str(self.id) + '","idNhanh":"' + str(self.nhanh_id) + '", "price": "' + str(int(
-                self.list_price)) + '", "name": "' + str(self.name) + '", "shippingWeight": "' + str(
-                int(self.weight)) + '", "status": "' + 'Active' + '", "categoryId": "' + str(category) + '"}]'
+        for item in self:
+            data = '[{"id": "' + str(item.id) + '","idNhanh":"' + str(item.nhanh_id) + '", "price": "' + str(int(
+                item.list_price)) + '", "name": "' + str(item.name) + '", "shippingWeight": "' + str(
+                int(item.weight)) + '", "status": "' + 'Active' + '", "barcode": "' + str(
+                    item.barcode if item.barcode else None) + '"}]'
             self.synchronized_price_nhanh(data)
         return res
 

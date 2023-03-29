@@ -24,3 +24,10 @@ class ResPartner(models.Model):
         default='male')
     date_of_birth = fields.Date(string='Date Of Birth')
     is_passersby = fields.Boolean(defaul=False)
+    is_inter_company_purchase = fields.Boolean(default=False)
+
+    @api.onchange('internal_code')
+    def onchange_is_inter_company_purchase(self):
+        for item in self:
+            code = str(item.internal_code)
+            item.is_inter_company_purchase = True if code.startswith("3000") else False

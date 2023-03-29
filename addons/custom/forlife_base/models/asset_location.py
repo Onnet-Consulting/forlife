@@ -4,7 +4,7 @@ class AssetLocation(models.Model):
     _name = 'asset.location'
 
     _description = 'Asset Location'
-
+    _rec_name = 'location_name'
     location_code = fields.Char('Location Code')
     location_name = fields.Char('Location Name')
     location_address = fields.Char("Location Address")

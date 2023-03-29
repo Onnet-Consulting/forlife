@@ -85,10 +85,20 @@ class StockTransfer(models.Model):
     def _action_out_approve(self):
         self.ensure_one()
         self._validate_product_quantity()
+        self._validate_product_tolerance('out')
         stock_transfer_line_less = self.stock_transfer_line.filtered(lambda r: r.qty_out < r.qty_plan)
         if stock_transfer_line_less:
             self._out_approve_less_quantity(stock_transfer_line_less)
+        if self.work_from:
+            self.work_from.write({
+                'forlife_bom_ids': [(4, self.id)]
+            })
         self.write({'state': 'out_approve'})
+
+    def _validate_product_tolerance(self, type='out'):
+        self.ensure_one()
+        for line in self.stock_transfer_line:
+            line.validate_product_tolerance(type)
 
     def _validate_product_quantity(self):
         self.ensure_one()
@@ -156,6 +166,7 @@ class StockTransfer(models.Model):
 
     def _action_in_approve(self):
         self.ensure_one()
+        self._validate_product_tolerance('in')
         self.write({'state': 'done'})
         return self._action_in_approve_in_process()
 
@@ -347,20 +358,20 @@ class StockTransferLine(models.Model):
         if self.product_id:
             self.uom_id = self.product_id.product_tmpl_id.uom_id.id
 
-    @api.constrains('qty_in', 'qty_out')
-    def constrains_qty_in(self):
-        for rec in self:
+    # @api.constrains('qty_in', 'qty_out')
+    # def constrains_qty_in(self):
+    #     for rec in self:
             # if rec.qty_in == 0 or rec.qty_out == 0:
             #     raise ValidationError(_('You have not re-entered the actual inventory quantity. If you continue, the system will automatically default to the approved quantity !!'))
-            if rec.qty_in > rec.qty_plan:
-                raise ValidationError(_('The number of inputs is greater than or equal to the number of adjustments !!'))
-            if rec.qty_out > rec.qty_plan:
-                raise ValidationError(_('Output quantity is greater than or equal to the number of adjustments !!'))
+            # if rec.qty_in > rec.qty_plan:
+            #     raise ValidationError(_('The number of inputs is greater than or equal to the number of adjustments !!'))
+            # if rec.qty_out > rec.qty_plan:
+            #     raise ValidationError(_('Output quantity is greater than or equal to the number of adjustments !!'))
                 
     @api.depends('qty_plan', 'qty_in')
     def compute_quantity_remaining(self):
         for item in self:
-            item.quantity_remaining = item.qty_plan - item.qty_in
+            item.quantity_remaining = max(item.qty_plan - item.qty_in, 0)
 
     @api.constrains('qty_plan', 'is_from_button', 'qty_plan_tsq')
     def constrains_qty_plan(self):
@@ -384,6 +395,16 @@ class StockTransferLine(models.Model):
                 raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để tạo phiếu dở dang!' % product.name)
             else:
                 raise ValidationError('Số lượng tồn kho sản phẩm %s không đủ để điều chuyển!' % product.name)
+        if self.work_from and self.qty_out > self.work_from.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == product.id).remaining_qty:
+            raise ValidationError('Số lượng điều chuyển lớn hơn số lượng còn lại trong lệnh sản xuất!')
+
+    def validate_product_tolerance(self, type='out'):
+        self.ensure_one()
+        product = self.product_id
+        tolerance = product.tolerance
+        quantity = self.qty_out if type == 'out' else self.qty_in
+        if quantity > self.qty_plan * (1 + (tolerance / 100)):
+            raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
 
 
 class ApprovalLogsStock(models.Model):
@@ -429,3 +450,18 @@ class StockTransferPopupConfirm(models.TransientModel):
     def process_in(self):
         self.ensure_one()
         self.stock_transfer_id._in_approve_with_confirm()
+
+
+class ForlifeProductionFinishedProduct(models.Model):
+    _inherit = 'forlife.production.finished.product'
+
+    forlife_production_stock_transfer_line_ids = fields.Many2many('stock.transfer.line')
+    remaining_qty = fields.Float(string='Remaining Quantity', compute='_compute_remaining_qty')
+
+    # BA xác nhận sau khi xác nhận xuất hàng không thể hủy quay lại nữa
+    @api.depends('forlife_production_stock_transfer_line_ids')
+    def _compute_remaining_qty(self):
+        for rec in self:
+            qty_done = sum([line.qty_out for line in rec.forlife_production_stock_transfer_line_ids.filtered(
+                lambda r: r.state in ('out_approve', 'in_approve', 'done'))])
+            rec.remaining_qty = rec.stock_qty - qty_done
