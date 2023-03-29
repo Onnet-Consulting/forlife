@@ -23,7 +23,7 @@
                         </tr>
                         <tr class="row-input-change-refund">
                             <td>Lý do đổi/trả: </td>
-                            <td colspan="5"><input class="reason"/></td>
+                            <td colspan="5"><PosReasonRefund order_line="props.line"/></td>
                         </tr>
                     </t>
                     <t t-if="props.line.is_new_line">

@@ -10,6 +10,7 @@ class PosOrderLine(models.Model):
     quantity_refunded = fields.Integer('Quantity refunded')
     expire_change_refund_date = fields.Date('Expire change refund_date', compute='_compute_expire_change_refund_date')
     quantity_canbe_refund = fields.Integer('Quantity can be refund', compute='_compute_quantity_canbe_refund')
+    reason_refund_id = fields.Many2one('pos.reason.refund', 'Reason Refund')
 
     def _compute_expire_change_refund_date(self):
         for r in self:

@@ -30,12 +30,13 @@
 
     'data': [
         # Security
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         # Wizards
         # View
         'views/store_views.xml',
         'views/pos_order_views.xml',
         'views/product_template_views.xml',
+        'views/pos_reason_refund.xml',
         # Menu
     ]
 }

@@ -5,3 +5,5 @@ from . import store
 from . import pos_order_line
 from . import product_product
 from . import product_template
+from . import pos_reason_refund
+from . import pos_session
