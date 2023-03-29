@@ -12,7 +12,9 @@
         'hr',
         'contacts',
         'purchase',
-        'account'
+        'account',
+        'forlife_product',
+        'forlife_point_of_sale'
     ],
     'installable': True,
     'auto_install': True,
@@ -24,6 +26,14 @@
         'data/res_partner_data.xml',
         'data/product_category_data.xml',
         'data/stock_warehouse_data.xml',
+        'views/uom_uom_view.xml',
+        'views/account_tax_view.xml',
+        'views/assets_assets_views.xml',
+        'views/res_headbank.xml',
+        'views/res_bank_view.xml',
+        'views/product_config_views.xml',
+        'views/account_analytic_account.xml',
+        'views/product_template_views.xml',
 
         'views/hr_department_views.xml',
         'views/res_company_views.xml',

@@ -11,14 +11,12 @@
                     <field name="short_name_internal"/>
                 </field>
                 <xpath expr="//sheet/group[1]/group[2]/field[@name='company_id']" position="before">
-                    <!-- <field name="warehouse_code"/> -->
                     <field name="warehouse_code_internal"/>
                 </xpath>
                 <page name="technical_info" position="before">
                     <page string="Information" name="general_info">
                         <group>
                             <group>
-                                <field name="warehouse_type_id"/>
                                 <field name="brand_id"/>
                                 <field name="square"/>
                                 <field name="phone"/>

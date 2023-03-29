@@ -323,7 +323,6 @@ msgstr "Loại hàng hoá NCC"
 #. module: forlife_base
 #: model:ir.actions.act_window,name:forlife_base.stock_warehouse_type_action
 #: model:ir.model,name:forlife_base.model_stock_warehouse_type
-#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__warehouse_type_id
 #: model:ir.ui.menu,name:forlife_base.stock_warehouse_type_menu
 #: model_terms:ir.ui.view,arch_db:forlife_base.stock_warehouse_type_view_tree
 msgid "Type of Warehouse"
