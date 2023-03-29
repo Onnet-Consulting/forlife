@@ -7,6 +7,7 @@
             <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_id']" position="before">
+                    <field name="code" required="1"/>
                     <field name="internal_name"/>
                     <field name="address"/>
                 </xpath>

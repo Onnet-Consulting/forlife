@@ -4,7 +4,7 @@ from odoo import api, fields, models
 class AssetsAssets(models.Model):
     _name = 'assets.assets'
 
-    type = fields.Integer('Type')
+    type = fields.Selection([('CCDC', '0'), ('TSCD', '1')], string='Type')
     code = fields.Char('Code', size=24)
     card_no = fields.Char('CardNo', size=24)
     item_code = fields.Char('ItemCode', size=24)
