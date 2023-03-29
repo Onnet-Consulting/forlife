@@ -40,7 +40,14 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
         }
 
         selectedQty() {
-            return this.state.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
+            let result = this.state.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
+            if (this.state.program.additional_reward_product_id) {
+                let qty = this.state.program.additional_reward_product_qty || this.state.qty_remaining;
+                if (qty > 0) {
+                    result += qty;
+                };
+            };
+            return result;
         }
 
         pricePerUnit(reward) {
