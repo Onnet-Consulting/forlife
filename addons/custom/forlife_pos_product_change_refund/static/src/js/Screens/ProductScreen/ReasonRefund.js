@@ -12,7 +12,6 @@ odoo.define('forlife_pos_product_change_refund.ReasonRefund', function (require)
             if (parseInt($select.value) !== 0) {
                 this.props.order_line.reason_refund_id = parseInt($select[0].value)
             }
-            console.log(this)
         }
 
     }

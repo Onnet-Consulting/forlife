@@ -120,8 +120,20 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
         }
 
         _onClickOrder({ detail: clickedOrder }) {
-                clickedOrder.is_change_or_refund_product = true;
+//                if (this.props.is_refund_product) {
+//                    clickedOrder.is_refund_product = true;
+//                }
+//                if (this.props.is_change_product) {
+//                    clickedOrder.is_change_product = true;
+//                }
+                const orderlines = clickedOrder.orderlines
+                for (const orderline of orderlines) {
+                    const toRefundDetail = this._getToRefundDetail(orderline);
+                    const refundableQty = toRefundDetail.orderline.qty - toRefundDetail.orderline.refundedQty;
+                    toRefundDetail.qty = refundableQty;
+                    }
                 this._setOrder(clickedOrder);
+                this._onDoRefund();
         }
         _onCreateNewOrder() {
             this.trigger('close-temp-screen');
@@ -218,7 +230,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             }
         }
         async _onDoRefund() {
-            const order = this.getSelectedSyncedOrder();
+            const order = this.env.pos.get_order();
 
             if (this._doesOrderHaveSoleItem(order)) {
                 if (!this._prepareAutoRefundOnOrder(order)) {
@@ -263,6 +275,12 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             }
 
             if (this.env.pos.get_order().cid !== destinationOrder.cid) {
+                if (this.props.is_refund_product) {
+                    destinationOrder.is_refund_product = true;
+                }
+                if (this.props.is_change_product) {
+                    destinationOrder.is_change_product = true;
+                }
                 this.env.pos.set_order(destinationOrder);
             }
 
@@ -444,6 +462,13 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             } else {
                 const partner = orderline.order.get_partner();
                 const orderPartnerId = partner ? partner.id : false;
+                var expire_change_refund_date = new Date(orderline.expire_change_refund_date);
+                expire_change_refund_date.setHours(0, 0, 0, 0);
+                var today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                var check_button = (expire_change_refund_date < today) ? true: false;
+
                 const newToRefundDetail = {
                     qty: 0,
                     orderline: {
@@ -455,6 +480,9 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                         orderUid: orderline.order.uid,
                         orderBackendId: orderline.order.backendId,
                         orderPartnerId,
+                        quantity_canbe_refund: orderline.quantity_canbe_refund,
+                        expire_change_refund_date: orderline.expire_change_refund_date,
+                        check_button: check_button,
                         tax_ids: orderline.get_taxes().map(tax => tax.id),
                         discount: orderline.discount,
                     },
@@ -475,12 +503,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
          * @returns {Array} refundableDetails
          */
         _getRefundableDetails(partner) {
-            return Object.values(this.env.pos.toRefundLines).filter(
-                ({ qty, orderline, destinationOrderUid }) =>
-                    !this.env.pos.isProductQtyZero(qty) &&
-                    (partner ? orderline.orderPartnerId == partner.id : true) &&
-                    !destinationOrderUid
-            );
+            return Object.values(this.env.pos.toRefundLines)
         }
         /**
          * Prepares the options to add a refund orderline.
@@ -491,8 +514,11 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
         _prepareRefundOrderlineOptions(toRefundDetail) {
             const { qty, orderline } = toRefundDetail;
             return {
-                quantity: -qty,
+                quantity: 0,
                 price: orderline.price,
+                quantity_canbe_refund: orderline.quantity_canbe_refund,
+                expire_change_refund_date: orderline.expire_change_refund_date,
+                check_button: orderline.check_button,
                 extras: { price_manually_set: true },
                 merge: false,
                 refunded_orderline_id: orderline.id,

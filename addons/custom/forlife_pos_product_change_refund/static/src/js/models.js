@@ -47,8 +47,8 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             return json;
         }
 
-        set_reason_refund(reason_id) {
-            this.reason_refund_id = reason_id
+        onchangeValue(event) {
+            this.set_quantity(-parseInt(event.target.value))
         }
     }
     Registries.Model.extend(Orderline, OrderLineAddField);
