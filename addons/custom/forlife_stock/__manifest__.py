@@ -30,7 +30,7 @@
       'views/hr_asset_transfer_view.xml',
       'views/transfer_stock_inventory.xml',
       'views/inventory_adj_approval_view.xml',
-      'views/menu.xml'
+      'views/menus.xml'
   ],
     "assets": {
         "web.assets_backend": [
