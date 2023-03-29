@@ -2,7 +2,7 @@
 <templates id="template" xml:space="preserve">
     <t t-name="forlife_pos_product_change_refund.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension" owl="1">
         <xpath expr="//span[hasclass('price')]" position="after">
-            <t t-if="props.line.order.is_change_product or props.line.order.is_refund_product">
+            <t t-if="props.line.order.is_change_or_refund_product">
                 <table class="tbl_change_refund_product">
                     <tr class="title-change-refund">
                         <td class="set-width">SL đổi/trả</td>

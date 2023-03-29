@@ -18,7 +18,7 @@ class PricelistItem(models.Model):
 
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
-        # _logger.info("**************context*****:%r",self._context)
+        _logger.info("**************context*****:%r",self._context)
         try:
             if (self._context.get('sync_from_mongo')):
                 context = self._context.copy()
