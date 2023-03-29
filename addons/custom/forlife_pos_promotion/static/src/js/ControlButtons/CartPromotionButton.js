@@ -48,6 +48,8 @@ export class CartPromotionButton extends PosComponent {
 
     async onClick() {
         const order = this.env.pos.get_order();
+        // Reset Cart Program
+        order._resetCartPromotionPrograms();
         let orderLines = order.get_orderlines();
         let programs = order.verifyCardProgramOnOrder(orderLines);
         const { confirmed, payload } = await this.showPopup('CartPromotionPopup', {

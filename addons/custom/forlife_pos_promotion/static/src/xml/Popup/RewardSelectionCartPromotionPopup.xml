@@ -40,7 +40,7 @@
                                 <div>SL chọn
                                     <input type="number"
                                            id="quantity" name="SL"
-                                           t-att-value="reward.quantity" min="1" t-att-max="reward.max_qty"
+                                           t-att-value="reward.quantity" min="0" t-att-max="reward.max_qty"
                                            t-on-change="(ev) => this.onChangeQty(reward, ev.target)"
                                     />
 
@@ -48,6 +48,26 @@
                             </div>
                         </li>
                     </t>
+                    <p t-if="this.state.program.program.reward_type == 'cart_get_x_free'">
+                        <label>Chọn sản phẩm tặng khác:</label>
+                        <div>
+                            <input class="" type="number" id="'additional_reward_qty_program_'+state.program.id"
+                                   min="0" t-att-max="state.qty_remaining"
+                                   t-on-change="(ev) => this.onChangeAdditionalRewardQty(ev.target)"
+                                   t-att-value="state.qty_remaining > 0 ? state.qty_remaining : 0"/>
+                            <select t-att-id="'additional_reward_product_selected_'+props.program.id"
+                                    t-on-click="(ev) => this.onChangeAdditionalRewardProduct(ev.target)"
+                                    style="margin-left: 2em;width: 70%;cursor: pointer;background-color: transparent;padding: 0.5em;color: #666666;font-size: 18px;margin-bottom: 0.5em;">
+                                <option t-att-value="0">--Chọn sản phẩm--</option>
+                                <option t-foreach="[...state.program.program.reward_product_ids]"
+                                        t-as="product_id" t-key="product_id" t-att-value="product_id"
+                                        t-att-selected="state.program.additional_reward_product_id == product_id and 'selected' or ''">
+                                    <t t-set="product" t-value="this.env.pos.db.get_product_by_id(product_id)"/>
+                                    <t t-out="product.display_name"/>
+                                </option>
+                            </select>
+                        </div>
+                    </p>
                 </ul>
             </main>
             <footer class="footer">
