@@ -61,9 +61,9 @@ class MainController(http.Controller):
             status = 'draft'
             if data['status'] == 'confirmed':
                 status = 'draft'
-            elif data['status'] in ('packing', 'pickup'):
+            elif data['status'] in ['Packing', 'Pickup']:
                 status = 'sale'
-            elif data['status'] in ('shipping', 'returning'):
+            elif data['status'] in ['Shipping', 'Returning']:
                 status = 'sale'
             elif data['status'] == 'success':
                 status = 'done'
@@ -85,11 +85,15 @@ class MainController(http.Controller):
         elif event_type == 'orderUpdate':
             if data.get('status'):
                 status = 'draft'
-                if data.get('status') == 'Confirmed':
+                if data['status'] == 'confirmed':
+                    status = 'draft'
+                elif data['status'] in ['Packing', 'Pickup']:
                     status = 'sale'
-                elif data.get('status') == 'Success':
+                elif data['status'] in ['Shipping', 'Returning']:
+                    status = 'sale'
+                elif data['status'] == 'success':
                     status = 'done'
-                elif data.get('status') == 'Canceled':
+                elif data['status'] == 'canceled':
                     status = 'cancel'
                 order.sudo().write({
                     'state': status

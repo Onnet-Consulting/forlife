@@ -123,9 +123,9 @@ class SaleOrder(models.Model):
                 status = 'draft'
                 if v['statusCode'] == 'confirmed':
                     status = 'draft'
-                elif v['statusCode'] in ('packing', 'pickup'):
+                elif v['statusCode'] in ['Packing', 'Pickup']:
                     status = 'sale'
-                elif v['statusCode'] in ('shipping', 'returning'):
+                elif v['statusCode'] in ['Shipping', 'Returning']:
                     status = 'sale'
                 elif v['statusCode'] == 'success':
                     status = 'done'

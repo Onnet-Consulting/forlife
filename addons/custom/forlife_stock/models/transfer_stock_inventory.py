@@ -58,7 +58,7 @@ class TransferStockInventory(models.Model):
     def action_approve(self):
         for rec in self:
             data_ex_other = {}
-            if not self.env.ref('forlife_stock.export_inventory_balance').valuation_out_account or not self.env.ref(
+            if not self.env.ref('forlife_stock.export_inventory_balance').valuation_in_account and not self.env.ref(
                     'forlife_stock.enter_inventory_balance').valuation_out_account:
                 raise ValidationError(
                     'Nhập/Xuất cân đối tồn kho - tự kiểm kê chưa có tài khoản định giá tồn kho (xuất hàng)')
