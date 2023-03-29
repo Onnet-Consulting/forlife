@@ -313,16 +313,16 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change
                 }
             }
-//            for(let i=0;i<data.length;i++){
-//                if(data[i].value != false){
-//                    price_dua += data[i].value.price_change
-//                    if(price_dua >= total_dua){
-//                        price_dua += data[i].value.price_change
-//                        data[i].value.price_change = price_dua - total_dua
-//                        break
-//                    }
-//                }
-//            }
+            for(let i=0;i<data.length;i++){
+                if(data[i].value != false){
+                    price_dua += data[i].value.price_change
+                    if(price_dua >= total_dua){
+                        price_dua += data[i].value.price_change
+                        data[i].value.price_change = price_dua - total_dua - data[i].value.price_residual
+                        break
+                    }
+                }
+            }
             this.state.data = data;
         }
     }
