@@ -24,13 +24,6 @@ class ProductCategory(models.Model):
     def get_bravo_values_by_level(self, level):
         records = self.filter_bravo_records()
         bravo_table = self.get_bravo_table_by_level(level)
-        records = records.filtered(lambda rec: len(re.findall('/', rec.parent_path)) == level)
-        company_codes = ['1100', '1200', '1400', '1500']
-        companies = self.env['res.company'].sudo().search([('code', 'in', company_codes)])
-        company_by_code = {c.code: c for c in companies}
-        missing_company_codes = set(company_codes) - set(company_by_code.keys())
-        if missing_company_codes:
-            raise ValidationError(_("Missing company codes: %r") % list(missing_company_codes))
         bravo_column_names = [
             "Code", "Name",
             "ItemAccount", "COGSAccount", "SalesAccount",
@@ -38,6 +31,16 @@ class ProductCategory(models.Model):
             "ItemAccount2", "COGSAccount2", "SalesAccount2",
             "ItemAccount3", "COGSAccount3", "SalesAccount3",
         ]
+        records = records.filtered(lambda rec: len(re.findall('/', rec.parent_path)) == level)
+        if not records:
+            return bravo_table, bravo_column_names, []
+        company_codes = ['1100', '1200', '1400', '1500']
+        companies = self.env['res.company'].sudo().search([('code', 'in', company_codes)])
+        company_by_code = {c.code: c for c in companies}
+        missing_company_codes = set(company_codes) - set(company_by_code.keys())
+        if missing_company_codes:
+            raise ValidationError(_("Missing company codes: %r") % list(missing_company_codes))
+
         values = []
         for record in records:
             value = {"Code": record.category_code, "Name": record.name}
@@ -125,17 +128,19 @@ class ProductCategory(models.Model):
         """1 update query -> 1 record instead of multiple records like other models"""
         bravo_table, column_names, values = self.get_bravo_values_by_level(level)
         if not values:
-            return False
+            return []
 
         queries = []
         for data in values:
             set_query_params = []
             set_query_placeholder = []
             for key, value in data.items():
+                if key == 'Code':
+                    # don't update Code column, it's really awkward
+                    continue
                 set_query_placeholder.append(f"{key}=?")
                 set_query_params.append(value)
-            set_query_params.extend([1, 'GETUTCDATE()'])
-            set_query_placeholder.extend(['Active=?', 'PushDate=?'])
+            set_query_placeholder.extend(["PushDate=GETUTCDATE(), Active=1"])
             set_query_placeholder = ','.join(set_query_placeholder)
             where_query_placeholder = 'Code = ?'
             where_query_param = [data.get('Code')]
@@ -146,6 +151,63 @@ class ProductCategory(models.Model):
             """
             queries.append((query, set_query_params + where_query_param))
 
+        return queries
+
+    def get_bravo_delete_sql_by_level(self, level):
+        records = self.filter_bravo_records()
+        bravo_table = self.get_bravo_table_by_level(level)
+        records = records.filtered(lambda rec: len(re.findall('/', rec.parent_path)) == level)
+        if not records:
+            return []
+        identity_key_values = [{'Code': rec.category_code} for rec in records]
+        set_query_params = []
+        set_query_placeholder = []
+        delete_default_value = self.get_delete_default_value()
+        for key, value in delete_default_value.items():
+            set_query_placeholder.append(f"{key}={value}")
+        set_query_placeholder = ','.join(set_query_placeholder)
+
+        single_where_value = []
+        for upkey, upvalue in identity_key_values[0].items():
+            single_where_value.append(f"{upkey} = ?")
+        single_where_value = "(" + ' and '.join(single_where_value) + ")"
+
+        where_params = []
+        for value in identity_key_values:
+            for ivalue in value.values():
+                where_params.append(ivalue)
+
+        num_param_per_where_condition = max(len(identity_key_values[0].keys()), 1)
+        num_row_per_request = 2000 // num_param_per_where_condition
+        offset = 0
+        queries = []
+
+        while True:
+            sub_where_params = where_params[offset: num_param_per_where_condition * num_row_per_request + offset]
+            actual_num_row = len(sub_where_params) // num_param_per_where_condition
+            if actual_num_row <= 0:
+                break
+            where_query_placholder = " or ".join([single_where_value] * actual_num_row)
+            query = f"""
+                        UPDATE {bravo_table}
+                        SET {set_query_placeholder}
+                        WHERE {where_query_placholder}
+                    """
+            queries.append((query, set_query_params + sub_where_params))
+            offset += num_param_per_where_condition * num_row_per_request
+
+        return queries
+
+    def get_delete_sql(self):
+        delete_sql_level_1 = self.get_bravo_delete_sql_by_level(1)
+        delete_sql_level_2 = self.get_bravo_delete_sql_by_level(2)
+        delete_sql_level_3 = self.get_bravo_delete_sql_by_level(3)
+        delete_sql_level_4 = self.get_bravo_delete_sql_by_level(4)
+        queries = []
+        queries.extend(delete_sql_level_1)
+        queries.extend(delete_sql_level_2)
+        queries.extend(delete_sql_level_3)
+        queries.extend(delete_sql_level_4)
         return queries
 
     def get_update_sql(self, values):
