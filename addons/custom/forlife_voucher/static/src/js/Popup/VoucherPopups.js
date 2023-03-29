@@ -54,6 +54,9 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         delete data[index].value.price_change
                         delete data[index].value.price_residual
                         delete data[index].value.end_date_not_format
+                        delete data[index].value.product_apply_ids
+                        delete data[index].value.is_full_price_applies
+                        delete data[index].value.has_condition
                     }
                  });
                  $('.o_input_priority').each(function( index ) {
@@ -165,6 +168,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
         }
 
         async check() {
+            this.state.data = false;
             this.state.trigger = false;
             this.state.error = [];
             this.state.error_continue = [];
@@ -185,11 +189,11 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 }
 
             });
-            var pos_brand = false
+            var pos_brand = false;
             for(let i=0; i<this.env.pos.pos_branch.length; i++){
                 pos_brand = this.env.pos.pos_branch[i].id
-            }
-            var data = await this.check_voucher(codes)
+            };
+            var data = await this.check_voucher(codes);
             $('.o_input_priority').each(function(index) {
                 $(this).val('')
                 if(data[index].value != false){
@@ -247,7 +251,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         let check_product = false;
                         for(let j = 0; j< this.env.pos.selectedOrder.orderlines.length; j++){
                             if(data[i].value.product_apply_ids.length > 0 && data[i].value.product_apply_ids.includes(this.env.pos.selectedOrder.orderlines[j].product.product_tmpl_id) == true){
-                                if(data[i].value.is_full_price_applies == true && this.env.pos.selectedOrder.orderlines[j].point != null){
+                                if(data[i].value.is_full_price_applies == true && this.env.pos.selectedOrder.orderlines[j].point){
                                     error_continue.push("Sản phẩm "+ this.env.pos.selectedOrder.orderlines[j].product.display_name +" nếu muốn sử dụng voucher sẽ cần được xóa chương trình khuyến mại trên giỏ hàng!")
                                 }
                                 check_product = true
@@ -301,6 +305,11 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                    })
                 data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
                }
+            }
+            for(let i=0;i<data.length;i++){
+                if(data[i].value != false){
+                    data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change
+                }
             }
             this.state.data = data;
         }
