@@ -1058,15 +1058,3 @@ msgstr ""
 #: model:ir.ui.menu,name:forlife_stock.menu_id
 msgid "Other reasons for import and export"
 msgstr "Lý do nhập khác xuất khác"
-
-#. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_stock_landed_cost__date
-msgid "Date"
-msgstr "Ngày Hoạch toán"
-
-#. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_stock_valuation_layer__x_move_date
-#: model_terms:ir.ui.view,arch_db:forlife_stock.view_move_line_tree_inherit
-#: model_terms:ir.ui.view,arch_db:forlife_stock.view_move_tree_inherit
-msgid "Date Done"
-msgstr "Ngày Hoạch toán"
