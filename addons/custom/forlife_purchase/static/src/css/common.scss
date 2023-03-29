@@ -1,5 +1,5 @@
 //change width hàng hóa
-.width-hh th{
+.width-hh th:not(.o_handle_cell):not([data-name="is_close"]) {
     width: 160px !important;
     max-width: 160px !important;
     .text-end {

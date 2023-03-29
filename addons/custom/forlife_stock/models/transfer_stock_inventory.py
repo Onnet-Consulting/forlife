@@ -10,23 +10,23 @@ import base64
 class TransferStockInventory(models.Model):
     _name = 'transfer.stock.inventory'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
-    _description = 'Transfer Stock Inventory'
+    _description = 'Kiểm kê cân tồn kho'
     _rec_name = 'code'
 
     code = fields.Char(string="Code", default='New', copy=False)
     employee_id = fields.Many2one('hr.employee', string="User")
     location_id = fields.Many2one('stock.location', string='Location')
     note = fields.Text(string="Note")
-    transfer_stock_inventory_line_ids = fields.One2many('transfer.stock.inventory.line', 'transfer_stock_inventory_id')
+    transfer_stock_inventory_line_ids = fields.One2many('transfer.stock.inventory.line', 'transfer_stock_inventory_id',
+                                                        copy=True)
     state = fields.Selection(
         tracking=True,
         string="Status",
         selection=[('draft', 'Draft'),
                    ('wait_confirm', 'Wait Confirm'),
-                   ('approved', 'Approved'),
+                   ('approved', 'Done'),
                    ('reject', 'Reject'),
-                   ('cancel', 'Cancel'),
-                   ('done', 'Done')], default='draft', copy=True)
+                   ('cancel', 'Cancel')], default='draft', copy=False)
     reason_reject = fields.Text('Reason Reject')
     reason_cancel = fields.Text('Reason Cancel')
 
@@ -45,10 +45,88 @@ class TransferStockInventory(models.Model):
 
     def action_wait_confirm(self):
         for rec in self:
+            for line in rec.transfer_stock_inventory_line_ids:
+                number_product = self.env['stock.quant'].search(
+                    [('location_id', '=', line.location_id.id), ('product_id', '=', line.product_from_id.id)])
+                if not number_product or sum(number_product.mapped('quantity')) < line.qty_out:
+                    raise ValidationError('Số lượng sản phẩm trong kho không đủ')
+                elif (line.qty_out <= line.qty_in) and (line.total_out != line.total_in):
+                    raise ValidationError(
+                        'Bạn không thể cân tồn khi Số lượng xuất <= số lượng nhập và giá trị xuất khác giá trị nhập')
             rec.write({'state': 'wait_confirm'})
 
     def action_approve(self):
         for rec in self:
+            data_ex_other = {}
+            if not self.env.ref('forlife_stock.export_inventory_balance').valuation_in_account and not self.env.ref(
+                    'forlife_stock.enter_inventory_balance').valuation_out_account:
+                raise ValidationError(
+                    'Nhập/Xuất cân đối tồn kho - tự kiểm kê chưa có tài khoản định giá tồn kho (xuất hàng)')
+            for line in rec.transfer_stock_inventory_line_ids:
+                key_import = str(line.location_id) + 'import'
+
+                key_export = str(line.location_id) + 'export'
+                product_import = (
+                    0, 0,
+                    {'product_id': line.product_to_id.id, 'product_uom_qty': line.qty_in,
+                     'product_uom': line.uom_to_id.id,
+                     'name': line.product_to_id.name, 'price_unit': line.unit_price_to,
+                     'location_id': self.env.ref('forlife_stock.enter_inventory_balance').id,
+                     'location_dest_id': line.location_id.id,
+                     "quantity_done": line.qty_in})
+                product_export = (
+                    0, 0,
+                    {'product_id': line.product_from_id.id, 'product_uom_qty': line.qty_out,
+                     'product_uom': line.uom_from_id.id, 'name': line.product_from_id.name,
+                     'price_unit': line.unit_price_from,
+                     'location_id': line.location_id.id,
+                     'location_dest_id': self.env.ref('forlife_stock.export_inventory_balance').id,
+                     "quantity_done": line.qty_out
+                     })
+                data_import = {
+                    "is_locked": True,
+                    "immediate_transfer": False,
+                    'transfer_stock_inventory_id': rec.id,
+                    'location_id': self.env.ref('forlife_stock.enter_inventory_balance').id,
+                    'reason_type_id': self.env.ref('forlife_stock.reason_type_5').id,
+                    'location_dest_id': self.env.ref('forlife_stock.enter_inventory_balance').id,
+                    'scheduled_date': datetime.now(),
+                    'origin': rec.code,
+                    'other_import': True,
+                    'state': 'assigned',
+                    'picking_type_id': self.env.ref('stock.picking_type_internal').id,
+                    'move_ids_without_package': [product_import]
+                }
+                data_export = {
+                    "is_locked": True,
+                    "immediate_transfer": False,
+                    'transfer_stock_inventory_id': rec.id,
+                    'location_id': line.location_id.id,
+                    'reason_type_id': self.env.ref('forlife_stock.reason_type_4').id,
+                    'location_dest_id': self.env.ref('forlife_stock.export_inventory_balance').id,
+                    'scheduled_date': datetime.now(),
+                    'origin': rec.code,
+                    'other_export': True,
+                    'state': 'assigned',
+                    'picking_type_id': self.env.ref('stock.picking_type_internal').id,
+                    'move_ids_without_package': [product_export]
+                }
+                number_product = self.env['stock.quant'].search(
+                    [('location_id', '=', line.location_id.id), ('product_id', '=', line.product_from_id.id)])
+                if not number_product or sum(number_product.mapped('quantity')) < line.qty_out:
+                    raise ValidationError('Số lượng sản phẩm trong kho không đủ')
+                else:
+                    if data_ex_other.get(key_import):
+                        data_ex_other.get(key_import).get('move_ids_without_package').append(product_import)
+                        data_ex_other.get(key_export).get('move_ids_without_package').append(product_export)
+                    else:
+                        data_ex_other.update({
+                            key_import: data_import,
+                            key_export: data_export
+                        })
+            for item in data_ex_other:
+                result = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
+                    data_ex_other.get(item)).button_validate()
             rec.write({'state': 'approved'})
 
     def action_cancel(self):
@@ -59,29 +137,42 @@ class TransferStockInventory(models.Model):
         for rec in self:
             rec.write({'state': 'draft'})
 
+    def unlink(self):
+        for rec in self:
+            if rec.state != 'draft':
+                raise ValidationError(_("Bạn không thể xóa bản ghi ngoài trạng thái nháp"))
+        return super(TransferStockInventory, self).unlink()
 
+    @api.constrains('transfer_stock_inventory_line_ids')
+    def constrains_request_lines(self):
+        for item in self:
+            if not item.transfer_stock_inventory_line_ids:
+                raise ValidationError(
+                    _('Bạn chưa nhập sản phẩm'))
 
 
 class TransferStockInventoryLine(models.Model):
     _name = "transfer.stock.inventory.line"
 
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
-    product_from_id = fields.Many2one('product.product', string= 'Product From')
+    product_from_id = fields.Many2one('product.product', string='Product From')
     uom_from_id = fields.Many2one('uom.uom', string='Uom', related='product_from_id.uom_id')
     qty_out = fields.Integer(string="Quantity Out")
     unit_price_from = fields.Float(string="Unit Price", related='product_from_id.standard_price')
     total_out = fields.Float(string='Total Out', compute='compute_total_out')
+    mrp_production_from_id = fields.Many2one('forlife.production', string="MRP production from ")
     product_to_id = fields.Many2one('product.product', string="Product To")
     uom_to_id = fields.Many2one('uom.uom', string='Uom', related='product_to_id.uom_id')
     location_id = fields.Many2one('stock.location', string='Location')
     qty_in = fields.Integer(string="Quantity In")
-    unit_price_to = fields.Float(string="Unit Price", related='product_from_id.standard_price')
+    unit_price_to = fields.Float(string="Unit Price")
     total_in = fields.Float(string='Total In', compute='compute_total_in')
+    mrp_production_to_id = fields.Many2one('forlife.production', string="MRP production to ")
 
     @api.depends('qty_out', 'unit_price_from')
     def compute_total_out(self):
         for item in self:
-                item.total_out = item.qty_out * item.unit_price_from
+            item.total_out = item.qty_out * item.unit_price_from
 
     @api.depends('qty_in', 'unit_price_to')
     def compute_total_in(self):
