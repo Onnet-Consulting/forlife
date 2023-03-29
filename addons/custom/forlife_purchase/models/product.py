@@ -88,8 +88,7 @@ class ProductProduct(models.Model):
             """ % (self.env.context.get('supplier_id'))
             self._cr.execute(sql)
             ids = [x[0] for x in self._cr.fetchall()]
-            batches = self.env['product.product'].search([('id', 'in', ids)])
-            return batches.name_get()
+            args.append(('id', 'in', ids))
         return super(ProductProduct, self).name_search(
             name, args, operator=operator, limit=limit)
 

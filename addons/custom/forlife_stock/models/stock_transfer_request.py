@@ -60,12 +60,12 @@ class StockTransferRequest(models.Model):
     def action_approve(self):
         for record in self:
             record.write({'state': 'approved',
-                          'approval_logs_ids': [(0, 0, {
-                              'request_approved_date': date.today(),
-                              'approval_user_id': record.env.user.id,
-                              'note': 'Approved',
-                              'state_request': 'approved',
-                          })],
+                          # 'approval_logs_ids': [(0, 0, {
+                          #     'request_approved_date': date.today(),
+                          #     'approval_user_id': record.env.user.id,
+                          #     'note': 'Approved',
+                          #     'state_request': 'approved',
+                          # })],
                           })
 
     def action_create_stock_transfer(self):
@@ -77,7 +77,8 @@ class StockTransferRequest(models.Model):
                     data_stock_transfer_line = (
                         0, 0, {'product_id': item.product_id.id, 'uom_id': item.uom_id.id,
                                'qty_plan': item.quantity_remaining,
-                               'product_str_id': item.id, 'qty_out': 0, 'qty_in': 0, 'is_from_button': True, 'qty_plan_tsq': item.quantity_remaining})
+                               'product_str_id': item.id, 'qty_out': 0, 'qty_in': 0, 'is_from_button': True,
+                               'qty_plan_tsq': item.quantity_remaining,'stock_request_id': record.id})
                     dic_data = {'state': 'draft',
                                 'stock_request_id': record.id, 'location_id': item.location_id.id,
                                 'location_dest_id': item.location_dest_id.id,

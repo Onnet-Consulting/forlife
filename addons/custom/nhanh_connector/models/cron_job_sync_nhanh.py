@@ -122,11 +122,16 @@ class SaleOrder(models.Model):
                 _logger.info(v)
                 status = 'draft'
                 if v['statusCode'] == 'confirmed':
+                    status = 'draft'
+                elif v['statusCode'] in ('packing', 'pickup'):
+                    status = 'sale'
+                elif v['statusCode'] in ('shipping', 'returning'):
                     status = 'sale'
                 elif v['statusCode'] == 'success':
                     status = 'done'
                 elif v['statusCode'] == 'canceled':
                     status = 'cancel'
+
                 value = {
                     'nhanh_id': v['id'],
                     'nhanh_status': v['statusCode'],
@@ -146,7 +151,7 @@ class SaleOrder(models.Model):
     @api.model
     def start_sync_customer_from_nhanh(self):
         ## Danh sách khách hàng
-        _logger.info("----------------Start Sync orders from NhanhVn --------------------")
+        _logger.info("----------------Start Sync customer from NhanhVn --------------------")
 
         today = datetime.datetime.today().strftime("%y/%m/%d")
         previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
@@ -170,11 +175,11 @@ class SaleOrder(models.Model):
                 res = res_server.json()
             except Exception as ex:
                 status_post = 0
-                _logger.info(f'Get orders from NhanhVn error {ex}')
+                _logger.info(f'Get customer from NhanhVn error {ex}')
                 return False
             if status_post == 1:
                 if res['code'] == 0:
-                    _logger.info(f'Get order error {res["messages"]}')
+                    _logger.info(f'Get customer error {res["messages"]}')
                     return False
                 else:
                     for item in res.get('data').get('customers'):
@@ -202,7 +207,7 @@ class SaleOrder(models.Model):
         # Cập nhật danh mục trước khi tạo product
         self.data_product_category_nhanh()
         ## Danh sách sản phẩm
-        _logger.info("----------------Start Sync orders from NhanhVn --------------------")
+        _logger.info("----------------Start Sync product from NhanhVn --------------------")
 
         today = datetime.datetime.today().strftime("%y/%m/%d")
         previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
@@ -222,11 +227,11 @@ class SaleOrder(models.Model):
             res = res_server.json()
         except Exception as ex:
             status_post = 0
-            _logger.info(f'Get orders from NhanhVn error {ex}')
+            _logger.info(f'Get product from NhanhVn error {ex}')
             return False
         if status_post == 1:
             if res['code'] == 0:
-                _logger.info(f'Get order error {res["messages"]}')
+                _logger.info(f'Get product error {res["messages"]}')
                 return False
             else:
                 for item in res.get('data').get('products'):
@@ -254,7 +259,7 @@ class SaleOrder(models.Model):
                                 dic_data_product.update({'categ_id': category.id})
                             self.env['product.template'].create(dic_data_product)
                     else:
-                        _logger.info(f'Get orders from NhanhVn error')
+                        _logger.info(f'Get product from NhanhVn error')
         ## End
 
     @api.model

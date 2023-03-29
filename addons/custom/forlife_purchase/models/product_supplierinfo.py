@@ -25,6 +25,7 @@ class SupplierInfo(models.Model):
             if record.search_count([('date_start', '=', record.date_start),
                                     ('date_end', '=', record.date_end),
                                     ('partner_id', '=', record.partner_id.id),
+                                    ('product_id', '=', record.product_id.id),
                                     ('product_tmpl_id', '=', record.product_tmpl_id.id),
                                     ('id', '!=', record.id)]) > 1:
                 raise ValidationError(_('Product already exists at the effective date !!'))

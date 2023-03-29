@@ -8,6 +8,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='detailed_type']" position="after">
                     <field name="department_id" attrs="{'invisible':[('detailed_type', '!=', 'asset')]}"/>
+                    <field name="employee_id" attrs="{'invisible':[('detailed_type', '!=', 'asset')]}"/>
+                    <field name="account_analytic_id" attrs="{'invisible':[('detailed_type', '!=', 'asset')]}"/>
+                    <field name="asset_location_id" attrs="{'invisible':[('detailed_type', '!=', 'asset')]}"/>
                 </xpath>
             </field>
         </record>

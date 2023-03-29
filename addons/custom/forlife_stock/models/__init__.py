@@ -8,3 +8,5 @@ from . import transfer_stock_inventory
 from . import stock_custom_location
 from . import inventory_adj_approval
 from . import forlife_reason_type
+from . import product_template
+from . import stock_warehouse
