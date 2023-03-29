@@ -23,8 +23,8 @@ class SaleOrder(models.Model):
                     for move_line_id in move_line_ids:
                         imei.append(move_line_id.lot_id.name)
                     quantity = self.env['voucher.voucher'].search_count(
-                        [('sale_id', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
-                elif line.product_id.program_voucher_id.type == 'e' and line.product_id.program_voucher_id.purpose_id.ref.upper() == 'B':
+                        [('sale_id', '=', self.id), ('purpose_id.purpose_voucher', '=', 'pay'), ('name', 'in', imei)])
+                elif line.product_id.program_voucher_id.type == 'e' and line.product_id.program_voucher_id.purpose_id.purpose_voucher == 'pay':
                     quantity = line.qty_invoiced
                 else:
                     quantity = 0

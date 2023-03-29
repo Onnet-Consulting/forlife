@@ -88,8 +88,8 @@ class PosOrder(models.Model):
             if line.product_id.program_voucher_id.type == 'v':
                 imei = line.pack_lot_ids.mapped('lot_name')
                 quantity = self.env['voucher.voucher'].search_count(
-                    [('order_pos', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
-            elif line.product_id.program_voucher_id.type == 'e' and line.product_id.program_voucher_id.purpose_id.ref.upper() == 'B':
+                    [('order_pos', '=', self.id), ('purpose_id.purpose_voucher', '=', 'pay'), ('name', 'in', imei)])
+            elif line.product_id.program_voucher_id.type == 'e' and line.product_id.program_voucher_id.purpose_id.purpose_voucher == 'pay':
                 quantity = line.qty
             else:
                 quantity = 0
