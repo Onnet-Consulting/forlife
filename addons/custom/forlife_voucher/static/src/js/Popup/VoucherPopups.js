@@ -296,9 +296,9 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                             if(!item.point){
                                 item.point = 0
                             }
-                            if(data[i].value.price_residual >= (item.original_price + item.point - so_tien_da_tra[item_id])){
-                                data[i].value.price_residual = data[i].value.price_residual-(item.original_price - so_tien_da_tra[item_id] + item.point);
-                                so_tien_da_tra[item_id] = item.original_price + item.point;
+                            if(data[i].value.price_residual >= (item.price*item.quantity + item.point - so_tien_da_tra[item_id])){
+                                data[i].value.price_residual = data[i].value.price_residual-(item.price*item.quantity - so_tien_da_tra[item_id] + item.point);
+                                so_tien_da_tra[item_id] = item.price*item.quantity + item.point;
                             }else{
                                 so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
                                 data[i].value.price_residual = 0;
@@ -313,15 +313,16 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change
                 }
             }
-//            for(let i=0;i<data.length;i++){
-//                if(data[i].value != false){
-//                    price_dua += data[i].value.price_change
-//                    if(price_dua >= total_dua){
-//                        price_dua += data[i].value.price_change
-//                        data[i].value.price_change = price_dua - total_dua - data[i].value.price_residual
-//                        break
-//                    }
-//                }
+//            for(let i = 0; i < data.length; i ++){
+//                if(codes[i].value != false && data[i].value != false){
+//                   this.env.pos.selectedOrder.orderlines.forEach(function(item){
+//                        if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.product_tmpl_id)) && !(item.point && data[i].value.is_full_price_applies)){
+//                            if(data[i].value.price_residual >= total_dua){
+//                                data[i].value.price_residual = total_dua
+//                            }
+//                        }
+//                   })
+//               }
 //            }
             this.state.data = data;
         }
