@@ -11,3 +11,10 @@ from . import stock_warehouse
 from . import account_move_line
 from . import asset_location
 from . import occasion_code
+from . import uom_uom
+from . import account_tax
+from . import asset_asset
+from . import res_bank
+from . import res_headbank
+from . import account_analytic_account
+from . import product_config

@@ -23,8 +23,8 @@ class SaleOrder(models.Model):
                     for move_line_id in move_line_ids:
                         imei.append(move_line_id.lot_id.name)
                     quantity = self.env['voucher.voucher'].search_count(
-                        [('sale_id', '=', self.id), ('purpose_id.ref', '=ilike', 'B'), ('name', 'in', imei)])
-                elif line.product_id.program_voucher_id.type == 'e' and line.product_id.program_voucher_id.purpose_id.ref.upper() == 'B':
+                        [('sale_id', '=', self.id), ('purpose_id.purpose_voucher', '=', 'pay'), ('name', 'in', imei)])
+                elif line.product_id.program_voucher_id.type == 'e' and line.product_id.program_voucher_id.purpose_id.purpose_voucher == 'pay':
                     quantity = line.qty_invoiced
                 else:
                     quantity = 0
@@ -70,6 +70,8 @@ class SaleOrder(models.Model):
                 'apply_contemp_time': program_voucher_id.apply_contemp_time,
                 'product_voucher_id': program_voucher_id.product_id.id if program_voucher_id.product_id else None,
                 'purpose_id': program_voucher_id.purpose_id.id if program_voucher_id.purpose_id else None,
-                'sale_id': line.order_id.id
+                'sale_id': line.order_id.id,
+                'product_apply_ids':[(6, False, program_voucher_id.product_apply_ids.ids)],
+                'is_full_price_applies': program_voucher_id.is_full_price_applies
             }] * int(line.product_uom_qty - line.x_qty_voucher))
             line.x_qty_voucher = line.product_uom_qty

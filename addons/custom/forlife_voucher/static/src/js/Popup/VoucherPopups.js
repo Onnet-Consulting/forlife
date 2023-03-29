@@ -16,6 +16,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             super.setup();
             this.state = useState({
                 error: [],
+                error_continue:[],
                 check_error: false,
                 data: false,
                 valid: true,
@@ -53,6 +54,9 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         delete data[index].value.price_change
                         delete data[index].value.price_residual
                         delete data[index].value.end_date_not_format
+                        delete data[index].value.product_apply_ids
+                        delete data[index].value.is_full_price_applies
+                        delete data[index].value.has_condition
                     }
                  });
                  $('.o_input_priority').each(function( index ) {
@@ -134,7 +138,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     data[i].value = false;
                 }
             }
-            this.state.data = data
+            this.state.data = data;
 //
         }
 
@@ -164,8 +168,10 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
         }
 
         async check() {
+            this.state.data = false;
             this.state.trigger = false;
-            this.state.error = []
+            this.state.error = [];
+            this.state.error_continue = [];
             var self = this;
             var codes = []
             $('.o_price_used').each(function( index ){
@@ -183,31 +189,41 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 }
 
             });
-            var pos_brand = false
+            var pos_brand = false;
             for(let i=0; i<this.env.pos.pos_branch.length; i++){
                 pos_brand = this.env.pos.pos_branch[i].id
-            }
-            var data = await this.check_voucher(codes)
+            };
+            var data = await this.check_voucher(codes);
             $('.o_input_priority').each(function(index) {
+                $(this).val('')
                 if(data[index].value != false){
                    $(this).val(index+1)
                 }
             });
+            var total_price_residual=0
+            var total_price_order_line = 0;
             var data_value = []
             for(let i = 0; i < data.length; i ++){
                 if(codes[i].value != false && data[i].value != false){
+                    total_price_residual+= data[i].value.price_residual
                     data_value.push(data[i].value)
                     if(data[i].value.price_change == 0){
                         data[i].value.price_change = data[i].value.price_residual
                     }
                 }
             }
+
+//            validate error expect
+            var priority = []
             for(let i = 0; i < data.length; i ++){
                 let error = [];
+                let error_continue = [];
                 if(codes[i].value != false && data[i].value == false){
                     error.push("Không tìm thấy mã voucher hợp lệ!")
                 }
                 if(codes[i].value != false && data[i].value != false){
+                        let pri = i+1;
+                        priority.push(pri)
                         if(data[i].value.brand_id != pos_brand){
                             error.push("Không trùng khớp mã thương hiệu!")
                         }
@@ -232,12 +248,81 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         if(this.env.pos.selectedOrder.creation_date < new Date(data[i].value.start_date)){
                             error.push("Mã voucher chưa đến thời gian sử dụng!")
                         }
+                        let check_product = false;
+                        for(let j = 0; j< this.env.pos.selectedOrder.orderlines.length; j++){
+                            if(data[i].value.product_apply_ids.length > 0 && data[i].value.product_apply_ids.includes(this.env.pos.selectedOrder.orderlines[j].product.product_tmpl_id) == true){
+                                if(data[i].value.is_full_price_applies == true && 'point' in this.env.pos.selectedOrder.orderlines[j] && this.env.pos.selectedOrder.orderlines[j].point > 0){
+                                    error_continue.push("Sản phẩm "+ this.env.pos.selectedOrder.orderlines[j].product.display_name +" nếu muốn sử dụng voucher sẽ cần được xóa chương trình khuyến mại trên giỏ hàng!")
+                                }
+                                check_product = true
+                            }else if(data[i].value.product_apply_ids.length == 0){
+                                check_product = true
+                            }
+                        }
+                        if(check_product == false){
+                            error.push("Sản phẩm được áp dụng voucher không có trong giỏ hàng!")
+                        }
                         if(this.env.pos.selectedOrder.creation_date > new Date(data[i].value.end_date_not_format)){
                             error.push("Mã voucher đã hết thời gian sử dụng!")
                         }
                 }
                 this.state.error.push(error)
+                this.state.error_continue.push(error_continue)
             }
+//            validate price fill
+            for(let i = 0; i < data.length; i ++){
+                if(data[i].value != false){
+                   if(data[i].value.product_apply_ids.length == 0){
+                        data[i].value.has_condition = false;
+                   }
+                   if(data[i].value.product_apply_ids.length > 0){
+                        data[i].value.has_condition = true;
+                   }
+                }
+            }
+            var so_tien_da_tra = {};
+            var gia_tri_con_lai_ban_dau =0;
+            var total_dua = this.env.pos.selectedOrder.get_due();
+            var price_dua = 0;
+            for(let i = 0; i < data.length; i ++){
+                if(codes[i].value != false && data[i].value != false){
+                   gia_tri_con_lai_ban_dau = data[i].value.price_residual
+                   this.env.pos.selectedOrder.orderlines.forEach(function(item){
+                        if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.product_tmpl_id)) && !(item.point && data[i].value.is_full_price_applies)){
+                            let item_id = item.id.toString()
+                            if(!so_tien_da_tra[item_id]){
+                                so_tien_da_tra[item_id] = 0;
+                            }
+                            if(!item.point){
+                                item.point = 0
+                            }
+                            if(data[i].value.price_residual >= (item.original_price + item.point - so_tien_da_tra[item_id])){
+                                data[i].value.price_residual = data[i].value.price_residual-(item.original_price - so_tien_da_tra[item_id] + item.point);
+                                so_tien_da_tra[item_id] = item.original_price + item.point;
+                            }else{
+                                so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
+                                data[i].value.price_residual = 0;
+                            }
+                        }
+                   })
+                data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
+               }
+            }
+            for(let i=0;i<data.length;i++){
+                if(data[i].value != false){
+                    data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change
+                }
+            }
+//            for(let i=0;i<data.length;i++){
+//                if(data[i].value != false){
+//                    price_dua += data[i].value.price_change
+//                    if(price_dua >= total_dua){
+//                        price_dua += data[i].value.price_change
+//                        data[i].value.price_change = price_dua - total_dua - data[i].value.price_residual
+//                        break
+//                    }
+//                }
+//            }
             this.state.data = data;
         }
     }
