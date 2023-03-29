@@ -338,7 +338,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     _programIsApplicableAutomatically(program) {
 
-        if (program.promotion_type == 'cart') {return false;};
         if (program.with_code) {
             if (this.activatedInputCodes) {
                 if (!this.activatedInputCodes.map(code => code.program_id).includes(program.id)) {return false;};
@@ -855,7 +854,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         var comboProgramToCheck = new Set();
         var programIsVerified = new Object();
         for (const program of toVerifyPromotionPrograms) {
-            if (this._programIsApplicableAutomatically(program)) {
+            if (this._programIsApplicableAutomatically(program) && program.promotion_type != 'cart') {
                 comboProgramToCheck.add(program);
             };
         };
@@ -989,6 +988,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
         let result = [];
         for (let program of cardPrograms) {
+            if (!this._programIsApplicableAutomatically(program)) {
+                continue
+            };
+
             const amountCheck = totalsPerProgram[program.id]['taxed']
             if (program.order_amount_min > amountCheck) {
                 continue;
@@ -1007,11 +1010,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let to_reward_lines = [];
             let vouchers = [];
             if (program.reward_type == 'cart_get_x_free') {
-                to_reward_lines = orderLines.filter(l=>!l.is_applied_promotion()).filter(l=>program.reward_product_ids.has(l.product.id));
+                to_reward_lines = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0).filter(l=>program.reward_product_ids.has(l.product.id));
             } else if (program.reward_type == 'cart_get_voucher') {
                 vouchers = [];
             } else {
-                to_discount_lines = orderLines.filter(l=>!l.is_applied_promotion()).filter(l=>program.discount_product_ids.has(l.product.id));
+                to_discount_lines = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0).filter(l=>program.discount_product_ids.has(l.product.id));
             };
             result.push({
                 id: program.id,
