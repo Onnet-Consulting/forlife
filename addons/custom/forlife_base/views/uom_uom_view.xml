@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
-        <record model="ir.ui.view" id="uom_category_data_inherit">
-            <field name="name">uom.category.data.inherit</field>
-            <field name="model">uom.category</field>
-            <field name="inherit_id" ref="uom.product_uom_categ_form_view"/>
+        <record model="ir.ui.view" id="uom_uom_data_inherit">
+            <field name="name">uom.uom.data.inherit</field>
+            <field name="model">uom.uom</field>
+            <field name="inherit_id" ref="uom.product_uom_tree_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='uom_ids']//field[@name='name']" position="before">
+                <xpath expr="//field[@name='name']" position="before">
                     <field name="code" required="1"/>
                 </xpath>
             </field>
