@@ -146,3 +146,7 @@ class PosOrder(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_journal_line")
         action['domain'] = [('id', 'in', self.change_payment_move_ids.ids)]
         return action
+
+    @api.model
+    def check_stock_quant_inventory(self, params):
+        print(params)
