@@ -11,5 +11,15 @@
                 </xpath>
             </field>
         </record>
+        <record model="ir.ui.view" id="uom_uom_data_inherit_form">
+            <field name="name">uom.uom.data.inherit.form</field>
+            <field name="model">uom.uom</field>
+            <field name="inherit_id" ref="uom.product_uom_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='category_id']" position="after">
+                    <field name="code" required="1"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
