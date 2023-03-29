@@ -43,3 +43,84 @@ access_occasion_code_system,occasion_code system,model_occasion_code,base.group_
 
 access_occasion_group_user,occasion_group user,model_occasion_group,base.group_user,1,0,0,0
 access_occasion_group_system,occasion_group system,model_occasion_group,base.group_system,1,1,1,1
+
+access_assets_assets_group_user,assets_assets user,model_assets_assets,base.group_user,1,0,0,0
+access_assets_assets_group_system,assets_assets system,model_assets_assets,base.group_system,1,1,1,1
+
+access_res_headbank_group_user,res_headbank user,model_res_headbank,base.group_user,1,0,0,0
+access_res_headbank_group_system,res_headbank system,model_res_headbank,base.group_system,1,1,1,1
+
+access_bank_level_group_user,bank_level user,model_bank_level,base.group_user,1,0,0,0
+access_bank_level_group_system,bank_level system,model_bank_level,base.group_system,1,1,1,1
+
+access_object_product_group_user,object_product user,model_object_product,base.group_user,1,0,0,0
+access_object_product_group_system,object_product system,model_object_product,base.group_system,1,1,1,1
+
+access_branch_product_group_user,branch_product user,model_branch_product,base.group_user,1,0,0,0
+access_branch_product_group_system,branch_product system,model_branch_product,base.group_system,1,1,1,1
+
+access_material_product_group_user,material_product user,model_material_product,base.group_user,1,0,0,0
+access_material_product_group_system,material_product system,model_material_product,base.group_system,1,1,1,1
+
+access_sub_class_one_group_user,sub_class_one user,model_sub_class_one,base.group_user,1,0,0,0
+access_sub_class_one_group_system,sub_class_one system,model_sub_class_one,base.group_system,1,1,1,1
+
+access_sub_class_two_group_user,sub_class_two user,model_sub_class_two,base.group_user,1,0,0,0
+access_sub_class_two_group_system,sub_class_two system,model_sub_class_two,base.group_system,1,1,1,1
+
+access_sub_class_three_group_user,sub_class_three user,model_sub_class_three,base.group_user,1,0,0,0
+access_sub_class_three_group_system,sub_class_three system,model_sub_class_three,base.group_system,1,1,1,1
+
+access_sub_class_four_group_user,sub_class_four user,model_sub_class_four,base.group_user,1,0,0,0
+access_sub_class_four_group_system,sub_class_four system,model_sub_class_four,base.group_system,1,1,1,1
+
+access_sub_class_five_group_user,sub_class_five user,model_sub_class_five,base.group_user,1,0,0,0
+access_sub_class_five_group_system,sub_class_five system,model_sub_class_five,base.group_system,1,1,1,1
+
+access_sub_class_six_group_user,sub_class_six user,model_sub_class_six,base.group_user,1,0,0,0
+access_sub_class_six_group_system,sub_class_six system,model_sub_class_six,base.group_system,1,1,1,1
+
+access_sub_class_seven_group_user,sub_class_seven user,model_sub_class_seven,base.group_user,1,0,0,0
+access_sub_class_seven_group_system,sub_class_seven system,model_sub_class_seven,base.group_system,1,1,1,1
+
+access_sub_class_eight_group_user,sub_class_eight user,model_sub_class_eight,base.group_user,1,0,0,0
+access_sub_class_eight_group_system,sub_class_eight system,model_sub_class_eight,base.group_system,1,1,1,1
+
+access_sub_class_nine_group_user,sub_class_nine user,model_sub_class_nine,base.group_user,1,0,0,0
+access_sub_class_nine_group_system,sub_class_nine system,model_sub_class_nine,base.group_system,1,1,1,1
+
+access_sub_class_ten_group_user,sub_class_ten user,model_sub_class_ten,base.group_user,1,0,0,0
+access_sub_class_ten_group_system,sub_class_ten system,model_sub_class_ten,base.group_system,1,1,1,1
+
+access_unit_priority_group_user,unit_priority user,model_unit_priority,base.group_user,1,0,0,0
+access_unit_priority_group_system,unit_priority system,model_unit_priority,base.group_system,1,1,1,1
+
+access_uses_product_group_user,uses_product user,model_uses_product,base.group_user,1,0,0,0
+access_uses_product_group_system,uses_product system,model_uses_product,base.group_system,1,1,1,1
+
+access_properties_one_product_group_user,properties_one_product user,model_properties_one_product,base.group_user,1,0,0,0
+access_properties_one_product_group_system,properties_one_product system,model_properties_one_product,base.group_system,1,1,1,1
+
+access_properties_two_product_group_user,properties_two_product user,model_properties_two_product,base.group_user,1,0,0,0
+access_properties_two_product_group_system,properties_two_product system,model_properties_two_product,base.group_system,1,1,1,1
+
+access_designer_product_group_user,designer_product user,model_designer_product,base.group_user,1,0,0,0
+access_designer_product_group_system,designer_product system,model_designer_product,base.group_system,1,1,1,1
+
+access_origin_product_group_user,origin_product user,model_origin_product,base.group_user,1,0,0,0
+access_origin_product_group_system,origin_product system,model_origin_product,base.group_system,1,1,1,1
+
+access_source_product_group_user,source_product user,model_source_product,base.group_user,1,0,0,0
+access_source_product_group_system,source_product system,model_source_product,base.group_system,1,1,1,1
+
+access_year_product_group_user,year_product user,model_year_product,base.group_user,1,0,0,0
+access_year_product_group_system,year_product system,model_year_product,base.group_system,1,1,1,1
+
+access_season_product_group_user,season_product user,model_season_product,base.group_user,1,0,0,0
+access_season_product_group_system,season_product system,model_season_product,base.group_system,1,1,1,1
+
+access_type_product_group_user,type_product user,model_type_product,base.group_user,1,0,0,0
+access_type_product_group_system,type_product system,model_type_product,base.group_system,1,1,1,1
+
+access_main_fabric_material_group_user,main_fabric_material user,model_main_fabric_material,base.group_user,1,0,0,0
+access_main_fabric_material_group_system,main_fabric_material system,model_main_fabric_material,base.group_system,1,1,1,1

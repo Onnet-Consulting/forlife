@@ -13,18 +13,6 @@
             </field>
         </record>
 
-<!--        <record id="res_asset_location_view_search" model="ir.ui.view">-->
-<!--                <field name="name">res.state.district.view.search</field>-->
-<!--                <field name="model">asset.location</field>-->
-<!--                <field name="arch" type="xml">-->
-<!--                    <search>-->
-<!--                        <field name="location_"/>-->
-<!--                        <field name="code"/>-->
-<!--                        <separator/>-->
-<!--                        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>-->
-<!--                    </search>-->
-<!--                </field>-->
-<!--            </record>-->
         <record id="res_asset_location_action" model="ir.actions.act_window">
             <field name="name">Asset Location</field>
             <field name="res_model">asset.location</field>
