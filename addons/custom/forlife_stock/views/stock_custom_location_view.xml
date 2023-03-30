@@ -8,6 +8,10 @@
             <field name="arch" type="xml">
                 <tree>
                         <field name="name"/>
+                        <field name="code"/>
+                        <field name="type_other"/>
+                        <field name="valuation_out_account" attrs="{'required': [('type_other', '=', 'incoming')], 'invisible': [('type_other', '!=', 'incoming')]}"/>
+                        <field name="valuation_in_account" attrs="{'required': [('type_other', '=', 'outcoming')], 'invisible': [('type_other', '!=', 'outcoming')]}"/>
                 </tree>
             </field>
         </record>
@@ -20,7 +24,9 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <h2><field name="name" placeholder="Name..."/></h2>
+                        <div class="oe_title">
+                            <h2><field name="name" placeholder="Name..."/></h2>
+                        </div>
                         <group>
                             <group class="col-3">
                                 <field name="code"/>
@@ -28,14 +34,13 @@
                             </group>
                             <group>
                                 <field name="reason_type_id"/>
+                                <field name="is_price_unit" attrs="{'invisible': [('type_other', '!=', 'incoming')]}"/>
                             </group>
                         </group>
                         <group string="Thông tin kế toán">
                             <group>
                                 <field name="valuation_out_account"
                                        attrs="{'required': [('type_other', '=', 'incoming')], 'invisible': [('type_other', '!=', 'incoming')]}"/>
-                            </group>
-                            <group>
                                 <field name="valuation_in_account"
                                        attrs="{'required': [('type_other', '=', 'outcoming')], 'invisible': [('type_other', '!=', 'outcoming')]}"/>
                             </group>
@@ -55,6 +60,7 @@
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('forlife_stock.other_reasons_for_import_and_export_tree_view_id')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.other_reasons_for_import_and_export_form_view_id')})]"/>
             <field name="domain">[('type_other', '!=', None)]</field>
+            <field name="context">{}</field>
         </record>
 
         <!-- Menu Item -->

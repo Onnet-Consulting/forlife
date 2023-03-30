@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="reason_type_1" model="forlife.reason.type">
             <field name="code">01</field>
             <field name="name">Xuất chi phí quản lý</field>
@@ -19,6 +19,10 @@
         <record id="reason_type_4" model="forlife.reason.type">
             <field name="code">04</field>
             <field name="name">Xuất cân đối tồn kho</field>
+        </record>
+        <record id="reason_type_5" model="forlife.reason.type">
+            <field name="code">05</field>
+            <field name="name">Nhập cân đối tồn kho</field>
         </record>
     </data>
 </odoo>

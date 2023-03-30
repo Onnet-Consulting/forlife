@@ -5,7 +5,7 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
     const Registries = require('point_of_sale.Registries');
     const { _lt } = require('@web/core/l10n/translation');
 
-    const { useState } = owl;
+    const { useState, onWillStart, onMounted } = owl;
 
     class CartPromotionPopup extends AbstractAwaitablePopup {
 
@@ -13,6 +13,13 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
             super.setup();
             this.state = useState({
                 programs: this.props.programs || [],
+            });
+            this.state.programs.forEach(option => {
+                if (option.reward_line_vals) {
+                    option.selectedQty = option.reward_line_vals.filter(l => l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0)
+                } else {
+                    option.selectedQty = 0
+                }
             });
         }
 
@@ -43,6 +50,13 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
                 reward_line_vals: programOption.reward_line_vals,
                 program: programOption,
                 programOptions: this.props.programs
+            });
+            this.state.programs.forEach(option => {
+                if (option.reward_line_vals) {
+                    option.selectedQty = option.reward_line_vals.filter(l => l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0)
+                } else {
+                    option.selectedQty = 0
+                }
             });
         }
 

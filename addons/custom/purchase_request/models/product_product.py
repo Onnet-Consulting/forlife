@@ -6,6 +6,10 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     department_id = fields.Many2one('hr.department', string="Department")
+    employee_id = fields.Many2one('hr.employee', string="Employee")
+    account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
+    asset_location_id = fields.Many2one('asset.location', string="Asset Location")
+
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super().fields_get(allfields=allfields, attributes=attributes)

@@ -79,6 +79,13 @@ msgid "Cost Center"
 msgstr "Trung tâm chi phí"
 
 #. module: forlife_purchase
+#: model:ir.actions.act_window,name:forlife_purchase.cost_center_action
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__request_purchases
+#: model_terms:ir.ui.view,arch_db:forlife_purchase.cost_center_tree
+msgid "Purchases"
+msgstr "Phiếu yêu cầu"
+
+#. module: forlife_purchase
 #: model:ir.model,name:forlife_purchase.model_cost_center
 msgid "Cost center"
 msgstr "Trung tâm chi phí"
@@ -463,7 +470,9 @@ msgstr "Đã có hóa đơn"
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_cost_line__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_exchange_rate__product_id
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__product_id
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_service_cost__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_material__product_id
@@ -503,6 +512,7 @@ msgstr "Thành tiền (USD)"
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_exchange_rate__vnd_amount
 msgid "VND Amount"
 msgstr "Thành tiền (VND)"
+
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_cost_line__total_vnd_amount
@@ -702,6 +712,8 @@ msgstr "Chi phí dịch vụ"
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__description
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_material__description
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_service_cost__description
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__description
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__description
 msgid "Description"
 msgstr "Mô tả"
 
@@ -771,3 +783,91 @@ msgstr "Ngày dự kiến"
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.inherit_purchase_order_form_view
 msgid "Create Invoice"
 msgstr "Tạo hóa đơn"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__forlife_production_id
+msgid "Forlife Production"
+msgstr "Lệnh sản xuất"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__forlife_production_name
+msgid "Production Order Name"
+msgstr "Tên lệnh sản xuất"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__unit_prices
+msgid "Unit Prices"
+msgstr "Giá thành phẩm"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__uom_id
+msgid "Unit of Measure"
+msgstr "Đơn vị tính"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__uom_id
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__uom_id
+msgid "Unit of Measure"
+msgstr "Đơn vị tính lưu kho"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__production_uom_id
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__production_uom_id
+msgid "Production UoM"
+msgstr "Đơn vị tính lệnh sản xuất"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__conversion_coefficient
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__conversion_coefficient
+msgid "Conversion Coefficient"
+msgstr "Hệ số quy đổi"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__rated_level
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__rated_level
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_service_cost__rated_level
+msgid "Rated Level"
+msgstr "Định mức"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__loss
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__loss
+msgid "Loss %"
+msgstr "Hao hụt %"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__total
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__total
+msgid "Total"
+msgstr "Tổng nhu cầu"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__forlife_bom_ingredients_ids
+#: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_bom_form
+msgid "Ingredients"
+msgstr "Phụ liệu"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__write_date
+msgid "Last Update on"
+msgstr "Ngày cập nhật"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__product_id
+msgid "Product"
+msgstr "Mã thành phẩm"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__quantity
+msgid "Quantity"
+msgstr "Số lượng sản xuất"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__description
+msgid "Description"
+msgstr "Tên thành phẩm"

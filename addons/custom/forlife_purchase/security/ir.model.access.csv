@@ -10,6 +10,7 @@ access_purchase_order_cost_line,purchase_order_cost_line,model_purchase_order_co
 access_forlife_bom,forlife_bom,model_forlife_bom,,1,1,1,1
 access_forlife_bom_material,forlife_bom_material,model_forlife_bom_material,,1,1,1,1
 access_forlife_bom_service_cost,forlife_bom_service_cost,model_forlife_bom_service_cost,,1,1,1,1
+access_forlife_bom_ingredients,forlife_bom_ingredients,model_forlife_bom_ingredients,,1,1,1,1
 access_stock_warehouse_type,stock_warehouse_type,model_stock_warehouse_type,,1,1,1,1
 access_supplier_group,supplier group,model_supplier_group,,1,1,1,1
 
@@ -17,6 +18,3 @@ access_purchase_order,purchase_order,model_purchase_order,forlife_purchase.admin
 access_purchase_order,purchase_order,model_purchase_order,forlife_purchase.user_purchase_order_group,1,1,1,1
 access_purchase_order,reject_purchase_order,model_reject_purchase_order,forlife_purchase.admin_purchase_order_group,1,1,1,1
 access_purchase_order,reject_purchase_order,model_reject_purchase_order,forlife_purchase.user_purchase_order_group,1,1,1,1
-access_forlife_mrp_bom,access_forlife_mrp_bom,model_forlife_mrp_bom,forlife_purchase.user_purchase_order_group,1,1,1,1
-access_forlife_mrp_bom_nvl_line,access_forlife_mrp_bom_nvl_line,model_forlife_mrp_bom_nvl_line,forlife_purchase.user_purchase_order_group,1,1,1,1
-access_forlife_mrp_bom_cost_line,access_forlife_mrp_bom_cost_line,model_forlife_mrp_bom_cost_line,forlife_purchase.user_purchase_order_group,1,1,1,1
