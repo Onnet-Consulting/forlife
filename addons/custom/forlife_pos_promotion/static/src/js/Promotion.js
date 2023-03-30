@@ -585,7 +585,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             });
         } else if (pro.promotion_type == 'code' && pro.discount_based_on == 'discounted_price') {
             return order_lines.filter(function(l) {
-                if (l.promotion_usage_ids || l.promotion_usage_ids.length) {
+                if (l.promotion_usage_ids && l.promotion_usage_ids.length) {
                     return l.promotion_usage_ids.some(p => p.promotion_type == 'pricelist' || (p.promotion_type == 'pricelist' && p.discount_based_on == 'unit_price')) ? true : false;
                 } else {return true};
             });
