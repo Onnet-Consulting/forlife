@@ -22,6 +22,18 @@
                                 <field name="material_id"/>
                             </group>
                             <group>
+                                <field name="sub_class_one_id" widget="many2many_tags"/>
+                                <field name="sub_class_two_id" widget="many2many_tags"/>
+                                <field name="sub_class_three_id" widget="many2many_tags"/>
+                                <field name="sub_class_four_id" widget="many2many_tags"/>
+                                <field name="sub_class_five_id" widget="many2many_tags"/>
+                                <field name="sub_class_six_id" widget="many2many_tags"/>
+                                <field name="sub_class_seven_id" widget="many2many_tags"/>
+                                <field name="sub_class_eight_id" widget="many2many_tags"/>
+                                <field name="sub_class_nine_id" widget="many2many_tags"/>
+                                <field name="sub_class_ten_id" widget="many2many_tags"/>
+                                <field name="properties_one_id" widget="many2many_tags"/>
+                                <field name="properties_two_id" widget="many2many_tags"/>
                                 <field name="designer_id"/>
                                 <field name="origin_id"/>
                                 <field name="source_id"/>
