@@ -2,7 +2,236 @@
 <odoo>
     <data>
 <!--        //-->
-
+        <record id="properties_one_product_tree" model="ir.ui.view">
+            <field name="name">properties.one.product.tree</field>
+            <field name="model">properties.one.product</field>
+            <field name="arch" type="xml">
+                <tree string="Thuộc tính 1" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_properties_one_product">
+            <field name="name">Thuộc tính 1</field>
+            <field name="res_model">sub.class.ten</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+<!--        //-->
+                <record id="sub_class_ten_tree" model="ir.ui.view">
+            <field name="name">sub.class.ten.tree</field>
+            <field name="model">sub.class.ten</field>
+            <field name="arch" type="xml">
+                <tree string="Subclass 10" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_class_ten">
+            <field name="name">Sub class 10</field>
+            <field name="res_model">sub.class.ten</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+<!--        //-->
+        <record id="sub_class_nine_tree" model="ir.ui.view">
+            <field name="name">sub.class.nine.tree</field>
+            <field name="model">sub.class.nine</field>
+            <field name="arch" type="xml">
+                <tree string="Subclass 9" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_class_nine">
+            <field name="name">Sub class 9</field>
+            <field name="res_model">sub.class.nine</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+<!--        //-->
+                <record id="sub_class_eight_tree" model="ir.ui.view">
+            <field name="name">sub.class.eight.tree</field>
+            <field name="model">sub.class.eight</field>
+            <field name="arch" type="xml">
+                <tree string="Subclass 8" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_class_eight">
+            <field name="name">Sub class 8</field>
+            <field name="res_model">sub.class.eight</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+<!--      //  -->
+        <record id="sub_class_seven_tree" model="ir.ui.view">
+            <field name="name">sub.class.seven.tree</field>
+            <field name="model">sub.class.seven</field>
+            <field name="arch" type="xml">
+                <tree string="Subclass 7" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_class_seven">
+            <field name="name">Sub class 7</field>
+            <field name="res_model">sub.class.seven</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+<!--        //-->
+        <record id="sub_class_six_tree" model="ir.ui.view">
+            <field name="name">sub.class.six.tree</field>
+            <field name="model">sub.class.six</field>
+            <field name="arch" type="xml">
+                <tree string="Subclass 6" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_class_six">
+            <field name="name">Sub class 6</field>
+            <field name="res_model">sub.class.six</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+<!--        //-->
+        <record id="sub_class_five_tree" model="ir.ui.view">
+            <field name="name">sub.class.four.tree</field>
+            <field name="model">sub.class.four</field>
+            <field name="arch" type="xml">
+                <tree string="Subclass 5" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_class_five">
+            <field name="name">Sub class 5</field>
+            <field name="res_model">sub.class.four</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+<!--        //-->
+        <record id="sub_class_four_tree" model="ir.ui.view">
+            <field name="name">sub.class.four.tree</field>
+            <field name="model">sub.class.four</field>
+            <field name="arch" type="xml">
+                <tree string="Subclass 4" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_class_four">
+            <field name="name">Sub class 4</field>
+            <field name="res_model">sub.class.four</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+<!--        //-->
+        <record id="sub_class_three_tree" model="ir.ui.view">
+            <field name="name">sub.class.three.tree</field>
+            <field name="model">sub.class.three</field>
+            <field name="arch" type="xml">
+                <tree string="Subclass 3" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_class_three">
+            <field name="name">Sub class 3</field>
+            <field name="res_model">sub.class.three</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+<!--        //-->
+        <record id="sub_class_two_tree" model="ir.ui.view">
+            <field name="name">sub.class.two.tree</field>
+            <field name="model">sub.class.two</field>
+            <field name="arch" type="xml">
+                <tree string="Subclass 2" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_class_two">
+            <field name="name">Sub class 2</field>
+            <field name="res_model">sub.class.two</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+<!--        //-->
+        <record id="sub_class_one_tree" model="ir.ui.view">
+            <field name="name">sub.class.one.tree</field>
+            <field name="model">sub.class.one</field>
+            <field name="arch" type="xml">
+                <tree string="Subclass 1" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_sub_class_one">
+            <field name="name">Sub class 1</field>
+            <field name="res_model">sub.class.one</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
 <!--        //-->
         <record id="material_product_tree" model="ir.ui.view">
             <field name="name">material.product.tree</field>
@@ -231,6 +460,26 @@
             </field>
         </record>
 <!--        //-->
+        <record id="properties_two_product_tree" model="ir.ui.view">
+            <field name="name">properties.two.product.tree</field>
+            <field name="model">properties.two.product</field>
+            <field name="arch" type="xml">
+                <tree string="Thuộc tính 2" editable="top">
+                    <field name="code"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_properties_two_product">
+            <field name="name">Thuộc tính 2</field>
+            <field name="res_model">properties.two.product</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
 <!--        //-->
         <record id="main_fabric_material_tree" model="ir.ui.view">
             <field name="name">main.fabric.material.tree</field>

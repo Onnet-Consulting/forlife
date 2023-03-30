@@ -62,11 +62,47 @@ access_branch_product_group_system,branch_product system,model_branch_product,ba
 access_material_product_group_user,material_product user,model_material_product,base.group_user,1,0,0,0
 access_material_product_group_system,material_product system,model_material_product,base.group_system,1,1,1,1
 
+access_sub_class_one_group_user,sub_class_one user,model_sub_class_one,base.group_user,1,0,0,0
+access_sub_class_one_group_system,sub_class_one system,model_sub_class_one,base.group_system,1,1,1,1
+
+access_sub_class_two_group_user,sub_class_two user,model_sub_class_two,base.group_user,1,0,0,0
+access_sub_class_two_group_system,sub_class_two system,model_sub_class_two,base.group_system,1,1,1,1
+
+access_sub_class_three_group_user,sub_class_three user,model_sub_class_three,base.group_user,1,0,0,0
+access_sub_class_three_group_system,sub_class_three system,model_sub_class_three,base.group_system,1,1,1,1
+
+access_sub_class_four_group_user,sub_class_four user,model_sub_class_four,base.group_user,1,0,0,0
+access_sub_class_four_group_system,sub_class_four system,model_sub_class_four,base.group_system,1,1,1,1
+
+access_sub_class_five_group_user,sub_class_five user,model_sub_class_five,base.group_user,1,0,0,0
+access_sub_class_five_group_system,sub_class_five system,model_sub_class_five,base.group_system,1,1,1,1
+
+access_sub_class_six_group_user,sub_class_six user,model_sub_class_six,base.group_user,1,0,0,0
+access_sub_class_six_group_system,sub_class_six system,model_sub_class_six,base.group_system,1,1,1,1
+
+access_sub_class_seven_group_user,sub_class_seven user,model_sub_class_seven,base.group_user,1,0,0,0
+access_sub_class_seven_group_system,sub_class_seven system,model_sub_class_seven,base.group_system,1,1,1,1
+
+access_sub_class_eight_group_user,sub_class_eight user,model_sub_class_eight,base.group_user,1,0,0,0
+access_sub_class_eight_group_system,sub_class_eight system,model_sub_class_eight,base.group_system,1,1,1,1
+
+access_sub_class_nine_group_user,sub_class_nine user,model_sub_class_nine,base.group_user,1,0,0,0
+access_sub_class_nine_group_system,sub_class_nine system,model_sub_class_nine,base.group_system,1,1,1,1
+
+access_sub_class_ten_group_user,sub_class_ten user,model_sub_class_ten,base.group_user,1,0,0,0
+access_sub_class_ten_group_system,sub_class_ten system,model_sub_class_ten,base.group_system,1,1,1,1
+
 access_unit_priority_group_user,unit_priority user,model_unit_priority,base.group_user,1,0,0,0
 access_unit_priority_group_system,unit_priority system,model_unit_priority,base.group_system,1,1,1,1
 
 access_uses_product_group_user,uses_product user,model_uses_product,base.group_user,1,0,0,0
 access_uses_product_group_system,uses_product system,model_uses_product,base.group_system,1,1,1,1
+
+access_properties_one_product_group_user,properties_one_product user,model_properties_one_product,base.group_user,1,0,0,0
+access_properties_one_product_group_system,properties_one_product system,model_properties_one_product,base.group_system,1,1,1,1
+
+access_properties_two_product_group_user,properties_two_product user,model_properties_two_product,base.group_user,1,0,0,0
+access_properties_two_product_group_system,properties_two_product system,model_properties_two_product,base.group_system,1,1,1,1
 
 access_designer_product_group_user,designer_product user,model_designer_product,base.group_user,1,0,0,0
 access_designer_product_group_system,designer_product system,model_designer_product,base.group_system,1,1,1,1
