@@ -72,10 +72,8 @@ export class PromotionButton extends PosComponent {
                         }
                     })
                 }
-
             }
         };
-        console.log(order);
     }
 
     async onClick() {
