@@ -153,13 +153,10 @@ class PosOrder(models.Model):
         Product = self.env['product.product'].sudo()
         stock_picking_type = self.env['stock.picking.type'].sudo().search([('id','=',int(picking_type_id))])
         stock_location = stock_picking_type.default_location_src_id
-        print(order_lines)
         product_not_availabel = []
         for k, v in order_lines[0].items():
             quant = StockQuant.search([('product_id','=',int(k)),('location_id','=', stock_location.id)])
             product = Product.search([('id','=', int(k))])
-            print(quant)
-            print(product)
             if not quant:
                 product_not_availabel.append(product.name)
             if quant and v > quant.available_quantity:
