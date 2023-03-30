@@ -10,3 +10,4 @@ from . import sale_order
 from . import purchase_order
 from . import product_category
 from . import uom_uom
+from . import occasion_code
