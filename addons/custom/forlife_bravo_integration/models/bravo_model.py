@@ -1,14 +1,13 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models
-from ..fields import BravoField, BravoCharField, BravoDatetimeField, BravoDateField, \
-    BravoMany2oneField, BravoIntegerField, BravoDecimalField
-from odoo.exceptions import ValidationError
+from ..fields import BravoField
 
 
 class BravoModel(models.AbstractModel):
     _name = 'bravo.model'
     _inherit = ['mssql.server']
+    _description = 'Bravo Model'
 
     def get_bravo_table(self):
         return self._bravo_table
@@ -278,93 +277,3 @@ class BravoModel(models.AbstractModel):
         # FIXME: push below function to job queue
         self.sudo().delete_bravo_data_db(queries)
         return res
-
-
-class BravoHeaderModel(models.AbstractModel):
-    _name = 'bravo.header.model'
-    _inherit = 'bravo.model'
-    _bravo_update_table = 'B30UpdateData'
-
-    def get_current_record_value_to_update(self):
-        self.ensure_one()
-        bravo_columns = ['BranchCode', 'DocNo', 'DocDate', 'Stt']
-        current_record_value = {}
-        bravo_fields = self.fields_bravo_get()
-        bravo_field_mapping = {bfield.bravo_name: bfield for bfield in bravo_fields}
-        for bfield in bravo_fields:
-            if bfield.bravo_name in bravo_columns:
-                current_record_value.update(bfield.compute_value(self))
-        if not current_record_value:
-            raise ValidationError("No value for insert to %s table" % self._bravo_update_table)
-        return bravo_field_mapping, current_record_value
-
-    def get_record_updated_value_to_update(self, values):
-        UPDATE_SPECIAL_VALUES = {
-            'UpdateType': '1',
-            'PushDate': 'GETUTCDATE()',
-        }
-        bravo_field_mapping, current_record_value = self.get_current_record_value_to_update()
-        bravo_updated_value = self.get_bravo_update_values(values)
-        queries = []
-        for key, value in bravo_updated_value.items():
-            bfield = bravo_field_mapping.get(key)
-            if not bfield:
-                continue
-            record_value = current_record_value.copy()
-            old_value = bfield.compute_value(self)
-            record_value.update({
-                'ColumnName': key,
-                'OldValue': old_value[key] if old_value else None,
-                'NewValue': value
-            })
-            record_value.update(UPDATE_SPECIAL_VALUES)
-            queries.append(record_value)
-        return queries
-
-    def write(self, vals):
-        record_values = self.sudo().get_record_updated_value_to_update(vals)
-        # TODO: generate insert sql to table self._bravo_update_table from record_values here
-        res = super(BravoModel, self).write(vals)
-        # FIXME: push below function to job queue
-
-        return res
-
-    def insert_into_bravo_update_table(self):
-        pass
-
-    def insert_into_bravo_db(self):
-        pass
-
-    def update_bravo_db(self):
-        pass
-
-    def delete_bravo_data_db(self, values):
-        pass
-
-
-class BravoLineModel(models.AbstractModel):
-    _name = 'bravo.line.model'
-    _inherit = 'bravo.model'
-    _bravo_update_table = 'B30UpdateData'
-
-    def get_bravo_header_insert_values(self):
-        # get insert values of header table here
-        header_field = self._bravo_header_field
-        header_record = self.mapped(header_field)
-        header_record.ensure_one()
-        header_columns, header_values = header_record.get_bravo_insert_values()
-        return header_columns, header_values[0]
-
-    def get_bravo_insert_values(self):
-        line_columns, line_values = super(BravoLineModel, self).get_bravo_insert_values()
-        header_columns, header_value = self.get_bravo_header_insert_values()
-        line_columns.extend(header_columns)
-        for value in line_values:
-            value.update(header_value)
-        return line_columns, line_values
-
-    def get_bravo_update_values(self, values):
-        ...
-
-    def get_update_sql(self, values):
-        update_table = self._bravo_update_table

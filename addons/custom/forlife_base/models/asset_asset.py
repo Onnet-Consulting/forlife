@@ -28,3 +28,4 @@ class AssetsAssets(models.Model):
     elavation_group_1 = fields.Char(string='Elavation group 1')
     elavation_group_2 = fields.Char(string='Elavation group 2')
     elavation_group_3 = fields.Char(string='Elavation group 3')
+    push_date = fields.Datetime(string='Push Date')
