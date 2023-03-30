@@ -7,7 +7,6 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 TITLES = ['STT', 'Nhóm hàng', 'Dòng hàng', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Giới tính', 'Tổng bán', 'Tổng tồn', 'Nhân viên']
-REPORT_TITLE = 'Bán - trưng hàng'
 
 
 class ReportNum6(models.TransientModel):
@@ -15,7 +14,6 @@ class ReportNum6(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report sale and stock'
 
-    name = fields.Char(default=REPORT_TITLE)
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     date = fields.Date('Date', required=True)
     start_time = fields.Float('Start time', default=0)
@@ -129,7 +127,7 @@ from products pr
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         return {
-            'reportTitle': REPORT_TITLE,
+            'reportTitle': self.name,
             'titles': TITLES,
             "data": data,
         }

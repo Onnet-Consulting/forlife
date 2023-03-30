@@ -7,7 +7,7 @@
     </t>
 
     <t t-name="ReportNum4MainTemplate">
-        <table class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped">
+        <table class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
             <t t-call="ReportTitle"/>
             <tbody>
                 <t t-set="format_decimal" t-value="widget.func.format_decimal"/>

@@ -9,6 +9,9 @@
             <t t-if="widget.reportPager">
                 <t t-call="ReportPager"/>
             </t>
+            <t t-else="">
+                <span/>
+            </t>
         </div>
     </t>
 
@@ -37,14 +40,14 @@
     </t>
 
     <t t-name="ButtonExportExcel">
-        <div class="row">
-            <div class="col-9" style="color: red;">Có <t t-esc="widget.total_records"/>
+        <div>
+            <span style="color: red;">Có
+                <t t-esc="widget.total_records"/>
                 bản ghi được tìm thấy
-            </div>
-            <div class="col-3">
-                <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel"
-                        t-att-button-id="widget.report_type_id" t-att-filename="widget.report_filename">Xuất Excel</button>
-            </div>
+            </span>
+            <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel"
+                    t-att-button-id="widget.report_type_id" t-att-filename="widget.report_filename">Xuất Excel
+            </button>
         </div>
     </t>
 
@@ -75,52 +78,33 @@
         <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
         <div id="report-template">
             <t t-call="ReportHeader"/>
+            <t t-if="widget.reportPager == false">
+                <t t-call="ButtonExportExcel"/>
+            </t>
             <div id="main-content">
             </div>
         </div>
     </t>
 
     <t t-name="AvailableReport">
-        <table class="available-report-list">
+        <table class="table-sm table-hover table-striped table o_list_table available-report-list report_table">
             <thead>
                 <tr>
+                    <th>STT</th>
                     <th>Module</th>
                     <th>Name</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Sales</td>
-                    <td>Revenue by product</td>
-                </tr>
-                <tr>
-                    <td>Inventory</td>
-                    <td>Stock with sale price by warehouse</td>
-                </tr>
-                <tr>
-                    <td>Inventory</td>
-                    <td>Stock in time range by branch/area</td>
-                </tr>
-                <tr>
-                    <td>Inventory</td>
-                    <td>Stock by product</td>
-                </tr>
-                <tr>
-                    <td>Sales</td>
-                    <td>Revenue by employee</td>
-                </tr>
-                <tr>
-                    <td>Sales</td>
-                    <td>Sale and stock</td>
-                </tr>
-                <tr>
-                    <td>Sales</td>
-                    <td>in-store revenue by product line</td>
-                </tr>
-                <tr>
-                    <td>Sales</td>
-                    <td>Voucher detail</td>
-                </tr>
+                <t t-set="num" t-value="1"/>
+                <t t-foreach="widget.report_info" t-as="report">
+                    <tr>
+                        <td><t t-esc="num"/></td>
+                        <td><t t-esc="report.module"/></td>
+                        <td><t t-esc="report.name"/></td>
+                    </tr>
+                    <t t-set="num" t-value="num + 1"/>
+                </t>
             </tbody>
         </table>
     </t>

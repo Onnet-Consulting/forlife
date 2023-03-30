@@ -5,7 +5,6 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 
 TITLES = ['STT', 'Dòng hàng', 'Số lượng', 'Doanh thu', '% danh thu']
-REPORT_TITLE = 'Doanh thu tại cửa hàng theo dòng hàng'
 
 
 class ReportNum7(models.TransientModel):
@@ -13,7 +12,6 @@ class ReportNum7(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report in-store revenue by product line'
 
-    name = fields.Char(default=REPORT_TITLE)
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     from_date = fields.Date('From date', required=True)
     to_date = fields.Date('To date', required=True)
@@ -101,7 +99,7 @@ group by product_line
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         return {
-            'reportTitle': REPORT_TITLE,
+            'reportTitle': self.name,
             'titles': TITLES,
             "data": data,
         }

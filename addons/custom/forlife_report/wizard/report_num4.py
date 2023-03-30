@@ -5,7 +5,6 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 
 TITLES = ['STT', 'Mã Hàng', 'Tên Hàng', 'Nhóm hàng', 'Màu', 'Size', 'Bộ sưu tập', 'Kết cấu', 'Dòng hàng', 'SL cuối kỳ']
 COLUMN_WIDTHS = [8, 20, 30, 20, 15, 10, 30, 20, 20, 20]
-REPORT_TITLE = 'Tồn kho theo sản phẩm'
 
 
 class ReportNum4(models.TransientModel):
@@ -13,7 +12,6 @@ class ReportNum4(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report stock by product'
 
-    name = fields.Char(default=REPORT_TITLE)
     to_date = fields.Date(string='To date', required=True, default=fields.Date.context_today)
     all_products = fields.Boolean(string='All products', default=False)
     all_warehouses = fields.Boolean(string='All warehouses', default=False)
@@ -126,7 +124,7 @@ order by num
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         return {
-            'reportTitle': REPORT_TITLE,
+            'reportTitle': self.name,
             'titles': TITLES,
             "data": data,
         }

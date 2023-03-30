@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.addons.base.models.res_partner import _tz_get
+from odoo.addons.forlife_report.wizard.available_report_list import AVAILABLE_REPORT
 
 from pytz import timezone
 from datetime import datetime
@@ -22,14 +23,24 @@ def format_date_query(column_name, tz_offset):
 class ReportBase(models.AbstractModel):
     _inherit = 'report.base'
 
+    @api.model
+    def get_default_name(self):
+        return AVAILABLE_REPORT.get(self._name, {}).get('name', '')
+
     tz = fields.Selection(_tz_get, default="Asia/Ho_Chi_Minh", string="Timezone",
                           help='Timezone used for selecting datetime data from DB', required=True)
     tz_offset = fields.Integer(compute='_compute_timezone_offset', string="Timezone offset",
                                help='Timezone offset in hours')
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company, required=True)
 
+    name = fields.Char(default=get_default_name)
+
     @api.depends('tz')
     def _compute_timezone_offset(self):
         for rec in self:
             localize_now = datetime.now(timezone(self.tz))
             rec.tz_offset = int(localize_now.utcoffset().total_seconds() / 3600)
+
+    @api.model
+    def get_available_report(self):
+        return [r for r in AVAILABLE_REPORT.values()]

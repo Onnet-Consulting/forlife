@@ -8,7 +8,6 @@ TITLES = [
     'STT', 'Mã CN', 'Tên CN', 'Mã Voucher', 'Loại Voucher', 'Đối tượng', 'Đầu mã Voucher', 'Bộ phận',
     'Tên chương trình', 'Mục đích sử dụng', 'Hóa đơn sử dụng', 'Ngày sử dụng', 'Giá trị sử dụng'
 ]
-REPORT_TITLE = 'Chi tiết hóa đơn vận chuyển voucher'
 
 
 class ReportNum8(models.TransientModel):
@@ -16,7 +15,6 @@ class ReportNum8(models.TransientModel):
     _inherit = 'report.base'
     _description = 'Report voucher detail'
 
-    name = fields.Char(default=REPORT_TITLE)
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     from_date = fields.Date('From date', required=True)
     to_date = fields.Date('To date', required=True)
@@ -57,12 +55,10 @@ select
     case when vv.apply_many_times is true then 'Voucher sử dụng nhiều lần'
         else 'Voucher sử dụng 1 lần' end									as voucher_type,
     sv.applicable_object 												 	as object,
-    substr(vv.name, 0, 8) 													as voucher_code8,
+    substr(vv.name, 0, 9) 													as voucher_code8,
     hd.name 																as department,
     pv.name 																as program_name,
-    case when sv.purpose_voucher = 'gift' then 'Tặng'
-        when sv.purpose_voucher = 'pay' then 'Bán'
-        else '' end 														as purpose,
+    ''               														as purpose,
     po.pos_reference 														as order_name,
     to_char(po.date_order + interval '7 hours', 'DD/MM/YYYY')				as date,
     pv_line.price_used														as value
@@ -72,7 +68,7 @@ from pos_order po
     left join setup_voucher sv on sv.id = vv.purpose_id
     left join program_voucher pv on pv.id = vv.program_voucher_id
     left join hr_department hd on hd.id = vv.derpartment_id
-where po.brand_id = {self.brand_id.id} 
+where vv.brand_id = {self.brand_id.id} 
 and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
 {po_conditions}
 {voucher_conditions} 
@@ -85,7 +81,7 @@ and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' a
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         return {
-            'reportTitle': REPORT_TITLE,
+            'reportTitle': self.name,
             'titles': TITLES,
             "data": data,
         }

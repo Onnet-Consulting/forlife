@@ -104,7 +104,7 @@ odoo.define('forlife_report.report_base', function (require) {
             this.render();
         },
 
-        action_export_data: function (e){
+        action_export_data: function (e) {
             this.export_data_by_id(e.currentTarget.getAttribute('button-id'), e.currentTarget.getAttribute('filename'));
         },
 
@@ -131,23 +131,40 @@ odoo.define('forlife_report.report_base', function (require) {
                 downloadLink.click();
             }
         },
-        action_back: function (){
+        action_back: function () {
             window.history.back();
         }
     });
 
     const AvailableReportAction = AbstractAction.extend({
         reportTemplate: 'AvailableReport',
+
+        willStart: async function () {
+            const reportPromise = this._rpc({
+                model: 'report.base',
+                method: 'get_available_report',
+                args: [],
+                context: this.odoo_context
+            }, {
+                timeout: this.readDataTimeout,
+            }).then(res => this.parse_data(res))
+            const parentPromise = this._super(...arguments);
+            return Promise.all([reportPromise, parentPromise]);
+        },
+
         start: async function () {
             await this._super(...arguments);
             this.render();
+        },
+
+        parse_data: function (data) {
+            this.report_info = data;
         },
 
         render: function () {
             let self = this;
             this.$('.o_content').html(QWeb.render(this.reportTemplate, {
                 "widget": this,
-                "options": self.options
             }));
         },
     })

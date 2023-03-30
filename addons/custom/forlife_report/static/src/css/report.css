@@ -41,15 +41,14 @@
     border-bottom: 1px solid #C9CCD2;
     padding: 0.5rem 16px;
     background-color: white;
+    max-height: 100%;
+    display: flex !important;
+    flex-direction: column !important;
 }
 
 #report-template .header {
     display: flex;
     justify-content: space-between;
-    position: -webkit-sticky;
-    position: sticky;
-    top: 0;
-    overflow: hidden;
     border-bottom: 1px solid #C9CCD2;
     background-color: #fff;
 }
@@ -57,6 +56,7 @@
 #report-template .header .title {
     font-size: 25px;
     text-align: center;
+    font-weight: bold;
 }
 
 #report-template .header .pagination {
@@ -68,13 +68,8 @@
 
 #report-template #main-content {
     border: 1px solid #C9CCD2;
-    padding: 10px;
-    overflow-x: auto;
-    font-size: 1.11rem;
-}
-
-#report-template #main-content tr {
-    border-bottom: 1px solid #eee;
+    padding: 5px;
+    overflow: auto;
 }
 
 #report-template #main-content tbody > tr:nth-of-type(odd) {
@@ -106,10 +101,8 @@
 }
 
 table.available-report-list {
-    font-size: 1.3em;
-    border-spacing: 100px 0;
-    border-collapse: separate;
-    margin-top: 10px;
+    font-size: 1em;
+    padding: 10px;
 }
 
 .oe_tab {
@@ -135,15 +128,15 @@ table.available-report-list {
     color: white;
 }
 
+.report_table {
+    border-spacing: 1px 0;
+    border-collapse: separate;
+}
+
 .oe_max_height_300 {
     max-height: 300px;
     margin-top: 7px;
     overflow: scroll;
-}
-.oe_max_height_700 {
-    max-height: 700px;
-    overflow: scroll;
-    margin-top: 7px;
 }
 
 .active_line {
