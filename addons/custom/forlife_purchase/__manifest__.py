@@ -14,7 +14,7 @@
     ],
     "data": [
         'data/barcode_country_data.xml',
-        'data/stock_warehouse_type.xml',
+        # 'data/stock_warehouse_type.xml',
         'security/purchase_security.xml',
         'security/ir.model.access.csv',
         'wizard/reject_purchase_order.xml',
@@ -26,7 +26,6 @@
         'views/product_view.xml',
         'views/res_partner_view.xml',
         'views/stock_warehouse_view.xml',
-        'views/forlife_mrp_bom.xml',
         # 'wizard/account_payment_register_view.xml',
         'report/purchase_order_templates.xml',
         'views/product_supplierinfo_views.xml',

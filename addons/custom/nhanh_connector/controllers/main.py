@@ -12,9 +12,6 @@ _logger = logging.getLogger(__name__)
 class MainController(http.Controller):
     def __init__(self):
         self.event_handlers = {
-            'productAdd': self.handle_product,
-            'productUpdate': self.handle_product,
-            'productDelete': self.handle_product,
             'orderAdd': self.handle_order,
             'orderUpdate': self.handle_order,
             'orderDelete': self.handle_order,
@@ -60,12 +57,17 @@ class MainController(http.Controller):
                            'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
                            'product_uom': product.uom_id.id if product.uom_id else self.uom_unit(),
                            'customer_lead': 0, 'sequence': 10, 'is_downpayment': False, 'discount': item.get('discount')}))
+
             status = 'draft'
-            if data.get('status') == 'confirmed':
+            if data['status'] == 'confirmed':
+                status = 'draft'
+            elif data['status'] in ['Packing', 'Pickup']:
                 status = 'sale'
-            elif data.get('status') == 'success':
+            elif data['status'] in ['Shipping', 'Returning']:
+                status = 'sale'
+            elif data['status'] == 'success':
                 status = 'done'
-            elif data.get('status') == 'canceled':
+            elif data['status'] == 'canceled':
                 status = 'cancel'
             value = {
                 'nhanh_id': data['orderId'],
@@ -83,11 +85,15 @@ class MainController(http.Controller):
         elif event_type == 'orderUpdate':
             if data.get('status'):
                 status = 'draft'
-                if data.get('status') == 'Confirmed':
+                if data['status'] == 'confirmed':
+                    status = 'draft'
+                elif data['status'] in ['Packing', 'Pickup']:
                     status = 'sale'
-                elif data.get('status') == 'Success':
+                elif data['status'] in ['Shipping', 'Returning']:
+                    status = 'sale'
+                elif data['status'] == 'success':
                     status = 'done'
-                elif data.get('status') == 'Canceled':
+                elif data['status'] == 'canceled':
                     status = 'cancel'
                 order.sudo().write({
                     'state': status
@@ -101,89 +107,6 @@ class MainController(http.Controller):
                     'state': 'cancel'
                 })
             return self.result_request(200, 0, _('Delete sale order success'))
-
-    def handle_product(self, event_type, data):
-        self.data_product_category_nhanh()
-        product_id = data.get('productId') if event_type != 'productDelete' else False
-        product_template = self.product_template_model().sudo().search([('nhanh_id', '=', product_id)], limit=1) if event_type != 'productDelete' else False
-        category = request.env['product.category'].sudo().search([('nhanh_product_category_id', '=', data.get('categoryId'))], limit=1)
-        if event_type == 'productAdd':
-            data_product = {
-                'nhanh_id': data.get('productId'),
-                'check_data_odoo': False,
-                'name': data.get('name'),
-                'code_product': data.get('code'),
-                'uom_id': self.uom_unit(),
-                'detailed_type': 'asset',
-                'create_date': data.get('createdDateTime'),
-                'width_product': float(data.get('width')),
-                'height_product': float(data.get('height')),
-            }
-            if category:
-                data_product.update({
-                    'categ_id': category.id
-                })
-            product = self.product_template_model().sudo().create(data_product)
-            return self.result_request(200, 0, _('Create product success'))
-        elif event_type == 'productUpdate':
-            product_template.sudo().write({
-                    'name': data.get('name'),
-                    'categ_id': category.id if category else False
-                })
-            return self.result_request(200, 0, _('Update product success'))
-        elif event_type == 'productDelete':
-            for item in data:
-                product_template = self.product_template_model().sudo().search([('nhanh_id', '=', int(item))]).sudo().unlink()
-            return self.result_request(200, 0, _('Delete product success'))
-
-
-    #Hàm tạo category
-    def data_product_category_nhanh(self):
-        today = datetime.datetime.today().strftime("%y/%m/%d")
-        previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-        _logger.info(f'Today is: {today}, Previous day is: {previous_day}')
-        nhanh_configs = self.get_nhanh_configs()
-        if 'nhanh_connector.nhanh_app_id' not in nhanh_configs or 'nhanh_connector.nhanh_business_id' not in nhanh_configs \
-                or 'nhanh_connector.nhanh_access_token' not in nhanh_configs:
-            _logger.info(f'Nhanh configuration does not set')
-            return False,
-        query_params = {
-            'data': "'{" + f'"fromDate":"{previous_day}","toDate":"{today}"' + "}'"
-        }
-        try:
-            res_server = requests.post(self.get_link_nhanh('product', 'category', query_params['data']))
-            status_post = 1
-            res = res_server.json()
-        except Exception as ex:
-            status_post = 0
-            _logger.info(f'Get orders from NhanhVn error {ex}')
-            return False
-        if status_post == 1:
-            if res['code'] == 0:
-                _logger.info(f'Get order error {res["messages"]}')
-                return False
-            else:
-                self.create_product_category(res['data'])
-
-    def create_product_category(self, data, parent_id=None):
-        for category in data:
-            product_category = request.env['product.category'].sudo().search([('code_category', '=', str(category['code']))])
-            if not product_category:
-                new_category = request.env['product.category'].sudo().create({
-                    'code_category': category.get('code'),
-                    'name': category.get('name'),
-                    'nhanh_parent_id': category.get('parentId'),
-                    'nhanh_product_category_id': category.get('id'),
-                    'content_category': category.get('content'),
-                    'parent_id': parent_id,
-                })
-                if 'childs' in category :
-                    self.create_product_category(category['childs'], new_category.id)
-            else:
-                product_category.write({'parent_id': parent_id})
-                if 'childs' in category:
-                    self.create_product_category(category['childs'], product_category.id)
-        return True
 
     def get_nhanh_configs(self):
         '''

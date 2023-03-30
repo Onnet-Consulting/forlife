@@ -5,6 +5,7 @@
     'depends': [
         'base_automation',
         'forlife_purchase',
+        'forlife_base',
         'auth_signup',
         'hr',
         'mrp',

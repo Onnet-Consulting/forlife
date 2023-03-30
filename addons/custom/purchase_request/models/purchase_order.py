@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 from datetime import date
+import json
 
 
 class PurchaseOrder(models.Model):
@@ -14,6 +15,19 @@ class PurchaseOrder(models.Model):
     has_contract_commerce = fields.Boolean(string='Commerce Contract')
     rejection_reason = fields.Text()
     # approval_logs_ids = fields.One2many('approval.logs', 'purchase_order_id')
+    order_line_production_order = fields.Many2many('purchase.order.line',
+                                                  compute='_compute_order_line_production_order',
+                                                  inverse='_inverse_order_line_production_order')
+
+    def _compute_order_line_production_order(self):
+        self = self.sudo()  # tối ưu tốc độ ghi dữ liệu
+        product_in_production_order = self.env['production.order'].search([('type', '=', 'normal')]).mapped('product_id')
+        for rec in self:
+            order_line_production_order = rec.order_line.filtered(lambda r: r.product_id.id in product_in_production_order.ids)
+            rec.order_line_production_order = [(6, 0, order_line_production_order.ids)]
+
+    def _inverse_order_line_production_order(self):
+        pass
 
     def action_approved(self):
         for rec in self:
@@ -70,9 +84,95 @@ class PurchaseOrderLine(models.Model):
 
     state = fields.Selection(related='order_id.state', store=1)
     purchase_request_line_id = fields.Many2one('purchase.request.line', ondelete='cascade')
+    purchase_order_line_material_line_ids = fields.One2many('purchase.order.line.material.line', 'purchase_order_line_id')
 
     @api.constrains('taxes_id')
     def _check_taxes_id(self):
         for line in self:
             if len(line.taxes_id) > 1:
                 raise ValidationError('Only one tax can be applied to a purchase order line.')
+
+    def action_npl(self):
+        self.ensure_one()
+        if not self.purchase_order_line_material_line_ids:
+            product = self.product_id
+            production_order = self.env['production.order'].search(
+                [('product_id', '=', product.id), ('type', '=', 'normal')], limit=1)
+            if not production_order:
+                raise ValidationError('Sản phẩm không hợp lệ, vui lòng kiểm tra lại!')
+            production_data = []
+            for production_line in production_order.order_line_ids:
+                product_plan_qty = self.product_qty / production_order.product_qty * production_line.product_qty
+                production_data.append((0, 0, {
+                    'product_id': production_line.product_id.id,
+                    'uom': production_line.uom_id.id,
+                    'product_qty': product_plan_qty,
+                    'production_order_product_qty': production_order.product_qty,
+                    'production_line_product_qty': production_line.product_qty,
+                    'is_from_po': True,
+                }))
+            self.write({
+                'purchase_order_line_material_line_ids': production_data
+            })
+        view_id = self.env.ref('purchase_request.purchase_order_line_material_form_view').id
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'view_type': 'form',
+            'view_mode': 'form',
+            'views': [(view_id, 'form')],
+            'target': 'new',
+            'res_id': self.id,
+            'context': dict(self._context),
+        }
+
+
+class PurchaseOrderLineMaterialLine(models.Model):
+    _name = 'purchase.order.line.material.line'
+    _description = 'Purchase Order Line Material Line'
+
+    purchase_order_line_id = fields.Many2one('purchase.order.line', ondelete='cascade')
+    product_id = fields.Many2one('product.product')
+    name = fields.Char(related='product_id.name')
+    uom = fields.Many2one('uom.uom', string='UOM')
+    production_order_product_qty = fields.Float(digits='Product Unit of Measure')  # ghi lại giá trị production_order tại thời điểm được tạo
+    production_line_product_qty = fields.Float(digits='Product Unit of Measure')  # ghi lại giá trị production_line tại thời điểm được tạo
+    product_qty = fields.Float('Quantity', digits='Product Unit of Measure')
+    product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
+    product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
+    is_from_po = fields.Boolean(default=False)
+
+    @api.constrains('product_qty', 'product_plan_qty')
+    def _constraint_product_qty(self):
+        for rec in self:
+            if rec.product_qty > rec.product_plan_qty:
+                raise ValidationError('Số lượng điều chuyển không được lớn hơn số lượng điều chuyển theo kế hoạch')
+
+    @api.depends('purchase_order_line_id.product_qty', 'production_order_product_qty', 'production_line_product_qty')
+    def _compute_product_plan_qty(self):
+        for rec in self:
+            if rec.production_order_product_qty > 0:
+                rec.product_plan_qty = self.purchase_order_line_id.product_qty / rec.production_order_product_qty * rec.production_line_product_qty
+            else:
+                rec.product_plan_qty = 0
+
+    def _inverse_product_plan_qty(self):
+        pass
+
+    @api.depends('product_plan_qty', 'product_qty')
+    def _compute_product_remain_qty(self):
+        for rec in self:
+            rec.product_remain_qty = max((rec.product_plan_qty - rec.product_qty), 0)
+
+
+# class PurchaseOrderLineCostLine(models.Model):
+#     _name = 'purchase.order.line.cost.line'
+#     _description = 'Purchase Order Line Cost Line'
+#
+#     purchase_order_line_id = fields.Many2one('purchase.order.line', ondelete='cascade')
+#     product_id = fields.Many2one('product.product')
+#     description = fields.Char(related='product_id.name')
+#     uom = fields.Many2one('uom.uom', string='UOM')
+#     product_qty = fields.Float('Quantity', digits='Product Unit of Measure')
+#     product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure')
+#     product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure')
