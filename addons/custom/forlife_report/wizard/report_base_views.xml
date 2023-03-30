@@ -16,6 +16,11 @@
               parent="report_menu"
               sequence="2"/>
 
+    <menuitem id="report_menu_card_rank"
+              name="Customer Rank"
+              parent="report_menu_sale"
+              sequence="7"/>
+
     <menuitem id="report_menu_stock"
               name="Stock"
               parent="report_menu"

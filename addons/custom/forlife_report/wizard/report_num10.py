@@ -48,7 +48,7 @@ class ReportNum10(models.TransientModel):
         conditions += '' if not self.store_ids else f"""
 and pcrl.order_id in (
     select id from pos_order
-        where date_order between '2023-01-01' and '2023-04-01'
+        where date_order between '{self.from_date}' and '{self.to_date}'
             and session_id in (
                 select id from pos_session where config_id in (
                     select id from pos_config where store_id = any (array{self.store_ids.ids})))
@@ -64,7 +64,10 @@ select
         )
     ))                                                                      as store_name,
     ''                                                                      as ngay_mua_dk,
-    ''                                                                      as ngay_mua_gn,
+    (select to_char(order_date, 'DD/MM/YYYY') from partner_card_rank_line
+         where partner_card_rank_id = pcrl.partner_card_rank_id
+            and order_id notnull and real_date < pcrl.real_date
+         order by real_date desc limit 1)                                   as ngay_mua_gn,
     coalesce(pcrl.value_up_rank, 0)                                         as dt_mua,
     (select name from card_rank where id = pcrl.old_card_rank_id)           as current_rank,
     (select name from card_rank where id = pcrl.new_card_rank_id)           as new_rank,
@@ -74,7 +77,7 @@ select
           coalesce(rp.gender, ''),
           coalesce(to_char(rp.birthday, 'DD/MM/YYYY'), ''),
           coalesce(rp.phone)]                                               as customer_info
-    from partner_card_rank_line pcrl
+from partner_card_rank_line pcrl
     join partner_card_rank pcr on pcr.id = pcrl.partner_card_rank_id
     join res_partner rp on rp.id = pcr.customer_id
 where pcr.brand_id = {self.brand_id.id} and pcrl.old_card_rank_id <> pcrl.new_card_rank_id

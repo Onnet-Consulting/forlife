@@ -42,5 +42,5 @@
     <menuitem id="report_num7_menu"
               action="report_num7_window_action"
               parent="report_menu_sale"
-              sequence="7"/>
+              sequence="4"/>
 </odoo>

@@ -41,9 +41,12 @@
 
     <t t-name="ButtonExportExcel">
         <div>
-            <span style="color: red;">Có
-                <t t-esc="widget.total_records"/>
-                bản ghi được tìm thấy
+            <span style="color: red;">
+                <t t-if="widget.total_records > 0">Có
+                    <t t-esc="widget.total_records"/>
+                    bản ghi được tìm thấy
+                </t>
+                <t t-else="">Không có bản ghi nào</t>
             </span>
             <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel"
                     t-att-button-id="widget.report_type_id" t-att-filename="widget.report_filename">Xuất Excel
@@ -99,9 +102,15 @@
                 <t t-set="num" t-value="1"/>
                 <t t-foreach="widget.report_info" t-as="report">
                     <tr>
-                        <td><t t-esc="num"/></td>
-                        <td><t t-esc="report.module"/></td>
-                        <td><t t-esc="report.name"/></td>
+                        <td>
+                            <t t-esc="num"/>
+                        </td>
+                        <td>
+                            <t t-esc="report.module"/>
+                        </td>
+                        <td>
+                            <t t-esc="report.name"/>
+                        </td>
                     </tr>
                     <t t-set="num" t-value="num + 1"/>
                 </t>

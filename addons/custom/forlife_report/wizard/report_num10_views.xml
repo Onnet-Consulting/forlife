@@ -18,7 +18,7 @@
                                 <field name="to_date" class="oe_inline" required="1"/>
                             </div>
                             <field name="from_rank_id" class="oe_inline"/>
-                            <field name="to_rank_id" class="oe_inline"/>
+                            <field name="to_rank_id" class="oe_inline" domain="[('id', '!=', from_rank_id)]"/>
                         </group>
                         <group>
                             <field name="brand_id"/>
@@ -40,6 +40,6 @@
 
     <menuitem id="report_num10_menu"
               action="report_num10_window_action"
-              parent="report_menu_sale"
-              sequence="10"/>
+              parent="report_menu_card_rank"
+              sequence="0"/>
 </odoo>

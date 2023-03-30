@@ -39,5 +39,5 @@
     <menuitem id="report_num8_menu"
               action="report_num8_window_action"
               parent="report_menu_sale"
-              sequence="8"/>
+              sequence="5"/>
 </odoo>
