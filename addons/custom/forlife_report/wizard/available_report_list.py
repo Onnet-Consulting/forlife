@@ -35,6 +35,10 @@ AVAILABLE_REPORT = {
     },
     'report.num9': {
         'module': 'Bán hàng',
-        'name': 'Voucher đã phát hành'
+        'name': 'Voucher phát hành'
+    },
+    'report.num10': {
+        'module': 'Bán hàng',
+        'name': 'Lịch sử nâng hạng'
     },
 }

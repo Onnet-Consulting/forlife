@@ -47,6 +47,6 @@
 
     <menuitem id="report_num3_menu"
               action="report_num3_window_action"
-              parent="report_menu_sale"
+              parent="report_menu_stock"
               sequence="3"/>
 </odoo>

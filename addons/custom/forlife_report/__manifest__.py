@@ -21,6 +21,7 @@
         'report_xlsx',
         'forlife_base',
         'forlife_point_of_sale',
+        'forlife_customer_card_rank',
     ],
 
     'data': [
@@ -36,6 +37,7 @@
         'wizard/report_num7_views.xml',
         'wizard/report_num8_views.xml',
         'wizard/report_num9_views.xml',
+        'wizard/report_num10_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

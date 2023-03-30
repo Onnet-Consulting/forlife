@@ -15,4 +15,9 @@
               name="Sales"
               parent="report_menu"
               sequence="2"/>
+
+    <menuitem id="report_menu_stock"
+              name="Stock"
+              parent="report_menu"
+              sequence="3"/>
 </odoo>
