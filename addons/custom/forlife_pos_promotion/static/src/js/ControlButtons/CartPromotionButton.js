@@ -5,6 +5,7 @@ import PosComponent from 'point_of_sale.PosComponent';
 import ProductScreen from 'point_of_sale.ProductScreen';
 import Registries from 'point_of_sale.Registries';
 import { useListener } from "@web/core/utils/hooks";
+import { round_decimals,round_precision } from 'web.utils';
 
 export class CartPromotionButton extends PosComponent {
     setup() {
@@ -44,10 +45,31 @@ export class CartPromotionButton extends PosComponent {
             let options = order._getNewLineValuesAfterDiscount(newLine);
             order.orderlines.add(order._createLineFromVals(options));
         };
+
+        for (let optionPro of optionPrograms) {
+            if (optionPro.program.reward_type == 'cart_get_x_free' && optionPro.additional_reward_product_id && optionPro.additional_reward_product_qty > 0) {
+                let product = this.env.pos.db.get_product_by_id(optionPro.additional_reward_product_id)
+                let line = order._createLineFromVals({
+                    product: product,
+                    quantity: optionPro.additional_reward_product_qty,
+                    tax_ids: product.tax_ids,
+                    merge: false,
+                    price: round_decimals(product.lst_price, this.env.pos.currency.decimal_places)
+                });
+                let to_apply_lines = order._apply_cart_program_to_orderline(optionPro.program, [line]);
+                to_apply_lines.forEach( newLine => {
+                    let options = order._getNewLineValuesAfterDiscount(newLine);
+                    options['is_reward_line'] = true;
+                    order.orderlines.add(order._createLineFromVals(options));
+                });
+            };
+        };
     }
 
     async onClick() {
         const order = this.env.pos.get_order();
+        // Reset Cart Program
+        order._resetCartPromotionPrograms();
         let orderLines = order.get_orderlines();
         let programs = order.verifyCardProgramOnOrder(orderLines);
         const { confirmed, payload } = await this.showPopup('CartPromotionPopup', {

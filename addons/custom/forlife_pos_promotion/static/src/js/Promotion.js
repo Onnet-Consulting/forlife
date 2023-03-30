@@ -373,9 +373,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         }
         line.promotion_usage_ids = options.promotion_usage_ids || [];
         line.is_cart_discounted = options.is_cart_discounted || false;
-        line.giftBarcode = options.giftBarcode;
-        line.giftCardId = options.giftCardId;
-        line.eWalletGiftCardProgram = options.eWalletGiftCardProgram;
+        line.is_reward_line = options.is_reward_line || false;
     }
 
     async _initializePromotionPrograms(v) {
@@ -423,7 +421,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     _resetCartPromotionPrograms() {
-        this.orderlines.remove(this._get_reward_lines_of_cart_pro()); // TODO: Xác định reward line của CTKM nào
+        let to_remove_lines = this._get_reward_lines_of_cart_pro();
+        for (let line of to_remove_lines) {
+            this.remove_orderline(line);
+        };
+        // TODO: Xác định reward line của CTKM nào
         let orderlines = this.orderlines.filter(line => line.is_cart_discounted);
         orderlines.forEach(line => line.reset_unit_price());
         orderlines.forEach(line => line.promotion_usage_ids = []);
@@ -822,12 +824,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     computeBestCombineOfProgram(){
         let programs = this.getActivatedPrograms().map(p => p.str_id);
-        console.log('programs', programs);
         if (programs.length > 8) {
             return [];
         };
         let programs_combines = this.permutator(programs);
-        console.log(programs_combines);
         return programs_combines;
     }
 
