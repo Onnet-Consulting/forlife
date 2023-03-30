@@ -11,19 +11,22 @@
                 <t t-esc="error_msg" />
             </p>
             <div><span style="font-weight: normal">Tối đa: </span><strong t-esc="this.state.program.program.reward_quantity"/> sản phẩm</div>
-            <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQty()"/> sản phẩm</div>
+            <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQtyOnProgram()"/> sản phẩm</div>
             <hr/>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
                 <ul>
                     <t t-foreach="props.reward_line_vals" t-as="reward" t-key="reward.line.cid">
-                        <li class="program-item"  style="height: 100px; margin: 0px 0 10px 0">
+                        <li class="program-item"  style="height: 100px; margin: 0px 0 10px 0"
+                            t-att-class="this.getSelectedQtyOfLine(reward) >= reward.line.quantity ? 'unselectable' : 'selectable'">
                             <input type="checkbox" name="programs"
                                    t-att-id="reward.line.cid"
                                    t-att-checked="'checked' ? reward.isSelected : ''"
                                    t-att-value="reward.line.cid"
                                    t-on-click="() => this.selectItem(reward.line.cid)"
+                                   t-att-disabled="this.getSelectedQtyOfLine(reward) >= reward.line.quantity ? 'selectable' : ''"
                             />
                             <label t-att-for="reward.line.cid">
+                                [<t t-esc="reward.line.cid"/>]
                                 <t t-esc="reward.line.product.display_name"/>
                             </label>
                             <ul class="info-list">
@@ -52,9 +55,9 @@
                         <label>Chọn sản phẩm tặng khác:</label>
                         <div>
                             <input class="" type="number" id="'additional_reward_qty_program_'+state.program.id"
-                                   min="0" t-att-max="state.qty_remaining"
+                                   min="0" t-att-max="state.additional_reward_remaining_qty"
                                    t-on-change="(ev) => this.onChangeAdditionalRewardQty(ev.target)"
-                                   t-att-value="state.qty_remaining > 0 ? state.qty_remaining : 0"/>
+                                   t-att-value="state.program.additional_reward_product_qty > 0 ? state.program.additional_reward_product_qty : 0"/>
                             <select t-att-id="'additional_reward_product_selected_'+props.program.id"
                                     t-on-click="(ev) => this.onChangeAdditionalRewardProduct(ev.target)"
                                     style="margin-left: 2em;width: 70%;cursor: pointer;background-color: transparent;padding: 0.5em;color: #666666;font-size: 18px;margin-bottom: 0.5em;">
@@ -69,6 +72,14 @@
                         </div>
                     </p>
                 </ul>
+                <style>
+                    .unselectable {
+                        background-color: rgb(176,176,176);
+                    }
+                    .selectable {
+                        background-color: rgb(237 248 252);
+                    }
+                </style>
             </main>
             <footer class="footer">
                 <div t-if="this.props.valid" class="button highlight confirm" t-on-click="confirm">

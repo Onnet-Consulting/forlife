@@ -5,6 +5,9 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
     const Registries = require('point_of_sale.Registries');
     const { _lt } = require('@web/core/l10n/translation');
     const { parse } = require('web.field_utils');
+    const { Gui } = require('point_of_sale.Gui');
+    const core = require('web.core');
+    const _t = core._t;
 
     const { useState, onWillUnmount, onWillDestroy } = owl;
 
@@ -18,10 +21,10 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 valid: this.props.valid,
                 programOptions: this.props.programOptions,
                 hasError: false,
-                qty_remaining: 0,
+                additional_reward_remaining_qty: 0,
             });
             this.error_msg = '';
-            this.state.qty_remaining = this.state.program.program.reward_quantity - this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
+            this.state.additional_reward_remaining_qty = this.state.program.program.reward_quantity - this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
 
             onWillUnmount(() => {
                 this.state.reward_line_vals.forEach(line => {
@@ -30,7 +33,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                         line.isSelected = false;
                     };
                 });
-                if (this.selectedQty() > 0) {
+                if (this.selectedQtyOnProgram() > 0) {
                     this.state.program.isSelected = true;
                 } else {
                     this.state.program.isSelected = false;
@@ -39,15 +42,24 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 
         }
 
-        selectedQty() {
+        selectedQtyOnProgram() {
             let result = this.state.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
             if (this.state.program.additional_reward_product_id) {
-                let qty = this.state.program.additional_reward_product_qty || this.state.qty_remaining;
+                let qty = this.state.program.additional_reward_product_qty || this.state.additional_reward_remaining_qty;
                 if (qty > 0) {
                     result += qty;
                 };
             };
             return result;
+        }
+
+        getSelectedQtyOfLine(reward) {
+            let program = this._currentProgram();
+            let selected_qty_of_line = 0; // một dòng có thể đang được chọn áp dụng cho nhiều CT Hóa đơn nếu SL > 1
+            this.state.programOptions.filter(p=> p.isSelected && p.id != program.id).forEach(option => {
+                selected_qty_of_line += option.reward_line_vals.filter(l => l.line.cid == reward.line.cid && l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0);
+            });
+            return selected_qty_of_line;
         }
 
         pricePerUnit(reward) {
@@ -119,6 +131,8 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             };
             if (Object.values(result).some(v => !v)) {
                 valid = false;
+                let invalidPro = Object.entries(result).find(([proID, val]) => !val)[0];
+                Gui.showNotification(`Chương trình ${this.env.pos.get_program_by_id(invalidPro).display_name} không hợp lệ nếu áp dụng khuyến mãi dòng này!`, 3000);
             };
 
             let current_selected_qty = this.state.reward_line_vals.filter(l => l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0)
@@ -126,12 +140,12 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             if (current_selected_qty > program.reward_quantity) {
                 valid = false;
             }
-            return valid
+            return valid;
         }
 
-        onChangeQty(reward, target) {
+        _computeOnchangeQty(reward, input_qty) {
             let currentLine = reward;
-            let quantity_input = parse.float(target.value);
+            let quantity_input = input_qty;
             currentLine.quantity = quantity_input;
             this.state.program.isSelected = true;
 
@@ -146,16 +160,13 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             let program = this._currentProgram()
             let selected_qty_of_line = 0; // một dòng có thể đang được chọn áp dụng cho nhiều CT Hóa đơn nếu SL > 1
             this.state.programOptions.filter(p=> p.isSelected && p.id != program.id).forEach(option => {
-                selected_qty_of_line += option.reward_line_vals.filter(l => l.line.cid == reward.line.cid).reduce((tmp, l) => tmp + l.quantity, 0);
+                selected_qty_of_line += option.reward_line_vals.filter(l => l.line.cid == reward.line.cid && l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0);
             })
 
             let qty_remaining = currentLine.line.quantity - selected_qty_of_line;
             if (qty_remaining > program.reward_quantity) {
                 qty_remaining = program.reward_quantity;
             };
-            // Compute remaining qty of reward product
-            let selectedQty_on_program = this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
-            this.state.qty_remaining = program.reward_quantity - selectedQty_on_program;
 
             // Set maximum qty of input
             currentLine.max_qty = qty_remaining;
@@ -168,6 +179,17 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             } else {
                 currentLine.quantity = quantity;
             }
+            // Compute remaining qty of reward product
+            let selectedQty_on_program = this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
+            this.state.additional_reward_remaining_qty = program.reward_quantity - selectedQty_on_program;
+            this.state.program.additional_reward_product_qty = this.state.additional_reward_remaining_qty;
+        }
+
+        onChangeQty(reward, target) {
+            let currentLine = reward;
+            let quantity_input = parse.float(target.value);
+
+            this._computeOnchangeQty(reward, quantity_input);
         }
 
         onChangeAdditionalRewardProduct(target) {
@@ -182,27 +204,20 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 
         onChangeAdditionalRewardQty(target) {
             let input = parse.float(target.value);
-            if (input > this.state.qty_remaining) {
-                target.value = this.state.qty_remaining;
+            if (input > this.state.additional_reward_remaining_qty) {
+                target.value = this.state.additional_reward_remaining_qty;
             };
             this.state.program.additional_reward_product_qty = parse.float(target.value);
         }
 
         selectItem(cid) {
-            this.state.program.isSelected = true;
             let order = this.env.pos.get_order();
             let currentLine = this.state.reward_line_vals.find(l => l.line.cid === cid);
             currentLine.isSelected = !currentLine.isSelected;
-            if (currentLine.isSelected && currentLine.quantity == 0) {
-                currentLine.quantity = 1;
-            };
-            if (currentLine.isSelected && !this._check_valid_rewards()) {
-                currentLine.quantity = 0;
-            };
-
-            // Compute remaining qty of reward product
-            let selectedQty_on_program = this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
-            this.state.qty_remaining = this._currentProgram().reward_quantity - selectedQty_on_program;
+            if (currentLine.isSelected) {
+                this.state.program.isSelected = true;
+                this._computeOnchangeQty(currentLine, 1);
+            }
         }
 
         confirm() {
@@ -231,7 +246,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
         getPayload() {
             if (this._currentProgram().reward_type == 'cart_get_x_free' && this.state.program.additional_reward_product_id) {
                 if (!this.state.program.additional_reward_product_qty) {
-                    this.state.program.additional_reward_product_qty = this.state.qty_remaining;
+                    this.state.program.additional_reward_product_qty = this.state.additional_reward_remaining_qty;
                 }
             }
             super.getPayload()

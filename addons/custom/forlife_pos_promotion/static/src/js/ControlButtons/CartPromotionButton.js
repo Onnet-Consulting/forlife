@@ -59,6 +59,7 @@ export class CartPromotionButton extends PosComponent {
                 let to_apply_lines = order._apply_cart_program_to_orderline(optionPro.program, [line]);
                 to_apply_lines.forEach( newLine => {
                     let options = order._getNewLineValuesAfterDiscount(newLine);
+                    options['is_reward_line'] = true;
                     order.orderlines.add(order._createLineFromVals(options));
                 });
             };
