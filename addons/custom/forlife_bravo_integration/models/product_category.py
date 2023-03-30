@@ -34,7 +34,7 @@ class ProductCategory(models.Model):
         records = records.filtered(lambda rec: len(re.findall('/', rec.parent_path)) == level)
         if not records:
             return bravo_table, bravo_column_names, []
-        company_codes = ['1100', '1200', '1400', '1500']
+        company_codes = ['1100', '1200', '1300', '1400']
         companies = self.env['res.company'].sudo().search([('code', 'in', company_codes)])
         company_by_code = {c.code: c for c in companies}
         missing_company_codes = set(company_codes) - set(company_by_code.keys())
@@ -50,17 +50,17 @@ class ProductCategory(models.Model):
                 "COGSAccount": record_1200.property_account_expense_categ_id.code,
                 "SalesAccount": record_1200.property_account_income_categ_id.code,
             })
+            record_1300 = record.with_company(company_by_code['1300']).sudo()
+            value.update({
+                "ItemAccount1": record_1300.property_stock_valuation_account_id.code,
+                "COGSAccount1": record_1300.property_account_expense_categ_id.code,
+                "SalesAccount1": record_1300.property_account_income_categ_id.code,
+            })
             record_1400 = record.with_company(company_by_code['1400']).sudo()
             value.update({
-                "ItemAccount1": record_1400.property_stock_valuation_account_id.code,
-                "COGSAccount1": record_1400.property_account_expense_categ_id.code,
-                "SalesAccount1": record_1400.property_account_income_categ_id.code,
-            })
-            record_1500 = record.with_company(company_by_code['1500']).sudo()
-            value.update({
-                "ItemAccount2": record_1500.property_stock_valuation_account_id.code,
-                "COGSAccount2": record_1500.property_account_expense_categ_id.code,
-                "SalesAccount2": record_1500.property_account_income_categ_id.code,
+                "ItemAccount2": record_1400.property_stock_valuation_account_id.code,
+                "COGSAccount2": record_1400.property_account_expense_categ_id.code,
+                "SalesAccount2": record_1400.property_account_income_categ_id.code,
             })
             record_1100 = record.with_company(company_by_code['1100']).sudo()
             value.update({
