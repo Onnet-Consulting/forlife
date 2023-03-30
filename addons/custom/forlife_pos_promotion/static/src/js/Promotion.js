@@ -617,7 +617,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (!valid_product_ids.size || valid_product_ids.has(product.id)) { return p + quantity; }
             return p;
         }
-        var check_q = to_check_order_lines.reduce(funct_check_q);
+        var check_q = 0;
+        if (to_check_order_lines.length) {
+            check_q = to_check_order_lines.reduce(funct_check_q);
+        }
         if (codeProgram.reward_type == "code_amount" && ((codeProgram.discount_apply_on == "order" && check_q >= valid_product_ids.size) || !valid_product_ids.size)) {
             for (const ol of to_check_order_lines) {
                 to_discount_line_vals.push({
