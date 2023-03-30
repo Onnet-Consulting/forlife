@@ -1340,6 +1340,28 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 //                        };
 //                    };
 //                } else {
+                    if (program.reward_product_id_selected && program.reward_product_id_selected.size && numberOfCombo > 0 && program.reward_type == "code_buy_x_get_y") {
+                        to_discount_line_vals.push({
+                            product: this.pos.db.get_product_by_id([...program.reward_product_id_selected][0]),
+                            quantity:  numberOfCombo * program.reward_quantity,
+                            price: 0,
+                            isNew: true,
+                            is_reward_line: true
+                        })
+                    }
+                    if (numberOfCombo > 0 && program.reward_type == "code_buy_x_get_cheapest") {
+                        var numberOfReward = numberOfCombo * program.reward_quantity
+                        for (const to_discount_line_val of to_discount_line_vals.sort((a,b) => a.price - b.price)) {
+                            if (to_discount_line_val.quantity >= numberOfReward) {
+                                to_discount_line_val.price = (to_discount_line_val.quantity - numberOfReward) / to_discount_line_val.quantity * to_discount_line_val.price;
+                                numberOfReward = 0;
+                                break;
+                            } else {
+                                numberOfReward -= to_discount_line_val.quantity;
+                                to_discount_line_val.price = 0;
+                            }
+                        }
+                    }
                     for (let i = 0; i < to_discount_line_vals.length; i++) {
                         let result;
                         [result, remaining_amount] = this.applyACodeProgramToLineVales(program, to_discount_line_vals[i], numberOfCombo, remaining_amount);
