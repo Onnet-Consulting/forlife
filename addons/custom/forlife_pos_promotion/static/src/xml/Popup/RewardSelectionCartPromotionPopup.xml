@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="RewardSelectionCartPromotionPopup" owl="1">
+        <div class="popup popup-text popup-med-custom product-configurator-popup">
+            <header class="title">
+                <span>Chọn phần thưởng</span><br/>
+                <t t-esc="this.state.program.program.display_name" />
+            </header>
+            <p t-if="state.hasError" style="color: red; background-color: antiquewhite;">
+                <t t-esc="error_msg" />
+            </p>
+            <div><span style="font-weight: normal">Tối đa: </span><strong t-esc="this.state.program.program.reward_quantity"/> sản phẩm</div>
+            <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQty()"/> sản phẩm</div>
+            <hr/>
+            <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
+                <ul>
+                    <t t-foreach="props.reward_line_vals" t-as="reward" t-key="reward.line.cid">
+                        <li class="program-item"  style="height: 100px; margin: 0px 0 10px 0">
+                            <input type="checkbox" name="programs"
+                                   t-att-id="reward.line.cid"
+                                   t-att-checked="'checked' ? reward.isSelected : ''"
+                                   t-att-value="reward.line.cid"
+                                   t-on-click="() => this.selectItem(reward.line.cid)"
+                            />
+                            <label t-att-for="reward.line.cid">
+                                <t t-esc="reward.line.product.display_name"/>
+                            </label>
+                            <ul class="info-list">
+                                <li class="info">
+                                    <strong>
+                                        <t t-esc="reward.line.quantity" />
+                                    </strong>
+                                    <span><t t-esc="this.pricePerUnit(reward)"/></span>
+                                    <i class="fa fa-light fa-arrow-right"/>
+                                    <span><t t-esc="this.getDiscountPrice(reward)"/></span>
+                                </li>
+                            </ul>
+                            <div t-if="reward.isSelected" style="margin: 0 0 0 20px;">
+                                <div>SL chọn
+                                    <input type="number"
+                                           id="quantity" name="SL"
+                                           t-att-value="reward.quantity" min="1" t-att-max="reward.max_qty"
+                                           t-on-change="(ev) => this.onChangeQty(reward, ev.target)"
+                                    />
+
+                                </div>
+                            </div>
+                        </li>
+                    </t>
+                </ul>
+            </main>
+            <footer class="footer">
+                <div t-if="this.props.valid" class="button highlight confirm" t-on-click="confirm">
+                    Apply
+                </div>
+                <div class="button cancel" t-on-click="cancel">
+                    Cancel
+                </div>
+            </footer>
+        </div>
+    </t>
+
+</templates>

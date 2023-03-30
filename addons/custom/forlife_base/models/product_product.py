@@ -5,6 +5,16 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
 
+class ProducAttributeValue(models.Model):
+    _inherit = "product.attribute.value"
+
+    code = fields.Char(string="Code", required=True)
+
+    _sql_constraints = [
+        ('unique_code', 'UNIQUE(code)', 'Code must be unique!')
+    ]
+
+
 class ProducProduct(models.Model):
     _inherit = "product.product"
 

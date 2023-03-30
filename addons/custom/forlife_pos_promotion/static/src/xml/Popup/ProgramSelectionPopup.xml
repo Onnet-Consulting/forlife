@@ -2,13 +2,13 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="ProgramSelectionPopup" owl="1">
-        <div class="popup popup-text popup-med product-configurator-popup">
+        <div class="popup popup-text popup-med-custom product-configurator-popup">
             <header class="title">
                 <t t-esc="'Chọn chương trình khuyến mãi'" />
             </header>
+            <p style="margin: 10px 0 10px 0"><strong style="font-size: 20px;">Tổng giảm đã trên đơn: &nbsp;<t t-esc="this.env.pos.format_currency(state.discount_amount_order)"/></strong></p>
+            <hr/>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
-                <p style="margin: 0 0 0 40px"><strong style="font-size: 20px;">Tổng giảm đã trên đơn: &nbsp;<t t-esc="this.env.pos.format_currency(state.discount_amount_order)"/></strong></p>
-                <hr/>
                 <ul>
                     <t t-foreach="props.programs" t-as="program" t-key="program.id">
                         <li class="program-item" t-att-class="program.forecastedNumber > 0 ? 'selectable' : ''">
@@ -60,41 +60,6 @@
                         </li>
                     </t>
                 </ul>
-                <hr/>
-            <style>
-                .program-item:hover {
-                    background: rgba(0, 0, 0, 0.055);
-                    cursor: pointer;
-                }
-                li:before {
-                    content: None !important;
-                }
-                .selectable {
-                    background-color: rgb(237 248 252);
-                }
-                div .badge {
-                    min-width: 2.7ch;
-                    margin-left: 10px;
-                }
-                div .rounded-pill {
-                    border-radius: 50rem !important;
-                }
-                div .text-bg-success {
-                    text-align: center;
-                    color: #FFF !important;
-                    background-color: RGBA(40, 167, 69, var(--bg-opacity, 1)) !important;
-                }
-                div .number-combo {
-                    display: inline-block;
-                    margin-right: 10px;
-                }
-                label {
-                    padding: 0px 100px 40px 0;
-                }
-                .btn-primary {
-                    color: #017e84;
-                }
-            </style>
             </main>
             <footer class="footer">
                 <div class="button highlight confirm" t-on-click="confirm">

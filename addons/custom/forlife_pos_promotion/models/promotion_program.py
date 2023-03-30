@@ -41,7 +41,7 @@ class PromotionProgram(models.Model):
         precompute=True)
     currency_symbol = fields.Char(related='currency_id.symbol')
 
-    brand_id = fields.Many2one(related='campaign_id.brand_id', string='Brand')
+    brand_id = fields.Many2one(related='campaign_id.brand_id', string='Brand', store=True)
     store_ids = fields.Many2many(related='campaign_id.store_ids', string='Stores')
     from_date = fields.Datetime(related='campaign_id.from_date', string='From Date', default=fields.Datetime.now)
     to_date = fields.Datetime(related='campaign_id.to_date', string='To Date')
@@ -109,9 +109,11 @@ class PromotionProgram(models.Model):
 
     # Cart
     order_amount_min = fields.Float()
+    incl_reward_in_order = fields.Boolean(string='Include Reward in Order')
     # Pricelist
 
-    pricelist_item_ids = fields.One2many('promotion.pricelist.item', 'program_id', string='Pricelist Item')
+    pricelist_item_ids = fields.One2many(
+        'promotion.pricelist.item', 'program_id', string='Pricelist Item', context={'active_test': False})
     pricelist_item_count = fields.Integer(compute='_compute_pricelist_item_count')
 
     # Rewards
@@ -309,6 +311,6 @@ class PromotionProgram(models.Model):
                 (self.env.ref('forlife_pos_promotion.promotion_pricelist_item_tree_view').id, 'tree'),
             ],
             'type': 'ir.actions.act_window',
-            'domain': [('id', 'in', self.pricelist_item_ids.ids)],
-            'context': {'default_program_id': self.id}
+            'domain': [('program_id', '=', self.id)],
+            'context': {'default_program_id': self.id, 'search_default_active': 1}
         }

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-15 08:01+0000\n"
-"PO-Revision-Date: 2023-03-15 08:01+0000\n"
+"POT-Creation-Date: 2023-03-17 04:36+0000\n"
+"PO-Revision-Date: 2023-03-17 04:36+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -111,6 +111,11 @@ msgid "Active"
 msgstr "Hoạt động"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__active_program_count
+msgid "Active Program Count"
+msgstr ""
+
+#. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
 msgid "Add a product"
 msgstr "Thêm sản phẩm"
@@ -167,6 +172,8 @@ msgstr "Dựa trên số lượng sản phẩm hoặc combo"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__brand_id
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_configuration__brand_id
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__brand_id
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_search
 msgid "Brand"
 msgstr "Thương hiệu"
 
@@ -429,6 +436,7 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__currency_id
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__currency_id
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__currency_id
 msgid "Currency"
 msgstr "Tiền tệ"
 
@@ -469,12 +477,12 @@ msgstr "Các ngày trong tuần"
 #: code:addons/forlife_pos_promotion/models/pos_order_line.py:0
 #, python-format
 msgid "Discount "
-msgstr "Giảm giá"
+msgstr "Giảm "
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__disc_amount
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__disc_amount
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__discount_amount
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__discount_total
 msgid "Discount Amount"
 msgstr "Số tiền giảm"
 
@@ -515,6 +523,11 @@ msgid "Discount Percent must be between 0.0 and 100.0"
 msgstr "Phần tram giảm giá phải là số dương"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__discount_amount
+msgid "Discount Price"
+msgstr "Số tiền giảm"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__discount_product_ids
 msgid "Discount Product"
 msgstr "Sản phẩm khuyến mãi"
@@ -544,6 +557,7 @@ msgstr "Miền"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_program_check_dates
+#: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_program_check_dates_tax_register
 msgid "End date may not be before the starting date."
 msgstr "Ngày kết thúc phải sau ngày bắt đầu."
 
@@ -614,6 +628,12 @@ msgid "Generate Codes"
 msgstr "Tạo mã KM"
 
 #. module: forlife_pos_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_search
+msgid "Group By"
+msgstr "Nhóm theo"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__has_cart
 msgid "Has Cart"
 msgstr ""
@@ -657,6 +677,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/forlife_pos_promotion/models/promotion_campaign.py:0
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_campaign__state__in_progress
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_search
 #, python-format
 msgid "In Progress"
 msgstr "Đang chạy"
@@ -827,6 +849,13 @@ msgid "No program found."
 msgstr ""
 
 #. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Promotion.js:0
+#, python-format
+msgid "Not found an available Promotion Program needed Code to be activated"
+msgstr "Không tìm thấy chương trình KM nào cần kích hoạt bằng mã KM"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__use_count
 msgid "Number of Order Usage"
 msgstr "Số đơn đã dùng"
@@ -921,12 +950,12 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__pricelist_program_ids
 msgid "Pricelist Program"
-msgstr "Chương trình sale-off"
+msgstr "Chương trình làm giá"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_form
 msgid "Pricelist Programs"
-msgstr "Chương trình sale-off"
+msgstr "Chương trình làm giá"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__pro_priceitem_id
@@ -959,7 +988,7 @@ msgstr "Miền sản phẩm"
 #: code:addons/forlife_pos_promotion/models/promotion_program.py:0
 #, python-format
 msgid "Product Pricelist Items"
-msgstr ""
+msgstr "Chi tiết bảng giá KM"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_combo_line__product_ids
@@ -1045,7 +1074,7 @@ msgstr "Tạo mã KM"
 #. module: forlife_pos_promotion
 #: model:ir.model,name:forlife_pos_promotion.model_promotion_pricelist_item
 msgid "Promotion Pricelist Item"
-msgstr ""
+msgstr "chi tiết bảng giá KM"
 
 #. module: forlife_pos_promotion
 #: model:ir.model,name:forlife_pos_promotion.model_promotion_program
@@ -1066,7 +1095,7 @@ msgstr "Phần thưởng KM"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_pos_order_line__promotion_usage_ids
 msgid "Promotion Usage"
-msgstr ""
+msgstr "Khuyến mã đã áp dụng"
 
 #. module: forlife_pos_promotion
 #: model:ir.model,name:forlife_pos_promotion.model_promotion_usage_line
@@ -1092,9 +1121,9 @@ msgid "Quantity"
 msgstr "Số lượng"
 
 #. module: forlife_pos_promotion
-#: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_combo_line_quantity
+#: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_combo_line_combo_line_quantity_check
 msgid "Quantity must be positive"
-msgstr "số lượng phải là số dương"
+msgstr "Số lượng phải là số dương"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_generate_wizard_view_form
@@ -1205,6 +1234,8 @@ msgstr "Sản phẩm chỉ định"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__state
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__state
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_search
 msgid "State"
 msgstr "Trạng thái"
 
@@ -1221,9 +1252,23 @@ msgid "Str"
 msgstr ""
 
 #. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Promotion.js:0
+#, python-format
+msgid "Successfully activate a promotion code."
+msgstr "Mã KM đã được kích hoạt thành công."
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__currency_symbol
 msgid "Symbol"
 msgstr ""
+
+#. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Promotion.js:0
+#, python-format
+msgid "That coupon code has already been scanned and activated."
+msgstr "Mã khuyến mãi đã được nhập và kích hoạt trước đó!"
 
 #. module: forlife_pos_promotion
 #. odoo-javascript
@@ -1244,9 +1289,10 @@ msgstr "Không có mã KM nào được tạo."
 #. module: forlife_pos_promotion
 #. odoo-python
 #: code:addons/forlife_pos_promotion/models/pos_config.py:0
+#: code:addons/forlife_pos_promotion/models/pos_config.py:0
 #, python-format
-msgid "This coupon is expired (%s)."
-msgstr "Mã khuyến mãi này hết hạn (%s)."
+msgid "This coupon is expired or over maximum usages: (%s)."
+msgstr "Mã khuyến mãi này hết hạn hoặc vượt quá giới hạn sử dụng: (%s)."
 
 #. module: forlife_pos_promotion
 #. odoo-python

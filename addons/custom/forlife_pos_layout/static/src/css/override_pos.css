@@ -80,6 +80,10 @@
     max-width: 250px;
 }
 
+.pos .pos-topheader .status-buttons > div.name-pos:hover{
+    background: rgba(0, 0, 0, 0);
+}
+
 @media (min-width: 768px){
     .pos .product-screen .leftpane,
     .pos .product-screen .rightpane{

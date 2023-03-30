@@ -5,6 +5,35 @@
         <menuitem id="menu_master_data_root" name="Master Data" sequence="100"/>
 
             <menuitem id="menu_master_data_config" name="Configuration" parent="menu_master_data_root" sequence="10"/>
+            <menuitem id="menu_master_data_product_config" parent="menu_master_data_root" name="Thiết lập sản phẩm" sequence="11"/>
+                <menuitem id="object_product" parent="menu_master_data_product_config" action="action_object_product" sequence="1"/>
+                <menuitem id="branch_product" parent="menu_master_data_product_config" action="action_branch_product" sequence="2"/>
+                <menuitem id="unit_priority" parent="menu_master_data_product_config" action="action_unit_priority" sequence="3"/>
+                <menuitem id="uses_product" parent="menu_master_data_product_config" action="action_uses_product" sequence="4"/>
+                <menuitem id="material_product" parent="menu_master_data_product_config" action="action_material_product" sequence="5"/>
+                <menuitem id="menu_sub_class_root" name="Sub Class" sequence="6" parent="menu_master_data_product_config">
+                        <menuitem id="sub_class_one" action="action_sub_class_one" sequence="1"/>
+                <menuitem id="sub_class_two" action="action_sub_class_two" sequence="2"/>
+                <menuitem id="sub_class_three" action="action_sub_class_three" sequence="3"/>
+                <menuitem id="sub_class_four" action="action_sub_class_four" sequence="4"/>
+                <menuitem id="sub_class_five" action="action_sub_class_five" sequence="5"/>
+                <menuitem id="sub_class_six" action="action_sub_class_six" sequence="6"/>
+                <menuitem id="sub_class_seven" action="action_sub_class_seven" sequence="7"/>
+                <menuitem id="sub_class_eight" action="action_sub_class_eight" sequence="8"/>
+                <menuitem id="sub_class_nine" action="action_sub_class_nine" sequence="9"/>
+                <menuitem id="sub_class_ten" action="action_sub_class_ten" sequence="10"/>
+                    </menuitem>
+
+                <menuitem id="properties_one_product" parent="menu_master_data_product_config" action="action_properties_one_product" sequence="7"/>
+                <menuitem id="properties_two_product" parent="menu_master_data_product_config" action="action_properties_two_product" sequence="8"/>
+                <menuitem id="designer_product" parent="menu_master_data_product_config" action="action_designer_product" sequence="9"/>
+                <menuitem id="origin_product" parent="menu_master_data_product_config" action="action_origin_product" sequence="10"/>
+                <menuitem id="source_product" parent="menu_master_data_product_config" action="action_source_product" sequence="11"/>
+                <menuitem id="year_product" parent="menu_master_data_product_config" action="action_year_product" sequence="12"/>
+                <menuitem id="season_product" parent="menu_master_data_product_config" action="action_season_product" sequence="13"/>
+                <menuitem id="type_product" parent="menu_master_data_product_config" action="action_type_product" sequence="14"/>
+                <menuitem id="main_fabric_material" parent="menu_master_data_product_config" action="action_main_fabric_material" sequence="15"/>
+
                 <menuitem
                     action="product_category_code_action" id="menu_product_category_code_action_purchase"
                     parent="menu_master_data_config" sequence="1" />
@@ -41,5 +70,22 @@
                 <menuitem 
                     id="res_state_district_menu" action="res_state_district_action" 
                     parent="menu_master_data_config" sequence="11"/>
+                <menuitem
+                    id="res_state_asset_location_menu" action="res_asset_location_action"
+                    parent="menu_master_data_config" sequence="13"/>
+                <menuitem
+                    id="res_occasion_code_menu" action="res_occasion_code_action"
+                    parent="account.menu_finance_configuration" sequence="15"/>
+                <menuitem
+                    id="res_occasion_gr_menu" action="res_occasion_gr_action"
+                    parent="account.menu_finance_configuration" sequence="16"/>
+                <menuitem
+                    id="res_assets_assets_menu" action="res_assets_assets_action"
+                    parent="menu_master_data_config" sequence="12"/>
+
+                <menuitem id="menu_action_res_partner_master_bank_form"
+                    action="action_res_partner_master_bank_form"
+                    parent="contacts.menu_config_bank_accounts"
+                sequence="3"/>
     </data>
 </odoo>

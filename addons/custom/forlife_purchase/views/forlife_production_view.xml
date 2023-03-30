@@ -1,0 +1,91 @@
+<odoo>
+    <record id="forlife_production_tree" model="ir.ui.view">
+        <field name="name">forlife.production.tree</field>
+        <field name="model">forlife.production</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Forlife Production">
+                <!--                <field name="name"/>-->
+                <field name="code"/>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="create_date"/>
+                <field name="company_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="forlife_production_form" model="ir.ui.view">
+        <field name="name">forlife.production.form</field>
+        <field name="model">forlife.production</field>
+        <field name="arch" type="xml">
+            <form string="">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="create_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Finished Product" name="finished_product">
+                            <field name="forlife_production_finished_product_ids" mode="tree"
+                                   attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="description"/>
+                                    <field name="produce_qty"/>
+                                    <field name="uom_id"/>
+                                    <field name="unit_price"/>
+                                    <field name="stock_qty"/>
+                                    <field name="remaining_qty"/>
+                                    <field name="forlife_bom_ids" widget="many2many_tags"/>
+                                </tree>
+                            </field>
+                        </page>
+<!--                        <page string="Materials" name="materials">-->
+<!--                            <field name="forlife_production_material_ids" mode="tree"-->
+<!--                                   attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">-->
+<!--                                <tree editable="bottom">-->
+<!--                                    <field name="product_id"/>-->
+<!--                                    <field name="description"/>-->
+<!--                                    <field name="quantity"/>-->
+<!--                                    <field name="uom_id"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
+<!--                        <page string="Service Costs" name="service_costs">-->
+<!--                            <field name="forlife_production_service_cost_ids" mode="tree"-->
+<!--                                   attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">-->
+<!--                                <tree editable="bottom">-->
+<!--                                    <field name="currency_id" invisible="1"/>-->
+<!--                                    <field name="product_id"/>-->
+<!--                                    <field name="description"/>-->
+<!--                                    <field name="prices" widget="monetary" options="{'currency_field': 'currency_id'}"/>-->
+<!--                                </tree>-->
+<!--                            </field>-->
+<!--                        </page>-->
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="forlife_production_action" model="ir.actions.act_window">
+        <field name="name">Forlife Production</field>
+        <field name="res_model">forlife.production</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

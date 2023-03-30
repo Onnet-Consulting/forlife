@@ -70,6 +70,11 @@ msgid "Code"
 msgstr "Mã"
 
 #. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_attribute__code
+msgid "Code"
+msgstr "Mã giá trị"
+
+#. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__warehouse_code_internal
 msgid "Code Internal"
 msgstr "Mã nội bộ"
@@ -87,6 +92,7 @@ msgstr "Mã nội bộ"
 #: model:ir.model.constraint,message:forlife_base.constraint_stock_warehouse_status_unique_code
 #: model:ir.model.constraint,message:forlife_base.constraint_stock_warehouse_type_unique_code
 #: model:ir.model.constraint,message:forlife_base.constraint_supplier_product_type_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_product_attribute_value_unique_code
 msgid "Code must be unique!"
 msgstr "Mã phải là duy nhất!"
 
@@ -317,7 +323,6 @@ msgstr "Loại hàng hoá NCC"
 #. module: forlife_base
 #: model:ir.actions.act_window,name:forlife_base.stock_warehouse_type_action
 #: model:ir.model,name:forlife_base.model_stock_warehouse_type
-#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__warehouse_type_id
 #: model:ir.ui.menu,name:forlife_base.stock_warehouse_type_menu
 #: model_terms:ir.ui.view,arch_db:forlife_base.stock_warehouse_type_view_tree
 msgid "Type of Warehouse"
@@ -349,3 +354,63 @@ msgstr "Khu vực thời tiết"
 #, python-format
 msgid "unknown error code %s"
 msgstr "mã lỗi không xác định %s"
+
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_occasion_code_action
+#: model:ir.model,name:forlife_base.model_occasion_code
+#: model:ir.ui.menu,name:forlife_base.res_occasion_code_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_occasion_code_view_tree
+msgid "Occasion Code"
+msgstr "Mã vụ việc"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_occasion_gr_action
+#: model:ir.model,name:forlife_base.model_occasion_group
+#: model:ir.ui.menu,name:forlife_base.res_occasion_gr_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_occasion_gr_view_tree
+msgid "Occasion Group"
+msgstr "Nhóm vụ việc"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_occasion_code__code
+msgid "Occasion code"
+msgstr "Mã vụ việc"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_occasion_code__group_id
+msgid "Occasion group"
+msgstr "Nhóm vụ việc"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_occasion_code__name
+msgid "Occasion name"
+msgstr "Tên vụ việc"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_asset_location__location_address
+msgid "Location Address"
+msgstr "Địa chỉ vị trí"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_asset_location__location_code
+msgid "Location Code"
+msgstr "Mã vị trí"
+
+#. module: forlife_base
+#: model:ir.model.constraint,message:forlife_base.constraint_asset_location_unique_location_code
+msgid "Location Code must be unique!"
+msgstr "Mã vị trí phải là duy nhất"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_asset_location__location_name
+msgid "Location Name"
+msgstr "Tên vị trí"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_asset_location_action
+#: model:ir.model,name:forlife_base.model_asset_location
+#: model:ir.ui.menu,name:forlife_base.res_state_asset_location_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_asset_location_view_tree
+msgid "Asset Location"
+msgstr "Vị trí tài sản"

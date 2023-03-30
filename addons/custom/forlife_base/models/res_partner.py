@@ -19,8 +19,8 @@ class SupplierProductType(models.Model):
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    supplier_code = fields.Char(string="Supplier Code", copy=False)
-    internal_code = fields.Char(string="Internal Code", copy=False)
+    # supplier_code = fields.Char(string="Supplier Code", copy=False)
+    # internal_code = fields.Char(string="Internal Code", copy=False)
 
     supplier_group_id = fields.Many2one('res.supplier.group', string="Supplier Group", copy=False)
     sup_product_type_id = fields.Many2one('supplier.product.type', string="Type of Supplier Product", copy=False)

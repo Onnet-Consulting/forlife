@@ -2,7 +2,6 @@
 <templates id="template" xml:space="preserve">
 
      <t t-name="PromotionButton" owl="1">
-<!--        <span class="control-button" t-att-class="hasClaimableRewards() ? 'highlight' : ''">-->
         <span class="control-button" t-att-class="'highlight'">
             <i class="fa fa-star"></i>
             <span> </span>

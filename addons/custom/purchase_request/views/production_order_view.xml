@@ -1,0 +1,75 @@
+<odoo>
+
+    <record id="production_order_tree" model="ir.ui.view">
+        <field name="name">production.order.tree</field>
+        <field name="model">production.order</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Production Order">
+<!--                <field name="sequence" widget="handle"/>-->
+                <field name="product_id"/>
+                <field name="code" string="Diễn giải"/>
+                <field name="type"/>
+                <field name="product_qty"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="production_order_form" model="ir.ui.view">
+        <field name="name">production.order.form</field>
+        <field name="model">production.order</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="product_id" domain="[('detailed_type', '=', 'product'), ('active', '=', True)]"/>
+                            <field name="product_qty"/>
+                        </group>
+                        <group>
+                            <field name="code" string="Diễn giải"/>
+                            <field name="type" widget="radio"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Components" name="components">
+                            <field name="order_line_ids" widget="section_and_note_one2many">
+                                <tree string="Components" editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id" domain="[('detailed_type', '=', 'product'), ('active', '=', True)]"/>
+<!--                                    <field name="uom_id"/>-->
+                                    <field name="product_qty"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+     <record id="production_order_search_view" model="ir.ui.view">
+        <field name="name">production_order_search_view</field>
+        <field name="model">production.order</field>
+        <field eval="10" name="priority"/>
+        <field name="arch" type="xml">
+            <search string="Lead Search">
+                <field name="product_id"/>
+                <field name="code"/>
+                <field name="type"/>
+                <field name="product_qty"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="production_order_action" model="ir.actions.act_window">
+        <field name="name">Attach Ingredients/Product Separation</field>
+        <field name="res_model">production.order</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

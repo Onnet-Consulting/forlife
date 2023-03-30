@@ -18,5 +18,17 @@
                 </field>
             </field>
         </record>
+
+        <record id="product_attribute_view_form_inherit_forlife" model="ir.ui.view">
+            <field name="name">product.attribute.form.inherit</field>
+            <field name="model">product.attribute</field>
+            <field name="inherit_id" ref="product.product_attribute_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='attribute_values']/field/tree/field[@name='name']" position="before">
+                    <field name="code"/>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>

@@ -114,6 +114,8 @@
                                    class="o_loyalty_kanban_inline"/>
                     </group>
                     <group string="Conditions" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
+                        <field name="order_amount_min" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
+<!--                        <field name="incl_reward_in_order" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>-->
                         <field name="product_ids" widget="many2many_tags"
                                attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
 <!--                        <field name="product_categ_ids" widget="many2many_tags"-->
@@ -126,7 +128,7 @@
                             </button>
                         </div>
                     </group>
-                    <group string="Rewards" attrs="{'invisible': [('reward_type', '=', 'pricelist')]}">
+                    <group string="Rewards" attrs="{'invisible': [('promotion_type', '=', 'pricelist')]}">
                         <group>
                             <field name="discount_based_on"
                                    attrs="{'invisible': [('reward_type', 'not in', ('code_amount', 'code_percent'))]}"/>
@@ -154,7 +156,7 @@
                             <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent'))]}"/>
                             <field name="discount_product_ids"
-                                   attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_percent'))]}"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price'))]}"
                                    widget="many2many_tags"/>
                             <field name="reward_product_ids"
                                    attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"
@@ -213,7 +215,7 @@
         <field name="name">promotion.program.view.tree</field>
         <field name="model">promotion.program</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree default_order="state desc">
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="campaign_id" optional="hide"/>
@@ -242,8 +244,14 @@
             <search>
                 <field name="name"/>
                 <field name="campaign_id"/>
+                <filter string="In Progress" domain="[('state','=','in_progress')]" name="in_progress"/>
+                <filter string="Brand" name="brand" domain="[]" context="{'group_by':'brand_id'}"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+                </group>
             </search>
         </field>
     </record>
