@@ -7,3 +7,6 @@
     color: black !important;
     font-weight: 500 !important;
 }
+.hide_add_and_remove table tr td.o_field_x2many_list_row_add, .hide_add_and_remove table tr td.o_list_record_remove  {
+    display: none !important;
+}

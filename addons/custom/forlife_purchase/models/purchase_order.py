@@ -4,10 +4,17 @@ from odoo.exceptions import ValidationError
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, format_amount, format_date, formatLang, get_lang, groupby
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
+import json
 
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
+
+    READONLY_STATES = {
+        'purchase': [('readonly', True)],
+        'done': [('readonly', True)],
+        'cancel': [('readonly', True)],
+    }
 
     purchase_type = fields.Selection([
         ('product', 'Goods'),
@@ -48,7 +55,24 @@ class PurchaseOrder(models.Model):
                    ])
     exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id')
     cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id')
-    is_passersby = fields.Boolean(default=False)
+    is_passersby = fields.Boolean(related='partner_id.is_passersby')
+    location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
+    is_inter_company = fields.Boolean(default=False)
+    partner_domain = fields.Char(compute='compute_partner_domain')
+    partner_id = fields.Many2one('res.partner', string='Vendor', required=True, states=READONLY_STATES, change_default=True, tracking=True, domain=False, help="You can find a vendor by its Name, TIN, Email or Internal Reference.")
+    occasion_code_ids = fields.Many2many('occasion.code', relation='occasion_code_ref', string="Case Code")
+    account_analytic_ids = fields.Many2many('account.analytic.account', relation='account_analytic_ref', string="Cost Center")
+    is_purchase_request = fields.Boolean(default=False)
+    source_document = fields.Char(string="Source Document")
+    receive_date = fields.Datetime(string='Receive Date')
+    note = fields.Char('Note')
+
+
+    @api.depends('is_inter_company')
+    def compute_partner_domain(self):
+        for item in self:
+            data_search = self.env['res.partner'].search([('is_inter_company_purchase', '=', True if item.is_inter_company else False), ('company_id', '=', False)])
+            item.partner_domain = json.dumps([('id', 'in', data_search.ids)])
 
     def action_confirm(self):
         for record in self:
@@ -115,13 +139,6 @@ class PurchaseOrder(models.Model):
     #             'active_manual_currency_rate': diff_currency
     #         })
     #     return result
-
-    @api.onchange('partner_id')
-    def onchange_partner(self):
-        if self.partner_id.is_passersby:
-            self.is_passersby = True
-        else:
-            self.is_passersby = False
 
     @api.onchange('company_id', 'currency_id')
     def onchange_currency_id(self):
@@ -249,6 +266,43 @@ class PurchaseOrder(models.Model):
         return self.action_view_invoice(moves)
 
 
+    def _prepare_picking(self):
+        if not self.group_id:
+            self.group_id = self.group_id.create({
+                'name': self.name,
+                'partner_id': self.partner_id.id
+            })
+        if not self.partner_id.property_stock_supplier.id:
+            raise UserError(_("You must set a Vendor Location for this partner %s", self.partner_id.name))
+        location_ids = self.order_line.mapped('location_id')
+        if self.location_id:
+            location_ids |= self.location_id
+        if not location_ids:
+            return {
+                'picking_type_id': self.picking_type_id.id,
+                'partner_id': self.partner_id.id,
+                'user_id': False,
+                'date': self.date_order,
+                'origin': self.name,
+                'location_dest_id': self._get_destination_location(),
+                'location_id': self.partner_id.property_stock_supplier.id,
+                'company_id': self.company_id.id,
+            }
+        vals = []
+        for location in location_ids:
+            vals.append({
+                'picking_type_id': self.picking_type_id.id,
+                'partner_id': self.partner_id.id,
+                'user_id': False,
+                'date': self.date_order,
+                'origin': self.name,
+                'location_dest_id': location.id,
+                'location_id': self.partner_id.property_stock_supplier.id,
+                'company_id': self.company_id.id,
+            })
+        return vals
+
+
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
@@ -277,8 +331,8 @@ class PurchaseOrderLine(models.Model):
     discount_percent = fields.Float(string='Discount (%)', digits='Discount', default=0.0)
     discount = fields.Float(string='Discount (Amount)', digits='Discount', default=0.0)
     free_good = fields.Boolean(string='Free Goods')
-    warehouses_id = fields.Many2one('stock.warehouse', string="Whs")
-    location_id = fields.Many2one('stock.location', string="Địa điểm kho")
+    warehouses_id = fields.Many2one('stock.warehouse', string="Whs", check_company=True)
+    location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
     production_id = fields.Many2one('forlife.production', string='Production Order Code')
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     request_line_id = fields.Many2one('purchase.request', string='Purchase Request')
@@ -466,4 +520,41 @@ class PurchaseOrderLine(models.Model):
                 raise ValidationError(_('The number of exchanges is not filled with negative numbers !!'))
             elif rec.purchase_quantity < 0:
                 raise ValidationError(_('Purchase quantity cannot be negative !!'))
+
+    def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
+        self.ensure_one()
+        self._check_orderpoint_picking_type()
+        product = self.product_id.with_context(lang=self.order_id.dest_address_id.lang or self.env.user.lang)
+        date_planned = self.date_planned or self.order_id.date_planned
+        location_dest_id = self.location_id.id if self.location_id else (self.order_id.location_id.id if self.order_id.location_id else False)
+        if not location_dest_id:
+            location_dest_id = (self.orderpoint_id and not (self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
+        picking_line = picking.filtered(lambda p: p.location_dest_id and p.location_dest_id.id == location_dest_id)
+        return {
+            # truncate to 2000 to avoid triggering index limit error
+            # TODO: remove index in master?
+            'name': (self.product_id.display_name or '')[:2000],
+            'product_id': self.product_id.id,
+            'date': date_planned,
+            'date_deadline': date_planned,
+            'location_id': self.order_id.partner_id.property_stock_supplier.id,
+            'location_dest_id': location_dest_id,
+            'picking_id': picking_line.id,
+            'partner_id': self.order_id.dest_address_id.id,
+            'move_dest_ids': [(4, x) for x in self.move_dest_ids.ids],
+            'state': 'draft',
+            'purchase_line_id': self.id,
+            'company_id': self.order_id.company_id.id,
+            'price_unit': price_unit,
+            'picking_type_id': self.order_id.picking_type_id.id,
+            'group_id': self.order_id.group_id.id,
+            'origin': self.order_id.name,
+            'description_picking': product.description_pickingin or self.name,
+            'propagate_cancel': self.propagate_cancel,
+            'warehouse_id': self.order_id.picking_type_id.warehouse_id.id,
+            'product_uom_qty': product_uom_qty,
+            'product_uom': product_uom.id,
+            'product_packaging_id': self.product_packaging_id.id,
+            'sequence': self.sequence,
+        }
 

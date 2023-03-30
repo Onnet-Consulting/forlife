@@ -6,6 +6,8 @@ class Location(models.Model):
 
     stock_location_type_id = fields.Many2one('stock.location.type', string="Stock Location Type")
     code_location = fields.Char(string="Code Location", compute="compute_code_location", store=True)
+    usage = fields.Selection(selection_add=[('import/export', 'Import Other/Export Other')],
+                             ondelete={'import/export': 'set default'})
 
     @api.depends('warehouse_id', 'stock_location_type_id')
     def compute_code_location(self):

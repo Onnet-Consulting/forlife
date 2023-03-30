@@ -21,6 +21,9 @@ class PurchaseRequest(models.Model):
     order_lines = fields.One2many('purchase.request.line', 'request_id', copy=True)
     order_ids = fields.One2many('purchase.order', 'request_id')
     rejection_reason = fields.Char(string="Rejection_reason")
+    account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
+    occasion_code_id = fields.Many2one('occasion.code', string="Occasion code")
+    production_id = fields.Many2one('forlife.production', string="Manufacturing Order")
 
     state = fields.Selection(
         copy=False,
@@ -174,7 +177,7 @@ class PurchaseRequest(models.Model):
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                     # 'product_uom': line.purchase_uom.id,
                     'purchase_uom': line.purchase_uom.id,
-                    'request_purchases': self.name,
+                    # 'request_purchases': self.name,
                 }))
                 po_ex_line_data.append((0, 0, {
                     'purchase_order_id': line.id,
@@ -187,6 +190,8 @@ class PurchaseRequest(models.Model):
                     'name': line.product_id.name,
                 }))
             if po_line_data:
+                source_document = ', '.join(self.mapped('name'))
+                print(source_document)
                 po_data = {
                     'partner_id': vendor_id,
                     'purchase_type': product_type,
@@ -194,6 +199,10 @@ class PurchaseRequest(models.Model):
                     'order_line': po_line_data,
                     'exchange_rate_line': po_ex_line_data,
                     'cost_line': po_cost_line_data,
+                    'occasion_code_ids': [(6, 0, self.mapped('occasion_code_id').ids)],
+                    'account_analytic_ids': [(6, 0, self.mapped('account_analytic_id').ids)],
+                    'is_purchase_request': True,
+                    'source_document': source_document
                 }
                 purchase_order |= purchase_order.create(po_data)
         if not purchase_order:
@@ -226,7 +235,7 @@ class PurchaseRequestLine(models.Model):
     _name = "purchase.request.line"
     _description = "Purchase Request Line"
 
-    is_close = fields.Boolean('Đóng dữ liệu')
+    is_close = fields.Boolean('')
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     asset_description = fields.Char(string="Asset description")
@@ -240,9 +249,11 @@ class PurchaseRequestLine(models.Model):
     purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase')
     product_uom = fields.Many2one('uom.uom', string='UOM Product', related='product_id.uom_id')
     exchange_quantity = fields.Float('Exchange Quantity')
+    account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
     order_quantity = fields.Integer('Quantity Order', compute='_compute_order_quantity', store=1)
     is_no_more_quantity = fields.Boolean(compute='_compute_is_no_more_quantity', store=1)
+    product_qty = fields.Float(string='Quantity', digits=(16, 0), required=True)
     state = fields.Selection(
         string="Status",
         selection=[('draft', 'Draft'),

@@ -14,6 +14,9 @@
                 <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', 'in', ('confirmed', 'assigned','done', 'cancel'))]}</attribute>
                 </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('state', 'in', ('confirmed', 'assigned','done', 'cancel'))]}</attribute>
+                </xpath>
                 <xpath expr="//button[@name='button_scrap']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|',
                         '&amp;', ('other_export', '=', True), ('state', 'in', ('draft', 'confirmed', 'assigned', 'done', 'cancel')),
@@ -21,15 +24,18 @@
                     </attribute>
                 </xpath>
                 <xpath expr="//field[@name='location_dest_id'][2]" position="attributes">
-                    <attribute name="domain">[]</attribute>
+<!--                    <attribute name="domain">[]</attribute>-->
+                    <attribute name="attrs">{'invisible': False}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='location_id'][2]" position="attributes">
-                    <attribute name="domain">[]</attribute>
+<!--                    <attribute name="domain">[]</attribute>-->
+                    <attribute name="attrs">{'invisible': False}</attribute>
                 </xpath>
                 <xpath expr="//page[@name='operations']//field[@name='product_uom']" position="after">
-                    <field name="name"/>
-                    <field name="price_unit"/>
-                    <field name="reason_type_id"/>
+                    <field name="name" required="0"/>
+                    <field name="price_unit" attrs="{'column_invisible': [('parent.other_import', '!=', True)]}"/>
+                    <field name="reason_id"/>
+                    <field name="occasion_code_id"/>
                 </xpath>
 <!--                <xpath expr="//field[@name='picking_type_id']" position="attributes">-->
 <!--                    <attribute name="attrs">{'invisible': ['|', ('other_import', '=', True), '|', ('other_export', '=', True), ('hide_picking_type', '=', True)]}</attribute>-->
@@ -69,13 +75,19 @@
                 </xpath>
                 <xpath expr="//button[@name='action_toggle_is_locked'][1]" position="attributes">
                     <attribute name="attrs">{'invisible': ['|',
-                        '&amp;', ('other_export', '=', True), ('state', 'in', ('done', 'cancel')),
-                        '&amp;', ('other_export', '=', False), '|', ('state', 'in', ('draft','cancel')), ('is_locked', '=', False)]}</attribute>
+                        '&amp;', '|', ('other_export', '=', True), ('other_import', '=', True), ('state', 'in', ('done', 'cancel')),
+                        '&amp;',
+                        '&amp;', ('other_export', '=', False), ('other_import', '=', False),
+                        '|', ('state', 'in', ('draft','cancel')), ('is_locked', '=', False)]}</attribute>
                 </xpath>
                 <xpath expr="//button[@name='action_cancel']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|',
-                        '&amp;', ('other_export', '=', True), ('state', 'not in', ('assigned', 'confirmed', 'draft', 'waiting','done')),
-                        '&amp;', ('other_export', '=', False), ('state', 'not in', ('assigned', 'confirmed', 'draft', 'waiting'))]}
+                        '&amp;',
+                        '|', ('other_export', '=', True), ('other_import', '=', True),
+                        ('state', 'not in', ('assigned', 'confirmed', 'draft', 'waiting','done')),
+                        '&amp;',
+                        '&amp;', ('other_export', '=', False), ('other_import', '=', False),
+                        ('state', 'not in', ('assigned', 'confirmed', 'draft', 'waiting'))]}
                     </attribute>
                 </xpath>
                 <xpath expr="//button[@name='action_cancel']" position="attributes">
@@ -94,7 +106,8 @@
             <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
-            <field name="context">{'default_other_export': True}</field>
+            <field name="domain">[('other_export', '=', True)]</field>
+            <field name="context" eval="{'default_other_export': True, 'default_picking_type_id': ref('stock.picking_type_out')}"/>
         </record>
 
         <record id="inherit_stock_picking_for_other_import_form_view_action" model="ir.actions.act_window">
@@ -104,7 +117,8 @@
             <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
-            <field name="context">{'default_other_import': True}</field>
+            <field name="domain">[('other_import', '=', True)]</field>
+            <field name="context" eval="{'default_other_import': True, 'default_picking_type_id': ref('stock.picking_type_in')}"/>
         </record>
 
         <record id="forlife_reason_type_tree_view" model="ir.ui.view">

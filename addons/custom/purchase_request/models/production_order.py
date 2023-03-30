@@ -35,3 +35,9 @@ class ProductionOrderLine(models.Model):
     order_id = fields.Many2one('production.order', ondelete='cascade', required=True)
     uom_id = fields.Many2one(related="product_id.uom_id")
     attachments_count = fields.Integer('Attachments Count')
+
+    @api.constrains('product_qty')
+    def constrains_product_qty(self):
+        for rec in self:
+            if rec.product_qty <= 0:
+                raise ValidationError(_('quantity cannot be zero or negative !!'))

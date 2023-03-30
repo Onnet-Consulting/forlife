@@ -454,6 +454,16 @@ msgid "Expected Arrival"
 msgstr "Hạn xử lý"
 
 #. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__account_analytic_id
+msgid "Account Analytic Account"
+msgstr "Trung tâm chi phí"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_qty
+msgid "Quantity"
+msgstr "Số lượng"
+
+#. module: purchase_request
 #: model:ir.model.fields.selection,name:purchase_request.selection__approval_logs__state__confirm
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__confirm
 #: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request_line__state__confirm
@@ -588,6 +598,7 @@ msgstr "Chương trình sự kiện"
 msgid "Production order"
 msgstr "Lệnh sản xuất"
 
+
 #. modules: forlife_purchase, purchase_request
 #: model:ir.actions.act_window,name:forlife_purchase.forlife_partner_action
 #: model:ir.ui.menu,name:purchase_request.partner_menu
@@ -709,3 +720,29 @@ msgstr "Số lượng nhập kho"
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__remaining_qty
 msgid "Remaining Quantity"
 msgstr "Còn lại"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_product_product__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_product_product__account_analytic_id
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__account_analytic_id
+msgid "Cost Center"
+msgstr "Trung tâm chi phí"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_product_product__asset_location_id
+msgid "Asset Location"
+msgstr "Địa điểm"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__occasion_code_id
+msgid "Occasion code"
+msgstr "Mã vụ việc"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__production_id
+msgid "Manufacturing Order"
+msgstr "Lệnh sản xuất"
