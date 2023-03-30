@@ -10,6 +10,7 @@
         'purchase',
         'product',
         'base',
+        'forlife_base',
         'purchase_stock',
     ],
     "data": [
