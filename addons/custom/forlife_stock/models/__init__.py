@@ -10,3 +10,7 @@ from . import inventory_adj_approval
 from . import forlife_reason_type
 from . import product_template
 from . import stock_warehouse
+from . import stock_landed_cost
+from . import stock_move
+from . import stock_move_line
+from . import stock_valuation_layer
