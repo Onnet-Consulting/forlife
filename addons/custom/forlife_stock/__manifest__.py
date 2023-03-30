@@ -16,8 +16,8 @@
     ],
     "data": [
         'data/data_stock_location_type.xml',
-        'data/data_stock_location.xml',
         'data/forlife_reason_type_data.xml',
+        'data/data_stock_location.xml',
         'security/ir.model.access.csv',
         'reports/outgoing_value_diff_report.xml',
         'reports/stock_incoming_outgoing_report.xml',
