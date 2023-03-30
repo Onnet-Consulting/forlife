@@ -1131,11 +1131,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let base_total_amount = LineList.quantity*LineList.price;
             let disc_total_amount = round_decimals(base_total_amount * CodeProgram.disc_percent / 100, this.pos.currency.decimal_places);
 
-            if (remaining_amount <= disc_total_amount) {
-                disc_total_amount = remaining_amount;
-                remaining_amount = 0;
-            } else {
-                remaining_amount -= disc_total_amount;
+            if (CodeProgram.disc_max_amount > 0) {
+                if (remaining_amount <= disc_total_amount) {
+                    disc_total_amount = remaining_amount;
+                    remaining_amount = 0;
+                } else {
+                    remaining_amount -= disc_total_amount;
+                }
             }
 
             if (disc_total_amount > 0) {
