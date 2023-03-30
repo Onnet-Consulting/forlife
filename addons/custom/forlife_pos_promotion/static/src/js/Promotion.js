@@ -1094,7 +1094,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${CodeProgram.name}.`), 3000);
             };
         } else if (CodeProgram.reward_type == "code_percent") {
-            remaining_amount = activatedCodeObj.remaining_amount;
+            if (remaining_amount === false) {
+                remaining_amount = activatedCodeObj.remaining_amount;
+            }
             let base_total_amount = LineList.quantity*LineList.price;
             let disc_total_amount = round_decimals(base_total_amount * CodeProgram.disc_percent / 100, this.pos.currency.decimal_places);
 
