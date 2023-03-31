@@ -27,6 +27,8 @@
                         <td><t t-esc="line.current_rank"/></td>
                         <td><t t-esc="line.new_rank"/></td>
                         <td><t t-esc="line.date_up_rank"/></td>
+                        <td><t t-esc="line.implementation"/></td>
+                        <td><t t-esc="line.date_implementation"/></td>
                     </tr>
                     <t t-set="num" t-value="num + 1"/>
                 </t>

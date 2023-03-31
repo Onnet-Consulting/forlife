@@ -5,8 +5,8 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 
 TITLES = [
-    'STT', 'Cửa hàng', 'Mã khách', 'Tên khách hàng', 'Giới tính', 'Ngày sinh', 'Điện thoại',
-    'Ngày mua đầu kỳ', 'Ngày mua gần nhất', 'DT mua hàng', 'Hạng hiện tại', 'Hạng mới', 'Ngày lên hạng'
+    'STT', 'Cửa hàng', 'Mã khách', 'Tên khách hàng', 'Giới tính', 'Ngày sinh', 'Điện thoại', 'Ngày mua đầu kỳ',
+    'Ngày mua gần nhất', 'DT mua hàng', 'Hạng hiện tại', 'Hạng mới', 'Ngày lên hạng', 'Thực hiện', 'Ngày thực hiện'
 ]
 
 
@@ -62,25 +62,39 @@ select
                 select session_id from pos_order where id = pcrl.order_id
             )
         )
-    ))                                                                      as store_name,
-    ''                                                                      as ngay_mua_dk,
-    (select to_char(order_date, 'DD/MM/YYYY') from partner_card_rank_line
-         where partner_card_rank_id = pcrl.partner_card_rank_id
-            and order_id notnull and real_date < pcrl.real_date
-         order by real_date desc limit 1)                                   as ngay_mua_gn,
-    coalesce(pcrl.value_up_rank, 0)                                         as dt_mua,
-    (select name from card_rank where id = pcrl.old_card_rank_id)           as current_rank,
-    (select name from card_rank where id = pcrl.new_card_rank_id)           as new_rank,
-    to_char(pcrl.real_date, 'DD/MM/YYYY')                                   as date_up_rank,
+    ))                                                                                  as store_name,
+    (select to_char(order_date + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY')
+        from partner_card_rank_line
+        where partner_card_rank_id = pcr.id and order_id notnull
+             and order_date >= pcrl.order_date - ((
+                select COALESCE(time_set_rank, 0) from member_card
+                where id in (
+                    select member_card_id from member_card_pos_order_rel
+                     where pos_order_id = pcrl.order_id
+                )) || ' d')::interval
+        order by order_date asc limit 1)                                                as ngay_mua_dk,
+    (select to_char(order_date + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY')
+        from partner_card_rank_line
+         where partner_card_rank_id = pcrl.partner_card_rank_id and order_id notnull
+            and {format_date_query("order_date", tz_offset)} <= '{self.to_date}'
+         order by order_date desc limit 1)                                              as ngay_mua_gn,
+    coalesce(pcrl.value_up_rank, 0)                                                     as dt_mua,
+    (select name from card_rank where id = pcrl.old_card_rank_id)                       as current_rank,
+    (select name from card_rank where id = pcrl.new_card_rank_id)                       as new_rank,
+    to_char(pcrl.order_date + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY')            as date_up_rank,
+    to_char(pcrl.real_date + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY')             as date_implementation,
+    case when pcrl.order_id notnull then 'Auto' else '' end                             as implementation,
     array[coalesce(rp.internal_code, ''),
           coalesce(rp.name, ''),
           coalesce(rp.gender, ''),
-          coalesce(to_char(rp.birthday, 'DD/MM/YYYY'), ''),
-          coalesce(rp.phone)]                                               as customer_info
+          coalesce(to_char(rp.birthday + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY'), ''),
+          coalesce(rp.phone)]                                                           as customer_info
 from partner_card_rank_line pcrl
     join partner_card_rank pcr on pcr.id = pcrl.partner_card_rank_id
     join res_partner rp on rp.id = pcr.customer_id
-where pcr.brand_id = {self.brand_id.id} and pcrl.old_card_rank_id <> pcrl.new_card_rank_id
+where pcr.brand_id = {self.brand_id.id}
+    and pcrl.old_card_rank_id <> pcrl.new_card_rank_id
+    and pcrl.order_id notnull
     and {format_date_query("pcrl.real_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
 {conditions} 
         """
