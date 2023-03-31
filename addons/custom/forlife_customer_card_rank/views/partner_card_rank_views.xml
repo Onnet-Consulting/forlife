@@ -122,11 +122,13 @@
                                 <field name="old_card_rank_id" readonly="1" force_save="1"/>
                             </group>
                             <group>
-                                <field name="new_card_rank_id" domain="[('id', '!=', old_card_rank_id)]"/>
+                                <field name="program_cr_id" string="New Rank" context="{'display_rank_name': True}"
+                                       domain="[('card_rank_id', '!=', old_card_rank_id), ('brand_id', '=', context.get('brand_id', False))]"/>
                             </group>
                         </group>
                         <field name="partner_card_rank_id" invisible="1"/>
                         <field name="order_date" invisible="1"/>
+                        <field name="new_card_rank_id" invisible="1" force_save="1"/>
                     </sheet>
                 </form>
             </field>
