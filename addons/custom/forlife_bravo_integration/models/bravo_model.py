@@ -64,7 +64,7 @@ class BravoModelInsertAction(models.AbstractModel):
     def bravo_get_default_insert_value(self):
         # special fields - don't declare them in Odoo
         return {
-            'PushDate': 'GETUTCDATE()',
+            'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
             'Active': 1,
         }
 
@@ -141,7 +141,7 @@ class BravoModelUpdateAction(models.AbstractModel):
     def bravo_get_default_update_value(self):
         # special fields - don't declare them in Odoo
         return {
-            'PushDate': 'GETUTCDATE()',
+            'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
             'Active': 1,
         }
 
@@ -230,7 +230,7 @@ class BravoModelDeleteAction(models.AbstractModel):
     def bravo_get_default_delete_values(self):
         # special fields - don't declare them in Odoo
         return {
-            'PushDate': 'GETUTCDATE()',
+            'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
             'Active': 0,
         }
 

@@ -19,7 +19,7 @@ class SaleOrder(models.Model):
     @api.model
     def bravo_get_default_insert_value(self):
         return {
-            'PushDate': 'GETUTCDATE()',
+            'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
         }
 
     def bravo_get_update_values(self, values):

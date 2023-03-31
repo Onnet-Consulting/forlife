@@ -6,7 +6,7 @@ from ..fields import BravoField, BravoCharField, BravoDatetimeField, BravoDateFi
 from odoo.exceptions import ValidationError
 
 DEFAULT_VALUE = {
-    'PushDate': 'GETUTCDATE()'
+    'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'"
 }
 
 # FIXME: this file is not correct, check documentation and update
