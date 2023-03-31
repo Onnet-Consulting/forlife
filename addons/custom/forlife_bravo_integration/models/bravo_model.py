@@ -3,6 +3,23 @@
 from odoo import api, fields, models
 from ..fields import BravoField
 
+class BravoModelCore(models.AbstractModel):
+    _name = 'bravo.model.core'
+    _inherit = ['mssql.server']
+    _description = 'Bravo Model Core'
+    _bravo_table = 'BravoTable'
+
+    def get_bravo_table(self):
+        return self._bravo_table
+
+class BravoModelInsertAction(models.AbstractModel):
+    _name = 'bravo.model.insert.action'
+    _inherit = ['bravo.model.core']
+    _description = 'Bravo Model Insert Action'
+
+
+
+
 
 class BravoModel(models.AbstractModel):
     _name = 'bravo.model'
@@ -113,17 +130,17 @@ class BravoModel(models.AbstractModel):
         offset = 0
         while True:
             sub_params = params[offset: num_row_per_request * num_param_per_row + offset]
-            actual_num_row = len(sub_params) // num_param_per_row
-            if actual_num_row <= 0:
+            actual_num_row_per_request = len(sub_params) // num_param_per_row
+            if actual_num_row_per_request <= 0:
                 break
-            insert_values_placholder = ','.join([single_record_values_placeholder] * actual_num_row)
+            insert_values_placholder = ','.join([single_record_values_placeholder] * actual_num_row_per_request)
             sub_query = f"""
             INSERT INTO {insert_table} 
             {insert_column_names}
             VALUES {insert_values_placholder}
             """
             queries.append((sub_query, sub_params))
-            offset += num_row_per_request * num_param_per_row
+            offset += num_param_per_row * actual_num_row_per_request
 
         return queries
 
@@ -165,17 +182,17 @@ class BravoModel(models.AbstractModel):
 
         while True:
             sub_where_params = where_params[offset: num_param_per_where_condition * num_row_per_request + offset]
-            actual_num_row = len(sub_where_params) // num_param_per_where_condition
-            if actual_num_row <= 0:
+            actual_num_row_per_request = len(sub_where_params) // num_param_per_where_condition
+            if actual_num_row_per_request <= 0:
                 break
-            where_query_placholder = " or ".join([single_where_value] * actual_num_row)
+            where_query_placeholder = " or ".join([single_where_value] * actual_num_row_per_request)
             query = f"""
                 UPDATE {update_table_name}
                 SET {set_query_placeholder}
-                WHERE {where_query_placholder}
+                WHERE {where_query_placeholder}
             """
             queries.append((query, set_query_params + sub_where_params))
-            offset += num_param_per_where_condition * num_row_per_request
+            offset += num_param_per_where_condition * actual_num_row_per_request
 
         return queries
 
@@ -210,17 +227,17 @@ class BravoModel(models.AbstractModel):
 
         while True:
             sub_where_params = where_params[offset: num_param_per_where_condition * num_row_per_request + offset]
-            actual_num_row = len(sub_where_params) // num_param_per_where_condition
-            if actual_num_row <= 0:
+            actual_num_row_per_request = len(sub_where_params) // num_param_per_where_condition
+            if actual_num_row_per_request <= 0:
                 break
-            where_query_placholder = " or ".join([single_where_value] * actual_num_row)
+            where_query_placeholder = " or ".join([single_where_value] * actual_num_row_per_request)
             query = f"""
                 UPDATE {update_table_name}
                 SET {set_query_placeholder}
-                WHERE {where_query_placholder}
+                WHERE {where_query_placeholder}
             """
             queries.append((query, set_query_params + sub_where_params))
-            offset += num_param_per_where_condition * num_row_per_request
+            offset += num_param_per_where_condition * actual_num_row_per_request
 
         return queries
 
@@ -245,6 +262,68 @@ class BravoModel(models.AbstractModel):
         if queries:
             self._execute_many(queries)
         return True
+
+    # ==========================================
+    def get_existing_records_before_insert_sql(self):
+        identity_key_values = self.get_bravo_identity_key_values()
+        if not identity_key_values:
+            return False
+
+        identity_keys = self.fields_bravo_identity_get()
+        identity_key_names = [bfield.bravo_name for bfield in identity_keys]
+        bravo_table = self.get_bravo_table()
+        single_where_query_placeholder = [f"{ikey}=?" for ikey in identity_key_names]
+        single_where_query_placeholder = f"({' and '.join(single_where_query_placeholder)})"
+        where_query_params = []
+
+        for value in identity_key_values:
+            where_query_params.extend([value.get(ikey) for ikey in identity_key_names if value.get(ikey)])
+
+        num_param_per_where_condition = max(len(identity_key_names), 1)
+        num_row_per_request = 2000 // num_param_per_where_condition
+        offset = 0
+        queries = []
+
+        while True:
+            sub_where_params = where_query_params[offset: num_param_per_where_condition * num_row_per_request + offset]
+            actual_num_row_per_request = len(sub_where_params) // num_param_per_where_condition
+            if actual_num_row_per_request <= 0:
+                break
+
+            where_query_placeholder = " or ".join([single_where_query_placeholder] * actual_num_row_per_request)
+            query = f"""
+                SELECT {','.join(identity_key_names)} 
+                FROM {bravo_table}
+                WHERE {where_query_placeholder}
+            """
+            queries.append((query, sub_where_params))
+            offset += num_param_per_where_condition * actual_num_row_per_request
+
+        return queries
+
+    def separate_records_by_identity_values(self, identity_values):
+        existing_records = self.env[self._name]
+        newly_records = self.env[self._name]
+        for rec in self:
+            record_identity_value = rec.get_bravo_identity_key_values()
+            if record_identity_value and record_identity_value[0] in identity_values:
+                existing_records += rec
+            else:
+                newly_records += rec
+        return existing_records, newly_records
+
+    def separate_records_before_insert(self):
+        queries = self.get_existing_records_before_insert_sql()
+        identity_values = []
+        if queries:
+            for data in self._execute_many_read(queries):
+                identity_values.extend([dict(zip(['Code'], row)) for row in data])
+        return self.separate_records_by_identity_values(identity_values)
+    def insert_into_bravo_db_with_check_existing(self):
+        existing_records, newly_records = self.separate_records_before_insert()
+        # update records existed
+        # insert remain records (don't exist in Bravo yet)
+        pass
 
     def update_bravo_db(self, values):
         queries = self.get_update_sql(values)

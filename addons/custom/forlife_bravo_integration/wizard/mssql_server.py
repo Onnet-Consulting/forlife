@@ -47,6 +47,18 @@ class MssqlServer(models.AbstractModel):
             return True
 
     @api.model
+    def _execute_many_read(self, queries, record_per_read=1000):
+        with self._conn() as conn:
+            cursor = conn.cursor()
+            for query, params in queries:
+                cursor.execute(query, params)
+                while True:
+                    data = cursor.fetchmany(record_per_read)
+                    if not data:
+                        break
+                    yield data
+
+    @api.model
     def _execute_read(self, query, params=None, size=1000):
         with self._conn() as conn:
             cursor = conn.cursor()
