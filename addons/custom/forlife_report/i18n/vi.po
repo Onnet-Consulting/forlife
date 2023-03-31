@@ -168,6 +168,11 @@ msgid "Customer"
 msgstr "Khách hàng"
 
 #. module: forlife_report
+#: model:ir.ui.menu,name:forlife_report.report_menu_card_rank
+msgid "Customer Rank"
+msgstr "Báo cáo hạng khách hàng"
+
+#. module: forlife_report
 #. odoo-javascript
 #: code:addons/forlife_report/static/src/xml/report_base.xml:0
 #, python-format
@@ -292,6 +297,13 @@ msgstr "Danh sách hóa đơn"
 #: code:addons/forlife_report/static/src/xml/report_num2.xml:0
 #, python-format
 msgid "Kho"
+msgstr ""
+
+#. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_base.xml:0
+#, python-format
+msgid "Không có bản ghi nào"
 msgstr ""
 
 #. module: forlife_report

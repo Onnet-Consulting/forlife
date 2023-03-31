@@ -123,7 +123,7 @@ table.available-report-list {
 }
 
 .report_table > thead {
-    vertical-align: bottom;
+    vertical-align: middle;
     background-color: #0d305ad1;
     color: white;
 }
@@ -146,8 +146,11 @@ table.available-report-list {
 
 .btn_back {
     color: #ff0533;
+    margin-top: 10px;
 }
 
 .btn_back:hover {
-    color: #00e1ff;
+    color: #01535e;
+    background: #80808047;
+    margin-top: 10px;
 }
