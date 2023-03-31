@@ -585,7 +585,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             });
         } else if (pro.promotion_type == 'code' && pro.discount_based_on == 'discounted_price') {
             return order_lines.filter(function(l) {
-                if (l.promotion_usage_ids) {
+                if (l.promotion_usage_ids && l.promotion_usage_ids.length) {
                     return l.promotion_usage_ids.some(p => p.promotion_type == 'pricelist' || (p.promotion_type == 'pricelist' && p.discount_based_on == 'unit_price')) ? true : false;
                 } else {return true};
             });
@@ -619,7 +619,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (!valid_product_ids.size || valid_product_ids.has(product.id)) { return p + quantity; }
             return p;
         }
-        var check_q = to_check_order_lines.reduce(funct_check_q);
+        var check_q = 0;
+        if (to_check_order_lines.length) {
+            check_q = to_check_order_lines.reduce(funct_check_q);
+        }
         if (codeProgram.reward_type == "code_amount" && ((codeProgram.discount_apply_on == "order" && check_q >= valid_product_ids.size) || !valid_product_ids.size)) {
             for (const ol of to_check_order_lines) {
                 to_discount_line_vals.push({
@@ -1128,11 +1131,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let base_total_amount = LineList.quantity*LineList.price;
             let disc_total_amount = round_decimals(base_total_amount * CodeProgram.disc_percent / 100, this.pos.currency.decimal_places);
 
-            if (remaining_amount <= disc_total_amount) {
-                disc_total_amount = remaining_amount;
-                remaining_amount = 0;
-            } else {
-                remaining_amount -= disc_total_amount;
+            if (CodeProgram.disc_max_amount > 0) {
+                if (remaining_amount <= disc_total_amount) {
+                    disc_total_amount = remaining_amount;
+                    remaining_amount = 0;
+                } else {
+                    remaining_amount -= disc_total_amount;
+                }
             }
 
             if (disc_total_amount > 0) {
@@ -1335,6 +1340,28 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 //                        };
 //                    };
 //                } else {
+                    if (program.reward_product_id_selected && program.reward_product_id_selected.size && numberOfCombo > 0 && program.reward_type == "code_buy_x_get_y") {
+                        to_discount_line_vals.push({
+                            product: this.pos.db.get_product_by_id([...program.reward_product_id_selected][0]),
+                            quantity:  numberOfCombo * program.reward_quantity,
+                            price: 0,
+                            isNew: true,
+                            is_reward_line: true
+                        })
+                    }
+                    if (numberOfCombo > 0 && program.reward_type == "code_buy_x_get_cheapest") {
+                        var numberOfReward = numberOfCombo * program.reward_quantity
+                        for (const to_discount_line_val of to_discount_line_vals.sort((a,b) => a.price - b.price)) {
+                            if (to_discount_line_val.quantity >= numberOfReward) {
+                                to_discount_line_val.price = (to_discount_line_val.quantity - numberOfReward) / to_discount_line_val.quantity * to_discount_line_val.price;
+                                numberOfReward = 0;
+                                break;
+                            } else {
+                                numberOfReward -= to_discount_line_val.quantity;
+                                to_discount_line_val.price = 0;
+                            }
+                        }
+                    }
                     for (let i = 0; i < to_discount_line_vals.length; i++) {
                         let result;
                         [result, remaining_amount] = this.applyACodeProgramToLineVales(program, to_discount_line_vals[i], numberOfCombo, remaining_amount);
