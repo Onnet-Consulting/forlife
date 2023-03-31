@@ -296,9 +296,9 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                             if(!item.point){
                                 item.point = 0
                             }
-                            if(data[i].value.price_residual >= (item.price*item.quantity + item.point - so_tien_da_tra[item_id])){
-                                data[i].value.price_residual = data[i].value.price_residual-(item.price*item.quantity - so_tien_da_tra[item_id] + item.point);
-                                so_tien_da_tra[item_id] = item.price*item.quantity + item.point;
+                            if(data[i].value.price_residual >= (item.product.lst_price*item.quantity + item.point - so_tien_da_tra[item_id])){
+                                data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*item.quantity - so_tien_da_tra[item_id] + item.point);
+                                so_tien_da_tra[item_id] = item.product.lst_price*item.quantity + item.point;
                             }else{
                                 so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
                                 data[i].value.price_residual = 0;
