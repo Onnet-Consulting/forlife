@@ -27,6 +27,17 @@
                                 Promotion Codes</span>
                             </div>
                         </button>
+                        <button class="oe_stat_button" type="object" name="action_open_issued_vouchers" icon="fa-ticket"
+                                attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}"
+                        >
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="voucher_count"/>
+                                </span>
+                                <span class="o_stat_text" >
+                                Issued Voucher</span>
+                            </div>
+                        </button>
                         <button class="oe_stat_button" type="object" name="action_open_orders" icon="fa-list"
                                 attrs="{'invisible': [('total_order_count', '=', 0)]}"
                         >
@@ -137,6 +148,15 @@
                             <field name="reward_type"/>
                             <field name="disc_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_amount', 'code_amount'))]}"/>
+
+                            <field name="voucher_program_id"
+                                   attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')], 'required': [('reward_type', '=', 'cart_get_voucher')]}"/>
+                            <field name="voucher_product_id" invisible="1"/>
+                            <field name="voucher_product_variant_id"
+                                   attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')], 'required': [('reward_type', '=', 'cart_get_voucher')]}"/>
+                            <field name="voucher_price" force_save="1" readonly="1"/>
+                            <field name="voucher_apply_product_ids" widget="many2many_tags"
+                                   attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}"/>
 
                             <label for="disc_fixed_price" attrs="{'invisible': [('reward_type', 'not in', ('combo_fixed_price', 'code_fixed_price', 'cart_discount_fixed_price'))]}"/>
                             <div attrs="{'invisible': [('reward_type', 'not in', ('combo_fixed_price', 'code_fixed_price', 'cart_discount_fixed_price'))]}">

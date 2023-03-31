@@ -294,6 +294,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         json.activatedCodePrograms = [...activatedCode];
         json.activatedPricelistItem = [...activatedPricelistItem];
         json.activatedInputCodes = this.activatedInputCodes;
+        json.reward_voucher_program_id = this.reward_voucher_program_id || null;
+        json.cart_promotion_program_id = this.cart_promotion_program_id || null;
         return json;
     }
     init_from_JSON(json) {
@@ -303,8 +305,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.activatedPricelistItem = new Set(json.activatedPricelistItem);
         this.activatedInputCodes = json.activatedInputCodes;
         this.get_history_program_usages();
-        this.historyProgramUsages = this.historyProgramUsages != undefined ? this.historyProgramUsages : {}
+        this.historyProgramUsages = this.historyProgramUsages != undefined ? this.historyProgramUsages : {};
+        this.reward_voucher_program_id = json.reward_promotion_voucher_id;
+        this.cart_promotion_program_id = json.cart_promotion_program_id || null;
         this._resetPromotionPrograms();
+        this._resetCartPromotionPrograms();
     }
     /**
      * @override
@@ -421,6 +426,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     _resetCartPromotionPrograms() {
+        this.reward_voucher_program_id = null;
+        this.cart_promotion_program_id = null;
         let to_remove_lines = this._get_reward_lines_of_cart_pro();
         for (let line of to_remove_lines) {
             this.remove_orderline(line);
@@ -997,7 +1004,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
 
             const amountCheck = totalsPerProgram[program.id]['taxed']
-            if (program.order_amount_min > amountCheck) {
+            if (program.order_amount_min >0 && program.order_amount_min > amountCheck) {
                 continue;
             };
             let to_check_products = program.valid_product_ids.size > 0;
@@ -1012,21 +1019,23 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
             let to_discount_lines = [];
             let to_reward_lines = [];
-            let vouchers = [];
+            let voucher_program_id = [];
+            let isSelected = false;
             if (program.reward_type == 'cart_get_x_free') {
                 to_reward_lines = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0).filter(l=>program.reward_product_ids.has(l.product.id));
             } else if (program.reward_type == 'cart_get_voucher') {
-                vouchers = [];
+                voucher_program_id = program.voucher_program_id;
+                isSelected = true;
             } else {
                 to_discount_lines = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0).filter(l=>program.discount_product_ids.has(l.product.id));
             };
             result.push({
                 id: program.id,
                 program: program,
-                vouchers,
+                voucher_program_id,
                 to_reward_lines,
                 to_discount_lines,
-                isSelected: false
+                isSelected
             });
         };
         return result
