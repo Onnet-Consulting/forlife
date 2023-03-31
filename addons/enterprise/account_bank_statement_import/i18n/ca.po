@@ -8,17 +8,18 @@
 # ericrolo, 2022
 # Martin Trigaux, 2022
 # Manel Fernandez Ramirez <manelfera@outlook.com>, 2022
-# Harcogourmet, 2022
 # RGB Consulting <odoo@rgbconsulting.com>, 2022
 # marcescu, 2022
+# Harcogourmet, 2022
+# Ivan Espinola, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-23 08:23+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: marcescu, 2022\n"
+"Last-Translator: Ivan Espinola, 2023\n"
 "Language-Team: Catalan (https://www.transifex.com/odoo/teams/41243/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,19 +28,21 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: account_bank_statement_import
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_bank_statement_import/static/src/js/account_bank_statement_import.js:0
 #, python-format
 msgid " Import Template for Bank Statements"
 msgstr "Importa una plantilla per a les declaracions bancàries"
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid "%d transactions had already been imported and were ignored."
 msgstr "%d de transaccions han estat ja importades i seran ignorades."
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid "1 transaction had already been imported and was ignored."
@@ -51,10 +54,11 @@ msgid "A bank account transactions can be imported only once !"
 msgstr "Les transaccions d'un compte bancari només poden importar-se un cop"
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
-msgid "Already imported items"
-msgstr "Elements ja importats"
+msgid "Bank Statement %s.pdf"
+msgstr "Extracte bancari %s.pdf"
 
 #. module: account_bank_statement_import
 #: model:ir.model,name:account_bank_statement_import.model_account_bank_statement_line
@@ -62,11 +66,19 @@ msgid "Bank Statement Line"
 msgstr "Línia d'extracte bancari"
 
 #. module: account_bank_statement_import
+#. odoo-python
+#: code:addons/account_bank_statement_import/models/account_journal.py:0
+#, python-format
+msgid "Bank Statement.pdf"
+msgstr "Extracte bancari.pdf"
+
+#. module: account_bank_statement_import
 #: model:ir.model,name:account_bank_statement_import.model_account_setup_bank_manual_config
 msgid "Bank setup manual config"
 msgstr "Configuració manual de configuració del banc"
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid ""
@@ -77,6 +89,7 @@ msgstr ""
 "seleccioni manualment un diari."
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid ""
@@ -87,12 +100,14 @@ msgstr ""
 "aquest tipus d'arxiu?"
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid "Go to Apps"
-msgstr ""
+msgstr "Ves a les aplicacions"
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid ""
@@ -103,6 +118,7 @@ msgstr ""
 "d'elles."
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid "Import"
@@ -114,28 +130,26 @@ msgid "Import ID"
 msgstr "Import ID"
 
 #. module: account_bank_statement_import
-#: model_terms:ir.ui.view,arch_db:account_bank_statement_import.journal_dashboard_view_inherit
-msgid "Import Statement"
-msgstr "Importar extracte"
-
-#. module: account_bank_statement_import
 #: model:ir.model,name:account_bank_statement_import.model_account_journal
 msgid "Journal"
 msgstr "Diari"
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid "No attachment was provided"
 msgstr "No s'ha proporcionat cap fitxer adjunt"
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid "No currency found matching '%s'."
 msgstr "No s'ha trobat cap moneda casant '%s'."
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid ""
@@ -145,6 +159,7 @@ msgstr ""
 "(%s)"
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid ""
@@ -155,24 +170,28 @@ msgstr ""
 "diari (%s)."
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid "This file doesn't contain any statement for account %s."
 msgstr "No és el mateix que la moneda del diari %s."
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid "This file doesn't contain any transaction for account %s."
 msgstr "Aquest fitxer no conté cap transacció per al compte %s."
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid "You already have imported that file."
 msgstr "Ja has dit aquest fitxer."
 
 #. module: account_bank_statement_import
+#. odoo-python
 #: code:addons/account_bank_statement_import/models/account_journal.py:0
 #, python-format
 msgid "You have to set a Default Account for the journal: %s"

@@ -106,7 +106,7 @@
         <field name="name">quality.point.view.tree</field>
         <field name="model">quality.point</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree default_order="sequence, id">
                 <field name="sequence" widget="handle"/>
                 <field name="name" decoration-bf="1"/>
                 <field name="title" optional="show"/>

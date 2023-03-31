@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="ResetCardButton" owl="1">
+        <div class="control-button">
+            <i class="fa fa-trash-o"/>
+            <span>Reset Card</span>
+        </div>
+    </t>
+</templates>

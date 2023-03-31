@@ -507,6 +507,7 @@
             </record>
             <record id="account_financial_report_l10n_fi_bs_line_2" model="account.report.line">
                 <field name="name">Tase Vastattavaa</field>
+                <field name="aggregation_formula">FIBS_LIA_A.balance + FIBS_LIA_B.balance + FIBS_LIA_C.balance + FIBS_LIA_D.balance + FIBS_LIA_E.balance + FIBS_LIA_F.balance</field>
                 <field name="children_ids">
                     <record id="account_financial_report_l10n_fi_bs_line_2_1" model="account.report.line">
                         <field name="name">A) OMA PÄÄOMA</field>
@@ -715,10 +716,16 @@
                                     <record id="account_financial_report_l10n_fi_bs_line_2_1_23_1" model="account.report.line">
                                         <field name="name">1. Edellisten tilikausien voitto (tappio)</field>
                                         <field name="code">FIBS_LIA_AXXIII_1</field>
-                                        <field name="groupby">account_id</field>
                                         <field name="hide_if_zero" eval="1"/>
-                                        <field name="foldable" eval="True"/>
-                                        <field name="account_codes_formula">-225</field>
+                                        <field name="expression_ids">
+                                            <record id="account_financial_report_l10n_fi_bs_line_2_1_23_1_previous_year_earnings_line_balance" model="account.report.expression">
+                                                <field name="label">balance</field>
+                                                <field name="engine">aggregation</field>
+                                                <field name="formula">FIPL_19.balance</field>
+                                                <field name="date_scope">to_beginning_of_fiscalyear</field>
+                                                <field name="subformula">cross_report</field>
+                                            </record>
+                                        </field>
                                     </record>
                                     <record id="account_financial_report_l10n_fi_bs_line_2_1_23_2" model="account.report.line">
                                         <field name="name">2. Osakeyhtiön tilit</field>
@@ -772,7 +779,15 @@
                                         <field name="name">8. Tilikauden voitto (tappio)</field>
                                         <field name="code">FIBS_LIA_AXXIII_8</field>
                                         <field name="hide_if_zero" eval="1"/>
-                                        <field name="domain_formula">-sum([('account_id.account_type', 'in', ('expense_depreciation', 'expense_direct_cost', 'expense', 'income_other', 'income'))])</field>
+                                        <field name="expression_ids">
+                                            <record id="account_financial_report_l10n_fi_bs_line_2_1_23_8_current_year_earnings_line_balance" model="account.report.expression">
+                                                <field name="label">balance</field>
+                                                <field name="engine">domain</field>
+                                                <field name="formula" eval="[('account_id.account_type', 'in', ('expense_depreciation', 'expense_direct_cost', 'expense', 'income_other', 'income'))]"/>
+                                                <field name="subformula">-sum</field>
+                                                <field name="date_scope">from_fiscalyear</field>
+                                            </record>
+                                        </field>
                                     </record>
                                     <record id="account_financial_report_l10n_fi_bs_line_2_1_23_9" model="account.report.line">
                                         <field name="name">9. Pääomalainat</field>

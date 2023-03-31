@@ -27,7 +27,7 @@ msgstr ""
 #. module: account_disallowed_expenses_fleet
 #: model:ir.model.fields,field_description:account_disallowed_expenses_fleet.field_fleet_disallowed_expenses_rate__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: account_disallowed_expenses_fleet
 #: model:ir.model.fields,field_description:account_disallowed_expenses_fleet.field_fleet_disallowed_expenses_rate__create_uid

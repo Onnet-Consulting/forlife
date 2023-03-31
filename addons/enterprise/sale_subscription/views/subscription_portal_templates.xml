@@ -116,7 +116,7 @@
                                     <hr class="my-0"/>
                                     <table class="table table-borderless table-sm">
                                         <tbody style="white-space:nowrap">
-                                            <tr>
+                                            <tr t-if="template">
                                                 <th class="text-end pb-0">Current Plan:</th>
                                                 <td class="w-100 pb-0 text-wrap"><span t-field="template.name"/></td>
                                             </tr>
@@ -124,7 +124,7 @@
                                                 <th class="text-end pb-0">Frequency:</th>
                                                 <td class="w-100 pb-0 text-wrap"><span t-field="subscription.recurrence_id.name"/></td>
                                             </tr>
-                                            <tr>
+                                            <tr t-if="subscription.client_order_ref">
                                                 <th class="text-end pb-0">Reference:</th>
                                                 <td class="w-100 pb-0 text-wrap"><span t-field="subscription.client_order_ref"/></td>
                                             </tr>
@@ -132,7 +132,7 @@
                                                 <th class="text-end pb-0">Valid Until:</th>
                                                 <td class="w-100 pb-0"><span t-field="subscription.end_date"/></td>
                                             </tr>
-                                            <tr>
+                                            <tr t-if="subscription.start_date">
                                                 <th class="text-end pb-0">Start Date:</th>
                                                 <td class="w-100 pb-0"><span t-field="subscription.start_date"/></td>
                                             </tr>

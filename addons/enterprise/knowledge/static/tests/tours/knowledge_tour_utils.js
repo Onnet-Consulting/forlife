@@ -1,5 +1,14 @@
 /** @odoo-module */
 
+
+export function makeVisible(selector) {
+    const el = document.querySelector(selector);
+    if (el) {
+        el.style.setProperty('visibility', 'visible', 'important');
+        el.style.setProperty('opacity', '1', 'important');
+    }
+}
+
 /**
  * Opens the power box of the editor
  * @param {HTMLElement} paragraph

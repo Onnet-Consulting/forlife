@@ -2,12 +2,23 @@
 # This file contains the translation of the following modules:
 # 	* stock_enterprise
 # 
+# Translators:
+# Boris Kodelja <boris@hbs.si>, 2022
+# Simon Gorše <simon@gorse.org>, 2022
+# Grega Vavtar <grega@hbs.si>, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Martin Trigaux, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.5alpha1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:49+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
+"Last-Translator: matjaz k <matjaz@mentis.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,7 +29,7 @@ msgstr ""
 #. module: stock_enterprise
 #: model:ir.model.fields.selection,name:stock_enterprise.selection__stock_report__state__assigned
 msgid "Available"
-msgstr ""
+msgstr "Razpoložljivo"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_pivot_view
@@ -33,47 +44,47 @@ msgstr ""
 #. module: stock_enterprise
 #: model:ir.model.fields.selection,name:stock_enterprise.selection__stock_report__state__cancel
 msgid "Cancelled"
-msgstr ""
+msgstr "Preklicano"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__company_id
 msgid "Company"
-msgstr ""
+msgstr "Podjetje"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__creation_date
 msgid "Creation Date"
-msgstr ""
+msgstr "Datum nastanka"
 
 #. module: stock_enterprise
 #: model:ir.model.fields.selection,name:stock_enterprise.selection__stock_report__picking_type_code__outgoing
 msgid "Customers"
-msgstr ""
+msgstr "Stranke"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_form_view
 msgid "Cycle Time"
-msgstr ""
+msgstr "Čas cikla"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__cycle_time
 msgid "Cycle Time (Days)"
-msgstr ""
+msgstr "Čas cikla (dnevi)"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_form_view
 msgid "Days"
-msgstr ""
+msgstr "Dni"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_form_view
 msgid "Delay"
-msgstr ""
+msgstr "Zakasnitev"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__delay
 msgid "Delay (Days)"
-msgstr ""
+msgstr "Zamuda (dnevi)"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_dashboard_view
@@ -92,52 +103,52 @@ msgstr ""
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_dashboard_view
 msgid "Deliveries Cycle Time"
-msgstr ""
+msgstr "Čas cikla dobave"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_dashboard_view
 msgid "Deliveries Delay"
-msgstr ""
+msgstr "Zamude dobavljanja"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Prikazani naziv"
 
 #. module: stock_enterprise
 #: model:ir.model.fields.selection,name:stock_enterprise.selection__stock_report__state__done
 msgid "Done"
-msgstr ""
+msgstr "Opravljeno"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_search_view
 msgid "Done Deliveries"
-msgstr ""
+msgstr "Končane dobave"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_search_view
 msgid "Done Receipts"
-msgstr ""
+msgstr "Končani prejemi"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_search_view
 msgid "Done Transfers"
-msgstr ""
+msgstr "Opravljeni prenosi"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__scheduled_date
 msgid "Expected Date"
-msgstr ""
+msgstr "Predvideni datum"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: stock_enterprise
 #: model:ir.model.fields.selection,name:stock_enterprise.selection__stock_report__picking_type_code__internal
 msgid "Internal"
-msgstr ""
+msgstr "Interno"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__is_late
@@ -152,37 +163,37 @@ msgstr ""
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Zadnjič spremenjeno"
 
 #. module: stock_enterprise
 #: model:ir.model.fields.selection,name:stock_enterprise.selection__stock_report__state__draft
 msgid "New"
-msgstr ""
+msgstr "Novo"
 
 #. module: stock_enterprise
 #: model_terms:ir.actions.act_window,help:stock_enterprise.stock_report_dashboard_action
 msgid "No data yet!"
-msgstr ""
+msgstr "Podatkov še ni!"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__operation_type
 msgid "Operation Type"
-msgstr ""
+msgstr "Tip operacije"
 
 #. module: stock_enterprise
 #: model:ir.model.fields.selection,name:stock_enterprise.selection__stock_report__state__partially_available
 msgid "Partially Available"
-msgstr ""
+msgstr "Delno razpoložljivo"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__partner_id
 msgid "Partner"
-msgstr ""
+msgstr "Partner"
 
 #. module: stock_enterprise
 #: model:ir.ui.menu,name:stock_enterprise.stock_dashboard_menuitem
 msgid "Performance"
-msgstr ""
+msgstr "Izvedba"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__picking_name
@@ -192,53 +203,53 @@ msgstr ""
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__product_id
 msgid "Product"
-msgstr ""
+msgstr "Proizvod"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__categ_id
 msgid "Product Category"
-msgstr ""
+msgstr "Kategorija proizvoda"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__product_qty
 msgid "Product Quantity"
-msgstr ""
+msgstr "Količina"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_enterprise_move_tree_view
 msgid "Quantity"
-msgstr ""
+msgstr "Količina"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_dashboard_view
 msgid "Receipts Cycle Time"
-msgstr ""
+msgstr "Čas cikla prejema"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_dashboard_view
 msgid "Receipts Delay"
-msgstr ""
+msgstr "Zamude prejemanja"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__reference
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_map_view
 msgid "Reference"
-msgstr ""
+msgstr "Referenca"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_cohort_view
 msgid "Report"
-msgstr ""
+msgstr "Poročilo"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_map_view
 msgid "Scheduled Date"
-msgstr ""
+msgstr "Načrtovani datum"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__state
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_pivot_view
@@ -272,34 +283,34 @@ msgstr ""
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__picking_id
 msgid "Transfer Reference"
-msgstr ""
+msgstr "Sklic prenosa"
 
 #. module: stock_enterprise
 #: model:ir.model.fields,field_description:stock_enterprise.field_stock_report__picking_type_code
 msgid "Type"
-msgstr ""
+msgstr "Tip"
 
 #. module: stock_enterprise
 #: model:ir.model.fields.selection,name:stock_enterprise.selection__stock_report__picking_type_code__incoming
 msgid "Vendors"
-msgstr ""
+msgstr "Dobavitelji"
 
 #. module: stock_enterprise
 #: model:ir.model.fields.selection,name:stock_enterprise.selection__stock_report__state__waiting
 msgid "Waiting Another Move"
-msgstr ""
+msgstr "Čaka na drugi premik"
 
 #. module: stock_enterprise
 #: model:ir.model.fields.selection,name:stock_enterprise.selection__stock_report__state__confirmed
 msgid "Waiting Availability"
-msgstr ""
+msgstr "Čaka na razpoložljivost"
 
 #. module: stock_enterprise
 #: model:ir.actions.act_window,name:stock_enterprise.stock_report_dashboard_action
 msgid "Warehouse Analysis"
-msgstr ""
+msgstr "Analiza skladišča"
 
 #. module: stock_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_enterprise.stock_report_dashboard_view
 msgid "days"
-msgstr ""
+msgstr "dni"

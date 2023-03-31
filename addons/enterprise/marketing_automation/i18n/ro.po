@@ -8,6 +8,7 @@
 # Martin Trigaux, 2022
 # Hongu Cosmin <cosmin513@gmail.com>, 2022
 # Foldi Robert <foldirobert@nexterp.ro>, 2022
+# Claudia Baisan, 2023
 # 
 msgid ""
 msgstr ""
@@ -15,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Foldi Robert <foldirobert@nexterp.ro>, 2022\n"
+"Last-Translator: Claudia Baisan, 2023\n"
 "Language-Team: Romanian (https://www.transifex.com/odoo/teams/41243/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,7 +32,7 @@ msgstr "# Clicks"
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__mailing_filter_count
 msgid "# Favorite Filters"
-msgstr ""
+msgstr "# Filtre Favorite"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__mass_mailing_count
@@ -163,12 +164,12 @@ msgstr "<strong>Fluxul de lucru a fost modificat!</strong>"
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__ab_testing_mailings_count
 msgid "A/B Test Mailings #"
-msgstr ""
+msgstr "Numărul de mailings de test A/B"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__ab_testing_completed
 msgid "A/B Testing Campaign Finished"
-msgstr ""
+msgstr "Campania de testare A/B a fost finalizată"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_participant__trace_ids
@@ -233,7 +234,7 @@ msgstr ""
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.mailing_mailing_view_form_marketing_activity
 msgid "Add to Templates"
-msgstr ""
+msgstr "Adăugați la șabloane"
 
 #. module: marketing_automation
 #: model:ir.model.fields,help:marketing_automation.field_marketing_activity__allowed_parent_ids
@@ -367,7 +368,7 @@ msgstr "Clicked"
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_trace__links_click_datetime
 msgid "Clicked On"
-msgstr ""
+msgstr "Clic pe"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
@@ -438,6 +439,8 @@ msgstr "Creat în"
 msgid ""
 "Date that will be used to know when to determine and send the winner mailing"
 msgstr ""
+"Data care va fi folosită pentru a determina când să se trimită corespondența"
+" "
 
 #. module: marketing_automation
 #: model:ir.model.fields.selection,name:marketing_automation.selection__marketing_activity__interval_type__days
@@ -581,17 +584,17 @@ msgstr "Durata expirării"
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__mailing_filter_id
 msgid "Favorite Filter"
-msgstr ""
+msgstr "Filtru Favorit"
 
 #. module: marketing_automation
 #: model:ir.ui.menu,name:marketing_automation.mailing_filter_menu_action_marketing_automaion
 msgid "Favorite Filters"
-msgstr ""
+msgstr "Filtre Favorite"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__mailing_filter_domain
 msgid "Favorite filter domain"
-msgstr ""
+msgstr "Domeniu filtru favorit"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__domain
@@ -634,7 +637,7 @@ msgstr "ID"
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__is_mailing_campaign_activated
 msgid "Is Mailing Campaign Activated"
-msgstr ""
+msgstr "Este activată campania de corespondență în masă"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_participant_view_form
@@ -1092,6 +1095,16 @@ msgid "Participants of %s (%s)"
 msgstr "Participanți de %s (%s)"
 
 #. module: marketing_automation
+#: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_view_form
+msgid "Pick a Server Action"
+msgstr ""
+
+#. module: marketing_automation
+#: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_activity_view_form
+msgid "Pick a Template"
+msgstr ""
+
+#. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_test_view_form
 msgid "Pick or create a/an"
 msgstr ""
@@ -1154,12 +1167,12 @@ msgstr "Respins de filtrul de activitate sau înregistrarea ștearsă / arhivat�
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form
 msgid "Reload a favorite filter"
-msgstr ""
+msgstr "Reîncărcați un filtru preferat"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.mailing_mailing_view_form_marketing_activity
 msgid "Remove from Templates"
-msgstr ""
+msgstr "Eliminați din șabloane"
 
 #. module: marketing_automation
 #: model:ir.model.fields.selection,name:marketing_automation.selection__marketing_participant__state__unlinked
@@ -1253,12 +1266,12 @@ msgstr "Căutare Urme"
 #. module: marketing_automation
 #: model:ir.model.fields,help:marketing_automation.field_marketing_campaign__ab_testing_winner_selection
 msgid "Selection to determine the winner mailing that will be sent."
-msgstr ""
+msgstr "Selectați pentru a determina mailing-ul câștigător care va fi trimis."
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__ab_testing_schedule_datetime
 msgid "Send Final On"
-msgstr ""
+msgstr "Trimite final la"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__interval_number
@@ -1353,7 +1366,7 @@ msgstr "Oprit"
 #. module: marketing_automation
 #: model:ir.model.fields,help:marketing_automation.field_marketing_trace__links_click_datetime
 msgid "Stores last click datetime in case of multi clicks."
-msgstr ""
+msgstr "Stochează ultima dată de clic în cazul mai multor clicuri."
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.mailing_mailing_view_form_marketing_activity
@@ -1443,7 +1456,7 @@ msgstr ""
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__ab_testing_total_pc
 msgid "Total A/B test percentage"
-msgstr ""
+msgstr "Total procent A/B test"
 
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_activity__total_bounce
@@ -1574,7 +1587,7 @@ msgstr "Săptămâni"
 #. module: marketing_automation
 #: model:ir.model.fields,field_description:marketing_automation.field_marketing_campaign__ab_testing_winner_selection
 msgid "Winner Selection"
-msgstr ""
+msgstr "Selectarea câștigătorului"
 
 #. module: marketing_automation
 #: model_terms:ir.ui.view,arch_db:marketing_automation.marketing_campaign_view_form

@@ -4,17 +4,16 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Nathan Grognet <ngr@odoo.com>, 2022
 # Cécile Collart <cco@odoo.com>, 2022
-# Jolien De Paepe, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:29+0000\n"
+"POT-Creation-Date: 2023-02-02 10:53+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Jolien De Paepe, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,45 +24,45 @@ msgstr ""
 #. module: spreadsheet_edition
 #: model:ir.model.fields,field_description:spreadsheet_edition.field_spreadsheet_revision__active
 msgid "Active"
-msgstr "Active"
+msgstr "Actif"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Add a new filter..."
 msgstr "Ajouter un nouveau filtre..."
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/filter_field_offset.js:0
 #, python-format
 msgid "After next"
 msgstr "Après le suivant"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_all_side_panel.js:0
 #, python-format
 msgid "Are you sure you want to delete this list ?"
-msgstr "Êtes-vous certain de vouloir supprimer cette liste ?"
+msgstr "Êtes-vous sûr de vouloir supprimer cette liste ?"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_list_side_panel.js:0
 #, python-format
 msgid "Are you sure you want to delete this pivot ?"
-msgstr "Êtes-vous certain de vouloir supprimer ce pivot ?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce tableau croisé dynamique ?"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Automatically filter on the current period"
 msgstr "Filtrer automatiquement sur la période en cours"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_all_side_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_list_side_panel.xml:0
 #, python-format
@@ -71,21 +70,21 @@ msgid "Back"
 msgstr "Retour"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/filter_field_offset.js:0
 #, python-format
 msgid "Before previous"
 msgstr "Avant le précédent"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_panel.xml:0
 #, python-format
 msgid "Blank spreadsheet"
 msgstr "Feuille de calcul vierge"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/ir_menu_selector/ir_menu_selector.xml:0
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/actions/spreadsheet.xml:0
@@ -95,7 +94,7 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/menu_item_registry.js:0
 #, python-format
 msgid "Clear history"
@@ -109,7 +108,7 @@ msgstr "Collaboration sur les feuilles de calcul"
 #. module: spreadsheet_edition
 #: model:ir.model,name:spreadsheet_edition.model_spreadsheet_revision
 msgid "Collaborative spreadsheet revision"
-msgstr "Révision collaborative du tableur"
+msgstr "Révision collaborative de la feuille de calcul"
 
 #. module: spreadsheet_edition
 #: model:ir.model.fields,field_description:spreadsheet_edition.field_spreadsheet_revision__commands
@@ -117,7 +116,7 @@ msgid "Commands"
 msgstr "Commandes"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/ir_menu_selector/ir_menu_selector.xml:0
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/actions/spreadsheet.xml:0
@@ -136,49 +135,49 @@ msgid "Created on"
 msgstr "Créé le"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/actions/spreadsheet_component.js:0
 #, python-format
 msgid "Currency"
 msgstr "Devise"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 #, python-format
 msgid "Dashboards"
 msgstr "Tableaux de bord"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Date"
 msgstr "Date"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Date field"
 msgstr "Champ Date"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/helpers.js:0
 #, python-format
 msgid "Day"
 msgstr "Jour"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Default value"
 msgstr "Valeur par défaut"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_all_side_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_list_side_panel.xml:0
 #, python-format
@@ -186,7 +185,7 @@ msgid "Delete"
 msgstr "Supprimer"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.xml:0
 #, python-format
 msgid "Dimensions"
@@ -198,14 +197,14 @@ msgid "Display Name"
 msgstr "Afficher le nom"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/pivot_dialog.xml:0
 #, python-format
 msgid "Display missing cells only"
 msgstr "Afficher uniquement les cellules manquantes"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_details_side_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.xml:0
 #, python-format
@@ -213,28 +212,28 @@ msgid "Domain"
 msgstr "Domaine"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/menu_item_registry.js:0
 #, python-format
 msgid "Download"
 msgstr "Télécharger"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/filter_editor_side_panel.js:0
 #, python-format
 msgid "Duplicated Label"
 msgstr "Libellé dupliqué"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Edit"
 msgstr "Modifier"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_details_side_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.xml:0
 #, python-format
@@ -242,28 +241,28 @@ msgid "Edit domain"
 msgstr "Modifier le domaine"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Field matching"
 msgstr "Correspondance des champs"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/menu_item_registry.js:0
 #, python-format
 msgid "File"
 msgstr "Fichier"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/index.js:0
 #, python-format
 msgid "Filter properties"
 msgstr "Propriétés du filtre"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/index.js:0
 #, python-format
@@ -276,7 +275,7 @@ msgid "ID"
 msgstr "ID"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/graph_view/graph_view.xml:0
 #: code:addons/spreadsheet_edition/static/src/assets/graph_view/graph_view.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/pivot.xml:0
@@ -288,29 +287,29 @@ msgid "Insert in Spreadsheet"
 msgstr "Insérer dans feuille de calcul"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/list_view/insert_list_spreadsheet_menu.xml:0
 #, python-format
 msgid "Insert list in spreadsheet"
-msgstr "Insérer une liste dans une feuille de calcul"
+msgstr "Insérer liste dans feuille de calcul"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/menu_item_registry.js:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/pivot_actions.js:0
 #, python-format
 msgid "Insert pivot cell"
-msgstr "Insérer une cellule de table pivot"
+msgstr "Insérer cellule de tableau croisé dynamique"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.xml:0
 #, python-format
 msgid "Insert the first"
 msgstr "Insérer le premier"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Label"
@@ -332,7 +331,7 @@ msgid "Last Updated on"
 msgstr "Dernière mise à jour le"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_details_side_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.xml:0
 #, python-format
@@ -340,49 +339,49 @@ msgid "Last updated at"
 msgstr "Dernière mise à jour à"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/ir_ui_menu/index.js:0
 #, python-format
 msgid "Link an Odoo menu"
-msgstr "Liker un menu Odoo"
+msgstr "Lier un menu Odoo"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/insert_action_link_menu/insert_action_link_menu.xml:0
 #, python-format
 msgid "Link menu in spreadsheet"
-msgstr "Lier le menu dans le tableur"
+msgstr "Lier le menu dans feuille de calcul"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/chart/odoo_menu/chart_panel.xml:0
 #, python-format
 msgid "Link to Odoo menu"
 msgstr "Lier au menu Odoo"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_details_side_panel.xml:0
 #, python-format
 msgid "List Name"
 msgstr "Nom de la liste"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/index.js:0
 #, python-format
 msgid "List properties"
 msgstr "Propriétés de la liste"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/menu_item_registry.js:0
 #, python-format
 msgid "Make a copy"
 msgstr "Faire une copie"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Match this filter to a field for each data source"
@@ -390,21 +389,21 @@ msgstr ""
 "Faites correspondre ce filtre à un champ pour chaque source de données"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.xml:0
 #, python-format
 msgid "Measures"
 msgstr "Mesures"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/ir_menu_selector/ir_menu_selector.js:0
 #, python-format
 msgid "Menu Items"
-msgstr "Éléments de Menu"
+msgstr "Rubriques"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_details_side_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.xml:0
 #: model:ir.model.fields,field_description:spreadsheet_edition.field_spreadsheet_revision__res_model
@@ -413,7 +412,7 @@ msgid "Model"
 msgstr "Modèle"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/helpers.js:0
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/filter_editor_side_panel.js:0
 #, python-format
@@ -421,49 +420,49 @@ msgid "Month"
 msgstr "Mois"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 #, python-format
 msgid "Name of the %s:"
 msgstr "Nom du %s :"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/menu_item_registry.js:0
 #, python-format
 msgid "New"
 msgstr "Nouveau"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/filter_editor_side_panel.js:0
 #, python-format
 msgid "New %s filter"
 msgstr "Nouveau filtre %s"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 #, python-format
 msgid "New sheet inserted in '%s'"
 msgstr "Nouvelle feuille insérée dans '%s'"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/filter_field_offset.js:0
 #, python-format
 msgid "Next"
 msgstr "Suivant"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_panel.xml:0
 #, python-format
 msgid "No preview"
 msgstr "Pas d'aperçu"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/actions/spreadsheet.xml:0
 #, python-format
 msgid "Ok"
@@ -475,35 +474,49 @@ msgid "Parent Revision"
 msgstr "Révision parente"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/filter_field_offset.xml:0
 #, python-format
 msgid "Period offset"
 msgstr "Période de décalage"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
+#: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/filter_field_offset.js:0
+#, python-format
+msgid "Period offset applied to this source"
+msgstr "Période de décalage appliquée à cette source"
+
+#. module: spreadsheet_edition
+#. odoo-javascript
+#: code:addons/spreadsheet_edition/static/src/assets/pivot_view/pivot_view.js:0
+#, python-format
+msgid "Pivot contains duplicate groupbys"
+msgstr "Le tableau croisé dynamique contient des valeurs groupby dupliquées"
+
+#. module: spreadsheet_edition
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.xml:0
 #, python-format
 msgid "Pivot name"
-msgstr "Nom de la table pivot"
+msgstr "Nom du tableau croisé dynamique"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/index.js:0
 #, python-format
 msgid "Pivot properties"
-msgstr "Propriétés de la table pivot"
+msgstr "Propriétés du tableau croisé dynamique"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/filter_field_offset.js:0
 #, python-format
 msgid "Previous"
 msgstr "Précedent"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/helpers.js:0
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/filter_editor_side_panel.js:0
 #, python-format
@@ -513,25 +526,25 @@ msgstr "Trimestre"
 #. module: spreadsheet_edition
 #: model:ir.model.fields,field_description:spreadsheet_edition.field_spreadsheet_collaborative_mixin__raw
 msgid "Raw"
-msgstr "Cru"
+msgstr "Brut"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/actions/spreadsheet_component.js:0
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/menu_item_registry.js:0
 #, python-format
 msgid "Re-insert list"
-msgstr "Ré-insérer la liste"
+msgstr "Réinsérer la liste"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/menu_item_registry.js:0
 #, python-format
 msgid "Re-insert pivot"
-msgstr "Ré-insérer une table pivot"
+msgstr "Réinsérer un tableau croisé dynamique"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/plugins/list_autofill_plugin.js:0
 #, python-format
 msgid "Record #"
@@ -543,14 +556,14 @@ msgid "Record id"
 msgstr "Id de l'enregistrement"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/menu_item_registry.js:0
 #, python-format
 msgid "Refresh all data"
 msgstr "Actualiser toutes les données"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_details_side_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.xml:0
 #, python-format
@@ -558,35 +571,35 @@ msgid "Refresh values"
 msgstr "Actualiser les valeurs"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Related model"
 msgstr "Modèle associé"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Relation"
 msgstr "Relation"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/filter_editor_side_panel.js:0
 #, python-format
 msgid "Relative Period"
 msgstr "Période relative"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Remove"
 msgstr "Supprimer"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/actions/control_panel/spreadsheet_name.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/editable_name/editable_name.xml:0
 #, python-format
@@ -594,12 +607,19 @@ msgid "Rename"
 msgstr "Renommer"
 
 #. module: spreadsheet_edition
+#. odoo-javascript
+#: code:addons/spreadsheet_edition/static/src/bundle/global_filters/components/filter_field_offset.js:0
+#, python-format
+msgid "Requires a selected field"
+msgstr "Exige un champ sélectionné"
+
+#. module: spreadsheet_edition
 #: model:ir.model.fields,field_description:spreadsheet_edition.field_spreadsheet_revision__revision_id
 msgid "Revision"
 msgstr "Révision"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/editable_name/editable_name.xml:0
 #, python-format
@@ -607,28 +627,28 @@ msgid "Save"
 msgstr "Sauvegarder"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/o_spreadsheet/menu_item_registry.js:0
 #, python-format
 msgid "Save as template"
-msgstr "Sauver en tant que modèle"
+msgstr "Sauvegarder en tant que modèle"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/actions/control_panel/spreadsheet_control_panel.xml:0
 #, python-format
 msgid "Saved"
 msgstr "Sauvegardé"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/actions/control_panel/spreadsheet_control_panel.xml:0
 #, python-format
 msgid "Saving"
-msgstr "Économie"
+msgstr "En cours de sauvegarde"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_panel.xml:0
@@ -637,63 +657,63 @@ msgid "Search..."
 msgstr "Recherche…"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/index.js:0
 #, python-format
 msgid "See list properties"
 msgstr "Voir les propriétés des listes"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/index.js:0
 #, python-format
 msgid "See pivot properties"
-msgstr "Voir les propriétés des pivots"
+msgstr "Voir les propriétés des tableaux croisés dynamiques"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/ir_menu_selector/ir_menu_selector.js:0
 #, python-format
 msgid "Select a menu..."
-msgstr "Sélectionnez un menu..."
+msgstr "Sélectionner un menu..."
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 #, python-format
 msgid "Select a spreadsheet to insert your %s."
-msgstr "Sélectionnez une feuille de calcul pour insérer votre %s."
+msgstr "Sélectionner une feuille de calcul pour insérer votre %s."
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/ir_menu_selector/ir_menu_selector.js:0
 #, python-format
 msgid "Select an Odoo menu to link in your spreadsheet"
-msgstr "Sélectionnez un menu Odoo à lier dans votre feuille de calcul"
+msgstr "Sélectionner un menu Odoo à lier dans votre feuille de calcul"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/actions/spreadsheet_component.js:0
 #, python-format
 msgid "Select the number of records to insert"
 msgstr "Choisir le nombre d'enregistrements à insérer"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/index.js:0
 #, python-format
 msgid "Set as filter"
 msgstr "Définir comme filtre"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/filter_editor_side_panel.js:0
 #, python-format
 msgid "Some required fields are not valid"
 msgstr "Certains champs obligatoires ne sont pas valides"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_details_side_panel.xml:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.xml:0
 #, python-format
@@ -711,42 +731,43 @@ msgid "Spreadsheet Snapshot"
 msgstr "Aperçu de la feuille de calcul"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 #, python-format
 msgid "Spreadsheets"
 msgstr "Feuilles de calcul"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/chart/side_panels/odoo_bar/odoo_bar_config_panel.xml:0
 #, python-format
 msgid "Stacked barchart"
 msgstr "Graphique à barres empilées"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/chart/side_panels/odoo_line/odoo_line_config_panel.xml:0
 #, python-format
 msgid "Stacked linechart"
 msgstr "Graphique à lignes empilées"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Text"
 msgstr "Texte"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/global_filter_side_panel.xml:0
 #, python-format
 msgid "Time range"
 msgstr "Période"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
+#: code:addons/spreadsheet_edition/static/src/bundle/pivot/plugins/pivot_autofill_plugin.js:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/plugins/pivot_autofill_plugin.js:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/spreadsheet_pivot_dialog.js:0
 #, python-format
@@ -754,14 +775,14 @@ msgid "Total"
 msgstr "Total"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/helpers.js:0
 #, python-format
 msgid "Week"
 msgstr "Semaine"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/helpers.js:0
 #: code:addons/spreadsheet_edition/static/src/bundle/global_filters/filter_editor_side_panel.js:0
 #, python-format
@@ -769,49 +790,49 @@ msgid "Year"
 msgstr "Année"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.js:0
 #, python-format
 msgid "ascending"
 msgstr "ascendant"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.js:0
 #, python-format
 msgid "descending"
 msgstr "descendant"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 #, python-format
 msgid "graph"
 msgstr "graphique"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/pivot_dialog.xml:0
 #, python-format
 msgid "has no cell missing from this sheet"
 msgstr "n'a pas de cellules manquantes dans cette feuille"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 #, python-format
 msgid "link"
 msgstr "lien"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 #, python-format
 msgid "list"
 msgstr "liste"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/bundle/list/side_panels/listing_details_side_panel.js:0
 #: code:addons/spreadsheet_edition/static/src/bundle/pivot/side_panels/pivot_details_side_panel.js:0
 #, python-format
@@ -824,14 +845,14 @@ msgid "o-spreadsheet revision refused due to concurrency"
 msgstr "révision o-spreadsheet refusée en raison de la simultanéité"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.js:0
 #, python-format
 msgid "pivot"
 msgstr "tableau croisé dynamique"
 
 #. module: spreadsheet_edition
-#. openerp-web
+#. odoo-javascript
 #: code:addons/spreadsheet_edition/static/src/assets/components/spreadsheet_selector_dialog/spreadsheet_selector_dialog.xml:0
 #, python-format
 msgid "records of the list."

@@ -130,6 +130,7 @@ class IntrastatReportCustomHandler(models.AbstractModel):
                         col['expression_label'] = 'country_code'
                     elif col['expression_label'] == 'intrastat_product_origin_country_name':
                         col['expression_label'] = 'intrastat_product_origin_country_code'
+        options['columns'] = new_columns
 
         # Only pick Sale/Purchase journals (+ divider)
         report._init_options_journals(options, previous_options=previous_options, additional_journals_domain=[('type', 'in', ('sale', 'purchase'))])
@@ -358,6 +359,7 @@ class IntrastatReportCustomHandler(models.AbstractModel):
                 AND company_country.id != country.id
                 AND country.intrastat = TRUE AND (country.code != 'GB' OR account_move.date < '2021-01-01')
                 AND prodt.type != 'service'
+                AND ref_weight_uom.active
         """
         order = "ORDER BY account_move.invoice_date DESC, account_move_line.id"
 

@@ -870,7 +870,8 @@ class Planning(models.Model):
         end_datetime = planning_slot_read_group[0]["end_datetime"].replace(tzinfo=pytz.utc)
 
         # Get slots' resources and current company work intervals.
-        resources = self.env["resource.resource"].browse(planning_slot_read_group[0]["resource_ids"])
+        fetched_resource_ids = [res_id for res_id in planning_slot_read_group[0]["resource_ids"] if res_id is not None]
+        resources = self.env["resource.resource"].browse(fetched_resource_ids)
         work_intervals_per_resource, dummy = resources._get_valid_work_intervals(start_datetime, end_datetime)
         company_calendar = self.env.company.resource_calendar_id
         company_calendar_work_intervals = company_calendar._work_intervals_batch(start_datetime, end_datetime)
@@ -884,6 +885,10 @@ class Planning(models.Model):
                     (resource_work_interval[0].astimezone(pytz.UTC), resource_work_interval[1].astimezone(pytz.UTC))
                 )
         return [work_interval_per_resource]
+
+    @api.model
+    def gantt_company_hours_per_day(self):
+        return self.env.company.resource_calendar_id.hours_per_day
 
     @api.model
     def gantt_unavailability(self, start_date, end_date, scale, group_bys=None, rows=None):

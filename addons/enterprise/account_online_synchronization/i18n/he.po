@@ -10,12 +10,12 @@
 # Lilach Gilliam <lilach.gilliam@gmail.com>, 2022
 # דודי מלכה <Dudimalka6@gmail.com>, 2022
 # Amit Spilman <amit@laylinetech.com>, 2022
-# Sagi Ahiel, 2022
 # hed shefer <hed@laylinetech.com>, 2022
 # Martin Trigaux, 2022
 # ZVI BLONDER <ZVIBLONDER@gmail.com>, 2022
 # NoaFarkash, 2022
 # Ha Ketem <haketem@gmail.com>, 2022
+# Sagi Ahiel, 2022
 # 
 msgid ""
 msgstr ""
@@ -23,7 +23,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-27 15:40+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Ha Ketem <haketem@gmail.com>, 2022\n"
+"Last-Translator: Sagi Ahiel, 2022\n"
 "Language-Team: Hebrew (https://www.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -473,7 +473,7 @@ msgstr "יומן"
 #: code:addons/account_online_synchronization/wizard/account_link_journal_wizard.py:0
 #, python-format
 msgid "Journals linked to a bank account must be of the bank type."
-msgstr ""
+msgstr "היומנים המקושרים לחשבון בנק חייב להיות מסוג בנק"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_link_journal____last_update
@@ -528,12 +528,12 @@ msgstr ""
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_account_link_journal
 msgid "Link list of bank accounts to journals"
-msgstr ""
+msgstr "שייך רשימה של חשבונות בנק ליומנים"
 
 #. module: account_online_synchronization
 #: model:ir.model,name:account_online_synchronization.model_account_link_journal_line
 msgid "Link one bank account to a journal"
-msgstr ""
+msgstr "שייך חשבון בנק ליומן"
 
 #. module: account_online_synchronization
 #: model:ir.model.fields,field_description:account_online_synchronization.field_account_online_link__message_main_attachment_id
@@ -774,7 +774,7 @@ msgstr ""
 #. module: account_online_synchronization
 #: model_terms:ir.ui.view,arch_db:account_online_synchronization.view_account_link_journal_form_wizard
 msgid "There is no new bank account to link."
-msgstr ""
+msgstr "קיים חשבון בנק חדש לשיוך"
 
 #. module: account_online_synchronization
 #: code:addons/account_online_synchronization/models/account_online.py:0

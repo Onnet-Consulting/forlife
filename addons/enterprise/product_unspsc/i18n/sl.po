@@ -2,12 +2,20 @@
 # This file contains the translation of the following modules:
 # 	* product_unspsc
 # 
+# Translators:
+# Martin Trigaux, 2022
+# laznikd <laznik@mentis.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Vida Potočnik <vida.potocnik@mentis.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:24+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
+"Last-Translator: Matjaz Mozetic <m.mozetic@matmoz.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,7 +26,7 @@ msgstr ""
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__active
 msgid "Active"
-msgstr ""
+msgstr "Aktivno"
 
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__applies_to
@@ -28,27 +36,27 @@ msgstr ""
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__code
 msgid "Code"
-msgstr ""
+msgstr "Oznaka"
 
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Ustvaril"
 
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Ustvarjeno"
 
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Prikazani naziv"
 
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: product_unspsc
 #: model:ir.model.fields,help:product_unspsc.field_product_unspsc_code__applies_to
@@ -58,33 +66,33 @@ msgstr ""
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Zadnjič spremenjeno"
 
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Zadnji posodobil"
 
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Zadnjič posodobljeno"
 
 #. module: product_unspsc
 #: model:ir.model.fields,field_description:product_unspsc.field_product_unspsc_code__name
 msgid "Name"
-msgstr ""
+msgstr "Naziv"
 
 #. module: product_unspsc
 #: model:ir.model,name:product_unspsc.model_product_template
 #: model:ir.model.fields.selection,name:product_unspsc.selection__product_unspsc_code__applies_to__product
 msgid "Product"
-msgstr ""
+msgstr "Proizvod"
 
 #. module: product_unspsc
 #: model:ir.model,name:product_unspsc.model_uom_uom
 msgid "Product Unit of Measure"
-msgstr ""
+msgstr "Merska enota izdelka"
 
 #. module: product_unspsc
 #: model:ir.model,name:product_unspsc.model_product_unspsc_code
@@ -119,4 +127,4 @@ msgstr ""
 #. module: product_unspsc
 #: model:ir.model.fields.selection,name:product_unspsc.selection__product_unspsc_code__applies_to__uom
 msgid "UoM"
-msgstr ""
+msgstr "EM"

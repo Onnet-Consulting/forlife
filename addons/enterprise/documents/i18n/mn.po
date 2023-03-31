@@ -10,7 +10,6 @@
 # Munkhbaatar g <muuguu17@gmail.com>, 2022
 # Minj P <pminj322@gmail.com>, 2022
 # Baasansuren Sharavsuren <baasansuren@bumanit.mn>, 2022
-# Batmunkh Ganbat <batmunkh.g@bumanit.mn>, 2022
 # Khoschuluu Khuderchuluu <khoschuluu@gmail.com>, 2022
 # Nurbahyt Kh <nurbahyt.kh@gmail.com>, 2022
 # Otgonbayar.A <gobi.mn@gmail.com>, 2022
@@ -19,16 +18,17 @@
 # hish, 2022
 # tserendavaa tsogtoo <tseegii011929@gmail.com>, 2022
 # Батмөнх Ганбат <batmunkh2522@gmail.com>, 2022
-# Martin Trigaux, 2022
 # Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2022
+# Batmunkh Ganbat <batmunkh.g@bumanit.mn>, 2022
+# Martin Trigaux, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:26+0000\n"
+"POT-Creation-Date: 2023-02-02 10:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2022\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Mongolian (https://www.transifex.com/odoo/teams/41243/mn/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -37,28 +37,28 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.js:0
 #, python-format
 msgid " + Add a tag"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_model_mixin.js:0
 #, python-format
 msgid "%s Documents"
 msgstr "%s Баримтууд"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_model_mixin.js:0
 #, python-format
 msgid "%s Documents (%s locked)"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "%s file(s) not moved because they are locked by another user"
@@ -80,12 +80,12 @@ msgstr ""
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2017
-msgid "2021"
+msgid "2022"
 msgstr ""
 
 #. module: documents
 #: model:documents.tag,name:documents.documents_finance_fiscal_year_2018
-msgid "2022"
+msgid "2023"
 msgstr ""
 
 #. module: documents
@@ -94,6 +94,7 @@ msgid "<b class=\"tip_title\">Tip: Become a paperless company</b>"
 msgstr ""
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/controllers/main.py:0
 #, python-format
 msgid ""
@@ -117,7 +118,7 @@ msgid "<b>Bytes</b>"
 msgstr "<b>Байт</b>"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "<b>Deselect this page</b> as we plan to process all bills first."
@@ -367,7 +368,7 @@ msgid "Access"
 msgstr "Хандалт"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "Access Error"
@@ -389,7 +390,7 @@ msgid "Access Token"
 msgstr "Хандах Токен"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #: model:ir.model.fields,field_description:documents.field_documents_workflow_action__action
@@ -419,7 +420,8 @@ msgid "Action Needed"
 msgstr "Үйлдэл шаардсан"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/documents/models/folder.py:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: model:ir.ui.menu,name:documents.workflow_rules_menu
@@ -485,7 +487,7 @@ msgid "Add"
 msgstr "Нэмэх"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #, python-format
@@ -498,14 +500,14 @@ msgid "Add Url"
 msgstr "URL нэмэх"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #, python-format
 msgid "Add a Link"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
@@ -550,6 +552,7 @@ msgid "Aliased Model"
 msgstr "Алиастай модел"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/controllers/main.py:0
 #, python-format
 msgid "All files uploaded"
@@ -566,6 +569,7 @@ msgid "Allows you to manage your documents."
 msgstr "Танд өөрийн документуудыг удирдах боломжийг олгоно."
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Already linked Documents"
@@ -589,14 +593,14 @@ msgid ""
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/hooks.js:0
 #, python-format
 msgid "An error occured while uploading."
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
@@ -606,7 +610,7 @@ msgid "Archive"
 msgstr "Архив"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #, python-format
 msgid "Archive original file(s)"
@@ -619,14 +623,14 @@ msgid "Archived"
 msgstr "Архивласан"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "Are you sure you want to delete this record?"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -748,27 +752,28 @@ msgid "Checksum/SHA1"
 msgstr "Чекийн дүн/SHA1"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/workflow.py:0
 #, python-format
 msgid "Choose a record to link"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Click on a card to <b>select the document</b>."
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Click on a thumbnail to <b>preview the document</b>."
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -777,7 +782,7 @@ msgid ""
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #, python-format
 msgid "Close"
@@ -832,7 +837,7 @@ msgid "Contracts"
 msgstr "Гэрээнүүд"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #, python-format
@@ -922,7 +927,7 @@ msgid "Default values for uploaded documents"
 msgstr "Байршуулсан баримтын анхны утга"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/search/documents_search_panel.xml:0
 #: model_terms:ir.ui.view,arch_db:documents.documents_folder_deletion_wizard_view_form
@@ -953,7 +958,6 @@ msgid "Description"
 msgstr "Тайлбар"
 
 #. module: documents
-#: model_terms:ir.ui.view,arch_db:documents.facet_view_form
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_form
 #: model_terms:ir.ui.view,arch_db:documents.tag_view_form
 msgid "Discard"
@@ -974,7 +978,7 @@ msgid "Display Name"
 msgstr "Дэлгэрэнгүй нэр"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.js:0
 #, python-format
 msgid "Do you really want to unlink this record?"
@@ -1017,6 +1021,7 @@ msgid ""
 msgstr ""
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/document.py:0
 #: code:addons/documents/models/document.py:0
 #: code:addons/documents/models/mail_activity.py:0
@@ -1045,7 +1050,8 @@ msgid "Document: Document Request"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/documents/models/folder.py:0
 #: code:addons/documents/models/res_partner.py:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
@@ -1104,7 +1110,7 @@ msgid "Domain"
 msgstr "Домэйн"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: model:ir.model.fields.selection,name:documents.selection__documents_share__action__download
 #: model_terms:ir.ui.view,arch_db:documents.document_view_form
@@ -1123,7 +1129,7 @@ msgid "Download and Upload"
 msgstr "Татах болон байршуулах"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/helper/documents_drop_zone.xml:0
 #, python-format
 msgid "Drop files here to upload"
@@ -1144,7 +1150,7 @@ msgid "Due type"
 msgstr "Төлбөрийн төрөл"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #: code:addons/documents/static/src/views/search/documents_search_panel.xml:0
 #, python-format
@@ -1152,7 +1158,7 @@ msgid "Edit"
 msgstr "Засах"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.js:0
 #, python-format
 msgid "Edit the linked record"
@@ -1169,7 +1175,7 @@ msgid "Email cc"
 msgstr "Имэйл CC"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #: code:addons/documents/static/src/views/hooks.js:0
 #: model:ir.model.fields.selection,name:documents.selection__documents_document__thumbnail_status__error
@@ -1224,7 +1230,7 @@ msgid "File Size"
 msgstr "Файлын хэмжээ"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/hooks.js:0
 #, python-format
 msgid "File is too large."
@@ -1285,6 +1291,11 @@ msgstr "Font awesome icon ж.ш. fa-tasks"
 
 #. module: documents
 #: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Future Activities"
+msgstr "Ирээдүйн үйл ажиллагаанууд"
+
+#. module: documents
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
 #: model_terms:ir.ui.view,arch_db:documents.facet_view_search
 msgid "Group By"
 msgstr "Бүлэглэлт"
@@ -1313,7 +1324,7 @@ msgid "Has Message"
 msgstr "Мессежтэй"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: model:ir.model.fields,field_description:documents.field_documents_document__previous_attachment_ids
 #, python-format
@@ -1482,12 +1493,17 @@ msgid "Last Updated on"
 msgstr "Сүүлд зассан огноо"
 
 #. module: documents
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Late Activities"
+msgstr "Хоцорсон ажилбар"
+
+#. module: documents
 #: model:documents.tag,name:documents.documents_internal_knowledge_legal
 msgid "Legal"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -1496,21 +1512,21 @@ msgid ""
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Let's process these bills: send to Finance workspace."
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Let's process this document, coming from our scanner."
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -1549,7 +1565,7 @@ msgid "Loading"
 msgstr "Ачаалж байна"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: model_terms:ir.ui.view,arch_db:documents.document_view_form
 #, python-format
@@ -1660,7 +1676,7 @@ msgid "Move to parent workspace"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector_field.js:0
 #, python-format
 msgid "Multiple values"
@@ -1699,35 +1715,35 @@ msgid "Name of the share link"
 msgstr "Хуваалцсан линкын нэр"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.xml:0
 #, python-format
 msgid "New"
 msgstr "Шинэ"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "New File"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "New Group"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "New Tag"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "New Workspace"
@@ -1754,7 +1770,7 @@ msgid "Next Activity Type"
 msgstr "Дараагийн ажилбарын төрөл"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "No document has been selected"
@@ -1771,12 +1787,14 @@ msgid "No shared links"
 msgstr ""
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/document.py:0
 #, python-format
 msgid "Not a file"
 msgstr "Файл биш байна"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/document.py:0
 #, python-format
 msgid "Not attached"
@@ -1828,7 +1846,7 @@ msgid "One record limit"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
@@ -1847,7 +1865,7 @@ msgstr ""
 "идэвхигүй болгоно."
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/helper/documents_action_helper.xml:0
 #, python-format
 msgid "Or send emails to"
@@ -1933,7 +1951,7 @@ msgstr ""
 "(parent_model) ба даалгавар (model))"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "Partial transfer"
@@ -1993,7 +2011,7 @@ msgid "Related Workspace"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "Remaining Pages"
@@ -2005,7 +2023,7 @@ msgid "Remove"
 msgstr "Хасах"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Replace"
@@ -2017,7 +2035,7 @@ msgid "Replace by"
 msgstr "Орлуулах"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #: model:ir.model.fields.selection,name:documents.selection__documents_document__type__empty
 #: model_terms:ir.ui.view,arch_db:documents.documents_request_form_view
@@ -2036,7 +2054,7 @@ msgid "Request To"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/components/activity_menu_view/activity_menu_view.xml:0
 #, python-format
 msgid "Request a Document"
@@ -2113,7 +2131,6 @@ msgid "Sales"
 msgstr "Борлуулалт"
 
 #. module: documents
-#: model_terms:ir.ui.view,arch_db:documents.facet_view_form
 #: model_terms:ir.ui.view,arch_db:documents.folder_view_form
 #: model_terms:ir.ui.view,arch_db:documents.tag_view_form
 msgid "Save"
@@ -2125,19 +2142,14 @@ msgid "Schedule Activity"
 msgstr "Ажилбар товлох"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #, python-format
 msgid "Select All: Shift + A"
 msgstr ""
 
 #. module: documents
-#: model_terms:ir.ui.view,arch_db:documents.document_view_kanban
-msgid "Select document"
-msgstr ""
-
-#. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid "Send this letter to the legal department, by assigning the right tags."
@@ -2163,7 +2175,7 @@ msgstr "Дугаарлалт"
 
 #. module: documents
 #: model:documents.workflow.rule,name:documents.documents_rule_finance_2018contracts
-msgid "Set As 2022 Contracts"
+msgid "Set As 2023 Contracts"
 msgstr ""
 
 #. module: documents
@@ -2194,7 +2206,7 @@ msgid "Settings"
 msgstr "Тохиргоо"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #: model_terms:ir.ui.view,arch_db:documents.document_view_form
 #: model_terms:ir.ui.view,arch_db:documents.share_view_form_popup
@@ -2208,6 +2220,7 @@ msgid "Share Links"
 msgstr "Холбоосуудыг хуваалцах"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/controllers/main.py:0
 #, python-format
 msgid "Share link"
@@ -2219,26 +2232,28 @@ msgid "Share links"
 msgstr "Холбоосуудыг хуваалцах"
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/share.py:0
 #, python-format
 msgid "Share selected files"
 msgstr ""
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/share.py:0
 #, python-format
 msgid "Share selected workspace"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #, python-format
 msgid "Share this domain"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Share this selection"
@@ -2275,7 +2290,14 @@ msgid "Shares & Emails"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Show all records which has next action date is before today"
+msgstr ""
+"Өнөөдрийг хүртэлх хугацаанд дараагийн ажилбарын огноо нь тохируулагдсан бүх "
+"тэмдэглэлүүд"
+
+#. module: documents
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Size"
@@ -2287,7 +2309,7 @@ msgid "Specific Model Linked"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
@@ -2296,7 +2318,7 @@ msgid "Split"
 msgstr "Хуваах"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/components/attachment_viewer/attachment_viewer.xml:0
 #: code:addons/documents/static/src/components/attachment_viewer/attachment_viewer.xml:0
 #, python-format
@@ -2370,7 +2392,7 @@ msgid "Tag categories defined for this workspace"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: model:ir.actions.act_window,name:documents.facet_action
 #: model:ir.model.fields,field_description:documents.field_documents_document__tag_ids
@@ -2433,7 +2455,7 @@ msgstr ""
 "систем хэрэглэгч олдохгүй бол Administrator-ийг онооно."
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/hooks.js:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.js:0
 #, python-format
@@ -2484,7 +2506,7 @@ msgid "Thumbnail Status"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/helper/documents_action_helper.xml:0
 #, python-format
 msgid "Tip: configure your scanner to send all documents to this address."
@@ -2505,6 +2527,11 @@ msgstr "Баталгаажуулах"
 #: model:mail.activity.type,name:documents.mail_documents_activity_data_tv
 msgid "To validate"
 msgstr "Баталгаажуулахын тулд"
+
+#. module: documents
+#: model_terms:ir.ui.view,arch_db:documents.document_view_search
+msgid "Today Activities"
+msgstr "Өнөөдрийн ажилбар"
 
 #. module: documents
 #: model:ir.model.fields,field_description:documents.field_documents_facet__tooltip
@@ -2541,7 +2568,7 @@ msgid "URL"
 msgstr "URL"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Un-archive"
@@ -2553,14 +2580,14 @@ msgid "Unlock"
 msgstr "Түгжээг нээх"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_model_mixin.js:0
 #, python-format
 msgid "Unnamed"
 msgstr "Нэргүй"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #: model_terms:ir.ui.view,arch_db:documents.share_page
 #, python-format
@@ -2575,7 +2602,7 @@ msgid ""
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Upload Document"
@@ -2592,6 +2619,7 @@ msgid "Upload by email"
 msgstr ""
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/mail_activity.py:0
 #, python-format
 msgid "Upload file request"
@@ -2630,7 +2658,7 @@ msgid "Videos"
 msgstr "Видеонууд"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -2689,7 +2717,7 @@ msgid "Workspaces"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/js/tours/documents.js:0
 #, python-format
 msgid ""
@@ -2722,33 +2750,35 @@ msgstr ""
 "тавих боломжтой."
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/folder.py:0
 #, python-format
 msgid "You cannot create recursive folders."
 msgstr ""
 
 #. module: documents
+#. odoo-python
 #: code:addons/documents/models/document.py:0
 #, python-format
 msgid "You don't have the right to move documents to that workspace."
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/search/documents_search_panel.js:0
 #, python-format
 msgid "You don't have the rights to move documents to that workspace"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "Youtube Video"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
@@ -2756,21 +2786,21 @@ msgid "delete"
 msgstr "устгах"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "document"
 msgstr "баримт"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "documents"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "documents selected"
@@ -2782,7 +2812,7 @@ msgid "documents shared by"
 msgstr "хуваалцсан баримтууд"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
@@ -2790,7 +2820,7 @@ msgid "download"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/documents_controller_mixin.xml:0
 #, python-format
 msgid "dropdown-item"
@@ -2834,14 +2864,14 @@ msgid "e.g. https://www.youtube.com/watch?v=CP96yVnXNrY"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "fa fa-folder text-odoo"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "folder_id"
@@ -2853,28 +2883,28 @@ msgid "is_readonly_model"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "name"
 msgstr "нэр"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "owner_id"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "partner_id"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
@@ -2882,7 +2912,7 @@ msgid "restore"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_page/pdf_page.xml:0
 #: code:addons/documents/static/src/owl/components/pdf_page/pdf_page.xml:0
 #, python-format
@@ -2890,7 +2920,7 @@ msgid "select"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "selected"
@@ -2902,21 +2932,21 @@ msgid "shared by"
 msgstr "хуваалцсан"
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/hooks.js:0
 #, python-format
 msgid "status code: %s, message: %s"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/owl/components/pdf_manager/pdf_manager.js:0
 #, python-format
 msgid "unnamed"
 msgstr ""
 
 #. module: documents
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents/static/src/views/inspector/documents_inspector.xml:0
 #, python-format
 msgid "url"

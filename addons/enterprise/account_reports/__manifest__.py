@@ -29,6 +29,7 @@ Accounting Reports
         'data/account_report_actions.xml',
         'data/menuitems.xml',
         'data/mail_activity_type_data.xml',
+        'views/account_move_views.xml',
         'views/res_company_views.xml',
         'views/partner_view.xml',
         'views/account_journal_dashboard_view.xml',

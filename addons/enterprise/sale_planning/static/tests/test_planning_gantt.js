@@ -66,6 +66,9 @@ QUnit.module('SalePlanning > GanttView', {
                     ]
                 );
             }
+            if (args.method === "gantt_company_hours_per_day") {
+                return Promise.resolve(8);
+            }
             return this._super.apply(this, arguments);
         };
     }

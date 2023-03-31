@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="PartnerListScreenSearch" t-inherit="point_of_sale.PartnerListScreen" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('pos-search-bar')]" position="replace">
+            <t t-set="_placeholder">Search Customers...</t>
+            <SearchBar config="getSearchBarConfig()" placeholder="_placeholder"/>
+        </xpath>
+    </t>
+
+ </templates>

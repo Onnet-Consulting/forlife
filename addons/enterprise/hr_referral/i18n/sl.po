@@ -2,12 +2,25 @@
 # This file contains the translation of the following modules:
 # 	* hr_referral
 # 
+# Translators:
+# Dejan Sraka <dejan.sraka@picolabs.si>, 2022
+# Vida Potočnik <vida.potocnik@mentis.si>, 2022
+# Grega Vavtar <grega@hbs.si>, 2022
+# laznikd <laznik@mentis.si>, 2022
+# Boris Kodelja <boris@hbs.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Martin Trigaux, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.5alpha1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:47+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
+"Last-Translator: Tadej Lupšina <tadej@hbs.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -86,6 +99,8 @@ msgid ""
 "<span title=\"My Link to Share\"><i class=\"fa fa-lg fa-link text-"
 "secondary\" role=\"img\" aria-label=\"My Link to Share\"/></span>"
 msgstr ""
+"<span title=\"My Link to Share\"><i class=\"fa fa-lg fa-link text-"
+"secondary\" role=\"img\" aria-label=\"My Link to Share\"/></span>"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
@@ -103,18 +118,18 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "Potreben je ukrep"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__active
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__active
 msgid "Active"
-msgstr ""
+msgstr "Aktivno"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "Aktivnosti"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_exception_decoration
@@ -124,7 +139,7 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "Stanje aktivnosti"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_type_icon
@@ -134,7 +149,7 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__name
 msgid "Alert"
-msgstr ""
+msgstr "Opozorilo"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_referral_alert
@@ -145,7 +160,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:hr_referral.action_hr_referral_alert_configuration
 #: model:ir.ui.menu,name:hr_referral.menu_hr_referral_alert_configuration
 msgid "Alerts"
-msgstr ""
+msgstr "Opozorila"
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_recruitment_stage__points
@@ -159,7 +174,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_points__applicant_id
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_report__applicant_id
 msgid "Applicant"
-msgstr ""
+msgstr "Kandidat"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.employee_referral_report_view_dashboard
@@ -186,17 +201,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_alert_view_search
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_alert_form
 msgid "Archived"
-msgstr ""
+msgstr "Arhivirano"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "Število prilog"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_applicant_employee_referral_kanban
 msgid "Avatar"
-msgstr ""
+msgstr "Avatar"
 
 #. module: hr_referral
 #: code:addons/hr_referral/models/hr_referral_reward.py:0
@@ -209,39 +224,39 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_friend__position__back
 msgid "Back"
-msgstr ""
+msgstr "Nazaj"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.res_config_settings_view__form
 msgid "Background"
-msgstr ""
+msgstr "Ozadje"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.res_config_settings_view__form
 msgid "Background Image"
-msgstr ""
+msgstr "Slika ozadja"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert_mail_wizard__body
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__body_html
 msgid "Body"
-msgstr ""
+msgstr "Vsebina"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_job__utm_campaign_id
 msgid "Campaign"
-msgstr ""
+msgstr "Kampanja"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_alert_mail_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_send_mail_view_form
 msgid "Cancel"
-msgstr ""
+msgstr "Prekliči"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_link_to_share__channel
 msgid "Channel"
-msgstr ""
+msgstr "Kanal"
 
 #. module: hr_referral
 #. openerp-web
@@ -260,12 +275,12 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_link_to_share_view_form
 msgid "Close"
-msgstr ""
+msgstr "Zaključi"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Podjetja"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__company_id
@@ -273,23 +288,23 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_points__company_id
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__company_id
 msgid "Company"
-msgstr ""
+msgstr "Podjetje"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Uredi nastavitve"
 
 #. module: hr_referral
 #: model:ir.ui.menu,name:hr_referral.menu_hr_referral_configuration
 msgid "Configuration"
-msgstr ""
+msgstr "Nastavitve"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__cost
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_reward_form
 msgid "Cost"
-msgstr ""
+msgstr "Lastna cena"
 
 #. module: hr_referral
 #: model_terms:ir.actions.act_window,help:hr_referral.action_hr_referral_alert_configuration
@@ -307,7 +322,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__create_uid
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Ustvaril"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__create_date
@@ -320,7 +335,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__create_date
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Ustvarjeno"
 
 #. module: hr_referral
 #. openerp-web
@@ -331,7 +346,7 @@ msgstr ""
 #: model:ir.ui.menu,name:hr_referral.menu_hr_applicant_employee_referral_dashboard
 #, python-format
 msgid "Dashboard"
-msgstr ""
+msgstr "Nadzorna plošča"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_friend__image
@@ -341,17 +356,17 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.employee_referral_report_view_search
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__date_from
 msgid "Date From"
-msgstr ""
+msgstr "Datum od"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__date_to
 msgid "Date To"
-msgstr ""
+msgstr "Date To"
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_friend__position
@@ -365,12 +380,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_report__department_id
 #: model_terms:ir.ui.view,arch_db:hr_referral.employee_referral_report_view_search
 msgid "Department"
-msgstr ""
+msgstr "Oddelek"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__description
 msgid "Description"
-msgstr ""
+msgstr "Opis"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_job__direct_clicks
@@ -400,7 +415,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__display_name
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Prikazani naziv"
 
 #. module: hr_referral
 #: code:addons/hr_referral/wizard/hr_referral_send_mail.py:0
@@ -425,7 +440,7 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__email_to
 msgid "Email"
-msgstr ""
+msgstr "E-pošta"
 
 #. module: hr_referral
 #. openerp-web
@@ -437,7 +452,7 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.employee_referral_report_view_search
 msgid "Employee"
-msgstr ""
+msgstr "Kader"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_report__employee_referral_hired
@@ -457,7 +472,7 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_reward_form
 msgid "Employees"
-msgstr ""
+msgstr "Kadri"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.employee_referral_report_view_graph
@@ -465,7 +480,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_referral.employee_referral_report_view_search
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_report_view_tree
 msgid "Employees Analysis"
-msgstr ""
+msgstr "Analiza zaposlenih"
 
 #. module: hr_referral
 #: model:ir.actions.act_window,name:hr_referral.employee_referral_report_action
@@ -482,7 +497,7 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_link_to_share__channel__facebook
 msgid "Facebook"
-msgstr ""
+msgstr "Facebook"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_job__facebook_clicks
@@ -492,12 +507,12 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "Sledilci"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "Sledilci (partnerji)"
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__activity_type_icon
@@ -563,7 +578,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_referral.employee_referral_report_view_search
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_points_filter
 msgid "Group By"
-msgstr ""
+msgstr "Združi po"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_alert_view_search
@@ -630,12 +645,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__id
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "Ikona"
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__activity_exception_icon
@@ -645,13 +660,13 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "Če je označeno, zahtevajo nova sporočila vašo pozornost."
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__message_has_error
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "Če je označeno, nekatera sporočila vsebujejo napako pri dostavi."
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_friend__image_head
@@ -659,19 +674,19 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_onboarding__image
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__image
 msgid "Image"
-msgstr ""
+msgstr "Slika"
 
 #. module: hr_referral
 #: model:ir.model.fields.selection,name:hr_referral.selection__hr_applicant__referral_state__progress
 #: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_report__referral_state__progress
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_filter
 msgid "In Progress"
-msgstr ""
+msgstr "V teku"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "Je sledilec"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_link_to_share__job_id
@@ -679,17 +694,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__job_id
 #: model_terms:ir.ui.view,arch_db:hr_referral.employee_referral_report_view_search
 msgid "Job"
-msgstr ""
+msgstr "Zaposlitev"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_job
 msgid "Job Position"
-msgstr ""
+msgstr "Delovno mesto"
 
 #. module: hr_referral
 #: model:ir.actions.act_window,name:hr_referral.action_hr_job_employee_referral
 msgid "Job Positions"
-msgstr ""
+msgstr "Delovno mesto"
 
 #. module: hr_referral
 #. openerp-web
@@ -715,7 +730,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward____last_update
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Zadnjič spremenjeno"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_report__write_date
@@ -733,7 +748,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__write_uid
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Zadnji posodobil"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__write_date
@@ -746,7 +761,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__write_date
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Zadnjič posodobljeno"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_applicant__last_valuable_stage_id
@@ -773,12 +788,12 @@ msgstr ""
 #: code:addons/hr_referral/static/src/views/dashboard.xml:0
 #, python-format
 msgid "Level"
-msgstr ""
+msgstr "Nivo"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_level__name
 msgid "Level Name"
-msgstr ""
+msgstr "Naziv nivoja"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_referral_level
@@ -794,13 +809,13 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_link_to_share__channel__direct
 msgid "Link"
-msgstr ""
+msgstr "Povezava"
 
 #. module: hr_referral
 #: model:ir.actions.act_window,name:hr_referral.hr_referral_link_to_share_action
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_link_to_share_view_form
 msgid "Link to Share"
-msgstr ""
+msgstr "Povezava do skupne rabe "
 
 #. module: hr_referral
 #: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_link_to_share__channel__linkedin
@@ -815,7 +830,7 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "Glavna priponka"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_applicant__max_points
@@ -826,17 +841,17 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_report__medium_id
 msgid "Medium"
-msgstr ""
+msgstr "Medij"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "Napaka pri dostavi sporočila"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "Sporočila"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__my_activity_date_deadline
@@ -865,7 +880,7 @@ msgstr ""
 #: code:addons/hr_referral/static/src/views/dashboard.xml:0
 #, python-format
 msgid "Next"
-msgstr ""
+msgstr "Naprej"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_calendar_event_id
@@ -875,17 +890,17 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "Rok naslednje aktivnosti"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "Povzetek naslednje aktivnosti"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "Tip naslednje aktivnosti"
 
 #. module: hr_referral
 #: model_terms:ir.actions.act_window,help:hr_referral.action_hr_job_employee_referral
@@ -907,22 +922,22 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "Število aktivnosti"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "Število napak"
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__message_needaction_counter
 msgid "Number of messages which requires an action"
-msgstr ""
+msgstr "Število sporočil, ki zahtevajo dejavnost"
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "Število sporočil, ki niso bila pravilno dostavljena."
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__onclick
@@ -945,7 +960,7 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
 msgid "Open"
-msgstr ""
+msgstr "Odprto"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_reward_kanban
@@ -1000,7 +1015,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_friend__position
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
 msgid "Position"
-msgstr ""
+msgstr "Delovno mesto"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
@@ -1010,12 +1025,12 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_reward_kanban
 msgid "Product"
-msgstr ""
+msgstr "Proizvod"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__name
 msgid "Product Name"
-msgstr ""
+msgstr "Ime Izdelka"
 
 #. module: hr_referral
 #: model_terms:ir.actions.act_window,help:hr_referral.action_hr_applicant_employee_referral
@@ -1030,7 +1045,7 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_recruitment_stage
 msgid "Recruitment Stages"
-msgstr ""
+msgstr "Stopnje zaposlovanja"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_report_view_tree
@@ -1113,7 +1128,7 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_applicant_view_search_bis_inherit_referral
 msgid "Referred By"
-msgstr ""
+msgstr "Navedel"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_applicant__ref_user_id
@@ -1133,17 +1148,17 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.ui.menu,name:hr_referral.menu_report_employee_referral_all
 msgid "Reporting"
-msgstr ""
+msgstr "Poročanje"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_level_form
 msgid "Requirements"
-msgstr ""
+msgstr "Zahteve"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__activity_user_id
 msgid "Responsible User"
-msgstr ""
+msgstr "Odgovorni uporabnik"
 
 #. module: hr_referral
 #. openerp-web
@@ -1162,7 +1177,7 @@ msgstr ""
 #: code:addons/hr_referral/static/src/views/dashboard.xml:0
 #, python-format
 msgid "Reward"
-msgstr ""
+msgstr "Nagrajevanje"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_referral_reward
@@ -1177,12 +1192,12 @@ msgstr ""
 #: model:ir.ui.menu,name:hr_referral.menu_hr_referral_reward_configuration
 #, python-format
 msgid "Rewards"
-msgstr ""
+msgstr "Nagrade"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr ""
+msgstr "Napaka pri dostavi SMS "
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_points_filter
@@ -1197,7 +1212,7 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_alert_mail_wizard_view_form
 msgid "Send"
-msgstr ""
+msgstr "Pošlji"
 
 #. module: hr_referral
 #: model:ir.actions.act_window,name:hr_referral.hr_referral_send_mail_action
@@ -1214,13 +1229,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_send_mail_view_form
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_alert_form
 msgid "Send Mail"
-msgstr ""
+msgstr "Pošlji pošto"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_onboarding__sequence
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Zaporedje"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_points__sequence_stage
@@ -1231,14 +1246,14 @@ msgstr ""
 #: model:ir.actions.act_window,name:hr_referral.action_hr_referral_configuration
 #: model:ir.ui.menu,name:hr_referral.hr_referral_menu_configuration
 msgid "Settings"
-msgstr ""
+msgstr "Nastavitve"
 
 #. module: hr_referral
 #. openerp-web
 #: code:addons/hr_referral/static/src/views/dashboard.xml:0
 #, python-format
 msgid "Share"
-msgstr ""
+msgstr "Souporaba"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_job_employee_referral_kanban
@@ -1270,7 +1285,7 @@ msgstr ""
 #: code:addons/hr_referral/static/src/views/dashboard.xml:0
 #, python-format
 msgid "Skip"
-msgstr ""
+msgstr "Preskoči"
 
 #. module: hr_referral
 #. openerp-web
@@ -1282,7 +1297,7 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_res_users__utm_source_id
 msgid "Source"
-msgstr ""
+msgstr "Vir"
 
 #. module: hr_referral
 #: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_alert__onclick__url
@@ -1292,7 +1307,7 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_points__stage_id
 msgid "Stage"
-msgstr ""
+msgstr "Stopnja"
 
 #. module: hr_referral
 #. openerp-web
@@ -1301,7 +1316,7 @@ msgstr ""
 #: code:addons/hr_referral/static/src/views/dashboard.xml:0
 #, python-format
 msgid "Start"
-msgstr ""
+msgstr "Prični"
 
 #. module: hr_referral
 #. openerp-web
@@ -1313,7 +1328,7 @@ msgstr ""
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.employee_referral_report_view_dashboard
 msgid "State"
-msgstr ""
+msgstr "Stanje"
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__activity_state
@@ -1323,12 +1338,16 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"Status na osnovi aktivnosti\n"
+"Zapadel: Rok je že prekoračen\n"
+"Danes: Datum aktivnosti je danes\n"
+"Planirano: Bodoče aktivnosti."
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert_mail_wizard__subject
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__subject
 msgid "Subject"
-msgstr ""
+msgstr "Zadeva"
 
 #. module: hr_referral
 #. openerp-web
@@ -1340,7 +1359,7 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_onboarding__text
 msgid "Text"
-msgstr ""
+msgstr "Besedilo"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_recruitment_report_view_dashboard_inherit
@@ -1368,7 +1387,7 @@ msgstr ""
 msgid ""
 "This field holds the image used as image for the product, limited to "
 "1024x1024px."
-msgstr ""
+msgstr "V tem polju je slika izdelka v velikosti 1024x1024 px"
 
 #. module: hr_referral
 #: model_terms:ir.ui.view,arch_db:hr_referral.hr_referral_link_to_share_view_form
@@ -1401,12 +1420,12 @@ msgstr ""
 #: code:addons/hr_referral/static/src/views/dashboard.xml:0
 #, python-format
 msgid "Total"
-msgstr ""
+msgstr "Skupaj"
 
 #. module: hr_referral
 #: model:ir.model.fields.selection,name:hr_referral.selection__hr_referral_link_to_share__channel__twitter
 msgid "Twitter"
-msgstr ""
+msgstr "Twitter"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_job__twitter_clicks
@@ -1416,17 +1435,17 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "Vrsta dejavnosti izjeme na zapisu. "
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_alert__url
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_utm_campaign
 msgid "UTM Campaign"
-msgstr ""
+msgstr "UTM kampanja"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_utm_source
@@ -1436,7 +1455,7 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_link_to_share__url
 msgid "Url"
-msgstr ""
+msgstr "Url"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_res_users
@@ -1445,7 +1464,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_report__ref_user_id
 #: model_terms:ir.ui.view,arch_db:hr_referral.view_hr_referral_points_filter
 msgid "User"
-msgstr ""
+msgstr "Uporabnik"
 
 #. module: hr_referral
 #: model:res.groups,name:hr_referral.group_hr_recruitment_referral_user
@@ -1478,12 +1497,12 @@ msgstr ""
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_reward__website_message_ids
 msgid "Website Messages"
-msgstr ""
+msgstr "Sporočila iz spletne strani"
 
 #. module: hr_referral
 #: model:ir.model.fields,help:hr_referral.field_hr_referral_reward__website_message_ids
 msgid "Website communication history"
-msgstr ""
+msgstr "Kronologija komunikacij spletne strani"
 
 #. module: hr_referral
 #: model:ir.model,name:hr_referral.model_hr_referral_onboarding
@@ -1571,9 +1590,9 @@ msgstr ""
 #: code:addons/hr_referral/static/src/views/dashboard.xml:0
 #, python-format
 msgid "share"
-msgstr ""
+msgstr "deli"
 
 #. module: hr_referral
 #: model:ir.model.fields,field_description:hr_referral.field_hr_referral_send_mail__url
 msgid "url"
-msgstr ""
+msgstr "url"

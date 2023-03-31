@@ -17,16 +17,17 @@
 # Piia Paurson <piia@avalah.ee>, 2022
 # Eneli Õigus <enelioigus@gmail.com>, 2022
 # Algo Kärp <algokarp@gmail.com>, 2022
-# Leaanika Randmets, 2022
-# Jana Jaakson, 2022
+# Anna, 2023
+# Leaanika Randmets, 2023
+# Jana Jaakson, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2023-02-02 10:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Jana Jaakson, 2022\n"
+"Last-Translator: Jana Jaakson, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -37,12 +38,12 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__answered_customer_message_count
 msgid "# Exchanges"
-msgstr ""
+msgstr "# Vahetused"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__open_ticket_count
 msgid "# Open Tickets"
-msgstr ""
+msgstr "# Avatud piletid"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__rating_count
@@ -52,29 +53,30 @@ msgstr "# Hinnangud"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__sla_policy_count
 msgid "# SLA Policy"
-msgstr ""
+msgstr "# Teenuseaseme lepingu poliitika"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__urgent_ticket
 msgid "# Urgent Ticket"
-msgstr ""
+msgstr "# Kiireloomulised piletid"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__failed_sla_rate
 msgid "% of Failed SLA"
-msgstr ""
+msgstr "% ei täitnud teenuse lubadust"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ongoing_sla_rate
 msgid "% of SLA In Progress"
-msgstr ""
+msgstr "% lubatud teenuse tingimused töös"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__successful_sla_rate
 msgid "% of Successful SLA"
-msgstr ""
+msgstr "% edukas teenuses lubatu"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #: code:addons/helpdesk/models/helpdesk.py:0
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
@@ -85,32 +87,33 @@ msgstr "%s (koopia)"
 #. module: helpdesk
 #: model:helpdesk.sla,name:helpdesk.helpdesk_sla_1
 msgid "2 days to start"
-msgstr ""
+msgstr "2 päeva alustamiseks"
 
 #. module: helpdesk
 #: model:helpdesk.sla,name:helpdesk.helpdesk_sla_2
 msgid "7 days to finish"
-msgstr ""
+msgstr "7 päeva lõpetamiseni"
 
 #. module: helpdesk
 #: model:helpdesk.sla,name:helpdesk.helpdesk_sla_3
 msgid "8 hours to finish"
-msgstr ""
+msgstr "8 tundi lõpetamiseni"
 
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid "<b class=\"tip_title\">Tip: Create tickets from incoming emails</b>"
 msgstr ""
+"<b class=\"tip_title\">Nõuanne: Loo pileteid sissetulevatest emailidest.</b>"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "<b>Drag &amp; drop</b> the card to change the stage of your ticket."
-msgstr ""
+msgstr "<b>Lohista</b>pileti etapi muutmiseks."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid ""
@@ -118,15 +121,20 @@ msgid ""
 "    Use <b>@ mentions</b> to ping a colleague \n"
 "    or <b># mentions</b> to contact a group of people."
 msgstr ""
+"<b>Lisa märkusi</b> sisekommunikatsiooni jaoks (teavitate ainult neid isikuid, keda te konkreetselt märgistate). \n"
+" Kasutage <b>@-märkusi</b>, et viidata kolleegile \n"
+"või <b>#-märkusi</b>, et võtta ühendust rühmaga."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid ""
 "<center><strong><b>Good job!</b> You walked through all steps of this "
 "tour.</strong></center>"
 msgstr ""
+"<center><strong><b>Hea töö!</b> Oled kõik esmased õpetuse etapid "
+"läbinud.</strong></center>"
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.rating_ticket_request_email_template
@@ -189,6 +197,63 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    <t t-set=\"access_token\" t-value=\"object._rating_get_access_token()\"/>\n"
+"    <t t-set=\"partner\" t-value=\"object._rating_get_partner()\"/>\n"
+"    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width:100%; margin:0;\">\n"
+"    <tbody>\n"
+"        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
+"            <t t-if=\"partner.name\">\n"
+"                Tere <t t-out=\"partner.name or ''\">Brandon Freeman</t>,<br/>\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                Tere,<br/>\n"
+"            </t>\n"
+"            Palun võtke hetk aega, et hinnata meie teenuseid seoses piletiga <strong t-out=\"object.name or ''\">\"Tabeli jalad on tasakaalust väljas\".</strong>\n"
+"            <t t-if=\"object._rating_get_operator().name\">\n"
+"                Pileti lahendaja oli <strong t-out=\"object._rating_get_operator().name or ''\">Mitchell Admin</strong>.<br/>\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                .<br/>\n"
+"            </t>\n"
+"        </td></tr>\n"
+"        <tr><td style=\"text-align: center;\">\n"
+"            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"o_mail_notification\" style=\"width:100%; margin: 32px 0px 32px 0px;\">\n"
+"                <tr><td style=\"font-size: 14px;\">\n"
+"                    <strong>Andke tagasisidet, kuidas olete rahul meie teenusega</strong><br/>\n"
+"                    <span style=\"text-color: #888888\">(kliki ühel neist emotikonidest)</span>\n"
+"                </td></tr>\n"
+"                <tr><td style=\"font-size: 14px;\">\n"
+"                    <table style=\"width:100%;text-align:center;margin-top:2rem;\">\n"
+"                        <tr>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/5\">\n"
+"                                    <img alt=\"Satisfied\" src=\"/rating/static/src/img/rating_5.png\" title=\"Satisfied\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/3\">\n"
+"                                    <img alt=\"Okay\" src=\"/rating/static/src/img/rating_3.png\" title=\"Okay\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                            <td>\n"
+"                                <a t-attf-href=\"/rate/{{ access_token }}/1\">\n"
+"                                    <img alt=\"Dissatisfied\" src=\"/rating/static/src/img/rating_1.png\" title=\"Dissatisfied\"/>\n"
+"                                </a>\n"
+"                            </td>\n"
+"                        </tr>\n"
+"                    </table>\n"
+"                </td></tr>\n"
+"            </table>\n"
+"        </td></tr>\n"
+"        <tr><td valign=\"top\" style=\"font-size: 14px;\">\n"
+"           Teie tagasisidet on meile oluline!.\n"
+"            <br/><br/><span style=\"margin: 0px 0px 0px 0px; font-size: 12px; opacity: 0.5; color: #454748;\">See kliendiküsitlus on saadetud, sest teie pilet on viidud etappi  <b t-out=\"object.stage_id.name or ''\">Töös</b></span>\n"
+"        </td></tr>\n"
+"    </tbody>\n"
+"    </table>\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.solved_ticket_request_email_template
@@ -204,6 +269,16 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div>\n"
+"    Lugupeetud <t t-out=\"object.sudo().partner_id.name or 'Madam/Sir'\">proua/härra</t>,<br/><br/>\n"
+"    See automaatne teade teavutab Teid, et oleme lõpetanud Teie pileti (viide <t t-out=\"object.id or ''\">15</t>).\n"
+"    Loodame, et osutatud teenused vastasid Teie ootustele.\n"
+"    Kui Teil tekib veel küsimusi, vastake julgelt sellele kirjale, et avada uuesti oma pilet.<br/><br/>\n"
+"    Täname Teid koostöö eest.<br/>\n"
+"    Heade soovidega,<br/><br/>\n"
+"    <t t-out=\"object.team_id.name or 'Helpdesk'\">Kasutatoe</t> meeskond.\n"
+"</div>\n"
+"        "
 
 #. module: helpdesk
 #: model:mail.template,body_html:helpdesk.new_ticket_request_email_template
@@ -215,7 +290,7 @@ msgid ""
 "        <a t-attf-href=\"/my/ticket/{{ object.id }}/{{ object.access_token }}\" t-out=\"object.name or ''\"/>\n"
 "    </t>\n"
 "    has been received and is being reviewed by our <t t-out=\"object.team_id.name or ''\">Table legs are unbalanced</t> team.\n"
-"    The reference of your ticket is <t t-out=\"object.id or ''\">15</t>.<br/>\n"
+"    The reference of your ticket is <t t-out=\"object.ticket_ref or ''\">15</t>.<br/>\n"
 "\n"
 "    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
 "        <a style=\"background-color: #875A7B; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size:13px;\" t-att-href=\"object.get_portal_url()\" target=\"_blank\">View the ticket</a><br/>\n"
@@ -245,6 +320,8 @@ msgid ""
 "<i class=\"fa fa-envelope-o\" title=\"Domain alias\" role=\"img\" aria-"
 "label=\"Domain alias\"/>&amp;nbsp;"
 msgstr ""
+"<i class=\"fa fa-envelope-o\" title=\"Domain alias\" role=\"img\" aria-"
+"label=\"Domain alias\"/>&amp;nbsp;"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -254,6 +331,9 @@ msgid ""
 "                            <i class=\"fa fa-fw o_button_icon fa-meh-o text-warning\" attrs=\"{'invisible': ['|', ('rating_avg', '&lt;', 2.33), ('rating_avg', '&gt;=', 3.66)]}\" title=\"Okay\"/>\n"
 "                            <i class=\"fa fa-fw o_button_icon fa-frown-o text-danger\" attrs=\"{'invisible': [('rating_avg', '&gt;=', 2.33)]}\" title=\"Dissatisfied\"/>"
 msgstr ""
+"<i class=\"fa fa-fw o_button_icon fa-smile-o text-success\" attrs=\"{'invisible': [('rating_avg', '&lt;', 3.66)]}\" title=\"Satisfied\"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-meh-o text-warning\" attrs=\"{'invisible': ['|', ('rating_avg', '&lt;', 2.33), ('rating_avg', '&gt;=', 3.66)]}\" title=\"Okay\"/>\n"
+"                            <i class=\"fa fa-fw o_button_icon fa-frown-o text-danger\" attrs=\"{'invisible': [('rating_avg', '&gt;=', 2.33)]}\" title=\"Dissatisfied\"/>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
@@ -261,6 +341,8 @@ msgid ""
 "<i class=\"fa fa-lg fa-clock-o me-2\" aria-label=\"Sla Deadline\" "
 "title=\"Sla Deadline\"/>"
 msgstr ""
+"<i class=\"fa fa-lg fa-clock-o me-2\" aria-label=\"Sla Deadline\" "
+"title=\"Sla Deadline\"/>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -269,26 +351,29 @@ msgid ""
 "Servers</i> feature in the <i>General Settings</i> and indicate an <i>alias "
 "domain</i>"
 msgstr ""
+"<i class=\"fa fa-lightbulb-o\" role=\"img\"/> Lülitage sisse <i>Kohandatud "
+"meiliserverite</i> sunktsioon <i>Üldiste seadistuste</i>all ja märkige "
+"<i>aliase domeen</i>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<i class=\"fa fa-lightbulb-o\"/>&amp;nbsp;"
-msgstr ""
+msgstr "<i class=\"fa fa-lightbulb-o\"/>&amp;nbsp;"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<i class=\"fa fa-warning\"/>&amp;nbsp;"
-msgstr ""
+msgstr "<i class=\"fa fa-warning\"/>&amp;nbsp;"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "<small class=\"text-end\">Stage:</small>"
-msgstr ""
+msgstr "<small class=\"text-end\">Etapp:</small>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "<small>#</small>"
-msgstr ""
+msgstr "<small>#</small>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
@@ -297,6 +382,9 @@ msgid ""
 "title=\"By saving this change, the customer email will also be updated.\" "
 "attrs=\"{'invisible': [('is_partner_email_update', '=', False)]}\"/>"
 msgstr ""
+"<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
+"title=\"By saving this change, the customer email will also be updated.\" "
+"attrs=\"{'invisible': [('is_partner_email_update', '=', False)]}\"/>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
@@ -306,11 +394,15 @@ msgid ""
 "updated.\" attrs=\"{'invisible': [('is_partner_phone_update', '=', "
 "False)]}\"/>"
 msgstr ""
+"<span class=\"fa fa-exclamation-triangle text-warning oe_edit_only\" "
+"title=\"By saving this change, the customer phone number will also be "
+"updated.\" attrs=\"{'invisible': [('is_partner_phone_update', '=', "
+"False)]}\"/>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 msgid "<span class=\"o_field_widget o_readonly_modifier\">Working Hours</span>"
-msgstr ""
+msgstr "<span class=\"o_field_widget o_readonly_modifier\">Töötunnid</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -319,6 +411,9 @@ msgid ""
 "                                    Satisfaction\n"
 "                                </span>"
 msgstr ""
+"<span class=\"o_stat_text\">\n"
+"                                    Rahulolu\n"
+"                                </span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_partner_form_inherit_helpdesk
@@ -328,47 +423,47 @@ msgstr "<span class=\"o_stat_text\"> Kasutajatoe piletid</span>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "<span class=\"o_stat_text\">Rating</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Hinnang</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "<span class=\"text-muted\">Failed</span>"
-msgstr ""
+msgstr "<span class=\"text-muted\">Ebaõnnestunud</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "<span class=\"text-muted\">Open</span>"
-msgstr ""
+msgstr "<span class=\"text-muted\">Avatud</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "<span class=\"text-muted\">Unassigned</span>"
-msgstr ""
+msgstr "<span class=\"text-muted\">Määramata</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "<span class=\"text-muted\">Urgent</span>"
-msgstr ""
+msgstr "<span class=\"text-muted\">Kiireloomuline</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "<span class=\"text-secondary fw-normal\"> Open</span>"
-msgstr ""
+msgstr "<span class=\"text-secondary fw-normal\"> Avatud</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "<span class=\"text-secondary fw-normal\"> Tickets</span>"
-msgstr ""
+msgstr "<span class=\"text-secondary fw-normal\"> Piletid</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<span><b>Followers </b></span>"
-msgstr ""
+msgstr "<span><b>Jälgijad </b></span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "<span>Average Rating</span>"
-msgstr ""
+msgstr "<span>Keskmine hinnang</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -378,12 +473,12 @@ msgstr "<span>Aruandlus</span>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "<span>Success Rate</span>"
-msgstr ""
+msgstr "<span>Edukus</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "<span>Tickets Closed</span>"
-msgstr ""
+msgstr "<span>Lõpetatud piletid</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -393,12 +488,12 @@ msgstr "<span>Vaata</span>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<span>days of inactivity</span>"
-msgstr ""
+msgstr "<span>päeva mitteaktiivne</span>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "<strong class=\"col-lg-2\">Managed by</strong>"
-msgstr ""
+msgstr "<strong class=\"col-lg-2\">Hallatud</strong>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -408,12 +503,12 @@ msgstr "<strong class=\"col-lg-2\">Probleemist teavitatud</strong>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<strong>After</strong>"
-msgstr ""
+msgstr "<strong>Pärast</strong>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "<strong>Alias </strong>"
-msgstr ""
+msgstr "<strong>Alias </strong>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -447,7 +542,7 @@ msgstr "Sama nimega silt on juba olemas."
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_helpdesk_ticket_type_name_uniq
 msgid "A type with the same name already exists."
-msgstr ""
+msgstr "Sama nimega tüüp on juba olemas."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__description
@@ -506,19 +601,22 @@ msgid "Activity Types"
 msgstr "Tegevuste tüübid"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid ""
 "Adapt your <b>pipeline</b> to your workflow by adding <b>stages</b> <i>(e.g."
 " Awaiting Customer Feedback, etc.).</i>"
 msgstr ""
+"Kohandage oma <b>müügitoru</b> oma töövoogudega, lisades "
+"<b>etapid</b><i>(nt. kliendi tagasiside ootamine jne).</i>"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_stage_action
 msgid ""
 "Adapt your pipeline to your workflow and track the progress of your tickets."
 msgstr ""
+"Kohandage oma müügitoru oma töövoogudega ja jälgige oma piletite edenemist."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -526,6 +624,8 @@ msgid ""
 "Add a description to help your coworkers understand the meaning and purpose "
 "of the stage."
 msgstr ""
+"Lisa kirjelduse teistele töötajatele, et nad saaksid aru selle etapi mõttest"
+" ja eesmärgist."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -535,16 +635,17 @@ msgstr "Lisa kirjeldus ..."
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Add team members..."
-msgstr ""
+msgstr "Lisa meeskonnaliikmeid..."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid ""
 "Add your stage and place it at the right step of your workflow by dragging &"
 " dropping it."
 msgstr ""
+"Lisage oma etapp ja paigutage see lohistades oma töövoo õigesse etappi, "
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_helpdesk_manager
@@ -554,7 +655,7 @@ msgstr "Administraator"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "After-Sales"
-msgstr ""
+msgstr "Järelmüük"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_id
@@ -569,7 +670,7 @@ msgstr "Turvakontakti alias"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_email_from
 msgid "Alias Email From"
-msgstr ""
+msgstr "Aliase e-mail "
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_name
@@ -592,6 +693,7 @@ msgid "Aliased Model"
 msgstr "Aliase mudel"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "All"
@@ -610,7 +712,7 @@ msgstr "Kõik ettevõttesisesed kasutajad"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Allow your customers to close their own tickets"
-msgstr ""
+msgstr "Luba klientidel ise kasutajatoe pileteid sulgeda"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_wizard
@@ -654,19 +756,21 @@ msgid "Assign To Me"
 msgstr "Määra mulle"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Assign the ticket to a <b>member of your team</b>."
-msgstr ""
+msgstr "Määra pilet mõnele oma <b>meeskonnaliikmele.</b>"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
 #, python-format
 msgid "Assign to me"
 msgstr "Määra mulle"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Assigned"
@@ -679,6 +783,7 @@ msgid "Assigned To"
 msgstr "Määratud (kellele)"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #: code:addons/helpdesk/controllers/portal.py:0
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__user_id
@@ -697,12 +802,12 @@ msgstr "Kellele määratud"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis_closed
 msgid "Assignee"
-msgstr ""
+msgstr "Määratud"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Assignment &amp; Visibility"
-msgstr ""
+msgstr "Määramine &amp; Nähtavus"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__assign_method
@@ -715,6 +820,8 @@ msgid ""
 "At each stage, employees can block tickets or mark them as ready for the next step.\n"
 "                                You can customize the meaning of each state."
 msgstr ""
+"Igas etapis saavad töötajad pileteid blokeerida või märkida need järgmiseks etapiks valmis.\n"
+"            Saate kohandada iga oleku tähendust."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_attachment_count
@@ -728,6 +835,8 @@ msgid ""
 "Automate the assignment of new tickets to the right people, and make sure "
 "all tickets are being handled"
 msgstr ""
+"Automatiseerige uute piletite määramine õigetele inimestele ja veenduge, et "
+"kõik piletid on käsitletud."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__auto_assignment
@@ -737,7 +846,7 @@ msgstr "Automaatne määramine"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__auto_close_ticket
 msgid "Automatic Closing"
-msgstr ""
+msgstr "Automaatne sulgemine"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_progress_data
@@ -748,10 +857,10 @@ msgstr "Keskmine"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__avg_response_hours
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__avg_response_hours
 msgid "Average Hours to Respond"
-msgstr ""
+msgstr "Keskmine aeg vastamiseks(h)"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__rating_avg
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__rating_avg
@@ -785,24 +894,24 @@ msgstr "Keskmine hinne: on rahul"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "Average rating for the last 7 days"
-msgstr ""
+msgstr "7 päeva keskminehinnang"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Avg 7 Days Customer Satisfaction"
-msgstr ""
+msgstr "7 päeva keskmine kliendi rahuolu"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Avg Last 7 days"
-msgstr ""
+msgstr "7 päeva keskmine"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Avg Open Hours"
@@ -816,9 +925,10 @@ msgstr "Halb"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Bill the time spent on your tickets to your customers"
-msgstr ""
+msgstr "Arvelda klientidele piletitele kulutatud aega."
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #: model:helpdesk.stage,legend_blocked:helpdesk.stage_cancelled
 #: model:helpdesk.stage,legend_blocked:helpdesk.stage_done
@@ -826,29 +936,6 @@ msgstr ""
 #: model:helpdesk.stage,legend_blocked:helpdesk.stage_new
 #: model:helpdesk.stage,legend_blocked:helpdesk.stage_on_hold
 #: model:helpdesk.stage,legend_blocked:helpdesk.stage_solved
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_1
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_10
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_11
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_12
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_13
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_14
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_15
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_16
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_17
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_18
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_19
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_2
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_20
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_21
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_22
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_23
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_3
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_4
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_5
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_6
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_7
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_8
-#: model:helpdesk.ticket,legend_blocked:helpdesk.helpdesk_ticket_9
 #, python-format
 msgid "Blocked"
 msgstr "Blokeeritud"
@@ -871,7 +958,7 @@ msgstr "Tühistatud"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Centralize, manage, share and grow your knowledge library"
-msgstr ""
+msgstr "Halda, jaga ning laienda enda teadmiste raamatukogu"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -879,11 +966,11 @@ msgid "Channels"
 msgstr "Kanalid"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_target/helpdesk_team_target.xml:0
 #, python-format
 msgid "Click to set"
-msgstr ""
+msgstr "Kliki, et määrata"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -893,7 +980,7 @@ msgstr "Sulge"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Close Ticket"
-msgstr ""
+msgstr "Märgi pilet lahendatuks"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__close_date
@@ -905,12 +992,12 @@ msgstr "Sulgemise kuupäev"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Close inactive tickets automatically"
-msgstr ""
+msgstr "Sulge mitteaktiivsed piletid automaatselt"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Close the ticket"
-msgstr ""
+msgstr "Märgi pilet lahendatuks"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
@@ -918,6 +1005,7 @@ msgid "Close ticket"
 msgstr "Märgi pilet lahendatuks"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -926,7 +1014,7 @@ msgid "Closed"
 msgstr "Lahendatud"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #, python-format
@@ -937,22 +1025,22 @@ msgstr "Lahendatud pileteid"
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_7days_analysis
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_close_analysis
 msgid "Closed Tickets Analysis"
-msgstr ""
+msgstr "Lõpetatud piletite analüüs"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__closed_by_partner
 msgid "Closed by Partner"
-msgstr ""
+msgstr "Lõpetatud partneri poolt"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Closed in Last 30 days"
-msgstr ""
+msgstr "Lõpetatud 30 päeva jooksul"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Closed in Last 7 days"
-msgstr ""
+msgstr "Lõpetatud 7 päeva jooksul"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -963,7 +1051,7 @@ msgstr "Sulgemise kuupäev"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__allow_portal_ticket_closing
 msgid "Closure by Customers"
-msgstr ""
+msgstr "Lõpetatud klientide poolt"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_tag__color
@@ -990,7 +1078,7 @@ msgstr "Äriline üksus"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_forum
 msgid "Community Forum"
-msgstr ""
+msgstr "Kogukonna foorum"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_res_company
@@ -1028,6 +1116,7 @@ msgid "Confirm"
 msgstr "Kinnita"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/wizard/helpdesk_stage_delete.py:0
 #, python-format
 msgid "Confirmation"
@@ -1058,7 +1147,7 @@ msgstr "Loomise kuupäev"
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.email_template_action_helpdesk
 msgid "Create a new template"
-msgstr ""
+msgstr "Loo uus mall"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_team_action
@@ -1067,11 +1156,14 @@ msgid ""
 "Create teams to organize your tickets by expertise or geographical region, "
 "and define a different workflow for each team."
 msgstr ""
+"Looge meeskonnad, et organiseerida oma piletid eriteadmiste või "
+"geograafilise piirkonna järgi, ning määratlege iga meeskonna jaoks erinev "
+"töövoog."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Create tickets by sending an email to an alias"
-msgstr ""
+msgstr "Looge pileteid, saates e-kirja aliasele"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_7days_analysis
@@ -1081,7 +1173,7 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_success
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_team_performance
 msgid "Create tickets to get statistics."
-msgstr ""
+msgstr "Statistika jaoks loo pileteid."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__create_date
@@ -1129,7 +1221,7 @@ msgstr "Kriteerium"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.tickets_followup
 msgid "Current stage of this ticket"
-msgstr ""
+msgstr "Pileti praegune etapp"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_bounced_content
@@ -1137,6 +1229,7 @@ msgid "Custom Bounced Message"
 msgstr "Kohandatud automaatsõnum"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__partner_id
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_id
@@ -1149,14 +1242,16 @@ msgid "Customer"
 msgstr "Klient"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #: code:addons/helpdesk/models/res_company.py:0
 #: model:helpdesk.team,name:helpdesk.helpdesk_team1
 #, python-format
 msgid "Customer Care"
-msgstr ""
+msgstr "Klienditeenindus"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_email
 #, python-format
@@ -1171,7 +1266,7 @@ msgstr "Kliendi nimi"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_phone
 msgid "Customer Phone"
-msgstr ""
+msgstr "Kliendi telefon"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__access_url
@@ -1191,20 +1286,21 @@ msgid "Customers"
 msgstr "Kliendid"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #, python-format
 msgid "Customers will be added to the followers of their tickets."
-msgstr ""
+msgstr "Kliendid lisatakse nende piletile jälgijaks."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Daily Target"
-msgstr "Päevane eesmärk"
+msgstr "Eesmärk päevas"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/views/helpdesk_team_kanban/helpdesk_team_kanban_view.js:0
 #, python-format
 msgid "Dashboard"
@@ -1213,7 +1309,7 @@ msgstr "Töölaud"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla_status__reached_datetime
 msgid "Datetime at which the SLA stage was reached for the first time"
-msgstr ""
+msgstr "Kuupäev, mil lubatud teenuse tingimused etapp esimest korda saavutati"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla_report_analysis__sla_exceeded_hours
@@ -1221,6 +1317,7 @@ msgid ""
 "Day to reach the stage of the SLA, without taking the working calendar into "
 "account"
 msgstr ""
+"Päev lubatud teenuse tingimuste etapini jõudmiseks, arvestamata töökalendrit"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__deadline
@@ -1240,6 +1337,7 @@ msgid "Delete"
 msgstr "Kustuta"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_confirmation_wizard
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_wizard
@@ -1251,7 +1349,7 @@ msgstr "Kustuta etapp"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Describe your team to your colleagues and customers..."
-msgstr ""
+msgstr "Kirjelda oma meeskonda kolleegidele ja klientidele..."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__description
@@ -1262,12 +1360,12 @@ msgstr "Kirjeldus"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 msgid "Description of the policy..."
-msgstr ""
+msgstr "Poliitika kirjeldus..."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "Description of the ticket..."
-msgstr ""
+msgstr "Pileti kirjeldus..."
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_digest_digest
@@ -1303,6 +1401,7 @@ msgid "Dissatisfied"
 msgstr "Rahulolematu"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/digest.py:0
 #, python-format
 msgid "Do not have access, skip this data for user's digest email"
@@ -1316,7 +1415,7 @@ msgstr "Dokumentatsioon"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__domain_user_ids
 msgid "Domain User"
-msgstr ""
+msgstr "Domeeni kasutaja"
 
 #. module: helpdesk
 #: model:helpdesk.stage,name:helpdesk.stage_done
@@ -1331,12 +1430,12 @@ msgstr "Rippmenüü"
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__assign_method__balanced
 msgid "Each user has an equal number of open tickets"
-msgstr ""
+msgstr "Igal kasutajal on võrdne töös piletite arv."
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__assign_method__randomly
 msgid "Each user is assigned an equal number of tickets"
-msgstr ""
+msgstr "Igale kasutajale määratakse võrdne piletite arv"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_kanban
@@ -1366,6 +1465,9 @@ msgid ""
 "By default, the email will be sent from the email alias of the helpdesk team.\n"
 "Otherwise it will be sent from the company's email address, or from the catchall (as defined in the System Parameters)."
 msgstr ""
+"Kui pilet jõuab sellesse etappi, saadetakse kliendile automaatselt e-kiri.\n"
+"Vaikimisi saadetakse e-kiri kasutajatoe meeskonna e-posti aliaselt.\n"
+"Vastasel juhul saadetakse see ettevõtte e-posti aadressilt või catchall'ist (nagu on määratletud süsteemiparameetrites)."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__email_cc
@@ -1375,7 +1477,7 @@ msgstr "Koopia"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__email
 msgid "Email on Customer"
-msgstr ""
+msgstr "E-kiri kliendile"
 
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
@@ -1387,35 +1489,40 @@ msgstr "Emailid saadetud aadressile"
 msgid ""
 "Emails sent to a Helpdesk Team alias generate tickets in your pipeline."
 msgstr ""
+"Kasutajatoe meeskonna aliasele saadetud e-kirjad loovad müügitorusse "
+"piletid."
 
 #. module: helpdesk
 #: model:mail.template,description:helpdesk.rating_ticket_request_email_template
 msgid "Enable \"customer ratings\" feature on the helpdesk team"
 msgstr ""
+"Võta kasutusele \"kliendite hinnangute\" funktsioon kasutajatoe meeskonnas"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_slides
 msgid "Enable eLearning"
-msgstr ""
+msgstr "Luba e-õpe"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid ""
 "Enter the <b>subject</b> of your ticket <br/><i>(e.g. Problem with my "
 "installation, Wrong order, etc.).</i>"
 msgstr ""
+"Sisestage oma <b>pileti</b> teema <br/><i>(nt. probleem laadimisega, vale "
+"tellimus jms).</i>"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__exceeded_hours
 msgid "Exceeded Working Hours"
-msgstr ""
+msgstr "Ületatud tööaeg"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__exclude_stage_ids
 msgid "Excluding Stages"
-msgstr ""
+msgstr "Välja arvatud etapid"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_status__status__failed
@@ -1426,19 +1533,19 @@ msgstr "Ebaõnnestus"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_fail
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__sla_fail
 msgid "Failed SLA Policy"
-msgstr ""
+msgstr "Ebaõnnestunud teenuses lubatu"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__sla_failed
 msgid "Failed SLA Ticket"
-msgstr ""
+msgstr "Ebaõnnestunud lubatud teenuse tingimustega pilet"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Failed Tickets"
-msgstr ""
+msgstr "Ebaõnnestunud piletid"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_fsm
@@ -1448,13 +1555,13 @@ msgstr "Paigaldus"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 msgid "First Assignment Date"
-msgstr ""
+msgstr "Esimene määramise kuupäev"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__assign_date
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__assign_date
 msgid "First assignment date"
-msgstr ""
+msgstr "Esimene määramise kuupäev"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__fold
@@ -1464,7 +1571,7 @@ msgstr "Kanbanis volditud"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Follow All Team's Tickets"
-msgstr ""
+msgstr "Jälgi kõikide meeskondade pileteid"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -1477,7 +1584,7 @@ msgstr "Jälgitud"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_search
 msgid "Followed Teams"
-msgstr ""
+msgstr "Jälgitud meeskonnad"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_follower_ids
@@ -1504,7 +1611,7 @@ msgstr "Tulevased tegevused"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Get in touch with your website visitors"
-msgstr ""
+msgstr "Võta ühendust oma veebilehe külastajatega"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_analysis_action
@@ -1512,32 +1619,40 @@ msgid ""
 "Get statistics on your tickets and how long it takes to assign and resolve "
 "them."
 msgstr ""
+"Saage statistikat oma piletite kohta ja selle kohta, kui kaua võtab nende "
+"määramine ja lahendamine aega."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Get tickets through an online form"
-msgstr ""
+msgstr "Saada piletid veebivormi kaudu"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Grant discounts or free products"
-msgstr ""
+msgstr "Pakkuge allahindluseid või tasuta tooteid"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #, python-format
 msgid ""
 "Grant employees access to your helpdesk team or tickets by adding them as "
 "followers."
 msgstr ""
+"Andke töötajatele juurdepääs kasutajatoe meeskonnale või piletitele, lisades"
+" nad jälgijaks."
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #, python-format
 msgid ""
 "Grant portal users access to your helpdesk team or tickets by adding them as"
 " followers."
 msgstr ""
+"Andke portaali kasutajatele juurdepääs kasutajatoe meeskonnale või "
+"piletitele, lisades nad jälgijaks."
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket__kanban_state__done
@@ -1548,7 +1663,7 @@ msgstr "Roheline"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__legend_done
 msgid "Green Kanban Label"
-msgstr "Roheline Kanban´i silt."
+msgstr "Roheline Kanban´i silt"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket__kanban_state__normal
@@ -1575,7 +1690,7 @@ msgstr "Grupeeri"
 #. module: helpdesk
 #: model:mail.activity.type,name:helpdesk.mail_act_helpdesk_handle
 msgid "Handle Ticket"
-msgstr ""
+msgstr "Käsitlege pilet"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_progress_data
@@ -1591,7 +1706,7 @@ msgstr "Õnnelik nägu"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__has_external_mail_server
 msgid "Has External Mail Server"
-msgstr ""
+msgstr "On väline e-posti server"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__has_message
@@ -1602,12 +1717,12 @@ msgstr "On sõnum"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_reached
 msgid "Has SLA reached"
-msgstr ""
+msgstr "Kas lubatud teenuse tingimused on saavutatud"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_reached_late
 msgid "Has SLA reached late"
-msgstr ""
+msgstr "Kas lubatud teenuse tingimused on saavutatud hilinemisega"
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.menu_helpdesk_root
@@ -1623,22 +1738,22 @@ msgstr "Kasutajatoe ülevaade"
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_sla
 msgid "Helpdesk SLA Policies"
-msgstr ""
+msgstr "Kasutajatoe lubatud teenuse tingimused"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_stage
 msgid "Helpdesk Stage"
-msgstr ""
+msgstr "Kasutajatoe etapp"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_stage_delete_wizard
 msgid "Helpdesk Stage Delete Wizard"
-msgstr ""
+msgstr "Kasutajatoe etapi kustutamise viisard"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_tag
 msgid "Helpdesk Tags"
-msgstr ""
+msgstr "Kasutajatoe sildid"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_team
@@ -1659,38 +1774,37 @@ msgstr "Kasutajatoe pilet"
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_ticket_type
 msgid "Helpdesk Ticket Type"
-msgstr ""
+msgstr "Kasutajatoe pileti tüüp"
 
 #. module: helpdesk
 #: model:ir.actions.server,name:helpdesk.ir_cron_auto_close_ticket_ir_actions_server
 #: model:ir.cron,cron_name:helpdesk.ir_cron_auto_close_ticket
-#: model:ir.cron,name:helpdesk.ir_cron_auto_close_ticket
 msgid "Helpdesk Ticket: Automatically close the tickets"
-msgstr ""
+msgstr "Kasutajatoe pilet: Automaatselt sulge piletid"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_graph_main
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_pivot_main
 msgid "Helpdesk Tickets"
-msgstr ""
+msgstr "Kasutajatoe piletid"
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.new_ticket_request_email_template
 msgid "Helpdesk: Request Acknowledgment"
-msgstr ""
+msgstr "Kasutajatugi: taotlege kinnitust"
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.solved_ticket_request_email_template
 msgid "Helpdesk: Ticket Closed"
-msgstr ""
+msgstr "Kasutajatugi: Pilet lõpetatud"
 
 #. module: helpdesk
 #: model:mail.template,name:helpdesk.rating_ticket_request_email_template
 msgid "Helpdesk: Ticket Rating Request"
-msgstr ""
+msgstr "Kasutajatugi: pileti hindamise taotlus"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
@@ -1716,7 +1830,7 @@ msgstr "Ajalugu"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_open_hours
 msgid "Hours Open"
-msgstr ""
+msgstr "Avatud tundides"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_assignation_hours
@@ -1724,7 +1838,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_graph_main
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_pivot_main
 msgid "Hours to Assign"
-msgstr ""
+msgstr "Tundi määramiseks"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_close_hours
@@ -1732,19 +1846,19 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_graph_main
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_pivot_main
 msgid "Hours to Close"
-msgstr ""
+msgstr "Tundi sulgemiseni"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__first_response_hours
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__first_response_hours
 msgid "Hours to First Response"
-msgstr ""
+msgstr "Tundi esimeseks vastamiseks"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_deadline_hours
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_deadline_hours
 msgid "Hours to SLA Deadline"
-msgstr ""
+msgstr "Tundi lubatud teenuse tingimuse tähtajani"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__id
@@ -1778,7 +1892,7 @@ msgstr "Ikoon"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_ticket__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr "Ikoon, mis näitab erandi tegevust"
+msgstr "Ikoon, mis näitab erandi tegevust."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__message_needaction
@@ -1800,6 +1914,8 @@ msgid ""
 "If enabled, portal users will have access to your customer satisfaction statistics from the last 30 days in their portal.\n"
 "They will only have access to the ratings themselves, and not to the written feedback if any was left. You can also manually hide ratings of your choosing."
 msgstr ""
+"Kui see on lubatud, saavad portaali kasutajad oma portaalis juurdepääsu teie klientide rahulolustatistikale viimase 30 päeva kohta.\n"
+"Neil on juurdepääs ainult hinnangutele, mitte aga kirjalikule tagasisidele, kui neid on jäetud. Samuti saate oma valikul hinnanguid käsitsi peita."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_bounced_content
@@ -1823,6 +1939,7 @@ msgid "In #{kanban_getcolorname(record.color.raw_value)}"
 msgstr "In #{kanban_getcolorname(record.color.raw_value)}"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #: model:helpdesk.stage,legend_normal:helpdesk.stage_cancelled
 #: model:helpdesk.stage,legend_normal:helpdesk.stage_done
@@ -1831,29 +1948,6 @@ msgstr "In #{kanban_getcolorname(record.color.raw_value)}"
 #: model:helpdesk.stage,legend_normal:helpdesk.stage_on_hold
 #: model:helpdesk.stage,legend_normal:helpdesk.stage_solved
 #: model:helpdesk.stage,name:helpdesk.stage_in_progress
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_1
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_10
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_11
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_12
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_13
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_14
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_15
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_16
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_17
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_18
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_19
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_2
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_20
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_21
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_22
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_23
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_3
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_4
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_5
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_6
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_7
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_8
-#: model:helpdesk.ticket,legend_normal:helpdesk.helpdesk_ticket_9
 #, python-format
 msgid "In Progress"
 msgstr "Töös"
@@ -1861,12 +1955,12 @@ msgstr "Töös"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__from_stage_ids
 msgid "In Stages"
-msgstr ""
+msgstr "Etappides"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__auto_close_day
 msgid "Inactive Period(days)"
-msgstr ""
+msgstr "Mitteaktiive periood(päeva)"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_team__privacy_visibility__invited_internal
@@ -1892,7 +1986,7 @@ msgstr "Probleem"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Issue credits notes"
-msgstr ""
+msgstr "Väljasta kreeditarved"
 
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_helpdesk_team_not_portal_show_rating_if_not_use_rating
@@ -1900,6 +1994,8 @@ msgid ""
 "It is necessary to enable customer ratings in the settings of your helpdesk "
 "team so that they can be displayed on the portal."
 msgstr ""
+"Selleks, et kliendihinnanguid saaks portaalis kuvada, on vaja lubada "
+"kliendihinnangud kasutajatoe seadetes."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__legend_blocked
@@ -1935,7 +2031,7 @@ msgstr "Teadmised"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_digest_digest__kpi_helpdesk_tickets_closed_value
 msgid "Kpi Helpdesk Tickets Closed Value"
-msgstr ""
+msgstr "Kpi kasutajatoe suletud piletite väärtus"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_data
@@ -1957,7 +2053,7 @@ msgstr "Viimased 30 päeva"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "Last 7 Days"
-msgstr ""
+msgstr "Viimased 7 päeva"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
@@ -1980,6 +2076,7 @@ msgid "Last Modified on"
 msgstr "Viimati muudetud"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__date_last_stage_update
 #, python-format
@@ -2018,35 +2115,37 @@ msgstr "Hilinenud tegevused"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_data
 msgid "Latest Ratings"
-msgstr ""
+msgstr "Viimased hinnangud"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Let your customers answer each other's questions on a forum"
-msgstr ""
+msgstr "Laske oma klientidel üksteise küsimustele foorumis vastata"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Let's create your first <b>ticket</b>."
-msgstr ""
+msgstr "Loome Teie esimese <b>pileti</b>."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid ""
 "Let's go back to the <b>kanban view</b> to get an overview of your next "
 "tickets."
 msgstr ""
+"Lähme tagasi <b>kanban vaatesse</b>, et saada ülevaade järgmistest "
+"piletitest."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Let's view your <b>team's tickets</b>."
-msgstr ""
+msgstr "Vaatame teie <b>meeskonna pileteid</b>."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_website_helpdesk_livechat
@@ -2080,16 +2179,20 @@ msgstr "Peamine manus"
 msgid ""
 "Make sure tickets are handled in a timely manner by using SLA Policies.<br>"
 msgstr ""
+"Veenduge, et pileteid käsitletakse õigeaegselt kasutades lubatud teenuse "
+"tingimusi. <br>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Make sure tickets are handled on time"
-msgstr ""
+msgstr "Veenduge, et pileteid käsitletakse õigeaegselt"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_action_main
 msgid "Make sure tickets are handled on time by using SLA Policies.<br>"
 msgstr ""
+"Veenduge, et pileteid käsitletakse õigeaegselt kasutades lubatud teenuse "
+"tingimusi. <br>"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__time
@@ -2097,6 +2200,8 @@ msgid ""
 "Maximum number of working hours a ticket should take to reach the target "
 "stage, starting from the date it was created."
 msgstr ""
+"Maksimaalne tööaeg, mille jooksul peaks pilet jõudma sihtetappi, alates "
+"selle loomise kuupäevast."
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.rating_rating_action_helpdesk
@@ -2104,6 +2209,8 @@ msgid ""
 "Measure your customer satisfaction by sending rating requests when your "
 "tickets are solved."
 msgstr ""
+"Mõõtke oma klientide rahulolu, saates hindamistaotlusi peale pileti "
+"lahendamist."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__medium_id
@@ -2116,7 +2223,7 @@ msgstr "Levitamise vahend"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "Medium Priority"
-msgstr ""
+msgstr "Keskmine tähtsus"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla__priority__1
@@ -2124,7 +2231,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket__priority__1
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_ticket_report_analysis__priority__1
 msgid "Medium priority"
-msgstr ""
+msgstr "Keskmine tähtsus"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_ir_ui_menu
@@ -2159,6 +2266,8 @@ msgstr "Minimaalne tähtsus"
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla_status__sla_stage_id
 msgid "Minimum stage a ticket needs to reach in order to satisfy this SLA."
 msgstr ""
+"Minimaalne etapp, kuhu pilet peab jõudma, et täita seda lubatud teenuse "
+"tingimusi."
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_ir_module_module
@@ -2168,7 +2277,7 @@ msgstr "Moodul"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__to_stage_id
 msgid "Move to Stage"
-msgstr ""
+msgstr "Liiguta etappi"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__my_activity_date_deadline
@@ -2176,7 +2285,7 @@ msgid "My Activity Deadline"
 msgstr "Minu tegevuse tähtaeg"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "My Performance"
@@ -2186,10 +2295,10 @@ msgstr "Minu tulemused"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_search
 msgid "My Teams"
-msgstr ""
+msgstr "Minu meeskonnad"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
@@ -2227,6 +2336,7 @@ msgid "Neutral face"
 msgstr "Neutraalne nägu"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #: model:helpdesk.stage,name:helpdesk.stage_new
 #, python-format
@@ -2239,8 +2349,11 @@ msgid ""
 "New tickets will automatically be assigned to the team members that are "
 "available, according to their working hours and their time off."
 msgstr ""
+"Uued piletid määratakse automaatselt meeskonnaliikmetele, kes on saadaval "
+"ning arvestades nende tööaega ja puhkuseid."
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Newest"
@@ -2275,7 +2388,7 @@ msgstr "Hinnang puudub"
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_action
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_action_main
 msgid "No SLA policies found. Let's create one!"
-msgstr ""
+msgstr "Lubatud teenusetingimusi ei leitud. Loome ühe!"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.mail_activity_type_action_config_helpdesk
@@ -2312,17 +2425,17 @@ msgstr "Silte ei leitud. Loome ühe!"
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_team_dashboard_action_main
 msgid "No teams found"
-msgstr ""
+msgstr "Meeskondi ei leitud"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_team_action
 msgid "No teams found. Let's create one!"
-msgstr ""
+msgstr "Meeskondi ei leitud. Loome ühe!"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_my_ticket_action_no_create
 msgid "No tickets found"
-msgstr ""
+msgstr "Kasutajatoe pileteid ei leitud"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_main_my
@@ -2330,14 +2443,15 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_team
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_unassigned
 msgid "No tickets found. Let's create one!"
-msgstr ""
+msgstr "Kasutajatoe pileteid ei leitud. Loome ühe!"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_type_action
 msgid "No types found. Let's create one!"
-msgstr ""
+msgstr "Tüüpe ei leitud. Loome ühe!"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "None"
@@ -2346,7 +2460,7 @@ msgstr "Pole"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_status_ongoing
 msgid "Number SLA In Progress"
-msgstr ""
+msgstr "Käimasolev teenusetaseme lepingute arv"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_needaction_counter
@@ -2357,17 +2471,17 @@ msgstr "Toimingute arv"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_status_failed
 msgid "Number of SLA Failed"
-msgstr ""
+msgstr "Ebaõnnestunud teenuses lubatu arv"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_status_successful
 msgid "Number of SLA Successful"
-msgstr ""
+msgstr "Edukate teenusetingimuste täitmiste arv"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage_delete_wizard__ticket_count
 msgid "Number of Tickets"
-msgstr ""
+msgstr "Piletite arv"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_has_error_counter
@@ -2391,21 +2505,23 @@ msgstr "Kohaletoimetamise veateatega sõnumite arv"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "Number of open tickets with at least one SLA failed."
 msgstr ""
+"Avatud piletite arv, mllel vähemalt ühel on ületatud lubatud teenuse "
+"tingimused"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_open_ticket_count
 msgid "Number of other open tickets from the same partner"
-msgstr ""
+msgstr "Teiste avatud piletite arv samalt partnerilt"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_ticket_count
 msgid "Number of other tickets from the same partner"
-msgstr ""
+msgstr "Teiste piletite arv samalt partnerilt"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
 msgid "Number of tickets closed in the past 7 days."
-msgstr ""
+msgstr "7 päeva jooksul suletud piletite arv"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -2416,7 +2532,7 @@ msgstr "Korras"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__oldest_unanswered_customer_message_date
 msgid "Oldest Unanswered Customer Message Date"
-msgstr ""
+msgstr "Vanim vastamata kliendisõnumi kuupäev"
 
 #. module: helpdesk
 #: model:helpdesk.stage,name:helpdesk.stage_on_hold
@@ -2429,6 +2545,7 @@ msgid "Ongoing"
 msgstr "Käimasolev"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -2437,17 +2554,17 @@ msgid "Open"
 msgstr "Avatud"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #, python-format
 msgid "Open Tickets"
-msgstr "Avatud kasutajatoe piletid"
+msgstr "Töös kasutajatoe piletid"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__open_hours
 msgid "Open Time (hours)"
-msgstr ""
+msgstr "Avatud aeg (tunnid)"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_force_thread_id
@@ -2463,12 +2580,12 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_page
 msgid "Our Customer Satisfaction"
-msgstr ""
+msgstr "Meie klientide rahulolu"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_my_home_menu_helpdesk
 msgid "Our Ratings"
-msgstr ""
+msgstr "Meie hinnangud"
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_menu_team_dashboard
@@ -2503,17 +2620,17 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__is_partner_email_update
 msgid "Partner Email will Update"
-msgstr ""
+msgstr "Partneri e-posti uuendatakse"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__is_partner_phone_update
 msgid "Partner Phone will Update"
-msgstr ""
+msgstr "Partneri e-posti uuendatakse"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__partner_ticket_ids
 msgid "Partner Tickets"
-msgstr ""
+msgstr "Partneri piletid"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__privacy_visibility
@@ -2529,6 +2646,15 @@ msgid ""
 "- Invited portal users and all internal users: all internal users can access the team and all of its tickets without distinction.\n"
 "Portal users can only access the tickets they are following. This access can be modified on each ticket individually by adding or removing the portal user as follower."
 msgstr ""
+"Inimesed, kellele see kasutajatoe meeskond ja selle piletid on nähtavad.\n"
+"\n"
+"- Kutsutud sisekasutajad: sisekasutajad saavad juurdepääsu meeskonnale ja nende jälgitavatele piletitele. Seda juurdepääsu saab muuta iga pileti puhul eraldi, lisades või eemaldades kasutaja jälgijana.\n"
+"Kasutajad, kellel on helpdeski > administraatori juurdepääsuõiguse tase, saavad sellele meeskonnale ja selle piletitele ikkagi juurdepääsu, isegi kui nad ei kuulu selgesõnaliselt jälgijate hulka.\n"
+"\n"
+"- Kõik sisekasutajad: kõik sisekasutajad saavad meeskonnale ja kõigile selle piletitele vahet tegemata juurdepääsu.\n"
+"\n"
+"- Kutsutud portaali kasutajad ja kõik sisekasutajad: kõik sisekasutajad saavad vahet tegemata juurdepääsu meeskonnale ja kõigile selle piletitele.\n"
+"Portaalkasutajad saavad juurdepääsu ainult nendele piletitele, mida nad jälgivad. Seda juurdepääsu saab muuta iga pileti puhul eraldi, lisades või eemaldades portaali kasutaja jälgijana."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__rating_percentage_satisfaction
@@ -2536,12 +2662,14 @@ msgid "Percentage of happy ratings"
 msgstr "Positiivse hinnangu protsent"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Percentage of tickets that were closed without failing any SLAs."
 msgstr ""
+"Piletite osakaal, mis on suletud ilma lubatud teenuse tingimuste "
+"rikkumiseta."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -2553,12 +2681,12 @@ msgstr "Tootlus"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_graph_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_pivot_analysis
 msgid "Performance Analysis"
-msgstr ""
+msgstr "Tootluse analüüs"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__auto_close_day
 msgid "Period of inactivity after which tickets will be automatically closed."
-msgstr ""
+msgstr "Mitteaktiivne periood, mille järel piletid automaatselt suletakse."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
@@ -2568,28 +2696,28 @@ msgstr "Telefon"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Plan onsite interventions"
-msgstr ""
+msgstr "Planeeri kohapealseid sekkumisi"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_target/helpdesk_team_target.js:0
 #, python-format
 msgid "Please enter a number."
-msgstr ""
+msgstr "Palun sisesta number."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_target/helpdesk_team_target.js:0
 #, python-format
 msgid "Please enter a percentage below 100."
-msgstr ""
+msgstr "Palun sisesta protsent, mis oleks alla 100."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_target/helpdesk_team_target.js:0
 #, python-format
 msgid "Please enter a positive value."
-msgstr ""
+msgstr "Palun sisesta positiivne väärtus."
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_team__alias_contact
@@ -2610,11 +2738,13 @@ msgid "Portal Access URL"
 msgstr "Portaali ligipääsu URL"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #, python-format
 msgid ""
 "Portal users will be removed from the followers of the team and its tickets."
 msgstr ""
+"Portaali kasutajad eemaldatakse meeskonna ja selle piletite jälgijatest."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__priority
@@ -2639,7 +2769,7 @@ msgstr "Seaded"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Publish this team's ratings on your website"
-msgstr ""
+msgstr "Avalda selle tiimi hinnangud veebilehele."
 
 #. module: helpdesk
 #: model:helpdesk.ticket.type,name:helpdesk.type_question
@@ -2650,7 +2780,7 @@ msgstr "Küsimus"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 msgid "Rated Tickets"
-msgstr ""
+msgstr "Hinnatud piletid"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__rating_ids
@@ -2710,7 +2840,7 @@ msgstr "Hinnangud"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__portal_show_rating
 msgid "Ratings on Website"
-msgstr ""
+msgstr "Veebilehe hinnagud"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_kanban
@@ -2718,13 +2848,16 @@ msgid ""
 "Ratio of tickets whose SLA has successfully been reached on time compared to"
 " the total number of tickets closed in the past 7 days."
 msgstr ""
+"Nende piletite suhtarv, mille lubatud teenuse tingimused on edukalt ja "
+"õigeaegselt saavutatud, võrreldes viimase 7 päeva jooksul suletud piletite "
+"koguarvuga."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_tree
 msgid "Reach Stage"
-msgstr ""
+msgstr "Jõua etappi"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_status__status__reached
@@ -2737,6 +2870,7 @@ msgid "Reached Date"
 msgstr "Saabunud kuupäev"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #: model:helpdesk.stage,legend_done:helpdesk.stage_cancelled
 #: model:helpdesk.stage,legend_done:helpdesk.stage_done
@@ -2744,29 +2878,6 @@ msgstr "Saabunud kuupäev"
 #: model:helpdesk.stage,legend_done:helpdesk.stage_new
 #: model:helpdesk.stage,legend_done:helpdesk.stage_on_hold
 #: model:helpdesk.stage,legend_done:helpdesk.stage_solved
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_1
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_10
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_11
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_12
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_13
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_14
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_15
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_16
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_17
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_18
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_19
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_2
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_20
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_21
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_22
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_23
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_3
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_4
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_5
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_6
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_7
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_8
-#: model:helpdesk.ticket,legend_done:helpdesk.helpdesk_ticket_9
 #, python-format
 msgid "Ready"
 msgstr "Valmis"
@@ -2777,6 +2888,7 @@ msgid ""
 "Receive notifications whenever tickets are created, rated or discussed on in"
 " this team"
 msgstr ""
+"Saa teavitusi kui selles tiimis luuakse, hinnatakse või arutatakse pileteid."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__alias_force_thread_id
@@ -2795,6 +2907,7 @@ msgid "Red Kanban Label"
 msgstr "Punane Kanban´i silt"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Reference"
@@ -2805,19 +2918,19 @@ msgstr "Viide"
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_refund_cancel
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_refund_cancel
 msgid "Refund Canceled"
-msgstr ""
+msgstr "Tagasimakse"
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_team_ticket_refund_posted
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_refund_posted
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_refund_posted
 msgid "Refund Posted"
-msgstr ""
+msgstr "Tagasimakse postitatud"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_credit_notes
 msgid "Refunds"
-msgstr "Kreeditarved"
+msgstr "Tagasimaksed"
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_repair
@@ -2829,14 +2942,14 @@ msgstr "Paranda"
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_repair_cancel
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_repair_cancel
 msgid "Repair Canceled"
-msgstr ""
+msgstr "Parandus tühistatud"
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_team_ticket_repair_done
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_repair_done
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_repair_done
 msgid "Repair Done"
-msgstr ""
+msgstr "Parandus tehtud"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_product_repairs
@@ -2846,7 +2959,7 @@ msgstr "Parandustööd"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "Reported on"
-msgstr ""
+msgstr "Teatatud"
 
 #. module: helpdesk
 #: model:ir.ui.menu,name:helpdesk.helpdesk_ticket_report_menu_main
@@ -2868,19 +2981,19 @@ msgstr "Taasta"
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_return_cancel
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_return_cancel
 msgid "Return Canceled"
-msgstr ""
+msgstr "Tagastus tühistatud"
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_team_ticket_return_done
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_return_done
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_return_done
 msgid "Return Done"
-msgstr ""
+msgstr "Tagastus tehtud"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Return faulty products"
-msgstr ""
+msgstr "Vigaste toodete tagastus"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_product_returns
@@ -2891,7 +3004,7 @@ msgstr "Tagastused"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_id
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "SLA"
-msgstr ""
+msgstr "Lubatud teenuse tingimused"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_deadline
@@ -2899,7 +3012,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
 msgid "SLA Deadline"
-msgstr ""
+msgstr "Reageerimise tähtaeg"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__sla_status__failed
@@ -2936,37 +3049,39 @@ msgid ""
 "SLA Policies that will automatically apply to the tickets submitted by this "
 "customer."
 msgstr ""
+"Lubatud teenuse tingimused,  mida kohaldatakse automaatselt selle kliendi "
+"esitatud piletite suhtes."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 msgid "SLA Policy"
-msgstr ""
+msgstr "Lubatud teenuse tingimused"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__description
 msgid "SLA Policy Description"
-msgstr ""
+msgstr "Lubatud teenuse tingimuste poliitika kirjeldus"
 
 #. module: helpdesk
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__sla_status__reached
 msgid "SLA Reached"
-msgstr ""
+msgstr "Lubatud teenuse tingimused saavutatud"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_reached_datetime
 msgid "SLA Reached Date"
-msgstr ""
+msgstr "Lubatud teenuse tingimuste saavutamise kuupäev"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_stage_id
 msgid "SLA Stage"
-msgstr ""
+msgstr "Lubatud teenuse tingimuste etapp"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_status_ids
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 msgid "SLA Status"
-msgstr ""
+msgstr "Lubatud teenuse tingimuste staatus"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_sla_report_analysis_action
@@ -2983,7 +3098,7 @@ msgstr "Teenuses lubatu täitmise analüüs"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_status_fail
 msgid "SLA Status Failed"
-msgstr ""
+msgstr "Teenuses lubatud staatus ebaõnnestus"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -2991,7 +3106,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
 msgid "SLA Success"
-msgstr ""
+msgstr "Teenuses lubatud õnnestus"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
@@ -3005,7 +3120,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_ids
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_tree
 msgid "SLAs"
-msgstr ""
+msgstr "Lubatud teenuse tingimused"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__message_has_sms_error
@@ -3020,17 +3135,11 @@ msgid "Sad face"
 msgstr "Kurb nägu"
 
 #. module: helpdesk
-#: code:addons/helpdesk/controllers/portal.py:0
-#, python-format
-msgid "Salesperson"
-msgstr "Müügiesindaja"
-
-#. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Sample"
-msgstr ""
+msgstr "Näidis"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -3041,21 +3150,29 @@ msgstr "Rahul"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Save this page and refresh to activate the feature"
-msgstr ""
+msgstr "Salvesta ja värskenda lehte, et funktsioon aktiveerida."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Save this page and refresh to activate the feature."
-msgstr ""
+msgstr "Salvesta ja värskenda lehte, et funktsioon aktiveerida."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Save this ticket and the modifications you've made to it."
-msgstr ""
+msgstr "Salvesta pilet ja tehtud muudatused."
 
 #. module: helpdesk
+#. odoo-javascript
+#: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
+#, python-format
+msgid "Schedule your <b>activity</b>."
+msgstr "Planeeri oma <b>tegevus</b>."
+
+#. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Search <span class=\"nolabel\"> (in Content)</span>"
@@ -3064,27 +3181,31 @@ msgstr "Otsi <span class=\"nolabel\"> kirjeldusest</span>"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_search
 msgid "Search SLA Policies"
-msgstr ""
+msgstr "Otsi lubatud teenuse tingimustest"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Search in Assigned to"
-msgstr ""
+msgstr "Otsi määratud piletitest"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Search in Messages"
 msgstr "Otsi kirjavahetusest"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Search in Reference"
 msgstr "Otsi viidet"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Search in Stage"
@@ -3096,16 +3217,16 @@ msgid "Security Token"
 msgstr "Turvamärgis"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Select the <b>customer</b> of your ticket."
-msgstr ""
+msgstr "Vali piltetile <b>klient.</b>"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Self-Service"
-msgstr "IIseteenindus"
+msgstr "Iseteenindus"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.action_helpdesk_ticket_mass_mail
@@ -3115,7 +3236,7 @@ msgstr "Saada kiri"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Send broken products for repair"
-msgstr ""
+msgstr "Saatke purunenud tooted remonti"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__sequence
@@ -3132,7 +3253,7 @@ msgstr "Teenus"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Set an Email Template on Stages"
-msgstr ""
+msgstr "Määrake meili mall etappides"
 
 #. module: helpdesk
 #: model:mail.template,description:helpdesk.new_ticket_request_email_template
@@ -3157,22 +3278,22 @@ msgstr "Jaga"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Share presentations and videos, and organize them into courses"
-msgstr ""
+msgstr "Jagage esitlusi ja videoid ning organiseerige neid kursusteks."
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_use_rating
 msgid "Show Customer Ratings"
-msgstr ""
+msgstr "Näita klientide hinnanguid"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__show_knowledge_base
 msgid "Show Knowledge Base"
-msgstr ""
+msgstr "Näita teadmistebaasi"
 
 #. module: helpdesk
 #: model:res.groups,name:helpdesk.group_use_sla
 msgid "Show SLA Policies"
-msgstr ""
+msgstr "Näita lubatud teenuse tingimusi"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_tickets_view_search
@@ -3183,7 +3304,7 @@ msgstr ""
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__sla_id
 msgid "Sla"
-msgstr ""
+msgstr "Sla"
 
 #. module: helpdesk
 #: model:helpdesk.stage,name:helpdesk.stage_solved
@@ -3196,6 +3317,7 @@ msgid "Source"
 msgstr "Alusdokument"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #: code:addons/helpdesk/controllers/portal.py:0
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__stage_id
@@ -3217,7 +3339,7 @@ msgstr "Etapp muudetud"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
 msgid "Stage Description and States Meaning"
-msgstr ""
+msgstr "Etapi kirjaldus ja oleku tähendus"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -3247,6 +3369,8 @@ msgid ""
 "Stages the team will use. This team's tickets will only be able to be in "
 "these stages."
 msgstr ""
+"Meeskonnas kasutatavad etapid. Selle meeskonna piletid saavad olla ainult "
+"nendes etappides."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__sla_status
@@ -3267,9 +3391,10 @@ msgstr ""
 "Tegevuspõhised staatused\n"
 "Üle aja: Tähtaeg on juba möödas\n"
 "Täna: Tegevuse tähtaeg on täna\n"
-"Planeeritud: Tulevased tegevused"
+"Planeeritud: Tulevased tegevused."
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__name
 #, python-format
@@ -3277,7 +3402,7 @@ msgid "Subject"
 msgstr "Teema"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__success_rate
 #, python-format
@@ -3288,7 +3413,7 @@ msgstr "Edukus"
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_7dayssuccess
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_ticket_action_success
 msgid "Success Rate Analysis"
-msgstr ""
+msgstr "Edukuse analüüs"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__sla_success
@@ -3314,7 +3439,7 @@ msgstr "Sildid"
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_tag_action
 msgid "Tags are perfect for organizing your tickets."
-msgstr ""
+msgstr "Sildid on piletite organiseerimiseks ideaalsed."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
@@ -3324,23 +3449,23 @@ msgstr "Eesmärk"
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_res_users__helpdesk_target_rating
 msgid "Target Customer Rating"
-msgstr ""
+msgstr "Kliendihinnangu eesmärk"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__stage_id
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_status__sla_stage_id
 msgid "Target Stage"
-msgstr ""
+msgstr "Etapi eesmärk"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_res_users__helpdesk_target_success
 msgid "Target Success Rate"
-msgstr ""
+msgstr "Edukuse eesmärk"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_res_users__helpdesk_target_closed
 msgid "Target Tickets to Close"
-msgstr ""
+msgstr "Suletud piletite eesmärk"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_stage_view_form
@@ -3376,12 +3501,12 @@ msgstr "Tiimiliikmed"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_search
 msgid "Team Search"
-msgstr ""
+msgstr "Meeskonna otsing"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__team_privacy_visibility
 msgid "Team Visibility"
-msgstr ""
+msgstr "Meeskonna nähtavus"
 
 #. module: helpdesk
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_team_action
@@ -3430,10 +3555,11 @@ msgstr ""
 "ei leita ühtegi süsteemikontot sellise e-posti aadressiga."
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "The team does not allow ticket closing through portal"
-msgstr ""
+msgstr "Meeskond ei luba pileti sulgemist portaali kaudu"
 
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_sla__exclude_stage_ids
@@ -3441,24 +3567,29 @@ msgid ""
 "The time spent in these stages won't be taken into account in the "
 "calculation of the SLA."
 msgstr ""
+"Nendes etappides kulunud aega ei võeta lubatud teenuse tingimuste "
+"arvutamisel arvesse."
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #, python-format
 msgid ""
 "The visibility of the team needs to be set as \"Invited portal users and all"
 " internal users\" in order to use the website form."
 msgstr ""
+"Meeskonna nähtavus peab olema seatud \"Kutsutud portaali kasutajad ja kõik "
+"sisekasutajad\", et kasutada veebilehe vormi."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.portal_helpdesk_ticket
 msgid "There are currently no Ticket for your account."
-msgstr ""
+msgstr "Praegu ei ole ühteggi piletit teie kasutaja jaoks."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_page
 msgid "There are no ratings yet."
-msgstr ""
+msgstr "Ühtegi hinnangut veel ei ole."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.ticket_creation
@@ -3498,6 +3629,7 @@ msgid ""
 "This will archive the stages and all of the tickets they contain from the "
 "following teams:"
 msgstr ""
+"See arhiveerib järgmiste projektide etapid ja kõik neis sisalduvad piletid:"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.mail_activity_type_action_config_helpdesk
@@ -3509,12 +3641,12 @@ msgstr ""
 "\"Helista\" või \"Saada e-mail\")."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Three stars, maximum score"
-msgstr ""
+msgstr "Kolm tärni, maksimaalne tulemus"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_id
@@ -3543,18 +3675,18 @@ msgstr "Piletite analüüs"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_closed
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__ticket_closed
 msgid "Ticket Closed"
-msgstr ""
+msgstr "Pilet suletud"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla__ticket_count
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_stage__ticket_count
 msgid "Ticket Count"
-msgstr ""
+msgstr "Kasutajatoe piletite arv"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__create_date
 msgid "Ticket Create Date"
-msgstr ""
+msgstr "Pileti loomisekuupäev"
 
 #. module: helpdesk
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_new
@@ -3566,39 +3698,39 @@ msgstr "Pilet loodud"
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_deadline
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_deadline
 msgid "Ticket Deadline"
-msgstr ""
+msgstr "Pileti tähtaeg"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__ticket_ref
 msgid "Ticket IDs Sequence"
-msgstr ""
+msgstr "Pileti ID järjestus"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__ticket_properties
 msgid "Ticket Properties"
-msgstr ""
+msgstr "Pileti omadused"
 
 #. module: helpdesk
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_rated
 #: model:mail.message.subtype,name:helpdesk.mt_ticket_rated
 msgid "Ticket Rated"
-msgstr ""
+msgstr "Pilet hinnatud"
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_helpdesk_sla_status
 msgid "Ticket SLA Status"
-msgstr ""
+msgstr "Pileti lubatud teenuse tingimuse staatus"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_stage_id
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket_report_analysis__ticket_stage_id
 msgid "Ticket Stage"
-msgstr ""
+msgstr "Pileti etapp"
 
 #. module: helpdesk
 #: model:mail.message.subtype,name:helpdesk.mt_team_ticket_stage
 msgid "Ticket Stage Changed"
-msgstr ""
+msgstr "Pileti etapp muudetud"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_sla_report_analysis__ticket_type_id
@@ -3608,10 +3740,11 @@ msgid "Ticket Type"
 msgstr "Pileti liik"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #, python-format
 msgid "Ticket closed by the customer"
-msgstr ""
+msgstr "Kliendi poolt suletud kasutajatoe pilet"
 
 #. module: helpdesk
 #: model:mail.message.subtype,description:helpdesk.mt_ticket_new
@@ -3619,7 +3752,8 @@ msgid "Ticket created"
 msgstr "Pilet loodud"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: model:ir.actions.act_window,name:helpdesk.helpdesk_my_ticket_action_no_create
@@ -3647,7 +3781,7 @@ msgid "Tickets"
 msgstr "Kasutajatoe piletid"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
@@ -3660,12 +3794,12 @@ msgstr "Kasutajatoe piletid"
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_graph_analysis
 #, python-format
 msgid "Tickets Analysis"
-msgstr ""
+msgstr "Kasutajatoe piletite analüüs"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_digest_digest__kpi_helpdesk_tickets_closed
 msgid "Tickets Closed"
-msgstr ""
+msgstr "Lõpetatud piletid"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_search_analysis
@@ -3677,22 +3811,22 @@ msgstr "Kasutajatoe piletite otsing"
 #. module: helpdesk
 #: model:ir.model.fields,help:helpdesk.field_helpdesk_stage__fold
 msgid "Tickets in a folded stage are considered as closed."
-msgstr ""
+msgstr "Volditud etapid pileteid loetakse suletuks."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_helpdesk_sale_timesheet
 msgid "Time Billing"
-msgstr ""
+msgstr "Aja arveldamine"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__close_hours
 msgid "Time to close (hours)"
-msgstr ""
+msgstr "Aega sulgemiseni (tunnid)"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__assign_hours
 msgid "Time to first assignment (hours)"
-msgstr ""
+msgstr "Aega esimese määramiseni (tunnid)"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_helpdesk_timesheet
@@ -3702,7 +3836,7 @@ msgstr "Tööaja arvestusleht"
 #. module: helpdesk
 #: model:digest.tip,name:helpdesk.digest_tip_helpdesk_0
 msgid "Tip: Create tickets from incoming emails"
-msgstr ""
+msgstr "Nõuanne: Looge piletid sissetulevatest meilidest"
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_my_ticket_action_no_create
@@ -3714,9 +3848,11 @@ msgid ""
 "To get things done, plan activities and use the ticket status.<br>\n"
 "                Collaborate efficiently by chatting in real-time or via email."
 msgstr ""
+"Et vajalikud toimingud saaksid tehtud, planeerige tegevusi ja kasutage pileti staatust.<br>\n"
+"              Tehke tõhusat koostööd, vesteldes reaalajas või e-posti teel."
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Today"
@@ -3728,11 +3864,11 @@ msgid "Today Activities"
 msgstr "Tänased tegevused"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Today Average Rating"
-msgstr ""
+msgstr "Tänane keskmine hinnang"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__total_response_hours
@@ -3742,12 +3878,12 @@ msgstr ""
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track &amp; Bill Time"
-msgstr ""
+msgstr "Jälgi ja arvelda aega"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track customer satisfaction on tickets"
-msgstr ""
+msgstr "Jälgi klientide rahulolu piletitel."
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_sla_report_analysis_action
@@ -3755,11 +3891,13 @@ msgid ""
 "Track the performance of your teams, the success rate of your tickets, and "
 "how quickly you reach your service level agreements (SLAs)."
 msgstr ""
+"Jälgige oma meeskondade tulemuslikkust, piletite edukuse määra ja seda, kui "
+"kiiresti saavutate oma teenustaseme kokkulepped (SLA)."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Track the time spent on tickets"
-msgstr ""
+msgstr "Jälgi piletitele kulutatud aega"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__use_twitter
@@ -3767,12 +3905,12 @@ msgid "Twitter"
 msgstr "Twitter"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #, python-format
 msgid "Two stars, with a maximum of three"
-msgstr ""
+msgstr "Kaks tärni, maksimaalsest kolmest tärnist"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__ticket_type_id
@@ -3797,15 +3935,17 @@ msgstr "Tüübid"
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_type_action
 msgid "Types are perfect for categorizing your tickets."
-msgstr ""
+msgstr "Tüübid on piletite kategoriseerimiseks ideaalsed."
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk.py:0
 #, python-format
 msgid "Unarchive Tickets"
-msgstr ""
+msgstr "Võta piletid arhiivist välja"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/controllers/portal.py:0
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_report_analysis_view_search
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_report_analysis_view_search
@@ -3828,7 +3968,7 @@ msgid "Unread Messages"
 msgstr "Lugemata sõnumid"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/components/helpdesk_team_dashboard/helpdesk_team_dashboard.xml:0
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla__priority__3
 #: model:ir.model.fields.selection,name:helpdesk.selection__helpdesk_sla_report_analysis__priority__3
@@ -3843,45 +3983,47 @@ msgid "Urgent"
 msgstr "Kiireloomuline"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid "Use <b>activities</b> to organize your daily work."
-msgstr ""
+msgstr "Kasutage <b>tegevusi</b>, et organiseerida oma igapäevatööd."
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_coupons
 msgid "Use Coupons"
-msgstr ""
+msgstr "Kupongid"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_credit_notes
 msgid "Use Credit Notes"
-msgstr ""
+msgstr "Tagasimaksed"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_rating
 msgid "Use Customer Ratings"
-msgstr ""
+msgstr "Kliendi hinnangud"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_product_repairs
 msgid "Use Repairs"
-msgstr ""
+msgstr "Parandustööd"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_ticket__use_product_returns
 msgid "Use Returns"
-msgstr ""
+msgstr "Tagastused"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid ""
 "Use the chatter to <b>send emails</b> and communicate efficiently with your customers. \n"
 "    Add new people to the followers' list to make them aware of the progress of this ticket."
 msgstr ""
+"Kasutage vestlusi <b>, et saata e-kirju</b> ja suhelda efektiivselt oma klientidega. \n"
+"    Lisa uusi inimesi jälgijate hulka, et nad oleksid teadlikud selle pileti tähtsamatest muudatustest."
 
 #. module: helpdesk
 #: model:ir.model,name:helpdesk.model_res_users
@@ -3892,12 +4034,12 @@ msgstr "Kasutaja"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "Users to whom this team will be visible"
-msgstr ""
+msgstr "Kasutajad, kellel on see meeskond nähtav."
 
 #. module: helpdesk
 #: model:helpdesk.team,name:helpdesk.helpdesk_team3
 msgid "VIP Support"
-msgstr ""
+msgstr "VIP tugi"
 
 #. module: helpdesk
 #: model:ir.model.fields,field_description:helpdesk.field_helpdesk_team__privacy_visibility
@@ -3905,13 +4047,15 @@ msgid "Visibility"
 msgstr "Nähtavus"
 
 #. module: helpdesk
-#. openerp-web
+#. odoo-javascript
 #: code:addons/helpdesk/static/src/js/tours/helpdesk.js:0
 #, python-format
 msgid ""
 "Want to <b>boost your customer satisfaction</b>?<br/><i>Click Helpdesk to "
 "start.</i>"
 msgstr ""
+"Kas soovite <b>suurendada oma klientide rahulolu</b>? <br/><i>Klõpsake "
+"Kasutatoel, et alustada.</i>"
 
 #. module: helpdesk
 #: model_terms:helpdesk.team,description:helpdesk.helpdesk_team1
@@ -3920,6 +4064,8 @@ msgid ""
 "We provide 24/7 support, Monday through Friday. Ticket responses are usually provided within 2 working days.<br>\n"
 "            Support is mainly provided in English. We can also assist in Spanish, French, and Dutch."
 msgstr ""
+"Pakume 24/7 tuge, esmaspäevast reedeni. Vastused piletile antakse tavaliselt 2 tööpäeva jooksul.<br>\n"
+"          Tugi on peamiselt inglise keeles. Saame olla abiks ka hispaania, prantsuse ja hollandi keeles."
 
 #. module: helpdesk
 #: model:helpdesk.tag,name:helpdesk.tag_website
@@ -3980,7 +4126,7 @@ msgstr ""
 msgid ""
 "Would you like to unarchive all of the tickets contained in these stages as "
 "well?"
-msgstr ""
+msgstr "Kas soovite kõik etapis olevad piletid samuti arhiivist välja tuua?"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_wizard
@@ -3988,6 +4134,8 @@ msgid ""
 "You cannot delete stages containing tickets. You can either archive them or "
 "first delete all of their tickets."
 msgstr ""
+"Ei saa kustutada etappi, mis sisaldab pileteid. Saate kas arhiveerida või "
+"kustutada etapis olevad piletid."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.view_helpdesk_stage_delete_wizard
@@ -3995,39 +4143,41 @@ msgid ""
 "You cannot delete stages containing tickets. You should first delete all of "
 "their tickets."
 msgstr ""
+"Ei saa kustutada etappi, mis sisaldab pileteid. Kõigepealt kustutage kõik "
+"etapis olevad piletid."
 
 #. module: helpdesk
 #: model:ir.model.constraint,message:helpdesk.constraint_res_users_target_closed_not_zero
 #: model:ir.model.constraint,message:helpdesk.constraint_res_users_target_rating_not_zero
 #: model:ir.model.constraint,message:helpdesk.constraint_res_users_target_success_not_zero
 msgid "You cannot have negative targets"
-msgstr ""
+msgstr "Ei saa olla negatiivseid eesmärke."
 
 #. module: helpdesk
 #: model_terms:ir.actions.act_window,help:helpdesk.helpdesk_ticket_action_sla
 msgid "You completed all your tickets on time."
-msgstr ""
+msgstr "Kõik piletid said lõpetatud õigel ajal."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_sla_view_form
 msgid "e.g. Close urgent tickets within 36 hours"
-msgstr ""
+msgstr "nt. Sulge kiireloomulised piletid 36 tunni jooksul"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
 msgid "e.g. Customer Care"
-msgstr ""
+msgstr "nt. Klienditeenindus"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 #: model_terms:ir.ui.view,arch_db:helpdesk.quick_create_ticket_form
 msgid "e.g. Product arrived damaged"
-msgstr ""
+msgstr "nt. Toode saabus kahjustatult"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_type_view_tree
 msgid "e.g. Question"
-msgstr ""
+msgstr "nt. Küsimus"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -4037,17 +4187,22 @@ msgstr "E-õpe"
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_ticket_view_form
 msgid "email"
-msgstr ""
+msgstr "email"
 
 #. module: helpdesk
 #: model_terms:digest.tip,tip_description:helpdesk.digest_tip_helpdesk_0
 msgid "generate tickets in your pipeline."
-msgstr ""
+msgstr "genereeri pileteid oma müügitorus."
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.ticket_creation
 msgid "has been created from ticket:"
-msgstr ""
+msgstr "loodud piletist:"
+
+#. module: helpdesk
+#: model:ir.actions.server,name:helpdesk.helpdesk_ratings_server_action
+msgid "helpdesk view rating"
+msgstr "kasutajatoe hinnang"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.helpdesk_team_view_form
@@ -4055,10 +4210,11 @@ msgid "team search"
 msgstr "meeskonna otsimine"
 
 #. module: helpdesk
+#. odoo-python
 #: code:addons/helpdesk/models/helpdesk_ticket.py:0
 #, python-format
 msgid "ticket"
-msgstr ""
+msgstr "pilet"
 
 #. module: helpdesk
 #: model:mail.template,subject:helpdesk.rating_ticket_request_email_template
@@ -4066,14 +4222,16 @@ msgid ""
 "{{ object.company_id.name or object.user_id.company_id.name or 'Helpdesk' "
 "}}: Service Rating Request"
 msgstr ""
+"{{ object.company_id.name or object.user_id.company_id.name or 'Helpdesk' "
+"}}: Service Rating Request"
 
 #. module: helpdesk
 #: model:mail.template,subject:helpdesk.new_ticket_request_email_template
 #: model:mail.template,subject:helpdesk.solved_ticket_request_email_template
 msgid "{{ object.display_name }}"
-msgstr ""
+msgstr "{{ object.display_name }}"
 
 #. module: helpdesk
 #: model_terms:ir.ui.view,arch_db:helpdesk.team_rating_data
 msgid "{{rating.res_name if t['is_helpdesk_user'] else ''}}"
-msgstr ""
+msgstr "{{rating.res_name if t['is_helpdesk_user'] else ''}}"

@@ -2,12 +2,19 @@
 # This file contains the translation of the following modules:
 # 	* hr_payroll_holidays
 # 
+# Translators:
+# Boris Kodelja <boris@hbs.si>, 2022
+# Grega Vavtar <grega@hbs.si>, 2022
+# Martin Trigaux, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:22+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
+"Last-Translator: Jasmina Macur <jasmina@hbs.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,12 +32,12 @@ msgstr ""
 #. module: hr_payroll_holidays
 #: model:ir.model,name:hr_payroll_holidays.model_mail_activity
 msgid "Activity"
-msgstr ""
+msgstr "Aktivnost"
 
 #. module: hr_payroll_holidays
 #: model:ir.model,name:hr_payroll_holidays.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Podjetja"
 
 #. module: hr_payroll_holidays
 #: model:ir.model.fields.selection,name:hr_payroll_holidays.selection__hr_leave__payslip_state__done
@@ -40,7 +47,7 @@ msgstr ""
 #. module: hr_payroll_holidays
 #: model:ir.model,name:hr_payroll_holidays.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Uredi nastavitve"
 
 #. module: hr_payroll_holidays
 #: model:ir.actions.server,name:hr_payroll_holidays.ir_actions_server_report_to_next_month
@@ -90,7 +97,7 @@ msgstr ""
 #. module: hr_payroll_holidays
 #: model:ir.model,name:hr_payroll_holidays.model_hr_payslip
 msgid "Pay Slip"
-msgstr ""
+msgstr "Pay Slip"
 
 #. module: hr_payroll_holidays
 #: model:ir.model.fields,field_description:hr_payroll_holidays.field_hr_leave__payslip_state
@@ -116,7 +123,7 @@ msgstr ""
 #. module: hr_payroll_holidays
 #: model_terms:ir.ui.view,arch_db:hr_payroll_holidays.res_config_settings_view_form
 msgid "Responsible"
-msgstr ""
+msgstr "Odgovoren"
 
 #. module: hr_payroll_holidays
 #: code:addons/hr_payroll_holidays/models/hr_leave.py:0
@@ -162,7 +169,7 @@ msgstr ""
 #: model:ir.model,name:hr_payroll_holidays.model_hr_leave
 #: model_terms:ir.ui.view,arch_db:hr_payroll_holidays.res_config_settings_view_form
 msgid "Time Off"
-msgstr ""
+msgstr "Odsotnost"
 
 #. module: hr_payroll_holidays
 #: code:addons/hr_payroll_holidays/models/hr_payslip.py:0

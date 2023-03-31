@@ -39,7 +39,7 @@ msgid ""
 "                                    Get token"
 msgstr ""
 "<i class=\"fa fa-arrow-right\"/>\n"
-"                                    Krijg token"
+"                                    Token bekomen"
 
 #. module: web_map
 #: model_terms:ir.ui.view,arch_db:web_map.res_config_settings_view_form
@@ -90,7 +90,7 @@ msgstr "Contact"
 #: model:ir.model.fields,field_description:web_map.field_res_partner__contact_address_complete
 #: model:ir.model.fields,field_description:web_map.field_res_users__contact_address_complete
 msgid "Contact Address Complete"
-msgstr "Contract adres compleet"
+msgstr "Contractadres compleet"
 
 #. module: web_map
 #: model:ir.model,name:web_map.model_ir_http
@@ -177,7 +177,7 @@ msgstr "Stel een MapBox-account in om routes en stijl te activeren"
 #: code:addons/web_map/static/src/map_view/map_renderer.xml:0
 #, python-format
 msgid "Set up token"
-msgstr "Token opzetten"
+msgstr "Token configureren"
 
 #. module: web_map
 #. openerp-web
@@ -185,7 +185,7 @@ msgstr "Token opzetten"
 #: code:addons/web_map/static/src/map_view/map_model.js:0
 #, python-format
 msgid "Some routing points are too far apart"
-msgstr "Sommige route punten liggen te ver uit elkaar"
+msgstr "Sommige routepunten liggen te ver uit elkaar"
 
 #. module: web_map
 #: code:addons/web_map/models/res_config_settings.py:0
@@ -212,8 +212,8 @@ msgid ""
 "The view has switched to another provider but functionalities will be "
 "limited"
 msgstr ""
-"De weergave is verwisseld naar een andere provider maar de functionaliteiten"
-" zullen beperkt zijn"
+"De weergave is verwisseld naar een andere provider, maar de "
+"functionaliteiten zullen beperkt zijn"
 
 #. module: web_map
 #: code:addons/web_map/models/res_config_settings.py:0
@@ -300,7 +300,7 @@ msgstr "Geen titel"
 #. module: web_map
 #: model:ir.model,name:web_map.model_ir_ui_view
 msgid "View"
-msgstr "Weergave"
+msgstr "Weergeven"
 
 #. module: web_map
 #: model:ir.model.fields,field_description:web_map.field_ir_actions_act_window_view__view_mode
@@ -314,7 +314,7 @@ msgstr "Soort weergave"
 #: code:addons/web_map/static/src/map_view/map_controller.xml:0
 #, python-format
 msgid "View in Google Maps"
-msgstr "Bekijk op Google Maps"
+msgstr "Weergeven in Google Maps"
 
 #. module: web_map
 #. openerp-web
@@ -345,4 +345,4 @@ msgstr "navigeer naar"
 #: code:addons/web_map/static/src/map_view/map_renderer.xml:0
 #, python-format
 msgid "open"
-msgstr "open"
+msgstr "openen"

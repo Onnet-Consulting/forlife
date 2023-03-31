@@ -8,7 +8,6 @@ import { useService } from "@web/core/utils/hooks";
 
 const {
     Component,
-    onMounted,
     onWillStart,
     useSubEnv } = owl;
 
@@ -62,7 +61,6 @@ export class EmbeddedViewManager extends Component {
             __getGlobalState__: this.__getGlobalState__,
         });
         onWillStart(this.onWillStart.bind(this));
-        onMounted(this.onMounted.bind(this));
     }
 
     /**
@@ -125,17 +123,17 @@ export class EmbeddedViewManager extends Component {
         if (action.search_view_id) {
             ViewProps.searchViewId = action.search_view_id[0];
         }
+        if (context.orderBy) {
+            try {
+                ViewProps.orderBy = JSON.parse(context.orderBy);
+            } catch {};
+        }
         if (this.props.viewType in EMBEDDED_VIEW_LIMITS) {
             ViewProps.limit = EMBEDDED_VIEW_LIMITS[this.props.viewType];
         }
         this.EmbeddedView = View;
         this.EmbeddedViewProps = ViewProps;
         this.action = action;
-        this.props.onLoadStart();
-    }
-
-    onMounted () {
-        this.props.onLoadEnd();
     }
 
     /**
@@ -160,9 +158,16 @@ export class EmbeddedViewManager extends Component {
         if (this.action.type !== "ir.actions.act_window") {
             throw new Error('Can not open the view: The action is not an "ir.actions.act_window"');
         }
+        const props = {};
+        if (this.action.context.orderBy) {
+            try {
+                props.orderBy = JSON.parse(this.action.context.orderBy);
+            } catch {};
+        }
         this.action.globalState = this.getEmbeddedViewGlobalState();
         this.actionService.doAction(this.action, {
             viewType: this.props.viewType,
+            props
         });
     }
 }
@@ -173,8 +178,6 @@ EmbeddedViewManager.props = {
     action: { type: Object },
     context: { type: Object },
     viewType: { type: String },
-    onLoadStart: { type: Function },
-    onLoadEnd: { type: Function },
     setTitle: { type: Function },
     getTitle: { type: Function },
     readonly: { type: Boolean },

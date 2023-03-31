@@ -53,7 +53,7 @@ msgstr ""
 #. module: website_twitter_wall
 #: model:ir.model.fields,field_description:website_twitter_wall.field_website_twitter_wall__access_token
 msgid "Access Token"
-msgstr ""
+msgstr "Token za pristup"
 
 #. module: website_twitter_wall
 #: model:ir.model.fields,field_description:website_twitter_wall.field_website_twitter_wall__active

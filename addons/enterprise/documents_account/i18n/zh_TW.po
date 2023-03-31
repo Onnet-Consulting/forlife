@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Tony Ng, 2023
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:42+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Tony Ng, 2023\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/odoo/teams/41243/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -209,7 +210,7 @@ msgstr "ID"
 #. module: documents_account
 #: model:ir.model.fields,field_description:documents_account.field_documents_account_folder_setting__journal_id
 msgid "Journal"
-msgstr "日記帳"
+msgstr "日記賬"
 
 #. module: documents_account
 #: model:ir.model,name:documents_account.model_account_move
@@ -224,7 +225,7 @@ msgstr ""
 #. module: documents_account
 #: model_terms:ir.ui.view,arch_db:documents_account.res_config_settings_view_form
 msgid "Journals"
-msgstr "日記帳"
+msgstr "日記賬"
 
 #. module: documents_account
 #: model:ir.actions.act_window,name:documents_account.action_folder_settings_installer
@@ -335,7 +336,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:documents_account.field_documents_account_folder_setting__folder_id
 #: model_terms:ir.ui.view,arch_db:documents_account.res_config_settings_view_form
 msgid "Workspace"
-msgstr ""
+msgstr "工作空間"
 
 #. module: documents_account
 #. openerp-web

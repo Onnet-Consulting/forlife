@@ -28,13 +28,14 @@
         'views/brand_views.xml',
         'views/store_views.xml',
         'views/pos_config_views.xml',
+        'data/mail_template.xml',
+        'data/cron.xml',
+        'views/ir_cron_views.xml'
     ],
     'assets': {
         'point_of_sale.assets': [
             'forlife_point_of_sale/static/src/js/*.js',
             'forlife_point_of_sale/static/src/xml/*.xml',
-            'forlife_point_of_sale/static/src/js/popups/*.js',
-            'forlife_point_of_sale/static/src/xml/popups/*.xml',
         ],
     }
 }

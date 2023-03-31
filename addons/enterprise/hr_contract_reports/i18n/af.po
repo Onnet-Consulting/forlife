@@ -33,7 +33,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:hr_contract_reports.field_hr_contract_employee_report__company_id
 #: model_terms:ir.ui.view,arch_db:hr_contract_reports.contract_employee_report_view_search
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: hr_contract_reports
 #: model:ir.model.fields,field_description:hr_contract_reports.field_hr_contract_employee_report__contract_id
@@ -53,7 +53,7 @@ msgstr ""
 #. module: hr_contract_reports
 #: model:ir.model.fields,field_description:hr_contract_reports.field_hr_contract_employee_report__date
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #. module: hr_contract_reports
 #: model:ir.model.fields,field_description:hr_contract_reports.field_hr_contract_employee_report__date_end_contract
@@ -105,7 +105,7 @@ msgstr ""
 #. module: hr_contract_reports
 #: model_terms:ir.ui.view,arch_db:hr_contract_reports.contract_employee_report_view_search
 msgid "Group By"
-msgstr ""
+msgstr "Groepeer deur"
 
 #. module: hr_contract_reports
 #: model:ir.model.fields,field_description:hr_contract_reports.field_hr_contract_employee_report__id

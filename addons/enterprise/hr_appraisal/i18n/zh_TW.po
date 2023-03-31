@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Tony Ng, 2023
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Tony Ng, 2023\n"
 "Language-Team: Chinese (Taiwan) (https://www.transifex.com/odoo/teams/41243/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -438,7 +439,7 @@ msgstr "對流程的評估"
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_hr_appraisal_form
 msgid "Archived"
-msgstr "已歸檔"
+msgstr "已封存"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.res_config_settings_view_employee_form
@@ -868,12 +869,12 @@ msgstr "目標"
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.view_appraisal_report_search
 msgid "Group By"
-msgstr "分組依據"
+msgstr "分組方式"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.hr_appraisal_search
 msgid "Group by..."
-msgstr "分組由..."
+msgstr "分組方式⋯"
 
 #. module: hr_appraisal
 #: model:mail.template,name:hr_appraisal.mail_template_appraisal_confirm
@@ -1461,7 +1462,7 @@ msgstr ""
 #. module: hr_appraisal
 #: model:ir.model.fields,field_description:hr_appraisal.field_request_appraisal__subject
 msgid "Subject"
-msgstr "來源"
+msgstr "主題"
 
 #. module: hr_appraisal
 #: model_terms:ir.ui.view,arch_db:hr_appraisal.request_appraisal_view_form

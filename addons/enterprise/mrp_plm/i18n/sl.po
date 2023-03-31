@@ -2,12 +2,23 @@
 # This file contains the translation of the following modules:
 # 	* mrp_plm
 # 
+# Translators:
+# Grega Vavtar <grega@hbs.si>, 2022
+# laznikd <laznik@mentis.si>, 2022
+# Boris Kodelja <boris@hbs.si>, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# Martin Trigaux, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.5alpha1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:47+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,7 +29,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__mrp_document_count
 msgid "# Attachments"
-msgstr ""
+msgstr "# Priponke"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_bom__eco_count
@@ -41,7 +52,7 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_type_dashboard_view_kanban
 msgid "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"Manage\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-ellipsis-v\" role=\"img\" aria-label=\"Manage\" title=\"Manage\"/>"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_type_dashboard_view_kanban
@@ -49,6 +60,8 @@ msgid ""
 "<i class=\"fa fa-envelope-o\" role=\"img\" aria-label=\"Domain alias\" "
 "title=\"Domain alias\"/>&amp;nbsp;"
 msgstr ""
+"<i class=\"fa fa-envelope-o\" role=\"img\" aria-label=\"Domain alias\" "
+"title=\"Domain alias\"/>&amp;nbsp;"
 
 #. module: mrp_plm
 #: code:addons/mrp_plm/models/mrp_eco.py:0
@@ -82,22 +95,24 @@ msgid ""
 "A Python dictionary that will be evaluated to provide default values when "
 "creating new records for this alias."
 msgstr ""
+"Python slovar, po katerem se podaja privzete vrednosti ob ustvarjanju vnosov"
+" za ta vzdevek."
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_needaction
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "Potreben je ukrep"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__active
 msgid "Active"
-msgstr ""
+msgstr "Aktivno"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "Aktivnosti"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__activity_exception_decoration
@@ -107,7 +122,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "Stanje aktivnosti"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__activity_type_icon
@@ -118,57 +133,57 @@ msgstr ""
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco_bom_change__change_type__add
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco_routing_change__change_type__add
 msgid "Add"
-msgstr ""
+msgstr "Dodaj"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_stage_view_form
 msgid "Add a description..."
-msgstr ""
+msgstr "Dodajanje opisa..."
 
 #. module: mrp_plm
 #: model_terms:ir.actions.act_window,help:mrp_plm.mrp_eco_tag_action
 msgid "Add a new tag"
-msgstr ""
+msgstr "Dodaj novo oznako"
 
 #. module: mrp_plm
 #: model:res.groups,name:mrp_plm.group_plm_manager
 msgid "Administrator"
-msgstr ""
+msgstr "Administrator"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_id
 msgid "Alias"
-msgstr ""
+msgstr "Vzdevek"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_contact
 msgid "Alias Contact Security"
-msgstr ""
+msgstr "Varnostne nastavitve vzdevka stika"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_name
 msgid "Alias Name"
-msgstr ""
+msgstr "Naziv vzdevka"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_domain
 msgid "Alias domain"
-msgstr ""
+msgstr "Domenski vzdevek"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_model_id
 msgid "Aliased Model"
-msgstr ""
+msgstr "Model vzdevka"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.view_document_search_mrp_plm
 msgid "All"
-msgstr ""
+msgstr "Vse"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_type_dashboard_view_kanban
 msgid "All Validations"
-msgstr ""
+msgstr "Vse potrditve"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__allow_change_kanban_state
@@ -204,12 +219,12 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__type
 msgid "Apply on"
-msgstr ""
+msgstr "Uporabi na"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__approval_date
 msgid "Approval Date"
-msgstr ""
+msgstr "Datum odobritve"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__approval_roles
@@ -232,7 +247,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_stage_view_form
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "Approvals"
-msgstr ""
+msgstr "Odobritve"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__approval_ids
@@ -242,13 +257,13 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "Approve"
-msgstr ""
+msgstr "Potrdi"
 
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco__kanban_state__done
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco_approval__status__approved
 msgid "Approved"
-msgstr ""
+msgstr "Odobreno"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__user_id
@@ -265,30 +280,30 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 #: model_terms:ir.ui.view,arch_db:mrp_plm.view_document_search_mrp_plm
 msgid "Archived"
-msgstr ""
+msgstr "Arhivirano"
 
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco__effectivity__asap
 msgid "As soon as possible"
-msgstr ""
+msgstr "Takoj, ko bo mogoče"
 
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco__effectivity__date
 msgid "At Date"
-msgstr ""
+msgstr "Na datum"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_attachment_count
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_attachment_count
 msgid "Attachment Count"
-msgstr ""
+msgstr "Število prilog"
 
 #. module: mrp_plm
 #: code:addons/mrp_plm/models/mrp_eco.py:0
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__mrp_document_ids
 #, python-format
 msgid "Attachments"
-msgstr ""
+msgstr "Priponke"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__awaiting_my_validation
@@ -309,7 +324,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model,name:mrp_plm.model_mrp_bom
 msgid "Bill of Material"
-msgstr ""
+msgstr "Kosovnica"
 
 #. module: mrp_plm
 #: model:ir.model,name:mrp_plm.model_mrp_bom_line
@@ -324,7 +339,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 #, python-format
 msgid "Bill of Materials"
-msgstr ""
+msgstr "Kosovnica"
 
 #. module: mrp_plm
 #: model_terms:ir.actions.act_window,help:mrp_plm.mrp_bom_action_kanban
@@ -343,7 +358,7 @@ msgstr ""
 #: model:mrp.eco.stage,legend_blocked:mrp_plm.ecostage_validated
 #, python-format
 msgid "Blocked"
-msgstr ""
+msgstr "Blokirano"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__is_blocking
@@ -418,12 +433,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__color
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__color
 msgid "Color"
-msgstr ""
+msgstr "Barva"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_tag__color
 msgid "Color Index"
-msgstr ""
+msgstr "Barvni indeks"
 
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco_approval__status__comment
@@ -439,13 +454,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__company_id
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Company"
-msgstr ""
+msgstr "Podjetje"
 
 #. module: mrp_plm
 #: model:ir.ui.menu,name:mrp_plm.menu_mrp_plm_configuration
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_type_dashboard_view_kanban
 msgid "Configuration"
-msgstr ""
+msgstr "Nastavitve"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_bom_change__conflict
@@ -485,7 +500,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_tag__create_uid
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Ustvaril"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__create_date
@@ -497,7 +512,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_tag__create_date
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Ustvarjeno"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_bounced_content
@@ -512,7 +527,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_defaults
 msgid "Default Values"
-msgstr ""
+msgstr "Privzete vrednosti"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
@@ -523,13 +538,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_kanban
 #: model_terms:ir.ui.view,arch_db:mrp_plm.view_document_file_kanban_mrp_plm
 msgid "Delete"
-msgstr ""
+msgstr "Izbriši"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__description
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "Description"
-msgstr ""
+msgstr "Opis"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_stage__description
@@ -561,33 +576,33 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_tag__display_name
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Prikazani naziv"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__displayed_image_id
 msgid "Displayed Image"
-msgstr ""
+msgstr "Prikazana slika"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "Documents"
-msgstr ""
+msgstr "Dokumenti"
 
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco__state__done
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Done"
-msgstr ""
+msgstr "Opravljeno"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_kanban
 msgid "Dropdown menu"
-msgstr ""
+msgstr "Spusti seznam"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_routing_change_view_form
 msgid "Duration"
-msgstr ""
+msgstr "Trajanje"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__eco_id
@@ -719,7 +734,7 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_kanban
 msgid "Edit Task"
-msgstr ""
+msgstr "Uredi opravilo"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__effectivity
@@ -730,12 +745,12 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__effectivity_date
 msgid "Effective Date"
-msgstr ""
+msgstr "DUR"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_type_view_form
 msgid "Email Alias"
-msgstr ""
+msgstr "Email alias"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__email_cc
@@ -773,12 +788,12 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "Extra Info"
-msgstr ""
+msgstr "Dodatne informacije"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Filters"
-msgstr ""
+msgstr "Filtri"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__final_stage
@@ -788,19 +803,19 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__folded
 msgid "Folded in kanban view"
-msgstr ""
+msgstr "V kanban prikazu zloženo"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_follower_ids
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "Sledilci"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_partner_ids
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "Sledilci (partnerji)"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__activity_type_icon
@@ -815,12 +830,12 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Future Activities"
-msgstr ""
+msgstr "Bodoče aktivnosti"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__legend_done
 msgid "Green Kanban Label"
-msgstr ""
+msgstr "Zelena kanban oznaka"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__legend_normal
@@ -830,7 +845,7 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Group by..."
-msgstr ""
+msgstr "Združi po..."
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__has_message
@@ -846,7 +861,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco__priority__1
 msgid "High"
-msgstr ""
+msgstr "Visok"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__id
@@ -858,7 +873,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_tag__id
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__alias_parent_thread_id
@@ -866,11 +881,13 @@ msgid ""
 "ID of the parent record holding the alias (example: project holding the task"
 " creation alias)"
 msgstr ""
+"ID nadrejenega zapisa, ki vsebuje vzdevek (primer: projekt z vzdevkom "
+"ustvarjanja opravil)"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "Ikona"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__activity_exception_icon
@@ -881,7 +898,7 @@ msgstr ""
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__message_needaction
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "Če je označeno, zahtevajo nova sporočila vašo pozornost."
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__message_has_error
@@ -889,7 +906,7 @@ msgstr ""
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__message_has_error
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "Če je označeno, nekatera sporočila vsebujejo napako pri dostavi."
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__alias_bounced_content
@@ -928,7 +945,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 #, python-format
 msgid "In Progress"
-msgstr ""
+msgstr "V teku"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__is_approved
@@ -938,18 +955,18 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__is_closed
 msgid "Is Closed"
-msgstr ""
+msgstr "Je zaprt"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_is_follower
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "Je sledilec"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__is_rejected
 msgid "Is Rejected"
-msgstr ""
+msgstr "Zavrnjeno"
 
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco_approval_template__approval_type__mandatory
@@ -959,17 +976,17 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__legend_blocked
 msgid "Kanban Blocked Explanation"
-msgstr ""
+msgstr "Obrazložitev blokade v kanban"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__legend_normal
 msgid "Kanban Ongoing Explanation"
-msgstr ""
+msgstr "Obrazložitev 'v teku' v kanban"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__kanban_state
 msgid "Kanban State"
-msgstr ""
+msgstr "Kanban stanje"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__kanban_state_label
@@ -979,7 +996,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__legend_done
 msgid "Kanban Valid Explanation"
-msgstr ""
+msgstr "Obrazložitev 'veljavno' v kanban"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco____last_update
@@ -991,7 +1008,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_tag____last_update
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Zadnjič spremenjeno"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__write_uid
@@ -1003,7 +1020,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_tag__write_uid
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Zadnji posodobil"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__write_date
@@ -1015,12 +1032,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_tag__write_date
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Zadnjič posodobljeno"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Late Activities"
-msgstr ""
+msgstr "Aktivnosti z zamudo"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_production__latest_bom_id
@@ -1030,13 +1047,13 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__email_cc
 msgid "List of cc from incoming emails."
-msgstr ""
+msgstr "Seznam kopij (cc) iz dohodne e-pošte."
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_main_attachment_id
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_main_attachment_id
 msgid "Main Attachment"
-msgstr ""
+msgstr "Glavna priponka"
 
 #. module: mrp_plm
 #: model_terms:ir.actions.act_window,help:mrp_plm.mrp_eco_action
@@ -1060,19 +1077,19 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.ui.menu,name:mrp_plm.menu_mrp_plm_master_data
 msgid "Master Data"
-msgstr ""
+msgstr "Glavni vir"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_has_error
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "Napaka pri dostavi sporočila"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_ids
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_ids
 msgid "Messages"
-msgstr ""
+msgstr "Sporočila"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_tag_view_search
@@ -1092,18 +1109,18 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_type_dashboard_view_kanban
 msgid "My Validations"
-msgstr ""
+msgstr "Moje potrditve"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__name
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__name
 msgid "Name"
-msgstr ""
+msgstr "Naziv"
 
 #. module: mrp_plm
 #: model:mrp.eco.stage,name:mrp_plm.ecostage_new
 msgid "New"
-msgstr ""
+msgstr "Novo"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__new_bom_id
@@ -1153,17 +1170,17 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "Rok naslednje aktivnosti"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "Povzetek naslednje aktivnosti"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "Tip naslednje aktivnosti"
 
 #. module: mrp_plm
 #: model_terms:ir.actions.act_window,help:mrp_plm.mrp_bom_action_kanban
@@ -1184,7 +1201,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco__priority__0
 msgid "Normal"
-msgstr ""
+msgstr "Običajno"
 
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco_approval__status__none
@@ -1195,31 +1212,31 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__note
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "Note"
-msgstr ""
+msgstr "Opomba"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_needaction_counter
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "Število aktivnosti"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_has_error_counter
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "Število napak"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__message_needaction_counter
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__message_needaction_counter
 msgid "Number of messages which requires an action"
-msgstr ""
+msgstr "Število sporočil, ki zahtevajo dejavnost"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__message_has_error_counter
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "Število sporočil, ki niso bila pravilno dostavljena."
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_routing_change__old_time_cycle_manual
@@ -1234,7 +1251,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_routing_change__operation_name
 msgid "Operation"
-msgstr ""
+msgstr "Postopek"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
@@ -1254,6 +1271,9 @@ msgid ""
 "attached, even if they did not reply to it. If set, this will disable the "
 "creation of new records completely."
 msgstr ""
+"Opcijski ID niti (zapisa), kamor bodo pripeta prejeta sporočila, čeprav niso"
+" bila poslana kot odgovor na nit. Če se nastavi, bo ustvarjanje novih "
+"zapisov onemogočeno."
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_document__origin_attachment_id
@@ -1287,12 +1307,12 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.ui.menu,name:mrp_plm.menu_mrp_plm_dashboard
 msgid "Overview"
-msgstr ""
+msgstr "Pregled"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_user_id
 msgid "Owner"
-msgstr ""
+msgstr "Lastnik"
 
 #. module: mrp_plm
 #: model:ir.module.category,name:mrp_plm.module_category_manufacturing_product_lifecycle_management_(plm)
@@ -1308,12 +1328,12 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_parent_model_id
 msgid "Parent Model"
-msgstr ""
+msgstr "Nadrejeni model"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_parent_thread_id
 msgid "Parent Record Thread ID"
-msgstr ""
+msgstr "ID nadrejene niti zapisov"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__alias_parent_model_id
@@ -1365,7 +1385,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__priority
 msgid "Priority"
-msgstr ""
+msgstr "Prioriteta"
 
 #. module: mrp_plm
 #: model:ir.model,name:mrp_plm.model_product_template
@@ -1374,23 +1394,23 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_bom_change_view_form
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Product"
-msgstr ""
+msgstr "Proizvod"
 
 #. module: mrp_plm
 #: code:addons/mrp_plm/models/mrp_eco.py:0
 #, python-format
 msgid "Product Only"
-msgstr ""
+msgstr "Samo izdelek"
 
 #. module: mrp_plm
 #: model:ir.model,name:mrp_plm.model_mrp_document
 msgid "Production Document"
-msgstr ""
+msgstr "Proizvodni dokument"
 
 #. module: mrp_plm
 #: model:ir.model,name:mrp_plm.model_mrp_production
 msgid "Production Order"
-msgstr ""
+msgstr "Proizvodni nalog"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_bom__active
@@ -1400,12 +1420,12 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.ui.menu,name:mrp_plm.menu_mrp_plm_products
 msgid "Products"
-msgstr ""
+msgstr "Proizvodi"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_bom_change__upd_product_qty
 msgid "Quantity"
-msgstr ""
+msgstr "Količina"
 
 #. module: mrp_plm
 #: code:addons/mrp_plm/models/mrp_eco.py:0
@@ -1415,7 +1435,7 @@ msgstr ""
 #: model:mrp.eco.stage,legend_done:mrp_plm.ecostage_validated
 #, python-format
 msgid "Ready"
-msgstr ""
+msgstr "Pripravljeno"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_bom_change__rebase_id
@@ -1432,27 +1452,27 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__alias_force_thread_id
 msgid "Record Thread ID"
-msgstr ""
+msgstr "ID niti zapisov"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__legend_blocked
 msgid "Red Kanban Label"
-msgstr ""
+msgstr "Rdeča kanban oznaka"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__name
 msgid "Reference"
-msgstr ""
+msgstr "Referenca"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "Reject"
-msgstr ""
+msgstr "Zavrni"
 
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco_approval__status__rejected
 msgid "Rejected"
-msgstr ""
+msgstr "Zavrnjeno"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__displayed_image_attachment_id
@@ -1464,12 +1484,12 @@ msgstr ""
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco_routing_change__change_type__remove
 #: model_terms:ir.ui.view,arch_db:mrp_plm.view_document_file_kanban_mrp_plm
 msgid "Remove"
-msgstr ""
+msgstr "Odstrani"
 
 #. module: mrp_plm
 #: model:ir.ui.menu,name:mrp_plm.menu_mrp_plm_reporting
 msgid "Reporting"
-msgstr ""
+msgstr "Poročanje"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__required_user_ids
@@ -1479,46 +1499,46 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__user_id
 msgid "Responsible"
-msgstr ""
+msgstr "Odgovoren"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__activity_user_id
 msgid "Responsible User"
-msgstr ""
+msgstr "Odgovorni uporabnik"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__name
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval_template__name
 msgid "Role"
-msgstr ""
+msgstr "Vloga"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Routing"
-msgstr ""
+msgstr "Delovni tok"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__message_has_sms_error
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr ""
+msgstr "Napaka pri dostavi SMS "
 
 #. module: mrp_plm
 #: model:ir.ui.menu,name:mrp_plm.menu_mrp_plm_search
 msgid "Search"
-msgstr ""
+msgstr "Iskanje"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval_template__sequence
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__sequence
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Zaporedje"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_kanban
 msgid "Set Cover Image"
-msgstr ""
+msgstr "Nastavi naslovno sliko"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__allow_apply_change
@@ -1529,13 +1549,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Show all records which has next action date is before today"
 msgstr ""
+"Prikaži vse zapise z datumom naslednje aktivnosti pred današnjim datumom."
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__stage_id
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval_template__stage_id
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Stage"
-msgstr ""
+msgstr "Stopnja"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_stage_view_form
@@ -1545,7 +1566,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__stage_ids
 msgid "Stages"
-msgstr ""
+msgstr "Stopnje"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
@@ -1555,13 +1576,13 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "State"
-msgstr ""
+msgstr "Stanje"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__state
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__status
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__activity_state
@@ -1571,6 +1592,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"Status na osnovi aktivnosti\n"
+"Zapadel: Rok je že prekoračen\n"
+"Danes: Datum aktivnosti je danes\n"
+"Planirano: Bodoče aktivnosti."
 
 #. module: mrp_plm
 #: code:addons/mrp_plm/models/mrp_eco.py:0
@@ -1588,18 +1613,18 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_tag__name
 msgid "Tag Name"
-msgstr ""
+msgstr "Naziv oznake"
 
 #. module: mrp_plm
 #: model:ir.model.constraint,message:mrp_plm.constraint_mrp_eco_tag_name_uniq
 msgid "Tag name already exists !"
-msgstr ""
+msgstr "Označba že obstaja!"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__tag_ids
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_tag_view_tree
 msgid "Tags"
-msgstr ""
+msgstr "Ključne besede"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_stage_view_form
@@ -1610,6 +1635,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_stage_view_form
 msgid "Task is blocked. Click to unblock or set as done."
 msgstr ""
+"Opravilo je blokirano. Kliknite, če želite deblokirati ali nastaviti kot "
+"dokončano."
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__user_can_approve
@@ -1624,7 +1651,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__approval_template_id
 msgid "Template"
-msgstr ""
+msgstr "Predloga"
 
 #. module: mrp_plm
 #: model:res.groups,comment:mrp_plm.group_plm_manager
@@ -1649,6 +1676,9 @@ msgid ""
 " email that does not reply to an existing record will cause the creation of "
 "a new record of this model (e.g. a Project Task)"
 msgstr ""
+"Model (Odoo Document Kind) kateremu pripada vzdevek. Vsa prispela e-pošta, "
+"ki se ne nanaša na kateri obstoječi zapis, ustvari nov zapis tega modela "
+"(npr. projektno opravilo)"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__alias_name
@@ -1656,6 +1686,8 @@ msgid ""
 "The name of the email alias, e.g. 'jobs' if you want to catch emails for "
 "<jobs@example.odoo.com>"
 msgstr ""
+"Naziv e-poštnega vzdevka, npr. 'zaposlovanje', če želite loviti e-pošto za "
+"<zaposlovanje@domena.com>"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__alias_user_id
@@ -1665,6 +1697,10 @@ msgid ""
 "the sender (From) address, or will use the Administrator account if no "
 "system user is found for that address."
 msgstr ""
+"Lastnik zapisov ustvarjenih iz prispele pošte na ta vzdevek. Če to polje ni "
+"nastavljeno, sistem poskuša ugotoviti pravega lastnika glede na "
+"pošiljateljev naslov (From). Če ni uporabnika s tem naslovom, bo uporabil "
+"Administratorjev račun."
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_stage_view_form
@@ -1682,24 +1718,24 @@ msgstr ""
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco__state__confirmed
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "To Do"
-msgstr ""
+msgstr "Opravek"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Today Activities"
-msgstr ""
+msgstr "Današnje aktivnosti"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__type_id
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_bom_change__change_type
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_routing_change__change_type
 msgid "Type"
-msgstr ""
+msgstr "Tip"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "Vrsta dejavnosti izjeme na zapisu. "
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_stage__type_ids
@@ -1709,18 +1745,18 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.view_document_file_kanban_mrp_plm
 msgid "Undo"
-msgstr ""
+msgstr "Razveljavi"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_bom_change__uom_change
 msgid "Unit of Measure"
-msgstr ""
+msgstr "Enota mere"
 
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco_bom_change__change_type__update
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco_routing_change__change_type__update
 msgid "Update"
-msgstr ""
+msgstr "Posodobi"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_plm_production_form_view
@@ -1730,17 +1766,17 @@ msgstr ""
 #. module: mrp_plm
 #: model:res.groups,name:mrp_plm.group_plm_user
 msgid "User"
-msgstr ""
+msgstr "Uporabnik"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval_template__user_ids
 msgid "Users"
-msgstr ""
+msgstr "Uporabniki"
 
 #. module: mrp_plm
 #: model:mrp.eco.stage,name:mrp_plm.ecostage_validated
 msgid "Validated"
-msgstr ""
+msgstr "Potrjeno"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_bom__version
@@ -1748,12 +1784,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_product_template__version
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_bom_view_form_inherit_plm
 msgid "Version"
-msgstr ""
+msgstr "Različica"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__nb_approvals
 msgid "Waiting Approvals"
-msgstr ""
+msgstr "Čakanje na odobritve"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__nb_approvals_my
@@ -1764,23 +1800,23 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__website_message_ids
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_type__website_message_ids
 msgid "Website Messages"
-msgstr ""
+msgstr "Sporočila iz spletne strani"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__website_message_ids
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__website_message_ids
 msgid "Website communication history"
-msgstr ""
+msgstr "Kronologija komunikacij spletne strani"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_routing_change__workcenter_id
 msgid "Work Center"
-msgstr ""
+msgstr "Delovni center"
 
 #. module: mrp_plm
 #: model:ir.ui.menu,name:mrp_plm.menu_mrp_plm_workcenters
 msgid "Work Centers"
-msgstr ""
+msgstr "Delovni centri"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_stage_view_form
@@ -1816,9 +1852,9 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_stage_view_form
 msgid "e.g. Engineering Department"
-msgstr ""
+msgstr "npr. Inženirski oddelek"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_kanban
 msgid "oe_kanban_text_red"
-msgstr ""
+msgstr "oe_kanban_text_red"

@@ -53,7 +53,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_point__active
 msgid "Active"
-msgstr ""
+msgstr "Aktief"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__activity_ids
@@ -173,7 +173,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_tag__color
 msgid "Color Index"
-msgstr ""
+msgstr "Kleur Indeks"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__company_id
@@ -181,7 +181,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__company_id
 #: model:ir.model.fields,field_description:quality.field_quality_point__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: quality
 #: model:quality.alert.stage,name:quality.quality_alert_stage_1
@@ -270,7 +270,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__description
 msgid "Description"
-msgstr ""
+msgstr "Beskrywing"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__display_name
@@ -334,7 +334,7 @@ msgstr ""
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
 msgid "Group By"
-msgstr ""
+msgstr "Groepeer deur"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__has_message
@@ -528,7 +528,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_point_test_type__name
 #: model:ir.model.fields,field_description:quality.field_quality_reason__name
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: quality
 #: code:addons/quality/models/quality.py:0
@@ -653,7 +653,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__alias_user_id
 msgid "Owner"
-msgstr ""
+msgstr "Eienaar"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__alias_parent_model_id
@@ -676,7 +676,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_check__partner_id
 msgid "Partner"
-msgstr ""
+msgstr "Vennoot"
 
 #. module: quality
 #: model:quality.reason,name:quality.reason_parts
@@ -842,7 +842,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_alert_team__sequence
 #: model:ir.model.fields,field_description:quality.field_quality_point__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Volgorde"
 
 #. module: quality
 #: model_terms:ir.ui.view,arch_db:quality.quality_alert_view_search
@@ -863,7 +863,7 @@ msgstr ""
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_check__quality_state
 msgid "Status"
-msgstr ""
+msgstr "Stand"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert__activity_state
@@ -955,7 +955,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:quality.field_quality_check__title
 #: model:ir.model.fields,field_description:quality.field_quality_point__title
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #. module: quality
 #: model:ir.model.fields.selection,name:quality.selection__quality_check__quality_state__none
@@ -971,7 +971,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_form
 #: model_terms:ir.ui.view,arch_db:quality.quality_point_view_tree
 msgid "Type"
-msgstr ""
+msgstr "Soort"
 
 #. module: quality
 #: model:ir.model.fields,help:quality.field_quality_alert__activity_exception_decoration
@@ -987,7 +987,7 @@ msgstr ""
 #. module: quality
 #: model:res.groups,name:quality.group_quality_user
 msgid "User"
-msgstr ""
+msgstr "Gebruiker"
 
 #. module: quality
 #: model:ir.model.fields,field_description:quality.field_quality_alert__partner_id

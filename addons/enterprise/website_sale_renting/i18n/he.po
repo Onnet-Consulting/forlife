@@ -4,18 +4,18 @@
 # 
 # Translators:
 # Lilach Gilliam <lilach.gilliam@gmail.com>, 2022
-# Martin Trigaux, 2022
 # Yihya Hugirat <hugirat@gmail.com>, 2022
 # ZVI BLONDER <ZVIBLONDER@gmail.com>, 2022
 # NoaFarkash, 2022
+# Martin Trigaux, 2022
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:50+0000\n"
+"POT-Creation-Date: 2022-12-15 13:30+0000\n"
 "PO-Revision-Date: 2022-09-22 05:50+0000\n"
-"Last-Translator: NoaFarkash, 2022\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Hebrew (https://www.transifex.com/odoo/teams/41243/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,6 +24,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;\n"
 
 #. module: website_sale_renting
+#. odoo-python
 #: code:addons/website_sale_renting/models/sale_order.py:0
 #, python-format
 msgid ""
@@ -34,6 +35,7 @@ msgid ""
 msgstr ""
 
 #. module: website_sale_renting
+#. odoo-python
 #: code:addons/website_sale_renting/models/sale_order.py:0
 #, python-format
 msgid ""
@@ -44,6 +46,7 @@ msgid ""
 msgstr ""
 
 #. module: website_sale_renting
+#. odoo-python
 #: code:addons/website_sale_renting/models/sale_order.py:0
 #, python-format
 msgid ""
@@ -54,6 +57,7 @@ msgid ""
 msgstr ""
 
 #. module: website_sale_renting
+#. odoo-python
 #: code:addons/website_sale_renting/models/sale_order.py:0
 #, python-format
 msgid ""
@@ -65,6 +69,7 @@ msgid ""
 msgstr ""
 
 #. module: website_sale_renting
+#. odoo-python
 #: code:addons/website_sale_renting/models/sale_order.py:0
 #, python-format
 msgid ""
@@ -76,28 +81,28 @@ msgid ""
 msgstr ""
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "(%s days)."
 msgstr "(%s ימים)."
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "(%s hours)."
 msgstr "(%s שעות)."
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "(%s months)."
 msgstr "(%s חודשים)."
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "(%s weeks)."
@@ -152,18 +157,16 @@ msgid "<strong class=\"attribute_name\">Rental Period</strong>"
 msgstr "<strong class=\"attribute_name\">תקופת השכרה</strong>"
 
 #. module: website_sale_renting
-#. openerp-web
+#: model_terms:ir.ui.view,arch_db:website_sale_renting.rental_product
+msgid "<u class=\"h5\">Pricing</u>"
+msgstr ""
+
+#. module: website_sale_renting
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/snippets/s_rental_search/options.js:0
 #, python-format
 msgid "All"
 msgstr "הכל"
-
-#. module: website_sale_renting
-#. openerp-web
-#: code:addons/website_sale_renting/static/src/js/website_sale_renting_daterangepicker.js:0
-#, python-format
-msgid "Apply"
-msgstr "החל"
 
 #. module: website_sale_renting
 #: model_terms:ir.ui.view,arch_db:website_sale_renting.s_rental_search_options
@@ -171,7 +174,7 @@ msgid "Attribute Filter"
 msgstr ""
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/website_sale_renting_daterangepicker.js:0
 #, python-format
 msgid "Cancel"
@@ -188,7 +191,7 @@ msgid "Config Settings"
 msgstr "הגדר הגדרות"
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/website_sale_renting_daterangepicker.js:0
 #, python-format
 msgid "Custom Range"
@@ -200,9 +203,7 @@ msgid "Datepicker"
 msgstr "בוחר תאריכים"
 
 #. module: website_sale_renting
-#: code:addons/website_sale_renting/models/product_pricing.py:0
 #: model_terms:ir.ui.view,arch_db:website_sale_renting.s_rental_search_options
-#, python-format
 msgid "Day"
 msgstr "יום"
 
@@ -228,9 +229,7 @@ msgid "From"
 msgstr "מ"
 
 #. module: website_sale_renting
-#: code:addons/website_sale_renting/models/product_pricing.py:0
 #: model_terms:ir.ui.view,arch_db:website_sale_renting.s_rental_search_options
-#, python-format
 msgid "Hour"
 msgstr "שעה"
 
@@ -263,18 +262,12 @@ msgid "Monday"
 msgstr "יום שני"
 
 #. module: website_sale_renting
-#: code:addons/website_sale_renting/models/product_pricing.py:0
-#, python-format
-msgid "Month"
-msgstr "חודש"
-
-#. module: website_sale_renting
 #: model:ir.model.fields.selection,name:website_sale_renting.selection__res_company__renting_minimal_time_unit__month
 msgid "Months"
 msgstr "חודשים"
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "Please select a rental period."
@@ -284,11 +277,6 @@ msgstr "תבחר בבקשה תקופת השכרה."
 #: model:ir.model,name:website_sale_renting.model_product_pricelist
 msgid "Pricelist"
 msgstr "מחירון"
-
-#. module: website_sale_renting
-#: model:ir.model,name:website_sale_renting.model_product_pricing
-msgid "Pricing rule of temporal products"
-msgstr ""
 
 #. module: website_sale_renting
 #: model:ir.model,name:website_sale_renting.model_product_template
@@ -322,27 +310,34 @@ msgid "Saturday"
 msgstr "יום שבת"
 
 #. module: website_sale_renting
+#. odoo-javascript
+#: code:addons/website_sale_renting/static/src/js/website_sale_renting_daterangepicker.js:0
+#, python-format
+msgid "Search"
+msgstr "חיפוש"
+
+#. module: website_sale_renting
 #: model:ir.model.fields,field_description:website_sale_renting.field_res_company__renting_forbidden_sun
 #: model:ir.model.fields,field_description:website_sale_renting.field_res_config_settings__renting_forbidden_sun
 msgid "Sunday"
 msgstr "יום ראשון"
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "The pickup date cannot be in the past."
 msgstr "תאריך האיסוף לא יכול להיות בעבר."
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "The rental lasts less than the minimal rental duration %s"
 msgstr "ההשכרה נמשכת פחות זמן ממשך הזמן המינימלי %s"
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "The return date should be after the pickup date."
@@ -382,31 +377,26 @@ msgid "Wednesday"
 msgstr "יום רביעי"
 
 #. module: website_sale_renting
-#: code:addons/website_sale_renting/models/product_pricing.py:0
-#, python-format
-msgid "Week"
-msgstr "שבוע"
-
-#. module: website_sale_renting
 #: model:ir.model.fields.selection,name:website_sale_renting.selection__res_company__renting_minimal_time_unit__week
 msgid "Weeks"
 msgstr "שבועות"
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "You cannot pick up your rental on that day of the week."
 msgstr "אינך יכול לאסוף את ההשכרה ביום זה בשבוע."
 
 #. module: website_sale_renting
-#. openerp-web
+#. odoo-javascript
 #: code:addons/website_sale_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "You cannot return your rental on that day of the week."
 msgstr "אינך יכול להחזיר את ההשכרה ביום זה בשבוע."
 
 #. module: website_sale_renting
+#. odoo-python
 #: code:addons/website_sale_renting/models/sale_order.py:0
 #, python-format
 msgid "Your rental product cannot be pickedup in the past."

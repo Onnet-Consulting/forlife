@@ -6,6 +6,7 @@
 # Triine Aavik <triine@avalah.ee>, 2022
 # Eneli Õigus <enelioigus@gmail.com>, 2022
 # Rivo Zängov <eraser@eraser.ee>, 2022
+# Patrick-Jordan Kiudorv, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:25+0000\n"
 "PO-Revision-Date: 2022-09-22 05:50+0000\n"
-"Last-Translator: Rivo Zängov <eraser@eraser.ee>, 2022\n"
+"Last-Translator: Patrick-Jordan Kiudorv, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,13 +31,16 @@ msgid ""
 "            %(rental_period)s.\n"
 "            "
 msgstr ""
+"\n"
+"Küsisite %(desired_qty)s toodetest, aga ainult %(new_qty)s on saadaval\n"
+"%(rental_period)s."
 
 #. module: website_sale_stock_renting
 #. openerp-web
 #: code:addons/website_sale_stock_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "- From %s to %s.\n"
-msgstr ""
+msgstr "- %skuni%s.\n"
 
 #. module: website_sale_stock_renting
 #. openerp-web
@@ -70,7 +74,7 @@ msgstr "Müügitellimuse rida"
 #: code:addons/website_sale_stock_renting/static/src/js/renting_mixin.js:0
 #, python-format
 msgid "The product is not available for all the selected time period:\n"
-msgstr ""
+msgstr "Toode ei ole saadaval valitud perioodi põhjal:\n"
 
 #. module: website_sale_stock_renting
 #. openerp-web
@@ -87,6 +91,8 @@ msgid ""
 "You already added all the available product in your cart during the selected"
 " period."
 msgstr ""
+"Teil on juba kõik saadaolevad tooted ostukorvi lisatud valitud perioodi "
+"põhjal."
 
 #. module: website_sale_stock_renting
 #. openerp-web
@@ -94,23 +100,27 @@ msgstr ""
 #, python-format
 msgid "Your rental product cannot be prepared as fast, please rent later."
 msgstr ""
+"Teie renditoodet ei ole võimalik nii kiiresti valmis panna, palun rentige "
+"hiljem."
 
 #. module: website_sale_stock_renting
 #: code:addons/website_sale_stock_renting/models/sale_order.py:0
 #, python-format
 msgid "Your rental product cannot be prepared on time, please rent later."
 msgstr ""
+"Teie renditoodet ei ole võimalik õigeks ajaks valmis panna, palun rentige "
+"hiljem."
 
 #. module: website_sale_stock_renting
 #. openerp-web
 #: code:addons/website_sale_stock_renting/static/src/xml/website_sale_stock_renting_product_availability.xml:0
 #, python-format
 msgid "in your cart for the selected period."
-msgstr ""
+msgstr "teie ostukorvis valitud perioodiks."
 
 #. module: website_sale_stock_renting
 #. openerp-web
 #: code:addons/website_sale_stock_renting/static/src/xml/website_sale_stock_renting_product_availability.xml:0
 #, python-format
 msgid "still available during the selected period."
-msgstr ""
+msgstr "endiselt saadaval valitud perioodi ajal."

@@ -2,12 +2,24 @@
 # This file contains the translation of the following modules:
 # 	* industry_fsm
 # 
+# Translators:
+# Vida Potočnik <vida.potocnik@mentis.si>, 2022
+# Grega Vavtar <grega@hbs.si>, 2022
+# laznikd <laznik@mentis.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Boris Kodelja <boris@hbs.si>, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# Martin Trigaux, 2022
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
+"Last-Translator: Jasmina Macur <jasmina@hbs.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,12 +30,12 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__nbr
 msgid "# of Tasks"
-msgstr ""
+msgstr "# opravil"
 
 #. module: industry_fsm
 #: model:ir.actions.report,print_report_name:industry_fsm.task_custom_report
 msgid "'Worksheet %s - %s' % (object.name, object.partner_id.name)"
-msgstr ""
+msgstr "'Poročilo %s - %s' % (object.name, object.partner_id.name)"
 
 #. module: industry_fsm
 #. openerp-web
@@ -105,7 +117,7 @@ msgstr ""
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "<strong>Customer: </strong>"
-msgstr ""
+msgstr "<strong>Kupec: </strong>"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.portal_my_task
@@ -120,24 +132,24 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__active
 msgid "Active"
-msgstr ""
+msgstr "Aktivno"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_config_activity_type
 msgid "Activity Types"
-msgstr ""
+msgstr "Tipi aktivnosti"
 
 #. module: industry_fsm
 #: model:res.groups,name:industry_fsm.group_fsm_manager
 msgid "Administrator"
-msgstr ""
+msgstr "Administrator"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_action_all_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_all_tasks_root
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_all_tasks_todo
 msgid "All Tasks"
-msgstr ""
+msgstr "Vsa opravila"
 
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_user_action_report_fsm
@@ -156,7 +168,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Archived"
-msgstr ""
+msgstr "Arhivirano"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__user_ids
@@ -169,7 +181,7 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__date_assign
 msgid "Assignment Date"
-msgstr ""
+msgstr "Datum dodelitve"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__rating_avg
@@ -199,39 +211,39 @@ msgstr ""
 #: model:project.task,legend_blocked:industry_fsm.planning_task_9
 #: model:project.task.type,legend_blocked:industry_fsm.planning_project_stage_1
 msgid "Blocked"
-msgstr ""
+msgstr "Blokirano"
 
 #. module: industry_fsm
 #: model:project.task,legend_done:industry_fsm.planning_task_18
 msgid "Buzz or set as done"
-msgstr ""
+msgstr "Odmevnost ali opravljno"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.project_task_menu_planning_by_project_fsm
 msgid "By Project"
-msgstr ""
+msgstr "Po projektu"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.project_task_menu_planning_by_user_fsm
 msgid "By User"
-msgstr ""
+msgstr "Po uporabniku"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_partner_address_form_industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_stop_timer_wizard_form
 msgid "Cancel"
-msgstr ""
+msgstr "Prekliči"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.portal_task_sign_button
 msgid "Close"
-msgstr ""
+msgstr "Zaključi"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Closed"
-msgstr ""
+msgstr "Neaktivni"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -251,33 +263,33 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__comment
 msgid "Comments"
-msgstr ""
+msgstr "Komentarji"
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Podjetja"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__company_id
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_project_project_filter_inherit_industry_fsm
 msgid "Company"
-msgstr ""
+msgstr "Podjetje"
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Uredi nastavitve"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_settings
 msgid "Configuration"
-msgstr ""
+msgstr "Nastavitve"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_stop_timer_wizard_form
 msgid "Confirm"
-msgstr ""
+msgstr "Potrdi"
 
 #. module: industry_fsm
 #. openerp-web
@@ -291,22 +303,22 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_res_partner
 msgid "Contact"
-msgstr ""
+msgstr "Stik"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_project_view_form_simplified_footer_fsm
 msgid "Create"
-msgstr ""
+msgstr "Ustvari"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__create_date
 msgid "Create Date"
-msgstr ""
+msgstr "Datum nastanka"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.open_create_project_fsm
 msgid "Create a Project"
-msgstr ""
+msgstr "Ustvari projekt"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.res_config_settings_view_form
@@ -316,7 +328,7 @@ msgstr ""
 #. module: industry_fsm
 #: model:res.groups,name:industry_fsm.group_fsm_quotation_from_task
 msgid "Create new quotations directly from the tasks"
-msgstr ""
+msgstr "Ustvarite nove ponudbe neposredno iz opravil"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.res_config_settings_view_form
@@ -339,13 +351,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard__create_uid
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Ustvaril"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard__create_date
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Ustvarjeno"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_res_config_settings__module_industry_fsm_report
@@ -360,7 +372,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 #, python-format
 msgid "Customer"
-msgstr ""
+msgstr "Stranka"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
@@ -370,12 +382,12 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_reporting_customer_ratings
 msgid "Customer Ratings"
-msgstr ""
+msgstr "Ocene strank"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
@@ -390,17 +402,17 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__date_deadline
 msgid "Deadline"
-msgstr ""
+msgstr "Rok"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "Description"
-msgstr ""
+msgstr "Opis"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_project_view_form_simplified_footer_fsm
 msgid "Discard"
-msgstr ""
+msgstr "Opusti"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_enabled_conditions_count
@@ -422,7 +434,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line__display_name
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Prikazani naziv"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__display_satisfied_conditions_count
@@ -473,7 +485,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__hours_effective
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_list_fsm
 msgid "Effective Hours"
-msgstr ""
+msgstr "Učinkovite ure"
 
 #. module: industry_fsm
 #: model:mail.template,description:industry_fsm.mail_template_data_task_report
@@ -483,17 +495,17 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__planned_date_end
 msgid "End date"
-msgstr ""
+msgstr "Končni datum"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__date_end
 msgid "Ending Date"
-msgstr ""
+msgstr "Končni datum"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_res_config_settings__group_industry_fsm_quotations
 msgid "Extra Quotations"
-msgstr ""
+msgstr "Dodatne ponudbe"
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_report_project_task_user_fsm
@@ -511,7 +523,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.res_config_settings_view_form
 #, python-format
 msgid "Field Service"
-msgstr ""
+msgstr "Storitve na terenu"
 
 #. module: industry_fsm
 #: model:mail.template,name:industry_fsm.mail_template_data_intervention_details
@@ -555,7 +567,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Future"
-msgstr ""
+msgstr "V prihodnje"
 
 #. module: industry_fsm
 #. openerp-web
@@ -577,19 +589,19 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Group By"
-msgstr ""
+msgstr "Združi po"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "Hours Spent"
-msgstr ""
+msgstr "Porabljene ure"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard__id
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line__id
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: industry_fsm
 #: model:project.task,legend_normal:industry_fsm.planning_task_0
@@ -617,12 +629,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "In Progress"
-msgstr ""
+msgstr "V teku"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_list_fsm
 msgid "Initially Planned Hours"
-msgstr ""
+msgstr "Prvotno načrtovani čas"
 
 #. module: industry_fsm
 #: code:addons/industry_fsm/controllers/portal.py:0
@@ -651,12 +663,12 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__fsm_is_sent
 msgid "Is Worksheet sent"
-msgstr ""
+msgstr "Je poročilo poslano"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__state
 msgid "Kanban State"
-msgstr ""
+msgstr "Kanban stanje"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.res_config_settings_view_form
@@ -670,24 +682,24 @@ msgstr ""
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line____last_update
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Zadnjič spremenjeno"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__date_last_stage_update
 msgid "Last Stage Update"
-msgstr ""
+msgstr "Zadnja posodobitev stopnje"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard__write_uid
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Zadnji posodobil"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard__write_date
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Zadnjič posodobljeno"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -721,7 +733,7 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard__line_ids
 msgid "Line"
-msgstr ""
+msgstr "Postavka"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_view_form_inherit
@@ -737,12 +749,12 @@ msgstr ""
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
 msgid "Mark as done"
-msgstr ""
+msgstr "Označi kot opravljeno"
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_ir_ui_menu
 msgid "Menu"
-msgstr ""
+msgstr "Meni"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__milestone_id
@@ -785,7 +797,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "My Projects"
-msgstr ""
+msgstr "Moji projekti"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_action_fsm
@@ -793,7 +805,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "My Tasks"
-msgstr ""
+msgstr "Moja opravila"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -816,7 +828,7 @@ msgstr ""
 #. module: industry_fsm
 #: model:project.task,legend_blocked:industry_fsm.planning_task_18
 msgid "Need functional or technical help"
-msgstr ""
+msgstr "Potrebuje funkcionalno ali tehnično pomoč"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -827,7 +839,7 @@ msgstr ""
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_user_action_report_fsm
 msgid "No data yet!"
-msgstr ""
+msgstr "Podatkov še ni!"
 
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_project_action_only_fsm
@@ -848,7 +860,7 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_to_schedule_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_tasks_action_fsm
 msgid "No tasks found. Let's create one!"
-msgstr ""
+msgstr "Nobenega opravila ni najdenega. Kreirajte ga!"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -879,13 +891,13 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__parent_id
 msgid "Parent Task"
-msgstr ""
+msgstr "Nadrejeno opravilo"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Past"
-msgstr ""
+msgstr "Preteklost"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__personal_stage_type_ids
@@ -895,22 +907,22 @@ msgstr ""
 #. module: industry_fsm
 #: model:project.task.type,name:industry_fsm.planning_project_stage_1
 msgid "Planned"
-msgstr ""
+msgstr "Planirano"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_sharing_inherit_project_task_view_form
 msgid "Planned Date"
-msgstr ""
+msgstr "Načrtovani datum"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__hours_planned
 msgid "Planned Hours"
-msgstr ""
+msgstr "Načrtovane ure"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_planning
 msgid "Planning"
-msgstr ""
+msgstr "Načrtovanje"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__planning_overlap
@@ -925,17 +937,17 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_action_fsm_planning_groupby_user
 msgid "Planning by User"
-msgstr ""
+msgstr "Načrtovanje po uporabniku"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__priority
 msgid "Priority"
-msgstr ""
+msgstr "Prioriteta"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__progress
 msgid "Progress"
-msgstr ""
+msgstr "Potek"
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_project_project
@@ -944,19 +956,19 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Project"
-msgstr ""
+msgstr "Projekt"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_project_action_only_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_settings_project
 msgid "Projects"
-msgstr ""
+msgstr "Projekti"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Rated tasks"
-msgstr ""
+msgstr "Ocenjena opravila"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__rating_last_text
@@ -990,7 +1002,7 @@ msgstr ""
 #: model:project.task,legend_done:industry_fsm.planning_task_9
 #: model:project.task.type,legend_done:industry_fsm.planning_project_stage_1
 msgid "Ready"
-msgstr ""
+msgstr "Pripravljeno"
 
 #. module: industry_fsm
 #. openerp-web
@@ -1004,24 +1016,24 @@ msgstr ""
 #. module: industry_fsm
 #: model:project.task,legend_done:industry_fsm.planning_task_20
 msgid "Ready to reopen"
-msgstr ""
+msgstr "Pripravljeno za ponovno odprtje"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__remaining_hours
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_list_fsm
 msgid "Remaining Hours"
-msgstr ""
+msgstr "Preostale ure"
 
 #. module: industry_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_reporting
 msgid "Reporting"
-msgstr ""
+msgstr "Poročanje"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Satisfied"
-msgstr ""
+msgstr "Zadovoljen"
 
 #. module: industry_fsm
 #. openerp-web
@@ -1053,7 +1065,7 @@ msgstr ""
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
 msgid "Send Report"
-msgstr ""
+msgstr "Pošlji poročilo"
 
 #. module: industry_fsm
 #: code:addons/industry_fsm/models/project_task.py:0
@@ -1072,17 +1084,17 @@ msgstr ""
 #: model:ir.actions.act_window,name:industry_fsm.res_config_settings_action_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_settings_res_config
 msgid "Settings"
-msgstr ""
+msgstr "Nastavitve"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.portal_task_sign_button
 msgid "Sign"
-msgstr ""
+msgstr "Podpisovanje"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
 msgid "Sign Report"
-msgstr ""
+msgstr "Podpiši poročilo"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.portal_task_sign_button
@@ -1094,18 +1106,18 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.portal_my_task
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "Signature"
-msgstr ""
+msgstr "Podpis"
 
 #. module: industry_fsm
 #: code:addons/industry_fsm/controllers/portal.py:0
 #, python-format
 msgid "Signature is missing."
-msgstr ""
+msgstr "Manjka podpis."
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__worksheet_signed_by
 msgid "Signed By"
-msgstr ""
+msgstr "Podpisal"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_stop_timer_wizard_form
@@ -1119,30 +1131,30 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Stage"
-msgstr ""
+msgstr "Stopnja"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_type_action_fsm
 #: model:ir.ui.menu,name:industry_fsm.fsm_menu_settings_stage
 msgid "Stages"
-msgstr ""
+msgstr "Stopnje"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Starred"
-msgstr ""
+msgstr "Označeno"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Start Date"
-msgstr ""
+msgstr "Začetni datum"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__planned_date_begin
 msgid "Start date"
-msgstr ""
+msgstr "Datum začetka"
 
 #. module: industry_fsm
 #. openerp-web
@@ -1154,7 +1166,7 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_project__allow_subtasks
 msgid "Sub-tasks"
-msgstr ""
+msgstr "Podopravila"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_tree
@@ -1165,14 +1177,14 @@ msgstr ""
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__tag_ids
 #: model:ir.ui.menu,name:industry_fsm.menu_project_tags_act
 msgid "Tags"
-msgstr ""
+msgstr "Ključne besede"
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_project_task
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line__task_id
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__name
 msgid "Task"
-msgstr ""
+msgstr "Opravilo"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_project__allow_task_dependencies
@@ -1215,7 +1227,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Tasks"
-msgstr ""
+msgstr "Opravilo"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_user_action_report_fsm
@@ -1224,7 +1236,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_user_view_pivot
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_tree
 msgid "Tasks Analysis"
-msgstr ""
+msgstr "Analiza opravil"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -1260,12 +1272,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
 #, python-format
 msgid "Time"
-msgstr ""
+msgstr "Čas"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.timesheet_view_form
 msgid "Time Spent"
-msgstr ""
+msgstr "Porabljeni čas"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_res_config_settings__module_industry_fsm_sale
@@ -1280,18 +1292,18 @@ msgstr ""
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.timesheet_view_form
 msgid "Timesheet"
-msgstr ""
+msgstr "Časovnica"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "Timesheets"
-msgstr ""
+msgstr "Časovnice"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "To Do"
-msgstr ""
+msgstr "Opravek"
 
 #. module: industry_fsm
 #: model:ir.actions.act_window,name:industry_fsm.project_task_action_to_schedule_fsm
@@ -1299,7 +1311,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "To Schedule"
-msgstr ""
+msgstr "Za načrtovanje"
 
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_all_fsm
@@ -1319,7 +1331,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Today"
-msgstr ""
+msgstr "Danes"
 
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_type_action_fsm
@@ -1330,12 +1342,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Unassigned"
-msgstr ""
+msgstr "Nedodeljeno"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 msgid "Unread Messages"
-msgstr ""
+msgstr "Neprebrana sporočila"
 
 #. module: industry_fsm
 #. openerp-web
@@ -1347,7 +1359,7 @@ msgstr ""
 #. module: industry_fsm
 #: model:res.groups,name:industry_fsm.group_fsm_user
 msgid "User"
-msgstr ""
+msgstr "Uporabnik"
 
 #. module: industry_fsm
 #. openerp-web
@@ -1359,7 +1371,7 @@ msgstr ""
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard_line__wizard_id
 msgid "Wizard"
-msgstr ""
+msgstr "Čarovnik"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
@@ -1394,7 +1406,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "Worksheet"
-msgstr ""
+msgstr "Poročilo"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
@@ -1412,7 +1424,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:industry_fsm.field_project_project__allow_worksheets
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task__allow_worksheets
 msgid "Worksheets"
-msgstr ""
+msgstr "Poročila"
 
 #. module: industry_fsm
 #: model:mail.template,subject:industry_fsm.mail_template_data_intervention_details
@@ -1428,7 +1440,7 @@ msgstr ""
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.fsm_form_view_comment
 msgid "comment"
-msgstr ""
+msgstr "komentar"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.quick_create_task_form_fsm_inherited

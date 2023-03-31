@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<odoo>
+        <record id="reject_stock_request_wizard_from" model="ir.ui.view">
+            <field name="name">reject.stock.transfer.request.form</field>
+            <field name="model">reject.stock.transfer.request</field>
+            <field name="arch" type="xml">
+                <form string="Lost Reason">
+                    <group class="oe_title">
+                        <field name="rejection_reason" />
+                    </group>
+                    <footer>
+                        <button name="action_stock_transfer_request" string="Submit" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="reject_stock_request_wizard" model="ir.actions.act_window">
+            <field name="name">Reject Stock Transfer Request</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">reject.stock.transfer.request</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="reject_stock_request_wizard_from"/>
+            <field name="target">new</field>
+        </record>
+</odoo>

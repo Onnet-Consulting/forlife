@@ -95,7 +95,7 @@ msgstr "否"
 #: model:ir.model.fields,field_description:account_3way_match.field_account_move__release_to_pay
 #: model:ir.model.fields,field_description:account_3way_match.field_account_payment__release_to_pay
 msgid "Release To Pay"
-msgstr "释放付款"
+msgstr "释放支付"
 
 #. module: account_3way_match
 #: model:ir.model.fields,field_description:account_3way_match.field_account_move_line__can_be_paid

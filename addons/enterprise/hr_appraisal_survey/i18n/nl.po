@@ -4,7 +4,8 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -132,7 +133,7 @@ msgstr ""
 "<h2>Algemeen doel van werknemersbeoordeling</h2>\n"
 "            <ul>\n"
 "                <li>Een duidelijke en open communicatie van prestatieverwachtingen op gang brengen</li>\n"
-"                <li>Om medewerkers te helpen bij hun professionele groei, door het identificeren van sterke punten en kansen voor ontwikkeling</li>\n"
+"                <li>Om werknemers te helpen bij hun professionele groei, door het identificeren van sterke punten en kansen voor ontwikkeling</li>\n"
 "            </ul>\n"
 "\n"
 "            <h2>Aan het begin van de beoordelingsperiode</h2>\n"
@@ -143,7 +144,7 @@ msgstr ""
 "\n"
 "            <h2>Aan het einde van de beoordelingsperiode</h2>\n"
 "            <ul>\n"
-"                <li>De werknemer is verantwoordelijk voor het invullen van een concept van het beoordelingsformulier als hulpmiddel voor zelfbeoordeling en als startpunt voor de beoordeling door de supervisor. Per criterium kan de medewerker voorbeelden van prestaties toevoegen. Nadat het formulier is ingevuld, stuurt de werknemer het naar zijn leidinggevende.</li>\n"
+"                <li>De werknemer is verantwoordelijk voor het invullen van een concept van het beoordelingsformulier als hulpmiddel voor zelfbeoordeling en als startpunt voor de beoordeling door de supervisor. Per criterium kan de werknemer voorbeelden van prestaties toevoegen. Nadat het formulier is ingevuld, stuurt de werknemer het naar zijn leidinggevende.</li>\n"
 "                <li>Het is de primaire verantwoordelijkheid van de supervisor om de nodige input te verzamelen van de juiste feedbackbronnen (interne en/of externe klanten, collega's).</li>\n"
 "                <li>De supervisor synthetiseert en integreert alle input in de voltooide beoordeling. De motivatie van de evaluatie wordt toegelicht in de ad-hocvelden.</li>\n"
 "                <li>De werknemer kan ervoor kiezen om opmerkingen of uitleg te geven over de voltooide beoordeling.</li>\n"
@@ -182,7 +183,7 @@ msgid ""
 "for employee’s continued career development over the coming year.</p>"
 msgstr ""
 "<p>Identificeer professionele, prestatie- of projectdoelstellingen die je "
-"aanbeveelt voor de verdere loopbaanontwikkeling van medewerkers in het "
+"aanbeveelt voor de verdere loopbaanontwikkeling van werknemers in het "
 "komende jaar.</p>"
 
 #. module: hr_appraisal_survey
@@ -214,7 +215,7 @@ msgid ""
 "<p>This survey allows you to give a feedback about your collaboration with an employee. Filling it helps us improving the appraisal process.</p>\n"
 "        "
 msgstr ""
-"<p>Met deze enquête kun je feedback geven over je samenwerking met een medewerker. Door het in te vullen, kunnen we het beoordelingsproces verbeteren.</p>\n"
+"<p>Met deze enquête kun je feedback geven over je samenwerking met een werknemer. Door het in te vullen, kunnen we het beoordelingsproces verbeteren.</p>\n"
 "        "
 
 #. module: hr_appraisal_survey
@@ -404,7 +405,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view
 msgid "Close"
-msgstr "Dichtbij"
+msgstr "Afsluiten"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.y_360_5_3
@@ -824,7 +825,7 @@ msgstr "Enquêtes"
 #. module: hr_appraisal_survey
 #: model:mail.template,subject:hr_appraisal_survey.mail_template_appraisal_ask_feedback
 msgid "Take part in {{ object.employee_id.name or 'this' }} appraisal"
-msgstr "Neem deel aan {{ object.employee_id.name or 'this' }} beoordeling"
+msgstr "Neem deel aan {{ object.employee_id.name or 'deze' }} beoordeling"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.arow_3_1_4
@@ -848,8 +849,8 @@ msgid ""
 "The following employees do not have any email : \n"
 "%s"
 msgstr ""
-"Deze medewerker heeft geen e-mailadres geregistreerd en zal geen e-mail ontvangen.\n"
-"De volgende medewerkers hebben geen e-mail:\n"
+"Deze werknemer heeft geen e-mailadres geregistreerd en zal geen e-mail ontvangen.\n"
+"De volgende werknemers hebben geen e-mail:\n"
 "%s"
 
 #. module: hr_appraisal_survey

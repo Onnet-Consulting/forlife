@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:24+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,7 +23,7 @@ msgstr ""
 #. module: purchase_enterprise
 #: model_terms:ir.ui.view,arch_db:purchase_enterprise.purchase_report_view_dashboard
 msgid "Average Days to Purchase"
-msgstr "Gem. aantal dagen tot inkoop"
+msgstr "Gemiddeld aantal dagen tot inkoop"
 
 #. module: purchase_enterprise
 #: model_terms:ir.ui.view,arch_db:purchase_enterprise.purchase_report_view_dashboard
@@ -42,12 +43,12 @@ msgstr "Totaal ingekocht"
 #. module: purchase_enterprise
 #: model_terms:ir.ui.view,arch_db:purchase_enterprise.purchase_report_view_dashboard
 msgid "Total, Tax Included"
-msgstr "Totaal incl. BTW"
+msgstr "Totaal incl. btw"
 
 #. module: purchase_enterprise
 #: model_terms:ir.ui.view,arch_db:purchase_enterprise.purchase_report_view_dashboard
 msgid "Untaxed Total"
-msgstr "Totaal excl. BTW"
+msgstr "Totaal excl. btw"
 
 #. module: purchase_enterprise
 #: model_terms:ir.ui.view,arch_db:purchase_enterprise.purchase_report_view_dashboard

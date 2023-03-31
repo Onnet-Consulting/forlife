@@ -57,7 +57,6 @@ class account_journal(models.Model):
             return self.env['account.bank.statement.line']._action_open_bank_reconciliation_widget(
                 extra_domain=[('journal_id', '=', self.id), ('line_ids.account_id', '=', self.default_account_id.id)],
                 default_context={'default_journal_id': self.id},
-                kanban_first=False,
             )
         return super().open_action()
 

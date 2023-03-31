@@ -5,7 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # Cécile Collart <cco@odoo.com>, 2022
-# Jolien De Paepe, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:22+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Jolien De Paepe, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,14 +24,14 @@ msgstr ""
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall_report__nbr
 msgid "# of Cases"
-msgstr "Nb. de cas"
+msgstr "# de cas"
 
 #. module: voip
 #. openerp-web
 #: code:addons/voip/static/src/js/dialing_panel.js:0
 #, python-format
 msgid "%(number of missed calls)s missed calls"
-msgstr "%(number of missed calls) appels manqués"
+msgstr "%(number of missed calls) d'appels manqués"
 
 #. module: voip
 #. openerp-web
@@ -56,8 +56,8 @@ msgid ""
 "Please make sure your drivers are up to date and try again."
 msgstr ""
 "Une erreur matérielle s'est produite lors de la tentative d'accès au "
-"périphérique d'enregistrement audio. Assurez-vous que vos pilotes sont à "
-"jour et réessayez."
+"dispositif d'enregistrement audio. Assurez-vous que vos pilotes sont à jour "
+"et réessayez."
 
 #. module: voip
 #. openerp-web
@@ -80,7 +80,7 @@ msgstr "Activité"
 #: code:addons/voip/static/src/models/call_queue_switch_view.js:0
 #, python-format
 msgid "Add to Call Queue"
-msgstr "Ajouter à la liste d'appels"
+msgstr "Ajouter à la file d'attente"
 
 #. module: voip
 #: model:ir.actions.server,name:voip.action_add_to_call_queue
@@ -95,8 +95,8 @@ msgid ""
 "An error occured involving the audio recording device "
 "(%(errorName)s):</br>%(errorMessage)s"
 msgstr ""
-"Une erreur s'est produite concernant le périphérique d'enregistrement audio "
-"(%(errorName)s): </br>%(errorMessage)s"
+"Une erreur s'est produite au niveau du dispositif d'enregistrement audio "
+"(%(errorName)s) : </br>%(errorMessage)s"
 
 #. module: voip
 #. openerp-web
@@ -163,7 +163,7 @@ msgstr "Durée de l'appel : %(min)s min %(sec)s sec"
 #: model:ir.model.fields,field_description:voip.field_res_users__should_call_from_another_device
 #: model:ir.model.fields,field_description:voip.field_res_users_settings__should_call_from_another_device
 msgid "Call from another device"
-msgstr "Appeler à partir d'un autre appareil"
+msgstr "Appeler à partir d'un autre périphérique"
 
 #. module: voip
 #. openerp-web
@@ -224,10 +224,10 @@ msgid ""
 " runs over HTTPS and that your browser is not set to deny access to media "
 "devices."
 msgstr ""
-"Impossible d'accéder au périphérique d'enregistrement audio. Si vous avez "
+"Impossible d'accéder au dispositif d'enregistrement audio. Si vous avez "
 "refusé l'accès à votre microphone, veuillez l'accorder et réessayer. Sinon, "
-"assurez-vous que ce site Web fonctionne sur HTTPS et que votre navigateur "
-"n'est pas configuré pour refuser l'accès aux appareils multimédias."
+"assurez-vous que ce site web fonctionne sur HTTPS et que votre navigateur "
+"n'est pas configuré pour refuser l'accès aux périphériques multimédias."
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_res_users__how_to_call_on_mobile
@@ -241,8 +241,8 @@ msgid ""
 msgstr ""
 "Choisissez la méthode à utiliser pour passer un appel lors de l'utilisation de l'application mobile :\n"
 "• VoIP : utilisez toujours le softphone Odoo\n"
-"• Téléphone de l'appareil : utilisez toujours le téléphone de l'appareil\n"
-"• Demander : demandez toujours si le softphone ou le téléphone de l'appareil doit être utilisé"
+"• Téléphone du périphérique : utilisez toujours le téléphone du périphérique\n"
+"• Demander : demandez toujours si le softphone ou le téléphone du périphérique doit être utilisé"
 
 #. module: voip
 #. openerp-web
@@ -262,14 +262,14 @@ msgstr "Fermer"
 #. module: voip
 #: model:ir.model,name:voip.model_res_config_settings
 msgid "Config Settings"
-msgstr "Paramètres de config"
+msgstr "Paramètres de configuration"
 
 #. module: voip
 #. openerp-web
 #: code:addons/voip/static/src/js/user_agent.js:0
 #, python-format
 msgid "Connecting..."
-msgstr "Se connecte..."
+msgstr "En cours de connexion..."
 
 #. module: voip
 #: model:ir.model,name:voip.model_res_partner
@@ -324,7 +324,7 @@ msgstr "Démo"
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__res_users_settings__how_to_call_on_mobile__phone
 msgid "Device's phone"
-msgstr "Téléphone de l'appareil"
+msgstr "Téléphone du périphérique"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall__direction
@@ -344,7 +344,7 @@ msgstr "Afficher le panneau d'appel"
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall_log_wizard__display_name
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall_report__display_name
 msgid "Display Name"
-msgstr "Nom affiché"
+msgstr "Afficher le nom"
 
 #. module: voip
 #. openerp-web
@@ -395,14 +395,14 @@ msgstr "Raccrocher"
 #: code:addons/voip/static/src/xml/phone_call_details.xml:0
 #, python-format
 msgid "Enter number or name"
-msgstr "Entrer un numéro ou un nom"
+msgstr "Saisir un numéro ou un nom"
 
 #. module: voip
 #. openerp-web
 #: code:addons/voip/static/src/xml/dialing_panel.xml:0
 #, python-format
 msgid "Enter the number..."
-msgstr "Entrer le numéro..."
+msgstr "Saisir le numéro..."
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_res_users__external_device_number
@@ -477,8 +477,8 @@ msgid ""
 msgstr ""
 "Si activé, passer un appel dans Odoo transférera l'appel vers le \"Numéro de"
 " périphérique externe\". Utilisez cette option pour passer l'appel dans Odoo"
-" mais le gérer à partir d'un autre appareil - par ex. votre téléphone de "
-"bureau."
+" mais le gérer à partir d'un autre périphérique - par ex. votre téléphone de"
+" bureau."
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_res_users__external_device_number
@@ -487,13 +487,13 @@ msgid ""
 "If the \"Call from another device\" option is enabled, calls placed in Odoo "
 "will be transfered to this phone number."
 msgstr ""
-"Si l'option \"Appeler depuis un autre appareil\" est activée, les appels "
-"passés dans Odoo seront transférés vers ce numéro de téléphone."
+"Si l'option \"Appeler depuis un autre périphérique\" est activée, les appels"
+" passés dans Odoo seront transférés vers ce numéro de téléphone."
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_phonecall_log_wizard__reschedule_option__7d
 msgid "In 1 Week"
-msgstr "Dans une semaine"
+msgstr "Dans 1 semaine"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_phonecall_log_wizard__reschedule_option__15d
@@ -515,7 +515,7 @@ msgstr "Dans la liste d'appel"
 #: code:addons/voip/static/src/xml/phone_call_details.xml:0
 #, python-format
 msgid "In call for:"
-msgstr "En appel pour:"
+msgstr "En appel pour :"
 
 #. module: voip
 #: model_terms:ir.actions.act_window,help:voip.voip_phonecall_view
@@ -529,7 +529,7 @@ msgstr ""
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_phonecall__direction__incoming
 msgid "Incoming"
-msgstr "Réception"
+msgstr "Entrant"
 
 #. module: voip
 #. openerp-web
@@ -603,7 +603,7 @@ msgstr "Activité associée"
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall__mail_message_id
 msgid "Linked Chatter Message"
-msgstr "Message Chatter associé"
+msgstr "Message du chatter associé"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_mail_activity__voip_phonecall_id
@@ -625,7 +625,7 @@ msgstr "Appel enregistré"
 #: code:addons/voip/static/src/js/dialing_panel.js:0
 #, python-format
 msgid "Make a call using:"
-msgstr "Passer un appel en utilisant:"
+msgstr "Passer un appel en utilisant :"
 
 #. module: voip
 #. openerp-web
@@ -683,7 +683,7 @@ msgstr "Mes appels"
 #: code:addons/voip/static/src/xml/dialing_panel.xml:0
 #, python-format
 msgid "Next activities"
-msgstr "Prochaines activités"
+msgstr "Activités suivantes"
 
 #. module: voip
 #. openerp-web
@@ -693,8 +693,8 @@ msgid ""
 "No audio recording device available. The application requires a microphone "
 "in order to be used."
 msgstr ""
-"Aucun appareil d'enregistrement audio disponible. L'application nécessite un"
-" microphone pour être utilisée."
+"Aucun dispositif d'enregistrement audio disponible. L'application nécessite "
+"un microphone pour être utilisée."
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_phonecall__state__pending
@@ -773,7 +773,7 @@ msgstr "Téléphone :"
 #: code:addons/voip/static/src/xml/phone_call_details.xml:0
 #, python-format
 msgid "Phonecall details"
-msgstr "Détail de l'appel"
+msgstr "Détails de l'appel"
 
 #. module: voip
 #: model:ir.actions.act_window,name:voip.voip_phonecall_view
@@ -834,7 +834,7 @@ msgstr "Inscription refusée : %(statusCode)s%(reasonPhrase)s."
 #: code:addons/voip/static/src/xml/phone_call_details.xml:0
 #, python-format
 msgid "Reject"
-msgstr "Refuser"
+msgstr "Rejeter"
 
 #. module: voip
 #. openerp-web
@@ -904,7 +904,7 @@ msgstr "Planifiez et passez des appels depuis votre base de données"
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall_log_wizard__reschedule_option
 msgid "Schedule A New Activity"
-msgstr "Planifier une  nouvelle activité"
+msgstr "Planifiez une nouvelle activité"
 
 #. module: voip
 #. openerp-web
@@ -1078,9 +1078,9 @@ msgid ""
 "When the call is over, the status is set to Held.\n"
 "If the call is not applicable anymore, the status can be set to Cancelled."
 msgstr ""
-"Lorsqu'un appel est créé, l'état est défini sur À faire.\n"
-"Lorsque l'appel se termine, l'état est défini sur Terminé.\n"
-"Si l'appel n'est plus nécessaire, l'état peut être défini sur Annulé."
+"Lorsqu'un appel est créé, le statut est défini sur À faire.\n"
+"Lorsque l'appel se termine, le statut est défini sur Terminé.\n"
+"Si l'appel n'est plus nécessaire, le statut peut être défini sur Annulé."
 
 #. module: voip
 #: model:ir.model.fields,help:voip.field_res_users__voip_username
@@ -1126,7 +1126,7 @@ msgstr "Transfert"
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.view_voip_case_phonecalls_filter
 msgid "Unassigned"
-msgstr "Non assigné"
+msgstr "Non attribué"
 
 #. module: voip
 #: model:ir.model,name:voip.model_res_users
@@ -1188,7 +1188,7 @@ msgstr "Secret VoIP"
 #: model:ir.model.fields,field_description:voip.field_res_users__voip_username
 #: model:ir.model.fields,field_description:voip.field_res_users_settings__voip_username
 msgid "VoIP username / Extension number"
-msgstr "Nom d'utilisateur VoIP / Numéro de poste"
+msgstr "Nom d'utilisateur VoIP / Numéro d'extension"
 
 #. module: voip
 #. openerp-web
@@ -1217,7 +1217,7 @@ msgid ""
 "You must allow the access to the microphone on your device. Otherwise, the "
 "VoIP call receiver will not hear you."
 msgstr ""
-"Vous devez autoriser l'accès au microphone de votre appareil. Sinon, le "
+"Vous devez autoriser l'accès au microphone de votre périphérique. Sinon, le "
 "récepteur d'appel VoIP ne vous entendra pas."
 
 #. module: voip

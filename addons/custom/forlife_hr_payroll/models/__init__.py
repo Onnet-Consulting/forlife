@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from . import res_company
-from . import hr_department
 from . import res_partner
 from . import salary_general_info
 from . import salary_accounting_config
@@ -16,5 +15,4 @@ from . import salary_supplementary
 from . import salary_total_income
 from . import salary_accounting
 from . import save_change_log
-from . import res_utility
 from . import account_move

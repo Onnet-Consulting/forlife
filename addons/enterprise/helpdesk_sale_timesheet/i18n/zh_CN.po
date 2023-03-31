@@ -5,7 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # 稀饭~~ <wangwhai@qq.com>, 2022
-# Jeffery CHEN <jeffery9@gmail.com>, 2022
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Jeffery CHEN <jeffery9@gmail.com>, 2022\n"
+"Last-Translator: Jeffery CHEN Fan <jeffery9@gmail.com>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -200,6 +200,7 @@ msgstr "SLA 策略，将自动应用于链接到包含此服务的销售订单�
 
 #. module: helpdesk_sale_timesheet
 #: code:addons/helpdesk_sale_timesheet/controllers/portal.py:0
+#: code:addons/helpdesk_sale_timesheet/models/helpdesk.py:0
 #: model:ir.model,name:helpdesk_sale_timesheet.model_sale_order
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_timesheet.helpdesk_ticket_view_form_inherit_helpdesk_sale_timesheet
 #, python-format
@@ -220,7 +221,7 @@ msgid ""
 "Remove the sales order item in order to make this ticket non-billable.\n"
 "You can also change or remove the sales order item of each timesheet entry individually."
 msgstr ""
-"销售订单项目，将添加在此工单上花费的时间，以便向您的客户开具发票。\n"
+"销售订单项目，将添加在此工单上花费的时间，以便向您的客户开具结算。\n"
 "默认情况下，将选择具有剩余时间的最后一个预付费销售订单项目。\n"
 "删除销售订单项，以使此工单不可计费。\n"
 "您还可以单独更改或删除每个工时表条目的销售订单项。"

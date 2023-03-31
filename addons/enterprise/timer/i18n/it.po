@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Sergio Zanchetta <primes2h@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-21 08:56+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Sergio Zanchetta <primes2h@gmail.com>, 2023\n"
 "Language-Team: Italian (https://www.transifex.com/odoo/teams/41243/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -83,7 +84,7 @@ msgstr "Ultimo aggiornamento il"
 #. module: timer
 #: model:ir.model.constraint,message:timer.constraint_timer_timer_unique_timer
 msgid "Only one timer occurrence by model, record and user"
-msgstr ""
+msgstr "Solo una occorrenza per modello, record e utente"
 
 #. module: timer
 #: code:addons/timer/models/timer_mixin.py:0
@@ -101,7 +102,7 @@ msgstr "Avvia"
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer__res_id
 msgid "Res"
-msgstr ""
+msgstr "Ris"
 
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer__res_model

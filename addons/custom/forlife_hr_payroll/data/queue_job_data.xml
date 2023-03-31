@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<odoo>
-    <record id="channel_sap" model="queue.job.channel">
-        <field name="name">SAP</field>
-        <field name="parent_id" ref="queue_job.channel_root"/>
-    </record>
-</odoo>

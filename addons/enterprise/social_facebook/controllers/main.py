@@ -23,8 +23,8 @@ class SocialFacebookController(SocialController):
     # ACCOUNTS MANAGEMENT
     # ========================================================
 
-    @fragment_to_query_string
     @http.route(['/social_facebook/callback'], type='http', auth='user')
+    @fragment_to_query_string
     def social_facebook_account_callback(self, access_token=None, is_extended_token=False, **kw):
         """ Facebook returns to the callback URL with all its own arguments as hash parameters.
         We use this very handy 'fragment_to_query_string' decorator to convert them to server readable parameters. """

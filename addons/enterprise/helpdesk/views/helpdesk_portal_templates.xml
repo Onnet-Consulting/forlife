@@ -9,7 +9,7 @@
                 <t t-else="">Tickets</t>
             </li>
             <li t-if="ticket" class="breadcrumb-item active">
-                <span t-field="ticket.name"/> (#<span t-field="ticket.id"/>)
+                <span t-field="ticket.name"/> (#<span t-field="ticket.ticket_ref"/>)
             </li>
             <li t-if="rating_page" t-attf-class="breadcrumb-item active">
                 Our Ratings
@@ -64,7 +64,7 @@
                         </tbody>
                         <t t-foreach="tickets" t-as="ticket">
                             <tr>
-                                <td class="text-start"><a t-attf-href="/helpdesk/ticket/#{ticket.id}"><small>#</small><t t-out="ticket.id"/><span class="ms-2" t-field="ticket.name"/></a></td>
+                                <td class="text-start"><a t-attf-href="/helpdesk/ticket/#{ticket.id}"><small>#</small><t t-out="ticket.ticket_ref"/><span class="ms-2" t-field="ticket.name"/></a></td>
                                 <td class="text-end" t-if="groupby != 'create_date'">
                                     <span t-field="ticket.create_date" t-options='{"widget": "datetime", "hide_seconds": True}'/>
                                 </td>
@@ -183,7 +183,7 @@
                                     <h5 class="row mx-1 mb-1 mb-md-0">
                                         <div class="col-9 text-truncate">
                                             <span t-field="ticket.name"/>
-                                            <small class="text-muted "> (#<span t-field="ticket.id"/>)</small>
+                                            <small class="text-muted "> (#<span t-field="ticket.ticket_ref"/>)</small>
                                         </div>
                                         <div class="col-3 text-end">
                                             <small class="text-end">Stage:</small>

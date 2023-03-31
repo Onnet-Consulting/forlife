@@ -22,11 +22,17 @@
     'data': [
         'views/views.xml',
         "views/res_users_views.xml",
+        "data/tax_report.xml",
         'security/ir.model.access.csv',
         'security/hmrc_security.xml',
         'wizard/hmrc_send_wizard.xml',
         'data/tax_report.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            "l10n_uk_reports/static/src/components/**/*",
+            ],
+    },
     'installable': True,
     'auto_install': ['l10n_uk', 'account_reports'],
     'license': 'OEEL-1',

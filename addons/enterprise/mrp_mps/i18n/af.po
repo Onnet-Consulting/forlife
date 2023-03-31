@@ -136,12 +136,12 @@ msgstr ""
 #. module: mrp_mps
 #: model:ir.model,name:mrp_mps.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Maatskappye"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: mrp_mps
 #: model:ir.model,name:mrp_mps.model_res_config_settings
@@ -177,7 +177,7 @@ msgstr ""
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_product_forecast__date
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #. module: mrp_mps
 #: model:ir.model.fields,help:mrp_mps.field_mrp_production_schedule__product_uom_id
@@ -571,7 +571,7 @@ msgstr ""
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Volgorde"
 
 #. module: mrp_mps
 #. openerp-web

@@ -5,7 +5,8 @@
 # Translators:
 # Mustafa Rawi <mustafa@cubexco.com>, 2022
 # Martin Trigaux, 2022
-# Malaz Abuidris <msea@odoo.com>, 2022
+# Niyas Raphy, 2022
+# Malaz Abuidris <msea@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2022\n"
+"Last-Translator: Malaz Abuidris <msea@odoo.com>, 2023\n"
 "Language-Team: Arabic (https://www.transifex.com/odoo/teams/41243/ar/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,7 +37,7 @@ msgstr "'ورقة العمل %s - %s' % (object.name, object.partner_id.name) "
 #: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
 #, python-format
 msgid "<b>Review and sign</b> the <b>task report</b> with your customer."
-msgstr ""
+msgstr "<b>قم بمراجعة والتوقيع على</b> <b>تقرير المهمة</b> مع عميلك. "
 
 #. module: industry_fsm
 #. openerp-web
@@ -44,7 +45,7 @@ msgstr ""
 #: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
 #, python-format
 msgid "<b>Send your task report</b> to your customer."
-msgstr ""
+msgstr "<b>أرسل تقرير مهامك</b> إلى عميلك. "
 
 #. module: industry_fsm
 #: model:mail.template,body_html:industry_fsm.mail_template_data_intervention_details
@@ -94,7 +95,7 @@ msgstr ""
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.portal_task_sign_button
 msgid "<i class=\"fa fa-check me-1\"/>Sign"
-msgstr ""
+msgstr "<i class=\"fa fa-check me-1\"/>التوقيع  "
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_sharing_inherit_project_task_view_form
@@ -116,6 +117,13 @@ msgid ""
 "            </p>\n"
 "        "
 msgstr ""
+"<p>\n"
+"                عزيزنا <t t-out=\"object.partner_id.name or 'Customer'\">العميل</t>،<br/><br/>\n"
+"                إليك ورقة العمل لعمليتنا في موقع العمل مرفقة أدناه. <br/><br/>\n"
+"                لا تتردد في التواصل معنا إذا كانت لديك أي أسئلة أو استفسارات.<br/><br/>\n"
+"                مع أطيب التحيات،<br/><br/>\n"
+"            </p>\n"
+"        "
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
@@ -131,7 +139,7 @@ msgstr ""
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "<strong class=\"me-2\">Total</strong>"
-msgstr ""
+msgstr "<strong class=\"me-2\">الإجمالي</strong> "
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
@@ -141,12 +149,12 @@ msgstr "<strong>العميل: </strong>"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.portal_my_task
 msgid "<strong>Planned Date:</strong>"
-msgstr ""
+msgstr "<strong>التاريخ المخطط له:</strong> "
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.worksheet_custom_page
 msgid "<strong>Worker: </strong>"
-msgstr ""
+msgstr "<strong>الموظف: </strong>"
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__active
@@ -174,14 +182,14 @@ msgstr "كافة المهام"
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_user_action_report_fsm
 msgid ""
 "Analyze the progress of your tasks and the performance of your workers."
-msgstr ""
+msgstr "قم بتحليل تقدم مهامل وأداء موظفيك. "
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__ancestor_id
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "Ancestor Task"
-msgstr ""
+msgstr "سلف المهمة"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -318,6 +326,8 @@ msgid ""
 "Confirm the <b>time spent</b> on your task. <i>Tip: note that the duration "
 "has automatically been rounded to 15 minutes.</i>"
 msgstr ""
+"قم بتأكيد <b>الوقت المقضي</b> في مهمتك. <i>نصيحة: يرجى الملاحظة بأنه يتم "
+"تقريب المدة تلقائياً إلى 15 دقيقة.</i> "
 
 #. module: industry_fsm
 #: model:ir.model,name:industry_fsm.model_res_partner
@@ -342,7 +352,7 @@ msgstr "إنشاء مشروع"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.res_config_settings_view_form
 msgid "Create custom worksheet templates"
-msgstr ""
+msgstr "أنشئ قوالب أوراق عمل مخصصة "
 
 #. module: industry_fsm
 #: model:res.groups,name:industry_fsm.group_fsm_quotation_from_task
@@ -364,7 +374,7 @@ msgstr "أنشئ مشاريعاً لتنظيم مهامك وتحديد سير ع
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_view_form_inherit
 msgid "Create reports to be signed off by your customers"
-msgstr ""
+msgstr "أنشئ التقارير ليقوم عملاؤك بالتوقيع عليها "
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_project_task_stop_timers_wizard__create_uid
@@ -381,7 +391,7 @@ msgstr "أنشئ في"
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_res_config_settings__module_industry_fsm_report
 msgid "Custom Worksheets"
-msgstr ""
+msgstr "أوراق عمل مخصصة "
 
 #. module: industry_fsm
 #: code:addons/industry_fsm/models/project_task.py:0
@@ -500,7 +510,7 @@ msgstr "غير راضٍ "
 #: code:addons/industry_fsm/models/project_task.py:0
 #, python-format
 msgid "Do you want to stop the running timers?"
-msgstr ""
+msgstr "هل ترغب في إيقاف المؤقتات الجارية؟ "
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__hours_effective
@@ -571,7 +581,7 @@ msgstr "ستجد هنا مخطط عملك لمهام اليوم. "
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm
 msgid "Find here your upcoming tasks for the next few days."
-msgstr ""
+msgstr "ستجد هنا مهامك للأيام القليلة القادمة. "
 
 #. module: industry_fsm
 #: model:ir.model.fields,help:industry_fsm.field_report_project_task_user_fsm__is_closed
@@ -598,6 +608,7 @@ msgid ""
 "Give it a <b>title</b> <i>(e.g. Boiler maintenance, Air-conditioning "
 "installation, etc.).</i>"
 msgstr ""
+"أضف <b>عنواناً</b> <i>(مثال: صيانة السخان، تركيب جهاز التكييف، إلخ).</i> "
 
 #. module: industry_fsm
 #. openerp-web
@@ -674,7 +685,7 @@ msgstr "بيانات التوقيع غير صالحة. "
 #: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
 #, python-format
 msgid "Invite your customer to <b>validate and sign your task report</b>."
-msgstr ""
+msgstr "ادع عميلك ليقوم <b>بتصديق تقرير مهمتك والتوقيع عليه</b>. "
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__milestone_reached
@@ -743,6 +754,8 @@ msgid ""
 "Let's <b>mark your task as done!</b> <i>Tip: when doing so, your stock will "
 "automatically be updated, and your task will be closed.</i>"
 msgstr ""
+"فلنقم <b>بتعيين مهمتك كمنتهية!</b> <i>نصيحة: عند قيامك بذلك، سوف يتم تحديث "
+"مخزونك تلقائياً، وسوف يتم إغلاق مهمتك.</i> "
 
 #. module: industry_fsm
 #. openerp-web
@@ -796,13 +809,13 @@ msgstr "مؤشرات التقدم "
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "My Department's Projects"
-msgstr ""
+msgstr "مشاريع قسمي "
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "My Department's Tasks"
-msgstr ""
+msgstr "مهام قسمي "
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -812,7 +825,7 @@ msgstr "مشاريعي المفضلة "
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.report_project_task_user_fsm_view_search
 msgid "My Favorites Projects"
-msgstr ""
+msgstr "مشاريعي المفضلة "
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -902,7 +915,7 @@ msgstr "حسناً "
 msgid ""
 "Open your <b>worksheet</b> in order to fill it in with the details of your "
 "intervention."
-msgstr ""
+msgstr "افتح <b>ورقة العمل</b> الخاصة بك لتعبئة تفاصيل عملك الميداني. "
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__overtime
@@ -1063,7 +1076,7 @@ msgstr "راضي "
 #: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
 #, python-format
 msgid "Save time by automatically generating a <b>signature</b>."
-msgstr ""
+msgstr "وفر الوقت عن طريق إنشاء <b>التوقيعات</b> تلقائياً. "
 
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_task_action_fsm_planning_groupby_project
@@ -1083,7 +1096,7 @@ msgstr "البحث في التخطيط "
 #: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
 #, python-format
 msgid "Select the <b>customer</b> for your task."
-msgstr ""
+msgstr "اختر <b>العميل</b> لمهمتك. "
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
@@ -1150,6 +1163,8 @@ msgid ""
 "Some employees are still running their timer for this task. Are you sure you"
 " want to continue?"
 msgstr ""
+"لا يزال المؤقت جارياً لبعض الموظفين في هذه المهمة. هل أنت متأكد من أنك ترغب "
+"بالاستمرار؟ "
 
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_report_project_task_user_fsm__stage_id
@@ -1266,7 +1281,7 @@ msgstr "تحليل المهام"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
 msgid "Tasks Soon in Overtime"
-msgstr ""
+msgstr "المهام في الوقت الإضافي قريباً "
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_view_search_fsm
@@ -1307,7 +1322,7 @@ msgstr "الوقت المستغرق"
 #. module: industry_fsm
 #: model:ir.model.fields,field_description:industry_fsm.field_res_config_settings__module_industry_fsm_sale
 msgid "Time and Material Invoicing"
-msgstr ""
+msgstr "الوقت والمواد الفواتير"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
@@ -1344,6 +1359,8 @@ msgid ""
 "To get things done, plan activities and use the task status.<br>\n"
 "                Collaborate efficiently by chatting in real-time or via email."
 msgstr ""
+"لإنجاز العمل، خطط لأنشطتك واستخدم حالات المهام.<br>\n"
+"                تعاون بكفاءة عن طريق الدردشة في الوقت الفعلي أو عن طريق البريد الإلكتروني."
 
 #. module: industry_fsm
 #: model_terms:ir.actions.act_window,help:industry_fsm.project_tasks_action_fsm
@@ -1381,7 +1398,7 @@ msgstr "الرسائل غير المقروءة "
 #: code:addons/industry_fsm/static/src/js/tours/industry_fsm_tour.js:0
 #, python-format
 msgid "Use the breadcrumbs to return to your <b>task</b>."
-msgstr ""
+msgstr "استخدم آثار التتبع للعودة إلى <b>مهمتك</b>. "
 
 #. module: industry_fsm
 #: model:res.groups,name:industry_fsm.group_fsm_user
@@ -1438,7 +1455,7 @@ msgstr "ورقة العمل"
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.view_task_form2_inherit
 msgid "Worksheet Complete"
-msgstr ""
+msgstr "تم إكمال ورقة العمل "
 
 #. module: industry_fsm
 #: model:mail.template,report_name:industry_fsm.mail_template_data_task_report
@@ -1490,7 +1507,7 @@ msgstr "إدارة الخدمات الميدانية؟ "
 #. module: industry_fsm
 #: model:ir.actions.server,name:industry_fsm.fsm_customer_ratings_server_action
 msgid "project.project.fsm"
-msgstr ""
+msgstr "project.project.fsm"
 
 #. module: industry_fsm
 #: model_terms:ir.ui.view,arch_db:industry_fsm.project_task_user_view_pivot

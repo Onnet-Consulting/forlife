@@ -21,6 +21,8 @@
             'forlife_pos_layout/static/src/js/Screens/ProductScreen/ProductItem.js',
             'forlife_pos_layout/static/src/xml/Screens/ProductScreen/ProductsWidget.xml',
             'forlife_pos_layout/static/src/xml/Screens/ProductScreen/ProductScreen.xml',
+            'forlife_pos_layout/static/src/xml/Chrome.xml',
+            'forlife_pos_layout/static/src/js/Chrome.js',
         ],
     }
 }

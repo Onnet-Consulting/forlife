@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="add_Name_Pos" t-inherit="point_of_sale.Chrome" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('pos-rightheader')]//div[hasclass('status-buttons')]" position="inside">
+            <div class="name-pos" style="order: -1;">
+                <h2><t t-esc="namePos" /></h2>
+            </div>
+        </xpath>
+    </t>
+</templates>

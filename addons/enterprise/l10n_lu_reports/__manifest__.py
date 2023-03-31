@@ -7,6 +7,9 @@
     'description': """
 Accounting reports for Luxembourg
 =================================
+Luxembourgish SAF-T (also known as FAIA) is standard file format for exporting various types of accounting transactional data using the XML format.
+The first version of the SAF-T Financial is limited to the general ledger level including customer and supplier transactions.
+Necessary master data is also included.
     """,
     'category': 'Accounting/Localizations/Reporting',
     'depends': ['l10n_lu', 'account_asset', 'account_reports', 'account_saft'],

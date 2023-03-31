@@ -178,7 +178,7 @@ msgstr ""
 "                                <li>IBAN: <t t-out=\"ctx['creditor_identifier'] or ''\">NO 93 8601 1117947</t></li>\n"
 "                            </t>\n"
 "                            <t t-if=\"ctx.get('mandate_ref')\">\n"
-"                                <li>SEPA直接付款授权参考：<t t-out=\"ctx['mandate_ref'] or ''\"/></li>\n"
+"                                <li>SEPA直接支付授权参考：<t t-out=\"ctx['mandate_ref'] or ''\"/></li>\n"
 "                            </t>\n"
 "                        </ul>\n"
 "                    </t>\n"
@@ -312,7 +312,7 @@ msgstr ""
 "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"590\" style=\"min-width: 590px; background-color: white; padding: 0px 8px 0px 8px; border-collapse:separate;\">\n"
 "                <tr><td valign=\"middle\">\n"
 "                    <t t-set=\"company\" t-value=\"object.payment_journal_id.company_id\"/>\n"
-"                    <span style=\"font-size: 10px;\">您的SEPA直接付款日期</span><br/>\n"
+"                    <span style=\"font-size: 10px;\">您的SEPA直接支付日期</span><br/>\n"
 "                    <span style=\"font-size: 20px; font-weight: bold;\" t-out=\"object.partner_bank_id.acc_number or ''\">BE15001559627230</span>\n"
 "                </td></tr>\n"
 "                <tr><td valign=\"middle\" align=\"right\">\n"
@@ -447,7 +447,7 @@ msgstr "线上签字"
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_account_payment_method
 msgid "Payment Methods"
-msgstr "付款方式"
+msgstr "支付方式"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_payment_provider
@@ -457,12 +457,12 @@ msgstr "支付提供商"
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_payment_token
 msgid "Payment Token"
-msgstr "付款令牌"
+msgstr "支付令牌"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model,name:payment_sepa_direct_debit.model_payment_transaction
 msgid "Payment Transaction"
-msgstr "付款交易"
+msgstr "支付交易"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,field_description:payment_sepa_direct_debit.field_sdd_mandate__phone_number
@@ -710,7 +710,7 @@ msgstr "已验证"
 #: code:addons/payment_sepa_direct_debit/static/src/js/payment_form.js:0
 #, python-format
 msgid "We are not able to process your payment."
-msgstr "我们无法处理您的付款。"
+msgstr "我们无法处理您的支付。"
 
 #. module: payment_sepa_direct_debit
 #: model:ir.model.fields,help:payment_sepa_direct_debit.field_payment_provider__sdd_signature_required

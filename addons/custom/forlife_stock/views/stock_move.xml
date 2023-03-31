@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_move_tree_inherit" model="ir.ui.view">
+        <field name="name">view.move.tree.inherit</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock.view_move_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='date']" position="attributes">
+                <attribute name="string">Date Done</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

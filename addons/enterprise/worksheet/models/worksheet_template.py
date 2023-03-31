@@ -20,7 +20,7 @@ class WorksheetTemplate(models.Model):
 
     name = fields.Char(string='Name', required=True)
     sequence = fields.Integer()
-    worksheet_count = fields.Integer(compute='_compute_worksheet_count')
+    worksheet_count = fields.Integer(compute='_compute_worksheet_count', compute_sudo=True)
     model_id = fields.Many2one('ir.model', ondelete='cascade', readonly=True, domain=[('state', '=', 'manual')])
     action_id = fields.Many2one('ir.actions.act_window', readonly=True)
     company_ids = fields.Many2many('res.company', string='Companies', domain=lambda self: [('id', 'in', self.env.companies.ids)])

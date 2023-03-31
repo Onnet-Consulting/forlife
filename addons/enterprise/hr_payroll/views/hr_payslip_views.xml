@@ -243,6 +243,7 @@
                 <field name="date_from"/>
                 <field name="contract_id"/>
                 <field name="payslip_run_id"/>
+                <field name="struct_id"/>
                 <filter string="To Compute" name="draft" domain="[('state', '=', 'draft')]" help="Draft Slip"/>
                 <filter string="To Confirm" name="draft" domain="[('state', '=', 'verify')]" help="Slips to Confirm"/>
                 <filter string="Done" name="done" domain="[('state', '=', 'done')]" help="Done Slip"/>

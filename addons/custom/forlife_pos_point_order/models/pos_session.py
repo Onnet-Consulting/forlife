@@ -13,3 +13,11 @@ class PosSession(models.Model):
         data.append('total_points_available_format')
         res['search_params']['fields'] = data
         return res
+
+    @api.model
+    def loader_data_res_partner_from_ui(self, data):
+        partner_update = self.env['res.partner'].sudo().search([('id', '=', data[0])])
+        return {
+            'total_points_available_forlife': partner_update.total_points_available_forlife,
+            'total_points_available_format': partner_update.total_points_available_format
+        }

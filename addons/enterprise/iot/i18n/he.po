@@ -297,7 +297,7 @@ msgstr ""
 #: code:addons/iot/static/src/view_widgets/iot_download_logs.xml:0
 #, python-format
 msgid "Download logs"
-msgstr ""
+msgstr "הורדת יומנים"
 
 #. module: iot
 #. openerp-web

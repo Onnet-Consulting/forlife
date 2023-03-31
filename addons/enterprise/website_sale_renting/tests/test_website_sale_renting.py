@@ -39,3 +39,16 @@ class TestWebsiteSaleRenting(TestWebsiteSaleRentingCommon):
             'return_date': now,
         })
         self.assertTrue(sol._is_invalid_renting_dates(sol.company_id), "Return date cannot be prior pickupdate")
+
+    def test_add_rental_product_to_cart(self):
+        """
+        Make sure that we can add a rental product
+        (only marked as "can be rented" and not "can be sold") to the shopping cart
+        """
+        self.computer.write({
+            'website_published': True,
+            'active': True,
+            'sale_ok': False,
+            'rent_ok': True,
+        })
+        self.assertTrue(self.computer._is_add_to_cart_allowed(), "Rental product should be addable to the cart")

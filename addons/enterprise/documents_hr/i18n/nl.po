@@ -6,6 +6,7 @@
 # Martin Trigaux, 2022
 # Gunther Clauwaert <gclauwae@hotmail.com>, 2022
 # Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +14,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:42+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -224,10 +225,12 @@ msgstr "Werkruimte"
 #. module: documents_hr
 #: code:addons/documents_hr/models/hr_employee.py:0
 #, python-format
-msgid "You must set an address on the employee to use Documents features."
+msgid ""
+"You must set a private address on the Employee in order to use Document's "
+"features."
 msgstr ""
-"Je moet een adres voor de werknemer instellen om de Documenten-functies te "
-"kunnen gebruiken."
+"Je moet een persoonlijk adres op het Werknemer instellen om de Documenten-"
+"functies te kunnen gebruiken."
 
 #. module: documents_hr
 #: model:ir.model.fields,field_description:documents_hr.field_res_company__documents_hr_folder

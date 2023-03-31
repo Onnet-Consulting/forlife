@@ -71,7 +71,7 @@ msgstr ""
 #. module: hr_recruitment_sign
 #: model:ir.model.fields,field_description:hr_recruitment_sign.field_hr_recruitment_sign_document_wizard__partner_id
 msgid "Contact"
-msgstr ""
+msgstr "Kontak"
 
 #. module: hr_recruitment_sign
 #: model:ir.model.fields,field_description:hr_recruitment_sign.field_hr_recruitment_sign_document_wizard__cc_partner_ids
@@ -149,7 +149,7 @@ msgstr ""
 #. module: hr_recruitment_sign
 #: model:ir.model.fields,field_description:hr_recruitment_sign.field_hr_recruitment_sign_document_wizard__message
 msgid "Message"
-msgstr ""
+msgstr "Boodskap"
 
 #. module: hr_recruitment_sign
 #: code:addons/hr_recruitment_sign/wizard/hr_recruitment_sign_document_wizard.py:0

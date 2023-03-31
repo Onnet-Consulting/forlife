@@ -63,8 +63,8 @@ tour.register('knowledge_main_flow_tour', {
     // open Knowledge App
     trigger: '.o_app[data-menu-xmlid="knowledge.knowledge_menu_root"]',
 }, {
-    // click on the main "Create" action
-    trigger: '.o_knowledge_header .btn:contains("Create")',
+    // click on the main "New" action
+    trigger: '.o_knowledge_header .btn:contains("New")',
 }, {
     trigger: 'section[data-section="private"] .o_article .o_article_name:contains("Untitled")',
     run: () => {},  // check that the article is correctly created (private section)
@@ -206,4 +206,12 @@ tour.register('knowledge_main_flow_tour', {
 }, {
     trigger: ':contains("Content of My Workspace Article")',
     run() {},
+}, {
+    // open the trash
+    trigger: '.o_knowledge_management_tools button',
+}, {
+    // verify that the trash list has been opened correctly and that items are correctly ordered
+    trigger: '.o_data_row:first .o_data_cell[name="display_name"]:contains("Article 2")',
+    extra_trigger: '.breadcrumb-item.active:contains("Trash")',
+    run: () => {},
 }]);

@@ -36,8 +36,3 @@ def is_valid_phone_number(phone_number):
     if not is_valid_number(parsed_number):
         return False
     return True
-
-
-class ResUtility(models.AbstractModel):
-    _name = 'res.utility'
-    _description = 'Utility'

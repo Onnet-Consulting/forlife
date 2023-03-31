@@ -152,7 +152,7 @@ msgstr ""
 #. module: mrp_account_enterprise
 #: model:ir.model.fields,field_description:mrp_account_enterprise.field_mrp_report__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: mrp_account_enterprise
 #: model:ir.model.fields,field_description:mrp_account_enterprise.field_mrp_report__unit_component_cost
@@ -226,7 +226,7 @@ msgstr ""
 #. module: mrp_account_enterprise
 #: model:ir.model.fields,field_description:mrp_account_enterprise.field_mrp_report__currency_id
 msgid "Currency"
-msgstr ""
+msgstr "Geldeenheid"
 
 #. module: mrp_account_enterprise
 #: model:ir.model.fields,field_description:mrp_account_enterprise.field_mrp_report__display_name

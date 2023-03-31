@@ -2,12 +2,17 @@
 # This file contains the translation of the following modules:
 # 	* sale_renting
 # 
+# Translators:
+# Niyas Raphy, 2022
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -83,7 +88,7 @@ msgstr ""
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.report_rental_order_document
 msgid "<strong>Shipping Address:</strong>"
-msgstr ""
+msgstr "<strong>Alamat Penghantaran:</strong>"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_gantt
@@ -93,7 +98,7 @@ msgstr ""
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_configurator_view_form
 msgid "Add"
-msgstr ""
+msgstr "Tambah"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.res_config_settings_view_form
@@ -110,7 +115,7 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_schedule__analytic_account_id
 msgid "Analytic Account"
-msgstr ""
+msgstr "Akaun Analitik"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.res_config_settings_view_form
@@ -146,7 +151,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_configurator_view_form
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_wizard_view_form
 msgid "Cancel"
-msgstr ""
+msgstr "Batal"
 
 #. module: sale_renting
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_order__rental_status__cancel
@@ -154,7 +159,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_rental_schedule__rental_status__cancel
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_rental_schedule__state__cancel
 msgid "Cancelled"
-msgstr ""
+msgstr "Dibatalkan"
 
 #. module: sale_renting
 #. openerp-web
@@ -187,12 +192,12 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_schedule__color
 msgid "Color"
-msgstr ""
+msgstr "Warna"
 
 #. module: sale_renting
 #: model:ir.model,name:sale_renting.model_res_company
 msgid "Companies"
-msgstr ""
+msgstr "Syarikat"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__company_id
@@ -201,17 +206,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_report_search_view
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_search
 msgid "Company"
-msgstr ""
+msgstr "Syarikat"
 
 #. module: sale_renting
 #: model:ir.model,name:sale_renting.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Tetapan Konfigurasi"
 
 #. module: sale_renting
 #: model:ir.ui.menu,name:sale_renting.menu_rental_config
 msgid "Configuration"
-msgstr ""
+msgstr "Konfigurasi"
 
 #. module: sale_renting
 #: model:ir.model,name:sale_renting.model_rental_wizard
@@ -236,7 +241,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_order__rental_status__pickup
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_form_view
 msgid "Confirmed"
-msgstr ""
+msgstr "Disahkan"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_report_search_view
@@ -281,20 +286,20 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard_line__create_uid
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Dicipta oleh"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard__create_date
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard_line__create_date
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Dicipta pada"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__currency_id
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report__currency_id
 msgid "Currency"
-msgstr ""
+msgstr "Mata wang"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report__partner_id
@@ -303,7 +308,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_report_search_view
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_search
 msgid "Customer"
-msgstr ""
+msgstr "Pelanggan"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_schedule__country_id
@@ -324,7 +329,7 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.ui.menu,name:sale_renting.menu_orders_customers
 msgid "Customers"
-msgstr ""
+msgstr "Pelanggan"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report__price
@@ -351,7 +356,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_report_search_view
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_search
 msgid "Date"
-msgstr ""
+msgstr "Tarikh"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_configurator_view_form
@@ -361,7 +366,7 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.model.fields.selection,name:sale_renting.selection__rental_wizard__duration_unit__day
 msgid "Days"
-msgstr ""
+msgstr "Hari"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_res_config_settings__extra_product
@@ -372,7 +377,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_schedule__description
 #: model_terms:ir.ui.view,arch_db:sale_renting.report_rental_order_document
 msgid "Description"
-msgstr ""
+msgstr "Penerangan"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_res_config_settings__module_sale_renting_sign
@@ -386,7 +391,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report__display_name
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_schedule__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nama paparan"
 
 #. module: sale_renting
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_rental_report__state__draft
@@ -397,7 +402,7 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__duration
 msgid "Duration"
-msgstr ""
+msgstr "Tempoh"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_configurator_view_form
@@ -479,7 +484,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_report_search_view
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_search
 msgid "Group By"
-msgstr ""
+msgstr "Kumpulan Oleh"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard__has_late_lines
@@ -515,7 +520,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report__id
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_schedule__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.report_rental_order_document
@@ -550,21 +555,21 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report____last_update
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_schedule____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Terakhir Diubah suai pada"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard__write_uid
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard_line__write_uid
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Kemas Kini Terakhir oleh"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard__write_date
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard_line__write_date
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Kemas Kini Terakhir pada"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_view_kanban
@@ -645,7 +650,7 @@ msgstr ""
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_form
 msgid "Ok"
-msgstr ""
+msgstr "Okey"
 
 #. module: sale_renting
 #: model_terms:ir.actions.act_window,help:sale_renting.rental_order_action
@@ -665,7 +670,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard__order_id
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_view_search
 msgid "Order"
-msgstr ""
+msgstr "Pesanan"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report__order_id
@@ -698,7 +703,7 @@ msgstr ""
 #: model:ir.ui.menu,name:sale_renting.rental_order_menu
 #: model:ir.ui.menu,name:sale_renting.rental_orders_all
 msgid "Orders"
-msgstr ""
+msgstr "Pesanan"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_form_view
@@ -792,12 +797,12 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__pricelist_id
 msgid "Pricelist"
-msgstr ""
+msgstr "Senarai harga"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__pricing_id
 msgid "Pricing"
-msgstr ""
+msgstr "Penentuan harga"
 
 #. module: sale_renting
 #: model:ir.model,name:sale_renting.model_product_template
@@ -811,7 +816,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_search
 #: model_terms:ir.ui.view,arch_db:sale_renting.res_config_settings_view_form
 msgid "Product"
-msgstr ""
+msgstr "Produk"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report__categ_id
@@ -819,7 +824,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_report_search_view
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_search
 msgid "Product Category"
-msgstr ""
+msgstr "Kategori Produk"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_schedule__product_name
@@ -835,7 +840,7 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.model,name:sale_renting.model_product_product
 msgid "Product Variant"
-msgstr ""
+msgstr "Varian Produk"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.res_config_settings_view_form
@@ -851,7 +856,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:sale_renting.rental_product_template_action
 #: model:ir.ui.menu,name:sale_renting.menu_rental_products
 msgid "Products"
-msgstr ""
+msgstr "Produk"
 
 #. module: sale_renting
 #: model:product.product,name:sale_renting.rental_product_1
@@ -877,7 +882,7 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__quantity
 msgid "Quantity"
-msgstr ""
+msgstr "Kuantiti"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_product_product__qty_in_rent
@@ -889,7 +894,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_order__rental_status__draft
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_rental_schedule__rental_status__draft
 msgid "Quotation"
-msgstr ""
+msgstr "Sebutharga"
 
 #. module: sale_renting
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_order__rental_status__sent
@@ -903,7 +908,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_report_search_view
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_search
 msgid "Quotations"
-msgstr ""
+msgstr "Sebutharga"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_form_view
@@ -1000,7 +1005,7 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.ui.menu,name:sale_renting.menu_rental_reporting
 msgid "Reporting"
-msgstr ""
+msgstr "Pelaporan"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.product_template_form_view_rental
@@ -1068,19 +1073,19 @@ msgstr ""
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_rental_report__state__sale
 #: model:ir.model.fields.selection,name:sale_renting.selection__sale_rental_schedule__state__sale
 msgid "Sales Order"
-msgstr ""
+msgstr "Pesanan Jualan"
 
 #. module: sale_renting
 #: model:ir.model,name:sale_renting.model_sale_order_line
 msgid "Sales Order Line"
-msgstr ""
+msgstr "Barisan Pesanan Jualan"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_schedule__team_id
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_view_search
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_search
 msgid "Sales Team"
-msgstr ""
+msgstr "Pasukan jualan"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report__user_id
@@ -1093,7 +1098,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_report_search_view
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_search
 msgid "Salesperson"
-msgstr ""
+msgstr "Jurujual"
 
 #. module: sale_renting
 #. openerp-web
@@ -1112,7 +1117,7 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.ui.menu,name:sale_renting.menu_rental_schedule
 msgid "Schedule"
-msgstr ""
+msgstr "Jadual"
 
 #. module: sale_renting
 #: code:addons/sale_renting/models/product_product.py:0
@@ -1133,7 +1138,7 @@ msgstr ""
 #: model:ir.actions.act_window,name:sale_renting.action_rental_config_settings
 #: model:ir.ui.menu,name:sale_renting.menu_rental_settings
 msgid "Settings"
-msgstr ""
+msgstr "Tetapan"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_wizard_view_form
@@ -1143,12 +1148,12 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_sale_order_line__start_date
 msgid "Start Date"
-msgstr ""
+msgstr "Tarikh mula"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_report_search_view
 msgid "State"
-msgstr ""
+msgstr "negeri"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_order_wizard__status
@@ -1158,7 +1163,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_view_search
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_schedule_view_search
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.sale_rental_report_view_tree
@@ -1272,14 +1277,14 @@ msgstr ""
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__unit_price
 msgid "Unit Price"
-msgstr ""
+msgstr "Harga seunit"
 
 #. module: sale_renting
 #: model:ir.model.fields,field_description:sale_renting.field_rental_wizard__uom_id
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_report__product_uom
 #: model:ir.model.fields,field_description:sale_renting.field_sale_rental_schedule__product_uom
 msgid "Unit of Measure"
-msgstr ""
+msgstr "Unit ukuran"
 
 #. module: sale_renting
 #: model:product.product,uom_name:sale_renting.rental_product_1
@@ -1287,12 +1292,12 @@ msgstr ""
 #: model:product.template,uom_name:sale_renting.rental_product_1_product_template
 #: model:product.template,uom_name:sale_renting.rental_product_2_product_template
 msgid "Units"
-msgstr ""
+msgstr "Unit"
 
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.rental_order_wizard_view_form
 msgid "Validate"
-msgstr ""
+msgstr "Sahkan"
 
 #. module: sale_renting
 #: code:addons/sale_renting/models/sale_order.py:0
@@ -1369,7 +1374,7 @@ msgstr ""
 #. module: sale_renting
 #: model_terms:ir.ui.view,arch_db:sale_renting.res_config_settings_view_form
 msgid "hours"
-msgstr ""
+msgstr "jam"
 
 #. module: sale_renting
 #: code:addons/sale_renting/models/sale_order_line.py:0

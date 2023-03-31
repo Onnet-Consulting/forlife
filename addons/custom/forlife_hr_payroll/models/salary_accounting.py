@@ -8,7 +8,8 @@ class SalaryAccounting(models.Model):
     _description = "Salary Accounting"
     _order = 'entry_id asc, purpose_id asc, analytic_account_id asc, manufacture_order_code asc, project_code asc, internal_order_code asc, id asc'
 
-    salary_record_id = fields.Many2one('salary.record', string='Reference', ondelete="cascade", required=True, copy=False)
+    salary_record_id = fields.Many2one('salary.record', string='Reference', ondelete="cascade", required=True,
+                                       copy=False)
     accounting_config_id = fields.Many2one('salary.accounting.config', required=True, ondelete='restrict')
     entry_id = fields.Many2one(related='accounting_config_id.entry_id', store=True)
     purpose_id = fields.Many2one(related='accounting_config_id.purpose_id', store=True)
@@ -31,9 +32,7 @@ class SalaryAccounting(models.Model):
     partner_id = fields.Many2one('res.partner', compute='_compute_accounting_value', store=True)
 
     move_id = fields.Many2one('account.move', string='Odoo FI')
-    sap_move_ref = fields.Char(string='SAP FI')
     reverse_move_id = fields.Many2one('account.move', string='Reverse Odoo FI')
-    reverse_sap_move_ref = fields.Char(string='Reverse SAP FI')
 
     @api.depends('record')
     def _compute_record_fields(self):
@@ -51,12 +50,20 @@ class SalaryAccounting(models.Model):
             amount = rec.record[field_id]
             if rec.accounting_type == 'debit':
                 debit = amount
-                partner_id = rec.accounting_config_id.debit_partner_id
-                account_id = rec.accounting_config_id.debit_account_id
+                accounting_config = rec.accounting_config_id
+                account_id = accounting_config.debit_account_id
+                if accounting_config.debit_partner_by_employee and hasattr(rec.record, 'employee_id'):
+                    partner_id = rec.record.employee_id.partner_id.id
+                else:
+                    partner_id = accounting_config.debit_partner_id.id
             else:
                 credit = amount
-                partner_id = rec.accounting_config_id.credit_partner_id
-                account_id = rec.accounting_config_id.credit_account_id
+                accounting_config = rec.accounting_config_id
+                account_id = accounting_config.credit_account_id
+                if accounting_config.credit_partner_by_employee and hasattr(rec.record, 'employee_id'):
+                    partner_id = rec.record.employee_id.partner_id.id
+                else:
+                    partner_id = accounting_config.credit_partner_id.id
 
             rec.debit = debit
             rec.credit = credit

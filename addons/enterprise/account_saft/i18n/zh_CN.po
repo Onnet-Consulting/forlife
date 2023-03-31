@@ -5,6 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # Raymond Yu <cl_yu@hotmail.com>, 2022
+# Emily Jia <eji@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:48+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Raymond Yu <cl_yu@hotmail.com>, 2022\n"
+"Last-Translator: Emily Jia <eji@odoo.com>, 2023\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -40,6 +41,12 @@ msgstr "Odoo SA"
 #, python-format
 msgid "Please define `Company Registry` for your company."
 msgstr "请为贵公司定义 \"公司注册\"。"
+
+#. module: account_saft
+#: code:addons/account_saft/models/account_general_ledger.py:0
+#, python-format
+msgid "Please define a `Phone` or `Mobile` for your company."
+msgstr "请为您的公司定义“电话”或“手机”。"
 
 #. module: account_saft
 #: code:addons/account_saft/models/account_general_ledger.py:0

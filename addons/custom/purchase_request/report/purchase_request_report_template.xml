@@ -1,0 +1,110 @@
+<odoo>
+    <data>
+        <template id="purchase_request_report_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <div class="page p-2 m-2">
+                        <div class="row">
+                            <div class="col-3">
+                                <span t-row="o.company_id.logo"/>
+                                <img t-attf-src="data:image/*;base64,{{o.company_id.logo}}"
+                                     t-att-alt="o.company_id.name"
+                                width="125" hieght="100"/>
+                            </div>
+                            <div class="col-9"></div>
+                        </div>
+                        <h2 style="margin-top: 30px; text-align: center;">
+                            Purchase Request <span t-field="o.name"/>
+                        </h2>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <p>
+                                    <b>Requested by:</b>
+                                    <span t-field="o.user_id"/>
+                                </p>
+                                <p>
+                                    <b>Vendor:</b>
+                                    <span t-field="o.partner_id"/>
+                                </p>
+                                <p>
+                                    <b>Company:</b>
+                                    <span t-field="o.company_id.name"/>
+                                </p>
+                            </div>
+
+                            <div class="col-6">
+                                <p>
+                                    <b>Start date:</b>
+                                    <span t-field="o.start_date"/>
+                                </p>
+                                <p>
+                                    <b>End date:</b>
+                                    <span t-field="o.end_date"/>
+                                </p>
+
+                                <p>
+                                    <b>Rejection reason:</b>
+                                    <span t-field="o.rejection_reason"/>
+                                </p>
+
+                            </div>
+                        </div>
+                        <div class="row">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Price unit</th>
+                                        <th scope="col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.order_lines" t-as="line">
+                                        <tr>
+                                            <td scope="row">
+                                                <span t-field="line.product_id"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.description"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.quantity"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.price_unit"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.total"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-8"></div>
+                            <div class="col-4 border-top border-dark">
+                                <table class="table table-borderless w-100">
+
+                                    <tr>
+                                        <th scope="row">Total</th>
+                                        <td class="float-right">
+                                            <span t-field="o.total_price"/>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
+

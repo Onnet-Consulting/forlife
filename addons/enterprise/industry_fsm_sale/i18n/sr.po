@@ -7,7 +7,7 @@
 # Bojan Borovnjak <bojan.borovnjak@modoolar.com>, 2022
 # Djordje Marjanovic <djvmarjanovic@gmail.com>, 2022
 # Martin Trigaux, 2022
-# Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2022
+# Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -15,7 +15,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:24+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2022\n"
+"Last-Translator: Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2023\n"
 "Language-Team: Serbian (https://www.transifex.com/odoo/teams/41243/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -79,7 +79,7 @@ msgstr "<strong class=\"mr16\">Subtotal</strong>"
 #. module: industry_fsm_sale
 #: model_terms:ir.ui.view,arch_db:industry_fsm_sale.worksheet_time_and_material
 msgid "<strong>Taxes</strong>"
-msgstr ""
+msgstr "<strong>Porezi</strong>"
 
 #. module: industry_fsm_sale
 #: model_terms:ir.ui.view,arch_db:industry_fsm_sale.worksheet_time_and_material
@@ -288,6 +288,18 @@ msgid "In Progress"
 msgstr "U radu"
 
 #. module: industry_fsm_sale
+#: code:addons/industry_fsm_sale/models/product_product.py:0
+#, python-format
+msgid "Invalid operator: %s"
+msgstr ""
+
+#. module: industry_fsm_sale
+#: code:addons/industry_fsm_sale/models/product_product.py:0
+#, python-format
+msgid "Invalid value: %s"
+msgstr ""
+
+#. module: industry_fsm_sale
 #: code:addons/industry_fsm_sale/models/project_task.py:0
 #, python-format
 msgid "Invoice"
@@ -365,7 +377,7 @@ msgstr ""
 #. module: industry_fsm_sale
 #: model_terms:ir.actions.act_window,help:industry_fsm_sale.project_task_action_to_invoice_fsm
 msgid "No tasks found. Let's create one!"
-msgstr ""
+msgstr "Nema pronađenih zadataka. Hajde da kriramo jedan!"
 
 #. module: industry_fsm_sale
 #: model:ir.model.fields.selection,name:industry_fsm_sale.selection__report_project_task_user_fsm__invoice_status__no
@@ -510,7 +522,7 @@ msgstr "Porudžbenica"
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_project_project__sale_line_id
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_project_task__sale_line_id
 msgid "Sales Order Item"
-msgstr ""
+msgstr "Stavka porudžbenice"
 
 #. module: industry_fsm_sale
 #: model:ir.model.fields,help:industry_fsm_sale.field_project_task__sale_line_id
@@ -561,7 +573,7 @@ msgstr "Usluge"
 #: model:ir.model,name:industry_fsm_sale.model_project_task
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_sale_order__task_id
 msgid "Task"
-msgstr ""
+msgstr "Zadatak"
 
 #. module: industry_fsm_sale
 #: model:ir.model,name:industry_fsm_sale.model_project_task_recurrence

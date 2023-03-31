@@ -309,6 +309,9 @@ class L10nClEdiUtilMixin(models.AbstractModel):
         http://www.sii.cl/factura_electronica/factura_mercado/envio.pdf
         it says: as mentioned previously, the client program must include in the request header the following.....
         """
+        if mode == 'SIIDEMO':
+            # mocked response
+            return None
         token = self._get_token(mode, digital_signature)
         if token is None:
             self._report_connection_err(_('No response trying to get a token'))
@@ -390,6 +393,8 @@ class L10nClEdiUtilMixin(models.AbstractModel):
         """
         Request the status of a DTE file sent to the SII.
         """
+        if mode == 'SIIDEMO':
+            return None
         token = self._get_token(mode, digital_signature)
         if token is None:
             self._report_connection_err(_('Token cannot be generated. Please try again'))

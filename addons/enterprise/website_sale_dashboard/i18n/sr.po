@@ -4,7 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2022
+# Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:22+0000\n"
 "PO-Revision-Date: 2022-09-22 05:50+0000\n"
-"Last-Translator: Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2022\n"
+"Last-Translator: Dragan Vukosavljevic <dragan.vukosavljevic@gmail.com>, 2023\n"
 "Language-Team: Serbian (https://www.transifex.com/odoo/teams/41243/sr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,12 +23,12 @@ msgstr ""
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.sale_dashboard_view
 msgid "# Customers"
-msgstr ""
+msgstr "# Kupaca"
 
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.sale_dashboard_view
 msgid "# Lines"
-msgstr ""
+msgstr "# Linija"
 
 #. module: website_sale_dashboard
 #: model:ir.model.fields,field_description:website_sale_dashboard.field_sale_report__is_abandoned_cart
@@ -48,7 +48,7 @@ msgstr "Aktiviraj Stripe"
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.sale_dashboard_view
 msgid "Average Order"
-msgstr ""
+msgstr "Prosečna porudžbina"
 
 #. module: website_sale_dashboard
 #: model:ir.model.fields.selection,name:website_sale_dashboard.selection__res_company__website_sale_dashboard_onboarding_state__closed
@@ -63,7 +63,7 @@ msgstr "Preduzeća"
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.sale_dashboard_view
 msgid "Conversion Rate"
-msgstr ""
+msgstr "Stopa konverzije"
 
 #. module: website_sale_dashboard
 #: model:ir.model,name:website_sale_dashboard.model_digest_digest
@@ -79,6 +79,8 @@ msgstr "Završeno"
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.website_sale_onboarding_payment_provider_step
 msgid "Enable credit &amp; debit card payments supported by Stripe"
 msgstr ""
+"Omogući plaćanje kreditnim &amp; debitnim karticama podržanim od strane "
+"Stripe-a"
 
 #. module: website_sale_dashboard
 #. openerp-web
@@ -86,7 +88,7 @@ msgstr ""
 #: code:addons/website_sale_dashboard/static/src/xml/website_sale_dashboard.xml:0
 #, python-format
 msgid "Go to Website"
-msgstr ""
+msgstr "Idi na Website"
 
 #. module: website_sale_dashboard
 #: model:ir.model.fields.selection,name:website_sale_dashboard.selection__res_company__website_sale_dashboard_onboarding_state__just_done
@@ -106,12 +108,12 @@ msgstr "Nije završeno"
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.website_sale_onboarding_payment_provider_step
 msgid "Online Payments"
-msgstr ""
+msgstr "Online plaćanja"
 
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.website_sale_onboarding_payment_provider_step
 msgid "Online payments enabled"
-msgstr ""
+msgstr "Online plaćanja omogućena"
 
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.sale_dashboard_view
@@ -132,22 +134,22 @@ msgstr "Izveštaj Analiza prodaje"
 #. module: website_sale_dashboard
 #: model:ir.model.fields,field_description:website_sale_dashboard.field_res_company__website_sale_dashboard_onboarding_state
 msgid "State of the website sale onboarding panel"
-msgstr ""
+msgstr "Stanje panela za uključivanje u prodaju website-a"
 
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.website_sale_dashboard_onboarding_panel
 msgid "The configuration is done. Happy selling!"
-msgstr ""
+msgstr "Konfiguracija je završena. Srećna prodaja!"
 
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.sale_dashboard_view
 msgid "Total Sales"
-msgstr ""
+msgstr "Ukupna prodaja"
 
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.sale_dashboard_view
 msgid "Total, Tax Included"
-msgstr ""
+msgstr "Ukupno, Porez uključen"
 
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.sale_report_view_search_website_inherit
@@ -157,7 +159,7 @@ msgstr "Neplaćene porudžbine"
 #. module: website_sale_dashboard
 #: model_terms:ir.ui.view,arch_db:website_sale_dashboard.sale_dashboard_view
 msgid "Untaxed Total"
-msgstr ""
+msgstr "Ukupno neoporezovano"
 
 #. module: website_sale_dashboard
 #: model:ir.model,name:website_sale_dashboard.model_website
@@ -167,4 +169,4 @@ msgstr "Website"
 #. module: website_sale_dashboard
 #: model:ir.actions.act_window,name:website_sale_dashboard.sale_dashboard
 msgid "eCommerce Dashboard"
-msgstr ""
+msgstr "eCommerce kontrolna tabla"

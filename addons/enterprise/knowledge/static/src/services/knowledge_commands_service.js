@@ -48,7 +48,7 @@ export const knowledgeCommandsService = {
          * @param {boolean} [recordInfo.withHtmlField] target record has a
          *                   targeted html field @see FormControllerPatch
          * @param {Object} [recordInfo.fieldInfo] info object for the html field
-         *                 {string, name}
+         *                 {string, name, pageName}
          * @param {XMLDocument} [recordInfo.fieldInfo] xml document (arch of the
          *                      view of the target record)
          */
