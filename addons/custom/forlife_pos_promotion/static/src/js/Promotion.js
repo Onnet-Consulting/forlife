@@ -1066,7 +1066,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 voucher_program_id,
                 to_reward_lines,
                 to_discount_lines,
-                isSelected
+                isSelected,
+                reward_line_vals: []
             });
         };
         return result

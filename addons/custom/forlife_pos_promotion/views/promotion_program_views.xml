@@ -154,7 +154,8 @@
                             <field name="voucher_product_id" invisible="1"/>
                             <field name="voucher_product_variant_id"
                                    attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')], 'required': [('reward_type', '=', 'cart_get_voucher')]}"/>
-                            <field name="voucher_price" force_save="1" readonly="1"/>
+                            <field name="voucher_price" force_save="1" readonly="1"
+                                   attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}"/>
                             <field name="voucher_apply_product_ids" widget="many2many_tags"
                                    attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}"/>
 
