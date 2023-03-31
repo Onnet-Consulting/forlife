@@ -146,3 +146,22 @@ class PosOrder(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id("account.action_move_journal_line")
         action['domain'] = [('id', 'in', self.change_payment_move_ids.ids)]
         return action
+
+    @api.model
+    def check_stock_quant_inventory(self, picking_type_id,order_lines):
+        StockQuant = self.env['stock.quant'].sudo()
+        Product = self.env['product.product'].sudo()
+        stock_picking_type = self.env['stock.picking.type'].sudo().search([('id','=',int(picking_type_id))])
+        stock_location = stock_picking_type.default_location_src_id
+        product_not_availabel = []
+        for k, v in order_lines[0].items():
+            quant = StockQuant.search([('product_id','=',int(k)),('location_id','=', stock_location.id)])
+            product = Product.search([('id','=', int(k))])
+            if not quant:
+                product_not_availabel.append(product.name)
+            if quant and v > quant.available_quantity:
+                product_not_availabel.append(quant.product_id.name)
+        if len(product_not_availabel) > 0:
+            message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {stock_location.name} kho {stock_location.warehouse_id.name}"
+            return message
+        return False
