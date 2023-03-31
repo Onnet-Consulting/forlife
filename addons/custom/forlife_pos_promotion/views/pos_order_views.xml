@@ -5,6 +5,9 @@
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='fiscal_position_id']" position="after">
+                <field name="reward_voucher_id" attrs="{'invisible': [('reward_voucher_id', '=', False)]}"/>
+            </xpath>
             <xpath expr="//field[@name='lines']/form/group" position="after">
                 <div name="promotion_usage_ids">
                     <label for="promotion_usage_ids"/>

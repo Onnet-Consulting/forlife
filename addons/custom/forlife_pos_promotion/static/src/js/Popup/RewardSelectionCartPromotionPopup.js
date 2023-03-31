@@ -123,7 +123,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             let valid = true;
             let result = {};
             for (let program of selected_programs) {
-                if (program.incl_reward_in_order && program.order_amount_min > amount_total_after_discount) {
+                if (program.incl_reward_in_order && program.order_amount_min > 0 && program.order_amount_min > amount_total_after_discount) {
                     result[program.id] = false;
                 } else {
                     result[program.id] = true;

@@ -17,7 +17,7 @@ export class CartPromotionButton extends PosComponent {
         let orderlines = this.env.pos.get_order().get_orderlines();
         let reward_data = {}
         for (let option of programOptions) {
-            if (option.isSelected && option.reward_line_vals.some(l => l.isSelected && l.quantity > 0)) {
+            if (option.program.reward_type != 'cart_get_voucher' && option.isSelected && option.reward_line_vals.some(l => l.isSelected && l.quantity > 0)) {
                 reward_data[option.id] = option.reward_line_vals.filter(l => l.isSelected && l.quantity > 0)
                                                 .reduce((tmp, l) => {tmp[l.line.cid] = l.quantity; return tmp}, {})
             }
@@ -62,7 +62,10 @@ export class CartPromotionButton extends PosComponent {
                     options['is_reward_line'] = true;
                     order.orderlines.add(order._createLineFromVals(options));
                 });
-            };
+            } else if (optionPro.program.reward_type == 'cart_get_voucher' && optionPro.voucher_program_id) {
+                order.reward_voucher_program_id = optionPro.voucher_program_id[0];
+                order.cart_promotion_program_id = optionPro.program.id;
+            }
         };
     }
 
