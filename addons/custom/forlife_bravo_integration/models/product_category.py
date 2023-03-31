@@ -10,7 +10,7 @@ class ProductCategory(models.Model):
     _inherit = ['product.category', 'bravo.model']
 
     @api.model
-    def get_bravo_table_by_level(self, level):
+    def bravo_get_table_by_level(self, level):
         if level == 4:
             bravo_table = 'B20Structure'
         elif level == 3:
@@ -21,9 +21,9 @@ class ProductCategory(models.Model):
             bravo_table = 'B20Brand'
         return bravo_table
 
-    def get_bravo_values_by_level(self, level):
-        records = self.filter_bravo_records()
-        bravo_table = self.get_bravo_table_by_level(level)
+    def bravo_get_values_by_level(self, level):
+        records = self.bravo_filter_records()
+        bravo_table = self.bravo_get_table_by_level(level)
         bravo_column_names = [
             "Code", "Name",
             "ItemAccount", "COGSAccount", "SalesAccount",
@@ -72,7 +72,7 @@ class ProductCategory(models.Model):
         return bravo_table, bravo_column_names, values
 
     def get_bravo_insert_sql_by_level(self, level):
-        bravo_table, column_names, values = self.get_bravo_values_by_level(level)
+        bravo_table, column_names, values = self.bravo_get_values_by_level(level)
         queries = []
         if not values:
             return []
@@ -84,7 +84,7 @@ class ProductCategory(models.Model):
             for fname in column_names:
                 params.append(rec_value.get(fname))
 
-        insert_default_value = self.get_insert_default_value()
+        insert_default_value = self.bravo_get_default_insert_value()
         for fname, fvalue in insert_default_value.items():
             insert_column_names.append(fname)
             single_record_values_placeholder.append(str(fvalue))
@@ -108,11 +108,11 @@ class ProductCategory(models.Model):
                 VALUES {insert_values_placholder}
                 """
             queries.append((sub_query, sub_params))
-            offset += num_row_per_request * num_param_per_row
+            offset += num_param_per_row * actual_num_row
 
         return queries
 
-    def get_insert_sql(self):
+    def bravo_get_insert_sql(self):
         insert_sql_level_1 = self.get_bravo_insert_sql_by_level(1)
         insert_sql_level_2 = self.get_bravo_insert_sql_by_level(2)
         insert_sql_level_3 = self.get_bravo_insert_sql_by_level(3)
@@ -124,9 +124,9 @@ class ProductCategory(models.Model):
         queries.extend(insert_sql_level_4)
         return queries
 
-    def get_bravo_update_sql_by_level(self, level):
+    def bravo_get_update_sql_by_level(self, level):
         """1 update query -> 1 record instead of multiple records like other models"""
-        bravo_table, column_names, values = self.get_bravo_values_by_level(level)
+        bravo_table, column_names, values = self.bravo_get_values_by_level(level)
         if not values:
             return []
 
@@ -153,9 +153,9 @@ class ProductCategory(models.Model):
 
         return queries
 
-    def get_bravo_delete_sql_by_level(self, level):
-        records = self.filter_bravo_records()
-        bravo_table = self.get_bravo_table_by_level(level)
+    def bravo_get_delete_sql_by_level(self, level):
+        records = self.bravo_filter_records()
+        bravo_table = self.bravo_get_table_by_level(level)
         records = records.filtered(lambda rec: len(re.findall('/', rec.parent_path)) == level)
         if not records:
             return []
@@ -194,15 +194,15 @@ class ProductCategory(models.Model):
                         WHERE {where_query_placholder}
                     """
             queries.append((query, set_query_params + sub_where_params))
-            offset += num_param_per_where_condition * num_row_per_request
+            offset += num_param_per_where_condition * actual_num_row
 
         return queries
 
-    def get_delete_sql(self):
-        delete_sql_level_1 = self.get_bravo_delete_sql_by_level(1)
-        delete_sql_level_2 = self.get_bravo_delete_sql_by_level(2)
-        delete_sql_level_3 = self.get_bravo_delete_sql_by_level(3)
-        delete_sql_level_4 = self.get_bravo_delete_sql_by_level(4)
+    def bravo_get_delete_sql(self):
+        delete_sql_level_1 = self.bravo_get_delete_sql_by_level(1)
+        delete_sql_level_2 = self.bravo_get_delete_sql_by_level(2)
+        delete_sql_level_3 = self.bravo_get_delete_sql_by_level(3)
+        delete_sql_level_4 = self.bravo_get_delete_sql_by_level(4)
         queries = []
         queries.extend(delete_sql_level_1)
         queries.extend(delete_sql_level_2)
@@ -210,11 +210,11 @@ class ProductCategory(models.Model):
         queries.extend(delete_sql_level_4)
         return queries
 
-    def get_update_sql(self, values):
-        update_sql_level_1 = self.get_bravo_update_sql_by_level(1)
-        update_sql_level_2 = self.get_bravo_update_sql_by_level(2)
-        update_sql_level_3 = self.get_bravo_update_sql_by_level(3)
-        update_sql_level_4 = self.get_bravo_update_sql_by_level(4)
+    def bravo_get_update_sql(self, values):
+        update_sql_level_1 = self.bravo_get_update_sql_by_level(1)
+        update_sql_level_2 = self.bravo_get_update_sql_by_level(2)
+        update_sql_level_3 = self.bravo_get_update_sql_by_level(3)
+        update_sql_level_4 = self.bravo_get_update_sql_by_level(4)
         queries = []
         queries.extend(update_sql_level_1)
         queries.extend(update_sql_level_2)

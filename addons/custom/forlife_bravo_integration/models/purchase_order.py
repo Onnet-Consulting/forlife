@@ -17,20 +17,20 @@ class PurchaseOrder(models.Model):
     br5 = BravoCharField(bravo_name='DocCode', bravo_default='PO')
 
     @api.model
-    def get_insert_default_value(self):
+    def bravo_get_default_insert_value(self):
         return {
             'PushDate': 'GETUTCDATE()',
         }
 
-    def get_bravo_update_values(self, values):
+    def bravo_get_update_values(self, values):
         return False
 
     def button_confirm(self):
         res = super().button_confirm()
         # FIXME: push below function to job queue
-        self.sudo().insert_into_bravo_db()
+        self.sudo().bravo_insert()
         return res
 
     @api.model
-    def get_bravo_filter_domain(self):
+    def bravo_get_filter_domain(self):
         return [('state', 'in', ('purchase', 'done'))]

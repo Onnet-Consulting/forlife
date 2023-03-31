@@ -9,6 +9,7 @@ DEFAULT_VALUE = {
     'PushDate': 'GETUTCDATE()'
 }
 
+# FIXME: this file is not correct, check documentation and update
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
@@ -39,7 +40,8 @@ class BravoAccountMove(models.AbstractModel):
 
     move_id = fields.Many2one('account.move', required=True)
 
-    def get_bravo_table(self):
+    @api.model
+    def bravo_get_table(self):
         return self._bravo_table
 
     def get_bravo_insert_sql(self):
