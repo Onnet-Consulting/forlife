@@ -27,6 +27,7 @@ class ResPartner(models.Model):
         ctx.update({
             'default_partner_card_rank_id': partner_card_rank.id,
             'default_old_card_rank_id': partner_card_rank.card_rank_id.id,
+            'brand_id': partner_card_rank.brand_id.id,
         })
         return {
             'type': 'ir.actions.act_window',
