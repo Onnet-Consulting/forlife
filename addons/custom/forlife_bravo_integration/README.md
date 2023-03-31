@@ -55,10 +55,15 @@ ERROR: Unable to set system administrator password: Password validation failed. 
    ```sql
       SELECT * FROM sys.time_zone_info;
    ```
-   2. default datetime value in specific timezone
+   2. default datetime value in UTC timezone
    ```sql
-      insert into B20Warehouse (PushDate) values(SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time')
+      insert into B20Warehouse (PushDate) values(GETUTCDATE())
    ```
+   3. default datetime value in specific timezone
+   ```sql
+       insert into B20Warehouse (PushDate) values(SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time')
+   ```
+   
    
 5. Can't install pyodbc <br/><br/>
 _ERROR_
