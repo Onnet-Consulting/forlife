@@ -13,14 +13,6 @@
 					<field name="is_passersby"/>
                     <field name="is_inter_company_purchase" invisible="1"/>
                 </xpath>
-				<field name="vat" position="after">
-					<field name="supplier_group"/>
-					<field name="product_category_id"/>
-				</field>
-				<field name="function" position="before">
-					<field name="gender" attrs="{'invisible': [('is_company', '=', True)]}"/>
-					<field name="date_of_birth" attrs="{'invisible': [('is_company', '=', True)]}"/>
-				</field>
             </field>
         </record>
 

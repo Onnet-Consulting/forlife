@@ -31,7 +31,6 @@
         'views/assets_assets_views.xml',
         'views/res_headbank.xml',
         'views/res_bank_view.xml',
-        'views/product_config_views.xml',
         'views/account_analytic_account.xml',
         'views/product_template_views.xml',
 
