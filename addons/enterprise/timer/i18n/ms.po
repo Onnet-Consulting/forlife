@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* timer
 # 
+# Translators:
+# Mehjabin Farsana, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.4alpha1+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-21 08:56+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
+"Last-Translator: Mehjabin Farsana, 2022\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,17 +22,17 @@ msgstr ""
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Dicipta oleh"
 
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Dicipta pada"
 
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nama paparan"
 
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_mixin__display_timer_pause
@@ -53,7 +57,7 @@ msgstr ""
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_mixin__is_timer_running
@@ -64,17 +68,17 @@ msgstr ""
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Terakhir Diubah suai pada"
 
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Kemas Kini Terakhir oleh"
 
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Kemas Kini Terakhir pada"
 
 #. module: timer
 #: model:ir.model.constraint,message:timer.constraint_timer_timer_unique_timer
@@ -117,7 +121,7 @@ msgstr ""
 #: code:addons/timer/static/src/js/timer_toggle_button.js:0
 #, python-format
 msgid "Stop"
-msgstr ""
+msgstr "Berhenti"
 
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_mixin__timer_pause
@@ -144,7 +148,7 @@ msgstr ""
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_timer__user_id
 msgid "User"
-msgstr ""
+msgstr "pengguna"
 
 #. module: timer
 #: model:ir.model.fields,field_description:timer.field_timer_mixin__user_timer_id

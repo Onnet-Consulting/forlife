@@ -23,27 +23,27 @@ msgstr ""
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 msgid "# Days To Convert"
-msgstr ""
+msgstr "# Dana do konverzije"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 msgid "#Days to Assign"
-msgstr ""
+msgstr "#Dana do dodeljivanja"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 msgid "% Opportunities"
-msgstr ""
+msgstr "% Prodajnih prilika"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_dashboard
 msgid "Average Deal Size"
-msgstr ""
+msgstr "Prosečna veličina posla"
 
 #. module: crm_enterprise
 #: model:ir.model,name:crm_enterprise.model_crm_activity_report
 msgid "CRM Activity Analysis"
-msgstr ""
+msgstr "CRM analiza aktivnosti"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_view_map
@@ -54,50 +54,50 @@ msgstr "Kupac"
 #: model:ir.actions.act_window,name:crm_enterprise.crm_lead_action_dashboard
 #: model:ir.ui.menu,name:crm_enterprise.crm_enterprise_dashboard_menu
 msgid "Dashboard"
-msgstr ""
+msgstr "Kontrolna tabla"
 
 #. module: crm_enterprise
 #: model:ir.model.fields,field_description:crm_enterprise.field_crm_lead__days_to_convert
 msgid "Days To Convert"
-msgstr ""
+msgstr "Dana do konverzije"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_dashboard
 msgid "Days to Assign"
-msgstr ""
+msgstr "Dana do dodeljivanja"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_dashboard
 msgid "Days to Close"
-msgstr "Dana do Zatvaranja"
+msgstr "Dana do zatvaranja"
 
 #. module: crm_enterprise
 #: model:ir.model.fields,field_description:crm_enterprise.field_crm_lead__days_exceeding_closing
 msgid "Exceeded Closing Days"
-msgstr ""
+msgstr "Prekoračeni dani do zatvaranja"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_dashboard
 msgid "Exceeding Close Days"
-msgstr ""
+msgstr "Ističu dani do zatvaranja"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 msgid "Expected MRR"
-msgstr ""
+msgstr "Očekivani MPP"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_dashboard
 msgid "Expected Revenue"
-msgstr "Ocekivani Prihod"
+msgstr "Očekivani prihod"
 
 #. module: crm_enterprise
 #: model:ir.model.fields,field_description:crm_enterprise.field_crm_activity_report__won_status
 #: model:ir.model.fields,field_description:crm_enterprise.field_crm_lead__won_status
 msgid "Is Won"
-msgstr ""
+msgstr "Dobijeno"
 
 #. module: crm_enterprise
 #: model:ir.model,name:crm_enterprise.model_crm_lead
@@ -107,19 +107,19 @@ msgstr "Lid/Prodajna prilika"
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_view_pivot
 msgid "Leads"
-msgstr "Tragovi"
+msgstr "Lidovi"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 msgid "Leads/Opportunities"
-msgstr ""
+msgstr "Lidovi/Prodajne prilike"
 
 #. module: crm_enterprise
 #: model:ir.model.fields.selection,name:crm_enterprise.selection__crm_activity_report__won_status__lost
 #: model:ir.model.fields.selection,name:crm_enterprise.selection__crm_lead__won_status__lost
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_activity_report_view_search
 msgid "Lost"
-msgstr "Izgubljen"
+msgstr "Izgubljeno"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
@@ -131,7 +131,7 @@ msgstr "Posrednik"
 #: model_terms:ir.actions.act_window,help:crm_enterprise.crm_lead_action_dashboard
 #: model_terms:ir.actions.act_window,help:crm_enterprise.crm_opportunity_action_dashboard
 msgid "No data found!"
-msgstr ""
+msgstr "Nema pronađenih podataka!"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
@@ -150,18 +150,18 @@ msgstr "U toku"
 #. module: crm_enterprise
 #: model:ir.actions.act_window,name:crm_enterprise.crm_opportunity_action_dashboard
 msgid "Pipeline Analysis"
-msgstr ""
+msgstr "Analiza prodajnog levka"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 msgid "Prorated MRR"
-msgstr ""
+msgstr "Proporcionalni MPP"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_dashboard
 msgid "Prorated Revenue"
-msgstr ""
+msgstr "Proporcionalni prihod"
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_dashboard_view
@@ -172,16 +172,18 @@ msgstr "Prodajni Timovi"
 #: model_terms:ir.actions.act_window,help:crm_enterprise.crm_lead_action_dashboard
 msgid "This Dashboard allows you to see at a glance how well you are doing."
 msgstr ""
+"Ova kontrolna tabla vam omogućava da na prvi pogled vidite koliko dobro "
+"radite."
 
 #. module: crm_enterprise
 #: model_terms:ir.actions.act_window,help:crm_enterprise.crm_opportunity_action_dashboard
 msgid "Use this menu to have an overview of your Pipeline."
-msgstr ""
+msgstr "Koristite ovaj meni za pregled vašeg prodajnog levka."
 
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_opportunity_view_dashboard
 msgid "Win/Loss Ratio"
-msgstr ""
+msgstr "Odnos dobijeno/izgubljeno"
 
 #. module: crm_enterprise
 #: model:ir.model.fields.selection,name:crm_enterprise.selection__crm_activity_report__won_status__won
@@ -198,4 +200,4 @@ msgstr "dana"
 #. module: crm_enterprise
 #: model_terms:ir.ui.view,arch_db:crm_enterprise.crm_lead_view_graph
 msgid "leads"
-msgstr ""
+msgstr "lidovi"

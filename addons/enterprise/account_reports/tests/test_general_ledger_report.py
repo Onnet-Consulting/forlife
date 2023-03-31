@@ -82,6 +82,104 @@ class TestGeneralLedgerReport(TestAccountReportsCommon, odoo.tests.HttpCase):
     # -------------------------------------------------------------------------
     # TESTS: General Ledger
     # -------------------------------------------------------------------------
+    def test_general_ledger_unaffected_earnings_current_fiscal_year(self):
+        def invoice_move(date):
+            return self.env['account.move'].create({
+                'move_type': 'entry',
+                'date': fields.Date.from_string(date),
+                'journal_id': self.company_data['default_journal_misc'].id,
+                'line_ids': [
+                    (0, 0, {'debit': 1000.0, 'credit': 0.0,    'name': 'payable', 'account_id': self.company_data['default_account_payable'].id}),
+                    (0, 0, {'debit': 2000.0, 'credit': 0.0,    'name': 'expense', 'account_id': self.company_data['default_account_expense'].id}),
+                    (0, 0, {'debit': 0.0,    'credit': 3000.0, 'name': 'revenue', 'account_id': self.company_data['default_account_revenue'].id}),
+                ],
+            })
+
+        move_2009_12 = invoice_move('2009-12-31')
+        move_2009_12.action_post()
+
+        move_2010_01 = invoice_move('2010-01-31')
+        move_2010_01.action_post()
+
+        move_2010_02 = self.env['account.move'].create({
+            'move_type': 'entry',
+            'date': fields.Date.from_string('2010-02-01'),
+            'journal_id': self.company_data['default_journal_misc'].id,
+            'line_ids': [
+                (0, 0, {'debit': 100.0, 'credit': 0.0,    'name': 'payable', 'account_id': self.company_data['default_account_payable'].id}),
+                (0, 0, {'debit': 200.0, 'credit': 0.0,    'name': 'expense', 'account_id': self.company_data['default_account_expense'].id}),
+                (0, 0, {'debit': 0.0,    'credit': 300.0, 'name': 'revenue', 'account_id': self.company_data['default_account_revenue'].id}),
+            ],
+        })
+        move_2010_02.action_post()
+
+        move_2010_03 = invoice_move('2010-03-01')
+        move_2010_03.action_post()
+
+        options = self._generate_options(self.report, fields.Date.from_string('2010-02-01'), fields.Date.from_string('2010-02-28'))
+
+        self.assertLinesValues(
+            self.report._get_lines(options),
+            #   Name                                    Debit           Credit          Balance
+            [   0,                                      4,              5,              6],
+            [
+                ('211000 Account Payable',              2100.0,         '',             2100.0),
+                ('400000 Product Sales',                '',             3300.0,         -3300.0),
+                ('600000 Expenses',                     2200.0,          '',            2200.0),
+                ('999999 Undistributed Profits/Losses', 2000.0,         3000.0,         -1000.0),
+                ('Total',                               6300.0,         6300.0,         0.0),
+            ],
+        )
+
+    def test_general_ledger_unaffected_earnings_previous_fiscal_year(self):
+        def invoice_move(date):
+            return self.env['account.move'].create({
+                'move_type': 'entry',
+                'date': fields.Date.from_string(date),
+                'journal_id': self.company_data['default_journal_misc'].id,
+                'line_ids': [
+                    (0, 0, {'debit': 1000.0, 'credit': 0.0,    'name': 'payable', 'account_id': self.company_data['default_account_payable'].id}),
+                    (0, 0, {'debit': 2000.0, 'credit': 0.0,    'name': 'expense', 'account_id': self.company_data['default_account_expense'].id}),
+                    (0, 0, {'debit': 0.0,    'credit': 3000.0, 'name': 'revenue', 'account_id': self.company_data['default_account_revenue'].id}),
+                ],
+            })
+
+        move_2009_12 = invoice_move('2009-12-31')
+        move_2009_12.action_post()
+
+        move_2010_01 = invoice_move('2010-01-31')
+        move_2010_01.action_post()
+
+        move_2010_02 = self.env['account.move'].create({
+            'move_type': 'entry',
+            'date': fields.Date.from_string('2010-02-01'),
+            'journal_id': self.company_data['default_journal_misc'].id,
+            'line_ids': [
+                (0, 0, {'debit': 100.0, 'credit': 0.0,    'name': 'payable', 'account_id': self.company_data['default_account_payable'].id}),
+                (0, 0, {'debit': 200.0, 'credit': 0.0,    'name': 'expense', 'account_id': self.company_data['default_account_expense'].id}),
+                (0, 0, {'debit': 0.0,    'credit': 300.0, 'name': 'revenue', 'account_id': self.company_data['default_account_revenue'].id}),
+            ],
+        })
+        move_2010_02.action_post()
+
+        move_2010_03 = invoice_move('2010-03-01')
+        move_2010_03.action_post()
+
+        options = self._generate_options(self.report, fields.Date.from_string('2010-01-01'), fields.Date.from_string('2010-02-28'))
+
+        self.assertLinesValues(
+            self.report._get_lines(options),
+            #   Name                                    Debit           Credit          Balance
+            [   0,                                      4,              5,              6],
+            [
+                ('211000 Account Payable',              2100.0,         '',             2100.0),
+                ('400000 Product Sales',                '',             3300.0,         -3300.0),
+                ('600000 Expenses',                     2200.0,          '',            2200.0),
+                ('999999 Undistributed Profits/Losses', 2000.0,         3000.0,         -1000.0),
+                ('Total',                               6300.0,         6300.0,         0.0),
+            ],
+        )
+
     def test_general_ledger_fold_unfold_multicompany_multicurrency(self):
         ''' Test unfolding a line when rendering the whole report. '''
         options = self._generate_options(self.report, fields.Date.from_string('2017-01-01'), fields.Date.from_string('2017-12-31'))
@@ -216,7 +314,7 @@ class TestGeneralLedgerReport(TestAccountReportsCommon, odoo.tests.HttpCase):
         self.report.load_more_limit = 2
 
         options = self._generate_options(self.report, fields.Date.from_string('2017-01-01'), fields.Date.from_string('2017-12-31'))
-        options['unfolded_lines'] = [f'-account.account-{self.company_data["default_account_revenue"].id}']
+        options['unfolded_lines'] = [self.env['account.report']._get_generic_line_id('account.account', self.company_data["default_account_revenue"].id)]
 
         report_lines = self.report._get_lines(options)
 
@@ -329,7 +427,7 @@ class TestGeneralLedgerReport(TestAccountReportsCommon, odoo.tests.HttpCase):
 
         # Init options.
         options = self._generate_options(self.report, fields.Date.from_string('2017-01-01'), fields.Date.from_string('2017-12-31'))
-        options['unfolded_lines'] = [f'-account.account-{foreign_curr_account.id}']
+        options['unfolded_lines'] = [self.env['account.report']._get_generic_line_id('account.account', foreign_curr_account.id)]
 
         self.assertLinesValues(
             self.report._get_lines(options),
@@ -388,37 +486,6 @@ class TestGeneralLedgerReport(TestAccountReportsCommon, odoo.tests.HttpCase):
                 ('999999 Undistributed Profits/Losses',       200.0,          300.0,          -100.0),
                 ('999999 Undistributed Profits/Losses',          '',           50.0,           -50.0),
                 ('Total',                                     200.0,          350.0,          -150.0),
-            ],
-        )
-
-    def test_general_ledger_filter_date(self):
-        move_07_2017 = self.env['account.move'].create({
-            'move_type': 'entry',
-            'date': fields.Date.from_string('2017-07-10'),
-            'journal_id': self.company_data['default_journal_sale'].id,
-            'line_ids': [
-                (0, 0, {'debit': 1000.0, 'credit': 0.0, 'name': '2017_1_1', 'account_id': self.company_data['default_account_receivable'].id}),
-                (0, 0, {'debit': 0.0, 'credit': 1000.0, 'name': '2017_1_2', 'account_id': self.company_data['default_account_revenue'].id}),
-            ],
-        })
-        move_07_2017.action_post()
-
-        # Init options
-        options = self._generate_options(self.report, fields.Date.from_string('2017-07-01'), fields.Date.from_string('2017-07-31'))
-
-        # There should not be an initial balance in account 400000 since it is an income
-        self.assertLinesValues(
-            self.report._get_lines(options),
-            #   Name                                    Debit           Credit          Balance
-            [   0,                                      4,              5,              6],
-            [
-                ('121000 Account Receivable',           2000.0,         '',             2000.0),
-                ('211000 Account Payable',              100.0,          '',             100.0),
-                ('211000 Account Payable',              50.0,           '',             50.0),
-                ('400000 Product Sales',                '',             1000.0,         -1000.0),
-                ('999999 Undistributed Profits/Losses', 200.0,          300.0,          -100.0),
-                ('999999 Undistributed Profits/Losses', '',             50.0,           -50.0),
-                ('Total',                               2350.0,         1350.0,         1000.0),
             ],
         )
 

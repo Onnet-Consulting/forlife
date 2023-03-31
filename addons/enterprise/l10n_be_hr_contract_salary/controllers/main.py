@@ -191,6 +191,7 @@ class HrContractSalary(main.HrContractSalary):
         if int(force_car):
             force_car_id = request.env['fleet.vehicle'].sudo().browse(int(force_car))
             available_cars |= force_car_id
+            contract.car_id = force_car_id
 
         def generate_dropdown_group_data(available, can_be_requested, only_new, allow_new_cars, vehicle_type='Car'):
             # Creates the necessary data for the dropdown group, looks like this
@@ -201,7 +202,7 @@ class HrContractSalary(main.HrContractSalary):
             #     ],
             #     'other_category': ...
             # }
-            model_categories = (available.model_id.category_id | can_be_requested.category_id)
+            model_categories = (available.category_id | available.model_id.category_id | can_be_requested.category_id)
             model_categories_ids = model_categories.sorted(key=lambda c: (c.sequence, c.id)).ids
             model_categories_ids.append(0) # Case when no category
             result = OrderedDict()
@@ -209,9 +210,21 @@ class HrContractSalary(main.HrContractSalary):
                 category_id = model_categories.filtered(lambda c: c.id == category)
                 car_values = []
                 if not only_new:
-                    cars = available.filtered_domain([
-                        ('model_id.category_id', '=', category),
-                    ])
+                    if not category:  # "No Category"
+                        domain = [
+                            ('category_id', '=', False),
+                            ('model_id.category_id', '=', False),
+                        ]
+                    else:
+                        domain = [
+                            '|',
+                                ('category_id', '=', category),
+                                '&',
+                                    ('category_id', '=', False),
+                                    ('model_id.category_id', '=', category),
+                        ]
+
+                    cars = available.filtered_domain(domain)
                     car_values.extend([(
                         'old-%s' % (car.id),
                         '%s/%s \u2022 %s € \u2022 %s%s%s' % (
@@ -430,6 +443,11 @@ class HrContractSalary(main.HrContractSalary):
             payslip.input_line_ids = [(0, 0, {
                 'input_type_id': request.env.ref('l10n_be_hr_payroll.input_fixed_commission').id,
                 'amount': new_contract.commission_on_target,
+            })]
+        if new_contract.l10n_be_bicyle_cost:
+            payslip.input_line_ids = [(0, 0, {
+                'input_type_id': request.env.ref('l10n_be_hr_payroll.cp200_input_cycle_transportation').id,
+                'amount': 4,  # Considers cycling one day per week
             })]
         return payslip
 

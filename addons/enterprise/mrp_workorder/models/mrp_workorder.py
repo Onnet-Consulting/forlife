@@ -97,8 +97,9 @@ class MrpProductionWorkcenterLine(models.Model):
         res = super().write(values)
         if 'qty_producing' in values:
             for wo in self:
-                if wo.current_quality_check_id.component_id:
-                    wo.current_quality_check_id._update_component_quantity()
+                for check in wo.check_ids:
+                    if check.component_id:
+                        check._update_component_quantity()
         return res
 
     def action_back(self):
@@ -256,7 +257,7 @@ class MrpProductionWorkcenterLine(models.Model):
     def button_start(self):
         res = super().button_start()
         for check in self.check_ids:
-            if check.component_tracking == 'serial' and check.component_id:
+            if check.component_id:
                 check._update_component_quantity()
         return res
 
@@ -436,7 +437,8 @@ class MrpProductionWorkcenterLine(models.Model):
             for wo in (self.production_id | backorder).workorder_ids:
                 if wo.state in ('done', 'cancel'):
                     continue
-                wo.current_quality_check_id.update(wo._defaults_from_move(wo.move_id))
+                if not wo.current_quality_check_id or not wo.current_quality_check_id.move_line_id:
+                    wo.current_quality_check_id.update(wo._defaults_from_move(wo.move_id))
                 if wo.move_id:
                     wo.current_quality_check_id._update_component_quantity()
             if not self.env.context.get('no_start_next'):
@@ -522,6 +524,7 @@ class MrpProductionWorkcenterLine(models.Model):
             'quality.check': self.check_ids._get_fields_for_tablet(sorted_check_list),
             'operation': self.operation_id.read(self.operation_id._get_fields_for_tablet())[0] if self.operation_id else {},
             'working_state': self.workcenter_id.working_state,
+            'has_bom': bool(self.production_id.bom_id),
             'views': {
                 'workorder': self.env.ref('mrp_workorder.mrp_workorder_view_form_tablet').id,
                 'check': self.env.ref('mrp_workorder.quality_check_view_form_tablet').id,

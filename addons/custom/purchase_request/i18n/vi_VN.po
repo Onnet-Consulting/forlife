@@ -1,0 +1,748 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* purchase_request
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-12-26 06:52+0000\n"
+"PO-Revision-Date: 2022-12-26 06:52+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+msgid "<b>Company:</b>"
+msgstr "<b>Công ty:</b>"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+msgid "<b>End date:</b>"
+msgstr "<b>Ngày kết thúc:</b>"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+msgid "<b>Rejection reason:</b>"
+msgstr "<b>Lí do từ chối:</b>"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+msgid "<b>Requested by:</b>"
+msgstr "<b>Yêu cầu bởi:</b>"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+msgid "<b>Start date:</b>"
+msgstr "<b>Ngày bắt đầu:</b>"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+msgid "<b>Vendor:</b>"
+msgstr "<b>Nhà cung cấp:</b>"
+
+#. module: purchase_request
+#: model:mail.template,body_html:purchase_request.approve_purchase_email_template
+msgid ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Dear all :\n"
+"\n"
+"                        <br/>\n"
+"                        <br/>\n"
+"                        Purchase Request <strong>${object.name}</strong> has been approved\n"
+"\n"
+"                        <br/>\n"
+"                        <br/>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"                    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"                        Dear all :\n"
+"\n"
+"                        <br/>\n"
+"                        <br/>\n"
+"                        Yêu cầu mua hàng <strong>${object.name}</strong> đã được duyệt\n"
+"\n"
+"                        <br/>\n"
+"                        <br/>\n"
+"                    </p>\n"
+"                </div>\n"
+"            "
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_kanban_view
+msgid ""
+"<strong>\n"
+"                                            <span>\n"
+"                                                End date:\n"
+"                                            </span>\n"
+"                                        </strong>"
+msgstr ""
+"<strong>\n"
+"                                            <span>\n"
+"                                                Ngày kết thúc:\n"
+"                                            </span>\n"
+"                                        </strong>"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_kanban_view
+msgid ""
+"<strong>\n"
+"                                            <span>\n"
+"                                                Start date:\n"
+"                                            </span>\n"
+"                                        </strong>"
+msgstr ""
+"<strong>\n"
+"                                            <span>\n"
+"                                                Ngày bắt đầu:\n"
+"                                            </span>\n"
+"                                        </strong>"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_kanban_view
+msgid ""
+"<strong>\n"
+"                                            <span>\n"
+"                                                Total:\n"
+"                                            </span>\n"
+"                                        </strong>"
+msgstr ""
+"<strong>\n"
+"                                            <span>\n"
+"                                                Tồng:\n"
+"                                            </span>\n"
+"                                        </strong>"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "Approve"
+msgstr "Chấp thuận"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+#: model_terms:ir.ui.view,arch_db:purchase_request.reject_request_wizard_from
+#: model_terms:ir.ui.view,arch_db:purchase_request.cancel_request_wizard_from
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__company_id
+msgid "Company"
+msgstr "Công ty"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__create_uid
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__create_uid
+#: model:ir.model.fields,field_description:purchase_request.field_reject_purchase_request__create_uid
+msgid "Created by"
+msgstr "Được tảo bởi"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__create_date
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__create_date
+#: model:ir.model.fields,field_description:purchase_request.field_reject_purchase_request__create_date
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__description
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+msgid "Description"
+msgstr "Mô tả"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__display_name
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__display_name
+#: model:ir.model.fields,field_description:purchase_request.field_reject_purchase_request__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__end_date
+msgid "End Date"
+msgstr "Ngày kết thúc"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__id
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__id
+#: model:ir.model.fields,field_description:purchase_request.field_reject_purchase_request__id
+msgid "ID"
+msgstr ""
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request____last_update
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line____last_update
+#: model:ir.model.fields,field_description:purchase_request.field_reject_purchase_request____last_update
+msgid "Last Modified on"
+msgstr "Sửa lần cuối vào"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__write_uid
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__write_uid
+#: model:ir.model.fields,field_description:purchase_request.field_reject_purchase_request__write_uid
+msgid "Last Updated by"
+msgstr "Cập nhật lần cuối bởi"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__write_date
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__write_date
+#: model:ir.model.fields,field_description:purchase_request.field_reject_purchase_request__write_date
+msgid "Last Updated on"
+msgstr "Lần cập nhật cuối"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "Lines"
+msgstr "Chi tiết"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.reject_request_wizard_from
+msgid "Lost Reason"
+msgstr "Lí do mất"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__order_ids
+msgid "Order"
+msgstr "Đơn hàng"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__order_lines
+msgid "Order Lines"
+msgstr "Chi tiết đơn hàng"
+
+#. module: purchase_request
+#: model:ir.ui.menu,name:purchase_request.purchase_order_menu_action
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "Orders"
+msgstr "Danh sách đơn hàng"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__out_of_stock
+msgid "Out Of Stock"
+msgstr "Hết hàng"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__price_unit
+msgid "Price Unit"
+msgstr "Đơn giá"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+msgid "Price unit"
+msgstr "Đơn giá"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_production_order__product_tmpl_id
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_id
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+#: model:ir.model.fields,field_description:purchase_request.field_production_order__product_id
+msgid "Product"
+msgstr "Sản phẩm"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_production_order__product_id
+msgid "Product"
+msgstr "Số phiếu"
+
+#. module: purchase_request
+#: model:mail.template,name:purchase_request.approve_purchase_email_template
+msgid "Purchase Approved"
+msgstr "Đơn mua hàng được duyệt"
+
+#. module: purchase_request
+#: model:ir.model,name:purchase_request.model_purchase_order
+#: model:ir.model.fields,field_description:purchase_request.field_approval_logs__purchase_order_id
+msgid "Purchase Order"
+msgstr "Đơn mua hàng"
+
+#. module: purchase_request
+#: model:ir.actions.act_window,name:purchase_request.purchase_request_action
+#: model:ir.model,name:purchase_request.model_purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_pivot_view
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+msgid "Purchase Request"
+msgstr "Yêu cầu mua hàng"
+
+#. module: purchase_request
+#: model:mail.template,subject:purchase_request.approve_purchase_email_template
+msgid "Purchase Request ${object.name} Approved"
+msgstr "Yêu cầu mua hàng được chấp nhận bởi ${object.name}"
+
+#. module: purchase_request
+#: model:ir.model,name:purchase_request.model_purchase_request_line
+msgid "Purchase Request Line"
+msgstr "Chi tiết phiếu yêu cầu mua hàng"
+
+#. module: purchase_request
+#: model:ir.ui.menu,name:purchase_request.root_purchase_requests_menu
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_search_inherit
+msgid "Purchase Requests"
+msgstr "Phiếu yêu cầu mua hàng"
+
+#. module: purchase_request
+#: model:ir.actions.act_window,name:purchase_request.purchase_order_action
+msgid "Purchase order"
+msgstr "Phiếu mua hàng"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__quantity
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+#: model:ir.model.fields,field_description:purchase_request.field_production_order__product_qty
+#: model:ir.model.fields,field_description:purchase_request.field_production_order_line__product_qty
+msgid "Quantity"
+msgstr "Số lượng"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "Reject"
+msgstr "Từ chối"
+
+#. module: purchase_request
+#: model:ir.actions.act_window,name:purchase_request.reject_request_wizard
+msgid "Reject Request"
+msgstr "Từ chối yêu cầu"
+
+#. module: purchase_request
+#: model:ir.model,name:purchase_request.model_reject_purchase_request
+msgid "Reject purchase request"
+msgstr "Từ chối phiếu yêu cầu mua hàng"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__rejection_reason
+#: model:ir.model.fields,field_description:purchase_request.field_reject_purchase_request__rejection_reason
+msgid "Rejection Reason"
+msgstr "Lí do từ chối"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_order__request_id
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__request_id
+msgid "Request"
+msgstr "Yêu cầu"
+
+#. module: purchase_request
+#: model:ir.actions.report,name:purchase_request.purchase_request_report
+msgid "Request Report"
+msgstr "Báo cáo yêu cầu mua hàng"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__name
+msgid "Request name"
+msgstr "Tên yêu cầu"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__user_id
+msgid "Requested by"
+msgstr "Yêu cầu bởi"
+
+#. module: purchase_request
+#: model:ir.ui.menu,name:purchase_request.purchase_request_menu_action
+msgid "Requests"
+msgstr "Yêu cầu"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "Reset to draft"
+msgstr "Đưa về dự thảo"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__start_date
+msgid "Start Date"
+msgstr "Ngày bắt đầu"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+#: model_terms:ir.ui.view,arch_db:purchase_request.reject_asset_wizard_form
+#: model_terms:ir.ui.view,arch_db:purchase_request.reject_request_wizard_from
+msgid "Submit"
+msgstr "Đồng ý"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "Submit for Approval"
+msgstr ""
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__total
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_report_template
+msgid "Total"
+msgstr "Tổng"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__total_price
+msgid "Total Price"
+msgstr "Tổng tiền"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_order__partner_id
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__vendor_code
+msgid "Vendor"
+msgstr "Nhà cung cấp"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__approve
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "approve"
+msgstr "Phê duyệt"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__cancel
+msgid "cancel"
+msgstr "Hủy"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__draft
+msgid "draft"
+msgstr "Dự thảo"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__reject
+msgid "reject"
+msgstr "Từ chối"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__to_be_approved
+msgid "to be approved"
+msgstr "được chấp thuận"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__employee_id
+msgid "User Request"
+msgstr "Người yêu cầu"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "User request"
+msgstr "Người yêu cầu"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_production_order__code
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_search_view
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_tree
+msgid "Reference"
+msgstr "Diễn giải"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_product_product__department_id
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__department_id
+msgid "Department"
+msgstr "Phòng/ban"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__request_date
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__request_date
+msgid "Request date"
+msgstr "Ngày yêu cầu"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__date_planned
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__date_planned
+msgid "Expected Arrival"
+msgstr "Hạn xử lý"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__account_analytic_id
+msgid "Account Analytic Account"
+msgstr "Trung tâm chi phí"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_qty
+msgid "Quantity"
+msgstr "Số lượng"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__approval_logs__state__confirm
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__confirm
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request_line__state__confirm
+msgid "Confirm"
+msgstr "Xác nhận"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__approval_logs__state__approved
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__approved
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request_line__state__approved
+msgid "Approved"
+msgstr "Phê duyệt"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__approval_logs__state__close
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request__state__close
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_request_line__state__close
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "Close"
+msgstr "Đóng"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_type
+msgid "Type"
+msgstr "Loại hàng hóa"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__asset_description
+msgid "Asset description"
+msgstr "Mô tả tài sản"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__purchase_quantity
+msgid "Quantity Purchase"
+msgstr "Số lượng đặt mua"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__exchange_quantity
+msgid "Exchange Quantity"
+msgstr "Số lượng quy đổi"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__purchase_uom
+msgid "UOM Purchase"
+msgstr "Đơn vị mua"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_uom
+msgid "UOM Product"
+msgstr "Đơn vị sản phẩm"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__production_id
+msgid "Production Order Code"
+msgstr "Lệnh sản xuất"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__order_quantity
+msgid "Quantity Order"
+msgstr "Số lượng đã đặt"
+
+#. module: purchase_request
+#: model:ir.model,name:purchase_request.model_approval_logs
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_order__approval_logs_ids
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__approval_logs_ids
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_order_form_forlife_inherit
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "Approval Logs"
+msgstr "Nhật ký phê duyệt"
+
+#. module: purchase_request
+#: model:ir.actions.act_window,name:purchase_request.production_order_action
+#: model:ir.model,name:purchase_request.model_production_order
+#: model:ir.ui.menu,name:purchase_request.production_order
+msgid "Attach Ingredients/Product Separation"
+msgstr ""
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_order__has_contract_commerce
+msgid "Commerce Contract"
+msgstr "Có hóa đơn hay không?"
+
+
+#. module: purchase_request
+#: model:ir.actions.act_window,name:purchase_request.production_order_action
+#: model:ir.model,name:purchase_request.model_production_order
+#: model:ir.ui.menu,name:purchase_request.production_order
+msgid "Attach Ingredients/Product Separation"
+msgstr "Đính kèm/Phân tách sản phẩm"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__production_order__type__normal
+msgid "Attach Ingredients"
+msgstr "Đính kèm NPL"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__production_order__type__phantom
+msgid "Product Separation"
+msgstr "Phân tách sản phẩm"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_production_order__type
+msgid "BoM Type"
+msgstr "Loại nguyên phụ liệu"
+
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_production_order_line__product_id
+msgid "Component"
+msgstr "Thành phần"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_production_order_line__uom_id
+msgid "Unit of Measure"
+msgstr "Đơn vị"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.production_order_form
+msgid "Components"
+msgstr "Thành phần"
+
+#. modules: forlife_purchase, purchase_request
+#: model:ir.actions.act_window,name:forlife_purchase.forlife_event_action
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__event_id
+#: model:ir.ui.menu,name:purchase_request.forlife_event_menu
+msgid "Program of events"
+msgstr "Chương trình sự kiện"
+
+#. module: purchase_request
+#: model:ir.ui.menu,name:purchase_request.forlife_production_menu
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_order__production_id
+msgid "Production order"
+msgstr "Lệnh sản xuất"
+
+
+#. modules: forlife_purchase, purchase_request
+#: model:ir.actions.act_window,name:forlife_purchase.forlife_partner_action
+#: model:ir.ui.menu,name:purchase_request.partner_menu
+msgid "Supplier"
+msgstr "Nhà cung cấp"
+
+#. module: purchase_request
+#: model:ir.ui.menu,name:purchase_request.purchase_category_menu
+msgid "Category"
+msgstr "Danh mục"
+
+#. module: purchase_request
+#: model:ir.model.fields.selection,name:purchase_request.selection__purchase_order__invoice_status__no
+msgid "Nothing to Bill"
+msgstr "Chưa tạo hóa đơn"
+
+#. module: purchase_request
+#. odoo-python
+#: code:addons/purchase_request/models/purchase_request.py:0
+#, python-format
+msgid "Expected Arrival must be greater than request date"
+msgstr "Hạn xử lý phải lớn hơn ngày yêu cầu"
+
+#. module: purchase_request
+#. odoo-python
+#: code:addons/purchase_request/models/purchase_request.py:0
+#, python-format
+msgid "The import file must contain the required column"
+msgstr "File nhập phải chứa cột bắt buộc"
+
+#. module: purchase_request
+#. odoo-python
+#: code:addons/purchase_request/models/purchase_request.py:0
+#, python-format
+msgid "It is mandatory to enter all the commodity information before confirming the purchase request!"
+msgstr "Bắt buộc nhập đầy đủ thông tin hàng hóa trước khi xác nhận yêu cầu mua hàng"
+
+#. module: purchase_request
+#. odoo-python
+#: code:addons/purchase_request/models/purchase_request.py:0
+#, python-format
+msgid "You only delete a record in draft and cancel status"
+msgstr "Chỉ được xóa bản ghi ở trạng thái nháp và hủy"
+
+#. module: purchase_request
+#. odoo-python
+#: code:addons/purchase_request/models/purchase_request.py:0
+#, python-format
+msgid "Quantity purchase must be greater than 0!"
+msgstr "Số lượng đặt mua phải lớn hơn 0"
+
+#. module: purchase_request
+#. odoo-python
+#: code:addons/purchase_request/models/purchase_request.py:0
+#, python-format
+msgid "Exchange quantity must be greater than 0!"
+msgstr "Số lượng quy đổi phải lớn hơn 0!"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_tree
+msgid "Create Purchase Order"
+msgstr "Tạo đơn mua hàng"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.purchase_request_from_view
+msgid "Set to draft"
+msgstr "Đưa về dự thảo"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.cancel_request_wizard_from
+msgid ""
+"<span> Purchase Request has been canceled do you want to create another "
+"draft?</span>"
+msgstr ""
+"<span> Yêu cầu mua hàng đã bị hủy, bạn có muốn tạo một yêu cầu khác?</span>"
+
+#. module: purchase_request
+#: model_terms:ir.ui.view,arch_db:purchase_request.cancel_request_wizard_from
+msgid "Agree"
+msgstr "Đồng ý"
+
+#. module: purchase_request
+#: model:ir.actions.act_window,name:purchase_request.action_cancel_request_wizard
+msgid "Cancel Request"
+msgstr "Hủy yêu cầu"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__user_id
+msgid "User Created"
+msgstr "Người tạo"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__create_date
+msgid "Create Date"
+msgstr "Ngày tạo"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__produce_qty
+msgid "Produce Qty"
+msgstr "Số lượng sản xuất"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__uom_id
+msgid "Unit"
+msgstr "Đơn vị tính"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__unit_price
+msgid "Price"
+msgstr "Đơn giá"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__stock_qty
+msgid "Stock Quantity"
+msgstr "Số lượng nhập kho"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__remaining_qty
+msgid "Remaining Quantity"
+msgstr "Còn lại"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_product_product__employee_id
+msgid "Employee"
+msgstr "Nhân viên"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_product_product__account_analytic_id
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__account_analytic_id
+msgid "Cost Center"
+msgstr "Trung tâm chi phí"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_product_product__asset_location_id
+msgid "Asset Location"
+msgstr "Địa điểm"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__occasion_code_id
+msgid "Occasion code"
+msgstr "Mã vụ việc"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__production_id
+msgid "Manufacturing Order"
+msgstr "Lệnh sản xuất"

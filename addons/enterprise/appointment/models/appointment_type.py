@@ -168,9 +168,9 @@ class AppointmentType(models.Model):
             if invalid_restricted_users:
                 raise ValidationError(_("The following users are in restricted slots but they are not part of the available staff: %s", ", ".join(invalid_restricted_users.mapped('name'))))
             if appointment_type.category == 'anytime':
-                duplicate = anytime_appointments.filtered(lambda apt_type: apt_type.staff_user_ids.ids in appointment_type.staff_user_ids.ids)
+                duplicate = anytime_appointments.filtered(lambda apt_type: bool(apt_type.staff_user_ids & appointment_type.staff_user_ids))
                 if appointment_type.ids:
-                    duplicate = anytime_appointments.filtered(lambda apt_type: apt_type.id not in appointment_type.ids)
+                    duplicate = duplicate.filtered(lambda apt_type: apt_type.id not in appointment_type.ids)
                 if duplicate:
                     raise ValidationError(_("Only one anytime appointment type is allowed for a specific user."))
 
@@ -322,14 +322,20 @@ class AppointmentType(models.Model):
                                      )
                                 )
             )
+            # localized end time for the entire slot on that day
+            local_slot_end = appt_tz.localize(
+                day.replace(hour=0, minute=0, second=0) +
+                timedelta(hours=slot._convert_end_hour_24_format())
+            )
             # Adapt local start to not append slot in the past for today
             if local_start.date() == ref_tz_apt_type.date():
                 while local_start < ref_tz_apt_type + relativedelta(hours=self.min_schedule_hours):
                     local_start += relativedelta(hours=self.appointment_duration)
             local_end = local_start + relativedelta(hours=self.appointment_duration)
 
-            n_slot = int((slot._convert_end_hour_24_format() - (local_start.hour + local_start.minute / 60.0)) /
-                         self.appointment_duration)
+            # if local_start >= local_slot_end, no slot will be appended
+            end_start_delta = ((local_slot_end - local_start).total_seconds() / 3600)
+            n_slot = int(end_start_delta / self.appointment_duration)
             for _ in range(n_slot):
                 slots.append({
                     self.appointment_tz: (

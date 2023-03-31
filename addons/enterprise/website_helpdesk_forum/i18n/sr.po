@@ -32,11 +32,13 @@ msgid ""
 "<i class=\"fa fa-3x rounded bg-secondary m-3 fa-comments fa-3x rounded bg-"
 "secondary m-3\">​</i>"
 msgstr ""
+"<i class=\"fa fa-3x rounded bg-secondary m-3 fa-comments fa-3x rounded bg-"
+"secondary m-3\">​</i>"
 
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.search_result
 msgid "<i class=\"fa fa-fw fa-2x fa-comments\" title=\"Forum Post\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-fw fa-2x fa-comments\" title=\"Forum Post\"/>"
 
 #. module: website_helpdesk_forum
 #: model_terms:ir.ui.view,arch_db:website_helpdesk_forum.question_dropdown

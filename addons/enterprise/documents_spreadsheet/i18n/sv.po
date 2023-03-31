@@ -3,21 +3,21 @@
 # 	* documents_spreadsheet
 # 
 # Translators:
-# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2022
 # Kristoffer Grundström <lovaren@gmail.com>, 2022
 # Simon S, 2022
 # Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
 # Haojun Zou <apollo_zhj@msn.com>, 2022
 # Anders Wallenquist <anders.wallenquist@vertel.se>, 2022
 # Martin Trigaux, 2022
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 09:42+0000\n"
+"POT-Creation-Date: 2022-12-15 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023\n"
 "Language-Team: Swedish (https://www.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,26 +26,21 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: documents_spreadsheet
+#. odoo-python
 #: code:addons/documents_spreadsheet/wizard/save_spreadsheet_template.py:0
 #, python-format
 msgid "\"%s\" saved as template"
 msgstr ""
 
 #. module: documents_spreadsheet
-#: model_terms:ir.ui.view,arch_db:documents_spreadsheet.share_page
-#: model_terms:ir.ui.view,arch_db:documents_spreadsheet.share_single
-msgid ""
-"#{ isSpreadsheet and 'Odoo Spreadsheets not available for download' or ''}"
-msgstr ""
-
-#. module: documents_spreadsheet
+#. odoo-python
 #: code:addons/documents_spreadsheet/models/spreadsheet_template.py:0
 #, python-format
 msgid "%s (copy)"
 msgstr "%s (kopia)"
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/bundle/components/spreadsheet_component.js:0
 #, python-format
 msgid "%s - Template"
@@ -54,8 +49,8 @@ msgstr ""
 #. module: documents_spreadsheet
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.res_config_settings_view_form_inherit_documents_spreadsheet
 msgid ""
-"<strong>Spreadsheets</strong>\n"
-"                            <span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-specific.\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\" role=\"img\"/>"
+"<strong class=\"o_form_label\">Spreadsheets</strong>\n"
+"                            <span class=\"fa fa-lg fa-building-o ms-1\" title=\"Values set here are company-specific.\" aria-label=\"Values set here are company-specific.\" groups=\"base.group_multi_company\" role=\"img\"/>"
 msgstr ""
 
 #. module: documents_spreadsheet
@@ -75,9 +70,11 @@ msgid ""
 "Ask an admin to configure the workspace to be accessible to the users you "
 "want."
 msgstr ""
+"Be en administratör att konfigurera arbetsområdet så att det blir "
+"tillgängligt för de användare du vill."
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_template/template_dialog.xml:0
 #, python-format
 msgid "Blank spreadsheet"
@@ -89,9 +86,11 @@ msgid ""
 "By default, the spreadsheets in this workspace will only be seen and updated"
 " by their <strong>creator</strong>."
 msgstr ""
+"Som standard kommer kalkylbladen i det här arbetsområdet endast att kunna "
+"ses och uppdateras av deras <strong>skapare</strong>."
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_template/template_dialog.xml:0
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.save_spreadsheet_template_view_form
 #, python-format
@@ -125,14 +124,14 @@ msgid "Contributors"
 msgstr "Bidragsgivare"
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_template/template_dialog.xml:0
 #, python-format
 msgid "Create"
 msgstr "Skapa"
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/documents_view/documents_spreadsheet_controller_mixin.xml:0
 #, python-format
 msgid "Create Spreadsheet"
@@ -250,7 +249,7 @@ msgstr ""
 #. module: documents_spreadsheet
 #: model_terms:documents.folder,description:documents_spreadsheet.documents_spreadsheet_folder
 msgid "Move them to another workspace"
-msgstr ""
+msgstr "Flytta dem till ett annat arbetsområde"
 
 #. module: documents_spreadsheet
 #: model_terms:ir.ui.view,arch_db:documents_spreadsheet.spreadsheet_template_view_search
@@ -263,14 +262,14 @@ msgid "Name"
 msgstr "Namn"
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_template/spreadsheet_template_dialog.js:0
 #, python-format
 msgid "New Spreadsheet"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_template/spreadsheet_template_dialog.js:0
 #, python-format
 msgid "New sheet saved in Documents"
@@ -282,7 +281,7 @@ msgid "New spreadsheet"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/bundle/actions/spreadsheet_action.js:0
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_selector_dialog/document_selector_panel.js:0
 #, python-format
@@ -290,10 +289,16 @@ msgid "New spreadsheet created in Documents"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/bundle/actions/spreadsheet_template/spreadsheet_template_action.js:0
 #, python-format
 msgid "New spreadsheet template created"
+msgstr ""
+
+#. module: documents_spreadsheet
+#: model_terms:ir.ui.view,arch_db:documents_spreadsheet.share_page
+#: model_terms:ir.ui.view,arch_db:documents_spreadsheet.share_single
+msgid "Odoo Spreadsheets not available for download"
 msgstr ""
 
 #. module: documents_spreadsheet
@@ -358,7 +363,7 @@ msgid "Spreadsheet Templates"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/documents_view/inspector/documents_inspector.js:0
 #, python-format
 msgid ""
@@ -372,18 +377,21 @@ msgid "Template Name"
 msgstr "Mallens namn"
 
 #. module: documents_spreadsheet
+#. odoo-python
 #: code:addons/documents_spreadsheet/models/document.py:0
 #, python-format
 msgid "The file is not a xlsx file"
 msgstr ""
 
 #. module: documents_spreadsheet
+#. odoo-python
 #: code:addons/documents_spreadsheet/models/document.py:0
 #, python-format
 msgid "The xlsx file is corrupted"
 msgstr ""
 
 #. module: documents_spreadsheet
+#. odoo-python
 #: code:addons/documents_spreadsheet/models/document.py:0
 #: code:addons/documents_spreadsheet/models/document.py:0
 #, python-format
@@ -394,17 +402,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_save_spreadsheet_template__thumbnail
 #: model:ir.model.fields,field_description:documents_spreadsheet.field_spreadsheet_template__thumbnail
 msgid "Thumbnail"
-msgstr ""
+msgstr "Miniatyr"
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/bundle/components/control_panel/spreadsheet_breadcrumbs.xml:0
 #, python-format
 msgid "Toggle favorite"
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/bundle/actions/spreadsheet_template/spreadsheet_template_action.js:0
 #, python-format
 msgid "Untitled spreadsheet template"
@@ -421,7 +429,7 @@ msgid "Workspace"
 msgstr "Arbetsyta"
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/documents_view/documents_spreadsheet_controller_mixin.js:0
 #, python-format
 msgid ""
@@ -429,7 +437,7 @@ msgid ""
 msgstr ""
 
 #. module: documents_spreadsheet
-#. openerp-web
+#. odoo-javascript
 #: code:addons/documents_spreadsheet/static/src/spreadsheet_selector_dialog/document_selector_panel.xml:0
 #, python-format
 msgid "getPageTitle('SPREADSHEET')"

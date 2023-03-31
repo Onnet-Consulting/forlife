@@ -259,7 +259,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall__partner_id
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall_report__partner_id
 msgid "Contact"
-msgstr ""
+msgstr "Kontak"
 
 #. module: voip
 #. openerp-web
@@ -297,7 +297,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall_report__call_date
 #: model_terms:ir.ui.view,arch_db:voip.view_voip_case_phonecalls_filter
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__res_config_settings__mode__demo
@@ -334,7 +334,7 @@ msgstr "Vertoningsnaam"
 #: code:addons/voip/static/src/xml/phone_call_details.xml:0
 #, python-format
 msgid "Document"
-msgstr ""
+msgstr "Dokument"
 
 #. module: voip
 #: model:ir.model.fields.selection,name:voip.selection__voip_phonecall_log_wizard__reschedule_option__no_reschedule
@@ -411,7 +411,7 @@ msgstr ""
 #. module: voip
 #: model_terms:ir.ui.view,arch_db:voip.view_voip_case_phonecalls_filter
 msgid "Group By"
-msgstr ""
+msgstr "Groepeer deur"
 
 #. module: voip
 #. openerp-web
@@ -906,7 +906,7 @@ msgstr ""
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Volgorde"
 
 #. module: voip
 #: code:addons/voip/models/voip_queue_mixin.py:0
@@ -931,7 +931,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall__state
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall_report__state
 msgid "Status"
-msgstr ""
+msgstr "Stand"
 
 #. module: voip
 #: model:ir.model.fields,field_description:voip.field_voip_phonecall_log_wizard__summary
@@ -1070,7 +1070,7 @@ msgstr ""
 #. module: voip
 #: model:ir.model,name:voip.model_res_users
 msgid "User"
-msgstr ""
+msgstr "Gebruiker"
 
 #. module: voip
 #: model:ir.model,name:voip.model_res_users_settings

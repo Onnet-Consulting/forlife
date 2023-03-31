@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* spreadsheet_dashboard_crm
 # 
+# Translators:
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-29 09:37+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -92,7 +96,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Closed"
-msgstr ""
+msgstr "Tertutup"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -117,7 +121,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Country"
-msgstr ""
+msgstr "Negara"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -125,7 +129,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Current"
-msgstr ""
+msgstr "Semasa"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -222,7 +226,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Medium"
-msgstr ""
+msgstr "Sederhana"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -251,7 +255,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Period"
-msgstr ""
+msgstr "Tempoh"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -266,7 +270,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Previous"
-msgstr ""
+msgstr "Sebelumnya"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -297,7 +301,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Revenue"
-msgstr ""
+msgstr "Hasil"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -307,7 +311,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Sales Team"
-msgstr ""
+msgstr "Pasukan jualan"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -318,7 +322,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Salesperson"
-msgstr ""
+msgstr "Jurujual"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -328,7 +332,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Source"
-msgstr ""
+msgstr "Sumber"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -336,7 +340,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "Stage"
-msgstr ""
+msgstr "Pentas"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -350,7 +354,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/leads_dashboard.json:0
 #, python-format
 msgid "Tags"
-msgstr ""
+msgstr "Tag"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -525,7 +529,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/leads_dashboard.json:0
 #, python-format
 msgid "last period"
-msgstr ""
+msgstr "tempoh terakhir"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web
@@ -542,7 +546,7 @@ msgstr ""
 #: code:addons/spreadsheet_dashboard_crm/data/files/pipeline_dashboard.json:0
 #, python-format
 msgid "since last period"
-msgstr ""
+msgstr "sejak period lepas"
 
 #. module: spreadsheet_dashboard_crm
 #. openerp-web

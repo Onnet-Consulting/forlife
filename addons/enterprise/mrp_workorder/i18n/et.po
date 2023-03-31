@@ -8,23 +8,25 @@
 # Egon Raamat <egon@avalah.ee>, 2022
 # Rivo Zängov <eraser@eraser.ee>, 2022
 # Arma Gedonsky <armagedonsky@hot.ee>, 2022
+# Algo Kärp <algokarp@gmail.com>, 2022
 # Triine Aavik <triine@avalah.ee>, 2022
 # Helen Sulaoja <helen@avalah.ee>, 2022
 # Piia Paurson <piia@avalah.ee>, 2022
 # Martin Aavastik <martin@avalah.ee>, 2022
-# Algo Kärp <algokarp@gmail.com>, 2022
 # Eneli Õigus <enelioigus@gmail.com>, 2022
 # Martin Trigaux, 2022
 # Patrick-Jordan Kiudorv, 2022
 # Leaanika Randmets, 2022
+# Anna, 2023
+# Jana Jaakson, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2023-02-02 10:51+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Leaanika Randmets, 2022\n"
+"Last-Translator: Jana Jaakson, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -33,29 +35,17 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/wizard/propose_change.py:0
 #, python-format
-msgid "<b>%s suggests to delete this instruction</b>"
+msgid "%(user_name)s suggests to delete this instruction"
 msgstr ""
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/wizard/propose_change.py:0
 #, python-format
-msgid ""
-"<b>%s suggests to use this document as instruction</b><br/><img style='max-"
-"width: 75%%' class='img-fluid' src=%s/>"
-msgstr ""
-
-#. module: mrp_workorder
-#: code:addons/mrp_workorder/wizard/propose_change.py:0
-#, python-format
-msgid "<b>New Instruction suggested by %s</b><br/>%s<br/><b>Reason: %s</b>"
-msgstr ""
-
-#. module: mrp_workorder
-#: code:addons/mrp_workorder/models/quality.py:0
-#, python-format
-msgid "<b>New Step suggested by %s</b><br/><b>Reason:</b>%s"
+msgid "%(user_name)s suggests to use this document as instruction"
 msgstr ""
 
 #. module: mrp_workorder
@@ -66,7 +56,7 @@ msgstr "<i class=\"fa fa-print\"/> Prindi triipkoodi käsk"
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_operation_form_view
 msgid "<span class=\"o_stat_text\">Instructions</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Juhised</span>"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_bom__activity_ids
@@ -89,6 +79,7 @@ msgid "Activity Type Icon"
 msgstr "Tegevuse liigi sümbol"
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/mrp_workorder.py:0
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_workorder_additional_product_wizard
 #, python-format
@@ -96,14 +87,15 @@ msgid "Add By-Product"
 msgstr "Lisa kõrvalsaadus"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/menuPopup.xml:0
 #, python-format
 msgid "Add By-product"
 msgstr "Lisa kõrvalsaadus"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/mrp_workorder/models/mrp_workorder.py:0
 #: code:addons/mrp_workorder/static/src/components/menuPopup.xml:0
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_workorder_additional_product_wizard
@@ -112,12 +104,13 @@ msgid "Add Component"
 msgstr "Lisa koostisosa"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
+#. odoo-python
 #: code:addons/mrp_workorder/models/mrp_workorder.py:0
 #: code:addons/mrp_workorder/static/src/components/menuPopup.xml:0
 #, python-format
 msgid "Add a Step"
-msgstr ""
+msgstr "Lisa samm"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.view_mrp_workorder_additional_product_wizard
@@ -155,11 +148,11 @@ msgid "Barcode Scanned"
 msgstr "Triipkood loetud"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/summary_step.xml:0
 #, python-format
 msgid "Best Time! Congratulations!"
-msgstr ""
+msgstr "Parim aeg! Õnnitleme!"
 
 #. module: mrp_workorder
 #: model:ir.model,name:mrp_workorder.model_mrp_bom
@@ -168,25 +161,26 @@ msgid "Bill of Material"
 msgstr "Retsept"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/menuPopup.xml:0
 #, python-format
 msgid "Block"
 msgstr "Blokeeri"
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/quality.py:0
 #: code:addons/mrp_workorder/wizard/propose_change.py:0
 #: code:addons/mrp_workorder/wizard/propose_change.py:0
 #: code:addons/mrp_workorder/wizard/propose_change.py:0
 #, python-format
 msgid "BoM feedback %s (%s)"
-msgstr ""
+msgstr "BoM´i tagasiside %s (%s)"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_point__bom_product_ids
 msgid "Bom Product"
-msgstr ""
+msgstr "Bom toode"
 
 #. module: mrp_workorder
 #: model:ir.model.fields.selection,name:mrp_workorder.selection__mrp_workorder_additional_product__type__byproduct
@@ -196,7 +190,7 @@ msgstr "Kõrvalsaadus"
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_form_tablet
 msgid "CONTINUE"
-msgstr ""
+msgstr "JÄTKA"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.quality_check_view_form_tablet
@@ -204,7 +198,7 @@ msgid "CONTINUE PRODUCTION"
 msgstr "JÄTKA TOOTMIST"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/menuPopup.xml:0
 #, python-format
 msgid "Cancel"
@@ -247,11 +241,11 @@ msgid "Company"
 msgstr "Ettevõte"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/summary_step.xml:0
 #, python-format
 msgid "Completion Time:"
-msgstr ""
+msgstr "Valmimisaeg:"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_check__component_id
@@ -304,18 +298,12 @@ msgstr "Loob uue seeria/partiinumbri"
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_workorder__current_quality_check_id
 msgid "Current Quality Check"
-msgstr "Praegune kvaliteedikontroll\n"
+msgstr "Praegune kvaliteedikontroll"
 
 #. module: mrp_workorder
 #: model:ir.model.fields.selection,name:mrp_workorder.selection__quality_point__source_document__step
 msgid "Custom"
-msgstr "Kohandatud"
-
-#. module: mrp_workorder
-#: model:product.template.attribute.value,name:mrp_workorder.product_attribute_value_1
-#: model:product.template.attribute.value,name:mrp_workorder.product_attribute_value_1_radio
-msgid "Dark Blue"
-msgstr ""
+msgstr "Kohandatud veebileht"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_form_inherit_workorder
@@ -325,19 +313,19 @@ msgstr "Kuupäev"
 #. module: mrp_workorder
 #: model:ir.model.fields,help:mrp_workorder.field_quality_point__test_type_id
 msgid "Defines the type of the quality control point."
-msgstr "Määrab ära kvaliteedikontrollipunktim tüübi"
+msgstr "Määrab ära kvaliteedikontrollipunkti tüübi."
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/menuPopup.xml:0
 #, python-format
 msgid "Delete this Step"
-msgstr ""
+msgstr "Kustuta see samm"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_check__is_deleted
 msgid "Deleted in production"
-msgstr ""
+msgstr "Kustuta tootmises"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.add_quality_check_from_tablet
@@ -400,7 +388,7 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Font awesome icon nt. fa-tasks"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/summary_step.xml:0
 #, python-format
 msgid "Good Job!"
@@ -414,19 +402,7 @@ msgstr "Google Slide Link"
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_point__worksheet_url
 msgid "Google doc URL"
-msgstr ""
-
-#. module: mrp_workorder
-#: model:product.template.attribute.value,name:mrp_workorder.product_attribute_value_2
-#: model:product.template.attribute.value,name:mrp_workorder.product_attribute_value_2_radio
-msgid "Green"
-msgstr "Roheline"
-
-#. module: mrp_workorder
-#: model:product.template.attribute.value,name:mrp_workorder.product_attribute_value_3
-#: model:product.template.attribute.value,name:mrp_workorder.product_attribute_value_3_radio
-msgid "Grey"
-msgstr "Hall"
+msgstr "Google doc URL"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_workorder_additional_product__id
@@ -448,7 +424,7 @@ msgstr "Ikoon, mis näitab erandi tegevust"
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_check__worksheet_document
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_point__worksheet_document
 msgid "Image/PDF"
-msgstr ""
+msgstr "Pilt/PDF"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,help:mrp_workorder.field_mrp_workorder__move_line_id
@@ -457,15 +433,23 @@ msgid ""
 "In case of Quality Check by Quantity, Move Line on which the Quality Check "
 "applies"
 msgstr ""
+"Kogusetele kehtiva kvaliteedikontrolli puhu teisaldage rida, millele "
+"kvaliteedikontroll rakendub"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.add_quality_check_from_tablet
 msgid "Instruction"
+msgstr "Tööjuhend"
+
+#. module: mrp_workorder
+#. odoo-python
+#: code:addons/mrp_workorder/models/quality.py:0
+#, python-format
+msgid "Instruction:"
 msgstr ""
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_routing_workcenter__quality_point_count
-#: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_routing_workcenter_tree_view_inherited
 msgid "Instructions"
 msgstr "Juhised"
 
@@ -555,6 +539,7 @@ msgid "Mark as Done and Close MO"
 msgstr "Märgi tehtuks ja sulge tootmistellimus"
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/mrp_workorder.py:0
 #, python-format
 msgid "Menu"
@@ -573,6 +558,27 @@ msgstr "Minu tegevuse tähtaeg"
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_propose_change__note
 msgid "New Instruction"
+msgstr "Uus juhis"
+
+#. module: mrp_workorder
+#. odoo-python
+#: code:addons/mrp_workorder/wizard/propose_change.py:0
+#, python-format
+msgid "New Instruction suggested by %(user_name)s"
+msgstr ""
+
+#. module: mrp_workorder
+#. odoo-python
+#: code:addons/mrp_workorder/models/quality.py:0
+#, python-format
+msgid "New Step suggested by %(user_name)s"
+msgstr ""
+
+#. module: mrp_workorder
+#. odoo-python
+#: code:addons/mrp_workorder/wizard/propose_change.py:0
+#, python-format
+msgid "New Title suggested:"
 msgstr ""
 
 #. module: mrp_workorder
@@ -618,7 +624,7 @@ msgstr "Töökäske pole teha!"
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_production_workorder_tree_editable_view_inherit_workorder
 msgid "Open Tablet View"
-msgstr ""
+msgstr "Ava tahvlivaade"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_alert__workorder_id
@@ -639,7 +645,7 @@ msgstr "Ülevaade"
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_form_tablet
 msgid "PAUSE"
-msgstr ""
+msgstr "PAUS"
 
 #. module: mrp_workorder
 #: model:ir.model.fields.selection,name:mrp_workorder.selection__quality_point__test_report_type__pdf
@@ -663,24 +669,28 @@ msgid "Planning by Workcenter"
 msgstr "Planeerimine töökeskuspõhiselt"
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/quality.py:0
 #, python-format
 msgid "Please ensure the quantity to produce is greater than 0."
 msgstr "Palun veenduge, et toodetav kogus on rohkem kui 0."
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/quality.py:0
 #, python-format
 msgid "Please enter a Lot/SN."
 msgstr "Palun sisestage Partii/SN"
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/quality.py:0
 #, python-format
 msgid "Please enter a positive quantity."
 msgstr "Palun sisestage positiivne kogus."
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/mrp_workorder.py:0
 #, python-format
 msgid ""
@@ -690,6 +700,7 @@ msgstr ""
 "Palun määrake toodetav kogus. See peab olema nullist erinev.from zero."
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/quality.py:0
 #, python-format
 msgid "Please upload a picture."
@@ -746,15 +757,15 @@ msgstr "Tooted"
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.add_quality_check_from_tablet
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.view_propose_change_wizard
 msgid "Propose Change"
-msgstr ""
+msgstr "Paku muudatusi"
 
 #. module: mrp_workorder
 #: model:ir.model,name:mrp_workorder.model_propose_change
 msgid "Propose a change in the production"
-msgstr ""
+msgstr "Paku muudatusi tootmises"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/summary_step.xml:0
 #, python-format
 msgid "Quality"
@@ -810,7 +821,7 @@ msgstr "Kvaliteedipunkti sammud"
 #. module: mrp_workorder
 #: model:ir.model.fields,help:mrp_workorder.field_quality_point__product_ids
 msgid "Quality Point will apply to every selected Products."
-msgstr ""
+msgstr "Kvaliteedipunkt kehtib iga valitud toote kohta."
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_workorder__quality_state
@@ -826,6 +837,14 @@ msgid "Quantity"
 msgstr "Kogus"
 
 #. module: mrp_workorder
+#. odoo-python
+#: code:addons/mrp_workorder/wizard/propose_change.py:0
+#: code:addons/mrp_workorder/wizard/propose_change.py:0
+#, python-format
+msgid "Reason:"
+msgstr "Põhjus:"
+
+#. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_form_tablet
 msgid "Record production"
 msgstr "Salvesta tootmine"
@@ -839,7 +858,7 @@ msgstr "Märkige üles lisatoode"
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_point__bom_active
 msgid "Related Bill of Material Active"
-msgstr ""
+msgstr "Aktiivsed seotud retseptid"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_check__component_remaining_qty
@@ -849,7 +868,7 @@ msgstr "Komponendi järelejäänud kogus"
 #. module: mrp_workorder
 #: model:ir.model.fields.selection,name:mrp_workorder.selection__propose_change__change_type__remove_step
 msgid "Remove Current Step"
-msgstr ""
+msgstr "Eemaldage praegune samm"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_point__test_report_type
@@ -872,7 +891,7 @@ msgid "Result"
 msgstr "Tulemus"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/menuPopup.xml:0
 #, python-format
 msgid "Scrap"
@@ -887,14 +906,19 @@ msgstr "Seeria"
 #. module: mrp_workorder
 #: model:ir.model.fields.selection,name:mrp_workorder.selection__propose_change__change_type__set_picture
 msgid "Set Picture"
-msgstr ""
+msgstr "Määra pilt"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/menuPopup.xml:0
 #, python-format
 msgid "Set a New picture"
-msgstr ""
+msgstr "Määra uus pilt"
+
+#. module: mrp_workorder
+#: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_routing_workcenter_tree_view_inherited
+msgid "Show Instructions"
+msgstr "Näita juhiseid"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.res_config_settings_view_form
@@ -902,17 +926,14 @@ msgid "Show the timer on the work order screen"
 msgstr "Näita taimerit töökäsu ekraanil"
 
 #. module: mrp_workorder
-#: model:product.product,description_sale:mrp_workorder.product_product_stool_1
-#: model:product.product,description_sale:mrp_workorder.product_product_stool_2
-#: model:product.product,description_sale:mrp_workorder.product_product_stool_3
 #: model:product.template,description_sale:mrp_workorder.product_template_stool
 msgid "Small wooden stool"
-msgstr ""
+msgstr "Väike puidust tool"
 
 #. module: mrp_workorder
 #: model:ir.model.fields.selection,name:mrp_workorder.selection__quality_point__source_document__operation
 msgid "Specific Page of Operation Worksheet"
-msgstr ""
+msgstr "Juhtnöörid töötajale"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,help:mrp_workorder.field_mrp_bom__activity_state
@@ -935,12 +956,12 @@ msgstr "Samm"
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_quality_point__source_document
 msgid "Step Document"
-msgstr ""
+msgstr "Juhised"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_propose_change__step_id
 msgid "Step to change"
-msgstr ""
+msgstr "Step to change"
 
 #. module: mrp_workorder
 #: model:ir.actions.act_window,name:mrp_workorder.action_mrp_workorder_show_steps
@@ -962,40 +983,31 @@ msgid "Stock Move Line"
 msgstr "Laoliikumise rida"
 
 #. module: mrp_workorder
-#: model:product.product,name:mrp_workorder.product_product_stool_1
-#: model:product.product,name:mrp_workorder.product_product_stool_2
-#: model:product.product,name:mrp_workorder.product_product_stool_3
 #: model:product.template,name:mrp_workorder.product_template_stool
 msgid "Stool"
-msgstr ""
+msgstr "Tool"
 
 #. module: mrp_workorder
-#: model:product.product,name:mrp_workorder.product_product_stool_foot_1
-#: model:product.product,name:mrp_workorder.product_product_stool_foot_2
-#: model:product.product,name:mrp_workorder.product_product_stool_foot_3
 #: model:product.template,name:mrp_workorder.product_template_stool_foot
 msgid "Stool Foot"
-msgstr ""
+msgstr "Tooli jalg"
 
 #. module: mrp_workorder
-#: model:product.product,name:mrp_workorder.product_product_stool_top_1
-#: model:product.product,name:mrp_workorder.product_product_stool_top_2
-#: model:product.product,name:mrp_workorder.product_product_stool_top_3
 #: model:product.template,name:mrp_workorder.product_template_stool_top
 msgid "Stool Top"
-msgstr ""
+msgstr "Tooli iste"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/menuPopup.xml:0
 #, python-format
 msgid "Suggest a Worksheet improvement"
-msgstr ""
+msgstr "Soovitage töölehe parendust"
 
 #. module: mrp_workorder
 #: model:ir.actions.client,name:mrp_workorder.tablet_client_action
 msgid "Tablet Client Action"
-msgstr ""
+msgstr "Tablet Client Action"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_mrp_workorder__test_type
@@ -1009,12 +1021,15 @@ msgid "Test Type"
 msgstr "Testi tüüp"
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/mrp_workorder.py:0
 #, python-format
 msgid ""
 "This workcenter isn't expected to have open workorders during this period. "
 "Work hours :"
 msgstr ""
+"Sellel perioodil ei ole konkreetses töökeskuses eeldatavasti avatud "
+"töökohti. Tööaeg:"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_res_config_settings__group_mrp_wo_tablet_timer
@@ -1046,7 +1061,7 @@ msgstr "Tüüp"
 #. module: mrp_workorder
 #: model:ir.model.fields,field_description:mrp_workorder.field_propose_change__change_type
 msgid "Type of Change"
-msgstr ""
+msgstr "Muudatuse tüüp"
 
 #. module: mrp_workorder
 #: model:ir.model.fields,help:mrp_workorder.field_mrp_bom__activity_exception_decoration
@@ -1064,22 +1079,6 @@ msgid "Unit of Measure"
 msgstr "Mõõtühik"
 
 #. module: mrp_workorder
-#: model:product.product,uom_name:mrp_workorder.product_product_stool_1
-#: model:product.product,uom_name:mrp_workorder.product_product_stool_2
-#: model:product.product,uom_name:mrp_workorder.product_product_stool_3
-#: model:product.product,uom_name:mrp_workorder.product_product_stool_foot_1
-#: model:product.product,uom_name:mrp_workorder.product_product_stool_foot_2
-#: model:product.product,uom_name:mrp_workorder.product_product_stool_foot_3
-#: model:product.product,uom_name:mrp_workorder.product_product_stool_top_1
-#: model:product.product,uom_name:mrp_workorder.product_product_stool_top_2
-#: model:product.product,uom_name:mrp_workorder.product_product_stool_top_3
-#: model:product.template,uom_name:mrp_workorder.product_template_stool
-#: model:product.template,uom_name:mrp_workorder.product_template_stool_foot
-#: model:product.template,uom_name:mrp_workorder.product_template_stool_top
-msgid "Units"
-msgstr "tk"
-
-#. module: mrp_workorder
 #: model:ir.actions.server,name:mrp_workorder.production_order_unplan_server_action
 msgid "Unplan orders"
 msgstr "Tühista tellimuste planeering"
@@ -1092,14 +1091,14 @@ msgstr "Mõõtühikud"
 #. module: mrp_workorder
 #: model:ir.model.fields.selection,name:mrp_workorder.selection__propose_change__change_type__update_step
 msgid "Update Current Step"
-msgstr ""
+msgstr "Värskenda praegust sammu"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/menuPopup.xml:0
 #, python-format
 msgid "Update Instructions"
-msgstr ""
+msgstr "Värskenda juhiseid"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.quality_point_view_form_inherit_mrp
@@ -1137,11 +1136,11 @@ msgid "Value of the last barcode scanned."
 msgstr "Viimase skaneeritud triipkoodi väärtus."
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/summary_step.xml:0
 #, python-format
 msgid "Well done, you're in the Top 10!"
-msgstr ""
+msgstr "Hästi tehtud, oled Top 10-s!"
 
 #. module: mrp_workorder
 #: model:ir.model,name:mrp_workorder.model_mrp_workcenter
@@ -1215,13 +1214,14 @@ msgid "Worksheet page"
 msgstr "Töölehe lehekülg"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/summary_step.xml:0
 #, python-format
-msgid "Wow, you made the the Top 5!"
-msgstr ""
+msgid "Wow, you made the Top 5!"
+msgstr "Tubli, oled Top 5 hulgas!"
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/wizard/change_production_qty.py:0
 #, python-format
 msgid ""
@@ -1232,18 +1232,21 @@ msgstr ""
 " tehtud kvaliteedikontrolle."
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/quality.py:0
 #, python-format
 msgid "You did not set a lot/serial number for the final product"
 msgstr "Te ei määranud lõpptootele partii/seerianumbrit"
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/mrp_workorder.py:0
 #, python-format
 msgid "You should provide a lot/serial number for the final product"
 msgstr "Tuleb määrata partii/seerianumbri lõpp-tootele"
 
 #. module: mrp_workorder
+#. odoo-python
 #: code:addons/mrp_workorder/models/mrp_workorder.py:0
 #: code:addons/mrp_workorder/models/mrp_workorder.py:0
 #, python-format
@@ -1258,7 +1261,7 @@ msgstr "ZPL"
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_form_tablet
 msgid "back"
-msgstr ""
+msgstr "tagasi"
 
 #. module: mrp_workorder
 #: model_terms:ir.ui.view,arch_db:mrp_workorder.mrp_workorder_view_form_tablet
@@ -1266,7 +1269,7 @@ msgid "menu"
 msgstr "menüü"
 
 #. module: mrp_workorder
-#. openerp-web
+#. odoo-javascript
 #: code:addons/mrp_workorder/static/src/components/summary_step.xml:0
 #, python-format
 msgid "minutes"
@@ -1278,17 +1281,11 @@ msgid "title"
 msgstr "pealkiri"
 
 #. module: mrp_workorder
-#: model:product.product,description_sale:mrp_workorder.product_product_stool_foot_1
-#: model:product.product,description_sale:mrp_workorder.product_product_stool_foot_2
-#: model:product.product,description_sale:mrp_workorder.product_product_stool_foot_3
 #: model:product.template,description_sale:mrp_workorder.product_template_stool_foot
 msgid "wooden stool foot"
-msgstr ""
+msgstr "puidust tooli jalg"
 
 #. module: mrp_workorder
-#: model:product.product,description_sale:mrp_workorder.product_product_stool_top_1
-#: model:product.product,description_sale:mrp_workorder.product_product_stool_top_2
-#: model:product.product,description_sale:mrp_workorder.product_product_stool_top_3
 #: model:product.template,description_sale:mrp_workorder.product_template_stool_top
 msgid "wooden stool top"
-msgstr ""
+msgstr "puidust tooli iste"

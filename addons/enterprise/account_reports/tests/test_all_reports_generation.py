@@ -53,6 +53,8 @@ class TestAllReportsGeneration(AccountTestInvoicingCommon):
             'BR': {'vat': '01234567891251'},
             'AR': {'vat': '30714295698'},
             'AU': {'vat': '11225459588', 'street': 'Arrow Street', 'zip': '1348', 'city': 'Starling City', 'state_id': self.env.ref('base.state_au_1').id},
+            'DE': {'vat': 'DE123456788', 'l10n_de_stnr': '151/815/08156', 'state_id': self.env.ref('base.state_de_th').id},
+            'NO': {'vat': 'NO123456785', 'l10n_no_bronnoysund_number': '987654325'},
         }
 
         partner_test_values = {

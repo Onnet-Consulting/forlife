@@ -95,7 +95,7 @@ class ProductTemplate(models.Model):
             start_date, end_date, only_template, website, current_duration, current_unit
         )
 
-        ratio = ceil(current_duration) / pricing.recurrence_id.duration
+        ratio = ceil(current_duration) / pricing.recurrence_id.duration if pricing.recurrence_id.duration else 1
         if current_unit != pricing.recurrence_id.unit:
             ratio *= PERIOD_RATIO[current_unit] / PERIOD_RATIO[pricing.recurrence_id.unit]
 
@@ -146,7 +146,7 @@ class ProductTemplate(models.Model):
             'current_rental_duration': ceil(current_duration),
             'current_rental_unit': current_pricing._get_unit_label(current_duration),
             'current_rental_price': current_price,
-            'current_rental_price_per_unit': current_price / (ratio or 1),
+            'current_rental_price_per_unit': current_price / ratio,
             'base_unit_price': 0,
             'base_unit_name': False,
             'pricing_table': pricing_table,

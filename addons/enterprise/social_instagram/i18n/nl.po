@@ -67,7 +67,7 @@ msgstr "Toegangstoken"
 #: model_terms:ir.ui.view,arch_db:social_instagram.instagram_preview
 #, python-format
 msgid "An image is required when posting on Instagram."
-msgstr "Een afbeelding is vereist bij het plaatsen op Instagram."
+msgstr "Een afbeelding is vereist bij het posten op Instagram."
 
 #. module: social_instagram
 #: model_terms:ir.ui.view,arch_db:social_instagram.res_config_settings_view_form
@@ -238,7 +238,7 @@ msgstr "Vind-ik-leuks"
 #. module: social_instagram
 #: model:ir.model.fields,field_description:social_instagram.field_social_media__media_type
 msgid "Media Type"
-msgstr "Soort media"
+msgstr "Mediatype"
 
 #. module: social_instagram
 #: code:addons/social_instagram/controllers/main.py:0
@@ -251,17 +251,17 @@ msgstr "Geen Instagram accounts gekoppeld aan je Facebook-pagina"
 #: model_terms:ir.ui.view,arch_db:social_instagram.instagram_preview
 #, python-format
 msgid "Only .jpg/.jpeg images can be posted on Instagram."
-msgstr "Alleen .jpg/.jpeg-afbeeldingen kunnen op Instagram worden geplaatst."
+msgstr "Alleen .jpg/.jpeg-afbeeldingen kunnen op Instagram worden gepost."
 
 #. module: social_instagram
 #: model_terms:ir.ui.view,arch_db:social_instagram.instagram_preview
 msgid "Only the first attached image will be posted on Instagram."
-msgstr "Alleen de eerste bijgevoegde afbeelding wordt op Instagram geplaatst."
+msgstr "Alleen de eerste bijgevoegde afbeelding wordt op Instagram gepost."
 
 #. module: social_instagram
 #: model_terms:ir.ui.view,arch_db:social_instagram.instagram_preview
 msgid "Post Image"
-msgstr "Plaats afbeelding"
+msgstr "Afbeelding posten"
 
 #. module: social_instagram
 #: model:ir.model,name:social_instagram.model_social_account

@@ -2,12 +2,16 @@
 # This file contains the translation of the following modules:
 # 	* spreadsheet_dashboard_documents
 # 
+# Translators:
+# Mehjabin Farsana, 2023
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
+"Last-Translator: Mehjabin Farsana, 2023\n"
 "Language-Team: Malay (https://www.transifex.com/odoo/teams/41243/ms/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,7 +22,7 @@ msgstr ""
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__group_ids
 msgid "Access Groups"
-msgstr ""
+msgstr "Akses Kumpulan"
 
 #. module: spreadsheet_dashboard_documents
 #: model_terms:ir.ui.view,arch_db:spreadsheet_dashboard_documents.spreadsheet_dashboard_view_list
@@ -38,19 +42,19 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:spreadsheet_dashboard_documents.spreadsheet_document_to_dashboard_view_form
 #, python-format
 msgid "Cancel"
-msgstr ""
+msgstr "Batal"
 
 #. module: spreadsheet_dashboard_documents
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_documents/static/src/assets/document_selector_dialog/document_selector_dialog.xml:0
 #, python-format
 msgid "Confirm"
-msgstr ""
+msgstr "Sahkan"
 
 #. module: spreadsheet_dashboard_documents
 #: model_terms:ir.ui.view,arch_db:spreadsheet_dashboard_documents.spreadsheet_document_to_dashboard_view_form
 msgid "Create"
-msgstr ""
+msgstr "Buat"
 
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model,name:spreadsheet_dashboard_documents.model_spreadsheet_document_to_dashboard
@@ -60,12 +64,12 @@ msgstr ""
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Dicipta oleh"
 
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Dicipta pada"
 
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__name
@@ -80,32 +84,32 @@ msgstr ""
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nama paparan"
 
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__document_id
 msgid "Document"
-msgstr ""
+msgstr "Dokumen"
 
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard____last_update
 msgid "Last Modified on"
-msgstr ""
+msgstr "Terakhir Diubah suai pada"
 
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Kemas Kini Terakhir oleh"
 
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_documents.field_spreadsheet_document_to_dashboard__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Kemas Kini Terakhir pada"
 
 #. module: spreadsheet_dashboard_documents
 #. openerp-web
@@ -117,4 +121,4 @@ msgstr ""
 #. module: spreadsheet_dashboard_documents
 #: model:ir.model,name:spreadsheet_dashboard_documents.model_spreadsheet_dashboard
 msgid "Spreadsheet Dashboard"
-msgstr ""
+msgstr "Papan Pemuka Hamparan"

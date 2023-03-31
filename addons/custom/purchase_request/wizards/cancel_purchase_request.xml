@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<odoo>
+        <record id="cancel_request_wizard_from" model="ir.ui.view">
+            <field name="name">cancel.purchase.request.form</field>
+            <field name="model">cancel.purchase.request</field>
+            <field name="arch" type="xml">
+                <form string="Cancel Reason">
+                    <span> Purchase Request has been canceled do you want to create another draft?</span>
+                    <footer>
+                        <button name="create_purchase_request_draft" string="Agree" type="object" class="btn-primary"/>
+                        <button name="action_cancel" string="Cancel" type="object" class="btn-primary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_cancel_request_wizard" model="ir.actions.act_window">
+            <field name="name">Cancel Request</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cancel.purchase.request</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="cancel_request_wizard_from"/>
+            <field name="target">new</field>
+        </record>
+</odoo>

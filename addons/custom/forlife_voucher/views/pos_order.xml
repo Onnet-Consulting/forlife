@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_pos_form_voucher_inherit" model="ir.ui.view">
+        <field name="name">view.pos.form.voucher.inherit</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_voucher" type="object" class="oe_stat_button" icon="fa-ticket">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Voucher</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='lines']/tree/field[@name='qty']" position="after">
+                <field name="x_qty_voucher" optional="hide"/>
+                <field name="is_voucher_conditional"/>
+            </xpath>
+            <xpath expr="//page[@name='payments']" position="after">
+                <page string="Voucher" name="voucher">
+                    <field name="pos_voucher_line_ids">
+                        <tree>
+                            <field name="voucher_id"/>
+                            <field name="priority"/>
+                            <field name="type"/>
+                            <field name="end_date"/>
+                            <field name="price_residual"/>
+                            <field name="price_used"/>
+                        </tree>
+                        <form>
+                            <group col="4">
+                            <field name="voucher_id" readonly="1"/>
+                            <field name="priority" readonly="1"/>
+                            <field name="type" readonly="1"/>
+                            <field name="end_date" readonly="1"/>
+                            <field name="price_residual" readonly="1"/>
+                            <field name="price_used" readonly="1"/>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

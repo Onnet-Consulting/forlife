@@ -8,16 +8,19 @@ class PosSession(models.Model):
 
     def load_pos_data(self):
         loaded_data = super(PosSession, self).load_pos_data()
-        all_pos = self.env['pos.config'].search(
-            [('store_id', '=', self.config_id.store_id.id), ('id', '!=', self.config_id.id)])
-        vals = []
-        for r in all_pos:
-            vals.append({
-                'id': r.id,
-                'name': r.name
-            })
+        all_pos = self.env['pos.config'].search([('store_id', '=', self.config_id.store_id.id), ('id', '!=', self.config_id.id)])
+        branchs = self.config_id.store_id.brand_id
+        pos = [{
+            'id': r.id,
+            'name': r.name
+        } for r in all_pos]
+        branch = [{
+            'id': r.id,
+            'name': r.name
+        } for r in branchs]
         loaded_data.update({
-            'pos.customize': vals
+            'pos.customize': pos,
+            'pos.branch': branch
         })
         return loaded_data
 
@@ -104,7 +107,7 @@ class PosSession(models.Model):
                 'to_store_tranfer': extras['shop']
                 if 'shop' in extras and _type == 'out' and extras['shop'] and extras['type_tranfer'] == 2 else False,
                 'is_reference': True if 'reference' in extras and extras['reference'] else False,
-                'pos_transfer_type': str(extras.get('type_tranfer', ''))
+                'pos_transfer_type': str(extras.get('type_tranfer')) if extras.get('type_tranfer') !=0 else False
             }
             for session in sessions
         ])

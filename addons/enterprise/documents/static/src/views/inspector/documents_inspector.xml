@@ -5,7 +5,7 @@
         <t t-set="currentFolder" t-value="getCurrentFolder()"/>
         <div class="o_documents_inspector h-100">
             <t t-set="nbPreviews" t-value="props.selection.length"/>
-            <div t-if="props.withFilePreview" class="o_documents_inspector_preview d-flex flex-row flex-wrap align-items-center justify-content-center position-relative">
+            <div t-if="props.withFilePreview || nbPreviews === 0" class="o_documents_inspector_preview d-flex flex-row flex-wrap align-items-center justify-content-center position-relative">
                 <div t-if="nbPreviews === 0">
                     <t t-if="currentFolder">
                         <div class="o_inspector_folder_description">
@@ -119,11 +119,11 @@
             <div class="btn-group">
                 <t t-set="locked" t-value="isLocked"/>
                 <t t-set="editDisabled" t-value="isEditDisabled"/>
-                <button class="btn fa fa-download o_inspector_button o_inspector_download" title="Download" t-on-click.stop.prevent="onDownload" t-att-disabled="editDisabled"/>
+                <button class="btn fa fa-download o_inspector_button o_inspector_download" title="Download" t-on-click.stop.prevent="onDownload"/>
                 <t t-if="records[0].data.active">
                     <!-- groups does not work here -->
                     <button t-if="currentFolder.id" class="btn fa fa-share-alt o_inspector_button o_inspector_share" title="Share this selection" groups="documents.group_documents_user"
-                        t-on-click.stop.prevent="onShare" t-att-disabled="editDisabled"/>
+                        t-on-click.stop.prevent="onShare"/>
                     <t t-if="nbPreviews === 1">
                         <button t-if="records[0].data.type !== 'url'" class="btn fa fa-retweet o_inspector_button o_inspector_replace" title="Replace" t-on-click.stop.prevent="() => this.documentsReplaceInput.el.click()" t-att-disabled="editDisabled || locked"/>
                         <input type="file" t-ref="replaceFileInput" class="o_inspector_replace_input o_input_file o_hidden" t-on-change.stop="onReplace"/>
@@ -190,7 +190,7 @@
                         <t t-set="additionalProps" t-value="{canOpen: false, canCreate: false, canCreateEdit: false, canQuickCreate: false}"/>
                     </t>
                     <tr class="o_inspector_divider"/>
-                    <tr t-if="nbPreviews === 1 &amp;&amp; records[0].data.res_model_name &amp;&amp; records[0].data.res_model !== 'documents.document'" class="o_inspector_custom_field o_model_container">
+                    <tr t-if="nbPreviews === 1 &amp;&amp; records[0].data.res_id &amp;&amp; records[0].data.res_model_name &amp;&amp; records[0].data.res_model !== 'documents.document'" class="o_inspector_custom_field o_model_container">
                         <td class="o_inspector_label align-middle">
                             <label t-att-title="records[0].data.res_model_name" class="o_inspector_model_name">
                                 <i class="o_documents_model_color fa fa-file-text"/> <t t-esc="records[0].data.res_model_name"/>

@@ -6,14 +6,16 @@
 # Foldi Robert <foldirobert@nexterp.ro>, 2022
 # Dorin Hongu <dhongu@gmail.com>, 2022
 # Martin Trigaux, 2022
+# Claudia Baisan, 2023
+# Cozmin Candea <office@terrabit.ro>, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:50+0000\n"
+"POT-Creation-Date: 2022-12-15 13:30+0000\n"
 "PO-Revision-Date: 2022-09-22 05:50+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Cozmin Candea <office@terrabit.ro>, 2023\n"
 "Language-Team: Romanian (https://www.transifex.com/odoo/teams/41243/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,17 +26,17 @@ msgstr ""
 #. module: website_knowledge
 #: model_terms:ir.ui.view,arch_db:website_knowledge.knowledge_article_view_form
 msgid "<i class=\"fa fa-globe fa-2x\" title=\"Share to web\"/>"
-msgstr ""
+msgstr "<i class=\"fa fa-globe fa-2x\" title=\"Partajează pe web\"/>"
 
 #. module: website_knowledge
 #: model_terms:ir.ui.view,arch_db:website_knowledge.knowledge_article_view_form
 msgid "Anyone can view"
-msgstr ""
+msgstr "Oricine poate vizualiza"
 
 #. module: website_knowledge
 #: model_terms:ir.ui.view,arch_db:website_knowledge.knowledge_article_view_form
 msgid "Article published"
-msgstr ""
+msgstr "Articol publicat"
 
 #. module: website_knowledge
 #: model:ir.model.fields,field_description:website_knowledge.field_knowledge_article__can_publish
@@ -43,33 +45,34 @@ msgstr "Poate Publica"
 
 #. module: website_knowledge
 #: model:ir.model.fields,field_description:website_knowledge.field_knowledge_article__is_published
+#: model_terms:ir.ui.view,arch_db:website_knowledge.knowledge_article_view_tree
 msgid "Is Published"
 msgstr "Este Publicat"
 
 #. module: website_knowledge
 #: model:ir.model,name:website_knowledge.model_knowledge_article
 msgid "Knowledge Article"
-msgstr ""
+msgstr "Articol de cunoștințe"
 
 #. module: website_knowledge
 #: model_terms:ir.ui.view,arch_db:website_knowledge.website_knowledge_article_tree_frontend
 msgid "Public articles"
-msgstr ""
+msgstr "Articole publice"
 
 #. module: website_knowledge
 #: model_terms:ir.ui.view,arch_db:website_knowledge.knowledge_article_view_form
 msgid "Publish and share with anyone"
-msgstr ""
+msgstr "Publică și partajează cu oricine"
 
 #. module: website_knowledge
 #: model_terms:ir.ui.view,arch_db:website_knowledge.knowledge_article_view_form
 msgid "Share to web"
-msgstr ""
+msgstr "Partajează pe web"
 
 #. module: website_knowledge
 #: model_terms:ir.ui.view,arch_db:website_knowledge.website_knowledge_article_tree_frontend
 msgid "Shared with you"
-msgstr ""
+msgstr "Partajat cu tine"
 
 #. module: website_knowledge
 #: model:ir.model.fields,help:website_knowledge.field_knowledge_article__website_url
@@ -81,6 +84,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:website_knowledge.field_knowledge_article__website_published
 msgid "Visible on current website"
 msgstr "Vizibil pe site-ul curent"
+
+#. module: website_knowledge
+#: model:ir.model,name:website_knowledge.model_website
+msgid "Website"
+msgstr "Pagină web"
 
 #. module: website_knowledge
 #: model:ir.model.fields,field_description:website_knowledge.field_knowledge_article__website_url

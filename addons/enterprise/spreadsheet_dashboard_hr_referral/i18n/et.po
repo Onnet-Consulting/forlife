@@ -9,7 +9,8 @@
 # Arma Gedonsky <armagedonsky@hot.ee>, 2022
 # Triine Aavik <triine@avalah.ee>, 2022
 # Martin Trigaux, 2022
-# Jana Jaakson, 2022
+# Anna, 2023
+# Jana Jaakson, 2023
 # 
 msgid ""
 msgstr ""
@@ -17,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-29 09:37+0000\n"
-"Last-Translator: Jana Jaakson, 2022\n"
+"Last-Translator: Jana Jaakson, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,7 +43,7 @@ msgstr "Kandidaadid"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Applications by Creation Date"
-msgstr ""
+msgstr "Kandideerimised kuupäeva järgi"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -64,7 +65,7 @@ msgstr "Praegune"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Date"
-msgstr "Date"
+msgstr "Kuupäev"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -90,21 +91,21 @@ msgstr "Tööle võetud"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Hired Ratio"
-msgstr ""
+msgstr "Tööle võtmise määr"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Hired by referral"
-msgstr ""
+msgstr "Tööle võetud tänu soovitusele"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Hired ratio"
-msgstr ""
+msgstr "Tööle võetud protsent"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -127,7 +128,7 @@ msgstr "Levitamise vahend"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Most Hired Job Positions"
-msgstr ""
+msgstr "Kõige rohkem palgatud ametikohad"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -149,14 +150,14 @@ msgstr "Uued kandidaadid"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "New Hires"
-msgstr ""
+msgstr "Uued töötajad"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "New applicants"
-msgstr ""
+msgstr "Uued kandideerijad"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -191,7 +192,7 @@ msgstr "Protsessi kestus"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Process duration"
-msgstr ""
+msgstr "Protsessi kestus"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -209,7 +210,7 @@ msgstr "Määr"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Recent Applications"
-msgstr ""
+msgstr "Hiljutised kandideerimised"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -226,49 +227,49 @@ msgstr "Värbaja"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Recruitment Analysis by Company"
-msgstr ""
+msgstr "Värbamise analüüs ettevõte lõikes"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Recruitment Analysis by Job"
-msgstr ""
+msgstr "Värbamise analüüs ametipositsiooni lõikes"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Recruitment Analysis by Medium"
-msgstr ""
+msgstr "Värbamise analüüs meediumide kaupa"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Recruitment Analysis by Recruiter"
-msgstr ""
+msgstr "Värbamise analüüs värbaja lõikes"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Recruitment Analysis by Source"
-msgstr ""
+msgstr "Värbamise analüüs värbamise allika lõikes"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Referral Rate"
-msgstr ""
+msgstr "Soovituste määr"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Referral rate"
-msgstr ""
+msgstr "Soovituste määr"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
@@ -290,46 +291,46 @@ msgstr "Etapp"
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Top Companies"
-msgstr ""
+msgstr "Top ettevõtted"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Top Job Positions"
-msgstr ""
+msgstr "Top ametipositsioonid"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Top Mediums"
-msgstr ""
+msgstr "Parimad keskmised"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Top Recruiters"
-msgstr ""
+msgstr "Parimad värbajad"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "Top Sources"
-msgstr ""
+msgstr "Parimad allikad"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "stats - current"
-msgstr ""
+msgstr "statistika - praegune"
 
 #. module: spreadsheet_dashboard_hr_referral
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_hr_referral/data/files/recruitment_dashboard.json:0
 #, python-format
 msgid "stats - previous"
-msgstr ""
+msgstr "statistika - eelmine"

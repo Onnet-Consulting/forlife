@@ -3,8 +3,9 @@
 from lxml import etree
 
 import odoo.tests
-from odoo import Command, api
+from odoo import Command, api, http
 from odoo.tools import mute_logger
+from odoo.addons.web_studio.controllers.main import WebStudioController
 from lxml import etree
 
 
@@ -98,6 +99,20 @@ def assertViewArchEqual(test, original, expected):
     if expected:
         expected = _transform_arch_for_assert(expected)
     test.assertEqual(original, expected)
+
+def watch_edit_view(test, on_edit_view):
+    clear_routing = test.env["ir.http"]._clear_routing_map
+
+    clear_routing()
+    edit_view = WebStudioController.edit_view
+
+    @http.route('/web_studio/edit_view', type='json', auth='user')
+    def edit_view_mocked(*args, **kwargs):
+        on_edit_view(*args, **kwargs)
+        return edit_view(*args, **kwargs)
+
+    test.patch(WebStudioController, "edit_view", edit_view_mocked)
+    test.addCleanup(clear_routing)
 
 
 @odoo.tests.tagged('post_install', '-at_install')
@@ -248,3 +263,262 @@ class TestStudioUIUnit(odoo.tests.HttpCase):
                </xpath>
              </data>
             """)
+
+    def test_enter_x2many_auto_inlined_subview_with_multiple_field_matching(self):
+        user_view = self.env["ir.ui.view"].create({
+            "name": "simple user",
+            "model": "res.users",
+            "type": "tree",
+            "arch": '''
+                <tree>
+                    <field name="display_name" />
+                </tree>
+            '''
+        })
+
+        user_view_xml_id = self.env["ir.model.data"].create({
+            "name": "studio_test_user_view",
+            "model": "ir.ui.view",
+            "module": "web_studio",
+            "res_id": user_view.id,
+        })
+
+        self.testView.arch = '''<form>
+            <field name="user_ids"/>
+            <sheet>
+                <notebook>
+                    <page>
+                        <field name="user_ids" context="{'tree_view_ref': '%s'}" />
+                    </page>
+                </notebook> 
+            </sheet>
+        </form>''' % user_view_xml_id.complete_name
+        studio_view = _get_studio_view(self.testView)
+        self.assertFalse(studio_view.exists())
+
+        self.start_tour("/web?debug=tests", 'web_studio_enter_x2many_auto_inlined_subview_with_multiple_field_matching',
+                        login="admin", timeout=200)
+        studio_view = _get_studio_view(self.testView)
+
+        assertViewArchEqual(self, studio_view.arch, """
+            <data>
+               <xpath expr="//form[1]/sheet[1]/notebook[1]/page[1]/field[@name='user_ids']" position="inside">
+                 <tree>
+                   <field name="display_name" />
+                   <field name="log_ids" optional="show" />
+                 </tree>
+               </xpath>
+             </data>
+            """)
+
+    def test_field_with_group(self):
+        operations = []
+        def edit_view_mocked(*args, **kwargs):
+            operations.extend(kwargs["operations"] if "operations" in kwargs else args[3])
+
+        watch_edit_view(self, edit_view_mocked)
+
+        doesNotHaveGroup = self.env["res.groups"].create({
+            "name": "studio does not have"
+        })
+        doesNotHaveGroupXmlId = self.env["ir.model.data"].create({
+            "name": "studio_test_doesnothavegroup",
+            "model": "res.groups",
+            "module": "web_studio",
+            "res_id": doesNotHaveGroup.id,
+        })
+        self.testView.write({
+            "type": "tree",
+            "arch": '''
+                <tree>
+                    <field name="display_name" />
+                    <field name="employee" groups="{doesnothavegroup}" />
+                    <field name="function" />
+                    <field name="lang" />
+                </tree>
+            '''.format(doesnothavegroup=doesNotHaveGroupXmlId.complete_name)
+        })
+        self.testAction.write({
+            "view_ids": [Command.clear(), Command.create({"view_id": self.testView.id, "view_mode": "tree"})]
+        })
+
+        self.start_tour("/web?debug=tests", 'web_studio_field_with_group', login="admin", timeout=200)
+
+        self.assertEqual(len(operations), 1)
+        self.assertEqual(operations[0]["target"]["xpath_info"], [{'tag': 'tree', 'indice': 1}, {'tag': 'field', 'indice': 3}])
+        studioView = _get_studio_view(self.testView)
+        assertViewArchEqual(self, studioView.arch, """
+             <data>
+                <xpath expr="//field[@name='function']" position="after">
+                    <field name="website" optional="show"/>
+                </xpath>
+            </data>
+        """)
+
+    def test_elements_with_groups_form(self):
+        operations = []
+        def edit_view_mocked(*args, **kwargs):
+            operations.extend(kwargs["operations"] if "operations" in kwargs else args[3])
+
+        watch_edit_view(self, edit_view_mocked)
+
+        doesNotHaveGroup = self.env["res.groups"].create({
+            "name": "studio does not have"
+        })
+        doesNotHaveGroupXmlId = self.env["ir.model.data"].create({
+            "name": "studio_test_doesnothavegroup",
+            "model": "res.groups",
+            "module": "web_studio",
+            "res_id": doesNotHaveGroup.id,
+        })
+
+        hasGroup = self.env["res.groups"].create({
+            "name": "studio has group",
+            "users": [Command.link(2)]
+        })
+        hasGroupXmlId = self.env["ir.model.data"].create({
+            "name": "studio_test_hasgroup",
+            "model": "res.groups",
+            "module": "web_studio",
+            "res_id": hasGroup.id,
+        })
+
+        self.patch(type(self.env["res.partner"]).function, "groups", doesNotHaveGroupXmlId.complete_name)
+
+        self.testView.write({
+            "arch": '''
+                <form>
+                    <group>
+                        <field name="function" groups="{hasgroup}" />
+                        <field name="employee" groups="{doesnothavegroup}" />
+                        <field name="display_name" />
+                    </group>
+                </form>
+            '''.format(doesnothavegroup=doesNotHaveGroupXmlId.complete_name, hasgroup=hasGroupXmlId.complete_name)
+        })
+        self.start_tour("/web", 'web_studio_elements_with_groups_form', login="admin", timeout=600000)
+        self.assertEqual(len(operations), 1)
+        self.assertEqual(operations[0]["target"]["xpath_info"], [{'indice': 1, 'tag': 'form'}, {'indice': 1, 'tag': 'group'}, {'indice': 3, 'tag': 'field'}])
+        studioView = _get_studio_view(self.testView)
+        assertViewArchEqual(self, studioView.arch, """
+            <data>
+               <xpath expr="//field[@name='display_name']" position="after">
+                 <field name="website"/>
+               </xpath>
+            </data>
+        """)
+
+    def test_element_group_in_sidebar(self):
+        group = self.env["res.groups"].create({
+            "name": "Test Group",
+            "users": [Command.link(2)]
+        })
+        groupXmlId = self.env["ir.model.data"].create({
+            "name": "test_group",
+            "model": "res.groups",
+            "module": "web_studio",
+            "res_id": group.id,
+        })
+
+        self.testView.write({
+            "arch": '''
+                <form>
+                    <field name="display_name" groups="{group}" />
+                </form>
+            '''.format(group=groupXmlId.complete_name)
+        })
+        self.start_tour("/web?debug=tests", 'test_element_group_in_sidebar', login="admin", timeout=600000)
+
+    def test_create_one2many_lines_then_edit_name(self):
+        self.testView.arch = '''
+        <form>
+            <group>
+                <field name="name" />
+            </group>
+        </form>
+        '''
+
+        custom_fields_before_studio = self.env["ir.model.fields"].search([
+            ("state", "=", "manual"),
+        ])
+
+        self.start_tour("/web?debug=tests", 'web_studio_test_create_one2many_lines_then_edit_name', login="admin", timeout=200)
+
+        custom_fields = self.env["ir.model.fields"].search_read([
+            ("state", "=", "manual"),
+            ("id", "not in", custom_fields_before_studio.ids),
+        ], fields=["name", "ttype", "field_description"])
+
+        self.maxDiff = None
+        self.assertCountEqual(
+            [{key: val for key, val in field.items() if key != 'id'} for field in custom_fields],
+            [
+                {"name": "x_studio_new_name", 'ttype': 'one2many', 'field_description': 'new name'},
+                {"name": "x_name", 'ttype': 'char', 'field_description': 'Description'},
+                {"name": "x_res_partner_id", 'ttype': 'many2one', 'field_description': 'X Res Partner'},
+                {"name": "x_studio_sequence", 'ttype': 'integer', 'field_description': 'Sequence'},
+            ]
+        )
+
+    def test_address_view_id_no_edit(self):
+        self.testView.write({
+            "arch": '''
+                <form>
+                    <div class="o_address_format">
+                        <field name="lang"/>
+                    </div>
+                </form>
+            '''
+        })
+        self.env.company.country_id.address_view_id = self.env.ref('base.view_partner_address_form')
+        self.start_tour("/web?debug=tests", 'web_studio_test_address_view_id_no_edit', login="admin", timeout=200)
+
+    def test_custom_selection_field_edit_values(self):
+        self.testView.arch = '''
+             <form>
+                 <group>
+                     <field name="name" />
+                 </group>
+             </form>
+        '''
+
+        self.start_tour("/web?debug=tests", 'web_studio_custom_selection_field_edit_values', login="admin", timeout=200)
+        selection_field = self.env["ir.model.fields"].search(
+            [
+                ("state", "=", "manual"),
+                ("model", "=", "res.partner"),
+                ("ttype", "=", "selection")
+            ],
+            limit=1
+        )
+
+        self.assertCountEqual(selection_field.selection_ids.mapped("name"), ["some value", "another value"])
+
+    def test_create_new_model_from_existing_view(self):
+        self.testView.write({
+            "model": "res.users",
+            "type": "kanban",
+            "arch": '''<kanban>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_details">
+                            <field name="display_name"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+            '''
+        })
+        self.testAction.view_ids.view_mode = "kanban"
+        self.start_tour("/web?debug=tests", 'web_studio_test_create_new_model_from_existing_view', login="admin",
+                        timeout=200)
+
+    def test_create_model_with_clickable_stages(self):
+        web_read_group = type(self.env["base"]).web_read_group
+        @mute_logger("odoo.models")
+        @api.model
+        def muted_web_read_group(self, *args, **kwargs):
+            return web_read_group(self, *args, **kwargs)
+
+        self.patch(type(self.env["base"]), "web_read_group", muted_web_read_group)
+        self.start_tour("/web?debug=tests", 'web_studio_test_create_model_with_clickable_stages', login="admin", timeout=200)

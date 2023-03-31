@@ -10,7 +10,7 @@
 # Martin Trigaux, 2022
 # Arma Gedonsky <armagedonsky@hot.ee>, 2022
 # Leaanika Randmets, 2022
-# Jana Jaakson, 2022
+# Jana Jaakson, 2023
 # 
 msgid ""
 msgstr ""
@@ -18,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-19 14:02+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
-"Last-Translator: Jana Jaakson, 2022\n"
+"Last-Translator: Jana Jaakson, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -36,7 +36,7 @@ msgstr "Tühista"
 #: model_terms:ir.ui.view,arch_db:project_helpdesk.helpdesk_ticket_convert_to_task_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:project_helpdesk.project_task_convert_to_ticket_wizard_view_form
 msgid "Convert"
-msgstr "Muuda"
+msgstr "Teisenda"
 
 #. module: project_helpdesk
 #: model:ir.model,name:project_helpdesk.model_helpdesk_ticket_convert_wizard
@@ -127,6 +127,12 @@ msgstr "Viimati uuendatud"
 #: model:ir.model.fields,field_description:project_helpdesk.field_helpdesk_ticket_convert_wizard__project_id
 msgid "Project"
 msgstr "Projekt"
+
+#. module: project_helpdesk
+#: code:addons/project_helpdesk/models/project.py:0
+#, python-format
+msgid "Recurring tasks cannot be converted into tickets."
+msgstr "Käesolevat ülesannet ei ole võimalik piletiks muuta."
 
 #. module: project_helpdesk
 #: model:ir.model.fields,field_description:project_helpdesk.field_helpdesk_ticket_convert_wizard__stage_id

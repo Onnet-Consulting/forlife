@@ -1,0 +1,8 @@
+<odoo>
+<!--    <data>-->
+<!--        <menuitem id="root_invoice_tscd_menu"-->
+<!--                  parent="account.menu_finance_receivables"-->
+<!--                  action="forlife_invoice.inherit_invoice_form_view_action"-->
+<!--                  name="Invoice TSCD" sequence="2"/>-->
+<!--    </data>-->
+</odoo>

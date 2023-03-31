@@ -4,6 +4,8 @@
 # 
 # Translators:
 # Triine Aavik <triine@avalah.ee>, 2022
+# Leaanika Randmets, 2022
+# Anna, 2023
 # 
 msgid ""
 msgstr ""
@@ -11,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Triine Aavik <triine@avalah.ee>, 2022\n"
+"Last-Translator: Anna, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,26 +29,26 @@ msgstr "Muuda"
 #. module: spreadsheet_dashboard_edition
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_edition.field_spreadsheet_dashboard__raw
 msgid "Raw"
-msgstr ""
+msgstr "Toores"
 
 #. module: spreadsheet_dashboard_edition
 #: model:ir.model,name:spreadsheet_dashboard_edition.model_spreadsheet_dashboard
 msgid "Spreadsheet Dashboard"
-msgstr ""
+msgstr "Arvutustabeli töölaud"
 
 #. module: spreadsheet_dashboard_edition
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_edition.field_spreadsheet_dashboard__spreadsheet_revision_ids
 msgid "Spreadsheet Revision"
-msgstr ""
+msgstr "Arvutustabeli redigeerimine"
 
 #. module: spreadsheet_dashboard_edition
 #: model:ir.model.fields,field_description:spreadsheet_dashboard_edition.field_spreadsheet_dashboard__spreadsheet_snapshot
 msgid "Spreadsheet Snapshot"
-msgstr ""
+msgstr "Arvutustabeli hetkepilt"
 
 #. module: spreadsheet_dashboard_edition
 #. openerp-web
 #: code:addons/spreadsheet_dashboard_edition/static/src/assets/dashboard_selector_dialog/dashboard_selector_panel.xml:0
 #, python-format
 msgid "getPageTitle('DASHBOARD')"
-msgstr ""
+msgstr "getPageTitle('DASHBOARD')"

@@ -4,7 +4,8 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Erwin van der Ploeg <erwin@odooexperts.nl>, 2022
+# Jolien De Paepe, 2022
+# Erwin van der Ploeg <erwin@odooexperts.nl>, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:24+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
-"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2022\n"
+"Last-Translator: Erwin van der Ploeg <erwin@odooexperts.nl>, 2023\n"
 "Language-Team: Dutch (https://www.transifex.com/odoo/teams/41243/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -191,6 +192,13 @@ msgid "ID"
 msgstr "ID"
 
 #. module: project_enterprise
+#. openerp-web
+#: code:addons/project_enterprise/static/src/js/task_gantt_utils.js:0
+#, python-format
+msgid "Invalid scale interval"
+msgstr "Ongeldige schaalinterval"
+
+#. module: project_enterprise
 #: model:ir.model.fields,field_description:project_enterprise.field_project_task_confirm_schedule_line_wizard____last_update
 #: model:ir.model.fields,field_description:project_enterprise.field_project_task_confirm_schedule_wizard____last_update
 msgid "Last Modified on"
@@ -229,6 +237,16 @@ msgstr "Mobiel"
 #, python-format
 msgid "No task has been scheduled in the future."
 msgstr "Er is geen taak gepland in de toekomst."
+
+#. module: project_enterprise
+#: code:addons/project_enterprise/models/project_task.py:0
+#, python-format
+msgid ""
+"One parameter is missing to use this method. You should give a start and end"
+" dates."
+msgstr ""
+"Er ontbreekt een parameter om deze methode te gebruiken. Je moet een begin- "
+"en einddatum opgeven."
 
 #. module: project_enterprise
 #: code:addons/project_enterprise/models/project_task.py:0
@@ -377,7 +395,7 @@ msgid ""
 "                        employees are unavailable. The next possible dates for these tasks are:"
 msgstr ""
 "De volgende taken zijn niet gepland omdat de bijbehorende\n"
-"                        medewerkers zijn niet bereikbaar. De eerstvolgende mogelijke data voor deze taken zijn:"
+"                        werknemers zijn niet bereikbaar. De eerstvolgende mogelijke data voor deze taken zijn:"
 
 #. module: project_enterprise
 #: model:ir.model.constraint,message:project_enterprise.constraint_project_task_planned_dates_check
@@ -399,11 +417,17 @@ msgstr "De taken zijn succesvol ingepland."
 #. module: project_enterprise
 #: code:addons/project_enterprise/models/project_task.py:0
 #, python-format
+msgid "This Progress Bar is not implemented."
+msgstr "Deze voorgangsbalk is niet geïmplementeerd."
+
+#. module: project_enterprise
+#: code:addons/project_enterprise/models/project_task.py:0
+#, python-format
 msgid ""
 "This employee does not have a running contract during the selected period.\n"
 "The working hours of the company were used as a reference instead."
 msgstr ""
-"Deze medewerker heeft geen lopend contract gedurende de geselecteerde periode.\n"
+"Deze werknemer heeft geen lopend contract gedurende de geselecteerde periode.\n"
 "In plaats daarvan werden de werkuren van het bedrijf als referentie gebruikt."
 
 #. module: project_enterprise

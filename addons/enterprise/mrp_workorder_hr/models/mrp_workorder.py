@@ -127,3 +127,9 @@ class MrpWorkorder(models.Model):
             now = datetime.now()
             return self._intervals_duration([(t.date_start, now, t) for t in self.time_ids if not t.date_end])
         return super().get_working_duration()
+
+    def _cal_cost(self, times=None):
+        res = super()._cal_cost(times=times)
+        times = times or self.time_ids
+        res += sum(times.mapped('total_cost'))
+        return res

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_ke_hr_payroll.hr_employee_barack" model="hr.employee">
+        <field name="l10n_ke_mortgage">21000</field>
+    </record>
+
+    <record id="l10n_ke_hr_payroll.hr_contract_cdi_barack" model="hr.contract">
+        <field name="l10n_ke_food_allowance">4000</field>
+        <field name="l10n_ke_airtime_allowance">3000</field>
+        <field name="l10n_ke_pension_allowance">6000</field>
+        <field name="l10n_ke_volontary_medical_insurance">3917</field>
+        <field name="l10n_ke_life_insurance">0</field>
+        <field name="l10n_ke_education">0</field>
+    </record>
+</odoo>

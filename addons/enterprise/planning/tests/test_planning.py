@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 
 from odoo import fields
+from odoo.exceptions import ValidationError
 from odoo.tests.common import Form
 
 from .common import TestCommonPlanning
@@ -275,3 +276,13 @@ class TestPlanning(TestCommonPlanning):
         test_week = test_week.save()
         self.assertEqual(test_week.start_datetime, datetime(2019, 6, 24, 8, 0), 'It should adjust to employee calendar: 0am -> 9pm')
         self.assertEqual(test_week.end_datetime, datetime(2019, 6, 28, 17, 0), 'It should adjust to employee calendar: 0am -> 9pm')
+
+    def test_name_long_duration(self):
+        """ Set an absurdly high duration to ensure we validate it and get an error """
+        template_slot = self.env['planning.slot.template'].create({
+            'start_time': 9,
+            'duration': 100000,
+        })
+        with self.assertRaises(ValidationError):
+            # only try to get the name, this triggers its compute
+            template_slot.name

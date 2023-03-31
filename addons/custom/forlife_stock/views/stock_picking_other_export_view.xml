@@ -1,0 +1,147 @@
+<odoo>
+    <data>
+        <record id="inherit_stock_picking_for_other_export_form_view" model="ir.ui.view">
+            <field name="name">inherit.stock.picking.for.other.export.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='location_id']" position="after">
+                    <field name="state" invisible="1"/>
+                    <field name="other_export" invisible="1"/>
+                    <field name="other_import" invisible="1"/>
+                    <field name="reason_type_id"/>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('state', 'in', ('confirmed', 'assigned','done', 'cancel'))]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('state', 'in', ('confirmed', 'assigned','done', 'cancel'))]}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_scrap']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',
+                        '&amp;', ('other_export', '=', True), ('state', 'in', ('draft', 'confirmed', 'assigned', 'done', 'cancel')),
+                        '&amp;', ('other_export', '=', False), '|', '&amp;', ('picking_type_code', '=', 'incoming'), ('state', '!=', 'done'), '&amp;', ('picking_type_code', '=', 'outgoing'), ('state', '=', 'done')]}
+                    </attribute>
+                </xpath>
+                <xpath expr="//field[@name='location_dest_id'][2]" position="attributes">
+<!--                    <attribute name="domain">[]</attribute>-->
+                    <attribute name="attrs">{'invisible': False}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='location_id'][2]" position="attributes">
+<!--                    <attribute name="domain">[]</attribute>-->
+                    <attribute name="attrs">{'invisible': False}</attribute>
+                </xpath>
+                <xpath expr="//page[@name='operations']//field[@name='product_uom']" position="after">
+                    <field name="name" required="0"/>
+                    <field name="price_unit" attrs="{'column_invisible': [('parent.other_import', '!=', True)]}"/>
+                    <field name="reason_id"/>
+                    <field name="occasion_code_id"/>
+                </xpath>
+<!--                <xpath expr="//field[@name='picking_type_id']" position="attributes">-->
+<!--                    <attribute name="attrs">{'invisible': ['|', ('other_import', '=', True), '|', ('other_export', '=', True), ('hide_picking_type', '=', True)]}</attribute>-->
+<!--                </xpath>-->
+                <xpath expr="//button[@name='button_validate'][hasclass('o_btn_validate')]" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',
+                        '&amp;', ('other_export', '=', True), '|', ('state', '!=', 'waiting'), ('show_validate', '=', False),
+                        '&amp;', ('other_export', '=', False), '|', ('state', 'not in', ('waiting', 'confirmed')), ('show_validate', '=', False)]}
+                    </attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_set_quantities_to_reservation']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',
+                        '&amp;', ('other_export', '=', True), '|', ('show_set_qty_button', '=', False), ('state', '=', 'assigned'),
+                        '&amp;', ('other_export', '=', False), ('show_set_qty_button', '=', False)]}
+                    </attribute>
+                </xpath>
+                <xpath expr="//button[@name='do_print_picking']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',
+                        ('other_export', '=', True),
+                        '&amp;', ('other_export', '=', False), ('state', '!=', 'assigned')]}
+                    </attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_open_label_type']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('other_export', '=', True), ('state', 'in', ('done', 'cancel'))]}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(stock.action_report_delivery)d']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',
+                        ('other_export', '=', True),
+                        '&amp;', ('other_export', '=', False), ('state', '!=', 'done')]}
+                    </attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',
+                        ('other_export', '=', True),
+                        '&amp;', ('other_export', '=', False), ('state', '!=', 'done')]}
+                    </attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_toggle_is_locked'][1]" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',
+                        '&amp;', '|', ('other_export', '=', True), ('other_import', '=', True), ('state', 'in', ('done', 'cancel')),
+                        '&amp;',
+                        '&amp;', ('other_export', '=', False), ('other_import', '=', False),
+                        '|', ('state', 'in', ('draft','cancel')), ('is_locked', '=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',
+                        '&amp;',
+                        '|', ('other_export', '=', True), ('other_import', '=', True),
+                        ('state', 'not in', ('assigned', 'confirmed', 'draft', 'waiting','done')),
+                        '&amp;',
+                        '&amp;', ('other_export', '=', False), ('other_import', '=', False),
+                        ('state', 'not in', ('assigned', 'confirmed', 'draft', 'waiting'))]}
+                    </attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="confirm">Are you sure you want to cancel?</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="after">
+                    <button name="action_back_to_draft" string="Back to draft" type="object" attrs="{'invisible': [('state', '!=', 'cancel')]}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="inherit_stock_picking_for_other_export_form_view_action" model="ir.actions.act_window">
+            <field name="name">Other Export</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
+            <field name="domain">[('other_export', '=', True)]</field>
+            <field name="context" eval="{'default_other_export': True, 'default_picking_type_id': ref('stock.picking_type_out')}"/>
+        </record>
+
+        <record id="inherit_stock_picking_for_other_import_form_view_action" model="ir.actions.act_window">
+            <field name="name">Other Import</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
+            <field name="domain">[('other_import', '=', True)]</field>
+            <field name="context" eval="{'default_other_import': True, 'default_picking_type_id': ref('stock.picking_type_in')}"/>
+        </record>
+
+        <record id="forlife_reason_type_tree_view" model="ir.ui.view">
+            <field name="name">forlife.reason.type.tree</field>
+            <field name="model">forlife.reason.type</field>
+            <field name="arch" type="xml">
+                <tree editable="top">
+                    <field name="name"/>
+                    <field name="code"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="forlife_reason_type_action" model="ir.actions.act_window">
+            <field name="name">Reason Type</field>
+            <field name="res_model">forlife.reason.type</field>
+            <field name="view_mode">tree</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('forlife_reason_type_tree_view')})]"/>
+        </record>
+
+        <menuitem name="Other Export" id="stock_picking_other_export_menu" action="inherit_stock_picking_for_other_export_form_view_action" parent="stock.menu_stock_warehouse_mgmt"/>
+        <menuitem name="Other Import" id="stock_picking_other_import_menu" action="inherit_stock_picking_for_other_import_form_view_action" parent="stock.menu_stock_warehouse_mgmt"/>
+        <menuitem name="Reason Type" id="reason_type_menu" action="forlife_reason_type_action" parent="stock.menu_stock_config_settings"/>
+    </data>
+</odoo>

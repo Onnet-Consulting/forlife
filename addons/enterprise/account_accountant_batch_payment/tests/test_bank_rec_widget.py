@@ -173,9 +173,11 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         # Validate with the full batch should reconcile directly the statement line.
         wizard.button_validate()
         self.assertTrue(wizard.next_action_todo)
-        self.assertEqual(wizard.next_action_todo['type'], 'rpc')
+        self.assertEqual(wizard.next_action_todo['type'], 'reconcile_st_line')
+        wizard.button_reset()
 
         # Remove a payment and check the wizard is well opened.
+        wizard._action_add_new_batch_payments(batch)
         line = wizard.line_ids.filtered(lambda x: x.flag == 'new_aml' and x.source_aml_id.payment_id == payments[-1])
         wizard._action_remove_line(line.index)
         wizard.button_validate()

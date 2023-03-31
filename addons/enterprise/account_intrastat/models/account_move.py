@@ -26,12 +26,17 @@ class AccountMove(models.Model):
         :return: A res.country record's id.
         '''
         self.ensure_one()
+        if self.is_sale_document():
+            if self.partner_shipping_id.country_id.intrastat:
+                return self.partner_shipping_id.country_id.id
+            else:
+                return False
         return self.partner_id.country_id.id
 
-    @api.depends('partner_id')
+    @api.depends('partner_id', 'partner_shipping_id')
     def _compute_intrastat_country_id(self):
         for move in self:
-            if move.partner_id.country_id.intrastat:
+            if move.partner_id.country_id.intrastat or move.is_sale_document():
                 move.intrastat_country_id = move._get_invoice_intrastat_country_id()
             else:
                 move.intrastat_country_id = False

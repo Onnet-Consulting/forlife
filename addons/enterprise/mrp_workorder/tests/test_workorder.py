@@ -268,12 +268,13 @@ class TestWorkOrder(common.TestMrpCommon):
         """ Production with a strict consumption
         Check that consuming the right amount of component doesn't trigger any error"""
 
-        self.env['quality.point'].create({
+        quality_point = self.env['quality.point'].create({
             'product_ids': [(4, self.submarine_pod.id)],
             'picking_type_ids': [(4, self.env['stock.picking.type'].search([('code', '=', 'mrp_operation')], limit=1).id)],
             'operation_id': self.bom_submarine.operation_ids[0].id,
             'test_type_id': self.env.ref('mrp_workorder.test_type_register_consumed_materials').id,
             'component_id': self.trapped_child.id,
+            'title': "Quality Control Point Title"
         })
         self.bom_submarine.bom_line_ids.filtered(lambda line: line.product_id == self.trapped_child).operation_id = self.bom_submarine.operation_ids[0]
         mo_form = Form(self.env['mrp.production'])
@@ -288,6 +289,7 @@ class TestWorkOrder(common.TestMrpCommon):
         sorted_workorder_ids = mo.workorder_ids.sorted()
         wo = sorted_workorder_ids[0]
         wo.button_start()
+        self.assertEqual(wo.check_ids[0].title, quality_point.title, "quality check title should match its corresponding quality point title")
         wo_form = Form(wo, view='mrp_workorder.mrp_workorder_view_form_tablet')
         self.assertEqual(wo_form.qty_producing, 1)
         wo_form.finished_lot_id = self.sp1
@@ -304,6 +306,7 @@ class TestWorkOrder(common.TestMrpCommon):
         qc._next()
         wo_form = Form(wo, view='mrp_workorder.mrp_workorder_view_form_tablet')
         qc_form = Form(wo.current_quality_check_id, view='mrp_workorder.quality_check_view_form_tablet')
+        self.assertEqual(wo.check_ids[1].title, '{} "{}"'.format(wo.check_ids[1].test_type_id.display_name, qc_form.component_id.name), "title of quality check with no control point should be based on consumed material test type + component")
         self.assertEqual(qc_form.qty_done, 2, 'The suggested component qty_done is wrong')
         self.assertEqual(qc_form.lot_id, self.mc1, 'The suggested lot is wrong')
         qc_form.qty_done = 1
@@ -558,8 +561,7 @@ class TestWorkOrder(common.TestMrpCommon):
 
         production.workorder_ids[0].button_start()
         wo_form = Form(production.workorder_ids[0], view='mrp_workorder.mrp_workorder_view_form_tablet')
-        self.assertEqual(wo_form.qty_producing, 0, "Wrong quantity to produce")
-        wo_form.qty_producing = 1
+        self.assertEqual(wo_form.qty_producing, 1, "Wrong quantity to produce")
         wo = wo_form.save()
         qc_form = Form(wo.current_quality_check_id, view='mrp_workorder.quality_check_view_form_tablet')
         self.assertEqual(qc_form.component_id, self.elon_musk, "The component should be changed")
@@ -783,7 +785,7 @@ class TestWorkOrder(common.TestMrpCommon):
 
         sorted_workorder_ids[0].button_start()
         wo_form = Form(sorted_workorder_ids[0], view='mrp_workorder.mrp_workorder_view_form_tablet')
-        self.assertEqual(wo_form.qty_producing, 0, "Wrong quantity to produce")
+        self.assertEqual(wo_form.qty_producing, 2, "Wrong quantity to produce")
         wo_form.qty_producing = 1
         wo = wo_form.save()
         qc_form = Form(wo.current_quality_check_id, view='mrp_workorder.quality_check_view_form_tablet')
@@ -1697,3 +1699,157 @@ class TestWorkOrder(common.TestMrpCommon):
         self.assertEqual(backorder.move_raw_ids.state, 'done')
         self.assertEqual(backorder.move_raw_ids.move_line_ids.qty_done, 2)
         self.assertEqual(backorder.move_raw_ids.move_line_ids.location_id, location)
+
+    def test_workoder_reservation_with_multiple_sn(self):
+        """ Check that component serial numbers are correctly prefills in each workorder
+            Bom 1:
+                product: finished_product
+                product tracking: serial
+                unit: 1.0
+                operation: op1
+                component:
+                    C1: 1.0 unit
+                    Consumed in operation: OP1
+        """
+        finished_product = self.env['product.product'].create({
+            'name': 'P1',
+            'type': 'product',
+            'tracking': 'serial'})
+        component = self.env['product.product'].create({
+            'name': 'C1',
+            'type': 'product',
+            'tracking': 'serial'})
+        bom_finished_product = self.env['mrp.bom'].create({
+            'product_tmpl_id': finished_product.product_tmpl_id.id,
+            'product_qty': 1.0,
+            'operation_ids': [
+                (0, 0, {'name': 'OP1', 'workcenter_id': self.workcenter_1.id, 'time_cycle': 12, 'sequence': 1}),
+            ]})
+        self.env['mrp.bom.line'].create({
+            'product_id': component.id,
+            'product_qty': 1.0,
+            'bom_id': bom_finished_product.id,
+            'operation_id': bom_finished_product.operation_ids[0].id})
+
+        # create 3 SN for the component
+        component_sn1 = self.env['stock.lot'].create({
+            'name': 'SN1',
+            'product_id': component.id,
+            'company_id': self.env.company.id,
+        })
+        component_sn2 = component_sn1.copy({'name': 'SN2'})
+        component_sn3 = component_sn1.copy({'name': 'SN3'})
+        self.env['stock.quant']._update_available_quantity(component, self.location_1, 1, lot_id=component_sn1)
+        self.env['stock.quant']._update_available_quantity(component, self.location_1, 1, lot_id=component_sn2)
+        self.env['stock.quant']._update_available_quantity(component, self.location_1, 1, lot_id=component_sn3)
+        # create 3 serial number for the finished product
+        finished_product_sn1 = self.env['stock.lot'].create({
+            'name': 'SN1-finished-product',
+            'product_id': finished_product.id,
+            'company_id': self.env.company.id,
+        })
+        finished_product_sn2 = component_sn1.copy({'name': 'SN2-finished-product'})
+        finished_product_sn3 = component_sn1.copy({'name': 'SN3-finished-product'})
+        # Create a MO
+        mo_form = Form(self.env['mrp.production'])
+        mo_form.bom_id = bom_finished_product
+        mo_form.product_qty = 3.0
+        mo01 = mo_form.save()
+        mo01.action_confirm()
+        mo01.action_assign()
+        mo01.button_plan()
+        self.assertEqual(len(mo01.workorder_ids), 1, "wrong number of workorders")
+        self.assertEqual(mo01.workorder_ids[0].state, 'ready', "workorder state should be 'ready'")
+        mo01.workorder_ids[0].button_start()
+        # work order 1
+        wo_form = Form(mo01.workorder_ids[0], view='mrp_workorder.mrp_workorder_view_form_tablet')
+        wo_form.finished_lot_id = finished_product_sn1
+        self.assertEqual(wo_form.qty_producing, 1, "Wrong quantity to produce (serial tracked)")
+        self.assertEqual(wo_form.qty_remaining, 3, "Wrong quantity remaining")
+        wo = wo_form.save()
+        qc_form = Form(wo.current_quality_check_id, view='mrp_workorder.quality_check_view_form_tablet')
+        self.assertEqual(qc_form.component_id, component)
+        self.assertEqual(qc_form.lot_id, component_sn1)
+        self.assertEqual(qc_form.qty_done, 1, "Wrong suggested quantity")
+        qc = qc_form.save()
+        qc._next()
+        action = wo.record_production()
+        # work order 2
+        wo_form = Form(self.env['mrp.workorder'].browse(action['res_id']), view='mrp_workorder.mrp_workorder_view_form_tablet')
+        wo_form.finished_lot_id = finished_product_sn2
+        wo = wo_form.save()
+        qc_form = Form(wo.current_quality_check_id, view='mrp_workorder.quality_check_view_form_tablet')
+        self.assertEqual(qc_form.lot_id, component_sn2)
+        qc = qc_form.save()
+        qc._next()
+        action = wo.record_production()
+        # work order 3
+        wo_form = Form(self.env['mrp.workorder'].browse(action['res_id']), view='mrp_workorder.mrp_workorder_view_form_tablet')
+        wo_form.finished_lot_id = finished_product_sn3
+        wo = wo_form.save()
+        qc_form = Form(wo.current_quality_check_id, view='mrp_workorder.quality_check_view_form_tablet')
+        self.assertEqual(qc_form.lot_id, component_sn3)
+        qc = qc_form.save()
+        qc._next()
+        wo.do_finish()
+        mo01.button_mark_done()
+
+    def test_wo_another_lot_than_reserved_one_02(self):
+        """
+        Tracked-by-SN component C. MO that consumes 2 x C in one operation. SN01
+        and SN02 are reserved. For the first consumption, the user select SN02.
+        It should therefore updates the line that reserves SN02 instead of the
+        one for SN01
+        """
+        compo = self.bom_4.bom_line_ids.product_id
+        compo.write({
+            'type': 'product',
+            'tracking': 'serial',
+        })
+
+        self.bom_4.bom_line_ids.write({
+            'product_qty': 2,
+            'operation_id': self.bom_4.operation_ids,
+        })
+
+        sn01, sn02 = self.env['stock.lot'].create([{
+            'name': 'SN %s' % i,
+            'product_id': compo.id,
+            'company_id': self.env.company.id,
+        } for i in range(2)])
+        self.env['stock.quant']._update_available_quantity(compo, self.location_1, 1.0, lot_id=sn01)
+        self.env['stock.quant']._update_available_quantity(compo, self.location_1, 1.0, lot_id=sn02)
+
+        mo_form = Form(self.env['mrp.production'])
+        mo_form.bom_id = self.bom_4
+        mo_form.product_qty = 1
+        mo = mo_form.save()
+        mo.action_confirm()
+        mo.action_assign()
+
+        self.assertRecordValues(mo.move_raw_ids.move_line_ids, [
+            {'lot_id': sn01.id, 'reserved_uom_qty': 1.0, 'qty_done': 0.0, 'state': 'assigned'},
+            {'lot_id': sn02.id, 'reserved_uom_qty': 1.0, 'qty_done': 0.0, 'state': 'assigned'},
+        ])
+
+        wo = mo.workorder_ids
+        wo.button_start()
+        self.assertEqual(wo.lot_id, sn01, 'The first reserved SN should be the suggested one')
+
+        qc = wo.current_quality_check_id
+        qc.lot_id = sn02
+        qc.action_continue()
+        self.assertRecordValues(mo.move_raw_ids.move_line_ids, [
+            {'lot_id': sn01.id, 'reserved_uom_qty': 1.0, 'qty_done': 0.0, 'state': 'assigned'},
+            {'lot_id': sn02.id, 'reserved_uom_qty': 1.0, 'qty_done': 1.0, 'state': 'assigned'},
+        ])
+
+        qc = wo.current_quality_check_id
+        self.assertEqual(qc.lot_id, sn01, 'SN02 has been consumed with the first SML, so it should suggest SN01 again')
+        qc.action_next()
+        wo.do_finish()
+
+        self.assertRecordValues(mo.move_raw_ids.move_line_ids, [
+            {'lot_id': sn01.id, 'reserved_uom_qty': 1.0, 'qty_done': 1.0, 'state': 'assigned'},
+            {'lot_id': sn02.id, 'reserved_uom_qty': 1.0, 'qty_done': 1.0, 'state': 'assigned'},
+        ])

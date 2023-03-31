@@ -23,8 +23,13 @@ class AccountMove(models.Model):
 
         return posted
 
-    def _send_to_avatax(self):
+    def _send_to_avatax(self, commit=False):
         self.ensure_one()
+
+        # don't recalculate posted invoices unless we're setting the invoice name on Avatax's side
+        if not commit and self.state == "posted":
+            return False
+
         return self.fiscal_position_id.is_avatax and self.move_type in ("out_invoice", "out_refund")
 
     def button_draft(self):
@@ -33,7 +38,7 @@ class AccountMove(models.Model):
             record._uncommit_avatax_transaction()
 
     def button_update_avatax(self, commit=False):
-        for record in self.filtered(lambda m: m._send_to_avatax()):
+        for record in self.filtered(lambda m: m._send_to_avatax(commit=commit)):
             record._compute_avalara_taxes(commit)
 
     def unlink(self):
@@ -99,3 +104,8 @@ class AccountMove(models.Model):
 
     def _get_avatax_description(self):
         return 'Journal Entry'
+
+    def _perform_address_validation(self):
+        # Payments inherit account.move and will end up with a fiscal position.
+        # Even if an auto-applied Avatax fiscal position is set don't validate the address.
+        return super()._perform_address_validation() and not self.payment_id

@@ -191,11 +191,15 @@ msgstr ""
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__is_purchased_of_forlife
-#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__is_purchased_of_format
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__is_purchased_of_forlife
-#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__is_purchased_of_format
 msgid "Is Purchased Forlife"
-msgstr ""
+msgstr "Đã mua hàng"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_partner__is_purchased_of_format
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_res_users__is_purchased_of_format
+msgid "Is Purchased Format"
+msgstr "Đã mua hàng"
 
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__item_total_point
@@ -338,8 +342,15 @@ msgstr "Đơn hàng"
 msgid "Pos order"
 msgstr ""
 
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line_discount_details__name
+msgid "Program Name"
+msgstr "Tên chương trình"
+
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__program_store_point_id
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line_discount_details__program_name
 msgid "Program Store Point"
 msgstr "Chương trình điểm"
 
@@ -388,8 +399,12 @@ msgid "Total Points Availible"
 msgstr "Tổng điểm khả dụng"
 
 #. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_account_bank_statement_line__point_order_type
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_account_move__point_order_type
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_account_payment__point_order_type
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_compensate_point_wizard__type
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_partner_history_point__point_order_type
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line_discount_details__type
 msgid "Type"
 msgstr "Loại"
 
@@ -438,3 +453,68 @@ msgstr "Bù điểm"
 #: model:ir.actions.act_window,name:forlife_pos_point_order.action_compensate_format_point_wizard
 msgid "Compensate Format Point"
 msgstr "Bù điểm"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line__money_is_reduced
+msgid "Money is reduced"
+msgstr "Tiền được giảm"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line__discount_details_lines
+msgid "Discount details"
+msgstr "Chi tiết giảm giá"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line_discount_details__listed_price
+msgid "Listed price"
+msgstr "Giá niêm yết"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line_discount_details__recipe
+msgid "Recipe"
+msgstr "Công thức"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order_line_discount_details__money_reduced
+msgid "Money Reduced"
+msgstr "Tiền giảm"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__pos_order_line_discount_details__type__make_price
+msgid "Make Price"
+msgstr "Làm giá"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__pos_order_line_discount_details__type__card
+msgid "Card"
+msgstr "Thẻ"
+
+#. module: forlife_pos_point_order
+#. odoo-javascript
+#: code:addons/forlife_pos_point_order/static/src/js/Popup/PointsConsumptionPopup.js:0
+#: code:addons/forlife_pos_point_order/static/src/xml/OrderLineDetails.xml:0
+#: code:addons/forlife_pos_point_order/static/src/xml/OrderLineDetails.xml:0
+#: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__pos_order_line_discount_details__type__point
+#, python-format
+msgid "Point"
+msgstr "Điểm"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_points_promotion__apply_all
+msgid "Apply All"
+msgstr "Áp dụng tất cả"
+
+#. module: forlife_pos_point_order
+#: model:ir.model.fields,field_description:forlife_pos_point_order.field_points_promotion__approve_consumption_point
+msgid "Approve Consumption Points"
+msgstr "Cho phép tiêu điểm"
+
+#. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.points_promotion_view_form_extend
+msgid "Consumption Products Points"
+msgstr "Sản phẩm được tiêu điểm"
+
+#. module: forlife_pos_point_order
+#: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.points_promotion_view_form_extend
+msgid "Consumption Point"
+msgstr "Tiêu điểm"

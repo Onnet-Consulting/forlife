@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+    <record model="ir.module.category" id="module_category_inventory_purchase_order">
+        <field name="name">Purchase Order</field>
+        <field name="description">Category Purchase Order</field>
+        <field name="sequence">8</field>
+        <field name="parent_id" ref="base.module_category_inventory"/>
+    </record>
+    <record id="user_purchase_order_group" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="forlife_purchase.module_category_inventory_purchase_order"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+     <record id="admin_purchase_order_group" model="res.groups">
+        <field name="name">Administrator</field>
+        <field name="category_id" ref="forlife_purchase.module_category_inventory_purchase_order"/>
+        <field name="implied_ids" eval="[(4, ref('user_purchase_order_group'))]"/>
+    </record>
+</data>
+</odoo>

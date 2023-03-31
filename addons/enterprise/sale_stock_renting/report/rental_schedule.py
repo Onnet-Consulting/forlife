@@ -27,7 +27,7 @@ class RentalSchedule(models.Model):
         return f"""COALESCE(lot_info.name, NULLIF(t.name->>'{lang}', ''), t.name->>'en_US') as product_name"""
 
     def _id(self):
-        return """CAST(CONCAT(lot_info.lot_id, pdg.max_id, sol.id) AS INTEGER) as id"""
+        return """CAST(CONCAT(lot_info.lot_id, pdg.max_id, sol.id) AS NUMERIC) as id"""
 
     def _quantity(self):
         return """

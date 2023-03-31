@@ -139,7 +139,7 @@ msgstr "数量"
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_product_product__quantity_decreasable
 msgid "Quantity Decreasable"
-msgstr "数量可递减"
+msgstr "数量可减少"
 
 #. module: industry_fsm_stock
 #: model:ir.model.fields,field_description:industry_fsm_stock.field_fsm_stock_tracking_line__sale_order_line_id

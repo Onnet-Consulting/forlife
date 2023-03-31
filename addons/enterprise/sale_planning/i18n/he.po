@@ -34,17 +34,17 @@ msgstr ""
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.view_order_form_inherit_sale_planning
 msgid "<span class=\"o_stat_text\">Planned</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">מתוכנן</span>"
 
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.view_order_form_inherit_sale_planning
 msgid "<span class=\"o_stat_text\">To plan</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">לתכנן</span>"
 
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.view_order_form_inherit_sale_planning
 msgid "<span>Hours</span>"
-msgstr ""
+msgstr "<span>שעות</span>"
 
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_slot_view_gantt_inherit_sale_planning
@@ -162,7 +162,7 @@ msgstr "תכנון הזמנות "
 #: model:ir.model.fields,field_description:sale_planning.field_product_product__planning_enabled
 #: model:ir.model.fields,field_description:sale_planning.field_product_template__planning_enabled
 msgid "Plan Services"
-msgstr ""
+msgstr "שירותי תכנון"
 
 #. module: sale_planning
 #: code:addons/sale_planning/models/product.py:0
@@ -304,7 +304,7 @@ msgstr "תאריך תחילה"
 #: model_terms:product.product,description:sale_planning.technical_maintainance_product
 #: model_terms:product.template,description:sale_planning.technical_maintainance_product_product_template
 msgid "Take a rest. We'll do our best."
-msgstr ""
+msgstr "לכו לנוח, אנחנו נעשה את מיטב יכלתנו."
 
 #. module: sale_planning
 #. openerp-web
@@ -341,7 +341,7 @@ msgstr ""
 #. module: sale_planning
 #: model_terms:ir.ui.view,arch_db:sale_planning.planning_view_form_in_gantt_inherit_sale_planning
 msgid "Unschedule"
-msgstr ""
+msgstr "הסרה מהלו\"ז"
 
 #. module: sale_planning
 #: code:addons/sale_planning/models/sale_order.py:0

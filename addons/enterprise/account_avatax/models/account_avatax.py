@@ -34,11 +34,20 @@ class AccountAvatax(models.AbstractModel):
 
     @api.constrains('partner_id', 'fiscal_position_id')
     def _check_address(self):
-        for record in self.filtered('fiscal_position_id.is_avatax'):
+        incomplete_partner_to_records = {}
+        for record in self.filtered(lambda r: r._perform_address_validation()):
             partner = record.partner_id
             country = partner.country_id
             if not country or (country.zip_required and not partner.zip) or (country.state_required and not partner.state_id):
-                raise ValidationError(_('Customers are required to have a zip, state and country when using Avatax.'))
+                incomplete_partner_to_records.setdefault(partner, []).append(record)
+
+        if incomplete_partner_to_records:
+            error = _("The following customer(s) need to have a zip, state and country when using Avatax:")
+            partner_errors = [
+                _("- %s (ID: %s) on %s") % (partner.display_name, partner.id, ", ".join(record.display_name for record in records))
+                for partner, records in incomplete_partner_to_records.items()
+            ]
+            raise ValidationError(error + "\n" + "\n".join(partner_errors))
 
     @api.depends('company_id', 'fiscal_position_id')
     def _compute_is_avatax(self):
@@ -84,6 +93,13 @@ class AccountAvatax(models.AbstractModel):
         :return (Model): a `res.partner` record
         """
         return self.partner_shipping_id or self.partner_id
+
+    def _perform_address_validation(self):
+        """Allows to bypass the _check_address constraint.
+
+        :return (bool): whether to execute the _check_address constraint
+        """
+        return self.fiscal_position_id.is_avatax
 
     # #############################################################################################
     # HELPERS

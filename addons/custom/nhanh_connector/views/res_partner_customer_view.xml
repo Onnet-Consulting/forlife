@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tree_view_res_partner" model="ir.ui.view">
+        <field name="name">res.partner.tree.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="source_record"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+<!--<odoo>-->
+<!--    <data>-->
+<!--        <record id="vt_action_res_partner_customer" model="ir.actions.act_window">-->
+<!--            <field name="name">Customer</field>-->
+<!--            <field name="type">ir.actions.act_window</field>-->
+<!--            <field name="res_model">res.partner</field>-->
+<!--            <field name="view_ids" eval="[(5, 0, 0),-->
+<!--                (0, 0, {'view_mode': 'kanban', 'view_id': ref('base.res_partner_kanban_view')}),-->
+<!--                (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>-->
+<!--            <field name="domain">[] </field>-->
+<!--            <field name="context">{}</field>-->
+<!--        </record>-->
+<!--    </data>-->
+<!--</odoo>-->

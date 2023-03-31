@@ -1,0 +1,416 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-03-07 09:44+0000\n"
+"PO-Revision-Date: 2023-03-07 09:44+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_product__alert_date
+msgid "Alert Date"
+msgstr "Ngày cảnh báo"
+
+#. module: forlife_base
+#: model:mail.activity.type,name:forlife_base.mail_activity_type_alert_date_reached
+msgid "Alert Date Reached"
+msgstr "Đã đến ngày thông báo"
+
+#. module: forlife_base
+#: model_terms:ir.ui.view,arch_db:forlife_base.product_category_code_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_base.product_category_type_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_forlife_brand_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_location_province_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_sale_province_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_state_district_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_supplier_group_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_weather_province_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_base.stock_warehouse_status_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_base.stock_warehouse_type_view_search
+#: model_terms:ir.ui.view,arch_db:forlife_base.supplier_product_type_view_search
+msgid "Archived"
+msgstr "Đã lưu trữ"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_forlife_brand_action
+#: model:ir.model,name:forlife_base.model_res_forlife_brand
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__brand_id
+#: model:ir.ui.menu,name:forlife_base.res_forlife_brand_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_forlife_brand_view_tree
+msgid "Brand"
+msgstr "Thương hiệu"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_forlife_model_mixin__code
+#: model:ir.model.fields,field_description:forlife_base.field_hr_department__code
+#: model:ir.model.fields,field_description:forlife_base.field_product_category__category_code
+#: model:ir.model.fields,field_description:forlife_base.field_product_category_code__code
+#: model:ir.model.fields,field_description:forlife_base.field_product_category_type__code
+#: model:ir.model.fields,field_description:forlife_base.field_res_company__code
+#: model:ir.model.fields,field_description:forlife_base.field_res_forlife_brand__code
+#: model:ir.model.fields,field_description:forlife_base.field_res_location_province__code
+#: model:ir.model.fields,field_description:forlife_base.field_res_sale_province__code
+#: model:ir.model.fields,field_description:forlife_base.field_res_state_district__code
+#: model:ir.model.fields,field_description:forlife_base.field_res_supplier_group__code
+#: model:ir.model.fields,field_description:forlife_base.field_res_weather_province__code
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__warehouse_code
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse_status__code
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse_type__code
+#: model:ir.model.fields,field_description:forlife_base.field_supplier_product_type__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_attribute__code
+msgid "Code"
+msgstr "Mã giá trị"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__warehouse_code_internal
+msgid "Code Internal"
+msgstr "Mã nội bộ"
+
+#. module: forlife_base
+#: model:ir.model.constraint,message:forlife_base.constraint_forlife_model_mixin_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_product_category_code_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_product_category_type_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_res_forlife_brand_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_res_location_province_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_res_sale_province_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_res_state_district_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_res_supplier_group_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_res_weather_province_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_stock_warehouse_status_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_stock_warehouse_type_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_supplier_product_type_unique_code
+#: model:ir.model.constraint,message:forlife_base.constraint_product_attribute_value_unique_code
+msgid "Code must be unique!"
+msgstr "Mã phải là duy nhất!"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.product_category_code_action
+#: model:ir.model,name:forlife_base.model_product_category_code
+#: model:ir.model.fields,field_description:forlife_base.field_product_category__category_code_id
+#: model:ir.ui.menu,name:forlife_base.menu_product_category_code_action_purchase
+#: model_terms:ir.ui.view,arch_db:forlife_base.product_category_code_view_tree
+msgid "Code of Product Category"
+msgstr "Mã nhóm sản phẩm"
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_res_company
+msgid "Companies"
+msgstr "Công ty"
+
+#. module: forlife_base
+#: model:ir.model.constraint,message:forlife_base.constraint_res_company_unique_code
+msgid "Company code must be unique!"
+msgstr "Mã công ty phải là duy nhất"
+
+#. module: forlife_base
+#: model:ir.ui.menu,name:forlife_base.menu_master_data_config
+msgid "Configuration"
+msgstr "Thiết lập"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_account_move_line__analytic_account_id
+msgid "Cost Center"
+msgstr "Trung tâm chi phí"
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_hr_department
+msgid "Department"
+msgstr "Phòng/Ban"
+
+#. module: forlife_base
+#: model:ir.model.constraint,message:forlife_base.constraint_hr_department_unique_code
+msgid "Department code must be unique!"
+msgstr "Mã phòng ban phải là duy nhất"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_state_district_action
+#: model:ir.model,name:forlife_base.model_res_state_district
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__district_id
+#: model:ir.ui.menu,name:forlife_base.res_state_district_menu
+msgid "District"
+msgstr "Quận/huyện"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_product__expiration_date
+msgid "Expiration Date"
+msgstr "Ngày hết hạn"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_product__product_expiry_reminded
+msgid "Expiry has been reminded"
+msgstr "Hết hạn đã được nhắc nhở"
+
+#. module: forlife_base
+#: model_terms:ir.ui.view,arch_db:forlife_base.view_warehouse_inherit_forlife
+msgid "Information"
+msgstr "Thông tin"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_res_partner__internal_code
+#: model:ir.model.fields,field_description:forlife_base.field_res_users__internal_code
+msgid "Internal Code"
+msgstr "Mã nội bộ"
+
+#. module: forlife_base
+#. odoo-python
+#: code:addons/forlife_base/models/res_utility.py:0
+#, python-format
+msgid "Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s"
+msgstr "Giá trị tại hàng %(row)s, cột %(col)s: %(cell_value)s không hợp lệ"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__id_deposit
+msgid "Is deposit?"
+msgstr "Kho hàng ký gửi"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_location_province_action
+#: model:ir.model,name:forlife_base.model_res_location_province
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__loc_province_id
+#: model:ir.ui.menu,name:forlife_base.res_location_province_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_location_province_view_tree
+msgid "Location Province"
+msgstr "Khu vực địa lý"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__longitude
+msgid "Longitude"
+msgstr "Kinh độ"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__latitude
+msgid "Latitude"
+msgstr "Vĩ độ"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__manager_id
+msgid "Manager"
+msgstr "Quản lý kho"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_forlife_model_mixin__name
+#: model:ir.model.fields,field_description:forlife_base.field_product_category_code__name
+#: model:ir.model.fields,field_description:forlife_base.field_product_category_type__name
+#: model:ir.model.fields,field_description:forlife_base.field_res_forlife_brand__name
+#: model:ir.model.fields,field_description:forlife_base.field_res_location_province__name
+#: model:ir.model.fields,field_description:forlife_base.field_res_sale_province__name
+#: model:ir.model.fields,field_description:forlife_base.field_res_state_district__name
+#: model:ir.model.fields,field_description:forlife_base.field_res_supplier_group__name
+#: model:ir.model.fields,field_description:forlife_base.field_res_weather_province__name
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse_status__name
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse_type__name
+#: model:ir.model.fields,field_description:forlife_base.field_supplier_product_type__name
+msgid "Name"
+msgstr "Tên"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__name_internal
+msgid "Name Internal"
+msgstr "Tên nội bộ"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__note
+msgid "Notes"
+msgstr "Ghi chú"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__phone
+msgid "Phone"
+msgstr "Số điện thoại"
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_product_category
+msgid "Product Category"
+msgstr "Nhóm sản phẩm"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_product__sku_code
+msgid "SKU Code"
+msgstr "Mã SKU"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_sale_province_action
+#: model:ir.model,name:forlife_base.model_res_sale_province
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__sale_province_id
+#: model:ir.ui.menu,name:forlife_base.res_sale_province_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_sale_province_view_tree
+msgid "Sale Province"
+msgstr "Khu vực kinh doanh"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__short_name_internal
+msgid "Short Name Internal"
+msgstr "Tên viết tắt nội bộ"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__square
+msgid "Square"
+msgstr "Diện tích kho"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__state_id
+msgid "State"
+msgstr "Tỉnh/thành phố"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__status_ids
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.stock_warehouse_status_action
+#: model:ir.model,name:forlife_base.model_stock_warehouse_status
+#: model:ir.ui.menu,name:forlife_base.stock_warehouse_status_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.stock_warehouse_status_view_tree
+msgid "Status of Warehouse"
+msgstr "Trạng thái kho"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_res_partner__supplier_code
+#: model:ir.model.fields,field_description:forlife_base.field_res_users__supplier_code
+msgid "Supplier Code"
+msgstr "Mã NCC"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_supplier_group_action
+#: model:ir.model,name:forlife_base.model_res_supplier_group
+#: model:ir.model.fields,field_description:forlife_base.field_res_partner__supplier_group_id
+#: model:ir.model.fields,field_description:forlife_base.field_res_users__supplier_group_id
+#: model:ir.ui.menu,name:forlife_base.res_supplier_group_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_supplier_group_view_tree
+msgid "Supplier Group"
+msgstr "Nhóm NCC"
+
+#. module: forlife_base
+#. odoo-python
+#: code:addons/forlife_base/models/product_product.py:0
+#, python-format
+msgid "The alert date has been reached for this product"
+msgstr "Đã đến ngày thông báo hết hạn cho sản phẩm này"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.product_category_type_action
+#: model:ir.model,name:forlife_base.model_product_category_type
+#: model:ir.model.fields,field_description:forlife_base.field_product_category__category_type_id
+#: model:ir.ui.menu,name:forlife_base.menu_product_category_type_action_purchase
+#: model_terms:ir.ui.view,arch_db:forlife_base.product_category_type_view_tree
+msgid "Type of Product Category"
+msgstr "Loại nhóm sản phẩm"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.supplier_product_type_action
+#: model:ir.model,name:forlife_base.model_supplier_product_type
+#: model:ir.model.fields,field_description:forlife_base.field_res_partner__sup_product_type_id
+#: model:ir.model.fields,field_description:forlife_base.field_res_users__sup_product_type_id
+#: model:ir.ui.menu,name:forlife_base.supplier_product_type_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.supplier_product_type_view_tree
+msgid "Type of Supplier Product"
+msgstr "Loại hàng hoá NCC"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.stock_warehouse_type_action
+#: model:ir.model,name:forlife_base.model_stock_warehouse_type
+#: model:ir.ui.menu,name:forlife_base.stock_warehouse_type_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.stock_warehouse_type_view_tree
+msgid "Type of Warehouse"
+msgstr "Loại kho hàng"
+
+#. module: forlife_base
+#: model:ir.model,name:forlife_base.model_res_utility
+msgid "Utility Methods"
+msgstr "Hàm tiện ích"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_product_product__days_before_alert
+msgid "Warning before (day)"
+msgstr "Cảnh báo trước (ngày)"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_weather_province_action
+#: model:ir.model,name:forlife_base.model_res_weather_province
+#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__weather_province_id
+#: model:ir.ui.menu,name:forlife_base.res_weather_province_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_state_district_view_tree
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_weather_province_view_tree
+msgid "Weather Province"
+msgstr "Khu vực thời tiết"
+
+#. module: forlife_base
+#. odoo-python
+#: code:addons/forlife_base/models/res_utility.py:0
+#, python-format
+msgid "unknown error code %s"
+msgstr "mã lỗi không xác định %s"
+
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_occasion_code_action
+#: model:ir.model,name:forlife_base.model_occasion_code
+#: model:ir.ui.menu,name:forlife_base.res_occasion_code_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_occasion_code_view_tree
+msgid "Occasion Code"
+msgstr "Mã vụ việc"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_occasion_gr_action
+#: model:ir.model,name:forlife_base.model_occasion_group
+#: model:ir.ui.menu,name:forlife_base.res_occasion_gr_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_occasion_gr_view_tree
+msgid "Occasion Group"
+msgstr "Nhóm vụ việc"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_occasion_code__code
+msgid "Occasion code"
+msgstr "Mã vụ việc"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_occasion_code__group_id
+msgid "Occasion group"
+msgstr "Nhóm vụ việc"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_occasion_code__name
+msgid "Occasion name"
+msgstr "Tên vụ việc"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_asset_location__location_address
+msgid "Location Address"
+msgstr "Địa chỉ vị trí"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_asset_location__location_code
+msgid "Location Code"
+msgstr "Mã vị trí"
+
+#. module: forlife_base
+#: model:ir.model.constraint,message:forlife_base.constraint_asset_location_unique_location_code
+msgid "Location Code must be unique!"
+msgstr "Mã vị trí phải là duy nhất"
+
+#. module: forlife_base
+#: model:ir.model.fields,field_description:forlife_base.field_asset_location__location_name
+msgid "Location Name"
+msgstr "Tên vị trí"
+
+#. module: forlife_base
+#: model:ir.actions.act_window,name:forlife_base.res_asset_location_action
+#: model:ir.model,name:forlife_base.model_asset_location
+#: model:ir.ui.menu,name:forlife_base.res_state_asset_location_menu
+#: model_terms:ir.ui.view,arch_db:forlife_base.res_asset_location_view_tree
+msgid "Asset Location"
+msgstr "Vị trí tài sản"

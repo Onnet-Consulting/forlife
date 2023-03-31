@@ -50,11 +50,11 @@ class TestSalaryRecord(TransactionCase):
         })
 
         self.employee = self.env['hr.employee'].create({
-            'barcode': 'test107759',
+            'code': 'test107759',
             'name': 'TEST Lưu Việt Dũng',
         })
         self.employee = self.env['hr.employee'].create({
-            'barcode': 'test107882',
+            'code': 'test107882',
             'name': 'TEST Nguyễn Thị Vân Anh',
         })
 

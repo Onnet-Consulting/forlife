@@ -860,7 +860,7 @@ class TestEdiResults(TestMxEdiCommon):
                                         ImpSaldoAnt="750.000"
                                         ImpSaldoInsoluto="550.000"
                                         MonedaDR="Gol"
-                                        EquivalenciaDR="2.000000"
+                                        EquivalenciaDR="2.0000000000"
                                         NumParcialidad="1"
                                         ObjetoImpDR="03"
                                         Serie="INV/2016/"/>

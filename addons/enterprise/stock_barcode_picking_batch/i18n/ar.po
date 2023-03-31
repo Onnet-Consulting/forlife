@@ -130,7 +130,7 @@ msgstr "تحركات المنتج (بنود حركة المخزون)"
 #: code:addons/stock_barcode_picking_batch/static/src/models/barcode_picking_batch_model.js:0
 #, python-format
 msgid "Scan the package %s"
-msgstr ""
+msgstr "مسح الطرد %s ضوئياً "
 
 #. module: stock_barcode_picking_batch
 #. openerp-web

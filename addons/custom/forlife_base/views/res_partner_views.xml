@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_partner_form_forlife_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.forlife.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="priority">50</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <field name="vat" position="after">
+                <field name="supplier_group_id"/>
+                <field name="sup_product_type_id"/>
+            </field>
+<!--             <span name="address_name" position="before">
+                <field name="supplier_code"/>
+                <field name="internal_code"/>
+            </span> -->
+        </field>
+    </record>
+
+    <!-- Supplier Group -->
+    <record id="res_supplier_group_view_tree" model="ir.ui.view">
+        <field name="name">res.supplier.group.view.tree</field>
+        <field name="model">res.supplier.group</field>
+        <field name="arch" type="xml">
+            <tree string="Supplier Group" editable="top">
+                <field name="code"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="res_supplier_group_view_search" model="ir.ui.view">
+            <field name="name">res.supplier.group.view.search</field>
+            <field name="model">res.supplier.group</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <separator/>
+                    <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                </search>
+            </field>
+        </record>
+
+    <record id="res_supplier_group_action" model="ir.actions.act_window">
+        <field name="name">Supplier Group</field>
+        <field name="res_model">res.supplier.group</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <!-- Type of Supplier Product -->
+    <record id="supplier_product_type_view_tree" model="ir.ui.view">
+        <field name="name">supplier.product.type.view.tree</field>
+        <field name="model">supplier.product.type</field>
+        <field name="arch" type="xml">
+            <tree string="Type of Supplier Product" editable="top">
+                <field name="code"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="supplier_product_type_view_search" model="ir.ui.view">
+            <field name="name">supplier.product.type.view.search</field>
+            <field name="model">supplier.product.type</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <separator/>
+                    <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                </search>
+            </field>
+        </record>
+
+    <record id="supplier_product_type_action" model="ir.actions.act_window">
+        <field name="name">Type of Supplier Product</field>
+        <field name="res_model">supplier.product.type</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

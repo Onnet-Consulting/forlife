@@ -7,6 +7,7 @@
 # Martin Trigaux, 2022
 # Emily Jia <eji@odoo.com>, 2022
 # Raymond Yu <cl_yu@hotmail.com>, 2022
+# Jeffery CHEN <jeffery9@gmail.com>, 2022
 # 
 msgid ""
 msgstr ""
@@ -14,7 +15,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Raymond Yu <cl_yu@hotmail.com>, 2022\n"
+"Last-Translator: Jeffery CHEN <jeffery9@gmail.com>, 2022\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -92,7 +93,7 @@ msgstr "约会"
 #. module: website_appointment
 #: model:ir.actions.act_window,name:website_appointment.action_appointment_pages_list
 msgid "Appointment Pages"
-msgstr "预约页面"
+msgstr "预约网页"
 
 #. module: website_appointment
 #: model:ir.model,name:website_appointment.model_appointment_type
@@ -114,7 +115,7 @@ msgstr "约会"
 #. module: website_appointment
 #: model_terms:ir.ui.view,arch_db:website_appointment.snippet_options
 msgid "Appointments Page"
-msgstr "预约页面"
+msgstr "预约网页"
 
 #. module: website_appointment
 #: model_terms:ir.ui.view,arch_db:website_appointment.appointment_progress_bar

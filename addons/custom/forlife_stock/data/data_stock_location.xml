@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Resource: stock.warehouse -->
+        <record id="warehouse_ho" model="stock.warehouse">
+            <field name="partner_id" ref="base.main_partner"/>
+            <field name="name">HO</field>
+            <field name="code">HO</field>
+        </record>
+
+        <record id="enter_inventory_balance" model="stock.location">
+            <field name="name">Nhập cân đối tồn kho - tự kiểm kê</field>
+            <field name="code">1381000001</field>
+            <field name="type_other">incoming</field>
+            <field name="reason_type_id" ref="forlife_stock.reason_type_5"/>
+        </record>
+        <record id="enter_inventory_balance_auto" model="stock.location">
+            <field name="name">Nhập cân đối tồn kho - kiểm kê định kỳ</field>
+            <field name="code">1381000002</field>
+            <field name="type_other">incoming</field>
+            <field name="reason_type_id" ref="forlife_stock.reason_type_5"/>
+        </record>
+        <record id="export_inventory_balance" model="stock.location">
+            <field name="name">Xuất cân đối tồn kho - tự kiểm kê</field>
+            <field name="code">1381000003</field>
+            <field name="type_other">outcoming</field>
+            <field name="reason_type_id" ref="forlife_stock.reason_type_4"/>
+        </record>
+        <record id="export_inventory_balance_auto" model="stock.location">
+            <field name="name">Xuất cân đối tồn kho - kiểm kê định kỳ</field>
+            <field name="code">1381000004</field>
+            <field name="type_other">outcoming</field>
+            <field name="reason_type_id" ref="forlife_stock.reason_type_4"/>
+        </record>
+
+        <!-- create xml ids for demo data that are widely used in tests or in other codes, for more convenience -->
+        <function model="ir.model.data" name="_update_xmlids">
+            <value model="base" eval="[{
+                'xml_id': 'forlife_stock.ho_location_stock',
+                'record': obj().env.ref('forlife_stock.warehouse_ho').lot_stock_id,
+                'noupdate': True,
+            }, {
+                'xml_id': 'forlife_stock.ho_location_company',
+                'record': obj().env.ref('forlife_stock.warehouse_ho').wh_input_stock_loc_id,
+                'noupdate': True,
+            }, {
+                'xml_id': 'forlife_stock.ho_location_output',
+                'record': obj().env.ref('forlife_stock.warehouse_ho').wh_output_stock_loc_id,
+                'noupdate': True,
+            }, {
+                'xml_id': 'forlife_stock.ho_location_pack_zone',
+                'record': obj().env.ref('forlife_stock.warehouse_ho').wh_pack_stock_loc_id,
+                'noupdate': True,
+            }, {
+                'xml_id': 'forlife_stock.ho_picking_type_internal',
+                'record': obj().env.ref('forlife_stock.warehouse_ho').int_type_id,
+                'noupdate': True,
+            }, {
+                'xml_id': 'forlife_stock.ho_picking_type_in',
+                'record': obj().env.ref('forlife_stock.warehouse_ho').in_type_id,
+                'noupdate': True,
+            }, {
+                'xml_id': 'forlife_stock.ho_picking_type_out',
+                'record': obj().env.ref('forlife_stock.warehouse_ho').out_type_id,
+                'noupdate': True,
+            }]"/>
+        </function>
+    </data>
+</odoo>

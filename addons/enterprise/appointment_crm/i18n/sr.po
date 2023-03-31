@@ -35,12 +35,12 @@ msgstr "Događaj kalendara"
 #: code:addons/appointment_crm/static/src/xml/calendar_appointment_scheduling.xml:0
 #, python-format
 msgid "Click in your calendar to pick meeting time proposals for"
-msgstr ""
+msgstr "Kliknite na svoj kalendar da odaberete predlog termina za"
 
 #. module: appointment_crm
 #: model:ir.model.fields,field_description:appointment_crm.field_appointment_type__lead_create
 msgid "Create Opportunities"
-msgstr ""
+msgstr "Kreiraj prodajne prilike"
 
 #. module: appointment_crm
 #: model:ir.model.fields,help:appointment_crm.field_appointment_type__lead_create
@@ -48,6 +48,8 @@ msgid ""
 "For each scheduled appointment, create a new opportunity and assign it to "
 "the responsible user."
 msgstr ""
+"Za svaki zakazani sastanak, kreiraj novu prodajnu priliku i dodeli je "
+"odgovornom korisniku."
 
 #. module: appointment_crm
 #: model:ir.model.fields,help:appointment_crm.field_appointment_type__opportunity_id
@@ -55,11 +57,13 @@ msgid ""
 "Link an opportunity/lead to the appointment type created.\n"
 "Used when creating a custom appointment type from the Meeting action in the crm form view."
 msgstr ""
+"Poveži prodajnu priliku/lid za vrstu kreiranog sastanka.\n"
+"Koristi se kada se kreira prilagođena vrsta sastanka iz Akcija sastanka u pregledu crm forma."
 
 #. module: appointment_crm
 #: model:crm.tag,name:appointment_crm.appointment_crm_tag
 msgid "Online Appointment"
-msgstr ""
+msgstr "Online zakazivanje"
 
 #. module: appointment_crm
 #: model:ir.model.fields,field_description:appointment_crm.field_calendar_event__opportunity_id
@@ -69,4 +73,4 @@ msgstr "Prilika"
 #. module: appointment_crm
 #: model:ir.model.fields,field_description:appointment_crm.field_appointment_type__opportunity_id
 msgid "Opportunity/Lead"
-msgstr ""
+msgstr "Prodajna prilika/Lid"

@@ -43,17 +43,15 @@ tour.register('helpdesk_tour', {
     content: _t('Assign the ticket to a <b>member of your team</b>.'),
     position: 'right',
 }, {
-    trigger: '.o_form_button_save',
-    content: _t('Save this ticket and the modifications you\'ve made to it.'),
-    position: 'bottom',
-}, {
     trigger: ".o_ChatterTopbar_buttonSendMessage",
+    extra_trigger: '.o_form_view',
     content: _t("Use the chatter to <b>send emails</b> and communicate efficiently with your customers. \
     Add new people to the followers' list to make them aware of the progress of this ticket."),
     width: 350,
     position: "bottom",
 }, {
     trigger: ".o_ChatterTopbar_buttonLogNote",
+    extra_trigger: '.o_form_view',
     content: _t("<b>Log notes</b> for internal communications (you will only notify the persons you specifically tag). \
     Use <b>@ mentions</b> to ping a colleague \
     or <b># mentions</b> to contact a group of people."),
@@ -61,7 +59,7 @@ tour.register('helpdesk_tour', {
     position: "bottom"
 }, {
     trigger: ".o_ChatterTopbar_buttonScheduleActivity",
-    extra_trigger: '.o_form_view .o_form_saved',
+    extra_trigger: '.o_form_view',
     content: _t("Use <b>activities</b> to organize your daily work."),
 }, {
     trigger: ".modal-dialog .btn-primary",
@@ -70,7 +68,7 @@ tour.register('helpdesk_tour', {
     run: "click",
 }, {
     trigger: '.o_back_button',
-    extra_trigger: '.o_form_view .o_form_saved',
+    extra_trigger: '.o_form_view',
     content: _t("Let's go back to the <b>kanban view</b> to get an overview of your next tickets."),
     position: 'bottom',
 }, {

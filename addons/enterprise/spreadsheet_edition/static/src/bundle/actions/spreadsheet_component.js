@@ -239,7 +239,7 @@ export default class SpreadsheetComponent extends LegacyComponent {
 
     getThumbnail() {
         const dimensions = spreadsheet.SPREADSHEET_DIMENSIONS;
-        const canvas = document.querySelector("canvas");
+        const canvas = document.querySelector(".o-grid canvas:not(.o-figure-canvas)");
         const canvasResizer = document.createElement("canvas");
         const size = this.props.thumbnailSize;
         canvasResizer.width = size;

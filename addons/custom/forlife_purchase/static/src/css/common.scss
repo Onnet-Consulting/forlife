@@ -1,0 +1,15 @@
+//change width hàng hóa
+.width-hh th:not(.o_handle_cell):not([data-name="is_close"]) {
+    width: 160px !important;
+    max-width: 160px !important;
+    .text-end {
+        text-align: left !important;
+    }
+}
+//.width-first th:first-child {
+//    width: 33px !important;
+//    max-width: 33px !important;
+//    .text-end {
+//        text-align: left !important;
+//    }
+//}

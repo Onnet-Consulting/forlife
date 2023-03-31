@@ -18,10 +18,10 @@ class HrContract(models.Model):
     contract_type_id = fields.Many2one('hr.contract.type', "Contract Type",
                                        default=lambda self: self.env.ref('l10n_be_hr_payroll.l10n_be_contract_type_cdi',
                                                                          raise_if_not_found=False))
-    has_bicycle = fields.Boolean(related="employee_id.has_bicycle")
+    has_bicycle = fields.Boolean(related="employee_id.has_bicycle", readonly=False)
     l10n_be_bicyle_cost = fields.Float(compute='_compute_l10n_be_bicyle_cost')
 
-    @api.depends('employee_id.has_bicycle', 'employee_id.has_bicycle')
+    @api.depends('employee_id.has_bicycle')
     def _compute_l10n_be_bicyle_cost(self):
         for contract in self:
             if not contract.employee_id.has_bicycle:
@@ -33,7 +33,7 @@ class HrContract(models.Model):
     def _get_private_bicycle_cost(self, distance):
         amount_per_km = self.env['hr.rule.parameter'].sudo()._get_parameter_from_code('cp200_cycle_reimbursement_per_km', raise_if_not_found=False) or 0.20
         amount_max = self.env['hr.rule.parameter'].sudo()._get_parameter_from_code('cp200_cycle_reimbursement_max', raise_if_not_found=False) or 8
-        return 52 * min(amount_max, amount_per_km * distance * 2)
+        return 4 * min(amount_max, amount_per_km * distance * 2)
 
     @api.depends(
         'wage_with_holidays', 'wage_on_signature', 'state',

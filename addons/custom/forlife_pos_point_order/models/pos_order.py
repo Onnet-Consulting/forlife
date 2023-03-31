@@ -49,6 +49,8 @@ class PosOrder(models.Model):
                         HistoryPoint.sudo().create(history_values)
                         pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
                         pos.action_point_addition()
+                        if pos.lines.filtered(lambda line: line.point != 0):
+                            pos.action_point_subtraction()
         return pos_id
 
     def btn_compensate_points_all(self, reason):
@@ -60,7 +62,7 @@ class PosOrder(models.Model):
         if not pos_order.partner_id.is_member_app_format and not pos_order.partner_id.is_member_app_forlife:
             return
         if not pos_order.program_store_point_id:
-            program = self._get_program_promotion({
+            program = self.get_program_promotion({
                 'date_order': datetime.strftime(pos_order.date_order, DEFAULT_SERVER_DATETIME_FORMAT),
                 'session_id': pos_order.session_id.id
             })
@@ -86,10 +88,10 @@ class PosOrder(models.Model):
                 [x.point_addition_event for x in pos.lines]),
             'point_order_type': point_type,
             'reason': reason or pos.name or '',
-            'points_used': 0,  # go back to edit
+            'points_used': abs(sum([line.point / 1000 for line in pos.lines])),  # go back to edit
             'points_back': 0,  # go back to edit
             'points_store': pos.point_order + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
-                [x.point_addition_event for x in pos.lines]) - 0 - 0
+                [x.point_addition_event for x in pos.lines]) - abs(sum([line.point / 1000 for line in pos.lines])) - 0
         }
 
     def _get_store_brand_from_program(self):
@@ -113,7 +115,8 @@ class PosOrder(models.Model):
                 rec.point_event_order = 0
             else:
                 valid_method_ids = rec.program_store_point_id.payment_method_ids.ids
-                valid_product_ids = rec.program_store_point_id.points_product_ids.filtered(lambda x: x.state == 'effective' and x.from_date <rec.date_order< x.to_date).product_ids.ids
+                valid_product_ids = rec.program_store_point_id.points_product_ids.filtered(
+                    lambda x: x.state == 'effective' and x.from_date < rec.date_order < x.to_date).product_ids.ids
                 for pay in rec.payment_ids:
                     if pay.payment_method_id.id in valid_method_ids:
                         valid_money_payment_method += pay.amount
@@ -184,18 +187,46 @@ class PosOrder(models.Model):
     def _order_fields(self, ui_order):
         data = super(PosOrder, self)._order_fields(ui_order)
         if data['partner_id']:
-            program_promotion = self._get_program_promotion(data)
+            program_promotion = self.get_program_promotion(data)
             if program_promotion:
                 data['program_store_point_id'] = program_promotion.id
         return data
 
-    def _get_program_promotion(self, data):
-        create_Date = self._format_time_zone(data['date_order'])
+    @api.model
+    def get_program_promotion(self, data):
+        # if self._context.get('from_PointsConsumption'):
+        #     data = data[0]
+        if self._context.get('from_PointsConsumptionPos'):
+            create_Date = self._format_time_zone(data['date_order'].replace('T', ' ')[:19])
+        else:
+            create_Date = self._format_time_zone(data['date_order'])
         session = self.env['pos.session'].sudo().search([('id', '=', data['session_id'])], limit=1)
         store = session.config_id.store_id
+        # query = "select id from points_promotion where id in (select points_promotion_id from points_promotion_store_rel where store_id = {}) " \
+        #         "and state = 'in_progress' and from_date < '{}' and to_date > '{}' " \
+        #         "and brand_id ={} " \
+        #         "limit 1".format(store.id, create_Date, create_Date, store.brand_id.id)
+        # self._cr.execute(query)
+        # program_promotion = self.env.cr.fetchall()
+        # print(program_promotion)
         program_promotion = self.env['points.promotion'].sudo().search(
             [('store_ids', 'in', store.id), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date), ('to_date', '>=', create_Date),
              ('brand_id', '=', store.brand_id.id)], limit=1)
+        if self._context.get('from_PointsConsumptionPos'):
+            dict_point_consumption_ids = []
+            for r in program_promotion.point_consumption_ids:
+                # dict_point_consumption_ids['id'] = r.product_id.id
+                # dict_point_consumption_ids['name'] = r.product_id.name
+                dict_point_consumption_ids.append({
+                    'id': r.id,
+                    'name': r.name,
+                    'price': r.lst_price
+                })
+            return {
+                'approve_consumption_point': program_promotion.approve_consumption_point,
+                'apply_all': program_promotion.apply_all,
+                'point_consumption_ids': dict_point_consumption_ids
+            }
         return program_promotion
 
     def _format_time_zone(self, time):
@@ -212,7 +243,7 @@ class PosOrder(models.Model):
             raise UserError(_('Order had already point addition journal entry posted!'))
         move_vals = {
             'ref': self.name,
-            'pos_order_ids': [(6, 0, self.ids)],
+            'pos_order_id': self.id,
             'move_type': 'entry',
             'date': self.date_order,
             'journal_id': self.program_store_point_id.account_journal_id.id,
@@ -239,4 +270,58 @@ class PosOrder(models.Model):
         }
         move = self.env['account.move'].create(move_vals)._post()
         self.point_addition_move_ids |= move
+        return True
+
+    def get_value_entry_reduced_point(self):
+        vl = 0
+        for rec in self.lines:
+            vl += self.get_number_tax(rec.product_id, rec.point)
+        return vl
+
+    def get_number_tax(self, product, point):
+        number_tax = 0
+        for tax in product.taxes_id.filtered(lambda t: t.type_tax_use == 'sale'):
+            number_tax += tax.amount
+        total_tax = 1 + number_tax / 100
+        point_tax = abs(point)/total_tax
+        return round(point_tax)
+
+    def get_total_point_reduced(self):
+        return abs(sum([line.point for line in self.lines]))
+
+    def get_fee_tax_reduced_line(self):
+        return self.get_total_point_reduced() - self.get_value_entry_reduced_point()
+
+
+    def action_point_subtraction(self):
+        move_vals = {
+            'ref': self.name,
+            'pos_order_id': self.id,
+            'move_type': 'entry',
+            'date': self.date_order,
+            'journal_id': self.program_store_point_id.account_journal_id.id,
+            'company_id': self.company_id.id,
+            'line_ids': [
+                # debit line
+                (0, 0, {
+                    'account_id': self.program_store_point_id.acc_reduce_accumulated_points_id.id,
+                    'debit': self.get_value_entry_reduced_point(),
+                    'credit': 0.0,
+                }),
+                # tax line
+                (0, 0, {
+                    'account_id': self.program_store_point_id.acc_tax_reduce_accumulated_points_id.id,
+                    'debit': self.get_fee_tax_reduced_line(),
+                    'credit': 0.0
+                }),
+                # credit line
+                (0, 0, {
+                    'account_id': self.program_store_point_id.acc_accumulate_points_id.id,
+                    'debit': 0.0,
+                    'credit': self.get_total_point_reduced(),
+                }),
+            ]
+
+        }
+        move = self.env['account.move'].create(move_vals)._post()
         return True

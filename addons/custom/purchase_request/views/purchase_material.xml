@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="purchase_material_tree" model="ir.ui.view">
+            <field name="name">purchase.material.tree</field>
+            <field name="model">purchase.material</field>
+            <field name="arch" type="xml">
+                <tree string="">
+                    <field name="source_document"/>
+                    <field name="create_uid"/>
+                    <field name="create_date"/>
+                    <field name="location_from"/>
+                    <field name="location_to"/>
+                    <field name="status"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="purchase_material_form" model="ir.ui.view">
+            <field name="name">purchase.material.form</field>
+            <field name="model">purchase.material</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <header>
+                        <button string="Approve" name="action_approve" type="object" attrs="{'invisible':[ ('status', '!=', 'draft')]}"/>
+                        <button string="Reject" name="action_cancel" type="object" attrs="{'invisible':[ ('status', '!=', 'draft')]}"/>
+                        <field name="status" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="source_document"/>
+                                <field name="create_uid"/>
+                            </group>
+                            <group>
+                                <field name="create_date"/>
+                                <field name="location_from"/>
+                                <field name="location_to"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="">
+                                <field name="purchase_material_line_ids" mode="tree,form">
+                                    <tree editable="bottom">
+                                        <button type="object" name="action_open_formview" string="Chi phí" icon="fa-edit"/>
+                                        <field name="purchase_order_line_id" invisible="1"/>
+                                        <field name="product_domain" invisible="1"/>
+                                        <field name="product_id" attrs="{'readonly': [('purchase_order_line_id', '!=', False)]}" context="{'show_product_code': True}"/>
+                                        <field name="description" attrs="{'readonly': [('purchase_order_line_id', '!=', False)]}"/>
+                                        <field name="free_good" attrs="{'readonly': [('purchase_order_line_id', '!=', False)]}"/>
+                                        <field name="purchase_quantity" attrs="{'readonly': [('purchase_order_line_id', '!=', False)]}"/>
+                                        <field name="purchase_uom" attrs="{'readonly': [('purchase_order_line_id', '!=', False)]}"/>
+                                        <field name="exchange_quantity" attrs="{'readonly': [('purchase_order_line_id', '!=', False)]}"/>
+                                        <field name="product_qty" attrs="{'readonly': [('purchase_order_line_id', '!=', False)]}"/>
+                                        <field name="purchase_material_line_item_ids" invisible="1" force_save="1" mode="tree">
+                                            <tree>
+                                                <field name="product_id" force_save="1"/>
+                                                <field name="description" force_save="1"/>
+                                                <field name="product_qty" force_save="1"/>
+                                                <field name="price_cost" force_save="1"/>
+                                                <field name="uom" force_save="1"/>
+                                            </tree>
+                                        </field>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="purchase_material_action" model="ir.actions.act_window">
+            <field name="name">Yêu cầu NPL</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">purchase.material</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="purchase_material_menu" parent="purchase.menu_procurement_management"
+                  action="purchase_material_action" sequence="50"/>
+
+        <record id="purchase_material_line_form" model="ir.ui.view">
+            <field name="name">purchase.material.line.form</field>
+            <field name="model">purchase.material.line</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <sheet>
+                        <notebook>
+                            <page string="Chi phí">
+                                <field name="purchase_material_line_item_ids" mode="tree">
+                                    <tree editable="bottom">
+                                        <field name="product_id" context="{'show_product_code': True}"/>
+                                        <field name="description"/>
+                                        <field name="product_qty"/>
+                                        <field name="price_cost"/>
+                                        <field name="uom"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="seq_number_location" model="ir.sequence">
+        <field name="name">Number Location</field>
+        <field name="code">forlife.stock.number.location</field>
+        <field name="prefix"></field>
+        <field name="padding">3</field>
+        <field name="company_id" eval="False"></field>
+    </record>
+    <record id="view_stock_location_form_inherit" model="ir.ui.view">
+        <field name="name">stock.location.form.inherit</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_form"/>
+<!--        <field name="priority" eval="26" />-->
+        <field name="arch" type="xml">
+                 <xpath expr="//field[@name='usage']" position="before">
+                <field name="code_location" attrs="{'invisible':[('id', '=', False)]}"/>
+                 <field name="stock_location_type_id" required="1" />
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

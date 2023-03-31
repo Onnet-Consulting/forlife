@@ -49,7 +49,9 @@ class TestIntrastatReport(TestAccountReportsCommon):
         cls.product_metre_supplementary_unit = cls.env['product.product'].create({
             'name': 'Proper Gander Film',
             'intrastat_code_id': cls.env.ref('account_intrastat.commodity_code_2018_37061020').id,
-            'intrastat_supplementary_unit_amount': 305,
+            'intrastat_supplementary_unit_amount': 1,
+            'uom_id': cls.env.ref('uom.product_uom_meter').id,
+            'uom_po_id': cls.env.ref('uom.product_uom_meter').id,
         })
         # A product with the product origin country set to spain
         cls.spanish_rioja = cls.env['product.product'].create({
@@ -310,7 +312,7 @@ class TestIntrastatReport(TestAccountReportsCommon):
             #
             [    0,                1,               2,             5,             11, ],
             [
-                ('INV/2022/00001', '19 (Dispatch)', 'Belgium',     '37061020',    375.15),
+                ('INV/2022/00001', '19 (Dispatch)', 'Belgium',     '37061020',    1230),
             ],
         )
 

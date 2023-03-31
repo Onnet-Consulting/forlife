@@ -2,12 +2,17 @@
 # This file contains the translation of the following modules:
 # 	* stock_account_enterprise
 # 
+# Translators:
+# Martin Trigaux, 2022
+# Tadej Lupšina <tadej@hbs.si>, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~14.4+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-07-12 07:57+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
+"Last-Translator: Tadej Lupšina <tadej@hbs.si>, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,7 +30,7 @@ msgstr ""
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit
 msgid "Incoming Inventory Value"
-msgstr ""
+msgstr "Vhodna vrednost zaloge"
 
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit
@@ -35,7 +40,7 @@ msgstr ""
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit
 msgid "Inventory Value"
-msgstr ""
+msgstr "Vrednost inventarja"
 
 #. module: stock_account_enterprise
 #: model:ir.model.fields,help:stock_account_enterprise.field_stock_report__valuation
@@ -54,7 +59,7 @@ msgstr ""
 #. module: stock_account_enterprise
 #: model_terms:ir.ui.view,arch_db:stock_account_enterprise.stock_report_dashboard_view_inherit
 msgid "Outgoing Inventory Value"
-msgstr ""
+msgstr "Odhodna vrednost zaloge"
 
 #. module: stock_account_enterprise
 #: model:ir.model,name:stock_account_enterprise.model_stock_report

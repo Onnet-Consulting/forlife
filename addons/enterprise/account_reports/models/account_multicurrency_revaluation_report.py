@@ -236,6 +236,7 @@ class MulticurrencyRevaluationReportCustomHandler(models.AbstractModel):
                 JOIN custom_currency_table ON custom_currency_table.currency_id = currency.id
                 WHERE {where_clause}
                     AND (account.currency_id = account_move_line.company_currency_id AND (account.account_type IN ('asset_receivable', 'liability_payable') AND account_move_line.currency_id = account_move_line.company_currency_id))
+                    AND (account_move_line.amount_residual != 0 OR account_move_line.amount_residual_currency != 0)
                     AND {'NOT EXISTS' if line_code == 'to_adjust' else 'EXISTS'} (
                         SELECT * FROM account_account_exclude_res_currency_provision WHERE account_account_id = account_id AND res_currency_id = account_move_line.currency_id
                     )

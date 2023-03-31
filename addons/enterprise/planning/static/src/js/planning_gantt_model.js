@@ -20,12 +20,6 @@ const GROUPBY_COMBINATIONS = [
     "project_id,department_id",
     "project_id,resource_id",
     "project_id,role_id",
-    "project_id,task_id,resource_id",
-    "project_id,task_id,role_id",
-    "task_id",
-    "task_id,department_id",
-    "task_id,resource_id",
-    "task_id,role_id",
 ];
 
 const PlanningGanttModel = GanttModel.extend({
@@ -174,6 +168,7 @@ const PlanningGanttModel = GanttModel.extend({
         const proms = this._super.apply(this, arguments);
         if (!this.isSampleModel && this.ganttData.records.length) {
             proms.push(this._fetchResourceWorkInterval());
+            proms.push(this._fetchCompanyHoursPerDay());
         }
         return proms;
     },
@@ -211,6 +206,13 @@ const PlanningGanttModel = GanttModel.extend({
 
             // Populate record with associated allocated hours.
             const dateKey = this._serializeDateTimeAccordingToScale(periodStart);
+            if (!record.resource_id) {
+                record.allocatedHoursDict[dateKey] = Math.min(
+                    (endDate - startDate) / (1000 * 60 * 60),
+                    this.ganttData.companyHoursPerDay
+                ) * record.allocated_percentage / 100;
+                continue;
+            }
             const workIntervals = this.ganttData.resourceWorkIntervalsDict
                                   && this.ganttData.resourceWorkIntervalsDict[record.resource_id && record.resource_id[0]]
                                   && this.ganttData.resourceWorkIntervalsDict[record.resource_id && record.resource_id[0]][dateKey]
@@ -242,6 +244,15 @@ const PlanningGanttModel = GanttModel.extend({
             }
         });
     },
+
+    async _fetchCompanyHoursPerDay() {
+        this.ganttData.companyHoursPerDay = await this._rpc({
+            model: this.modelName,
+            method: 'gantt_company_hours_per_day',
+            context: this.context,
+        });
+    },
+
     /**
      * @override
      */

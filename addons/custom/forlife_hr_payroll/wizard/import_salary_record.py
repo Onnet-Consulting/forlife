@@ -13,6 +13,8 @@ class ImportSalaryRecord(models.TransientModel):
     _name = 'import.salary.record'
     _description = 'Import Salary Record'
 
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company,
+                                 string='Company', readonly=True, store=True, required=True)
     import_file = fields.Binary(attachment=False, string='Upload file')
     import_file_name = fields.Char()
 
@@ -143,22 +145,34 @@ class ImportSalaryRecord(models.TransientModel):
         entry_arrears = entries.filtered(lambda x: x.salary_table_id.model == 'salary.arrears')
 
         accounting_configs = self.env['salary.accounting.config'].search([])
-        salary_main_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_salary_main, accounting_configs)
-        total_income_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_total_income, accounting_configs)
-        supplementary_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_supplementary, accounting_configs)
+        salary_main_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_salary_main,
+                                                                                         accounting_configs)
+        total_income_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_total_income,
+                                                                                          accounting_configs)
+        supplementary_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_supplementary,
+                                                                                           accounting_configs)
         arrears_accounting_by_purpose_id = self.mapping_entry_with_accounting_config(entry_arrears, accounting_configs)
 
-        salary_main_accounting_values = self.generate_accounting_value(salary_record.salary_record_main_ids, salary_main_accounting_by_purpose_id, 'salary.record.main')
-        total_income_accounting_values = self.generate_accounting_value(salary_record.salary_total_income_ids, total_income_accounting_by_purpose_id, 'salary.total.income')
-        supplementary_accounting_values = self.generate_accounting_value(salary_record.salary_supplementary_ids, supplementary_accounting_by_purpose_id, 'salary.supplementary')
-        arrears_accounting_values = self.generate_accounting_value(salary_record.salary_arrears_ids, arrears_accounting_by_purpose_id, 'salary.arrears')
-
-        accounting_values = salary_main_accounting_values + total_income_accounting_values + supplementary_accounting_values + arrears_accounting_values
         salary_record_id = salary_record.id
-        for value in accounting_values:
-            value.update({'salary_record_id': salary_record_id})
+        salary_main_accounting_values = self.generate_accounting_value(salary_record.salary_record_main_ids,
+                                                                       salary_main_accounting_by_purpose_id,
+                                                                       'salary.record.main', salary_record_id)
+        total_income_accounting_values = self.generate_accounting_value(salary_record.salary_total_income_ids,
+                                                                        total_income_accounting_by_purpose_id,
+                                                                        'salary.total.income', salary_record_id)
+        supplementary_accounting_values = self.generate_accounting_value(salary_record.salary_supplementary_ids,
+                                                                         supplementary_accounting_by_purpose_id,
+                                                                         'salary.supplementary', salary_record_id)
+        arrears_accounting_values = self.generate_accounting_value(salary_record.salary_arrears_ids,
+                                                                   arrears_accounting_by_purpose_id,
+                                                                   'salary.arrears', salary_record_id)
+
+        accounting_values = salary_main_accounting_values + total_income_accounting_values \
+                            + supplementary_accounting_values + arrears_accounting_values
 
         self.env['salary.accounting'].create(accounting_values)
+        salary_record.salary_accounting_ids.filtered(lambda rec: rec.debit == 0 and rec.credit == 0).unlink()
+        return True
 
     @api.model
     def mapping_entry_with_accounting_config(self, entries, accounting_config):
@@ -181,13 +195,16 @@ class ImportSalaryRecord(models.TransientModel):
         return accounting_value_by_purpose_id
 
     @api.model
-    def generate_accounting_value(self, records, accounting_value_by_purpose_id, record_model):
+    def generate_accounting_value(self, records, accounting_value_by_purpose_id, record_model, salary_record_id):
         accounting_values = []
         for rec in records:
             record_purpose_id = rec.purpose_id.id
             for accounting_value in (accounting_value_by_purpose_id.get(record_purpose_id) or []):
                 copy_accounting_value = accounting_value.copy()
-                copy_accounting_value.update({'record': '%s,%r' % (record_model, rec.id)})
+                copy_accounting_value.update({
+                    'record': '%s,%r' % (record_model, rec.id),
+                    'salary_record_id': salary_record_id
+                })
                 accounting_values.append(copy_accounting_value)
         return accounting_values
 
@@ -222,26 +239,45 @@ class ImportSalaryRecord(models.TransientModel):
         return purpose_by_code, error_by_code
 
     def map_employee_data(self, data):
-        employees = self.env['hr.employee'].search([('barcode', 'in', data)])
+        employees = self.env['hr.employee'].search(
+            ['&', '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id),
+             '|', ('code', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
         error_by_code = {}
-        employee_by_code = {e.barcode: e.id for e in employees}
-        for code in data:
-            if code and not employee_by_code.get(code):
-                error_by_code[code] = _('Mã nhân viên %s không tồn tại') % code
+        employee_by_code = {}
+        employee_data_by_code = {epl.code: (epl.name, epl.id) for epl in employees}
+
+        for import_code, import_name in data.items():
+            db_data = employee_data_by_code.get(import_code)
+            if not db_data or import_name != db_data[0]:
+                error_by_code[import_code] = _('Tên-mã nhân viên không tồn tại hoặc không khớp: "%s" "%s"') \
+                                             % (import_name, import_code)
+                continue
+            employee_by_code[import_code] = db_data[1]
 
         return employee_by_code, error_by_code
 
     def map_department_data(self, data):
-        departments = self.env['hr.department'].search([('code', 'in', data)])
+        departments = self.env['hr.department'].search(
+            ['&', '|', ('company_id', '=', False), ('company_id', '=', self.company_id.id),
+             '|', ('code', 'in', list(data.keys())), ('name', 'in', list(data.values()))])
         error_by_code = {}
-        department_by_code = {d.code: d.id for d in departments}
-        for code in data:
-            if code and not department_by_code.get(code):
-                error_by_code[code] = _('Mã phòng ban/bộ phận %s không tồn tại') % code
+        department_by_code = {}
+        department_data_by_code = {d.code: (d.name, d.id) for d in departments}
+
+        for import_code, import_name in data.items():
+            db_data = department_data_by_code.get(import_code)
+            if not db_data or import_name != db_data[0]:
+                error_by_code[import_code] = _('Tên-Mã phòng ban/bộ phận không tồn tại hoặc không khớp:  "%s" "%s"') \
+                                             % (import_name, import_code)
+                continue
+            department_by_code[import_code] = db_data[1]
+
         return department_by_code, error_by_code
 
     def map_analytic_data(self, data):
-        analytic_accounts = self.env['account.analytic.account'].search([('code', 'in', data)])
+        analytic_accounts = self.env['account.analytic.account'].search([
+            ('code', 'in', data),
+            ('company_id', '=', self.company_id.id)])
         analytic_by_code = {a.code: a.id for a in analytic_accounts}
         error_by_code = {}
         for code in data:
@@ -250,16 +286,9 @@ class ImportSalaryRecord(models.TransientModel):
         return analytic_by_code, error_by_code
 
     def map_project_data(self, asset_codes):
-        company_code = self.env.company.code
-        asset_codes = [c for c in asset_codes if c]
-        if not asset_codes:
-            return {}, {}
-        sap_asset_codes = self.env['integration.sap'].int07(asset_codes, company_code)
-        asset_code_by_code = {code: code for code in sap_asset_codes if code in asset_codes}
+        # FIXME: chờ chốt giải pháp cho Mã dự án
+        asset_code_by_code = {code: code for code in asset_codes}
         error_by_code = {}
-        for code in asset_codes:
-            if code and not asset_code_by_code.get(code):
-                error_by_code[code] = _('Mã dự án %s không tồn tại') % code
         return asset_code_by_code, error_by_code
 
     def map_manufacturing_data(self, data):
@@ -268,21 +297,15 @@ class ImportSalaryRecord(models.TransientModel):
         return manufacturing_code_by_code, {}
 
     def map_internal_order_data(self, io_codes):
-        io_codes = [c for c in io_codes if c]
-        if not io_codes:
-            return {}, {}
-        sap_io_codes = self.env['integration.sap'].int10(io_codes)
-        io_code_by_code = {code: code for code in sap_io_codes if code in io_codes}
+        # FIXME: chờ chốt giải pháp cho Mã chương trình sự kiện
+        io_code_by_code = {code: code for code in io_codes}
         error_by_code = {}
-        for code in io_codes:
-            if code and not io_code_by_code.get(code):
-                error_by_code[code] = _('Mã chương trình sự kiện %s không tồn tại') % code
         return io_code_by_code, error_by_code
 
     def map_data(self, **kwargs):
         """
-        Mapping data between Excel file <-> Odoo,SAP
-        :param kwargs: Contains dict value of data from xls, each pair of key-value is the value need to check in system (Odoo, SAP)
+        Mapping data between Excel file <-> Odoo
+        :param kwargs: Contains dict value of data from xls, each pair of key-value is the value need to check in system Odoo
                      possible keys: ['purpose', 'employee', 'department', 'analytic', 'project', 'manufacturing', 'internal_order']
         :return: dict
         """
@@ -346,16 +369,19 @@ class ImportSalaryRecord(models.TransientModel):
             except (TypeError, ValueError):
                 month = False
 
-            errors += _('Line %r, Salary Record Type "%s" is invalid\n') % (index, type_code) if not salary_record_type else ''
+            errors += _('Line %r, Salary Record Type "%s" is invalid\n') % (
+                index, type_code) if not salary_record_type else ''
             errors += _('Line %r, %r is an invalid year\n') % (index, year) if not year else ''
             errors += _('Line %r, %r is an invalid month\n') % (index, month) if month not in MONTH else ''
 
             if not errors:
                 salary_record_exits = self.env['salary.record'].search([
-                    ('company_id', '=', self.env.company.id), ('type_id', '=', salary_record_type.id),
+                    ('company_id', '=', self.company_id.id), ('type_id', '=', salary_record_type.id),
                     ('month', '=', month), ('year', '=', year), ('state', 'in', ('approved', 'posted'))])
                 if salary_record_exits:
-                    message = _('Salary records could not be imported, some previous versions [%s] were approved or posted.') % ', '.join(salary_record_exits.mapped('name'))
+                    message = _(
+                        'Salary records could not be imported, some previous versions were approved or posted: %s') \
+                              % ', '.join(salary_record_exits.mapped('name'))
                     raise ValidationError(message)
                 res.append({
                     'type_id': salary_record_type.id,
@@ -376,16 +402,17 @@ class ImportSalaryRecord(models.TransientModel):
         res = []
         errors = []
         xls_purposes = []
-        xls_departments = []
+        xls_departments_name_and_code = {}
         xls_analytic_accounts = []
         xls_projects = []
 
         for row_idx, row in enumerate(data):
             xls_purposes.append(row[0])
-            xls_departments.append(row[1])
+            xls_departments_name_and_code.update({row[1]: row[2]})
             xls_analytic_accounts.append(row[3])
             xls_projects.append(row[4])
-        xls_data = dict(purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts, project=xls_projects)
+        xls_data = dict(purpose=xls_purposes, department=xls_departments_name_and_code, analytic=xls_analytic_accounts,
+                        project=xls_projects)
         mapped_data = self.map_data(**xls_data)
         purpose_by_code, purpose_error_by_code = mapped_data.get('purpose')
         department_by_code, department_error_by_code = mapped_data.get('department')
@@ -429,7 +456,7 @@ class ImportSalaryRecord(models.TransientModel):
         res = []
         errors = []
         xls_purposes = []
-        xls_departments = []
+        xls_departments_name_and_code = {}
         xls_analytic_accounts = []
         xls_projects = []
         xls_manufacturing = []
@@ -437,13 +464,13 @@ class ImportSalaryRecord(models.TransientModel):
 
         for row_idx, row in enumerate(data):
             xls_purposes.append(row[0])
-            xls_departments.append(row[1])
+            xls_departments_name_and_code.update({row[1]: row[2]})
             xls_analytic_accounts.append(row[3])
             xls_projects.append(row[4])
             xls_manufacturing.append(row[5])
             xls_internal_orders.append(row[6])
         xls_data = dict(
-            purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts,
+            purpose=xls_purposes, department=xls_departments_name_and_code, analytic=xls_analytic_accounts,
             project=xls_projects, manufacturing=xls_manufacturing, internal_order=xls_internal_orders
         )
         mapped_data = self.map_data(**xls_data)
@@ -468,7 +495,8 @@ class ImportSalaryRecord(models.TransientModel):
             project_error = project_error_by_code.get(project_code)
             manufacturing_error = manufacturing_error_by_code.get(manufacturing_code)
             internal_order_error = internal_order_error_by_code.get(internal_order_code)
-            line_error = [purpose_error, department_error, analytic_error, project_error, manufacturing_error, internal_order_error]
+            line_error = [purpose_error, department_error, analytic_error, project_error, manufacturing_error,
+                          internal_order_error]
             line_error = list(filter(None, line_error))
             if line_error:
                 line_error = [_('Line %s, ' % row_idx) + error for error in line_error]
@@ -497,7 +525,7 @@ class ImportSalaryRecord(models.TransientModel):
         res = []
         errors = []
         xls_purposes = []
-        xls_departments = []
+        xls_departments_name_and_code = {}
         xls_analytic_accounts = []
         xls_projects = []
         xls_manufacturing = []
@@ -505,13 +533,13 @@ class ImportSalaryRecord(models.TransientModel):
 
         for row_idx, row in enumerate(data):
             xls_purposes.append(row[0])
-            xls_departments.append(row[1])
+            xls_departments_name_and_code.update({row[1]: row[2]})
             xls_analytic_accounts.append(row[3])
             xls_projects.append(row[4])
             xls_manufacturing.append(row[5])
             xls_internal_orders.append(row[6])
         xls_data = dict(
-            purpose=xls_purposes, department=xls_departments, analytic=xls_analytic_accounts,
+            purpose=xls_purposes, department=xls_departments_name_and_code, analytic=xls_analytic_accounts,
             project=xls_projects, manufacturing=xls_manufacturing, internal_order=xls_internal_orders
         )
         mapped_data = self.map_data(**xls_data)
@@ -536,7 +564,8 @@ class ImportSalaryRecord(models.TransientModel):
             project_error = project_error_by_code.get(project_code)
             manufacturing_error = manufacturing_error_by_code.get(manufacturing_code)
             internal_order_error = internal_order_error_by_code.get(internal_order_code)
-            line_error = [purpose_error, department_error, analytic_error, project_error, manufacturing_error, internal_order_error]
+            line_error = [purpose_error, department_error, analytic_error, project_error, manufacturing_error,
+                          internal_order_error]
             line_error = list(filter(None, line_error))
             if line_error:
                 line_error = [_('Line %s, ' % row_idx) + error for error in line_error]
@@ -576,8 +605,8 @@ class ImportSalaryRecord(models.TransientModel):
         res = []
         errors = []
         xls_purposes = []
-        xls_employees = []
-        xls_departments = []
+        xls_employees_name_and_code = {}
+        xls_departments_name_and_code = {}
         xls_analytic_accounts = []
         xls_projects = []
         xls_manufacturing = []
@@ -585,14 +614,15 @@ class ImportSalaryRecord(models.TransientModel):
 
         for row_idx, row in enumerate(data, start=start_row):
             xls_purposes.append(row[0])
-            xls_employees.append(row[1])
-            xls_departments.append(row[3])
+            xls_employees_name_and_code.update({row[1]: row[2]})
+            xls_departments_name_and_code.update({row[3]: row[4]})
             xls_analytic_accounts.append(row[5])
             xls_projects.append(row[6])
             xls_manufacturing.append(row[7])
             xls_internal_orders.append(row[8])
         xls_data = dict(
-            purpose=xls_purposes, employee=xls_employees, department=xls_departments, analytic=xls_analytic_accounts,
+            purpose=xls_purposes, employee=xls_employees_name_and_code, department=xls_departments_name_and_code,
+            analytic=xls_analytic_accounts,
             project=xls_projects, manufacturing=xls_manufacturing, internal_order=xls_internal_orders
         )
         mapped_data = self.map_data(**xls_data)
@@ -620,7 +650,8 @@ class ImportSalaryRecord(models.TransientModel):
             project_error = project_error_by_code.get(project_code)
             manufacturing_error = manufacturing_error_by_code.get(manufacturing_code)
             internal_order_error = internal_order_error_by_code.get(internal_order_code)
-            line_error = [purpose_error, employee_error, department_error, analytic_error, project_error, manufacturing_error, internal_order_error]
+            line_error = [purpose_error, employee_error, department_error, analytic_error, project_error,
+                          manufacturing_error, internal_order_error]
             line_error = list(filter(None, line_error))
             if line_error:
                 line_error = [_('Line %d - %s') % (row_idx, error_message) for error_message in line_error]
@@ -663,12 +694,12 @@ class ImportSalaryRecord(models.TransientModel):
         data = data[start_row:]
         res = []
         errors = []
-        xls_employees = []
-        xls_departments = []
+        xls_employees_name_and_code = {}
+        xls_departments_name_and_code = {}
         for row_idx, row in enumerate(data):
-            xls_employees.append(row[1])
-            xls_departments.append(row[3])
-        xls_data = dict(employee=xls_employees, department=xls_departments)
+            xls_employees_name_and_code.update({row[1]: row[2]})
+            xls_departments_name_and_code.update({row[3]: row[4]})
+        xls_data = dict(employee=xls_employees_name_and_code, department=xls_departments_name_and_code)
         mapped_data = self.map_data(**xls_data)
         employee_by_code, employee_error_by_code = mapped_data.get('employee')
         department_by_code, department_error_by_code = mapped_data.get('department')

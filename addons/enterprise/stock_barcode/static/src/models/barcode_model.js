@@ -919,6 +919,22 @@ export default class BarcodeModel extends EventBus {
         return result;
     }
 
+    async print(action, method) {
+        await this.save();
+        const options = this._getPrintOptions();
+        if (options.warning) {
+            return this.notification.add(options.warning, { type: 'warning' });
+        }
+        if (!action && method) {
+            action = await this.orm.call(
+                this.params.model,
+                method,
+                [[this.params.id]]
+            );
+        }
+        this.trigger('do-action', { action, options });
+    }
+
     async _processGs1Data(data) {
         const result = {};
         const { rule, value } = data;
@@ -1084,15 +1100,25 @@ export default class BarcodeModel extends EventBus {
                 }
             }
             return this.notification.add(barcodeData.error, { type: 'danger' });
+        } else if (barcodeData.lot && barcodeData.lot.product_id !== product.id) {
+            delete barcodeData.lot; // The product was scanned alongside another product's lot.
         }
         if (barcodeData.weight) { // the encoded weight is based on the product's UoM
             barcodeData.uom = this.cache.getRecord('uom.uom', product.uom_id);
         }
 
+        // Searches and selects a line if needed.
+        if (!currentLine || this._shouldSearchForAnotherLine(currentLine, barcodeData)) {
+            currentLine = this._findLine(barcodeData);
+        }
+
         // Default quantity set to 1 by default if the product is untracked or
         // if there is a scanned tracking number.
         if (product.tracking === 'none' || barcodeData.lot || barcodeData.lotName || this._incrementTrackedLine()) {
-            barcodeData.quantity = barcodeData.quantity || 1;
+            const hasUnassignedQty = currentLine && currentLine.qty_done && !currentLine.lot_id && !currentLine.lot_name;
+            const isTrackingNumber = barcodeData.lot || barcodeData.lotName;
+            const defaultQuantity = isTrackingNumber && hasUnassignedQty ? 0 : 1;
+            barcodeData.quantity = barcodeData.quantity || defaultQuantity;
             if (product.tracking === 'serial' && barcodeData.quantity > 1 && (barcodeData.lot || barcodeData.lotName)) {
                 barcodeData.quantity = 1;
                 this.notification.add(
@@ -1100,11 +1126,6 @@ export default class BarcodeModel extends EventBus {
                     { type: 'danger' }
                 );
             }
-        }
-
-        // Searches and selects a line if needed.
-        if (!currentLine || this._shouldSearchForAnotherLine(currentLine, barcodeData)) {
-            currentLine = this._findLine(barcodeData);
         }
 
         if ((barcodeData.lotName || barcodeData.lot) && product) {
@@ -1160,7 +1181,7 @@ export default class BarcodeModel extends EventBus {
                     barcodeData.quantity = remainingQty;
                 }
             }
-            if (barcodeData.quantity > 0) {
+            if (barcodeData.quantity > 0 || barcodeData.lot || barcodeData.lotName) {
                 const fieldsParams = this._convertDataToFieldsParams(barcodeData);
                 if (barcodeData.uom) {
                     fieldsParams.uom = barcodeData.uom;
@@ -1331,6 +1352,9 @@ export default class BarcodeModel extends EventBus {
             }
             if (dataLotName && lineLotName && dataLotName !== lineLotName && !this._canOverrideTrackingNumber(line)) {
                 continue; // Not the same lot.
+            }
+            if (dataLotName && line.id && !line.lot_id && this.params.model === "stock.quant") {
+                continue; // Matches an existing quant without lot_id but this field can't be updated
             }
             if (line.product_id.tracking === 'serial') {
                 if (this.getQtyDone(line) >= 1 && lineLotName) {

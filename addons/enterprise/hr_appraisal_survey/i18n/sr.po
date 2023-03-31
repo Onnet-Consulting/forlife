@@ -198,7 +198,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_2_3
 msgid "Additional Comments"
-msgstr ""
+msgstr "Dodatni komentari"
 
 #. module: hr_appraisal_survey
 #: model:survey.question.answer,value:hr_appraisal_survey.y_360_5_6
@@ -422,6 +422,8 @@ msgstr "Naziv za prikaz"
 #: model:survey.question,title:hr_appraisal_survey.appraisal_360_10
 msgid "Do you have any comment to tell me and help me improve?"
 msgstr ""
+"Da li imate bilo kakav komentar za mene i tako mi pomognete da unapredim "
+"svoj rad?"
 
 #. module: hr_appraisal_survey
 #: model:ir.model,name:hr_appraisal_survey.model_hr_appraisal
@@ -436,7 +438,7 @@ msgstr ""
 #. module: hr_appraisal_survey
 #: model:survey.question,title:hr_appraisal_survey.appraisal_5
 msgid "Employee Comments"
-msgstr ""
+msgstr "Komentari zaposlenog"
 
 #. module: hr_appraisal_survey
 #: model:survey.survey,title:hr_appraisal_survey.opinion_form

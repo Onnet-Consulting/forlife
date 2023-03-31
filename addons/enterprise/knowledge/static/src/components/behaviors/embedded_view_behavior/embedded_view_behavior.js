@@ -2,9 +2,12 @@
 
 import { AbstractBehavior } from "@knowledge/components/behaviors/abstract_behavior/abstract_behavior";
 import { EmbeddedViewManager } from "@knowledge/components/behaviors/embedded_view_behavior/embedded_view_manager";
-import { Markup } from "web.utils";
 import { makeContext } from "@web/core/context";
-import { setIntersectionObserver } from "@knowledge/js/knowledge_utils";
+import {
+    decodeDataBehaviorProps,
+    encodeDataBehaviorProps,
+    setIntersectionObserver
+} from "@knowledge/js/knowledge_utils";
 import { useService } from "@web/core/utils/hooks";
 
 const {
@@ -12,8 +15,6 @@ const {
     onMounted,
     onWillUnmount,
     useState } = owl;
-
-let observerId = 0;
 
 /**
  * This component will have the responsibility to load the embedded view lazily
@@ -28,7 +29,6 @@ export class EmbeddedViewBehavior extends AbstractBehavior {
             waiting: true,
             error: false
         });
-        this.observerId = observerId++;
 
         onMounted(() => {
             const { anchor } = this.props;
@@ -68,8 +68,8 @@ export class EmbeddedViewBehavior extends AbstractBehavior {
             this.state.error = true;
             return;
         }
-        if (action.help) {
-            action.help = Markup(action.help);
+        if (this.props.action_help) {
+            action.help = this.props.action_help;
         }
         Object.assign(this.props, {
             act_window: action,
@@ -77,32 +77,15 @@ export class EmbeddedViewBehavior extends AbstractBehavior {
         });
     }
 
-    // Hooks:
-
-    onEmbeddedViewLoadStart () {
-        if (!this.props.readonly) {
-            const editor = this.props.wysiwyg.odooEditor;
-            editor.observerUnactive(`knowledge_embedded_view_id_${this.observerId}`);
-        }
-    }
-
-    onEmbeddedViewLoadEnd () {
-        if (!this.props.readonly) {
-            const editor = this.props.wysiwyg.odooEditor;
-            editor.idSet(this.props.anchor);
-            editor.observerActive(`knowledge_embedded_view_id_${this.observerId}`);
-        }
-    }
-
     /**
      * Set the title of the embedded view.
      * @param {String} name
      */
     setTitle (name) {
-        const data = JSON.parse(this.props.anchor.getAttribute('data-behavior-props'));
+        const data = decodeDataBehaviorProps(this.props.anchor.getAttribute('data-behavior-props'));
         data.act_window.name = name;
         data.act_window.display_name = name;
-        this.props.anchor.setAttribute('data-behavior-props', JSON.stringify(data));
+        this.props.anchor.setAttribute('data-behavior-props', encodeDataBehaviorProps(data));
         Object.assign(this.props.act_window, {
             name: name,
             display_name: name
@@ -133,5 +116,6 @@ EmbeddedViewBehavior.props = {
     ...AbstractBehavior.props,
     act_window: { type: Object },
     context: { type: Object },
-    view_type: { type: String }
+    view_type: { type: String },
+    action_help: { type: Object, optional: true},
 };

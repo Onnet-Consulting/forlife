@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="product_data_view_inherit">
+            <field name="name">product_data_view_inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='general_information']//group" position="inside">
+                            <group>
+                                <field name="description_color"/>
+                                <field name="material_composition"/>
+                                <field name="cloth_code"/>
+                                <field name="collection"/>
+                                <field name="user_manual"/>
+                                <field name="daisai"/>
+                                <field name="unit_priority_id"/>
+                                <field name="uses_id"/>
+                                <field name="object_id"/>
+                                <field name="branch_id"/>
+                                <field name="fabric_id"/>
+                                <field name="material_id"/>
+                            </group>
+                            <group>
+                                <field name="sub_class_one_id" widget="many2many_tags"/>
+                                <field name="sub_class_two_id" widget="many2many_tags"/>
+                                <field name="sub_class_three_id" widget="many2many_tags"/>
+                                <field name="sub_class_four_id" widget="many2many_tags"/>
+                                <field name="sub_class_five_id" widget="many2many_tags"/>
+                                <field name="sub_class_six_id" widget="many2many_tags"/>
+                                <field name="sub_class_seven_id" widget="many2many_tags"/>
+                                <field name="sub_class_eight_id" widget="many2many_tags"/>
+                                <field name="sub_class_nine_id" widget="many2many_tags"/>
+                                <field name="sub_class_ten_id" widget="many2many_tags"/>
+                                <field name="properties_one_id" widget="many2many_tags"/>
+                                <field name="properties_two_id" widget="many2many_tags"/>
+                                <field name="designer_id"/>
+                                <field name="origin_id"/>
+                                <field name="source_id"/>
+                                <field name="year_id"/>
+                                <field name="season_id"/>
+                                <field name="type_id"/>
+                                <field name="note"/>
+                            </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

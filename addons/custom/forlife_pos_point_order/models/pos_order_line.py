@@ -1,11 +1,37 @@
 from odoo import api, fields, models
 from ast import literal_eval
 
+
 class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'
 
     point_addition = fields.Integer('Point(+)', compute='_compute_value_follow_program_event', store=True)
     point_addition_event = fields.Integer('Point (+) Event', compute='_compute_value_follow_program_event', store=True)
+    point = fields.Integer('Points Used', readonly=True)
+    money_is_reduced = fields.Monetary('Money is reduced', compute='_compute_money_is_reduced_line')
+    discount_details_lines = fields.One2many('pos.order.line.discount.details', 'pos_order_line_id', 'Discount details')
+
+    @api.depends('discount_details_lines.money_reduced')
+    def _compute_money_is_reduced_line(self):
+        for rec in self:
+            rec.money_is_reduced = sum([dis.money_reduced for dis in rec.discount_details_lines])
+
+    @api.model
+    def create(self, vals_list):
+        if 'point' in vals_list and vals_list['point']:
+            vals_list['discount_details_lines'] = vals_list.get('discount_details_lines', []) + [
+                (0, 0, {
+                    'type': 'point',
+                    'listed_price': vals_list['price_unit'],
+                    'recipe': -vals_list['point']/1000,
+                })
+            ]
+        return super(PosOrderLine, self).create(vals_list)
+
+    def _export_for_ui(self, orderline):
+        result = super()._export_for_ui(orderline)
+        result['point'] = orderline.point
+        return result
 
     @api.depends('order_id.program_store_point_id')
     def _compute_value_follow_program_event(self):
@@ -19,28 +45,28 @@ class PosOrderLine(models.Model):
                 branch_id = rec.order_id.program_store_point_id.brand_id.id
                 dict_products_points = rec._prepare_dict_point_product_program()
                 product_ids_valid_event = rec._prepare_dict_point_product_event()
-                #compute c
+                # compute c
                 # is_purchased_of_format, is_purchased_of_forlife = rec.order_id.partner_id._check_is_purchased()
 
                 if dict_products_points:
                     for key, val in dict_products_points.items():
                         if rec.product_id in key:
                             if rec.order_id.partner_id.is_purchased_of_forlife and branch_id == brand_tokyolife:
-                                rec.point_addition = int(dict_products_points[key])*rec.qty
+                                rec.point_addition = int(dict_products_points[key]) * rec.qty
                             elif rec.order_id.partner_id.is_purchased_of_format and branch_id == brand_format:
-                                rec.point_addition = int(dict_products_points[key])*rec.qty
+                                rec.point_addition = int(dict_products_points[key]) * rec.qty
                             else:
-                                rec.point_addition = int(dict_products_points[key])*rec.order_id.program_store_point_id.first_order*rec.qty
+                                rec.point_addition = int(dict_products_points[key]) * rec.order_id.program_store_point_id.first_order * rec.qty
                             break
                         else:
                             rec.point_addition = 0
                 else:
                     rec.point_addition = 0
-                #compute d
+                # compute d
                 if product_ids_valid_event:
                     for key, val in product_ids_valid_event.items():
                         if rec.product_id in key:
-                            rec.point_addition_event = int(product_ids_valid_event[key])*rec.qty
+                            rec.point_addition_event = int(product_ids_valid_event[key]) * rec.qty
                             break
                         else:
                             rec.point_addition_event = 0
@@ -49,7 +75,8 @@ class PosOrderLine(models.Model):
 
     def _prepare_dict_point_product_program(self):
         if self.order_id.program_store_point_id:
-            program_point_products = self.order_id.program_store_point_id.points_product_ids.filtered(lambda x: x.state == 'effective' and x.from_date < self.order_id.date_order < x.to_date)
+            program_point_products = self.order_id.program_store_point_id.points_product_ids.filtered(
+                lambda x: x.state == 'effective' and x.from_date < self.order_id.date_order < x.to_date)
             dict_product_poit_add = {}
             for r in program_point_products:
                 dict_product_poit_add[r.product_ids] = r.point_addition
@@ -70,7 +97,3 @@ class PosOrderLine(models.Model):
                 return False
         else:
             return False
-
-
-
-

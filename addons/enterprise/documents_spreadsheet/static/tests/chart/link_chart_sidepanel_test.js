@@ -1,6 +1,13 @@
 /** @odoo-module */
 
-import { click, getFixture, nextTick, patchWithCleanup } from "@web/../tests/helpers/utils";
+import {
+    click,
+    editInput,
+    getFixture,
+    nextTick,
+    patchWithCleanup,
+    triggerEvent,
+} from "@web/../tests/helpers/utils";
 import { session } from "@web/session";
 import { createSpreadsheet } from "../spreadsheet_test_utils";
 import { getBasicData } from "@spreadsheet/../tests/utils/data";
@@ -22,16 +29,14 @@ const chartId = "uuid1";
  * able to interact with it.
  */
 async function showChartMenu() {
-    const chartMenu = target.querySelector(".o-chart-menu");
-    chartMenu.style.display = "flex";
-    await nextTick();
+    const chart = target.querySelector(".o-chart-container");
+    const { x, y } = chart.getBoundingClientRect();
+    await triggerEvent(chart, null, "contextmenu", { clientX: x, clientY: y });
 }
 
 /** Open the chart side panel of the first chart found in the page*/
 async function openChartSidePanel() {
     await showChartMenu();
-    const chartMenuItem = target.querySelector(".o-chart-menu-item:not(.o-chart-external-link)");
-    await click(chartMenuItem);
     await click(target, ".o-menu-item[title='Edit']");
 }
 
@@ -159,7 +164,7 @@ QUnit.module(
                     "A menu to link charts to odoo menus was added to the side panel"
                 );
                 await click(irMenuField);
-                await nextTick();
+                await editInput(irMenuField, null, "");
                 await click(document.querySelectorAll(".ui-menu-item")[0]);
                 odooMenu = model.getters.getChartOdooMenu(chartId);
                 assert.equal(
@@ -188,7 +193,7 @@ QUnit.module(
                     "A menu to link charts to odoo menus was added to the side panel"
                 );
                 await click(irMenuField);
-                await nextTick();
+                await editInput(irMenuField, null, "");
                 await click(document.querySelectorAll(".ui-menu-item")[0]);
                 odooMenu = model.getters.getChartOdooMenu(chartId);
                 assert.equal(
@@ -217,7 +222,7 @@ QUnit.module(
                     "A menu to link charts to odoo menus was added to the side panel"
                 );
                 await click(irMenuField);
-                await nextTick();
+                await editInput(irMenuField, null, "");
                 await click(document.querySelectorAll(".ui-menu-item")[0]);
                 odooMenu = model.getters.getChartOdooMenu(chartId);
                 assert.equal(

@@ -49,7 +49,7 @@ msgstr "Korisnik"
 #. module: voip_onsip
 #: model:ir.model,name:voip_onsip.model_res_users_settings
 msgid "User Settings"
-msgstr ""
+msgstr "Podešavanja korisnika"
 
 #. module: voip_onsip
 #: model:ir.model.fields,field_description:voip_onsip.field_res_config_settings__wsServer

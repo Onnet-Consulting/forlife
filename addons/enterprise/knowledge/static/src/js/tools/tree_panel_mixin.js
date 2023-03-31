@@ -1,5 +1,7 @@
 /** @odoo-module */
 
+import { localization } from "@web/core/l10n/localization";
+
 export default {
     //--------------------------------------------------------------------------
     // Handlers
@@ -12,9 +14,16 @@ export default {
     resizeSidebar: function (el, saveSize) {
         const onPointerMove = _.throttle(event => {
             event.preventDefault();
-            el.style.setProperty('--knowledge-article-sidebar-size', `${event.pageX}px`);
+            let width;
+            if (localization.direction === "rtl") {
+                // Sidebar is placed on the right
+                width = window.innerWidth - event.pageX;
+            } else {
+                width = event.pageX;
+            }
+            el.style.setProperty('--knowledge-article-sidebar-size', `${width}px`);
             if (saveSize) {
-                localStorage.setItem('knowledgeArticleSidebarSize', event.pageX);
+                localStorage.setItem('knowledgeArticleSidebarSize', width);
             }
         }, 100);
         const onPointerUp = () => {
