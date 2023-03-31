@@ -48,7 +48,7 @@ class ReportNum10(models.TransientModel):
         conditions += '' if not self.store_ids else f"""
 and pcrl.order_id in (
     select id from pos_order
-        where date_order between '{self.from_date}' and '{self.to_date}'
+        where {format_date_query("date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
             and session_id in (
                 select id from pos_session where config_id in (
                     select id from pos_config where store_id = any (array{self.store_ids.ids})))
@@ -68,10 +68,7 @@ select
         where partner_card_rank_id = pcr.id and order_id notnull
              and order_date >= pcrl.order_date - ((
                 select COALESCE(time_set_rank, 0) from member_card
-                where id in (
-                    select member_card_id from member_card_pos_order_rel
-                     where pos_order_id = pcrl.order_id
-                )) || ' d')::interval
+                where id = pcrl.program_cr_id) || ' d')::interval
         order by order_date asc limit 1)                                                as ngay_mua_dk,
     (select to_char(order_date + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY')
         from partner_card_rank_line
@@ -94,9 +91,9 @@ from partner_card_rank_line pcrl
     join res_partner rp on rp.id = pcr.customer_id
 where pcr.brand_id = {self.brand_id.id}
     and pcrl.old_card_rank_id <> pcrl.new_card_rank_id
-    and pcrl.order_id notnull
-    and {format_date_query("pcrl.real_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
-{conditions} 
+    and {format_date_query("pcrl.order_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
+{conditions}
+order by pcrl.order_date desc
         """
         return query
 
