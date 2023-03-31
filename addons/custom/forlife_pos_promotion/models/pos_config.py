@@ -68,5 +68,6 @@ class PosConfig(models.Model):
                 'program_id': code_id.program_id.id,
                 'code_id': code_id.id,
                 'coupon_partner_id': code_id.partner_id.id,
+                'remaining_amount': code_id.remaining_amount,
             },
         }

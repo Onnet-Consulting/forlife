@@ -52,8 +52,11 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
                 programOptions: this.props.programs
             });
             this.state.programs.forEach(option => {
-                if (option.reward_line_vals) {
-                    option.selectedQty = option.reward_line_vals.filter(l => l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0)
+                if (option.reward_line_vals || option.additional_reward_product_id) {
+                    option.selectedQty = option.reward_line_vals.filter(l => l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0);
+                    if (option.additional_reward_product_id && option.additional_reward_product_qty > 0) {
+                        option.selectedQty += option.additional_reward_product_qty;
+                    }
                 } else {
                     option.selectedQty = 0
                 }
