@@ -131,13 +131,6 @@ class BravoModelInsertAction(models.AbstractModel):
             self._execute_many(queries)
         return True
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        res = super().create(vals_list)
-        # FIXME: push below function to job queue
-        res.sudo().bravo_insert()
-        return res
-
 
 class BravoModelUpdateAction(models.AbstractModel):
     _name = 'bravo.model.update.action'
@@ -300,20 +293,19 @@ class BravoModelDeleteAction(models.AbstractModel):
         return res
 
 
-class BravoModel(models.AbstractModel):
-    _name = 'bravo.model'
-    _inherit = ['bravo.model.insert.action', 'bravo.model.update.action', 'bravo.model.delete.action']
-    _description = 'Bravo Model'
+class BravoModelInsertCheckExistAction(models.AbstractModel):
+    _name = 'bravo.model.insert.exist.action'
+    _inherit = ['bravo.model.insert.action']
+    _description = 'Bravo Model Insert Exist Action'
 
-    # ==========================================
-    def get_existing_records_before_insert_sql(self):
-        identity_key_values = self.get_bravo_identity_key_values()
+    def bravo_get_existing_records_sql(self):
+        identity_key_values = self.bravo_get_identity_key_values()
         if not identity_key_values:
             return False
 
-        identity_keys = self.fields_bravo_identity_get()
+        identity_keys = self.bravo_identity_fields_get()
         identity_key_names = [bfield.bravo_name for bfield in identity_keys]
-        bravo_table = self.get_bravo_table()
+        bravo_table = self.bravo_get_table()
         single_where_query_placeholder = [f"{ikey}=?" for ikey in identity_key_names]
         single_where_query_placeholder = f"({' and '.join(single_where_query_placeholder)})"
         where_query_params = []
@@ -343,27 +335,99 @@ class BravoModel(models.AbstractModel):
 
         return queries
 
-    def separate_records_by_identity_values(self, identity_values):
+    def bravo_separate_records_by_identity_values(self, identity_values):
         existing_records = self.env[self._name]
         newly_records = self.env[self._name]
         for rec in self:
-            record_identity_value = rec.get_bravo_identity_key_values()
+            record_identity_value = rec.bravo_get_identity_key_values()
             if record_identity_value and record_identity_value[0] in identity_values:
                 existing_records += rec
             else:
                 newly_records += rec
         return existing_records, newly_records
 
-    def separate_records_before_insert(self):
-        queries = self.get_existing_records_before_insert_sql()
+    def bravo_separate_records_before_insert(self):
+        queries = self.bravo_get_existing_records_sql()
         identity_values = []
         if queries:
             for data in self._execute_many_read(queries):
                 identity_values.extend([dict(zip(['Code'], row)) for row in data])
-        return self.separate_records_by_identity_values(identity_values)
+        return self.bravo_separate_records_by_identity_values(identity_values)
 
-    def insert_into_bravo_db_with_check_existing(self):
-        existing_records, newly_records = self.separate_records_before_insert()
+    def bravo_get_update_value_for_existing_record(self):
+        self.ensure_one()
+        bravo_fields = self.bravo_fields_get()
+        normal_bravo_fields = list(filter(lambda bfield: not bfield.identity, bravo_fields))
+        bravo_value = {}
+        for bfield in normal_bravo_fields:
+            bravo_value.update(bfield.compute_value(self))
+        return bravo_value
+
+    def bravo_get_identity_key_values_single_record(self):
+        self.ensure_one()
+        values = self.bravo_get_identity_key_values()
+        if not values:
+            return False
+        return values[0]
+
+    def bravo_get_update_sql_for_existing_single_record(self):
+        self.ensure_one()
+        updated_value = self.bravo_get_update_value_for_existing_record()
+        default_update_value = self.bravo_get_default_insert_value()
+        identity_key_value = self.bravo_get_identity_key_values_single_record()
+        bravo_table = self.bravo_get_table()
+        set_query_placeholder = []
+        where_query_placeholder = []
+        query_params = []
+        for up_key, up_value in updated_value.items():
+            set_query_placeholder.append(f"{up_key}=?")
+            query_params.append(up_value)
+
+        for d_key, d_value in default_update_value.items():
+            set_query_placeholder.append(f"{d_key}={d_value}")
+        set_query_placeholder = ','.join(set_query_placeholder)
+
+        for id_key, id_value in identity_key_value.items():
+            where_query_placeholder.append(f"{id_key}=?")
+            query_params.append(id_value)
+        where_query_placeholder = ' and '.join(where_query_placeholder)
+
+        query = f"""
+            UPDATE {bravo_table}
+            SET {set_query_placeholder}        
+            WHERE {where_query_placeholder}
+        """
+        return query, query_params
+
+    def bravo_get_update_sql_for_existing_multiple_records(self):
+        queries = []
+        for rec in self:
+            queries.append(rec.bravo_get_update_sql_for_existing_single_record())
+        return queries
+
+    def bravo_update_existing_records(self):
+        queries = self.bravo_get_update_sql_for_existing_multiple_records()
+        if queries:
+            self._execute_many(queries)
+        return True
+
+    def bravo_insert_with_check_existing(self):
+        existing_records, newly_records = self.bravo_separate_records_before_insert()
         # update records existed
+        existing_records.bravo_update_existing_records()
         # insert remain records (don't exist in Bravo yet)
-        pass
+        newly_records.bravo_insert()
+        return True
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        # FIXME: push below function to job queue
+        res.sudo().bravo_insert_with_check_existing()
+        return res
+
+
+class BravoModel(models.AbstractModel):
+    _name = 'bravo.model'
+    _inherit = ['bravo.model.insert.exist.action', 'bravo.model.update.action', 'bravo.model.delete.action']
+    _description = 'Bravo Model'
