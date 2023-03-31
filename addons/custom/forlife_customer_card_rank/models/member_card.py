@@ -158,3 +158,11 @@ class MemberCard(models.Model):
             if line.order_ids:
                 raise ValidationError(_("You can't delete the card rank program that delivered the order"))
         return super().unlink()
+
+    def name_get(self):
+        result = super().name_get()
+        if self._context.get('display_rank_name', False):
+            result = []
+            for program in self:
+                result.append((program.id, program.card_rank_id.name))
+        return result
