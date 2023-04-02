@@ -104,6 +104,11 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 
             let [newLinesToApply, remainingLines, combo_count] = this.env.pos.get_order().computeForListOfProgram(clone_order_lines, selectedPrograms);
 
+            let [newLinesToApplyCode, remainingLinesCode, code_count] = this.env.pos.get_order().computeForListOfCodeProgram(clone_order_lines, selectedPrograms, newLinesToApply);
+
+            newLinesToApply = newLinesToApplyCode;
+            remainingLines = remainingLinesCode
+
             this.setComboDetails(newLinesToApply);
 
             // todo: chương trình không có giảm giá thì kiểm tra promotion_usage_ids có undefined không?

@@ -18,7 +18,10 @@ export class PromotionButton extends PosComponent {
         order._resetPromotionPrograms(false);
         let order_lines = order.get_orderlines_to_check();
         let [newLines, remainingOrderLines, combo_count] = order.computeForListOfProgram(order_lines, selectedProgramsList);
-        remainingOrderLines.forEach(line => {
+        let [newLinesCode, remainingOrderLinesCode, combo_count_Code] = order.computeForListOfCodeProgram(order_lines, selectedProgramsList, newLines);
+        newLines = newLinesCode;
+        remainingOrderLines = remainingOrderLinesCode;
+        order.orderlines.forEach(line => {
             let qty = line.get_quantity();
             let qty_orig = parseFloat(line.quantityStr);
             if (qty != qty_orig) {
