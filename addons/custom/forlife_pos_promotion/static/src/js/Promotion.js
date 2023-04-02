@@ -525,14 +525,14 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (line.is_reward_line) {
                 return false;
             };
-//            if (line.promotion_usage_ids) {
-//                // Xóa chương trình đã áp dụng, nếu đã lưu trữ sau khi load lại đơn hàng từ Localstorage của browser
-//                if (line.promotion_usage_ids.some(usage => this.pos.promotion_program_by_id[usage.program_id] == undefined)) {
-//                    line.promotion_usage_ids = [];
-//                    line.reset_unit_price();
-//                    return true;
-//                };
-//            };
+            if (line.promotion_usage_ids) {
+                // Xóa chương trình đã áp dụng, nếu đã lưu trữ sau khi load lại đơn hàng từ Localstorage của browser
+                if (line.promotion_usage_ids.some(usage => this.pos.promotion_program_by_id[usage.program_id] == undefined)) {
+                    line.promotion_usage_ids = [];
+                    line.reset_unit_price();
+                    return true;
+                };
+            };
             return true;
         });
     }
