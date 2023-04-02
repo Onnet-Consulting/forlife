@@ -156,7 +156,6 @@ class PosOrder(models.Model):
         product_not_availabel = []
         for k, v in order_lines[0].items():
             product = Product.search([('id','=', int(k)), ('detailed_type','=','product')])
-            print(product)
             if product:
                 quant = StockQuant.search([('product_id','=',product.id), ('location_id','=', stock_location.id)])
                 if not quant:
