@@ -308,6 +308,16 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
                }
             }
+            var order_line_apply = Object.keys(so_tien_da_tra)
+            this.env.pos.selectedOrder.orderlines.forEach(function(line){
+                let line_id = line.id.toString()
+                if(order_line_apply.includes(line_id)){
+                    line.is_voucher_conditional = true;
+                }else{
+                    line.is_voucher_conditional = false;
+                }
+            });
+
             for(let i=0;i<data.length;i++){
                 if(data[i].value != false){
                     data[i].value.price_residual = data[i].value.price_residual + data[i].value.price_change
