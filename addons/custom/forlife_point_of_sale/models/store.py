@@ -25,7 +25,3 @@ class Store(models.Model):
             store = self.search([('id', '!=', line.id), ('warehouse_id', '=', line.warehouse_id.id)])
             if store:
                 raise ValidationError(_("Warehouse '%s' has been assigned to store '%s'") % (line.warehouse_id.name, ', '.join(store.mapped('name'))))
-
-    @api.onchange('warehouse_id')
-    def onchange_warehouse(self):
-        self.stock_location_id = False
