@@ -15,7 +15,6 @@ class Store(models.Model):
     cashier_ids = fields.Many2many('res.users', string='Cashiers', required=True)
     employee_ids = fields.Many2many('hr.employee', string='Employees', required=True)
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
-    stock_location_id = fields.Many2one('stock.location', string='Location', required=True)
     pos_config_ids = fields.One2many('pos.config', 'store_id', string='POS Config', readonly=True)
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method', required=True)
     analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic Account')
