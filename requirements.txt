@@ -1,4 +1,1 @@
-cryptography
-phonenumbers
-redis
-boto3
+
