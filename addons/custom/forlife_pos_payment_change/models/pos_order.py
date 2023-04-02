@@ -154,13 +154,14 @@ class PosOrder(models.Model):
         stock_picking_type = self.env['stock.picking.type'].sudo().search([('id','=',int(picking_type_id))])
         stock_location = stock_picking_type.default_location_src_id
         product_not_availabel = []
-        for k, v in order_lines[0].items():
-            product = Product.search([('id','=', int(k)), ('detailed_type','=','product')])
+        for rec in order_lines[0]:
+            product = Product.search([('id','=', rec['product_id']), ('detailed_type','=','product')])
             if product:
-                quant = StockQuant.search([('product_id','=',product.id), ('location_id','=', stock_location.id)])
+                lot_id = self.env['stock.lot'].sudo().search([('name', '=', rec['seri'])])
+                quant = StockQuant.search([('product_id','=',product.id), ('location_id','=', stock_location.id),('lot_id','=',lot_id.id)])
                 if not quant:
                     product_not_availabel.append(product.with_context(lang=self.env.user.lang).name)
-                if quant and v > quant.available_quantity:
+                if quant and rec['count'] > quant.available_quantity:
                     product_not_availabel.append(quant.product_id.with_context(lang=self.env.user.lang).name)
         if len(product_not_availabel) > 0:
             message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {stock_location.name} kho {stock_location.warehouse_id.name}"
