@@ -131,16 +131,24 @@ class ProductCategory(models.Model):
             return []
 
         queries = []
+        identity_keys = self.bravo_identity_fields_get()
+        identity_key_names = {bfield.bravo_name: True for bfield in identity_keys}
+        update_default_value = self.bravo_get_default_update_value()
+        update_default_value_list = []
+        for dkey, dvalue in update_default_value.items():
+            update_default_value_list.append(f"{dkey}={dvalue}")
+        update_default_value = ", ".join(update_default_value_list)
+
         for data in values:
             set_query_params = []
             set_query_placeholder = []
             for key, value in data.items():
-                if key == 'Code':
-                    # don't update Code column, it's really awkward
+                if identity_key_names.get(key):
+                    # don't update identity columns, it's really awkward
                     continue
                 set_query_placeholder.append(f"{key}=?")
                 set_query_params.append(value)
-            set_query_placeholder.extend(["PushDate=GETUTCDATE(), Active=1"])
+            set_query_placeholder.append(update_default_value)
             set_query_placeholder = ','.join(set_query_placeholder)
             where_query_placeholder = 'Code = ?'
             where_query_param = [data.get('Code')]
@@ -162,7 +170,7 @@ class ProductCategory(models.Model):
         identity_key_values = [{'Code': rec.category_code} for rec in records]
         set_query_params = []
         set_query_placeholder = []
-        delete_default_value = self.get_delete_default_value()
+        delete_default_value = self.bravo_get_default_delete_values()
         for key, value in delete_default_value.items():
             set_query_placeholder.append(f"{key}={value}")
         set_query_placeholder = ','.join(set_query_placeholder)

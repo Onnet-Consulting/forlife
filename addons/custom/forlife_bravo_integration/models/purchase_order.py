@@ -25,12 +25,15 @@ class PurchaseOrder(models.Model):
     def bravo_get_update_values(self, values):
         return False
 
-    def button_confirm(self):
-        res = super().button_confirm()
-        # FIXME: push below function to job queue
-        self.sudo().bravo_insert()
+    def bravo_get_delete_sql(self):
+        return False
+
+    def action_approved(self):
+        res = super().action_approved()
+        queries = self.bravo_get_insert_with_check_existing_sql()
+        self.env['purchase.order'].sudo().with_delay().bravo_insert_with_check_existing(queries)
         return res
 
     @api.model
     def bravo_get_filter_domain(self):
-        return [('state', 'in', ('purchase', 'done'))]
+        return [('custom_state', '=', 'approved')]

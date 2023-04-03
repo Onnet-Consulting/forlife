@@ -25,10 +25,13 @@ class SaleOrder(models.Model):
     def bravo_get_update_values(self, values):
         return False
 
+    def bravo_get_delete_sql(self):
+        return False
+
     def action_confirm(self):
         res = super().action_confirm()
-        # FIXME: push below function to job queue
-        self.sudo().bravo_insert()
+        queries = self.bravo_get_insert_with_check_existing_sql()
+        self.env['sale.order'].sudo().with_delay().bravo_insert_with_check_existing(queries)
         return res
 
     @api.model
