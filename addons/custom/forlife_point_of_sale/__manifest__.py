@@ -28,6 +28,7 @@
         'views/brand_views.xml',
         'views/store_views.xml',
         'views/pos_config_views.xml',
+        'views/res_partner_views.xml',
         'data/mail_template.xml',
         'data/cron.xml',
         'views/ir_cron_views.xml'
