@@ -2,7 +2,7 @@
 addons_path = /mnt/extra-addons/custom,/mnt/extra-addons/enterprise
 admin_passwd = jYcBQvl8t)
 csv_internal_sep = ,
-data_dir = /var/lib/odoo
+data_dir = /var/log/odoo
 import_data_dir = /mnt/data-import/data
 db_host = database
 db_maxconn = 128
