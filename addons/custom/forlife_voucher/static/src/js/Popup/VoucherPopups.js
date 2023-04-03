@@ -284,6 +284,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
             var gia_tri_con_lai_ban_dau =0;
             var total_dua = this.env.pos.selectedOrder.get_due();
             var price_dua = 0;
+            var list_id_product_apply_condition = []
             for(let i = 0; i < data.length; i ++){
                 if(codes[i].value != false && data[i].value != false){
                    gia_tri_con_lai_ban_dau = data[i].value.price_residual
@@ -303,15 +304,17 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                                 so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
                                 data[i].value.price_residual = 0;
                             }
+                            if(data[i].value.product_apply_ids.includes(item.product.product_tmpl_id)){
+                                list_id_product_apply_condition.push(item.id)
+                            }
                         }
                    })
                 data[i].value.price_change = gia_tri_con_lai_ban_dau - data[i].value.price_residual;
                }
             }
-            var order_line_apply = Object.keys(so_tien_da_tra)
             this.env.pos.selectedOrder.orderlines.forEach(function(line){
                 let line_id = line.id.toString()
-                if(order_line_apply.includes(line_id)){
+                if(list_id_product_apply_condition.includes(line.id)){
                     line.is_voucher_conditional = true;
                 }else{
                     line.is_voucher_conditional = false;
