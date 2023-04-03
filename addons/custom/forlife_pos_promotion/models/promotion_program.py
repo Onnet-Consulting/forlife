@@ -247,6 +247,11 @@ class PromotionProgram(models.Model):
             else:
                 program.show_gen_code = False
 
+    @api.onchange('tax_from_date', 'tax_to_date')
+    def onchange_from_to_date(self):
+        if self.tax_from_date and self.tax_to_date and self.tax_from_date > self.tax_to_date:
+            raise UserError('Chương trình "%s": Ngày bắt đầu phải nhỏ hơn ngày kết thúc!' % self.name or '')
+
     @api.onchange('voucher_product_variant_id')
     def onchange_voucher_product(self):
         if self.voucher_product_variant_id:
@@ -322,7 +327,6 @@ class PromotionProgram(models.Model):
             'view_id': False,
             'view_mode': 'tree,form',
         }
-        return action
 
     def action_open_orders(self):
         self.ensure_one()
