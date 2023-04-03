@@ -30,7 +30,7 @@ class ProgramVoucher(models.Model):
 
     state_app = fields.Boolean('Trạng thái App')
 
-    store_ids = fields.Many2many('store', string='Apply for store', required=True)
+    store_ids = fields.Many2many('store', string='Apply for store')
 
     product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse', domain=[('voucher','=',True)])
 

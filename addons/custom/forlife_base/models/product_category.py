@@ -36,6 +36,7 @@ class ProductCategory(models.Model):
     category_type_id = fields.Many2one('product.category.type', string="Type of Product Category", copy=False)
     level = fields.Integer()
     current_code = fields.Char()
+    default_account_manufacture = fields.Many2one('account.account', 'Tài khoản dịch vụ theo lệnh sản xuất')
 
     def write(self, vals):
         res = super(ProductCategory, self).write(vals)
