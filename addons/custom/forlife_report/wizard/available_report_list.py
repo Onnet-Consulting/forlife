@@ -41,4 +41,8 @@ AVAILABLE_REPORT = {
         'module': 'Bán hàng',
         'name': 'Lịch sử nâng hạng'
     },
+    'report.num11': {
+        'module': 'Bán hàng',
+        'name': 'Sắp lên hạng'
+    },
 }
