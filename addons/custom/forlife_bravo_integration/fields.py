@@ -3,7 +3,7 @@
 from odoo import api, fields, models
 from odoo.fields import Default
 from odoo.tools.float_utils import float_round
-from datetime import date, datetime, time
+from odoo.addons.forlife_base.models.res_utility import convert_localize_datetime
 from operator import attrgetter
 
 MSSQL_DATE_FORMAT = '%Y-%m-%d'
@@ -86,7 +86,29 @@ class BravoDateField(BravoField, fields.Date):
 
 
 class BravoDatetimeField(BravoField, fields.Datetime):
-    ...
+    DEFAULT_BRAVO_TZ = 'Asia/Ho_Chi_Minh'
+    bravo_tz = DEFAULT_BRAVO_TZ
+
+    _description_bravo_tz = property(attrgetter('bravo_tz'))
+
+    def __int__(self, bravo_tz=DEFAULT_BRAVO_TZ, **kwargs):
+        super(BravoField, self).__int__(bravo_tz=bravo_tz, **kwargs)
+
+    def compute_value(self, record):
+        res = super().compute_value(record)
+        key, value = res.popitem()
+        if not value:
+            return {key: value}
+        value = convert_localize_datetime(value, tz=self.bravo_tz)
+        return {key: value}
+
+    def compute_update_value(self, value, model=Default):
+        res = super().compute_update_value(value, model=model)
+        if not res:
+            return False
+        key, value = res.popitem()
+        value = convert_localize_datetime(value, tz=self.bravo_tz)
+        return {key: value}
 
 
 class BravoMany2oneField(BravoField, fields.Many2one):
