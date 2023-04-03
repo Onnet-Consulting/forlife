@@ -20,6 +20,8 @@ class BravoModelCore(models.AbstractModel):
         return []
 
     def bravo_filter_records(self):
+        if self.env.context.get('test_import'):
+            return self.env[self._name]
         filter_domain = self.bravo_get_filter_domain()
         if not filter_domain:
             return self
