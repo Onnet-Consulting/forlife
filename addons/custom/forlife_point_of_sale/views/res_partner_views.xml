@@ -10,7 +10,7 @@
 
                 <xpath expr=".//notebook" position="inside">
                     <page string="Stores" name="store">
-                        <field name="store_fo_ids">
+                        <field name="store_fo_ids" readonly="1">
                             <tree>
                                 <field name="brand_id"/>
                                 <field name="store_id"/>
