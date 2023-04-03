@@ -29,6 +29,7 @@
 
     'data': [
         'security/ir.model.access.csv',
+        'data/queue_job_data.xml',
         'views/res_config_settings.xml',
         'wizard/bravo_sync_account_wizard_views.xml',
     ],

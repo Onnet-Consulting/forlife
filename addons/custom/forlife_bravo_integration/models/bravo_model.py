@@ -87,7 +87,7 @@ class BravoModelInsertAction(models.AbstractModel):
         queries = []
 
         if not values:
-            return False
+            return queries
         insert_table = self.bravo_get_table()
         params = []
         insert_column_names = column_names.copy()
@@ -124,12 +124,6 @@ class BravoModelInsertAction(models.AbstractModel):
             offset += num_param_per_row * actual_num_row_per_request
 
         return queries
-
-    def bravo_insert(self):
-        queries = self.bravo_get_insert_sql()
-        if queries:
-            self._execute_many(queries)
-        return True
 
 
 class BravoModelUpdateAction(models.AbstractModel):
@@ -208,16 +202,15 @@ class BravoModelUpdateAction(models.AbstractModel):
 
         return queries
 
-    def bravo_update(self, values):
-        queries = self.bravo_get_update_sql(values)
+    def bravo_update(self, queries):
         if queries:
             self._execute_many(queries)
         return True
 
-    def write(self, vals):
-        res = super().write(vals)
-        # FIXME: push below function to job queue
-        self.sudo().bravo_update(vals)
+    def write(self, values):
+        res = super().write(values)
+        queries = self.bravo_get_update_sql(values)
+        self.env[self._name].sudo().with_delay().bravo_update(queries)
         return res
 
 
@@ -279,17 +272,16 @@ class BravoModelDeleteAction(models.AbstractModel):
 
         return queries
 
+    @api.model
     def bravo_delete(self, queries):
         if queries:
             self._execute_many(queries)
         return True
 
     def unlink(self):
-        # need to extract query and params before records be deleted in Odoo
         queries = self.sudo().bravo_get_delete_sql()
         res = super().unlink()
-        # FIXME: push below function to job queue
-        self.sudo().bravo_delete(queries)
+        self.env[self._name].sudo().with_delay().bravo_delete(queries)
         return res
 
 
@@ -298,10 +290,10 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
     _inherit = ['bravo.model.insert.action']
     _description = 'Bravo Model Insert Exist Action'
 
-    def bravo_get_existing_records_sql(self):
+    def bravo_get_existing_records_sql_and_identity_keys(self):
         identity_key_values = self.bravo_get_identity_key_values()
         if not identity_key_values:
-            return False
+            return [], []
 
         identity_keys = self.bravo_identity_fields_get()
         identity_key_names = [bfield.bravo_name for bfield in identity_keys]
@@ -333,7 +325,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
             queries.append((query, sub_where_params))
             offset += num_param_per_where_condition * actual_num_row_per_request
 
-        return queries
+        return identity_key_names, queries
 
     def bravo_separate_records_by_identity_values(self, identity_values):
         existing_records = self.env[self._name]
@@ -347,11 +339,11 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
         return existing_records, newly_records
 
     def bravo_separate_records_before_insert(self):
-        queries = self.bravo_get_existing_records_sql()
+        identity_keys, queries = self.bravo_get_existing_records_sql_and_identity_keys()
         identity_values = []
         if queries:
             for data in self._execute_many_read(queries):
-                identity_values.extend([dict(zip(['Code'], row)) for row in data])
+                identity_values.extend([dict(zip(identity_keys, row)) for row in data])
         return self.bravo_separate_records_by_identity_values(identity_values)
 
     def bravo_get_update_value_for_existing_record(self):
@@ -405,25 +397,25 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
             queries.append(rec.bravo_get_update_sql_for_existing_single_record())
         return queries
 
-    def bravo_update_existing_records(self):
-        queries = self.bravo_get_update_sql_for_existing_multiple_records()
+    def bravo_get_insert_with_check_existing_sql(self):
+        existing_records, newly_records = self.bravo_separate_records_before_insert()
+        # update records existed queries
+        update_queries = existing_records.bravo_get_update_sql_for_existing_multiple_records()
+        # insert remain records (don't exist in Bravo yet) queries
+        insert_queries = newly_records.bravo_get_insert_sql()
+        return update_queries + insert_queries
+
+    @api.model
+    def bravo_insert_with_check_existing(self, queries):
         if queries:
             self._execute_many(queries)
-        return True
-
-    def bravo_insert_with_check_existing(self):
-        existing_records, newly_records = self.bravo_separate_records_before_insert()
-        # update records existed
-        existing_records.bravo_update_existing_records()
-        # insert remain records (don't exist in Bravo yet)
-        newly_records.bravo_insert()
         return True
 
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        # FIXME: push below function to job queue
-        res.sudo().bravo_insert_with_check_existing()
+        queries = res.bravo_get_insert_with_check_existing_sql()
+        self.env[self._name].sudo().with_delay().bravo_insert_with_check_existing(queries)
         return res
 
 
