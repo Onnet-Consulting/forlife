@@ -27,11 +27,6 @@ class ReportNum6(models.TransientModel):
             if record.start_time < 0.0 or record.start_time >= record.end_time or record.end_time >= 24.0:
                 raise ValidationError(_('Invalid time slot !'))
 
-    def view_report(self):
-        self.ensure_one()
-        action = self.env.ref('forlife_report.report_num_6_client_action').read()[0]
-        return action
-
     def _get_query(self, warehouse_ids):
         self.ensure_one()
         user_lang_code = self.env.user.lang
@@ -120,14 +115,15 @@ from products pr
 
     def get_data(self):
         self.ensure_one()
+        values = dict(super().get_data())
         warehouse_ids = self.env['stock.warehouse'].search([]) if self.all_warehouses else self.warehouse_ids # todo: ('brand_id', '=', self.brand_id.id)
         if not warehouse_ids:
             raise ValidationError(_('Warehouse not found !'))
         query = self._get_query(warehouse_ids)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
-        return {
-            'reportTitle': self.name,
+        values.update({
             'titles': TITLES,
             "data": data,
-        }
+        })
+        return values

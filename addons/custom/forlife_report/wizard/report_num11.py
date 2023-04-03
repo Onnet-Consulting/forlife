@@ -25,11 +25,6 @@ class ReportNum11(models.TransientModel):
     def onchange_brand(self):
         self.store_ids = False
 
-    def view_report(self):
-        self.ensure_one()
-        action = self.env.ref('forlife_report.report_num_11_client_action').read()[0]
-        return action
-
     def _get_query(self):
         self.ensure_one()
         tz_offset = self.tz_offset
@@ -90,11 +85,12 @@ order by pcrl.order_date desc
 
     def get_data(self):
         self.ensure_one()
+        values = dict(super().get_data())
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()
-        return {
-            'reportTitle': self.name,
+        values.update({
             'titles': TITLES,
             "data": data,
-        }
+        })
+        return values

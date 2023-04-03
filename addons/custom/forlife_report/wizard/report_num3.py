@@ -44,11 +44,6 @@ class ReportNum3(models.TransientModel):
         self.product_texture_ids = self.product_texture_ids.filtered(lambda f: f.parent_id in self.product_line_ids.ids)
         return {'domain': {'product_texture_ids': [('parent_id', 'in', self.product_line_ids.ids)]}}
 
-    def view_report(self):
-        self.ensure_one()
-        action = self.env.ref('forlife_report.report_num_3_client_action').read()[0]
-        return action
-
     def _get_query(self, product_ids, warehouse_ids):
         self.ensure_one()
         user_lang_code = self.env.user.lang
@@ -228,6 +223,7 @@ order by num
 
     def get_data(self):
         self.ensure_one()
+        values = dict(super().get_data())
         stock_wh = self.env['stock.warehouse']
         product_ids = self.env['product.product'].search([]).ids if self.all_products else self.product_ids.ids
         if self.report_by == 'area':
@@ -242,12 +238,12 @@ order by num
         data = self._cr.dictfetchall()
         data = self.format_data(data)
         warehouse_data = self.get_warehouse_data(warehouse_ids)
-        return {
-            'reportTitle': self.name,
+        values.update({
             'titles': TITLES + warehouse_data['warehouse_names'],
             "data": data,
             **warehouse_data
-        }
+        })
+        return values
 
     def generate_xlsx_report(self, workbook):
         data = self.get_data()

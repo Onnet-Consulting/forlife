@@ -26,11 +26,6 @@ class ReportNum9(models.TransientModel):
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
 
-    def view_report(self):
-        self.ensure_one()
-        action = self.env.ref('forlife_report.report_num_9_client_action').read()[0]
-        return action
-
     def _get_query(self):
         self.ensure_one()
         tz_offset = self.tz_offset
@@ -60,11 +55,12 @@ where vv.brand_id = {self.brand_id.id}
 
     def get_data(self):
         self.ensure_one()
+        values = dict(super().get_data())
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()
-        return {
-            'reportTitle': self.name,
+        values.update({
             'titles': TITLES,
             "data": data,
-        }
+        })
+        return values

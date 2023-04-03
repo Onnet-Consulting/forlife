@@ -41,11 +41,6 @@ class ReportNum5(models.TransientModel):
         self.employee_id = False
         return {'domain': {'employee_id': [('id', 'in', self.store_id.employee_ids.ids)]}}
 
-    def view_report(self):
-        self.ensure_one()
-        action = self.env.ref('forlife_report.report_num_5_client_action').read()[0]
-        return action
-
     def _get_query(self):
         self.ensure_one()
         user_lang_code = self.env.user.lang
@@ -211,7 +206,6 @@ from employee_list employee
             value['total_amount'] = total_amount
             res.append(value)
         return {
-            'reportTitle': self.name,
             'titles': titles,
             'data': res,
             'column_add': column_add,
@@ -227,8 +221,9 @@ from employee_list employee
 
     def get_data(self):
         self.ensure_one()
+        values = super().get_data()
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()
-        _return = self.format_data(data)
-        return _return
+        values.update(self.format_data(data))
+        return values

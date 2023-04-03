@@ -48,11 +48,6 @@ select array_agg(emp_id) as ids from (
         data = self._cr.dictfetchall()
         return data[0].get('ids', [])
 
-    def view_report(self):
-        self.ensure_one()
-        action = self.env.ref('forlife_report.report_num_7_client_action').read()[0]
-        return action
-
     def _get_query(self, store_ids):
         self.ensure_one()
         tz_offset = self.tz_offset
@@ -91,6 +86,7 @@ group by product_line
 
     def get_data(self):
         self.ensure_one()
+        values = dict(super().get_data())
         warehouse_ids = self.env['stock.warehouse'].search([]) if self.all_warehouses else self.warehouse_ids # todo: ('brand_id', '=', self.brand_id.id)
         store_ids = self.env['store'].search([('warehouse_id', 'in', warehouse_ids.ids)])
         if not store_ids:
@@ -98,8 +94,8 @@ group by product_line
         query = self._get_query(store_ids.ids)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
-        return {
-            'reportTitle': self.name,
+        values.update({
             'titles': TITLES,
             "data": data,
-        }
+        })
+        return values

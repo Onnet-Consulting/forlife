@@ -2,15 +2,11 @@ odoo.define('forlife_report.report_num5', function (require) {
     'use strict';
 
     const core = require('web.core');
-    const _t = core._t;
     const ReportBaseAction = require('forlife_report.report_base');
     const QWeb = core.qweb;
 
 
     let ReportNum5Action = ReportBaseAction.extend({
-        reportTemplate: 'ReportNum5Template',
-        reportPager: false,
-
         events: _.extend({}, ReportBaseAction.prototype.events, {
             'click .show-employee-detail': 'show_employee_detail',
             'click .show-order-detail': 'show_order_detail',

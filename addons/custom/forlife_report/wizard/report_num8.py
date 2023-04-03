@@ -31,11 +31,6 @@ class ReportNum8(models.TransientModel):
     def onchange_brand(self):
         self.order_id = False
 
-    def view_report(self):
-        self.ensure_one()
-        action = self.env.ref('forlife_report.report_num_8_client_action').read()[0]
-        return action
-
     def _get_query(self):
         self.ensure_one()
         tz_offset = self.tz_offset
@@ -77,11 +72,12 @@ and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' a
 
     def get_data(self):
         self.ensure_one()
+        values = dict(super().get_data())
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()
-        return {
-            'reportTitle': self.name,
+        values.update({
             'titles': TITLES,
             "data": data,
-        }
+        })
+        return values

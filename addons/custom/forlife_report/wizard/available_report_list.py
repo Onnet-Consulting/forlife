@@ -3,46 +3,71 @@
 AVAILABLE_REPORT = {
     'report.num1': {
         'module': 'Bán hàng',
-        'name': 'Doanh thu theo sản phẩm'
+        'name': 'Doanh thu theo sản phẩm',
+        'reportTemplate': 'ReportNum1Template',
+        'reportPager': True,
     },
     'report.num2': {
         'module': 'Tồn kho',
-        'name': 'Tồn kho theo giá bán'
+        'name': 'Tồn kho theo giá bán',
+        'reportTemplate': 'ReportNum2Template',
+        'reportPager': True,
+        'tag': 'report_num2_action',
     },
     'report.num3': {
         'module': 'Tồn kho',
-        'name': 'Tồn kho theo chi nhánh/khu vực'
+        'name': 'Tồn kho theo chi nhánh/khu vực',
+        'reportTemplate': 'ReportNum3Template',
+        'reportPager': True,
+        'tag': 'report_num2_action',
     },
     'report.num4': {
         'module': 'Tồn kho',
-        'name': 'Tồn kho theo sản phẩm'
+        'name': 'Tồn kho theo sản phẩm',
+        'reportTemplate': 'ReportNum4Template',
+        'reportPager': True,
     },
     'report.num5': {
         'module': 'Bán hàng',
-        'name': 'Doanh thu theo nhân viên'
+        'name': 'Doanh thu theo nhân viên',
+        'reportTemplate': 'ReportNum5Template',
+        'reportPager': False,
+        'tag': 'report_num5_action',
     },
     'report.num6': {
         'module': 'Bán hàng',
-        'name': 'Bán - trưng hàng'
+        'name': 'Bán - trưng hàng',
+        'reportTemplate': 'ReportNum6Template',
+        'reportPager': False,
     },
     'report.num7': {
         'module': 'Bán hàng',
-        'name': 'Doanh thu tại cửa hàng theo dòng hàng'
+        'name': 'Doanh thu tại cửa hàng theo dòng hàng',
+        'reportTemplate': 'ReportNum7Template',
+        'reportPager': False,
     },
     'report.num8': {
         'module': 'Bán hàng',
-        'name': 'Chi tiết hóa đơn vận chuyển voucher'
+        'name': 'Chi tiết hóa đơn vận chuyển voucher',
+        'reportTemplate': 'ReportNum8Template',
+        'reportPager': False,
     },
     'report.num9': {
         'module': 'Bán hàng',
-        'name': 'Voucher phát hành'
+        'name': 'Voucher phát hành',
+        'reportTemplate': 'ReportNum9Template',
+        'reportPager': False,
     },
     'report.num10': {
         'module': 'Bán hàng',
-        'name': 'Lịch sử nâng hạng'
+        'name': 'Lịch sử nâng hạng',
+        'reportTemplate': 'ReportNum11Template',
+        'reportPager': False,
     },
     'report.num11': {
         'module': 'Bán hàng',
-        'name': 'Sắp lên hạng'
+        'name': 'Sắp lên hạng',
+        'reportTemplate': 'ReportNum11Template',
+        'reportPager': False,
     },
 }

@@ -44,3 +44,21 @@ class ReportBase(models.AbstractModel):
     @api.model
     def get_available_report(self):
         return [r for r in AVAILABLE_REPORT.values()]
+
+    def get_data(self):
+        report_data = AVAILABLE_REPORT.get(self._name, {})
+        return {
+            'reportTitle': report_data.get('name', ''),
+            'reportTemplate': report_data.get('reportTemplate', ''),
+            'reportPager': report_data.get('reportPager', False),
+        }
+
+    def view_report(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.client',
+            'tag': AVAILABLE_REPORT.get(self._name, {}).get('tag', 'report_base_action'),
+            'context': {
+                'report_model': self._name,
+            }
+        }

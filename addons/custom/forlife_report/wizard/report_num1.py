@@ -52,11 +52,6 @@ class ReportNum1(models.TransientModel):
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
 
-    def view_report(self):
-        self.ensure_one()
-        action = self.env.ref('forlife_report.report_num_1_client_action').read()[0]
-        return action
-
     def _get_query(self, product_ids, warehouse_ids):
         self.ensure_one()
         user_lang_code = self.env.user.lang
@@ -210,16 +205,17 @@ order by product_name
 
     def get_data(self):
         self.ensure_one()
+        values = dict(super().get_data())
         product_ids = self.env['product.product'].search([]).ids if self.all_products else self.product_ids.ids
         warehouse_ids = self.env['stock.warehouse'].search([]).ids if self.all_warehouses else self.warehouse_ids.ids
         query = self._get_query(product_ids, warehouse_ids)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
-        return {
-            'reportTitle': self.name,
+        values.update({
             'titles': TITLES,
             'data': data,
-        }
+        })
+        return values
 
     def generate_xlsx_report(self, workbook):
         data = self.get_data()

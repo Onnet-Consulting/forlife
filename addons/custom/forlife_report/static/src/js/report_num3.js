@@ -6,7 +6,6 @@ odoo.define('forlife_report.report_num3', function (require) {
 
 
     let ReportNum3Action = ReportBaseAction.extend({
-        reportTemplate: 'ReportNum3Template',
 
         parse_data: function (data) {
             this.warehouse_name_by_id = data.warehouse_name_by_id;

@@ -26,9 +26,6 @@ odoo.define('forlife_report.report_base', function (require) {
             'click .export_data': 'action_export_data',
             'click .btn_back': 'action_back',
         },
-        reportTemplate: 'ReportBase',
-        reportTitle: _t("Base Report"),
-        reportPager: true,
         record_per_page: 80,
         readDataTimeout: 300,
 
@@ -80,6 +77,8 @@ odoo.define('forlife_report.report_base', function (require) {
         parse_data: function (data) {
             this.data = data.data;
             this.reportTitle = data.reportTitle;
+            this.reportTemplate = data.reportTemplate;
+            this.reportPager = data.reportPager;
             this.report_filename = data.reportTitle + '.xlsx';
             this.report_type_id = 'all_data';
             this.titles = data.titles;
@@ -170,6 +169,7 @@ odoo.define('forlife_report.report_base', function (require) {
     })
 
     core.action_registry.add('available_report_action', AvailableReportAction)
+    core.action_registry.add('report_base_action', ReportBaseAction)
 
 
     return ReportBaseAction;
