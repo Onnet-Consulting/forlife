@@ -22,8 +22,8 @@ services:
       - ./requirements.txt:/opt/requirements.txt
       - ./odoo.conf:/etc/odoo/odoo.conf
       - ./addons:/mnt/extra-addons
-      - ${LOCAL_FILE_STORE_DIR}:/var/lib/odoo
-    command: /bin/bash -c "pip3 install -r /opt/requirements.txt && odoo"
+      - ${LOCAL_FILE_STORE_DIR}:/var/log/odoo
+    # command: /bin/bash -c "pip3 install -r /opt/requirements.txt && odoo"
     links:
       - "database:database"
     environment:
