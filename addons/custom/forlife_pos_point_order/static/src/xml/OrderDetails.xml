@@ -4,17 +4,60 @@
         <div>
             <span>
                 <t t-if="props.order.partner">
-                    <span>
-                        Điểm :
-                        <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">
-                            <t t-if="branch.name == 'TokyoLife'">
-                                <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_forlife)"/>
-                            </t>
-                            <t t-if="branch.name == 'Format'">
-                                <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_format)"/>
-                            </t>
-                        </t>
-                    </span>
+                    <!--                    <span>-->
+                    <!--                        Điểm :-->
+                    <!--                        <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">-->
+                    <!--                            <t t-if="branch.name == 'TokyoLife'">-->
+                    <!--                                <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_forlife)"/>-->
+                    <!--                            </t>-->
+                    <!--                            <t t-if="branch.name == 'Format'">-->
+                    <!--                                <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_format)"/>-->
+                    <!--                            </t>-->
+                    <!--                        </t>-->
+                    <!--                    </span>-->
+                    <table style="border: 1px solid black;width:100%">
+                        <tr style="border: 1px solid black; text-align:left">
+                            <th style="border: 1px solid black; width:25%">Điểm có</th>
+                            <th>
+                                <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">
+                                    <t t-if="branch.name == 'TokyoLife'">
+                                        <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_forlife)"/>
+                                    </t>
+                                    <t t-if="branch.name == 'Format'">
+                                        <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_format)"/>
+                                    </t>
+                                </t>
+                            </th>
+                        </tr>
+                        <tr style="border: 1px solid black; text-align:left">
+                            <th style="border: 1px solid black;width:25%">Đổi</th>
+                            <th>
+                                <t t-if="env.pos.selectedOrder.total_order_line_point_used">
+                                    <t t-esc="env.pos.selectedOrder.total_order_line_point_used"/>
+                                </t>
+                                <t t-else="">
+                                    0
+                                </t>
+                            </th>
+                        </tr>
+                        <tr style="border: 1px solid black; text-align:left">
+                            <th style="border: 1px solid black;width:25%">Còn lại</th>
+                            <th><t t-if="env.pos.selectedOrder.total_order_line_redisual">
+                                    <t t-esc="env.pos.selectedOrder.total_order_line_redisual"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-esc="env.pos.selectedOrder.total_order_line_point_used"/>
+                                </t></th>
+                        </tr>
+<!--                        <tr style="border: 1px solid black; text-align:left">-->
+<!--                            <th></th>-->
+<!--                            <th></th>-->
+<!--                            <th>Tổng tiền thanh toán</th>-->
+<!--                            <th>-->
+<!--                                <t t-esc="_total"/>-->
+<!--                            </th>-->
+<!--                        </tr>-->
+                    </table>
 
                 </t>
             </span>
