@@ -8,6 +8,11 @@
             <xpath expr="//field[@name='lines']/tree/field[@name='qty']" position="after">
                 <field name="quantity_refunded"/>
             </xpath>
+            <xpath expr="//field[@name='fiscal_position_id']" position="after">
+                <field name="pay_point"/>
+                <field name="refund_point" readonly="1" force_save="1"/>
+                <field name="approved" readonly="1" force_save="1"/>
+            </xpath>
         </field>
     </record>
 </odoo>
