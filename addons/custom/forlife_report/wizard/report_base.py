@@ -60,5 +60,6 @@ class ReportBase(models.AbstractModel):
             'tag': AVAILABLE_REPORT.get(self._name, {}).get('tag', 'report_base_action'),
             'context': {
                 'report_model': self._name,
-            }
+            },
+            'params': {'active_model': self._name},
         }

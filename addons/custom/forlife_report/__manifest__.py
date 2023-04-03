@@ -38,8 +38,7 @@
         'wizard/report_num8_views.xml',
         'wizard/report_num9_views.xml',
         'wizard/report_num10_views.xml',
-        'wizard/report_num11_views.xml',
-        'wizard/report_num12_views.xml',
+        # 'wizard/report_num11_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

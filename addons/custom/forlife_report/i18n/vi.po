@@ -517,7 +517,7 @@ msgstr "Báo cáo tồn kho theo giá bán"
 #: model:ir.ui.menu,name:forlife_report.report_num8_menu
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num8_form
 msgid "Report voucher detail"
-msgstr "Báo cáo chi tiết hóa đơn vận chuyển voucher"
+msgstr "Báo cáo chi tiết hóa đơn áp dụng voucher"
 
 #. module: forlife_report
 #: model:ir.actions.act_window,name:forlife_report.report_num9_window_action
@@ -748,7 +748,7 @@ msgstr "Mã voucher"
 #. module: forlife_report
 #: model:ir.actions.client,name:forlife_report.report_num_8_client_action
 msgid "Voucher detail"
-msgstr "Chi tiết hóa đơn vận chuyển voucher"
+msgstr "Chi tiết hóa đơn áp dụng voucher"
 
 #. module: forlife_report
 #: model:ir.actions.client,name:forlife_report.report_num_9_client_action

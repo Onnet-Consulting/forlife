@@ -32,8 +32,8 @@ odoo.define('forlife_report.report_base', function (require) {
         init: function (parent, action) {
             this.actionManager = parent;
             this.odoo_context = action.context;
-            this.report_model = this.odoo_context.report_model || this.odoo_context.active_model;
-            this.report_id = this.odoo_context.active_id;
+            this.report_model = this.odoo_context.report_model || this.odoo_context.active_model || action.params.active_model;
+            this.report_id = this.odoo_context.active_id || action.params.active_id;
             this.func = {
                 format_decimal
             };

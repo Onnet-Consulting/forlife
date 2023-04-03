@@ -41,23 +41,23 @@ class ReportNum10(models.TransientModel):
         conditions += f"and pcrl.new_card_rank_id = {self.to_rank_id.id}\n" if self.to_rank_id else ''
         conditions += f"and pcr.customer_id = any (array{self.customer_ids.ids})\n" if self.customer_ids else ''
         conditions += '' if not self.store_ids else f"""
-and pcrl.order_id in (
-    select id from pos_order
-        where {format_date_query("date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
-            and session_id in (
-                select id from pos_session where config_id in (
-                    select id from pos_config where store_id = any (array{self.store_ids.ids})))
-)"""
+and (select coalesce(name, '')
+     from store where id = (
+        select store_id from store_first_order
+         where customer_id = rp.id and brand_id = {self.brand_id.id}
+         limit 1
+        )
+    ) = any (array{self.store_ids.mapped('name')})
+"""
         query = f"""
 select
     (select coalesce(name, '')
-     from store where id in (
-        select store_id from pos_config where id in (
-            select config_id from pos_session where id in (
-                select session_id from pos_order where id = pcrl.order_id
-            )
+     from store where id = (
+        select store_id from store_first_order
+         where customer_id = rp.id and brand_id = {self.brand_id.id}
+         limit 1
         )
-    ))                                                                                  as store_name,
+    )                                                                                  as store_name,
     (select to_char(order_date + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY')
         from partner_card_rank_line
         where partner_card_rank_id = pcr.id and order_id notnull
@@ -78,7 +78,7 @@ select
     case when pcrl.order_id notnull then 'Auto' else '' end                             as implementation,
     array[coalesce(rp.internal_code, ''),
           coalesce(rp.name, ''),
-          coalesce(rp.gender, ''),
+          case when rp.gender = 'male' then 'Nam' when rp.gender = 'female' then 'Nữ' when rp.gender = 'other' then 'Khác' else '' end ,
           coalesce(to_char(rp.birthday + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY'), ''),
           coalesce(rp.phone)]                                                           as customer_info
 from partner_card_rank_line pcrl
