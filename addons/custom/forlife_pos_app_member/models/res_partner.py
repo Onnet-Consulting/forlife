@@ -35,11 +35,6 @@ class ResPartner(models.Model):
     retail_type_ids = fields.Many2many('res.partner.retail', string='Retail types', copy=False, ondelete='restrict')
     show_customer_type = fields.Boolean(compute='_compute_show_retail_types')
     birthday = fields.Date(string='Birthday')
-    gender = fields.Selection([
-        ('male', 'Male'),
-        ('female', 'Female'),
-        ('other', 'Other')
-    ], string='Gender')
     ref = fields.Char(readonly=True, copy=False)
     barcode = fields.Char(readonly=True, company_dependent=False)  # a partner has only one barcode
     phone = fields.Char(copy=False, string='Phone #1')

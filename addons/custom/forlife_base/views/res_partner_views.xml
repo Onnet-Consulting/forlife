@@ -1,21 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="view_partner_form_forlife_inherit" model="ir.ui.view">
-        <field name="name">res.partner.form.forlife.inherit</field>
-        <field name="model">res.partner</field>
-        <field name="priority">50</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
-        <field name="arch" type="xml">
-            <field name="vat" position="after">
-                <field name="supplier_group_id"/>
-                <field name="sup_product_type_id"/>
-            </field>
-<!--             <span name="address_name" position="before">
-                <field name="supplier_code"/>
-                <field name="internal_code"/>
-            </span> -->
-        </field>
-    </record>
 
     <!-- Supplier Group -->
     <record id="res_supplier_group_view_tree" model="ir.ui.view">

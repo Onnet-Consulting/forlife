@@ -151,10 +151,6 @@ msgstr ""
 msgid "Last Updated on"
 msgstr ""
 
-#. module: forlife_point_of_sale
-#: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__stock_location_id
-msgid "Location"
-msgstr "Địa điểm kho"
 
 #. module: forlife_point_of_sale
 #. odoo-python

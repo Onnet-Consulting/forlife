@@ -12,6 +12,17 @@
                 </xpath>
             </field>
         </record>
+        <record model="ir.ui.view" id="res_partner_bank_tree_data_inherit">
+            <field name="name">res.partner.bank.tree.data.inherit</field>
+            <field name="model">res.partner.bank</field>
+            <field name="inherit_id" ref="account.view_partner_bank_form_inherit_account"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='allow_out_payment']" position="after">
+                    <field name="gl_account"/>
+                    <field name="description"/>
+                </xpath>
+            </field>
+        </record>
         <record model="ir.ui.view" id="res_bank_data_inherit">
             <field name="name">res.bank.data.inherit</field>
             <field name="model">res.bank</field>

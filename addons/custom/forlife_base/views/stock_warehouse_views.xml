@@ -23,16 +23,11 @@
                                 <field name="manager_id"/>
                                 <field name="status_ids"/>
                                 <field name="id_deposit"/>
-                                <field name="note"/>
                             </group>
                             <group>
                                 <field name="sale_province_id"/>
                                 <field name="loc_province_id"/>
                                 <field name="weather_province_id"/>
-                                <field name="state_id"/>
-                                <field name="district_id"/>
-                                <field name="longitude"/>
-                                <field name="latitude"/>
                             </group>
                         </group>
                 	</page>

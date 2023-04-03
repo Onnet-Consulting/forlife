@@ -197,9 +197,9 @@ class PosOrder(models.Model):
         # if self._context.get('from_PointsConsumption'):
         #     data = data[0]
         if self._context.get('from_PointsConsumptionPos'):
-            create_Date = self._format_time_zone(data['date_order'].replace('T', ' ')[:19])
+            create_Date = data['date_order'].replace('T', ' ')[:19]
         else:
-            create_Date = self._format_time_zone(data['date_order'])
+            create_Date = data['date_order']
         session = self.env['pos.session'].sudo().search([('id', '=', data['session_id'])], limit=1)
         store = session.config_id.store_id
         # query = "select id from points_promotion where id in (select points_promotion_id from points_promotion_store_rel where store_id = {}) " \
