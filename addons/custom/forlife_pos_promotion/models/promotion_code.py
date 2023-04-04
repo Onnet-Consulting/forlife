@@ -28,7 +28,7 @@ class PromotionCode(models.Model):
 
     amount = fields.Float()
     consumed_amount = fields.Float()
-    remaining_amount = fields.Float()
+    remaining_amount = fields.Float(compute='_compute_remaining_amount', store=False)
     reward_for_referring = fields.Boolean(related='program_id.reward_for_referring')
     referred_partner_id = fields.Many2one('res.partner')
     expiration_date = fields.Datetime()
@@ -42,3 +42,8 @@ class PromotionCode(models.Model):
             order_ids = code.usage_line_ids.mapped('order_line_id.order_id')
             code.order_ids = order_ids
             code.use_count = len(order_ids)
+
+    @api.depends('amount', 'consumed_amount')
+    def _compute_remaining_amount(self):
+        for code in self:
+            code.remaining_amount = code.amount - code.consumed_amount
