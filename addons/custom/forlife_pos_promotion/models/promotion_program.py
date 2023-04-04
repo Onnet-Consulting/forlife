@@ -122,7 +122,17 @@ class PromotionProgram(models.Model):
     reward_ids = fields.One2many('promotion.reward.line', 'program_id', 'Rewards', copy=True, readonly=False, store=True)
     qty_min_required = fields.Float(compute='_qty_min_required', help='Use for Combo Program  based on quantity of the Combo')
 
-    voucher_ids = fields.One2many('promotion.voucher', 'program_id')
+    voucher_program_id = fields.Many2one(
+        'program.voucher', domain="[('type', '=', 'e')]", string='Voucher Program')
+    voucher_product_id = fields.Many2one(
+        'product.template', related='voucher_program_id.product_id', string='Voucher Product Template')
+    voucher_product_variant_id = fields.Many2one(
+        'product.product', domain="[('product_tmpl_id', '=', voucher_product_id)]", string='Voucher Product Variant')
+    voucher_price = fields.Monetary(string='Voucher Price', currency_field='currency_id')
+    voucher_apply_product_ids = fields.Many2many(
+        'product.template', related='voucher_program_id.product_apply_ids', string='Applicable Products')
+    voucher_ids = fields.One2many('voucher.voucher', 'promotion_program_id')
+    voucher_count = fields.Integer(compute='_compute_voucher_count')
 
     code_ids = fields.One2many('promotion.code', 'program_id')
     code_count = fields.Integer(compute='_compute_code_count')
@@ -189,6 +199,13 @@ class PromotionProgram(models.Model):
         for program in self:
             program.code_count = count_per_program.get(program.id, 0)
 
+    @api.depends('voucher_ids')
+    def _compute_voucher_count(self):
+        read_group_data = self.env['voucher.voucher']._read_group([('promotion_program_id', 'in', self.ids)], ['promotion_program_id'], ['promotion_program_id'])
+        count_per_program = {r['promotion_program_id'][0]: r['promotion_program_id_count'] for r in read_group_data}
+        for program in self:
+            program.voucher_count = count_per_program.get(program.id, 0)
+
     @api.depends('product_ids', 'product_categ_ids')
     def _compute_valid_product_ids(self):
         for line in self:
@@ -230,7 +247,19 @@ class PromotionProgram(models.Model):
             else:
                 program.show_gen_code = False
 
-    @api.onchange('promotion_type')
+    @api.onchange('tax_from_date', 'tax_to_date')
+    def onchange_from_to_date(self):
+        if self.tax_from_date and self.tax_to_date and self.tax_from_date > self.tax_to_date:
+            raise UserError('Chương trình "%s": Ngày bắt đầu phải nhỏ hơn ngày kết thúc!' % self.name or '')
+
+    @api.onchange('voucher_product_variant_id')
+    def onchange_voucher_product(self):
+        if self.voucher_product_variant_id:
+            self.voucher_price = self.voucher_product_variant_id.price
+        else:
+            self.voucher_price = 0.0
+
+    @api.onchange('promotion_type', 'reward_type')
     def onchange_promotion_type(self):
         if not self.promotion_type:
             self.reward_type = False
@@ -287,6 +316,17 @@ class PromotionProgram(models.Model):
             'default_program_id': self.id,
         }
         return action
+
+    def action_open_issued_vouchers(self):
+        self.ensure_one()
+        return {
+            'name': _('Issued Vouchers'),
+            'domain': [('id', 'in', self.voucher_ids.ids)],
+            'res_model': 'voucher.voucher',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+        }
 
     def action_open_orders(self):
         self.ensure_one()

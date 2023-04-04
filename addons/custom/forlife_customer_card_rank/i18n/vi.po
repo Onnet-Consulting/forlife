@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-04 03:52+0000\n"
-"PO-Revision-Date: 2023-03-04 03:52+0000\n"
+"POT-Creation-Date: 2023-04-04 04:01+0000\n"
+"PO-Revision-Date: 2023-04-04 04:01+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -36,6 +36,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__active
 msgid "Active"
 msgstr "Hoạt động"
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_filter
+msgid "All"
+msgstr "Tất cả"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__apply_value_from_1
@@ -464,6 +469,7 @@ msgstr "Tên"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__new_card_rank_id
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_line_view_form_update_manual
 msgid "New Rank"
 msgstr "Hạng mới"
 
@@ -575,6 +581,11 @@ msgstr "Thứ hạng"
 #, python-format
 msgid "Priority must be unique '%s'"
 msgstr "Thứ hạng không được trùng '%s'"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__program_cr_id
+msgid "Program Card Rank"
+msgstr "Chương trình hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__name
@@ -719,9 +730,19 @@ msgid "Value Orders"
 msgstr "Giá trị đơn hàng"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value_remind
+msgid "Value Remind"
+msgstr "Giá trị nhắc nhở lên hạng"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__value_to_upper
 msgid "Value to upper"
 msgstr "Giá trị được xét hạng"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__value_up_rank
+msgid "Value up rank"
+msgstr "Doanh thu nâng hạng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__website_message_ids
@@ -800,6 +821,11 @@ msgstr ""
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_tree
 msgid "partner_card_rank_tree"
+msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_pos_order_line_discount_details
+msgid "pos.order.line.discount.details"
 msgstr ""
 
 #. module: forlife_customer_card_rank

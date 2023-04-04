@@ -12,6 +12,9 @@
                 <field name="parent_id" position="after">
                     <field name="category_code"/>
                 </field>
+                <field name="property_account_expense_categ_id" position="after">
+                    <field name="default_account_manufacture"/>
+                </field>
 
             </field>
         </record>

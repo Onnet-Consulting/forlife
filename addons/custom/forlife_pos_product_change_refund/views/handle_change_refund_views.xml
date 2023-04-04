@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="handle_change_refund_tree_view" model="ir.ui.view">
+            <field name="name">handle.change.refund.tree</field>
+            <field name="model">handle.change.refund</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="send_approval_date"/>
+                    <field name="origin_order"/>
+                    <field name="store_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="handle_change_refund_form_view" model="ir.ui.view">
+            <field name="name">handle.change.refund.form</field>
+            <field name="model">handle.change.refund</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_approve" type="object" class="oe_highlight" string="Approve" states="draft"/>
+                        <button name="action_refuse" type="object" string="Refuse" states="draft"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,approved,refuse,cancelled"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="pos_order_id" invisible="1"/>
+                                <field name="origin_order"/>
+                                <field name="store_id" options="{'no_create': 1, 'no_create_edit': 1}"/>
+                            </group>
+                            <group>
+                                <field name="company_id" invisible="1"/>
+                                <field name="currency_id" invisible="1"/>
+                                <field name="send_approval_date"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Product Details">
+                                <field name="line_ids">
+                                    <tree editable="bottom">
+                                        <field name="company_id" invisible="1"/>
+                                        <field name="currency_id" invisible="1"/>
+                                        <field name="product_id"/>
+                                        <field name="purchase_price"/>
+                                        <field name="return_price"/>
+                                        <field name="expire_change_refund_date"/>
+                                        <field name="note"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="handle_change_refund_view_action" model="ir.actions.act_window">
+            <field name="name">Handle Change Refund</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">handle.change.refund</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="handle_change_refund_menu_view" name="Handle Change Refund" parent="point_of_sale.menu_point_root"
+                  action="handle_change_refund_view_action" sequence="20"/>
+
+
+    </data>
+</odoo>

@@ -13,12 +13,12 @@
                 </tree>
             </field>
         </record>
-                <record id="res_occasion_gr_view_tree" model="ir.ui.view">
+        <record id="res_occasion_gr_view_tree" model="ir.ui.view">
             <field name="name">res.occasion.gr.view.tree</field>
             <field name="model">occasion.group</field>
             <field name="arch" type="xml">
                 <tree string="Occasion Group" editable="top">
-                    <field name="code"/>
+                    <field name="name"/>
                     <field name="description"/>
                 </tree>
             </field>

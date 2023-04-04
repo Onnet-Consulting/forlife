@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="res_partner_view_form_inherit" model="ir.ui.view">
+            <field name="name">res_partner_view_form_inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr=".//notebook" position="inside">
+                    <page string="Stores" name="store">
+                        <field name="store_fo_ids" readonly="1">
+                            <tree>
+                                <field name="brand_id"/>
+                                <field name="store_id"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="brand_id"/>
+                                    <field name="store_id"/>
+                                </group>
+                            </form>
+                        </field>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

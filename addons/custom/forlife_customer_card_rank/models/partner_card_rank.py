@@ -71,3 +71,8 @@ class PartnerCardRankLine(models.Model):
     value_up_rank = fields.Integer('Value up rank')
     old_card_rank_id = fields.Many2one('card.rank', string='Old Rank', required=True, default=lambda self: self.env['card.rank'].search([], order='priority asc', limit=1))
     new_card_rank_id = fields.Many2one('card.rank', string='New Rank', required=True)
+    program_cr_id = fields.Many2one('member.card', string='Program Card Rank', required=True)
+
+    @api.onchange('program_cr_id')
+    def onchange_program_cr(self):
+        self.new_card_rank_id = self.program_cr_id.card_rank_id

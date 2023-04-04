@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import _, api, fields, models
+from odoo import models, fields, api, _
 
 
-class PromotionVoucher(models.Model):
-    _name = 'promotion.voucher'
-    _description = 'Voucher'
+class VoucherVoucher(models.Model):
+    _inherit = 'voucher.voucher'
 
-    name = fields.Char()
-    program_id = fields.Many2one('promotion.program')
+    promotion_program_id = fields.Many2one('promotion.program', string='Promotion Program Ref', readonly=True)
+    orig_pos_order_id = fields.Many2one('pos.order', 'Original POS Order', readonly=True)

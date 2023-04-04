@@ -121,6 +121,16 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                         order_lines[i].set_point(- result[i].point * 1000)
                     }
                 };
+                var total_point_used = 0;
+                order_lines.forEach(function(item){
+                    if(!item.point){
+                        item.point = 0;
+                    }
+                    let point = -item.point
+                    total_point_used += point
+                })
+                this.env.pos.selectedOrder.total_order_line_point_used = total_point_used/1000;
+                this.env.pos.selectedOrder.total_order_line_redisual = points_of_customer - this.env.pos.selectedOrder.total_order_line_point_used
             }
         }
 
