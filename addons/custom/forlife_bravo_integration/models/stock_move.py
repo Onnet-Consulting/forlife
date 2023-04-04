@@ -15,5 +15,14 @@ class StockMove(models.Model):
 
     def insert_purchase_picking_data(self):
         bravo_table = 'B30AccDocPurchase'
-        moves = self.filtered(lambda m: m.purchase_line_id)
+        moves = self.filtered(lambda m: m.purchase_line_id and m.account_move_ids)
+        for move in moves:
+            picking = move.picking_id
+            picking_data = picking.read(['id', 'name', 'date_done'])
+            picking_partner_data = picking.partner_id.read(['name', 'ref', 'contact_address_complete'])
+            account_move = move.account_move_ids[0]
+            bravo_data = {
+                'CompanyCode': picking.company_id.code,
+                'Stt': picking.id,
+            }
 

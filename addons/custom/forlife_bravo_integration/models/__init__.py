@@ -12,4 +12,4 @@ from . import uom_uom
 from . import occasion_code
 from . import stock_move
 from . import asset_location
-# from . import account_move
+# from . import hr_asset_transfer

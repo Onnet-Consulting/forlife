@@ -24,6 +24,7 @@
         'forlife_base',
         'forlife_pos_app_member',
         'forlife_purchase',
+        'forlife_stock',
     ],
     'auto_install': True,
 
