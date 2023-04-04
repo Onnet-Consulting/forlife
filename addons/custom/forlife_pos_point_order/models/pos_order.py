@@ -19,6 +19,8 @@ class PosOrder(models.Model):
     allow_compensate_point = fields.Boolean(compute='_allow_compensate_point')
     point_addition_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
+    total_order_line_point_used = fields.Integer()
+    total_order_line_redisual = fields.Integer()
 
     @api.depends('lines', 'lines.point_addition', 'lines.point_addition_event')
     def _compute_item_total_point(self):
@@ -325,3 +327,11 @@ class PosOrder(models.Model):
         }
         move = self.env['account.move'].create(move_vals)._post()
         return True
+
+    def _export_for_ui(self, order):
+        result = super(PosOrder, self)._export_for_ui(order)
+        result.update({
+            'total_order_line_point_used': order.total_order_line_point_used,
+            'total_order_line_redisual':order.total_order_line_redisual
+        })
+        return result
