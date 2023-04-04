@@ -29,7 +29,11 @@ class PromotionCode(models.Model):
     amount = fields.Float()
     consumed_amount = fields.Float()
     remaining_amount = fields.Float(compute='_compute_remaining_amount', store=False)
-    reward_for_referring = fields.Boolean(related='program_id.reward_for_referring')
+    reward_for_referring = fields.Boolean('Rewards for Referring', copy=False, readonly=False)
+    referring_date_from = fields.Datetime('Refer From')
+    referring_date_to = fields.Datetime('Refer To')
+    referring_program_id = fields.Many2one('promotion.program', string='Program Reward')
+
     referred_partner_id = fields.Many2one('res.partner')
     expiration_date = fields.Datetime()
 

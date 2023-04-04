@@ -18,7 +18,10 @@
     <!--                    <field name="amount"/>-->
     <!--                    <field name="consumed_amount"/>-->
     <!--                    <field name="remaining_amount"/>-->
-    <!--                    <field name="reward_for_referring"/>-->
+                        <field name="reward_for_referring"/>
+                        <field name="referring_date_from"/>
+                        <field name="referring_date_to"/>
+                        <field name="referring_program_id"/>
                     </group>
                 </sheet>
             </form>
@@ -42,6 +45,9 @@
                     <field name="consumed_amount"/>
                     <field name="remaining_amount"/>
                     <field name="reward_for_referring"/>
+                    <field name="referring_date_from"/>
+                    <field name="referring_date_to"/>
+                    <field name="referring_program_id"/>
             </tree>
         </field>
     </record>

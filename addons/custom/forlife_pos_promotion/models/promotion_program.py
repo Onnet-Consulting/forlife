@@ -136,7 +136,7 @@ class PromotionProgram(models.Model):
     code_ids = fields.One2many('promotion.code', 'program_id')
     code_count = fields.Integer(compute='_compute_code_count')
 
-    reward_for_referring = fields.Boolean('Rewards for Referring', copy=False, readonly=False)
+    # reward_for_referring = fields.Boolean('Rewards for Referring', copy=False, readonly=False)
 
     discount_product_ids = fields.Many2many('product.product', 'promotion_program_discount_product_rel')
     reward_product_ids = fields.Many2many('product.product', 'promotion_program_reward_product_rel')
