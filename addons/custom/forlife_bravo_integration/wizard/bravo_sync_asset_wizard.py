@@ -99,6 +99,7 @@ class BravoSyncAssetWizard(models.TransientModel):
         employee_id_by_code = self.generate_hr_employee_id_by_code(company_data, employee_codes)
 
         for record_value in res:
+            record_value['Type'] = str(record_value['Type'])
             record_value['DeptCode'] = analytic_account_id_by_code[record_value['DeptCode']]
             record_value['LocationCode'] = asset_location_id_by_code[record_value['LocationCode']]
             record_value['EmployeeCode'] = employee_id_by_code[record_value['EmployeeCode']]
