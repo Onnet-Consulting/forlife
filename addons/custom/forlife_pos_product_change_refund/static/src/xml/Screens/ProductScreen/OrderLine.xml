@@ -2,7 +2,7 @@
 <templates id="template" xml:space="preserve">
     <t t-name="forlife_pos_product_change_refund.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension" owl="1">
         <xpath expr="//span[hasclass('price')]" position="after">
-            <t t-if="props.line.order.is_change_or_refund_product">
+            <t t-if="props.line.order.is_refund_product or props.line.order.is_change_product">
                 <table class="tbl_change_refund_product">
                     <tr class="title-change-refund">
                         <td class="set-width">SL đổi/trả</td>
@@ -14,24 +14,39 @@
                     </tr>
                     <t t-if="!props.line.is_new_line">
                         <tr class="row-input-change-refund">
-                            <td><input class="input-change-refund"/></td>
+                            <td><input type="number" class="input-change-refund change" t-on-change="onchangeValue"/></td>
                             <td></td>
-                            <td><input class="input-change-refund"/></td>
-                            <td><input class="input-change-refund"/></td>
+                            <td></td>
+                            <td></td>
                             <td><t t-esc="props.line.quantity_canbe_refund"/></td>
                             <td><t t-esc="props.line.expire_change_refund_date"/></td>
                         </tr>
                         <tr class="row-input-change-refund">
                             <td>Lý do đổi/trả: </td>
-                            <td colspan="5"><input class="reason"/></td>
+                            <td colspan="3"><input class="reason"/></td>
+                            <td></td>
+                            <t t-if="props.line.check_button">
+                                <t t-if="!props.line.approvalStatus">
+                                    <div class="control-button" t-on-click="sendApprove"
+                                         style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none;">
+                                        Send Approve
+                                    </div>
+                                </t>
+                                <t t-else="">
+                                    <div class="control-button" t-on-click="actUpdate"
+                                         style="background: #007bff; color: #fff; font-weight: 400; border-radius: 10px; border: none;">
+                                        Update
+                                    </div>
+                                </t>
+                            </t>
                         </tr>
                     </t>
                     <t t-if="props.line.is_new_line">
                         <tr class="row-input-change-refund">
                             <td></td>
-                            <td><input class="input-change-refund"/></td>
-                            <td><input class="input-change-refund"/></td>
-                            <td><input class="input-change-refund"/></td>
+                            <td><input class="input-change-refund new"/></td>
+                            <td></td>
+                            <td></td>
                             <td></td>
                             <td></td>
                         </tr>
