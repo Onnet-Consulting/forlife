@@ -8,9 +8,7 @@ from odoo.exceptions import UserError
 class StockWarehouse(models.Model):
     _inherit = 'stock.warehouse'
 
-    whs_code = fields.Char(string='Tên kho viết tắt ')
     whs_type = fields.Many2one('stock.warehouse.type', string='Type')
-    phone = fields.Char(string="Phone")
     street = fields.Char('Street')
     street2 = fields.Char('Street2')
     city = fields.Char('City')
@@ -23,11 +21,3 @@ class StockWarehouse(models.Model):
         ('open', 'Open'),
         ('close', 'Close'),
     ], string='Status')
-
-
-
-class StockWarehouseType(models.Model):
-    _name = 'stock.warehouse.type'
-
-    name = fields.Char(string='Name')
-    code = fields.Char(string='code')
