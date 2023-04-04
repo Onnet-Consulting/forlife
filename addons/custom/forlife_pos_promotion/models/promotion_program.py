@@ -122,7 +122,8 @@ class PromotionProgram(models.Model):
     reward_ids = fields.One2many('promotion.reward.line', 'program_id', 'Rewards', copy=True, readonly=False, store=True)
     qty_min_required = fields.Float(compute='_qty_min_required', help='Use for Combo Program  based on quantity of the Combo')
 
-    voucher_program_id = fields.Many2one('program.voucher', string='Voucher Program')
+    voucher_program_id = fields.Many2one(
+        'program.voucher', domain="[('type', '=', 'e')]", string='Voucher Program')
     voucher_product_id = fields.Many2one(
         'product.template', related='voucher_program_id.product_id', string='Voucher Product Template')
     voucher_product_variant_id = fields.Many2one(
@@ -246,10 +247,15 @@ class PromotionProgram(models.Model):
             else:
                 program.show_gen_code = False
 
+    @api.onchange('tax_from_date', 'tax_to_date')
+    def onchange_from_to_date(self):
+        if self.tax_from_date and self.tax_to_date and self.tax_from_date > self.tax_to_date:
+            raise UserError('Chương trình "%s": Ngày bắt đầu phải nhỏ hơn ngày kết thúc!' % self.name or '')
+
     @api.onchange('voucher_product_variant_id')
     def onchange_voucher_product(self):
         if self.voucher_product_variant_id:
-            self.voucher_price = self.voucher_product_variant_id.lst_price
+            self.voucher_price = self.voucher_product_variant_id.price
         else:
             self.voucher_price = 0.0
 
@@ -321,7 +327,6 @@ class PromotionProgram(models.Model):
             'view_id': False,
             'view_mode': 'tree,form',
         }
-        return action
 
     def action_open_orders(self):
         self.ensure_one()
