@@ -67,7 +67,6 @@ class PurchaseOrder(models.Model):
     receive_date = fields.Datetime(string='Receive Date')
     note = fields.Char('Note')
 
-
     @api.depends('is_inter_company')
     def compute_partner_domain(self):
         for item in self:
@@ -342,6 +341,11 @@ class PurchaseOrderLine(models.Model):
     readonly_discount_percent = fields.Boolean(default=False)
     billed = fields.Float(string='Billed')
     request_purchases = fields.Char(string='Purchases', readonly=1)
+    is_passersby = fields.Boolean(related='order_id.is_passersby')
+    supplier_id = fields.Many2one('res.partner', related='order_id.partner_id')
+    receive_date = fields.Datetime(string='Date receive')
+    tolerance = fields.Float(related='product_id.tolerance')
+    received = fields.Integer(string='Received')
 
     _sql_constraints = [
         (
@@ -351,12 +355,26 @@ class PurchaseOrderLine(models.Model):
         )
     ]
 
+    @api.onchange('product_id', 'supplier_id', 'is_passersby')
+    def onchange_vendor_price(self):
+        if not self.is_passersby:
+            if self.product_id and self.supplier_id:
+                data = self.env['product.supplierinfo'].search([('partner_id', '=', self.supplier_id.id), (
+                'product_tmpl_id' , '=', self.product_id.product_tmpl_id.id)])
+                if data:
+                    self.vendor_price = data.price
+
+    @api.onchange('product_id', 'order_id')
+    def onchange_receive_date(self):
+        if self.order_id:
+            self.receive_date = self.order_id.receive_date
+
     #discount
 
     @api.onchange("free_good")
     def _onchange_free_good(self):
         if self.free_good:
-            self.vendor_price = self.discount = self.discount_percent = False
+            self.discount = self.discount_percent = False
             self.readonly_discount_percent = self.readonly_discount = True
         else:
             self.readonly_discount_percent = self.readonly_discount = False

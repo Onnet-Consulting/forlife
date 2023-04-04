@@ -96,7 +96,7 @@ class PurchaseRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Download Template for Purchase Request'),
-            'template': '/purchase_request/static/src/xlsx/template_PR.xlsx?download=true'
+            'template': '/purchase_request/static/src/xlsx/template_purchase_request.xlsx?download=true'
         }]
 
     def orders_smart_button(self):
@@ -114,28 +114,6 @@ class PurchaseRequest(models.Model):
         if vals.get('name', 'New') == 'New':
             vals['name'] = self.env['ir.sequence'].next_by_code('purchase.request.name.sequence') or 'Pr'
         return super(PurchaseRequest, self).create(vals)
-
-    def action_create_purchase_order(self):
-        for r in self:
-            list_consumable = []
-            list_service = []
-            list_product = []
-            # for line in r.order_lines:
-            #     if line.product_id.detailed_type == 'consu' and r.state == 'approved':
-            #         list_consumable.append(line.product_id.id)
-            #         r.state = 'sale'
-            #     elif line.product_id.detailed_type == 'service' and r.state == 'approved':
-            #         list_service.append(line.product_id.id)
-            #         r.state = 'sale'
-            #     else:
-            #         list_product.append(line.product_id.id)
-            #         r.state = 'sale'
-            # if list_consumable:
-            #     for item in list_consumable:
-            #         self.env['purchase.order'].create({
-            #             'product_id': item,
-            #             'state': 'purchase'
-            #         })
 
     @api.constrains('order_lines')
     def constrains_order_lines(self):
@@ -177,7 +155,7 @@ class PurchaseRequest(models.Model):
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                     # 'product_uom': line.purchase_uom.id,
                     'purchase_uom': line.purchase_uom.id,
-                    # 'request_purchases': self.name,
+                    'request_purchases': line.purchase_request,
                 }))
                 po_ex_line_data.append((0, 0, {
                     'purchase_order_id': line.id,
@@ -191,7 +169,6 @@ class PurchaseRequest(models.Model):
                 }))
             if po_line_data:
                 source_document = ', '.join(self.mapped('name'))
-                print(source_document)
                 po_data = {
                     'partner_id': vendor_id,
                     'purchase_type': product_type,
@@ -241,19 +218,20 @@ class PurchaseRequestLine(models.Model):
     asset_description = fields.Char(string="Asset description")
     description = fields.Char(string="Description", store=1)
     vendor_code = fields.Many2one('res.partner', string="Vendor")
-    production_id = fields.Many2one('forlife.production', string='Production Order Code')
+    production_id = fields.Many2one(string='Production Order Code', related='request_id.production_id')
     request_id = fields.Many2one('purchase.request')
-    date_planned = fields.Datetime(string='Expected Arrival')
+    date_planned = fields.Datetime(string='Expected Arrival', related='request_id.date_planned')
     request_date = fields.Date(string='Request date')
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure')
     purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase')
     product_uom = fields.Many2one('uom.uom', string='UOM Product', related='product_id.uom_id')
     exchange_quantity = fields.Float('Exchange Quantity')
-    account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
+    account_analytic_id = fields.Many2one(string='Account Analytic Account', related='request_id.account_analytic_id')
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
     order_quantity = fields.Integer('Quantity Order', compute='_compute_order_quantity', store=1)
     is_no_more_quantity = fields.Boolean(compute='_compute_is_no_more_quantity', store=1)
     product_qty = fields.Float(string='Quantity', digits=(16, 0), required=True)
+    purchase_request = fields.Char(related='request_id.name')
     state = fields.Selection(
         string="Status",
         selection=[('draft', 'Draft'),

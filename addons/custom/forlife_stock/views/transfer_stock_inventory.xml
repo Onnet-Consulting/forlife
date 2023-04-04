@@ -60,7 +60,7 @@
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group>
-                            <field name="create_date" readonly="1" string="Create Date"/>
+                            <field name="create_date" string="Create Date"/>
                             <field name="reason_cancel" readonly="1" attrs="{'invisible':[('state', '!=', 'cancel')]}"/>
                             <field name="reason_reject" readonly="1" attrs="{'invisible':[('state', '!=', 'reject')]}"/>
                         </group>

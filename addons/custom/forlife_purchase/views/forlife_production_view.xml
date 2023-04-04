@@ -37,8 +37,9 @@
                     <notebook>
                         <page string="Finished Product" name="finished_product">
                             <field name="forlife_production_finished_product_ids" mode="tree"
-                                   attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">
+                                   attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}" class="width-hh">
                                 <tree editable="bottom">
+                                    <field name="forlife_production_id" invisible="1"/>
                                     <field name="product_id"/>
                                     <field name="description"/>
                                     <field name="produce_qty"/>
@@ -47,6 +48,7 @@
                                     <field name="stock_qty"/>
                                     <field name="remaining_qty"/>
                                     <field name="forlife_bom_ids" widget="many2many_tags"/>
+                                    <button name="action_open_bom" string="BOM" type="object" context="{'default_forlife_production_id': forlife_production_id, 'default_product_id': product_id, 'default_quantity': produce_qty}"/>
                                 </tree>
                             </field>
                         </page>
@@ -80,6 +82,20 @@
                     <field name="message_ids"/>
                 </div>
             </form>
+        </field>
+    </record>
+
+    <record id="forlife_production_bom_view_search" model="ir.ui.view">
+        <field name="name">forlife.production.bom.search</field>
+        <field name="model">forlife.production</field>
+        <field name="arch" type="xml">
+            <search string="Worksheet Template Search">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="create_date"/>
+                <field name="company_id"/>
+            </search>
         </field>
     </record>
 

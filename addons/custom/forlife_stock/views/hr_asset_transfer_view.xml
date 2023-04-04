@@ -19,7 +19,7 @@
         <field name="name">Rec name</field>
         <field name="code">hr.asset.transfer.name.sequence</field>
         <field name="prefix">AT</field>
-        <field name="padding">3</field>
+        <field name="padding">8</field>
         <field name="company_id" eval="False"></field>
     </record>
 

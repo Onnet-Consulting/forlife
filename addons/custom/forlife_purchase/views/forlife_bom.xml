@@ -51,8 +51,8 @@
                         </group>
                         <notebook>
                             <page string="Materials" name="materials">
-                                <field name="forlife_bom_material_ids" mode="tree"
-                                       attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">
+                                <field name="forlife_bom_material_ids" mode="tree" class="width-hh"
+                                       attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}" string="Nguyên vật liệu">
                                     <tree editable="bottom">
                                         <field name="product_id"/>
                                         <field name="description"/>
@@ -66,7 +66,7 @@
                                 </field>
                             </page>
                             <page string="Ingredients" name="ingredients">
-                                <field name="forlife_bom_ingredients_ids" mode="tree">
+                                <field name="forlife_bom_ingredients_ids" mode="tree" class="width-hh" string="Phụ liệu">
                                     <tree editable="bottom">
                                         <field name="product_id"/>
                                         <field name="description"/>
@@ -81,7 +81,7 @@
                             </page>
                             <page string="Service Costs" name="service_costs">
                                 <field name="forlife_bom_service_cost_ids" mode="tree"
-                                       attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">
+                                       attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}" class="width-hh" string="Chi phí dịch vụ">
                                     <tree editable="bottom">
 <!--                                        <field name="currency_id" invisible="1"/>-->
 <!--                                        <field name="product_id"/>-->

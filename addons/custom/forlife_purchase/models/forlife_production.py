@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api
-
+from odoo.exceptions import UserError, ValidationError
 
 class ForlifeProduction(models.Model):
     _name = 'forlife.production'
@@ -9,11 +9,11 @@ class ForlifeProduction(models.Model):
     _rec_name = 'code'
 
     # name = fields.Char("Name")
-    code = fields.Char("Production Order Code")
-    name = fields.Char("Production Order Name")
-    user_id = fields.Many2one('res.users', string="User Created", default=lambda self: self.env.user)
+    code = fields.Char("Production Order Code", required=1)
+    name = fields.Char("Production Order Name", required=1)
+    user_id = fields.Many2one('res.users', string="User Created", default=lambda self: self.env.user, required=1)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
-    create_date = fields.Date(string="Create Date", default=fields.Date.context_today)
+    create_date = fields.Date(string="Create Date", default=fields.Date.context_today, required=1)
     forlife_production_finished_product_ids = fields.One2many('forlife.production.finished.product',
                                                               'forlife_production_id', string='Finished Products')
     forlife_production_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id',
@@ -34,14 +34,38 @@ class ForlifeProductionFinishedProduct(models.Model):
     _description = 'Forlife Production Finished Product'
 
     forlife_production_id = fields.Many2one('forlife.production', ondelete='cascade')
-    product_id = fields.Many2one('product.product')
-    uom_id = fields.Many2one('uom.uom', string='Unit')
-    produce_qty = fields.Float(tring='Produce Quantity')
+    product_id = fields.Many2one('product.product', required=1)
+    uom_id = fields.Many2one(string='Unit', related='product_id.uom_id')
+    produce_qty = fields.Float(string='Produce Quantity', required=1)
     unit_price = fields.Float(string='Price')
-    stock_qty = fields.Float(string='Stock Quantity')
-    remaining_qty = fields.Float(string='Remaining Quantity')
+    stock_qty = fields.Float(string='Stock Quantity', required=1)
+    remaining_qty = fields.Float(string='Remaining Quantity', compute='_compute_remaining_qty')
     description = fields.Char(String='Description')
     forlife_bom_ids = fields.Many2many('forlife.bom', string='Declare BOM')
+
+    def action_open_bom(self):
+        req_id = self.forlife_production_id.id
+        current_bom = self.env['forlife.bom'].search([('forlife_production_id', '=', req_id), ('product_id', '=', self.product_id.id)], limit=1)
+        return {
+            'name': ('BOM'),
+            'view_mode': 'form',
+            'view_id': self.env.ref('forlife_purchase.forlife_bom_form').id,
+            'res_model': 'forlife.bom',
+            'type': 'ir.actions.act_window',
+            'target': 'current',
+            'res_id': current_bom.id,
+        }
+
+    @api.constrains('produce_qty', 'stock_qty')
+    def constrains_stock_qty_produce_qty(self):
+        for rec in self:
+            if rec.produce_qty < 0:
+                raise ValidationError('Số lượng sản xuất không được âm!')
+            elif rec.stock_qty < 0:
+                raise ValidationError('Số lượng nhập kho không được âm!')
+            elif rec.produce_qty < rec.stock_qty:
+                raise ValidationError('Số lượng sản xuất phải lớn hơn số lượng nhập kho!!')
+
 
 
 class ForlifeProductionMaterial(models.Model):
