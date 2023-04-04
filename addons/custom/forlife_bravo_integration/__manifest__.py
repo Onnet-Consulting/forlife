@@ -21,6 +21,7 @@
         'stock',
         'sale_management',
         'queue_job',
+        'queue_job_cron',
         'forlife_base',
         'forlife_pos_app_member',
         'forlife_purchase',

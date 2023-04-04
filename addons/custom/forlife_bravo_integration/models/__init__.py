@@ -13,3 +13,4 @@ from . import occasion_code
 from . import stock_move
 from . import asset_location
 # from . import hr_asset_transfer
+from . import assets_assets
