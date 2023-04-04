@@ -4,7 +4,7 @@
         <field name="name">form</field>
         <field name="model">report.num10</field>
         <field name="arch" type="xml">
-            <form string="Report Up Rank History" create="0">
+            <form string="Up Rank History" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
@@ -32,7 +32,7 @@
     </record>
 
     <record id="report_num10_window_action" model="ir.actions.act_window">
-        <field name="name">Report Up Rank History</field>
+        <field name="name">Up Rank History</field>
         <field name="res_model">report.num10</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>

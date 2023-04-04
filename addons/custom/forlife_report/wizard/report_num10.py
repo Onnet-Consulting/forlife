@@ -13,7 +13,7 @@ TITLES = [
 class ReportNum10(models.TransientModel):
     _name = 'report.num10'
     _inherit = 'report.base'
-    _description = 'Report Up Rank History'
+    _description = 'Up Rank History'
 
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     from_date = fields.Date('From date', required=True)

@@ -169,8 +169,8 @@ msgstr "Khách hàng"
 
 #. module: forlife_report
 #: model:ir.ui.menu,name:forlife_report.report_menu_card_rank
-msgid "Customer Rank"
-msgstr "Báo cáo hạng khách hàng"
+msgid "Customer Rank Management"
+msgstr "Quản lý hạng khách"
 
 #. module: forlife_report
 #. odoo-javascript
@@ -446,8 +446,8 @@ msgstr "Báo cáo cơ bản"
 #: model:ir.model,name:forlife_report.model_report_num10
 #: model:ir.ui.menu,name:forlife_report.report_num10_menu
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num10_form
-msgid "Report Up Rank History"
-msgstr "Báo cáo lịch sử nâng hạng"
+msgid "Up Rank History"
+msgstr "Lịch sử nâng hạng"
 
 #. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num3__report_by

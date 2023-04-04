@@ -17,7 +17,7 @@
               sequence="2"/>
 
     <menuitem id="report_menu_card_rank"
-              name="Customer Rank"
+              name="Customer Rank Management"
               parent="report_menu_sale"
               sequence="7"/>
 
