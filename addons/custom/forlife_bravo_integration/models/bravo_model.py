@@ -33,7 +33,11 @@ class BravoModelCore(models.AbstractModel):
         for bfield in self._fields.values():
             if not issubclass(type(bfield), BravoField) or not hasattr(bfield, "bravo_name"):
                 continue
-            if allfields and bfield.odoo_name not in allfields:
+            if allfields and (
+                    (bfield.odoo_name not in allfields)
+                    and
+                    (not bfield.odoo_depend_fields or not (set(bfield.odoo_depend_fields) & set(allfields)))
+            ):
                 continue
             res.append(bfield)
         return res

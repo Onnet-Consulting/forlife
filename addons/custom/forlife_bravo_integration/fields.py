@@ -19,14 +19,17 @@ class BravoField(fields.Field):
     identity = False  # fields with identity = True use to indentify which record to update or delete
     store = False  # don't save to Odoo DB
     groups = "base.group_no_one"  # prevent normal user read this field type
+    odoo_depend_fields = False  # use this attribute to decide if a computed field be updated
 
     _description_bravo_name = property(attrgetter('bravo_name'))
     _description_odoo_name = property(attrgetter('odoo_name'))
     _description_identity = property(attrgetter('identity'))
 
-    def __int__(self, bravo_name=Default, bravo_default=bravo_default, odoo_name=Default, identity=Default, **kwargs):
+    def __int__(self, bravo_name=Default, bravo_default=bravo_default, odoo_name=Default, identity=Default,
+                odoo_depend_fields=Default, **kwargs):
         super(BravoField, self).__int__(bravo_name=bravo_name, bravo_default=bravo_default,
-                                        odoo_name=odoo_name, identity=identity, **kwargs)
+                                        odoo_name=odoo_name, identity=identity,
+                                        odoo_depend_fields=odoo_depend_fields, **kwargs)
 
     def compute_value(self, record):
         if self.bravo_default is not None:
@@ -37,9 +40,7 @@ class BravoField(fields.Field):
 
     def compute_update_value(self, value, model=Default):
         odoo_name = self.odoo_name
-        if odoo_name not in value:
-            return NONE_VALUE
-        return {self.bravo_name: value.get(odoo_name) or NONE_VALUE}
+        return {self.bravo_name: model[odoo_name] or NONE_VALUE}
 
 
 class BravoCharField(BravoField, fields.Char):

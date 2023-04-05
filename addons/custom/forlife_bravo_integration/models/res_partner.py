@@ -14,7 +14,8 @@ class ResPartner(models.Model):
     br_3 = BravoCharField(odoo_name="phone", bravo_name="Tel")
     br_4 = BravoCharField(odoo_name="email", bravo_name="Email")
     br_5 = BravoCharField(odoo_name="vat", bravo_name="TaxRegNo")
-    br_6 = BravoCharField(odoo_name="contact_address_complete", bravo_name="Address")
+    br_6 = BravoCharField(odoo_name="contact_address_complete", bravo_name="Address",
+                          odoo_depend_fields=('street', 'zip', 'city', 'state_id', 'country_id'))
     br_7 = BravoIntegerField(bravo_default=0, bravo_name="IsGroup")
     br_8 = BravoMany2oneField('res.partner.group', odoo_name='group_id', bravo_name='ParentCode', field_detail='code')
     br_9 = BravoDecimalField(odoo_name='credit_limit', bravo_name='CreditLimit')
