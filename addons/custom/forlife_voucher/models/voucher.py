@@ -120,11 +120,13 @@ class Voucher(models.Model):
                     start_date_format = datetime.strptime(start_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
                     data.append({
                         'value': {
+                            'voucher_name':vourcher.name,
                             'voucher_id': vourcher.id,
                             'type': vourcher.type,
                             'end_date_not_format': end_date,
                             'end_date': end_date_format,
                             'price_residual': vourcher.price_residual,
+                            'price_residual_no_compute': vourcher.price_residual,
                             'price_used': vourcher.price_used,
                             'price_change': 0,
                             'brand_id': vourcher.brand_id.id,

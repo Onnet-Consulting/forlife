@@ -13,8 +13,13 @@ odoo.define('forlife_voucher.PosPaymentScreenVoucher', function (require) {
             }
 
             async addNewPaymentLine({ detail: paymentMethod }) {
+                if(!this.env.pos.data_voucher){
+                    this.env.pos.data_voucher = false
+                }
+                var data_voucher = this.env.pos.data_voucher
                 if(paymentMethod.is_voucher){
                     const {confirmed, payload: data} = await this.showPopup('VoucherPopup', {
+                        data_voucher :data_voucher,
                         confirm: this.env._t('Xác nhận'),
                         title: this.env._t('Voucher'),
                         cancel: this.env._t('Hủy')
@@ -32,8 +37,8 @@ odoo.define('forlife_voucher.PosPaymentScreenVoucher', function (require) {
                                     data[i].value.payment_method_id = paymentMethod.id
                                 }
                             }
-                            this.currentOrder.addVoucherline(data)
-                            result.amount = price_used
+                            this.currentOrder.addVoucherline(data);
+                            result.amount = price_used;
                         }
                     }
                     if (result){

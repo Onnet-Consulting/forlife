@@ -37,7 +37,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
 
 
         confirm() {
-            var data = this.state.data
+            var data = this.state.data;
             if(!data) return;
             var self = this;
             var check_error = this.state.check_error
@@ -73,6 +73,8 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         });
                     }
                  }
+                 this.env.pos.data_voucher = data;
+                 this.props.data_voucher = false;
 
             }else{
                 this.showPopup('ErrorPopup', {
