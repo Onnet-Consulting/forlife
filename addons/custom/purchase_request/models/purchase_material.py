@@ -32,7 +32,7 @@ class PurchaseMaterial(models.Model):
     @api.model
     def get_import_templates(self):
         return [{
-            'label': _('Download Template for Materials'),
+            'label': _('Tải xuống mẫu nguyên phụ liệu'),
             'template': '/purchase_request/static/src/xlsx/template_materials.xlsx?download=true'
         }]
 

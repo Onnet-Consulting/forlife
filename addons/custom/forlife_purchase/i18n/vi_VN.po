@@ -65,6 +65,11 @@ msgid "Code"
 msgstr "Mã"
 
 #. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__code
+msgid "Code"
+msgstr "Mã lệnh sản xuất"
+
+#. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_cost_center__company_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_event__company_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__company_id
@@ -291,6 +296,39 @@ msgstr "Tổng tiền"
 #: model:ir.model.fields,field_description:forlife_purchase.field_stock_warehouse_type__name
 msgid "Name"
 msgstr "Tên"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__name
+msgid "Name"
+msgstr "Tên lệnh sản xuất"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__implementation_department
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__implementation_department
+msgid "Implementation Department"
+msgstr "Bộ phận thực hiện"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__management_department
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__management_department
+msgid "Management Department"
+msgstr "Bộ phận quản lý"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__production_department
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__production_department
+msgid "Production Department"
+msgstr "Bộ phận sản xuất"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__produced_from_date
+msgid "Produced From Date"
+msgstr "Dự kiến sản xuất từ"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__to_date
+msgid "To date"
+msgstr "Đến ngày"
 
 #. module: forlife_purchase
 #: model:ir.model,name:forlife_purchase.model_account_payment
@@ -535,14 +573,22 @@ msgstr "Đã có hóa đơn"
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_cost_line__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_exchange_rate__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__product_id
-#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__product_id
-#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__product_id
-#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_service_cost__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_material__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_service_cost__product_id
 msgid "Product"
 msgstr "Mã sản phẩm"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_service_cost__product_id
+msgid "Product"
+msgstr "Mã chi phí"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__product_id
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__product_id
+msgid "Product"
+msgstr "Mã nguyên liệu"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_cost_line__name
@@ -789,28 +835,36 @@ msgstr "Sản phẩm hoàn thành"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__forlife_bom_material_ids
-#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__forlife_production_material_ids
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_bom_form
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_production_form
 msgid "Materials"
 msgstr "Nguyên vật liệu"
 
 #. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production__forlife_production_material_ids
+msgid "Materials"
+msgstr "Nguyên liệu chính"
+
+#. module: forlife_purchase
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_bom_form
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_production_form
 msgid "Service Costs"
-msgstr "Chi phí dịch vụ"
+msgstr "Chi phí"
 
 #. modules: forlife_purchase
-#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__description
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_service_cost__description
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__description
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_material__description
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_service_cost__description
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__description
-#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__description
 msgid "Description"
 msgstr "Mô tả"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__description
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__description
+msgid "Description"
+msgstr "Tên nguyên liệu"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__forlife_bom_ids
@@ -878,7 +932,12 @@ msgstr "Tạo hóa đơn"
 #. modules: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__forlife_production_id
 msgid "Forlife Production"
-msgstr "Lệnh sản xuất"
+msgstr "Mã lệnh sản xuất"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__product_id
+msgid "Product"
+msgstr "Thành phẩm"
 
 #. modules: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__forlife_production_name
@@ -962,3 +1021,8 @@ msgstr "Số lượng sản xuất"
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__description
 msgid "Description"
 msgstr "Tên thành phẩm"
+
+#. modules: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__created_date
+msgid "Create Date"
+msgstr "Ngày tạo"

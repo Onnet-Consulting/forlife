@@ -70,7 +70,7 @@ def connect_bkav(data):
             """
     proxies = get_proxies()
 
-    response = requests.post(URL_WEB_SERVICE_BKAV, headers=headers, data=soap_request)
+    response = requests.post(URL_WEB_SERVICE_BKAV, headers=headers, data=soap_request, timeout=3.5)
 
     mes = response.content.decode("utf-8")
 

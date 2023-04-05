@@ -13,7 +13,7 @@
                     <header>
                         <button name="action_create_invoice" string="Create Invoice"
                                 class="btn btn-primary ms-md-2" type="object"
-                                attrs="{'invisible':[('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>
+                                attrs="{'invisible':['|',('is_inter_company', '=', True),('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>
                         <button string="Submit" name="action_confirm"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>
                         <button string="Approved" name="action_approved"
@@ -88,7 +88,8 @@
                 <xpath expr="//field[@name='date_order']" position="before">
                     <field name="has_contract"/>
                     <field name="has_invoice"/>
-                    <field name="location_id"/>
+                    <field name="source_location_id" required="1"/>
+                    <field name="location_id" required="1"/>
                 </xpath>
                 <xpath expr="//field[@name='date_order']" position="after">
                     <field name="payment_term_id"/>

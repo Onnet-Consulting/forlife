@@ -3,8 +3,9 @@
     <record id="seq_stock_transfer" model="ir.sequence">
         <field name="name">Rec name</field>
         <field name="code">stock.transfer.sequence</field>
-        <field name="prefix">ST</field>
-        <field name="padding">3</field>
+        <field name="prefix">PXB</field>
+        <field name="padding">2</field>
+        <field name="suffix" eval=""/>
     </record>
 
     <record id="stock_transfer_tree" model="ir.ui.view">

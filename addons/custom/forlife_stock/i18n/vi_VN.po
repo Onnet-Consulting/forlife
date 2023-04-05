@@ -1320,3 +1320,18 @@ msgstr "Vụ việc"
 #: model:ir.actions.act_window,name:forlife_stock.transfer_stock_inventory_wizard
 msgid "Reject/Cancel Transfer Stock Inventory"
 msgstr "Từ chối/Hủy phiếu kiểm kê cân tồn"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__create_date
+msgid "Created on"
+msgstr "Ngày tạo"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__validate_date
+msgid "Validate Date"
+msgstr "Ngày xác nhận"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__cancel_date
+msgid "Cancel Date"
+msgstr "Ngày hủy"

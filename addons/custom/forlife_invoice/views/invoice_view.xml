@@ -58,7 +58,7 @@
                     <field name="exchange_rate" attrs="{'invisible': [('purchase_type', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_reference']" position="before">
-                    <field name="payment_term"/>
+<!--                    <field name="payment_term"/>-->
                     <field name="due_date"/>
                 </xpath>
                 <xpath expr="//div[@name='journal_div']" position="after">

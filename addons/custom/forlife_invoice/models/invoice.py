@@ -21,7 +21,7 @@ class AccountMove(models.Model):
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string="Exchange Rate", default=1)
     accounting_date = fields.Datetime(string='Accounting Date')
-    payment_term = fields.Many2one('account.payment.term', string='Payment Policy')
+    # payment_term = fields.Many2one('account.payment.term', string='Payment Policy')
     payment_status = fields.Char(string='Payment status')
 
 
@@ -60,7 +60,7 @@ class AccountMoveLine(models.Model):
 
     type = fields.Selection(related="product_id.detailed_type")
     work_order = fields.Many2one('forlife.production', string='Work Order')
-    current_user = fields.Many2one('res.users', default=lambda self: self.env.user, string='Account')
+    current_user = fields.Many2one('res.users', default=lambda self: self.env.user.id, string='Account')
     uom_id = fields.Many2one(related="product_id.uom_id", string='Uom')
     warehouse = fields.Many2one('stock.location', string='Whs')
     discount = fields.Float(string='Taxs (%)')
@@ -86,7 +86,7 @@ class AccountMoveLine(models.Model):
     asset_code = fields.Char('Asset Code')
     asset_name = fields.Char('Asset Name')
     code_tax = fields.Char(string='MST')
-    company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company.id)
+    company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company)
     invoice_reference = fields.Char(string='Invoice Reference')
     invoice_description = fields.Char(string="Invoice Description")
 

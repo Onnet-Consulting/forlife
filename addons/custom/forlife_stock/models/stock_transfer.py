@@ -346,7 +346,8 @@ class StockTransfer(models.Model):
     @api.model
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'ST'
+            warehouse = self.env['stock.location'].browse(vals.get('location_id')).code
+            vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.sequence') + (warehouse + str(datetime.now().year)) or 'PXB'
         return super(StockTransfer, self).create(vals)
 
     def unlink(self):

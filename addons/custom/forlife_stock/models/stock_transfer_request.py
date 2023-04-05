@@ -26,7 +26,7 @@ class StockTransferRequest(models.Model):
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel'),
                    ('done', 'Done')], default='draft', copy=True)
-    request_lines = fields.One2many('transfer.request.line', 'request_id')
+    request_lines = fields.One2many('transfer.request.line', 'request_id', string='Request Line')
     stock_transfer_ids = fields.One2many('stock.transfer', 'stock_request_id', string="Stock Transfer", copy=True)
     rejection_reason = fields.Text()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_request_id')
@@ -41,6 +41,13 @@ class StockTransferRequest(models.Model):
         res['department_id'] = self.env.user.department_id.id if self.env.user.department_id else False
         res['request_date'] = datetime.now()
         return res
+
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Tải xuống mẫu yêu cầu điều chuyển'),
+            'template': '/forlife_stock/static/src/xlsx/Import YCDC.xlsx?download=true'
+        }]
 
     def action_wait_confirm(self):
         for record in self:
