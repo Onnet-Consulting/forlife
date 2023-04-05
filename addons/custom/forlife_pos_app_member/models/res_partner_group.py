@@ -26,7 +26,7 @@ class ResPartnerGroup(models.Model):
         for value in vals_list:
             auto_generate = value.get('auto_generate')
             code = value.get('code')
-            if auto_generate:
+            if auto_generate and code:
                 sequence = self.env['ir.sequence'].sudo().create({
                     'name': value.get('name'),
                     'prefix': code,

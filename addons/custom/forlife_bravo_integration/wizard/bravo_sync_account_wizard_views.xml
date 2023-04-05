@@ -5,7 +5,7 @@
             <field name="name">Bravo synchronize accounts</field>
             <field name="model">bravo.sync.account.wizard</field>
             <field name="arch" type="xml">
-                <form string="Grant Badge To">
+                <form>
                     <h2>You will synchronize Accounts from Bravo to Odoo for below companies:</h2>
                     <p>(To add more companies: select from the available companies list on the right corner)</p>
                     <group>

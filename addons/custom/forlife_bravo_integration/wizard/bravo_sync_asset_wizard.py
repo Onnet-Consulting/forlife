@@ -10,7 +10,6 @@ class BravoSyncAssetWizard(models.TransientModel):
     _description = 'Bravo synchronize Assets wizard'
 
     def sync(self):
-        # FIXME: push this function to queue job cron
         companies = self.env['res.company'].search_read([('code', '!=', False)], ['code'])
         for company_data in companies:
             self.create_odoo_data(company_data)
