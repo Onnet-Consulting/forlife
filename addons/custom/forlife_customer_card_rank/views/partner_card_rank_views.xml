@@ -123,7 +123,10 @@
                             </group>
                             <group>
                                 <field name="program_cr_id" string="New Rank" context="{'display_rank_name': True}"
-                                       domain="[('card_rank_id', '!=', old_card_rank_id), ('brand_id', '=', context.get('brand_id', False))]"/>
+                                       domain="[('card_rank_id', '!=', old_card_rank_id),
+                                        ('from_date', '&lt;=', context_today().strftime('%Y-%m-%d')),
+                                        ('to_date', '&gt;=', context_today().strftime('%Y-%m-%d')),
+                                        ('brand_id', '=', context.get('brand_id', False))]"/>
                             </group>
                         </group>
                         <field name="partner_card_rank_id" invisible="1"/>
