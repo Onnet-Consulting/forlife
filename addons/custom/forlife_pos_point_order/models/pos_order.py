@@ -43,9 +43,13 @@ class PosOrder(models.Model):
         HistoryPoint = self.env['partner.history.point']
         if not existing_order:
             pos = self.env['pos.order'].browse(pos_id)
+            store = pos._get_store_brand_from_program()
+            if store == 'format':
+                pos.partner_id.is_purchased_of_format = True
+            if store == 'forlife':
+                pos.partner_id.is_purchased_of_forlife = True
             if pos.partner_id.is_member_app_format or pos.partner_id.is_member_app_forlife:
                 if pos.program_store_point_id:
-                    store = pos._get_store_brand_from_program()
                     if store is not None:
                         history_values = pos._prepare_history_point_value(store)
                         HistoryPoint.sudo().create(history_values)
