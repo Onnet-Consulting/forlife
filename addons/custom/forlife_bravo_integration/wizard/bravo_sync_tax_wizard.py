@@ -11,7 +11,7 @@ class BravoSyncTaxWizard(models.TransientModel):
 
     def sync(self):
         # TODO: must run bravo_sync_account_wizard before this wizard
-        companies = self.env['res.company'].search([('code', '!=', False)])
+        companies = self.env['res.company'].search([])
         for company in companies:
             self = self.with_company(company).sudo()
             self.update_odoo_taxes_by_company()
@@ -46,7 +46,7 @@ class BravoSyncTaxWizard(models.TransientModel):
         return res
 
     def get_odoo_taxes_by_company(self):
-        taxes = self.search([('type_tax_use', '!=', 'none')])
+        taxes = self.env['account.tax'].search([('type_tax_use', '!=', 'none'), ('company_id', '=', self.env.company.id)])
         res = []
         for tax in taxes:
             tax_value = {
@@ -62,16 +62,16 @@ class BravoSyncTaxWizard(models.TransientModel):
         odoo_taxes = self.get_odoo_taxes_by_company()
         bravo_account_codes = []
         for value in bravo_taxes.values():
-            for detail_value in value.items():
-                bravo_account_codes.append(detail_value['Account'])
-        odoo_accounts = self.search_read([('code', 'in', bravo_account_codes)], ['code'])
+            for detail_value in value.values():
+                bravo_account_codes.append(detail_value['account'])
+        odoo_accounts = self.env['account.account'].search([('code', 'in', bravo_account_codes), ('company_id', '=', self.env.company.id)])
         odoo_account_id_by_code = {}
         for oac in odoo_accounts:
             odoo_account_id_by_code[oac.code] = oac.id
 
         missing_accounts = set(bravo_account_codes) - set(odoo_account_id_by_code.keys())
         if missing_accounts:
-            raise ValidationError(_('Missing accounts code in company %s: %r') % (self.env.company.code, missing_accounts))
+            raise ValidationError(_('Missing accounts code in company %s: %r') % (self.env.company.name, missing_accounts))
 
         for tax_value in odoo_taxes:
             odoo_type = tax_value['type']
