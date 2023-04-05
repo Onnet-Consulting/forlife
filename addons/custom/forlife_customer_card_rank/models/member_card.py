@@ -25,7 +25,7 @@ class MemberCard(models.Model):
     partner_retail_ids = fields.Many2many('res.partner.retail', string='Customer Retail Types')
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method')
     card_rank_id = fields.Many2one('card.rank', string='Rank', tracking=True)
-    min_turnover = fields.Integer('Turnover', tracking=True)
+    min_turnover = fields.Float('Turnover', tracking=True, digits=(16, 0))
     original_price = fields.Float('Original Price')
     apply_value_from_1 = fields.Float('Apply Value From1')
     apply_value_to_1 = fields.Float('Apply Value To1')
@@ -43,6 +43,7 @@ class MemberCard(models.Model):
     journal_id = fields.Many2one('account.journal', string='Journal', tracking=True)
     discount_account_id = fields.Many2one('account.account', string='Discount Account', tracking=True)
     value_account_id = fields.Many2one('account.account', string='Value Account', tracking=True)
+    value_remind = fields.Float('Value Remind', tracking=True, digits=(16, 0))
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -90,7 +91,7 @@ class MemberCard(models.Model):
 
     def get_master_domain(self):
         self.ensure_one()
-        return ['&', '&', ('brand_id', '=', self.brand_id.id), ('id', '!=', self.id),
+        return ['&', '&', '&', ('brand_id', '=', self.brand_id.id), ('id', '!=', self.id), ('active', 'in', (True, False)),
                 '|', '|', '&', ('from_date', '<=', self.from_date), ('to_date', '>=', self.from_date),
                 '&', ('from_date', '<=', self.to_date), ('to_date', '>=', self.to_date),
                 '&', ('from_date', '>', self.from_date), ('to_date', '<', self.to_date)]

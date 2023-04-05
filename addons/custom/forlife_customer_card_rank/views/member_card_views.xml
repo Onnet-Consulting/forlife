@@ -67,7 +67,8 @@
                                 <field name="partner_retail_ids" widget="many2many_tags" required="1" domain="[('brand_id', '=', brand_id)]"/>
                                 <field name="payment_method_ids" widget="many2many_tags" required="1"/>
                                 <field name="card_rank_id" class="oe_inline" required="1"/>
-                                <field name="min_turnover" class="oe_inline"/>
+                                <field name="min_turnover"/>
+                                <field name="value_remind"/>
                             </group>
                             <separator string="Card Rank Discount"/>
                             <div>
@@ -120,6 +121,7 @@
                     <field name="name"/>
                     <field name="card_rank_id"/>
                     <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                    <filter name="all" string="All" domain="[('active', 'in', (False, True))]"/>
                 </search>
             </field>
         </record>
