@@ -14,3 +14,5 @@ from . import stock_move
 from . import asset_location
 # from . import hr_asset_transfer
 from . import assets_assets
+from . import res_currency_rate
+from . import res_company
