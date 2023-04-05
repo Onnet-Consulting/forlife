@@ -6,14 +6,9 @@
             <field name="model">bravo.sync.account.wizard</field>
             <field name="arch" type="xml">
                 <form>
-                    <h2>You will synchronize Accounts from Bravo to Odoo for below companies:</h2>
-                    <p>(To add more companies: select from the available companies list on the right corner)</p>
-                    <group>
-                        <field name="company_ids" widget="many2many_tags" readonly="True"/>
-                    </group>
+                    <h2>You will synchronize Accounts from Bravo to Odoo for all companies</h2>
                     <footer>
                         <button string="Synchronize" type="object" name="sync" class="btn-primary"/>
-                        <button string="Synchronize missing" type="object" name="sync_updated" class="btn-secondary"/>
                         <button string="Cancel" special="cancel" data-hotkey="z" class="btn-secondary"/>
                     </footer>
                 </form>

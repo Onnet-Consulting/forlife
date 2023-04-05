@@ -2,7 +2,12 @@
 
 from odoo import api, fields, models
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
 BRAVO_ACCOUNT_TABLE = 'B20ChartOfAccount'
+
 
 class BravoSyncAccountWizard(models.TransientModel):
     """
@@ -12,40 +17,28 @@ class BravoSyncAccountWizard(models.TransientModel):
     _inherit = ['mssql.server']
     _description = 'Bravo Synchronize account wizard'
 
-    company_ids = fields.Many2many('res.company', 'bravo_sync_account_compan_rel', 'sync_id', 'cid',
-                                   string='Companies', default=lambda self: self.env.companies.ids)
-
-    # TODO: reload site after click this button
     def sync(self):
         self.ensure_one()
-        self.install_coa()
-        self.insert_accounts()
-        self.archive_vn_template_accounts()
-
-    # TODO: reload site after click this button
-    def sync_updated(self):
-        self.ensure_one()
-        self.insert_missing_accounts()
+        companies = self.env['res.company'].search([])
+        bravo_accounts = self.get_bravo_accounts()
+        for company in companies:
+            self = self.with_company(company).sudo()
+            self.install_coa()
+            self.insert_accounts(bravo_accounts)
+            self.archive_vn_template_accounts()
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def install_coa(self):
-        companies = self.company_ids
-        # companies = self.env['res.company'].search([])
-
         vn_account_chart_template = self.env.ref('l10n_vn.vn_template')
-        for company in companies:
-            vn_account_chart_template.try_loading(company, install_demo=False)
+        vn_account_chart_template.try_loading(self.env.company, install_demo=False)
 
-    def insert_accounts(self):
-        accounts = self.get_bravo_accounts()
-        companies = self.company_ids
-        for company in companies:
-            self.env['account.account'].with_company(company).sudo().create(accounts)
-        return True
-
-    def insert_missing_accounts(self):
-        companies = self.company_ids
-        for company in companies:
-            self.insert_odoo_missing_accounts(company)
+    def insert_accounts(self, bravo_accounts):
+        account_account = self.env['account.account']
+        bravo_account_codes = [ba['code'] for ba in bravo_accounts]
+        exist_odoo_account_codes = account_account.search(
+            [('code', 'in', bravo_account_codes), ('company_id', '=', self.env.company.id)]).mapped('code')
+        newly_bravo_accounts = [ba for ba in bravo_accounts if ba['code'] not in exist_odoo_account_codes]
+        self.env['account.account'].create(newly_bravo_accounts)
         return True
 
     def archive_vn_template_accounts(self):
@@ -53,10 +46,9 @@ class BravoSyncAccountWizard(models.TransientModel):
         res_ids = self.env['ir.model.data'].sudo().search([
             ('model', '=', 'account.account'), ('module', '=', 'l10n_vn')
         ]).mapped('res_id')
-        companies = self.company_ids
-        for company in companies:
-            self.env['account.account'].with_company(company).sudo(). \
-                search([('company_id', '=', company.id), ('id', 'in', res_ids)]).write({'deprecated': True})
+        company = self.env.company
+        self.env['account.account'].sudo(). \
+            search([('company_id', '=', company.id), ('id', 'in', res_ids)]).write({'deprecated': True})
         return True
 
     def get_bravo_accounts(self):
@@ -70,28 +62,3 @@ class BravoSyncAccountWizard(models.TransientModel):
         for chunk_data in data:
             accounts.extend([dict(zip(field_names, cdata)) for cdata in chunk_data])
         return accounts
-
-    def get_odoo_missing_accounts(self, company):
-        odoo_account_codes = self.env['account.account'].sudo().search([('company_id', '=', company.id)]).mapped('code')
-        accounts = []
-        if not odoo_account_codes:
-            query = """
-                SELECT Code, Name
-                FROM %s
-            """ % BRAVO_ACCOUNT_TABLE
-        else:
-            query = """
-                SELECT Code, Name
-                FROM %s
-                Where Code not in (%s)
-            """ % (BRAVO_ACCOUNT_TABLE, ','.join(['?'] * len(odoo_account_codes)))
-        data = self._execute_read(query, params=odoo_account_codes)
-        field_names = ['code', 'name']
-        for chunk_data in data:
-            accounts.extend([dict(zip(field_names, cdata)) for cdata in chunk_data])
-        return accounts
-
-    def insert_odoo_missing_accounts(self, company):
-        odoo_missing_accounts = self.get_odoo_missing_accounts(company)
-        self.env['account.account'].with_company(company).sudo().create(odoo_missing_accounts)
-        return True
