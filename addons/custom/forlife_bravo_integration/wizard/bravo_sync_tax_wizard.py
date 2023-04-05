@@ -10,12 +10,12 @@ class BravoSyncTaxWizard(models.TransientModel):
     _description = 'Bravo synchronize Taxes wizard'
 
     def sync(self):
-        # TODO: must run bravo_sync_account_wizard before this wizard
         companies = self.env['res.company'].search([])
+        bravo_taxes = self.get_bravo_taxes()
         for company in companies:
             self = self.with_company(company).sudo()
-            self.update_odoo_taxes_by_company()
-        return True
+            self.update_odoo_taxes_by_company(bravo_taxes)
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def get_bravo_taxes(self):
         bravo_table = 'B20Tax'
@@ -57,8 +57,7 @@ class BravoSyncTaxWizard(models.TransientModel):
             res.append(tax_value)
         return res
 
-    def update_odoo_taxes_by_company(self):
-        bravo_taxes = self.get_bravo_taxes()
+    def update_odoo_taxes_by_company(self, bravo_taxes):
         odoo_taxes = self.get_odoo_taxes_by_company()
         bravo_account_codes = []
         for value in bravo_taxes.values():
