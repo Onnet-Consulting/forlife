@@ -87,7 +87,7 @@ group by product_line
     def get_data(self):
         self.ensure_one()
         values = dict(super().get_data())
-        warehouse_ids = self.env['stock.warehouse'].search([]) if self.all_warehouses else self.warehouse_ids # todo: ('brand_id', '=', self.brand_id.id)
+        warehouse_ids = self.env['stock.warehouse'].search([('brand_id', '=', self.brand_id.id)]) if self.all_warehouses else self.warehouse_ids
         store_ids = self.env['store'].search([('warehouse_id', 'in', warehouse_ids.ids)])
         if not store_ids:
             raise ValidationError(_('Stores not found !'))

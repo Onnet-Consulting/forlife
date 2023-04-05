@@ -20,11 +20,10 @@
                         <td><t t-esc="line.customer_info[1]"/></td>
                         <td><t t-esc="line.customer_info[2]"/></td>
                         <td><t t-esc="line.customer_info[3]"/></td>
-                        <td><t t-esc="line.customer_info[4]"/></td>
-                        <td><t t-esc="line.ngay_mua_ld"/></td>
+                        <td><t t-esc="line.ngay_mua_dk"/></td>
                         <td><t t-esc="line.ngay_mua_gn"/></td>
                         <td><t t-esc="line.ngay_ck"/></td>
-                        <td><t t-esc="format_decimal(line.dt_pt, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.dt_ps, 0)"/></td>
                         <td><t t-esc="line.gt_cd"/></td>
                         <td><t t-esc="line.current_rank"/></td>
                         <td><t t-esc="line.new_rank"/></td>

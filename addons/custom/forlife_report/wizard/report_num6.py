@@ -116,7 +116,7 @@ from products pr
     def get_data(self):
         self.ensure_one()
         values = dict(super().get_data())
-        warehouse_ids = self.env['stock.warehouse'].search([]) if self.all_warehouses else self.warehouse_ids # todo: ('brand_id', '=', self.brand_id.id)
+        warehouse_ids = self.env['stock.warehouse'].search([('brand_id', '=', self.brand_id.id)]) if self.all_warehouses else self.warehouse_ids
         if not warehouse_ids:
             raise ValidationError(_('Warehouse not found !'))
         query = self._get_query(warehouse_ids)
