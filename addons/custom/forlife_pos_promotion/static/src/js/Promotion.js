@@ -35,12 +35,14 @@ export class PromotionUsageLine {
 }
 
 export class PosPromotionCode {
-    constructor(code, id, program_id, partner_id, remaining_amount) {
+    constructor(code, id, program_id, partner_id, remaining_amount, reward_for_referring, reward_program_id) {
         this.code = code;
         this.id = id || nextId--;
         this.program_id = program_id;
         this.partner_id = partner_id;
         this.remaining_amount = remaining_amount || 0;
+        this.reward_for_referring = reward_for_referring;
+        this.reward_program_id = reward_program_id;
     }
 }
 
@@ -151,6 +153,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
     }
 
     get_program_by_id(str_id) {
+        str_id = String(str_id);
         if (str_id.includes('p')) {
             let [pId, itemId] = str_id.split('p');
             return this.promotionPricelistItems.find(p => p.id == itemId)
@@ -301,6 +304,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         json.activatedInputCodes = this.activatedInputCodes;
         json.reward_voucher_program_id = this.reward_voucher_program_id || null;
         json.cart_promotion_program_id = this.cart_promotion_program_id || null;
+        json.reward_for_referring = this.reward_for_referring || null;
+        json.referred_code_id = this.referred_code_id || null;
         return json;
     }
     init_from_JSON(json) {
@@ -313,6 +318,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.historyProgramUsages = this.historyProgramUsages != undefined ? this.historyProgramUsages : {};
         this.reward_voucher_program_id = json.reward_promotion_voucher_id;
         this.cart_promotion_program_id = json.cart_promotion_program_id || null;
+        this.reward_for_referring = json.reward_for_referring || null;
+        this.referred_code_id = json.referred_code_id || null;
         this._resetPromotionPrograms();
         this._resetCartPromotionPrograms();
     }
@@ -411,6 +418,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             this.activatedCodePrograms = new Set();
             this.activatedPricelistItem = new Set();
         }
+        this.reward_for_referring = null;
+        this.referred_code_id = null;
         this._get_reward_lines().forEach(reward_line => {
             this.orderlines.remove(reward_line);
         })
@@ -1458,8 +1467,20 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             kwargs: { context: session.user_context },
         });
         if (successful) {
-            const codeObj = new PosPromotionCode(code, payload.code_id, payload.program_id, payload.coupon_partner_id, payload.remaining_amount);
+            const codeObj = new PosPromotionCode(
+                code,
+                payload.code_id,
+                payload.program_id,
+                payload.coupon_partner_id,
+                payload.remaining_amount,
+                payload.reward_for_referring,
+                payload.reward_program_id);
             this.activatedInputCodes.push(codeObj);
+            if (codeObj.reward_for_referring) {
+                let codeProgram = this.pos.promotionPrograms.find(p => p.id == codeObj.program_id);
+                codeProgram.reward_for_referring = true;
+                codeProgram.codeObj = codeObj;
+            }
             await this._updateActivatedPromotionPrograms();
         } else {
             return payload.error_message;

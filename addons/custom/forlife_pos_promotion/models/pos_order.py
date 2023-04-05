@@ -33,6 +33,27 @@ class PosOrder(models.Model):
         cart_promotion_program_id = order['data'].get('cart_promotion_program_id', 0)
         if reward_voucher_program_id and cart_promotion_program_id:
             self.issue_promotion_voucher(order_id, reward_voucher_program_id, cart_promotion_program_id)
+        # Kiểm tra và tạo Mã KM cho CT giới thiệu
+
+        if order['data'].get('reward_for_referring', 0) and order['data'].get('referred_code_id', {}):
+            code_data = order['data'].get('referred_code_id', {})
+            code = self.env['promotion.code'].browse(code_data['id'])
+            referring_partner_id = code.partner_id
+            partner = self.env['res.partner'].sudo().browse(partner_id)
+            reward_program = self.env['promotion.program'].browse(code_data.get('reward_program_id', 0))
+
+            gen_code_wizard = self.env['promotion.generate.code'].create({
+                'program_id': reward_program.id,
+                'max_usage': 1
+            })
+            code_create_vals = [gen_code_wizard._get_coupon_values(customer, force_partner=True)
+                                for customer in [referring_partner_id, partner]]
+            new_codes = self.env['promotion.code'].create(code_create_vals)
+            new_codes.write({
+                'original_program_id': code.program_id.id,
+                'original_order_id': order_id
+            })
+
         return order_id
 
     def issue_promotion_voucher(self, order_id, reward_voucher_program_id, program_id):

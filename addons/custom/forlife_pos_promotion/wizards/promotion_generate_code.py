@@ -23,7 +23,7 @@ class PromotionGenerateCode(models.Model):
     reward_for_referring = fields.Boolean('Rewards for Referring', copy=False, readonly=False)
     referring_date_from = fields.Datetime('Refer Date From')
     referring_date_to = fields.Datetime('Refer Date To')
-    referring_program_id = fields.Many2one('promotion.program', string='Referring Program Reward')
+    reward_program_id = fields.Many2one('promotion.program', string='Referring Program Reward')
 
     promotion_type = fields.Selection(related='program_id.promotion_type')
 
@@ -53,7 +53,7 @@ class PromotionGenerateCode(models.Model):
             else:
                 wizard.coupon_qty = wizard.coupon_qty or 0
 
-    def _get_coupon_values(self, partner):
+    def _get_coupon_values(self, partner, force_partner=False):
         self.ensure_one()
         program = self.program_id
         if program.reward_type in ('combo_amount', 'code_amount'):
@@ -65,7 +65,7 @@ class PromotionGenerateCode(models.Model):
         result = {
             'program_id': self.program_id.id,
             'amount': amount,
-            'partner_id': partner.id if self.mode == 'selected' else False,
+            'partner_id': partner.id if self.mode == 'selected' or force_partner else False,
             'expiration_date': self.valid_until or self.program_id.to_date or False,
             'max_usage': self.max_usage
         }
@@ -73,7 +73,7 @@ class PromotionGenerateCode(models.Model):
             result['reward_for_referring'] = self.reward_for_referring
             result['referring_date_from'] = self.referring_date_from
             result['referring_date_to'] = self.referring_date_to
-            result['referring_program_id'] = self.referring_program_id.id
+            result['reward_program_id'] = self.reward_program_id.id
         return result
 
     @api.onchange('program_id')

@@ -25,7 +25,7 @@
                                    attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
                             <field name="referring_date_to"
                                    attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
-                            <field name="referring_program_id"
+                            <field name="reward_program_id"
                                    domain="[('promotion_type', '=', 'code'), ('with_code', '=', True)]"
                                    attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
                         </group>

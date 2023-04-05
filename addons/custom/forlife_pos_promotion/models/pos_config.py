@@ -74,8 +74,7 @@ class PosConfig(models.Model):
             is_new_customer = not order_partner.sudo().store_fo_ids.filtered(
                 lambda r: r.brand_id == code_id.program_id.brand_id)
             valid_date = code_id.referring_date_from <= check_date <= code_id.referring_date_to
-            result = order_partner and code_partner and order_partner.id != code_partner and \
-                     is_new_customer and valid_date
+            result = order_partner and code_partner and order_partner.id != code_partner and is_new_customer and valid_date
             if not result:
                 return {
                     'successful': False,
@@ -91,6 +90,6 @@ class PosConfig(models.Model):
                 'coupon_partner_id': code_id.partner_id.id,
                 'remaining_amount': code_id.remaining_amount,
                 'reward_for_referring': code_id.reward_for_referring,
-                'referring_program_id': code_id.referring_program_id.id
+                'reward_program_id': code_id.reward_program_id.id
             },
         }
