@@ -283,6 +283,7 @@
                 <separator/>
                 <group expand="0" string="Group By">
                     <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="Promotion Type" name="promotion_type" domain="[]" context="{'group_by':'promotion_type'}"/>
                 </group>
             </search>
         </field>

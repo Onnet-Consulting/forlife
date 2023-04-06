@@ -12,7 +12,7 @@
                     </div>
                     <div t-if="props.program.promotion_type != 'pricelist'" class="column flex-end">
                         <strong>
-                            <t t-esc="props.qty_per_combo"/> &nbsp;SP / Combo
+                            <t t-esc="props.qty_per_combo"/> SP / Combo
                         </strong>
                     </div>
                 </div>
