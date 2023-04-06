@@ -11,6 +11,7 @@
                 <field name="note"/>
                 <field name="asset_date"/>
                 <field name="state" widget="badge"/>
+                <field name="company_id"/>
             </tree>
         </field>
     </record>
@@ -54,6 +55,7 @@
                         <group>
                             <field name="asset_date" attrs="{'readonly': [('state', 'in', ('approved', 'done'))]}"/>
                             <field name="validate_date" readonly="1" attrs="{'invisible':[('state', 'not in', ('approved', 'cancel'))]}"/>
+                            <field name="company_id"/>
                         </group>
                     </group>
                     <group string="Note">

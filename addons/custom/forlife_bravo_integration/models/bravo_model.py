@@ -131,6 +131,12 @@ class BravoModelInsertAction(models.AbstractModel):
 
         return queries
 
+    @api.model
+    def bravo_insert(self, queries):
+        if queries:
+            self._execute_many(queries)
+        return True
+
 
 class BravoModelUpdateAction(models.AbstractModel):
     _name = 'bravo.model.update.action'

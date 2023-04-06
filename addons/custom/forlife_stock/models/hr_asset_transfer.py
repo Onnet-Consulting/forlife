@@ -24,6 +24,7 @@ class HrAssetTransfer(models.Model):
     selected_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')
     reject_reason = fields.Text()
     validate_date = fields.Datetime(string='Ngày cập nhật')
+    company_id = fields.Many2one('res.company', required=True, readonly=True, default=lambda self: self.env.company)
 
     @api.model
     def default_get(self, default_fields):
