@@ -11,6 +11,7 @@ class PosSession(models.Model):
         result = super()._pos_ui_models_to_load()
         if self.config_id._get_promotion_program_ids():
             result += [
+                'surprising.reward.product.line',
                 'promotion.program',
                 'promotion.combo.line',
                 'promotion.reward.line',
@@ -51,6 +52,17 @@ class PosSession(models.Model):
             'search_params': {
                 'domain': [],
                 'fields': ['id', 'code']
+            }
+        }
+
+    def _loader_params_surprising_reward_product_line(self):
+        return {
+            'search_params': {
+                'domain': [('campaign_id', 'in', self.config_id._get_promotion_campaign_ids().ids), ('active', '=', True)],
+                'fields': [
+                    'to_check_product_ids',
+                    'reward_code_program_id',
+                ]
             }
         }
 
@@ -120,6 +132,9 @@ class PosSession(models.Model):
                 'fields': ['program_id', 'product_id', 'fixed_price']
             }
         }
+
+    def _get_pos_ui_surprising_reward_product_line(self, params):
+        return self.env['surprising.reward.product.line'].search_read(**params['search_params'])
 
     def _get_pos_ui_promotion_program(self, params):
         return self.env['promotion.program'].search_read(**params['search_params'])

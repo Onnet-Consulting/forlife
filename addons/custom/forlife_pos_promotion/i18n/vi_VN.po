@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-31 07:50+0000\n"
-"PO-Revision-Date: 2023-03-31 07:50+0000\n"
+"POT-Creation-Date: 2023-04-06 04:35+0000\n"
+"PO-Revision-Date: 2023-04-06 04:35+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -128,6 +128,7 @@ msgstr "Đang kích hoạt"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_pricelist_item__active
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__active
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__active
 msgid "Active"
 msgstr "Hoạt động"
 
@@ -176,11 +177,12 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_pos_order__cart_promotion_program_id
 msgid "Applied Cart Promotion"
-msgstr ""
+msgstr "Chương trình hóa đơn đã áp dụng"
 
 #. module: forlife_pos_promotion
 #. odoo-javascript
 #: code:addons/forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml:0
+#: code:addons/forlife_pos_promotion/static/src/xml/Popup/SurpriseRewardPopup.xml:0
 #, python-format
 msgid "Apply"
 msgstr "Áp dụng"
@@ -217,9 +219,17 @@ msgid "Brand"
 msgstr "Thương hiệu"
 
 #. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/xml/Popup/SurpriseRewardPopup.xml:0
+#, python-format
+msgid "Bạn được tặng code của chương trình bất ngờ"
+msgstr ""
+
+#. module: forlife_pos_promotion
 #: model:ir.actions.act_window,name:forlife_pos_promotion.promotion_campaign_action
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__name
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__campaign_id
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__campaign_id
 msgid "Campaign"
 msgstr "Chiến dịch"
 
@@ -246,7 +256,9 @@ msgstr "Không thể xóa chương trình khuyến mãi đã được sử dụn
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/ComboDetailsPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/RewardSelectionCartPromotionPopup.js:0
+#: code:addons/forlife_pos_promotion/static/src/js/Popup/SurpriseRewardPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml:0
+#: code:addons/forlife_pos_promotion/static/src/xml/Popup/SurpriseRewardPopup.xml:0
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_generate_wizard_view_form
 #, python-format
 msgid "Cancel"
@@ -484,6 +496,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__create_uid
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__create_uid
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__create_uid
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__create_uid
 msgid "Created by"
 msgstr ""
 
@@ -496,6 +509,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__create_date
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__create_date
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__create_date
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__create_date
 msgid "Created on"
 msgstr ""
 
@@ -612,6 +626,7 @@ msgstr "Giá đã giảm"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__display_name
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__display_name
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__display_name
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__display_name
 msgid "Display Name"
 msgstr "Tên hiển thị"
 
@@ -735,6 +750,7 @@ msgstr "Giờ"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__id
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__id
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__id
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__id
 msgid "ID"
 msgstr ""
 
@@ -768,6 +784,17 @@ msgid "Issued Vouchers"
 msgstr "Voucher"
 
 #. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Promotion.js:0
+#: code:addons/forlife_pos_promotion/static/src/js/Promotion.js:0
+#: code:addons/forlife_pos_promotion/static/src/js/Promotion.js:0
+#, python-format
+msgid ""
+"Không tính được số tiền giảm!\n"
+" Bỏ qua việc áp dụng chương trình ${CodeProgram.name}."
+msgstr ""
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign____last_update
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code____last_update
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_combo_line____last_update
@@ -776,6 +803,7 @@ msgstr "Voucher"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program____last_update
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line____last_update
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line____last_update
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -788,6 +816,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__write_uid
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__write_uid
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__write_uid
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__write_uid
 msgid "Last Updated by"
 msgstr ""
 
@@ -800,6 +829,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__write_date
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__write_date
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__write_date
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__write_date
 msgid "Last Updated on"
 msgstr ""
 
@@ -889,6 +919,13 @@ msgid "Months"
 msgstr "Tháng"
 
 #. module: forlife_pos_promotion
+#. odoo-python
+#: code:addons/forlife_pos_promotion/models/pos_config.py:0
+#, python-format
+msgid "Mã KM này không hợp lệ"
+msgstr ""
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__name
 msgid "Name"
 msgstr "Tên"
@@ -905,6 +942,13 @@ msgstr "Mới"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__new_price
 msgid "New Price"
 msgstr "Đơn giá mới"
+
+#. module: forlife_pos_promotion
+#. odoo-python
+#: code:addons/forlife_pos_promotion/wizards/promotion_generate_code.py:0
+#, python-format
+msgid "Ngày bắt đầu phải nhỏ hơn ngày kết thúc!"
+msgstr ""
 
 #. module: forlife_pos_promotion
 #. odoo-javascript
@@ -944,6 +988,13 @@ msgid "Number of Order Usage"
 msgstr "Số đơn đã dùng"
 
 #. module: forlife_pos_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_form
+msgid ""
+"Nếu đơn hàng không chứa sản phẩm dưới đây, hệ thống sẽ tìm CT KM của các sản"
+" phẩm này và tặng mã KM cho Khách hàng"
+msgstr ""
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__order_ids
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__order_ids
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__discount_apply_on__order
@@ -973,6 +1024,11 @@ msgid "Orders"
 msgstr "Đơn hàng"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__original_order_id
+msgid "Original Order"
+msgstr "Đơn hàng gốc"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_voucher_voucher__orig_pos_order_id
 msgid "Original POS Order"
 msgstr "Đơn hàng gốc"
@@ -981,6 +1037,11 @@ msgstr "Đơn hàng gốc"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__original_price
 msgid "Original Price"
 msgstr "Đơn giá ban đầu"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__original_program_id
+msgid "Original Program"
+msgstr "Chương trình gốc"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__partner_id
@@ -998,6 +1059,7 @@ msgstr "Vui lòng chọn các CTKM"
 #. module: forlife_pos_promotion
 #. odoo-javascript
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/CartPromotionPopup.js:0
+#: code:addons/forlife_pos_promotion/static/src/js/ProductScreen.js:0
 #, python-format
 msgid "Please select some rewards"
 msgstr "Chọn sản phẩm thưởng/khuyến mãi"
@@ -1128,6 +1190,12 @@ msgid "Program Name"
 msgstr "Tên chương trình"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__reward_program_id
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__reward_code_program_id
+msgid "Program Reward"
+msgstr "Chương trình tặng"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__promotion_type
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__promotion_type
 msgid "Program Type"
@@ -1234,9 +1302,34 @@ msgid "Quantity to generate"
 msgstr "Số lượng cần tạo"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__referring_date_from
+msgid "Refer Date From"
+msgstr "Từ"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__referring_date_to
+msgid "Refer Date To"
+msgstr "Đến"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__referring_date_from
+msgid "Refer From"
+msgstr "Từ"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__referring_date_to
+msgid "Refer To"
+msgstr "Đến"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__referred_partner_id
 msgid "Referred Partner"
 msgstr "Khách được giới thiệu"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__reward_program_id
+msgid "Referring Program Reward"
+msgstr "Chương trình thưởng cho giới thiệu"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__registering_tax
@@ -1306,7 +1399,6 @@ msgstr "Phần thưởng"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__reward_for_referring
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__reward_for_referring
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__reward_for_referring
 msgid "Rewards for Referring"
 msgstr "Phần chưởng cho giới thiệu"
 
@@ -1322,6 +1414,7 @@ msgstr ""
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/CartPromotionPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/RewardSelectionCartPromotionPopup.js:0
+#: code:addons/forlife_pos_promotion/static/src/js/Popup/SurpriseRewardPopup.js:0
 #, python-format
 msgid "Select"
 msgstr "Chọn"
@@ -1376,6 +1469,21 @@ msgid "Successfully activate a promotion code."
 msgstr "Mã KM đã được kích hoạt thành công."
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__surprising_reward_product_ids
+msgid "Surprising Applied Products"
+msgstr "Sản phẩm áp dụng quà tặng bất ngờ"
+
+#. module: forlife_pos_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_campaign_view_form
+msgid "Surprising Reward"
+msgstr "Quà tặng bất ngờ"
+
+#. module: forlife_pos_promotion
+#: model:ir.model,name:forlife_pos_promotion.model_surprising_reward_product_line
+msgid "Surprising Reward Product"
+msgstr "Sản phẩm quà tặng bất ngờ"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__currency_symbol
 msgid "Symbol"
 msgstr ""
@@ -1417,6 +1525,11 @@ msgstr "Mã khuyến mãi này hết hạn hoặc vượt quá giới hạn sử
 #, python-format
 msgid "This coupon is invalid (%s)."
 msgstr "Mã khuyến mãi này không hợp lệ (%s)."
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_surprising_reward_product_line__to_check_product_ids
+msgid "To Check Products"
+msgstr "Sản phẩm kiểm tra"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__to_date

@@ -7,6 +7,11 @@ from odoo.osv.expression import OR
 class PosConfig(models.Model):
     _inherit = 'pos.config'
 
+    def _get_promotion_campaign_ids(self):
+        return self.env['promotion.campaign'].search(
+            [('state', '=', 'in_progress'), '|', ('store_ids', '=', False),
+             ('store_ids', '=', self.store_id.id)])
+
     def _get_promotion_program_ids(self):
         return self.env['promotion.program'].search(
             [('state', '=', 'in_progress'), '|', ('campaign_id.store_ids', '=', False),

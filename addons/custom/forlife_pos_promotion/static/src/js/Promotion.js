@@ -52,6 +52,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.couponCache = {};
         await super._processData(loadedData);
         this.promotionPrograms = loadedData['promotion.program'] || [];
+        this.surprisingRewardProducts = loadedData['surprising.reward.product.line'] || [];
         this.promotionComboLines = loadedData['promotion.combo.line'] || [];
         this.rewardLines = loadedData['promotion.reward.line'] || [];
         this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
@@ -66,6 +67,9 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.reward_line_by_id = {};
         this.pro_pricelist_item_by_id = {};
         var self = this;
+        for (const line of this.surprisingRewardProducts) {
+            line.to_check_product_ids = new Set(line.to_check_product_ids);
+        };
         for (const program of this.promotionPrograms) {
             if (program.from_date) {
                 program.from_date = new Date(program.from_date);
@@ -306,6 +310,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         json.cart_promotion_program_id = this.cart_promotion_program_id || null;
         json.reward_for_referring = this.reward_for_referring || null;
         json.referred_code_id = this.referred_code_id || null;
+        json.surprise_reward_program_id = this.surprise_reward_program_id || null;
         return json;
     }
     init_from_JSON(json) {
@@ -320,6 +325,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.cart_promotion_program_id = json.cart_promotion_program_id || null;
         this.reward_for_referring = json.reward_for_referring || null;
         this.referred_code_id = json.referred_code_id || null;
+        this.surprise_reward_program_id = json.surprise_reward_program_id || null;
         this._resetPromotionPrograms();
         this._resetCartPromotionPrograms();
     }
@@ -420,6 +426,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         }
         this.reward_for_referring = null;
         this.referred_code_id = null;
+        this.surprise_reward_program_id = null;
         this._get_reward_lines().forEach(reward_line => {
             this.orderlines.remove(reward_line);
         })

@@ -54,6 +54,19 @@ class PosOrder(models.Model):
                 'original_order_id': order_id
             })
 
+        # Kiểm tra và tạo Mã KM cho chương trình Quà tặng bất ngờ
+        if order['data'].get('surprise_reward_program_id', 0):
+            surprise_reward_program_id = order['data'].get('surprise_reward_program_id', 0)
+            surprise_program = self.env['promotion.program'].browse(surprise_reward_program_id)
+            if surprise_program:
+                gen_code_wizard = self.env['promotion.generate.code'].create({
+                    'program_id': surprise_program.id,
+                    'max_usage': 1
+                })
+                customer = self.env['res.partner'].sudo().browse(partner_id)
+                new_code = self.env['promotion.code'].create(gen_code_wizard._get_coupon_values(customer, force_partner=True))
+                new_code.original_order_id = order_id
+
         return order_id
 
     def issue_promotion_voucher(self, order_id, reward_voucher_program_id, program_id):
