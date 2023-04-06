@@ -146,7 +146,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             delete program_clone.id;
             delete program_clone.str_id;
             item = Object.assign(item, program_clone);
-            item.display_name = item.display_name + ': ' + this.db.product_by_id[item.product_id].display_name;
+            item.display_name = item.display_name + ': ' + ((this.db.product_by_id && this.db.product_by_id[item.product_id]) ? this.db.product_by_id[item.product_id].display_name : "");
         };
     }
 
