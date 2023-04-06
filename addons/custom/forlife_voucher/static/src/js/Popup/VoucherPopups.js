@@ -73,8 +73,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         });
                     }
                  }
-                 this.env.pos.data_voucher = data;
-                 this.props.data_voucher = false;
+                 this.env.pos.selectedOrder.data_voucher = data;
 
             }else{
                 this.showPopup('ErrorPopup', {
@@ -141,7 +140,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 }
             }
             this.state.data = data;
-//
+
         }
 
         _onValueChange() {
@@ -170,6 +169,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
         }
 
         async check() {
+            this.env.pos.selectedOrder.data_voucher = false;
             this.state.data = false;
             this.state.trigger = false;
             this.state.error = [];

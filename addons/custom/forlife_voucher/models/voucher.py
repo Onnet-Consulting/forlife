@@ -51,6 +51,7 @@ class Voucher(models.Model):
     brand_id = fields.Many2one('res.brand', 'Brand', required=True)
     store_ids = fields.Many2many('store', string='Cửa hàng áp dụng')
     is_full_price_applies = fields.Boolean('Áp dụng nguyên giá')
+    using_limit = fields.Integer('Giới hạn sử dụng')
 
     @api.depends('price_used', 'price')
     def _compute_price_residual(self):
