@@ -25,4 +25,4 @@ class AssetsAssets(models.Model):
     comment = fields.Text('Comment')
     quantity = fields.Integer('Quantity')
     employee = fields.Many2one('hr.employee', string='Employee')
-    category_product = fields.Many2one('product.category',string='Danh mục sản phẩm', domain=[('asset_group','=',True)])
+    category_product = fields.Many2one('product.category',string='Danh mục sản phẩm')
