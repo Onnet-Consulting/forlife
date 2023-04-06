@@ -14,23 +14,17 @@ class PurchaseOrder(models.Model):
     event_id = fields.Many2one('forlife.event', string='Event Program')
     has_contract_commerce = fields.Boolean(string='Commerce Contract')
     rejection_reason = fields.Text()
-    is_check_line_material_line = fields.Boolean()
     # approval_logs_ids = fields.One2many('approval.logs', 'purchase_order_id')
     order_line_production_order = fields.Many2many('purchase.order.line',
                                                   compute='_compute_order_line_production_order',
                                                   inverse='_inverse_order_line_production_order')
 
-    @api.depends('order_line.product_id')
     def _compute_order_line_production_order(self):
         self = self.sudo()  # tối ưu tốc độ ghi dữ liệu
         product_in_production_order = self.env['production.order'].search([('type', '=', 'normal')]).mapped('product_id')
         for rec in self:
             order_line_production_order = rec.order_line.filtered(lambda r: r.product_id.id in product_in_production_order.ids)
             rec.order_line_production_order = [(6, 0, order_line_production_order.ids)]
-        if not order_line_production_order:
-            rec.is_check_line_material_line = True
-        else:
-            rec.is_check_line_material_line = False
 
     def _inverse_order_line_production_order(self):
         pass

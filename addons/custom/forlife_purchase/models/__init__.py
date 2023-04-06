@@ -3,6 +3,7 @@ from . import product_order_exchange_rate
 from . import purchase_order
 from . import forlife_event
 from . import forlife_production
+from . import forlife_account
 from . import barcode
 from . import product
 from . import barcode

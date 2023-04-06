@@ -7,12 +7,7 @@ class RejectTransferStockInventory(models.TransientModel):
 
     rejection_reason = fields.Text()
     cancel_reason = fields.Text()
-    type_button_reject = fields.Boolean()
-
-    def default_get(self, default_fields):
-        res = super().default_get(default_fields)
-        res['type_button_reject'] = True if self._context.get('click_button') and self._context.get('click_button') == 'reject' else False
-        return res
+    type_button_reject = fields.Boolean(compute='compute_type_button_reject')
 
     def action_reject_transfer_stock_inventory(self):
         req_id = self._context.get('active_id')
@@ -23,13 +18,6 @@ class RejectTransferStockInventory(models.TransientModel):
                 current_request.write({'state': 'reject', 'reason_reject': self.rejection_reason})
             else:
                 current_request.write({'state': 'cancel', 'reason_cancel': self.cancel_reason})
-                data_ox_other = self.env['stock.picking'].search([('transfer_stock_inventory_id', '=', current_request.id), '|', ('other_import', '=', True), ('other_export', '=', True)])
-                for item in data_ox_other:
-                    if item:
-                        item.write({
-                            'state': 'cancel'
-                        })
-
             return {
                 'name': ('transfer.stock.inventory'),
                 'view_mode': 'form',
@@ -39,4 +27,8 @@ class RejectTransferStockInventory(models.TransientModel):
                 'target': 'current',
                 'res_id': current_request.id,
             }
+
+    def compute_type_button_reject(self):
+        for r in self:
+            r.type_button_reject = True if self._context.get('click_button') == 'reject' else False
 

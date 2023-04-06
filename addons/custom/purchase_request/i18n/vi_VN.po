@@ -251,7 +251,7 @@ msgstr "Sản phẩm"
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_production_order__product_id
 msgid "Product"
-msgstr "Sản phẩm"
+msgstr "Số phiếu"
 
 #. module: purchase_request
 #: model:mail.template,name:purchase_request.approve_purchase_email_template

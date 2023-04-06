@@ -102,7 +102,8 @@
                         <page string="Product">
                             <field name="order_lines" widget="section_and_note_one2many" mode="tree,kanban"
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'reject', 'approved', 'close'))]}"
-                                   context="{'default_request_date': request_date,'default_state': state, 'default_date_planned': date_planned}">
+                                   context="{'default_request_date': request_date,'default_state': state, 'default_date_planned': date_planned}"
+                            >
                                 <tree editable="bottom" decoration-muted="is_no_more_quantity == True" class="width-hh width-first">
                                     <field name="is_close" string=" "/>
                                     <field name="product_id" domain="[('detailed_type', '!=', 'consu')]"/>

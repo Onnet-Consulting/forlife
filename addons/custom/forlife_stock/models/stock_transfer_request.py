@@ -13,7 +13,7 @@ class StockTransferRequest(models.Model):
     _description = 'Forlife Stock Transfer'
 
     name = fields.code = fields.Char(string="Name", default="New", copy=False)
-    request_date = fields.Datetime(string="Request Date", default=lambda self: fields.datetime.now())
+    request_date = fields.Datetime(string="Request Date",default=lambda self: fields.datetime.now())
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
     request_employee_id = fields.Many2one('hr.employee', string="Employee")
     department_id = fields.Many2one('hr.department', string="Department")
@@ -26,7 +26,7 @@ class StockTransferRequest(models.Model):
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel'),
                    ('done', 'Done')], default='draft', copy=True)
-    request_lines = fields.One2many('transfer.request.line', 'request_id', string='Request Line')
+    request_lines = fields.One2many('transfer.request.line', 'request_id')
     stock_transfer_ids = fields.One2many('stock.transfer', 'stock_request_id', string="Stock Transfer", copy=True)
     rejection_reason = fields.Text()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_request_id')
@@ -41,13 +41,6 @@ class StockTransferRequest(models.Model):
         res['department_id'] = self.env.user.department_id.id if self.env.user.department_id else False
         res['request_date'] = datetime.now()
         return res
-
-    @api.model
-    def get_import_templates(self):
-        return [{
-            'label': _('Tải xuống mẫu yêu cầu điều chuyển'),
-            'template': '/forlife_stock/static/src/xlsx/Import YCDC.xlsx?download=true'
-        }]
 
     def action_wait_confirm(self):
         for record in self:
@@ -66,6 +59,17 @@ class StockTransferRequest(models.Model):
 
     def action_approve(self):
         for record in self:
+            record.write({'state': 'approved',
+                          # 'approval_logs_ids': [(0, 0, {
+                          #     'request_approved_date': date.today(),
+                          #     'approval_user_id': record.env.user.id,
+                          #     'note': 'Approved',
+                          #     'state_request': 'approved',
+                          # })],
+                          })
+
+    def action_create_stock_transfer(self):
+        for record in self:
             value = {}
             for item in record.request_lines:
                 if item.quantity_remaining > 0:
@@ -74,7 +78,7 @@ class StockTransferRequest(models.Model):
                         0, 0, {'product_id': item.product_id.id, 'uom_id': item.uom_id.id,
                                'qty_plan': item.quantity_remaining,
                                'product_str_id': item.id, 'qty_out': 0, 'qty_in': 0, 'is_from_button': True,
-                               'qty_plan_tsq': item.quantity_remaining, 'stock_request_id': record.id})
+                               'qty_plan_tsq': item.quantity_remaining,'stock_request_id': record.id})
                     dic_data = {'state': 'draft',
                                 'stock_request_id': record.id, 'location_id': item.location_id.id,
                                 'location_dest_id': item.location_dest_id.id,
@@ -88,7 +92,7 @@ class StockTransferRequest(models.Model):
                         })
             for item in value:
                 data_stock_transfer = self.env['stock.transfer'].create(value.get(item))
-            record.write({'created_stock_transfer': True, 'state': 'approved'})
+            self.write({'created_stock_transfer': True})
             context = {'stock_request_id': self.id, 'create': True, 'delete': True, 'edit': True}
             return {
                 'name': _('List Stock Transfer'),
@@ -102,25 +106,30 @@ class StockTransferRequest(models.Model):
 
     def action_done(self):
         for record in self:
+            record.write({'state': 'done'})
             record.write({'state': 'done',
-                          # 'approval_logs_ids': [(0, 0, {
-                          #     'request_approved_date': date.today(),
-                          #     'approval_user_id': record.env.user.id,
-                          #     'note': 'Done',
-                          #     'state_request': 'done',
-                          # })],
+                          'approval_logs_ids': [(0, 0, {
+                              'request_approved_date': date.today(),
+                              'approval_user_id': record.env.user.id,
+                              'note': 'Done',
+                              'state_request': 'done',
+                          })],
                           })
 
     def action_cancel(self):
         for record in self:
             record.write({'state': 'cancel',
-                          # 'approval_logs_ids': [(0, 0, {
-                          #     'request_approved_date': date.today(),
-                          #     'approval_user_id': record.env.user.id,
-                          #     'note': 'Cancel',
-                          #     'state_request': 'cancel',
-                          # })],
+                          'approval_logs_ids': [(0, 0, {
+                              'request_approved_date': date.today(),
+                              'approval_user_id': record.env.user.id,
+                              'note': 'Cancel',
+                              'state_request': 'cancel',
+                          })],
                           })
+
+    def action_cancel(self):
+        for record in self:
+            record.write({'state': 'cancel'})
 
     # @api.onchange('request_lines')
     # def onchange_request_lines(self):
@@ -260,7 +269,7 @@ class TransferRequestLine(models.Model):
                 item.quantity_reality_receive = 0
 
     def get_value_str_line(self):
-        return self.env['stock.transfer.line'].search([('is_parent_done', '=', True), ('product_str_id', '=', self.id)])
+        return self.env['stock.transfer.line'].search([('product_str_id', '=', self.id)])
 
     @api.onchange('product_id')
     def onchange_product_id(self):
