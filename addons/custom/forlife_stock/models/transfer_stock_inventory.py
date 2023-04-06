@@ -166,7 +166,6 @@ class TransferStockInventoryLine(models.Model):
     location_id = fields.Many2one('stock.location', string='Location')
     qty_in = fields.Integer(string="Quantity In")
     unit_price_to = fields.Float(string="Unit Price")
-    cost_price = fields.Float(string="Cost Price")
     total_in = fields.Float(string='Total In', compute='compute_total_in')
     mrp_production_to_id = fields.Many2one('forlife.production', string="MRP production to ")
 

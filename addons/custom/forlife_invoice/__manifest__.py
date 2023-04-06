@@ -8,8 +8,7 @@
     "depends": [
         'account',
         'purchase',
-        'base',
-        'forlife_purchase'
+        'base'
     ],
     "data": [
         'views/invoice_view.xml',
