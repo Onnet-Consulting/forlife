@@ -5,6 +5,7 @@
         <field name="model">promotion.pricelist.item</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
+                <field name="program_id"/>
                 <field name="product_id"/>
                 <field name="fixed_price"/>
             </tree>
