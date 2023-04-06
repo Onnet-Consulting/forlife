@@ -8,8 +8,6 @@
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
                     <field name="vendor_code"/>
-                    <field name="uom_product_tmpl" invisible="1"/>
-                    <field name="uom_product" invisible="1"/>
                 </field>
                 <xpath expr="//field[@name='date_start']" position="attributes">
                     <attribute name="required">1</attribute>
