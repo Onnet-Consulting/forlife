@@ -139,6 +139,12 @@ table.available-report-list {
     overflow: scroll;
 }
 
+.oe_max_height_500 {
+    max-height: 500px;
+    margin-top: 7px;
+    overflow: scroll;
+}
+
 .active_line {
     color: #000000 !important;
     background: rgba(56, 142, 60, 0.4) !important;

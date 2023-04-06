@@ -2,7 +2,6 @@
 
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
-from dateutil.relativedelta import relativedelta
 
 TITLES = [
     'STT', 'Cửa hàng', 'Mã khách', 'Tên khách hàng', 'Ngày sinh', 'Điện thoại', 'Ngày mua đầu kỳ',

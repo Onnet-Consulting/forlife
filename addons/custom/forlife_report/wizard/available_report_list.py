@@ -8,21 +8,21 @@ AVAILABLE_REPORT = {
         'reportPager': True,
     },
     'report.num2': {
-        'module': 'Tồn kho',
+        'module': 'Kho',
         'name': 'Tồn kho theo giá bán',
         'reportTemplate': 'ReportNum2Template',
         'reportPager': True,
         'tag': 'report_num2_action',
     },
     'report.num3': {
-        'module': 'Tồn kho',
+        'module': 'Kho',
         'name': 'Tồn kho theo chi nhánh/khu vực',
         'reportTemplate': 'ReportNum3Template',
         'reportPager': True,
         'tag': 'report_num3_action',
     },
     'report.num4': {
-        'module': 'Tồn kho',
+        'module': 'Kho',
         'name': 'Tồn kho theo sản phẩm',
         'reportTemplate': 'ReportNum4Template',
         'reportPager': True,
@@ -62,5 +62,18 @@ AVAILABLE_REPORT = {
         'module': 'Bán hàng',
         'name': 'Sắp lên hạng',
         'reportTemplate': 'ReportNum11Template',
+    },
+    'report.num12': {
+        'module': 'Bán hàng',
+        'name': 'Khách hàng không mua hàng',
+        'reportTemplate': 'ReportNum12Template',
+        'tag': 'report_num12_action',
+    },
+    'report.num13': {
+        'module': 'Kho',
+        'name': 'Tình hình thực hiện đơn hàng mua',
+        'reportTemplate': 'ReportNum13Template',
+        'tag': 'report_num13_action',
+        'reportPager': True,
     },
 }
