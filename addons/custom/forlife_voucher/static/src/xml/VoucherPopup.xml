@@ -4,8 +4,7 @@
         <div class="popup" style="max-width: 1150px !important">
             <header class="title">
                 <t t-esc="props.title"/>
-                <t t-set="env.pos.selectedOrder.data_voucher" t-value="data_voucher"/>
-                <t t-esc="data_voucher"/>
+
             </header>
             <main class="body">
                 <div class="my-custom-scrollbar my-custom-scrollbar-primary">
@@ -73,7 +72,7 @@
 <!--                        </t>-->
 <!--                            <t t-else="">-->
                             <tr style="width:100%;">
-                                <t t-if="data_voucher &amp;&amp; data_voucher[num].value != false">
+                                <t t-if="env.pos.selectedOrder.data_voucher &amp;&amp; env.pos.selectedOrder.data_voucher[num].value != false">
                                     <td style="border:1px solid black;"><input type="number" t-att-value="env.pos.selectedOrder.data_voucher[num].value.priority" t-att-value-priority="num" style="width: 100%;text-align: center;" class="o_input_priority"/></td>
                                     <td style="border:1px solid black;width:130px;text-align: center;"><input style="width: 100%;text-align: center;text-transform: uppercase;" t-att-value="env.pos.selectedOrder.data_voucher[num].value.voucher_name" type="text" t-att-value-index="num" class="o_input_code"/></td>
                                 </t>
@@ -95,7 +94,6 @@
                                             <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;" t-att-value="env.pos.format_currency(state.data[num].value.price_residual)"/></td>
                                             <td style="border:1px solid black;width:85px;">
                                                 <input class="o_price_used" readonly="True" type="text"
-                                                       t-on-change="_onValueChange"
                                                        style="width: 100%;text-align: center;"
                                                        t-att-value="env.pos.format_currency(state.data[num].value.price_change)"/>
                                             </td>
@@ -117,20 +115,20 @@
                                     </t>
 
                                 </t>
-                                <t t-elif="data_voucher &amp;&amp; data_voucher[num].value != false">
-                                    <t t-if="data_voucher[num].value.type == 'v'">
+                                <t t-elif="env.pos.selectedOrder.data_voucher &amp;&amp; env.pos.selectedOrder.data_voucher[num].value != false">
+                                    <t t-if="env.pos.selectedOrder.data_voucher[num].value.type == 'v'">
                                                 <td class="o_table_type" style="border:1px solid black;width:85px;">V-Giấy</td>
                                             </t>
                                             <t t-else="">
                                                 <td class="o_table_type" style="border:1px solid black;width:85px;">E-Điện tử</td>
                                             </t>
-                                    <td class="o_table_end_date" style="border:1px solid black;width:85px;"></td>
-                                    <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
-                                    <td style="border:1px solid black;width:85px;"><input class="o_price_used" readonly="True" type="text" style="width: 100%;text-align: center;"/></td>
+                                    <td class="o_table_end_date" style="border:1px solid black;width:85px;"><t t-esc="env.pos.selectedOrder.data_voucher[num].value.end_date"/></td>
+                                    <td style="border:1px solid black;width:85px;"><input class="o_price_residual" t-att-value="env.pos.format_currency(env.pos.selectedOrder.data_voucher[num].value.price_residual_no_compute)" type="text" style="width: 100%;text-align: center;"/></td>
+                                    <td style="border:1px solid black;width:85px;"><input class="o_price_used" t-on-change="_onValueChange" t-att-value="env.pos.format_currency(env.pos.selectedOrder.data_voucher[num].value.price_used)" type="text" style="width: 100%;text-align: center;"/></td>
                                 </t>
                                 <t t-else="">
-                                    <td class="o_table_type" style="border:1px solid black;width:85px;">eeee</td>
-                                    <td class="o_table_end_date" style="border:1px solid black;width:85px;">eee</td>
+                                    <td class="o_table_type" style="border:1px solid black;width:85px;"></td>
+                                    <td class="o_table_end_date" style="border:1px solid black;width:85px;"></td>
                                     <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
                                     <td style="border:1px solid black;width:85px;"><input class="o_price_used" readonly="True" type="text" style="width: 100%;text-align: center;"/></td>
                                 </t>

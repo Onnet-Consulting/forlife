@@ -95,7 +95,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
         }
 
         _deleteValue(ev){
-            this._onValueChange()
+//            this._onValueChange()
             var self = this;
             var data = this.state.data;
             $('.o_table_type').each(function( index ) {
@@ -140,36 +140,39 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 }
             }
             this.state.data = data;
+            for(let i = 0; i< this.env.pos.selectedOrder.data_voucher.length; i++){
+                if(i == id){
+                    this.env.pos.selectedOrder.data_voucher[i].value = false;
+                }
+            }
 
         }
 
         _onValueChange() {
-            var data = this.state.data;
             var self = this;
             self.state.valid = true;
-            if(data != false){
+            if(this.env.pos.selectedOrder.data_voucher != false){
                     $('.o_price_used').each(function( index ){
-                        if(data[index].value !== false && self.state.error[index].length == 0){
+                        if(self.env.pos.selectedOrder.data_voucher[index].value !== false){
                             let price_used = $(this).val()
                             let price_used_convert = parseInt(price_used.split('.').join('').replace('₫',''))
-                            if(price_used_convert > parseInt(data[index].value.price_residual)){
+                            if(price_used_convert > parseInt(self.env.pos.selectedOrder.data_voucher[index].value.price_residual_no_compute)){
                                 self.state.valid = false;
-                                data[index].value.price_change = price_used_convert
+                                self.env.pos.selectedOrder.data_voucher[index].value.price_used = price_used_convert
                                 $(this).css('color', 'red');
                             }
-                            if(price_used_convert <= parseInt(data[index].value.price_residual)){
-                                data[index].value.price_change = price_used_convert
+                            if(price_used_convert <= parseInt(self.env.pos.selectedOrder.data_voucher[index].value.price_residual_no_compute)){
+                                self.env.pos.selectedOrder.data_voucher[index].value.price_change = price_used_convert
                                 $(this).css('color', '#444');
                             }
                         }
                 })
             }
-            this.state.data = data;
-
+            this.state.data = this.env.pos.selectedOrder.data_voucher;
+            console.log(this.state.data)
         }
 
         async check() {
-            this.env.pos.selectedOrder.data_voucher = false;
             this.state.data = false;
             this.state.trigger = false;
             this.state.error = [];
@@ -191,6 +194,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 }
 
             });
+            this.env.pos.selectedOrder.data_voucher = false;
             var pos_brand = false;
             for(let i=0; i<this.env.pos.pos_branch.length; i++){
                 pos_brand = this.env.pos.pos_branch[i].id
