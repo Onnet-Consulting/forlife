@@ -1,4 +1,4 @@
-from unittest.case import _id
+# -*- coding: utf-8 -*-
 
 from odoo import models, fields, _, api
 
@@ -46,7 +46,7 @@ class PosOrder(models.Model):
             'brand_id': voucher_program.brand_id.id,
             'store_ids': [(6, False, voucher_program.store_ids.ids)],
             'start_date': voucher_program.start_date,
-            'state': 'new',
+            'state': 'sold',
             'partner_id': pos_order.partner_id.id,
             'price': program.voucher_price,
             'price_used': 0,

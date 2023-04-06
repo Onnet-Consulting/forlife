@@ -9,6 +9,13 @@
                 <xpath expr="//field[@name='categ_id']" position="after">
                     <field name="number_days_change_refund"/>
                 </xpath>
+
+                <xpath expr="//div[@name='options']" position="inside">
+                    <span class="d-inline-block">
+                        <field name="is_product_auto"/>
+                        <label for="is_product_auto"/>
+                    </span>
+                </xpath>
             </field>
         </record>
     </data>

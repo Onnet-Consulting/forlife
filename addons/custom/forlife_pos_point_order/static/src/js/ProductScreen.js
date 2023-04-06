@@ -42,6 +42,8 @@ odoo.define('forlife_pos_point_order.ProductScreen', function (require) {
                 for(var i =0; i< this.currentOrder.orderlines.length; i++){
                     this.currentOrder.orderlines[i].point = 0
                 }
+                this.currentOrder.total_order_line_point_used = 0
+                this.currentOrder.total_order_line_redisual = 0
             }
             if (confirmed) {
                 this.currentOrder.set_partner(newPartner);
