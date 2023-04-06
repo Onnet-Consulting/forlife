@@ -39,6 +39,13 @@ export class PromotionButton extends PosComponent {
                 order.orderlines.add(order._createLineFromVals(options));
             }
         }
+        // Kiểm tra phần thưởng cho chương trình giới thiệu KH mới
+        for (let program of selectedProgramsList) {
+            if (program.reward_for_referring) {
+                order.reward_for_referring = true;
+                order.referred_code_id = program.codeObj;
+            }
+        }
 //        for (let newLine of newLines) {
 //            if (newLine.hasOwnProperty('reward_products')) {
 //                if (newLine.reward_products.reward_product_ids) {
@@ -107,7 +114,9 @@ export class PromotionButton extends PosComponent {
             discounted_amount: 0.0,
             forecasted_discounted_amount: 0.0,
             reward_type: pro.program.reward_type,
-            reward_product_ids: pro.program.reward_product_ids
+            reward_product_ids: pro.program.reward_product_ids,
+            reward_for_referring: pro.program.reward_for_referring,
+            codeObj: pro.program.codeObj
         }));
 
         const { confirmed, payload } = await this.showPopup('ProgramSelectionPopup', {
