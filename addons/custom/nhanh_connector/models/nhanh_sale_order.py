@@ -21,23 +21,23 @@ class SaleOrderNhanh(models.Model):
         for rec in self:
             if 'state' in vals and rec.nhanh_id:
 
-                self.synchronized_price_nhanh(rec.state, rec)
+                self.synchronized_price_nhanh(rec.state)
         return res
 
-    def synchronized_price_nhanh(self, odoo_st, rec):
+    def synchronized_price_nhanh(self, odoo_st):
         status = 'Confirming'
         if odoo_st == 'draft':
-            status = 'Confirmed'
+            status = 'confirmed'
         elif odoo_st == 'send':
-            status = 'Confirming'
+            status = 'confirming'
         elif odoo_st == 'sale':
-            status = 'Confirmed'
+            status = 'confirmed'
         elif odoo_st == 'done':
-            status = 'Success'
+            status = 'success'
         elif odoo_st == 'cancel':
-            status = 'Canceled'
+            status = 'canceled'
         try:
-            res_server = constant.get_post_status(self, status, rec)
+            res_server = constant.get_post_status(self, status)
         except Exception as ex:
             _logger.info(f'Get orders from NhanhVn error {ex}')
             return False
