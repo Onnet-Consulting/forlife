@@ -28,11 +28,12 @@
 					<attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//div[@name='date_planned_div']" position="after">
-                    <field name="receive_date"/>
+                    <field name="source_location_id" required="1"/>
+                    <field name="location_id" required="1"/>
+                    <field name="source_document"/>
                     <field name="inventory_status"/>
                     <field name="invoice_status"/>
-                    <field name="picking_type_id"/>
-                    <field name="source_document"/>
+<!--                    <field name="picking_type_id"/>-->
                     <field name="has_contract"/>
                     <field name="has_contract_commerce"/>
                     <field name="note"/>

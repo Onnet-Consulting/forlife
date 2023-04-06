@@ -23,8 +23,6 @@
 
     'data': [
         'security/ir.model.access.csv',
-        'views/product_inherit_view.xml',
-        'views/product_category.xml',
-        'views/product_attribute.xml'
+        'views/product_inherit_view.xml'
     ]
 }

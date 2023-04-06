@@ -1,6 +1,6 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-from datetime import date
+from datetime import date, datetime
 import re
 import base64
 import xlsxwriter
@@ -13,11 +13,11 @@ class PurchaseRequest(models.Model):
 
     name = fields.Char(string="Request name", required=True, default='New', copy=False)
     # wo_code = fields.Char(string="Work Order Code")
-    user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
+    # user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
     employee_id = fields.Many2one('hr.employee', string='User Request', required=True)
     department_id = fields.Many2one('hr.department', string='Department', required=True)
-    date_planned = fields.Datetime(string='Expected Arrival', required=True)
-    request_date = fields.Date(string='Request date', default=lambda self: fields.Date.context_today(self))
+    date_planned = fields.Datetime(string='Expected Arrival', required=True,  widget='datetime', options={'format': 'DD-MM-YYYY HH:mm:ss'})
+    request_date = fields.Date(string='Request date', default=lambda self: fields.Date.context_today(self), required=True, options={'format': 'DD-MM-YYYY'})
     order_lines = fields.One2many('purchase.request.line', 'request_id', copy=True)
     order_ids = fields.One2many('purchase.order', 'request_id')
     rejection_reason = fields.Char(string="Rejection_reason")
@@ -38,6 +38,10 @@ class PurchaseRequest(models.Model):
                    ], tracking=True)
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company.id)
     # approval_logs_ids = fields.One2many('approval.logs', 'purchase_request_id')
+
+
+    #check button orders_smart_button
+    is_check_button_orders_smart_button = fields.Boolean(default=False)
 
 
 
@@ -96,7 +100,7 @@ class PurchaseRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu yêu cầu mua hàng'),
-            'template': '/purchase_request/static/src/xlsx/template_pr.xlsx?download=true'
+            'template': '/purchase_request/static/src/xlsx/import_template_pr.xlsx?download=true'
         }]
 
     def orders_smart_button(self):
@@ -108,6 +112,14 @@ class PurchaseRequest(models.Model):
             'view_mode': 'tree,form',
             'domain': [('purchase_request_ids', '=', self.id)],
         }
+
+    @api.constrains('request_date', 'date_planned')
+    def constrains_request_date(self):
+        for item in self:
+            request_date_format = datetime.combine(item.request_date, datetime.min.time())
+            if item.request_date and item.date_planned:
+                if request_date_format > item.date_planned:
+                    raise ValidationError(_("Expected Arrival must be greater than request date"))
 
     @api.model
     def create(self, vals):
@@ -127,6 +139,7 @@ class PurchaseRequest(models.Model):
         return super(PurchaseRequest, self).unlink()
 
     def create_purchase_orders(self):
+        self.is_check_button_orders_smart_button = True
         order_lines_ids = self.filtered(lambda r: r.state != 'close').order_lines.filtered(lambda r: r.is_close == False).ids
         order_lines_groups = self.env['purchase.request.line'].read_group(domain=[('id', 'in', order_lines_ids)],
                                     fields=['product_id', 'vendor_code', 'product_type'],
@@ -134,7 +147,7 @@ class PurchaseRequest(models.Model):
         purchase_order = self.env['purchase.order']
         for rec in self:
             if rec.state != 'approved':
-                raise ValidationError('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Approved!')
+                raise ValidationError('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt!')
         for group in order_lines_groups:
             domain = group['__domain']
             vendor_code = group['vendor_code']
@@ -145,6 +158,8 @@ class PurchaseRequest(models.Model):
             po_ex_line_data = []
             po_cost_line_data = []
             for line in purchase_request_lines:
+                if line.purchase_quantity == line.order_quantity:
+                    continue
                 if line.is_no_more_quantity or line.is_close:
                     continue
                 po_line_data.append((0, 0, {
@@ -153,7 +168,6 @@ class PurchaseRequest(models.Model):
                     'purchase_quantity': line.purchase_quantity - line.order_quantity,
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
-                    # 'product_uom': line.purchase_uom.id,
                     'purchase_uom': line.purchase_uom.id,
                     'request_purchases': line.purchase_request,
                 }))
@@ -201,13 +215,6 @@ class PurchaseRequest(models.Model):
         for rec in self:
             rec.is_no_more_quantity = all(rec.order_lines.mapped('is_no_more_quantity'))
 
-    @api.constrains('request_date', 'date_planned')
-    def constrains_request_date(self):
-        for item in self:
-            if item.request_date > item.date_planned.date():
-                raise ValidationError(_("Expected Arrival must be greater than request date"))
-
-
 class PurchaseRequestLine(models.Model):
     _name = "purchase.request.line"
     _description = "Purchase Request Line"
@@ -216,21 +223,20 @@ class PurchaseRequestLine(models.Model):
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     asset_description = fields.Char(string="Asset description")
-    description = fields.Char(string="Description", store=1)
+    description = fields.Char(string="Description", store=1, related='product_id.name')
     vendor_code = fields.Many2one('res.partner', string="Vendor")
-    production_id = fields.Many2one(string='Production Order Code', related='request_id.production_id')
+    production_id = fields.Many2one(string='Production Order Code', related='request_id.production_id', store=1)
     request_id = fields.Many2one('purchase.request')
-    date_planned = fields.Datetime(string='Expected Arrival', related='request_id.date_planned')
-    request_date = fields.Date(string='Request date')
-    purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure')
-    purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase')
-    product_uom = fields.Many2one('uom.uom', string='UOM Product', related='product_id.uom_id')
-    exchange_quantity = fields.Float('Exchange Quantity')
-    account_analytic_id = fields.Many2one(string='Account Analytic Account', related='request_id.account_analytic_id')
+    date_planned = fields.Datetime(string='Expected Arrival', related='request_id.date_planned', store=1)
+    request_date = fields.Date(string='Request date', related='request_id.request_date')
+    purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
+    purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', related='product_id.uom_id', store=1)
+    exchange_quantity = fields.Float('Exchange Quantity', required=True)
+    account_analytic_id = fields.Many2one(string='Account Analytic Account', related='request_id.account_analytic_id', store=1)
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
     order_quantity = fields.Integer('Quantity Order', compute='_compute_order_quantity', store=1)
     is_no_more_quantity = fields.Boolean(compute='_compute_is_no_more_quantity', store=1)
-    product_qty = fields.Float(string='Quantity', digits=(16, 0), required=True)
+    product_qty = fields.Float(string='Quantity', digits=(16, 0), compute='_compute_product_qty')
     purchase_request = fields.Char(related='request_id.name')
     state = fields.Selection(
         string="Status",
@@ -241,6 +247,14 @@ class PurchaseRequestLine(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
+
+    @api.depends('purchase_quantity', 'exchange_quantity')
+    def _compute_product_qty(self):
+        for line in self:
+            if line.purchase_quantity and line.exchange_quantity:
+                line.product_qty = line.purchase_quantity * line.exchange_quantity
+            else:
+                line.product_qty = line.purchase_quantity
 
     @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.state')
     def _compute_order_quantity(self):

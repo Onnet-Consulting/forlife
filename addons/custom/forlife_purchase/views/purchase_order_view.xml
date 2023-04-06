@@ -71,15 +71,19 @@
                 <xpath expr="//field[@name='payment_term_id']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//field[@name='currency_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//field[@name='currency_id']" position="before">
                     <field name="partner_domain" invisible="1"/>
                     <field name="partner_id" string="Nhà cung cấp" domain="partner_domain"/>
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type"/>
+                     <field name="currency_id"/>
+                    <field name="exchange_rate"/>
                     <field name="purchase_code"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
-                    <field name="exchange_rate"/>
                     <field name="active_manual_currency_rate" invisible="1"/>
                     <!--                    <field name="apply_manual_currency_exchange" invisible="1"/>-->
                     <field name="manual_currency_exchange_rate"
@@ -88,14 +92,17 @@
                 <xpath expr="//field[@name='date_order']" position="before">
                     <field name="has_contract"/>
                     <field name="has_invoice"/>
-                    <field name="source_location_id" required="1"/>
-                    <field name="location_id" required="1"/>
                 </xpath>
                 <xpath expr="//field[@name='date_order']" position="after">
                     <field name="payment_term_id"/>
+                    <field name="receive_date"/>
                 </xpath>
                 <xpath expr="//field[@name='date_order']" position="replace">
                     <field name="date_order" string="Order Date"/>
+                </xpath>
+                <xpath expr="//field[@name='tax_totals']" position="after">
+                    <field name="trade_discount"/>
+                    <field name="total_trade_discount"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree" position="replace">
                     <tree editable="bottom" class="width-hh">

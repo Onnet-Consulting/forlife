@@ -1180,6 +1180,12 @@ msgid "Unit Price"
 msgstr "Đơn giá"
 
 #. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__cost_price_from
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__cost_price
+msgid "Cost Price"
+msgstr "Gíá vốn"
+
+#. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__total_out
 msgid "Total Out"
 msgstr "Tổng tiền xuất"

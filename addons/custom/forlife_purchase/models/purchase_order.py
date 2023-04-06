@@ -69,6 +69,25 @@ class PurchaseOrder(models.Model):
     receive_date = fields.Datetime(string='Receive Date')
     note = fields.Char('Note')
     source_location_id = fields.Many2one('stock.location', string="Địa điểm nguồn")
+    trade_discount = fields.Float(string='Chiết khấu thương mại')
+    total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại')
+    is_trade_discount = fields.Selection(
+        selection=[('trade_discount', 'Trade discount'),
+                   ('total', 'Total')])
+
+    @api.onchange('trade_discount', 'tax_totals', 'total_trade_discount')
+    def onchange_total_trade_discount(self):
+        if not self.trade_discount:
+            self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_total') * 100
+            self.is_trade_discount = 'trade_discount'
+        if not self.total_trade_discount:
+            self.total_trade_discount = self.tax_totals.get('amount_total')/ self.trade_discount
+            self.is_trade_discount = 'total'
+        if self.is_trade_discount == 'trade_discount':
+            self.trade_discount = self.total_trade_discount / self.tax_totals.get('amount_total') * 100
+        elif self.is_trade_discount == 'total':
+            self.total_trade_discount = self.tax_totals.get('amount_total') / self.trade_discount
+
 
     @api.depends('is_inter_company')
     def compute_partner_domain(self):

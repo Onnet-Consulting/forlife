@@ -7,7 +7,6 @@ from . import barcode
 from . import product
 from . import barcode
 from . import res_partner
-from . import supplier_group
 from . import forlife_bom
 from . import stock_warehouse
 from . import product_supplierinfo

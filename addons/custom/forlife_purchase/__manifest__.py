@@ -12,6 +12,7 @@
         'base',
         'forlife_base',
         'purchase_stock',
+        'forlife_pos_app_member',
         'web_domain_field'
     ],
     "data": [

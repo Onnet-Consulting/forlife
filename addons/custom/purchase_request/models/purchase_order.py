@@ -41,9 +41,9 @@ class PurchaseOrder(models.Model):
                 if not line.purchase_request_line_id:
                     continue
                 purchase_request_line = line.purchase_request_line_id
-                purchase_request_name = purchase_request_line.request_id.name
-                if (line.product_qty + purchase_request_line.order_quantity) > purchase_request_line.purchase_quantity:
-                    raise ValidationError('Số lượng sản phẩm %s còn lại không đủ!\nVui lòng check Purchase Request %s.' % (line.product_id.name, purchase_request_name))
+                # purchase_request_name = purchase_request_line.request_id.name
+                # if (line.product_qty + purchase_request_line.order_quantity) > purchase_request_line.purchase_quantity:
+                #     raise ValidationError('Số lượng sản phẩm %s còn lại không đủ!\nVui lòng check Purchase Request %s.' % (line.product_id.name, purchase_request_name))
         res = super(PurchaseOrder, self).action_approved()
         for rec in self:
             # rec.write({
