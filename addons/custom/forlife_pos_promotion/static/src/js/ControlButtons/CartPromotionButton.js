@@ -30,6 +30,7 @@ export class CartPromotionButton extends PosComponent {
         let orderLines = order.get_orderlines();
         let selections = this._prepareRewardData(optionPrograms);
         let [newLines, remainingOrderLines] = order.computeForListOfCartProgram(orderLines, selections);
+        let toRemoveLines = []
         remainingOrderLines.forEach(line => {
             let qty = line.get_quantity();
             let qty_orig = parseFloat(line.quantityStr);
@@ -37,9 +38,12 @@ export class CartPromotionButton extends PosComponent {
                 line.set_quantity(line.get_quantity());
             };
             if (line.quantity == 0) {
-                order.remove_orderline(line);
+                toRemoveLines.push(line);
             };
         });
+        for (let line of toRemoveLines) {
+            order.remove_orderline(line);
+        }
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);
