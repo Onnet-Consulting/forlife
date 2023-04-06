@@ -31,9 +31,7 @@
                                 <field name="dept_code"/>
                                 <field name="comment"/>
                                 <field name="employee"/>
-                                <field name="elavation_group_1"/>
-                                <field name="elavation_group_2"/>
-                                <field name="elavation_group_3"/>
+                                <field name="category_product"/>
                             </group>
                         </group>
                     </sheet>
@@ -57,6 +55,7 @@
                                 <field name="capacity"/>
                                 <field name="made_year"/>
                                 <field name="made_in"/>
+                                <field name="category_product"/>
                 </tree>
             </field>
         </record>
