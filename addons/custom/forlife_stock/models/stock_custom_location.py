@@ -11,10 +11,7 @@ class Location(models.Model):
     valuation_out_account = fields.Many2one("account.account", string="Tài khoản định giá tồn kho (xuất hàng)")
     valuation_in_account = fields.Many2one("account.account", string="Tài khoản định giá tồn kho (nhập hàng)")
     reason_type_id = fields.Many2one('forlife.reason.type')
-    work_order = fields.Many2one('forlife.production', string='Work Order')
-
     is_price_unit = fields.Boolean(default=False)
-    is_work_order = fields.Boolean(default=False)
 
     @api.onchange('type_other')
     def _onchange_type_other(self):
@@ -23,8 +20,6 @@ class Location(models.Model):
                 r.usage = 'supplier'
             elif r.type_other == 'outcoming':
                 r.usage = 'import/export'
-
-
 
 
 class StockMove(models.Model):

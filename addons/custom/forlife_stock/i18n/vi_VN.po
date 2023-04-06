@@ -177,7 +177,7 @@ msgstr ""
 #. module: forlife_stock
 #: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
 msgid "Create date"
-msgstr "Ngày tạo"
+msgstr ""
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__created_stock_transfer
@@ -285,7 +285,7 @@ msgstr "Bạn có muốn hủy không"
 #. module: forlife_stock
 #: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
 msgid "Document"
-msgstr "Tài liệu"
+msgstr ""
 
 #. module: forlife_stock
 #: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state__done
@@ -740,7 +740,7 @@ msgstr "Mã phiếu"
 #. module: forlife_stock
 #: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
 msgid "Reference Document"
-msgstr "Tài liệu gốc"
+msgstr ""
 
 #. module: forlife_stock
 #: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state_request__reject
@@ -763,12 +763,12 @@ msgstr "Lý do từ chối"
 #. module: forlife_stock
 #: model:ir.actions.act_window,name:forlife_stock.reject_stock_request_wizard
 msgid "Reject Stock Transfer Request"
-msgstr "Từ chối phiếu yêu cầu điều chuyển"
+msgstr ""
 
 #. module: forlife_stock
 #: model:ir.model,name:forlife_stock.model_reject_stock_transfer_request
 msgid "Reject stock transfer request"
-msgstr "Từ chối phiếu yêu cầu điều chuyển"
+msgstr ""
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_reject_stock_transfer_request__rejection_reason
@@ -1067,13 +1067,6 @@ msgid "Whs To"
 msgstr "Đến kho"
 
 #. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__date_planned
-#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request_line__date_planned
-#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
-msgid "Expected Arrival"
-msgstr "Hạn xử lý"
-
-#. module: forlife_stock
 #. odoo-python
 #: code:addons/forlife_stock/models/hr_asset_transfer.py:0
 #, python-format
@@ -1296,16 +1289,6 @@ msgid "Is Price Unit"
 msgstr "Có dùng đơn giá"
 
 #. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_stock_location__is_work_order
-msgid "Is Work Order"
-msgstr "Có Lệnh sản xuất"
-
-#. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_stock_location__work_order
-msgid "Work Order"
-msgstr "Lệnh sản xuất"
-
-#. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_move__reason_id
 #: model_terms:ir.ui.view,arch_db:forlife_stock.reject_asset_wizard_form
 msgid "Reason"
@@ -1315,23 +1298,3 @@ msgstr "Lý do"
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_move__occasion_code_id
 msgid "Occasion Code"
 msgstr "Vụ việc"
-
-#. module: forlife_stock
-#: model:ir.actions.act_window,name:forlife_stock.transfer_stock_inventory_wizard
-msgid "Reject/Cancel Transfer Stock Inventory"
-msgstr "Từ chối/Hủy phiếu kiểm kê cân tồn"
-
-#. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__create_date
-msgid "Created on"
-msgstr "Ngày tạo"
-
-#. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__validate_date
-msgid "Validate Date"
-msgstr "Ngày xác nhận"
-
-#. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__cancel_date
-msgid "Cancel Date"
-msgstr "Ngày hủy"

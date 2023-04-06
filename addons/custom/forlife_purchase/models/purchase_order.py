@@ -1,5 +1,3 @@
-import datetime
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
@@ -39,7 +37,7 @@ class PurchaseOrder(models.Model):
     # apply_manual_currency_exchange = fields.Boolean(string='Apply Manual Exchange', compute='_compute_active_manual_currency_rate')
     manual_currency_exchange_rate = fields.Float('Rate', digits=(12, 6))
     active_manual_currency_rate = fields.Boolean('active Manual Currency', compute='_compute_active_manual_currency_rate')
-    production_id = fields.Many2one('forlife.production', string='Production Order Code', ondelete='restrict')
+    production_id = fields.Many2one('forlife.production', string='Production Order Code')
 
     # prod_filter = fields.Boolean(string='Filter Products by Supplier', compute='_compute_')
     # total_discount = fields.Monetary(string='Total Discount', store=True, readonly=True,
@@ -62,13 +60,13 @@ class PurchaseOrder(models.Model):
     is_inter_company = fields.Boolean(default=False)
     partner_domain = fields.Char(compute='compute_partner_domain')
     partner_id = fields.Many2one('res.partner', string='Vendor', required=True, states=READONLY_STATES, change_default=True, tracking=True, domain=False, help="You can find a vendor by its Name, TIN, Email or Internal Reference.")
-    occasion_code_ids = fields.Many2many('occasion.code', string="Case Code")
+    occasion_code_ids = fields.Many2many('occasion.code', relation='occasion_code_ref', string="Case Code")
     account_analytic_ids = fields.Many2many('account.analytic.account', relation='account_analytic_ref', string="Cost Center")
     is_purchase_request = fields.Boolean(default=False)
     source_document = fields.Char(string="Source Document")
     receive_date = fields.Datetime(string='Receive Date')
     note = fields.Char('Note')
-    source_location_id = fields.Many2one('stock.location', string="Địa điểm nguồn")
+
 
     @api.depends('is_inter_company')
     def compute_partner_domain(self):
@@ -81,127 +79,10 @@ class PurchaseOrder(models.Model):
             record.write({'custom_state': 'confirm'})
 
     def action_approved(self):
+        super(PurchaseOrder, self).button_confirm()
         for record in self:
-            if not record.is_inter_company:
-                super(PurchaseOrder, self).button_confirm()
-                record.write({'custom_state': 'approved'})
-            else:
-                data = {'partner_id': record.partner_id.id, 'purchase_type': record.purchase_type,
-                        'is_purchase_request': record.is_purchase_request, 'production_id': record.production_id.id,
-                        'event_id': record.event_id, 'currency_id': record.currency_id.id,
-                        'exchange_rate': record.exchange_rate,
-                        'manual_currency_exchange_rate': record.manual_currency_exchange_rate,
-                        'company_id': record.company_id.id, 'has_contract': record.has_contract,
-                        'has_invoice': record.has_invoice,
-                        'location_id': record.location_id.id, 'source_location_id': record.source_location_id.id,
-                        'date_order': record.date_order,
-                        'payment_term_id': record.payment_term_id.id,
-                        'date_planned': record.date_planned, 'receive_date': record.receive_date,
-                        'inventory_status': record.inventory_status, 'picking_type_id': record.picking_type_id.id,
-                        'source_document': record.source_document,
-                        'has_contract_commerce': record.has_contract_commerce, 'note': record.note,
-                        'receipt_reminder_email': record.receipt_reminder_email,
-                        'reminder_date_before_receipt': record.reminder_date_before_receipt,
-                        'dest_address_id': record.dest_address_id.id, 'purchase_order_id': record.id,
-                        'name': record.name
-                        }
-                order_line = []
-                uom = self.env.ref('uom.product_uom_unit').id
-                for line in record.order_line:
-                    data_product = {
-                                    'product_tmpl_id': line.product_id.product_tmpl_id.id,
-                                    'product_id': line.product_id.id, 'name': line.product_id.name,
-                                    'purchase_quantity': line.purchase_quantity,
-                                    'purchase_uom': line.purchase_uom.id,
-                                    'exchange_quantity': line.exchange_quantity,
-                                    'product_quantity': line.product_qty, 'vendor_price': line.vendor_price,
-                                    'price_unit': line.price_unit,
-                                    'product_uom': line.product_id.uom_id.id if line.product_id.uom_id else uom,
-                                    'location_id': line.location_id.id,
-                                    'taxes_id': line.taxes_id.id, 'price_tax': line.price_tax,
-                                    'discount_percent': line.discount_percent,
-                                    'discount': line.discount, 'event_id': line.event_id.id,
-                                    'production_id': line.production_id.id,
-                                    'billed': line.billed,
-                                    'account_analytic_id': line.account_analytic_id.id,
-                                    'receive_date': line.receive_date,
-                                    'tolerance': line.tolerance,
-                                    'price_subtotal': line.price_subtotal
-                                    }
-                    order_line.append(data_product)
-                supplier_sales_order = self.supplier_sales_order(data, order_line)
-                record.write({'custom_state': 'approved'})
+            record.write({'custom_state': 'approved'})
 
-    def supplier_sales_order(self, data, order_line):
-        company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
-        if company_partner:
-            data_all_picking = {}
-            account_move_line = []
-            order_line_so = []
-            for item in order_line:
-                key_location = data.get('location_id')
-                picking_line = (
-                    0, 0,
-                    {'product_id': item.get('product_id'), 'name': item.get('name'),
-                     'location_dest_id': item.get('location_id'), 'location_id': data.get('source_location_id'),
-                     'product_uom_qty': item.get('product_quantity'), 'price_unit': item.get('price_unit'),
-                     'product_uom': item.get('product_uom'), 'reason_id': data.get('location_id'), 'quantity_done': item.get('product_quantity')})
-                picking_master = {
-                    'state': 'done',
-                    'picking_type_id': self.env.ref('stock.picking_type_in').id,
-                    'partner_id': company_partner.id,
-                    'location_id': data.get('source_location_id'),
-                    'location_dest_id': data.get('location_id'),
-                    'scheduled_date': datetime.datetime.now(),
-                    'date_done': data.get('deceive_date'),
-                    'move_ids_without_package': [picking_line],
-                    'origin': data.get('name'),
-                }
-                if data_all_picking.get(key_location):
-                    data_all_picking.get(key_location).get('move_ids_without_package').append(picking_line)
-                else:
-                    data_all_picking.update({
-                        key_location: picking_master
-                    })
-                order_line_so.append((
-                    0, 0,
-                    {'product_id': item.get('product_id'),
-                     'name': item.get('name'),
-                     'product_uom_qty': item.get('product_quantity'), 'price_unit': item.get('price_unit'),
-                     'product_uom': item.get('product_uom'),
-                     'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
-                     'discount': item.get('discount')}))
-
-            master_so = {
-                'origin': data.get('name'),
-                'partner_id': company_partner.id,
-                'payment_term_id': data.get('payment_term_id'),
-                'state': 'sent',
-                'date_order': data.get('date_order'),
-                'order_line': order_line_so
-            }
-            data_so = self.env['sale.order'].create(master_so)
-            st_picking_out = data_so.action_confirm()
-            for item in data_so.picking_ids:
-                item.write({
-                    'location_id': data.get('source_location_id'),
-                    'location_dest_id': data.get('location_id')
-                })
-            invoice_ncc = self.env['sale.advance.payment.inv'].create({
-                'sale_order_ids': [(6, 0, data_so.ids)],
-                'advance_payment_method': 'delivered',
-                'deduct_down_payments': True,
-            }).forlife_create_invoices()
-            invoice_customer = invoice_ncc.copy()
-            invoice_customer.write({
-                'partner_id': data.get('partner_id')
-            })
-            for st in data_all_picking:
-                st_picking_in = self.env['stock.picking'].create(data_all_picking[st])
-            return True
-
-        else:
-            raise ValidationError('Nhà cung cấp của bạn chưa có đối tác')
 
     def action_reject(self):
         for record in self:
@@ -218,7 +99,7 @@ class PurchaseOrder(models.Model):
     @api.model
     def get_import_templates(self):
         return [{
-            'label': _('Tải xuống mẫu đơn mua hàng'),
+            'label': _('Download Template for Purchase Order'),
             'template': '/forlife_purchase/static/src/xlsx/TemplatePO.xlsx?download=true'
         }]
 
@@ -461,11 +342,6 @@ class PurchaseOrderLine(models.Model):
     readonly_discount_percent = fields.Boolean(default=False)
     billed = fields.Float(string='Billed')
     request_purchases = fields.Char(string='Purchases', readonly=1)
-    is_passersby = fields.Boolean(related='order_id.is_passersby')
-    supplier_id = fields.Many2one('res.partner', related='order_id.partner_id')
-    receive_date = fields.Datetime(string='Date receive')
-    tolerance = fields.Float(related='product_id.tolerance')
-    received = fields.Integer(string='Received')
 
     _sql_constraints = [
         (
@@ -475,27 +351,12 @@ class PurchaseOrderLine(models.Model):
         )
     ]
 
-    @api.onchange('product_id', 'supplier_id', 'is_passersby')
-    def onchange_vendor_price(self):
-        if not self.is_passersby:
-            if self.product_id and self.supplier_id:
-                data = self.env['product.supplierinfo'].search([('partner_id', '=', self.supplier_id.id), (
-                'product_tmpl_id' , '=', self.product_id.product_tmpl_id.id)])
-                if data:
-                    self.vendor_price = data.price
-
-    @api.onchange('product_id', 'order_id')
-    def onchange_receive_date(self):
-        if self.order_id:
-            self.receive_date = self.order_id.receive_date
-            self.location_id = self.order_id.location_id
-
     #discount
 
     @api.onchange("free_good")
     def _onchange_free_good(self):
         if self.free_good:
-            self.discount = self.discount_percent = False
+            self.vendor_price = self.discount = self.discount_percent = False
             self.readonly_discount_percent = self.readonly_discount = True
         else:
             self.readonly_discount_percent = self.readonly_discount = False

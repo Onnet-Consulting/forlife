@@ -7,8 +7,6 @@
     "description": """Forlife Stock""",
     "depends": [
         'hr',
-        'forlife_product',
-        'forlife_purchase',
         'purchase_request',
         'product',
         'base',
@@ -36,7 +34,6 @@
         'views/hr_asset_transfer_view.xml',
         'views/transfer_stock_inventory.xml',
         'views/inventory_adj_approval_view.xml',
-        'views/product_template.xml',
         'views/menus.xml',
         'views/stock_picking.xml',
         'views/stock_move.xml',
