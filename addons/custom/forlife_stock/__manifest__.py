@@ -7,6 +7,8 @@
     "description": """Forlife Stock""",
     "depends": [
         'hr',
+        'forlife_product',
+        'forlife_purchase',
         'purchase_request',
         'product',
         'base',

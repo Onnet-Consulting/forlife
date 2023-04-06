@@ -14,17 +14,23 @@ class PurchaseOrder(models.Model):
     event_id = fields.Many2one('forlife.event', string='Event Program')
     has_contract_commerce = fields.Boolean(string='Commerce Contract')
     rejection_reason = fields.Text()
+    is_check_line_material_line = fields.Boolean()
     # approval_logs_ids = fields.One2many('approval.logs', 'purchase_order_id')
     order_line_production_order = fields.Many2many('purchase.order.line',
                                                   compute='_compute_order_line_production_order',
                                                   inverse='_inverse_order_line_production_order')
 
+    @api.depends('order_line.product_id')
     def _compute_order_line_production_order(self):
         self = self.sudo()  # tối ưu tốc độ ghi dữ liệu
         product_in_production_order = self.env['production.order'].search([('type', '=', 'normal')]).mapped('product_id')
         for rec in self:
             order_line_production_order = rec.order_line.filtered(lambda r: r.product_id.id in product_in_production_order.ids)
             rec.order_line_production_order = [(6, 0, order_line_production_order.ids)]
+        if not order_line_production_order:
+            rec.is_check_line_material_line = True
+        else:
+            rec.is_check_line_material_line = False
 
     def _inverse_order_line_production_order(self):
         pass
@@ -35,9 +41,9 @@ class PurchaseOrder(models.Model):
                 if not line.purchase_request_line_id:
                     continue
                 purchase_request_line = line.purchase_request_line_id
-                purchase_request_name = purchase_request_line.request_id.name
-                if (line.product_qty + purchase_request_line.order_quantity) > purchase_request_line.purchase_quantity:
-                    raise ValidationError('Số lượng sản phẩm %s còn lại không đủ!\nVui lòng check Purchase Request %s.' % (line.product_id.name, purchase_request_name))
+                # purchase_request_name = purchase_request_line.request_id.name
+                # if (line.product_qty + purchase_request_line.order_quantity) > purchase_request_line.purchase_quantity:
+                #     raise ValidationError('Số lượng sản phẩm %s còn lại không đủ!\nVui lòng check Purchase Request %s.' % (line.product_id.name, purchase_request_name))
         res = super(PurchaseOrder, self).action_approved()
         for rec in self:
             # rec.write({

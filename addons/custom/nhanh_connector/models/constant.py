@@ -28,9 +28,9 @@ def base_url():
     return 'https://open.nhanh.vn/api'
 
 
-def get_post_status(self, status):
+def get_post_status(self, status, rec):
     nhanh_configs = get_nhanh_configs(self)
-    data = '{"id": "' + str(self.id) + '", "status": "' + status + '"}'
+    data = '{"orderId": "' + str(rec.nhanh_id) + '", "status": "' + status + '"}'
     url = f"{base_url()}/order/update?version=2.0&appId={nhanh_configs['nhanh_connector.nhanh_app_id']}" \
           f"&businessId={nhanh_configs['nhanh_connector.nhanh_business_id']}&accessToken={nhanh_configs['nhanh_connector.nhanh_access_token']}" \
           f"&data={data}"

@@ -5,9 +5,6 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <tree string="Stock Transfer Request" default_order="create_date desc" limit="25">
-                <header>
-                    <button name="create_stock_transfer" string="Create Stock Transfer" class="btn btn-primary ms-md-2" type="object"/>
-                </header>
                 <field name="name"/>
                 <field name="request_employee_id"/>
                 <field name="request_date"/>
@@ -38,13 +35,11 @@
                     <button string="Approve" name="action_approve" type="object"
                             attrs="{'invisible':[ ('state', 'in', ('draft','approved', 'done','cancel', 'reject'))]}"
                             groups="purchase_request.admin_purchase_request_group"/>
-                    <button string="Create Stock Transfer" name="action_create_stock_transfer" type="object"
-                            attrs="{'invisible':[('state', 'in', ('draft','wait_confirm', 'done', 'cancel', 'reject'))]} "/>
                     <button string="Reject " name="%(forlife_stock.reject_stock_request_wizard)d"
                             type="action" attrs="{'invisible':[('state', 'in', ('draft', 'approved', 'done', 'cancel', 'reject'))]}"/>
                     <button string="Cancel" name="action_cancel"
                             type="object" attrs="{'invisible':[('state', 'in', ('draft','done','cancel'))]}" confirm="Do you really want to cancel?"/>
-                    <button string="Done" name="action_done" type="object" invisible="1"/>
+                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'wait_confirm','reject','cancel','done'))]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -76,7 +71,7 @@
                                 <tree editable="bottom" class="width-hh width-first" decoration-muted="quantity_remaining == 0">
                                     <field name="product_id" domain="[('detailed_type', '=', 'product')]" options="{'no_create': True, 'no_edit': True}"/>
                                     <field name="plan_quantity"/>
-                                    <field name="uom_id"/>
+                                    <field name="uom_id" readonly="False"/>
                                     <field name="location_id" domain="[('usage', '=', 'internal')]"/>
                                     <field name="location_dest_id" domain="[('usage', '=', 'internal')]"/>
                                     <field name="quantity_reality_transfer" readonly="1"  force_save="1"/>
