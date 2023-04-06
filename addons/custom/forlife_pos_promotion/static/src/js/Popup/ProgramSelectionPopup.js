@@ -104,6 +104,11 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 
             let [newLinesToApply, remainingLines, combo_count] = this.env.pos.get_order().computeForListOfProgram(clone_order_lines, selectedPrograms);
 
+            let [newLinesToApplyCode, remainingLinesCode, code_count] = this.env.pos.get_order().computeForListOfCodeProgram(clone_order_lines, selectedPrograms, newLinesToApply);
+
+            newLinesToApply = newLinesToApplyCode;
+            remainingLines = remainingLinesCode
+
             this.setComboDetails(newLinesToApply);
 
             // todo: chương trình không có giảm giá thì kiểm tra promotion_usage_ids có undefined không?
@@ -162,7 +167,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             let computePro = function(p) {
                 var program = self.env.pos.get_program_by_id(p.id);
                 var reward_product_id = jQuery("#reward_product_selected_"+p.id).val();
-                program.reward_product_ids = new Set([parseInt(reward_product_id)]);
+                program.reward_product_id_selected = new Set([parseInt(reward_product_id)]);
                 return program;
             }
             return this.state.programs.filter(p => p.isSelected)

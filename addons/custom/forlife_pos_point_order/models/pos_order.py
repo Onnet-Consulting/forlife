@@ -19,6 +19,8 @@ class PosOrder(models.Model):
     allow_compensate_point = fields.Boolean(compute='_allow_compensate_point')
     point_addition_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
+    total_order_line_point_used = fields.Integer()
+    total_order_line_redisual = fields.Integer()
 
     @api.depends('lines', 'lines.point_addition', 'lines.point_addition_event')
     def _compute_item_total_point(self):
@@ -197,9 +199,9 @@ class PosOrder(models.Model):
         # if self._context.get('from_PointsConsumption'):
         #     data = data[0]
         if self._context.get('from_PointsConsumptionPos'):
-            create_Date = self._format_time_zone(data['date_order'].replace('T', ' ')[:19])
+            create_Date = data['date_order'].replace('T', ' ')[:19]
         else:
-            create_Date = self._format_time_zone(data['date_order'])
+            create_Date = data['date_order']
         session = self.env['pos.session'].sudo().search([('id', '=', data['session_id'])], limit=1)
         store = session.config_id.store_id
         # query = "select id from points_promotion where id in (select points_promotion_id from points_promotion_store_rel where store_id = {}) " \
@@ -325,3 +327,11 @@ class PosOrder(models.Model):
         }
         move = self.env['account.move'].create(move_vals)._post()
         return True
+
+    def _export_for_ui(self, order):
+        result = super(PosOrder, self)._export_for_ui(order)
+        result.update({
+            'total_order_line_point_used': order.total_order_line_point_used,
+            'total_order_line_redisual':order.total_order_line_redisual
+        })
+        return result

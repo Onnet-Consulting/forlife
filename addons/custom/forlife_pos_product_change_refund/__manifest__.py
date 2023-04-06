@@ -18,7 +18,9 @@
     'depends': [
         'point_of_sale',
         'forlife_pos_promotion',
-        'forlife_point_of_sale'
+        'forlife_point_of_sale',
+        'forlife_pos_point_order',
+        'forlife_voucher',
     ],
     'assets': {
         'point_of_sale.assets': [
@@ -31,8 +33,10 @@
     'data': [
         # Security
         'security/ir.model.access.csv',
+        'data/mail_template_data.xml',
         # Wizards
         # View
+        'views/handle_change_refund_views.xml',
         'views/store_views.xml',
         'views/pos_order_views.xml',
         'views/product_template_views.xml',

@@ -16,9 +16,9 @@ class OccasionGroup(models.Model):
 
     _description = 'Occasion Group'
 
-    code = fields.Char('Mã')
+    name = fields.Char('Mã')
     description = fields.Text('Mô tả')
 
     _sql_constraints = [
-        ('unique_code', 'UNIQUE(code)', 'Mã nhóm phải là duy nhất!')
+        ('unique_code', 'UNIQUE(name)', 'Mã nhóm phải là duy nhất!')
     ]

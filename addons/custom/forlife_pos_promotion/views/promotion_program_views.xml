@@ -27,6 +27,17 @@
                                 Promotion Codes</span>
                             </div>
                         </button>
+                        <button class="oe_stat_button" type="object" name="action_open_issued_vouchers" icon="fa-ticket"
+                                attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}"
+                        >
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="voucher_count"/>
+                                </span>
+                                <span class="o_stat_text" >
+                                Issued Voucher</span>
+                            </div>
+                        </button>
                         <button class="oe_stat_button" type="object" name="action_open_orders" icon="fa-list"
                                 attrs="{'invisible': [('total_order_count', '=', 0)]}"
                         >
@@ -115,7 +126,7 @@
                     </group>
                     <group string="Conditions" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
                         <field name="order_amount_min" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
-<!--                        <field name="incl_reward_in_order" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>-->
+                        <field name="incl_reward_in_order" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
                         <field name="product_ids" widget="many2many_tags"
                                attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
 <!--                        <field name="product_categ_ids" widget="many2many_tags"-->
@@ -138,6 +149,16 @@
                             <field name="disc_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_amount', 'code_amount'))]}"/>
 
+                            <field name="voucher_program_id"
+                                   attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')], 'required': [('reward_type', '=', 'cart_get_voucher')]}"/>
+                            <field name="voucher_product_id" invisible="1"/>
+                            <field name="voucher_product_variant_id"
+                                   attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')], 'required': [('reward_type', '=', 'cart_get_voucher')]}"/>
+                            <field name="voucher_price" force_save="1" readonly="1"
+                                   attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}"/>
+                            <field name="voucher_apply_product_ids" widget="many2many_tags"
+                                   attrs="{'invisible': [('reward_type', '!=', 'cart_get_voucher')]}"/>
+
                             <label for="disc_fixed_price" attrs="{'invisible': [('reward_type', 'not in', ('combo_fixed_price', 'code_fixed_price', 'cart_discount_fixed_price'))]}"/>
                             <div attrs="{'invisible': [('reward_type', 'not in', ('combo_fixed_price', 'code_fixed_price', 'cart_discount_fixed_price'))]}">
                                 <field name="disc_fixed_price"  class="oe_inline" widget="monetary" options="{'currency_field': 'currency_id'}"
@@ -154,15 +175,26 @@
                             </div>
 
                             <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
-                                   attrs="{'invisible': [('reward_type', 'not in', ('combo_percent'))]}"/>
+                                   attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent'))]}"/>
                             <field name="discount_product_ids"
                                    attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price'))]}"
                                    widget="many2many_tags"/>
                             <field name="reward_product_ids"
                                    attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"
                                    widget="many2many_tags"/>
-                            <field name="reward_quantity"
-                                   attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest'))]}"/>
+                            <label for="reward_quantity" string="Maximum Reward Quantity"
+                                    attrs="{'invisible': [('reward_type', 'not in',
+                                                        ('code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest'))]}"/>
+                            <label for="reward_quantity" string="Maximum Discounted Quantity"
+                                    attrs="{'invisible': [('reward_type', 'not in',
+                                                        ('cart_discount_percent', 'cart_discount_fixed_price'))]}"/>
+                            <div>
+                                <field name="reward_quantity" class="oe_inline"
+                                        attrs="{'invisible': [('reward_type', 'not in',
+                                                ('code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest',
+                                                'cart_discount_percent', 'cart_discount_fixed_price'))]}"/>
+                            </div>
+
                         </group>
                         <group/>
                         <group>
@@ -251,6 +283,7 @@
                 <separator/>
                 <group expand="0" string="Group By">
                     <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="Promotion Type" name="promotion_type" domain="[]" context="{'group_by':'promotion_type'}"/>
                 </group>
             </search>
         </field>

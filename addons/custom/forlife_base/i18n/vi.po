@@ -138,7 +138,6 @@ msgstr "Mã phòng ban phải là duy nhất"
 #. module: forlife_base
 #: model:ir.actions.act_window,name:forlife_base.res_state_district_action
 #: model:ir.model,name:forlife_base.model_res_state_district
-#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__district_id
 #: model:ir.ui.menu,name:forlife_base.res_state_district_menu
 msgid "District"
 msgstr "Quận/huyện"
@@ -185,15 +184,6 @@ msgstr "Kho hàng ký gửi"
 msgid "Location Province"
 msgstr "Khu vực địa lý"
 
-#. module: forlife_base
-#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__longitude
-msgid "Longitude"
-msgstr "Kinh độ"
-
-#. module: forlife_base
-#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__latitude
-msgid "Latitude"
-msgstr "Vĩ độ"
 
 #. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__manager_id
@@ -261,11 +251,6 @@ msgid "Square"
 msgstr "Diện tích kho"
 
 #. module: forlife_base
-#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__state_id
-msgid "State"
-msgstr "Tỉnh/thành phố"
-
-#. module: forlife_base
 #: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__status_ids
 msgid "Status"
 msgstr "Trạng thái"
@@ -287,8 +272,6 @@ msgstr "Mã NCC"
 #. module: forlife_base
 #: model:ir.actions.act_window,name:forlife_base.res_supplier_group_action
 #: model:ir.model,name:forlife_base.model_res_supplier_group
-#: model:ir.model.fields,field_description:forlife_base.field_res_partner__supplier_group_id
-#: model:ir.model.fields,field_description:forlife_base.field_res_users__supplier_group_id
 #: model:ir.ui.menu,name:forlife_base.res_supplier_group_menu
 #: model_terms:ir.ui.view,arch_db:forlife_base.res_supplier_group_view_tree
 msgid "Supplier Group"

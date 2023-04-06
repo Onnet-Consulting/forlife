@@ -19,10 +19,12 @@
         'point_of_sale',
         'forlife_point_of_sale',
         'forlife_promotion',
+        'forlife_voucher'
     ],
     'assets': {
         'point_of_sale.assets': [
             'forlife_pos_promotion/static/src/js/Promotion.js',
+            'forlife_pos_promotion/static/src/js/ProductScreen.js',
             'forlife_pos_promotion/static/src/js/ControlButtons/PromotionButton.js',
             'forlife_pos_promotion/static/src/js/ControlButtons/EnterCodeButton.js',
             'forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js',
@@ -31,6 +33,7 @@
             'forlife_pos_promotion/static/src/js/ControlButtons/CartPromotionButton.js',
             'forlife_pos_promotion/static/src/js/Popup/CartPromotionPopup.js',
             'forlife_pos_promotion/static/src/js/Popup/RewardSelectionCartPromotionPopup.js',
+            'forlife_pos_promotion/static/src/js/Popup/SurpriseRewardPopup.js',
 
             'forlife_pos_promotion/static/src/xml/ControlButtons/PromotionButton.xml',
             'forlife_pos_promotion/static/src/xml/ControlButtons/EnterCodeButton.xml',
@@ -43,6 +46,7 @@
             'forlife_pos_promotion/static/src/xml/ControlButtons/CartPromotionButton.xml',
             'forlife_pos_promotion/static/src/xml/Popup/CartPromotionPopup.xml',
             'forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml',
+            'forlife_pos_promotion/static/src/xml/Popup/SurpriseRewardPopup.xml',
 
             'forlife_pos_promotion/static/src/css/detail-product-popup.css',
             'forlife_pos_promotion/static/src/css/program-selection-popup.css',

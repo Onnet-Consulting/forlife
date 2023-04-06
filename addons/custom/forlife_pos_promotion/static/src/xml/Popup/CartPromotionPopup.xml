@@ -26,13 +26,16 @@
                                     <strong t-esc="program.selectedQty"/> sản phẩm đã áp dụng khuyến mãi
                                 </div>
                                 <div t-if="program.to_discount_lines.length > 0"  style="display: inline-block;" class="btn-primary">
-                                    <i title="Chọn SP giảm giá" t-on-click="() => this.select_reward(program.id)">Chọn SP giảm giá</i>
+                                    <i title="Chọn SP giảm giá" t-on-click="() => this.select_reward(program)">Chọn SP giảm giá</i>
                                 </div>
-                                <div t-if="program.to_reward_lines.length > 0"  style="display: inline-block;" class="btn-primary">
-                                    <i title="Chọn SP tặng" t-on-click="() => this.select_reward(program.id)">Chọn SP tặng</i>
+                                <div t-if="program.program.reward_type == 'cart_get_x_free'"  style="display: inline-block;" class="btn-primary">
+                                    <i title="Chọn SP tặng" t-on-click="() => this.select_reward(program)">Chọn SP tặng</i>
                                 </div>
-                                <div t-if="!(program.to_discount_lines.length > 0 || program.to_reward_lines.length > 0)">
+                                <div t-if="!(program.program.reward_type == 'cart_get_x_free' or program.program.reward_type == 'cart_get_voucher' or program.to_discount_lines.length > 0)">
                                     <span style="font-style: italic; color: brown">Mua thêm SP khuyến mãi của Chương trình để nhận ưu đãi</span>
+                                </div>
+                                <div t-if="program.program.reward_type == 'cart_get_voucher' and program.isSelected">
+                                    <span style="font-style: italic; color: blue">Tặng Voucher: <t t-esc="program.program.voucher_product_variant_id[1]"/> trị giá <strong t-esc="this.env.pos.format_currency(program.program.voucher_price)"/></span>
                                 </div>
                             </div>
                         </li>

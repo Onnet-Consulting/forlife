@@ -18,13 +18,15 @@ class PosOrderLine(models.Model):
             res[2].pop('reason_refund_id')
         return res
 
+    @api.depends('order_id.date_order', 'product_id.number_days_change_refund')
     def _compute_expire_change_refund_date(self):
         for r in self:
             r.expire_change_refund_date = r.order_id.date_order.date() + timedelta(days=r.product_id.number_days_change_refund)
 
+    @api.depends('qty', 'refunded_qty')
     def _compute_quantity_canbe_refund(self):
         for r in self:
-            r.quantity_canbe_refund = r.qty + r.quantity_refunded
+            r.quantity_canbe_refund = r.qty - r.refunded_qty
 
     def _export_for_ui(self, orderline):
         result = super()._export_for_ui(orderline)

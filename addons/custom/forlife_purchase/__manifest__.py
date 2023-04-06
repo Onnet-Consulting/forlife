@@ -10,11 +10,11 @@
         'purchase',
         'product',
         'base',
+        'forlife_base',
         'purchase_stock',
     ],
     "data": [
         'data/barcode_country_data.xml',
-        # 'data/stock_warehouse_type.xml',
         'security/purchase_security.xml',
         'security/ir.model.access.csv',
         'wizard/reject_purchase_order.xml',

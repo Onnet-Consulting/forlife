@@ -22,7 +22,7 @@ class BankLevel(models.Model):
     level = fields.Char('Cấp độ')
 
     def name_get(self):
-        return [(rec.id, '%s' % rec.code) for rec in self]
+        return [(rec.id, '%s' % rec.level) for rec in self]
 
     _sql_constraints = [
         ('unique_code', 'UNIQUE(code)', 'Code must be unique!')

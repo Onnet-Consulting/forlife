@@ -1,7 +1,7 @@
 odoo.define('forlife_voucher.voucher', function (require) {
 "use strict";
 
-    const { PosGlobalState, Order} = require('point_of_sale.models');
+    const { PosGlobalState, Order, Orderline} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
 
     class PosCollection extends Array {
@@ -53,6 +53,31 @@ odoo.define('forlife_voucher.voucher', function (require) {
                 this.voucherlines = voucherLines
             }
 
-    }
+    };
+    const PointsOrderLine = (Orderline) =>
+        class extends Orderline {
+            constructor(obj, options) {
+                super(...arguments);
+            }
+
+            init_from_JSON(json) {
+                super.init_from_JSON(...arguments);
+                this.is_voucher_conditional = json.is_voucher_conditional;
+            }
+
+            clone() {
+                let orderline = super.clone(...arguments);
+                orderline.is_voucher_conditional = this.is_voucher_conditional;
+                return orderline;
+            }
+
+            export_as_JSON() {
+                const json = super.export_as_JSON(...arguments);
+                json.is_voucher_conditional = this.is_voucher_conditional;
+                return json;
+            }
+
+        };
+Registries.Model.extend(Orderline, PointsOrderLine);
 Registries.Model.extend(Order, VoucherOrder);
 });
