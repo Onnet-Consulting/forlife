@@ -25,6 +25,4 @@ class AssetsAssets(models.Model):
     comment = fields.Text('Comment')
     quantity = fields.Integer('Quantity')
     employee = fields.Many2one('hr.employee', string='Employee')
-    elavation_group_1 = fields.Char(string='Elavation group 1')
-    elavation_group_2 = fields.Char(string='Elavation group 2')
-    elavation_group_3 = fields.Char(string='Elavation group 3')
+    category_product = fields.Many2one('product.category',string='Danh mục sản phẩm', domain=[('asset_group','=',True)])
