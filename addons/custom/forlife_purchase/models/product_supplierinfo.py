@@ -7,6 +7,9 @@ class SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     vendor_code = fields.Char(related='partner_id.code')
+    uom_product_tmpl = fields.Many2one(related="product_tmpl_id.uom_id")
+    uom_product = fields.Many2one(related="product_id.uom_id")
+
 
 
     @api.returns('self', lambda value: value.id)
@@ -25,6 +28,8 @@ class SupplierInfo(models.Model):
             if record.search_count([('date_start', '=', record.date_start),
                                     ('date_end', '=', record.date_end),
                                     ('partner_id', '=', record.partner_id.id),
+                                    ('uom_product_tmpl', '=', record.uom_product_tmpl.id),
+                                    ('uom_product', '=', record.uom_product.id),
                                     ('product_id', '=', record.product_id.id),
                                     ('product_tmpl_id', '=', record.product_tmpl_id.id),
                                     ('id', '!=', record.id)]) > 1:
