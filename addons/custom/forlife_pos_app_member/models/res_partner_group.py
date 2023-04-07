@@ -13,7 +13,8 @@ class ResPartnerGroup(models.Model):
                                     string='Type', default='customer', required=True)
     auto_generate = fields.Boolean(string='Auto Generate Code', default=True,
                                    help="If true, we'll generate partner's reference by group's sequence field.\n "
-                                        "Otherwise, use group's code to add prefix to partner's reference", required=True)
+                                        "Otherwise, use group's code to add prefix to partner's reference",
+                                   required=True)
     sequence_id = fields.Many2one('ir.sequence', string='Sequence')
 
     _sql_constraints = [
@@ -25,7 +26,7 @@ class ResPartnerGroup(models.Model):
         for value in vals_list:
             auto_generate = value.get('auto_generate')
             code = value.get('code')
-            if auto_generate:
+            if auto_generate and code:
                 sequence = self.env['ir.sequence'].sudo().create({
                     'name': value.get('name'),
                     'prefix': code,
