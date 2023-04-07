@@ -262,7 +262,6 @@ class PromotionProgram(models.Model):
         if not self.promotion_type:
             self.reward_type = False
         elif self.promotion_type == 'combo':
-            self.with_code = False
             if self.reward_type and not self.reward_type.startswith('combo'):
                 self.reward_type = 'combo_amount'
         elif self.promotion_type == 'code':
