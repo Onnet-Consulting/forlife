@@ -20,6 +20,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 check_error: false,
                 data: false,
                 valid: true,
+                data_old: false
             });
         }
 
@@ -38,6 +39,9 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
 
         confirm() {
             var data = this.state.data;
+            if(!data){
+                data = this.env.pos.selectedOrder.data_voucher;
+            };
             if(!data) return;
             var self = this;
             var check_error = this.state.check_error
@@ -139,7 +143,6 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     data[i].value = false;
                 }
             }
-            this.state.data = data;
             for(let i = 0; i< this.env.pos.selectedOrder.data_voucher.length; i++){
                 if(i == id){
                     this.env.pos.selectedOrder.data_voucher[i].value = false;
@@ -162,14 +165,13 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                                 $(this).css('color', 'red');
                             }
                             if(price_used_convert <= parseInt(self.env.pos.selectedOrder.data_voucher[index].value.price_residual_no_compute)){
-                                self.env.pos.selectedOrder.data_voucher[index].value.price_change = price_used_convert
+                                self.env.pos.selectedOrder.data_voucher[index].value.price_used = price_used_convert
                                 $(this).css('color', '#444');
                             }
                         }
                 })
             }
             this.state.data = this.env.pos.selectedOrder.data_voucher;
-            console.log(this.state.data)
         }
 
         async check() {
@@ -194,7 +196,6 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 }
 
             });
-            this.env.pos.selectedOrder.data_voucher = false;
             var pos_brand = false;
             for(let i=0; i<this.env.pos.pos_branch.length; i++){
                 pos_brand = this.env.pos.pos_branch[i].id
@@ -344,6 +345,13 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
 //               }
 //            }
             this.state.data = data;
+            this.state.data_old = data;
+            for(let i=0;i<this.state.data_old.length;i++){
+                if(this.state.data_old[i].value != false){
+                    this.state.data_old[i].value.priority = i+1
+                }
+            }
+            this.env.pos.selectedOrder.data_voucher = false;
         }
     }
 

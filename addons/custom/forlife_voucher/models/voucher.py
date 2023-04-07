@@ -137,7 +137,9 @@ class Voucher(models.Model):
                             'start_date': start_date_format,
                             'apply_contemp_time': vourcher.apply_contemp_time,
                             'product_apply_ids': vourcher.product_apply_ids.ids,
-                            'is_full_price_applies': vourcher.is_full_price_applies
+                            'is_full_price_applies': vourcher.is_full_price_applies,
+                            'using_limit': vourcher.program_voucher_id.using_limit,
+                            'program_voucher_id': vourcher.program_voucher_id.id
                         }
                     })
                 if not vourcher:
