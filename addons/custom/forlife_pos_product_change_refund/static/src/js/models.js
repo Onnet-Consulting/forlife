@@ -3,7 +3,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
     "use strict";
 
     const Registries = require('point_of_sale.Registries');
-    var {Order, Orderline, PosGlobalState} = require('point_of_sale.models');
+    var {Order,Orderline} = require('point_of_sale.models');
 
     const OrderGetPhone = (Order) => class extends Order{
 
@@ -78,7 +78,6 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             super(...arguments);
             this.expire_change_refund_date = this.expire_change_refund_date || '';
             this.quantity_canbe_refund = this.quantity_canbe_refund || 0;
-            this.reason_refund_id = this.reason_refund_id || 0;
             // manhld
             this.approvalStatus = this.approvalStatus || false;
             this.check_button = this.check_button || false;
@@ -90,7 +89,6 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             super.init_from_JSON(...arguments);
             this.expire_change_refund_date = json.expire_change_refund_date || '';
             this.quantity_canbe_refund = json.quantity_canbe_refund || 0;
-            this.reason_refund_id = json.reason_refund_id;
             // manhld
             this.approvalStatus = json.approvalStatus || false;
             this.check_button = json.check_button || false;
@@ -102,7 +100,6 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             let orderline = super.clone(...arguments);
             orderline.expire_change_refund_date = this.expire_change_refund_date;
             orderline.quantity_canbe_refund = this.quantity_canbe_refund;
-            orderline.reason_refund_id = this.reason_refund_id;
             // manhld
             orderline.approvalStatus = this.approvalStatus;
             orderline.check_button = this.check_button;
@@ -115,7 +112,6 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             const json = super.export_as_JSON(...arguments);
             json.expire_change_refund_date = this.expire_change_refund_date || '';
             json.quantity_canbe_refund = this.quantity_canbe_refund || 0;
-            json.reason_refund_id = this.reason_refund_id;
             // manhld
             json.approvalStatus = this.approvalStatus || false;
             json.check_button = this.check_button || false;
@@ -126,13 +122,5 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
         }
     }
     Registries.Model.extend(Orderline, OrderLineAddField);
-
-     const ReasonRefundPosGlobalState = (PosGlobalState) => class extends PosGlobalState {
-        async _processData(loadedData) {
-            await super._processData(...arguments);
-            this.pos_reason_refund = loadedData['pos.reason.refund'];
-        }
-    }
-    Registries.Model.extend(PosGlobalState, ReasonRefundPosGlobalState);
 
 });
