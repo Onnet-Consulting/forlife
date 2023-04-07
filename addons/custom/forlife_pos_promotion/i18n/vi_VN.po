@@ -1406,7 +1406,7 @@ msgstr "Phần thưởng"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__reward_for_referring
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__reward_for_referring
 msgid "Rewards for Referring"
-msgstr "Phần chưởng cho giới thiệu"
+msgstr "Phần thưởng cho giới thiệu"
 
 #. module: forlife_pos_promotion
 #. odoo-javascript
