@@ -10,13 +10,6 @@ class PosOrderLine(models.Model):
     quantity_refunded = fields.Integer('Quantity refunded')
     expire_change_refund_date = fields.Date('Expire change refund_date', compute='_compute_expire_change_refund_date')
     quantity_canbe_refund = fields.Integer('Quantity can be refund', compute='_compute_quantity_canbe_refund')
-    reason_refund_id = fields.Many2one('pos.reason.refund', 'Reason Refund')
-
-    def _order_line_fields(self, line, session_id=None):
-        res = super()._order_line_fields(line, session_id)
-        if 'reason_refund_id' in res[2] and res[2].get('reason_refund_id', 0) < 1:
-            res[2].pop('reason_refund_id')
-        return res
 
     @api.depends('order_id.date_order', 'product_id.number_days_change_refund')
     def _compute_expire_change_refund_date(self):
@@ -32,5 +25,4 @@ class PosOrderLine(models.Model):
         result = super()._export_for_ui(orderline)
         result['expire_change_refund_date'] = orderline.expire_change_refund_date
         result['quantity_canbe_refund'] = orderline.quantity_canbe_refund
-        result['reason_refund_id'] = orderline.reason_refund_id
         return result
