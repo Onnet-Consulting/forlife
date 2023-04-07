@@ -487,6 +487,29 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
 #, python-format
+msgid "Ongoing"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#. odoo-javascript
+#: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
+#: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
+#, python-format
+msgid "Paid"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#. odoo-javascript
+#: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
+#, python-format
+msgid "Payment"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#. odoo-javascript
+#: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
+#: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
+#, python-format
 msgid "Phone"
 msgstr "Số điện thoại"
 
@@ -586,6 +609,33 @@ msgid "Quantity refunded"
 msgstr "Số lượng đã trả"
 
 #. module: forlife_pos_product_change_refund
+#: model:ir.actions.act_window,name:forlife_pos_product_change_refund.pos_reason_refund_action
+#: model:ir.ui.menu,name:forlife_pos_product_change_refund.pos_reason_refund_menu
+#: model_terms:ir.ui.view,arch_db:forlife_pos_product_change_refund.pos_reason_refund_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_pos_product_change_refund.pos_reason_refund_view_tree
+msgid "Reason Refund"
+msgstr "Lý do đổi trả"
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model,name:forlife_pos_product_change_refund.model_pos_reason_refund
+msgid "Reason Refund for POS"
+msgstr "Lý do đổi trả trên POS"
+
+#. module: forlife_pos_product_change_refund
+#. odoo-javascript
+#: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
+#, python-format
+msgid "Receipt"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#. odoo-javascript
+#: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
+#: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/OrderChangeRefundProductScreen.xml:0
+#: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/OrderChangeRefundProductScreen.xml:0
+#, python-format
+msgid "Receipt Number"
+msgstr ""
 #. odoo-javascript
 #: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
 #, python-format
