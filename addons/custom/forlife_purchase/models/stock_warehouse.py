@@ -16,12 +16,12 @@ class StockWarehouse(models.Model):
     city = fields.Char('City')
     state_id = fields.Many2one("res.country.state", string='State')
     country_id = fields.Many2one('res.country', string='Country')
-    whs_location = fields.Selection([
-        ('s1', 'S1'),
-        ('s2', 'S2'),
-        ('s3', 'S3'),
-        ('s4', 'S4'),
-    ], string='Location')
+    # whs_location = fields.Selection([
+    #     ('s1', 'S1'),
+    #     ('s2', 'S2'),
+    #     ('s3', 'S3'),
+    #     ('s4', 'S4'),
+    # ], string='Location')
     whs_latitude = fields.Float('Geo Latitude', digits=(10, 7))
     whs_longitude = fields.Float('Geo Longitude', digits=(10, 7))
     status = fields.Selection([
