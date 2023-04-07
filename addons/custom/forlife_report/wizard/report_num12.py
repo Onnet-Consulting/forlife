@@ -19,6 +19,7 @@ class ReportNum12(models.TransientModel):
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
     to_date = fields.Date('To date', required=True)
     store_ids = fields.Many2many('store', string='Store')
+    number_of_days = fields.Integer(string='Number of days', default=90)
 
     @api.onchange('brand_id')
     def onchange_brand(self):
@@ -41,7 +42,7 @@ with part_card_rank_data1 as (
          to_date('{self.to_date}', 'YYYY-MM-DD')::date - (pcr.last_order_date + interval '7 hours')::date               as tg_khong_ms
     from partner_card_rank pcr
     where pcr.brand_id = {self.brand_id.id}
-        and {format_date_query("pcr.last_order_date", tz_offset)} < '{self.to_date - relativedelta(days=90)}'
+        and {format_date_query("pcr.last_order_date", tz_offset)} < '{self.to_date - relativedelta(days=self.number_of_days)}'
 ),
 part_card_rank_data2 as (
     select concat(xx.store_id, '_', xx.card_rank_id) 				                                                            as key_data,

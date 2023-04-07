@@ -29,6 +29,45 @@ class ReportNum13(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
+        po_number_list = self.po_number.split(',') if self.po_number else []
+        po_number_condition = f"and po.name = any (array{[x.strip('') for x in po_number_list if x]})" if po_number_list else ''
         sql = f"""
-        """
+select 
+    pr.name                                                                 as pr_name,
+    to_char(pr.request_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')      as pr_date,
+    po.name                                                                 as po_name,
+    to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')        as po_date,
+    rp.name                                                                 as suppliers_name,
+    pp.barcode                                                              as product_code,
+    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
+    pol.product_qty,
+    pol.price_unit,
+    pol.discount_percent,
+    pol.price_subtotal,
+    pol.qty_received,
+    pol.product_qty - pol.qty_received                                      as qty_not_received,
+    pol.qty_invoiced
+from purchase_order_line pol
+    join purchase_order po on pol.order_id = po.id
+    left join res_partner rp on rp.id = po.partner_id
+    left join purchase_request pr on pr.id = po.request_id
+    left join product_product pp on pp.id = pol.product_id
+    left join product_template pt on pt.id = pp.product_tmpl_id
+where {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
+    and pol.company_id = {self.company_id.id}
+    {po_number_condition}
+order by po.date_order desc 
+"""
         return sql
+
+    def get_data(self):
+        self.ensure_one()
+        values = dict(super().get_data())
+        query = self._get_query()
+        self._cr.execute(query)
+        data = self._cr.dictfetchall()
+        values.update({
+            'titles': TITLES,
+            "data": data,
+        })
+        return values

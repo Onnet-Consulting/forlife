@@ -13,6 +13,7 @@
                         <group>
                             <field name="to_date" class="oe_inline" required="1"/>
                             <field name="from_rank_ids" class="oe_inline" widget="many2many_tags"/>
+                            <field name="number_of_days"/>
                         </group>
                         <group>
                             <field name="brand_id"/>

@@ -19,7 +19,7 @@
                             </div>
                         </group>
                         <group>
-                            <field name="po_number"/>
+                            <field name="po_number" placeholder="PO001,PO002,..."/>
                         </group>
                     </group>
                 </sheet>

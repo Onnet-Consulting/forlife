@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
+from dateutil.relativedelta import relativedelta
 
 TITLES = [
     'STT', 'Cửa hàng', 'Mã khách', 'Tên khách hàng', 'Ngày sinh', 'Điện thoại', 'Ngày mua đầu kỳ',
@@ -19,6 +20,7 @@ class ReportNum11(models.TransientModel):
     from_rank_ids = fields.Many2many('card.rank', string='From rank')
     store_ids = fields.Many2many('store', string='Store')
     customer_ids = fields.Many2many('res.partner', string='Customer', domain=lambda self: [('group_id', 'in', self.env['res.partner.group'].search([('code', '=', 'C')]).ids)])
+    number_of_days = fields.Integer(string='Number of days', default=20)
 
     @api.onchange('brand_id')
     def onchange_brand(self):
@@ -72,8 +74,9 @@ current_partner_card_rank_by_period as (
     select cpcr.*,
            pcr.min_turnover,
            pcr.x_value_remind,
-           (to_date('2023-04-05', 'YYYY-MM-DD') + (coalesce(pcr.time_set_rank, 0) || ' d')::interval)::date as ngay_mua_dk,
-           to_date('2023-04-25', 'YYYY-MM-DD')::date as ngay_ck
+           (to_date('{self.to_date + relativedelta(days=self.number_of_days)}',
+            'YYYY-MM-DD') - (coalesce(pcr.time_set_rank, 0) || ' d')::interval)::date               as ngay_mua_dk,
+           to_date('{self.to_date + relativedelta(days=self.number_of_days)}', 'YYYY-MM-DD')::date  as ngay_ck
     from current_partner_card_rank cpcr
         join program_cr pcr on pcr.previous_rank_id = cpcr.current_rank_id
 ),

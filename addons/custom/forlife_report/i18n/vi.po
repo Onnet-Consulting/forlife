@@ -210,6 +210,13 @@ msgid "Date"
 msgstr "Ngày"
 
 #. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_num12.xml:0
+#, python-format
+msgid "Detail"
+msgstr "Chi tiết"
+
+#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__display_name
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__display_name
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12__display_name
@@ -317,7 +324,6 @@ msgstr "Số hóa đơn"
 
 #. module: forlife_report
 #. odoo-javascript
-#: code:addons/forlife_report/static/src/xml/report_num12.xml:0
 #: code:addons/forlife_report/static/src/xml/report_num5.xml:0
 #, python-format
 msgid "Invoice list"
@@ -426,6 +432,12 @@ msgid "Next"
 msgstr "Kế tiếp"
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_report_num11__number_of_days
+#: model:ir.model.fields,field_description:forlife_report.field_report_num12__number_of_days
+msgid "Number of days"
+msgstr "Số ngày"
+
+#. module: forlife_report
 #. odoo-javascript
 #: code:addons/forlife_report/static/src/xml/report_num5.xml:0
 #, python-format
@@ -436,6 +448,11 @@ msgstr "Chi tiết giao dịch"
 #: model:ir.model.fields,field_description:forlife_report.field_report_num13__po_number
 msgid "PO number"
 msgstr "Số PO"
+
+#. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num13_form
+msgid "PO001,PO002,..."
+msgstr ""
 
 #. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num1__picking_type

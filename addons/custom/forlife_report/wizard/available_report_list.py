@@ -73,7 +73,5 @@ AVAILABLE_REPORT = {
         'module': 'Kho',
         'name': 'Tình hình thực hiện đơn hàng mua',
         'reportTemplate': 'ReportNum13Template',
-        'tag': 'report_num13_action',
-        'reportPager': True,
     },
 }
