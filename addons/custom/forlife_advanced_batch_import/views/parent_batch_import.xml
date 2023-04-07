@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="parent_batch_import_view_form" model="ir.ui.view">
+            <field name="name">parent_batch_import_view_form</field>
+            <field name="model">parent.batch.import</field>
+            <field name="arch" type="xml">
+                <form string="parent_batch_import_form">
+                    <sheet>
+                        <header>
+                            <field name="status" widget="statusbar" class="o_field_statusbar"
+                                   options="{'clickable': '1'}"/>
+                        </header>
+                        <group>
+                            <field name="res_model"/>
+                            <field name="file" filename="file_name"/>
+                            <field name="list_field"/>
+                            <field name="columns"/>
+                            <field name="options"/>
+                            <field name="dryrun"/>
+                            <field name="with_delay"/>
+                        </group>
+                        <group>
+                            <field name="child_batch_import_ids">
+                                <tree>
+                                    <field name="sequence"/>
+                                    <field name="file"/>
+                                    <field name="skip"/>
+                                    <field name="status"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="parent_batch_import_view_tree" model="ir.ui.view">
+            <field name="name">parent_batch_import_view_tree</field>
+            <field name="model">parent.batch.import</field>
+            <field name="arch" type="xml">
+                <tree string="parent_batch_import_tree">
+                    <field name="res_model"/>
+                    <field name="file" filename="file_name"/>
+                    <field name="with_delay"/>
+                    <field name="status"/>
+                </tree>
+            </field>
+        </record>
+        <record id="parent_batch_import_action" model="ir.actions.act_window">
+            <field name="name">Config Batch Import</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">parent.batch.import</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem
+                id="menu_advanced_batch_import"
+                name="Batch Import"
+                web_icon="forlife_advanced_batch_import,static/description/icon.png"
+                groups="base.group_system"
+        />
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="menu_parent_batch_import" name="Parent Batch Import" parent="menu_advanced_batch_import" action="parent_batch_import_action" sequence="1"/>
+    </data>
+</odoo>
