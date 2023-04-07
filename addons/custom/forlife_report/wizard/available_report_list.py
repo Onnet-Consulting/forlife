@@ -74,4 +74,9 @@ AVAILABLE_REPORT = {
         'name': 'Tình hình thực hiện đơn hàng mua',
         'reportTemplate': 'ReportNum13Template',
     },
+    'report.num14': {
+        'module': 'Bán hàng',
+        'name': 'Tra cứu mã Code - voucher đã sử dụng',
+        'reportTemplate': 'ReportNum14Template',
+    },
 }
