@@ -636,6 +636,8 @@ msgstr ""
 #, python-format
 msgid "Receipt Number"
 msgstr ""
+
+#. module: forlife_pos_product_change_refund
 #. odoo-javascript
 #: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
 #, python-format
