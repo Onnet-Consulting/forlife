@@ -41,6 +41,6 @@ class ReportNum14(models.TransientModel):
         # data = self._cr.dictfetchall()
         values.update({
             'titles': TITLES,
-            "data": {},
+            "data": [],
         })
         return values
