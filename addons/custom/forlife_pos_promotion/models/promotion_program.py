@@ -152,7 +152,7 @@ class PromotionProgram(models.Model):
     tax_from_date = fields.Date('Registered Tax From')
     tax_to_date = fields.Date('Registered Tax To')
 
-    @api.constrains('promotion_type', 'combo_line_ids')
+    @api.constrains('promotion_type', 'combo_line_ids', 'reward_ids', 'reward_type')
     def _check_duplicate_product_in_combo(self):
         for program in self:
             if program.promotion_type == 'combo' and program.combo_line_ids:
@@ -163,6 +163,10 @@ class PromotionProgram(models.Model):
                         raise UserError(_('Products duplication occurs in the combo formula!'))
             if program.promotion_type == 'combo' and not program.combo_line_ids:
                 raise UserError(_('%s: Combo Formular is not set!') % program.name)
+            if program.promotion_type == 'combo' and program.reward_ids and program.reward_type in ['combo_percent_by_qty', 'combo_fixed_price_by_qty']:
+                if len(program.reward_ids) != len(set(program.reward_ids.mapped('quantity_min'))):
+                    raise UserError(_('%s: Không được khai báo cùng số lượng trên các chi tiết combo!') % program.name)
+
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
