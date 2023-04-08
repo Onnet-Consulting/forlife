@@ -311,6 +311,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         json.reward_for_referring = this.reward_for_referring || null;
         json.referred_code_id = this.referred_code_id || null;
         json.surprise_reward_program_id = this.surprise_reward_program_id || null;
+        json.surprising_reward_line_id = this.surprising_reward_line_id || null;
         return json;
     }
     init_from_JSON(json) {
@@ -326,6 +327,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.reward_for_referring = json.reward_for_referring || null;
         this.referred_code_id = json.referred_code_id || null;
         this.surprise_reward_program_id = json.surprise_reward_program_id || null;
+        this.surprising_reward_line_id = json.surprising_reward_line_id || null;
         this._resetPromotionPrograms();
         this._resetCartPromotionPrograms();
     }
@@ -427,6 +429,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.reward_for_referring = null;
         this.referred_code_id = null;
         this.surprise_reward_program_id = null;
+        this.surprising_reward_line_id = null;
         this._get_reward_lines().forEach(reward_line => {
             this.orderlines.remove(reward_line);
         })

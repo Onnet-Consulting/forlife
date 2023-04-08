@@ -99,7 +99,7 @@ class PromotionProgram(models.Model):
     discount_based_on = fields.Selection([
         ('unit_price', 'Unit Price'),
         ('discounted_price', 'Discounted Price')], string='Discount Based On', required=True, default='unit_price')
-    product_ids = fields.Many2many('product.product', string='Products')
+    product_ids = fields.Many2many('product.product', string='Products', domain="[('available_in_pos', '=', True)]")
     product_categ_ids = fields.Many2many('product.category', string='Product Categories')
     product_domain = fields.Char()
     min_quantity = fields.Float('Minimum Quantity', default=1)
@@ -137,8 +137,10 @@ class PromotionProgram(models.Model):
     code_ids = fields.One2many('promotion.code', 'program_id')
     code_count = fields.Integer(compute='_compute_code_count')
 
-    discount_product_ids = fields.Many2many('product.product', 'promotion_program_discount_product_rel')
-    reward_product_ids = fields.Many2many('product.product', 'promotion_program_reward_product_rel')
+    discount_product_ids = fields.Many2many(
+        'product.product', 'promotion_program_discount_product_rel', domain="[('available_in_pos', '=', True)]")
+    reward_product_ids = fields.Many2many(
+        'product.product', 'promotion_program_reward_product_rel', domain="[('available_in_pos', '=', True)]")
     reward_quantity = fields.Float()
 
     disc_amount = fields.Float('Discount Amount')
