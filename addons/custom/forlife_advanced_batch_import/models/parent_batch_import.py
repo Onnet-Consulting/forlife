@@ -1,92 +1,181 @@
 from odoo import api, fields, models
 import pandas as pd
 from io import BytesIO
+import base64
+import csv
+from io import StringIO
+import numpy as np
+import json
 
 
 class ParentBatchImport(models.Model):
     _name = "parent.batch.import"
     _description = "Manage and configure original file import"
-    _rec_name = "res_model"
+    _rec_name = "display_name"
 
+    display_name = fields.Char(string="Display Name", compute="compute_display_name")
     res_model = fields.Char(string="Model")
-    file = fields.Binary('File', help="File to check and/or import, raw binary (not base64)", attachment=False)
+    attachment_id = fields.Many2one(string="Attachment", comodel_name="ir.attachment")
     file_name = fields.Char('File Name')
     list_field = fields.Text(string="List Fields")
     columns = fields.Text(string="Columns")
     options = fields.Text(string="Options")
     dryrun = fields.Boolean(string="Dry Run", help="performs all import operations (and validations) but rollbacks writes, allows getting as much errors as possible without the risk of clobbering the database")
-    status = fields.Selection([('draft', 'Draft'), ('pending', 'Pending'), ('done', 'Done'), ('cancel', 'Cancel')], string='Status', default='pending')
-    number_of_split_file = fields.Integer(string="Number of split file")
+    status = fields.Selection([('draft', 'Draft'), ('processing', 'Processing'), ('done', 'Done'), ('cancel', 'Cancel')], string='Status', default='draft', compute="compute_status")
+    limit = fields.Integer(string="Limit records/File")
+    number_of_split_file = fields.Integer(string="Number of split file", compute="_compute_number_of_split_file", store=True)
     with_delay = fields.Integer(string="Delay execute between every batch", default=10)
     child_batch_import_ids = fields.One2many(string="Children  Batch", comodel_name="child.batch.import", inverse_name='parent_batch_import_id')
+
+    def compute_display_name(self):
+        for rec in self:
+            rec.display_name = str(rec.res_model) + '_' + str(rec.file_name) + "_" + str(rec.create_date.date())
+
+    def set_all_to_daft(self):
+        for rec in self:
+            rec.child_batch_import_ids.filtered(lambda b: b.status not in ['draft', 'done']).write({
+                'status': 'draft'
+            })
+
+    def set_all_to_processing(self):
+        for rec in self:
+            rec.child_batch_import_ids.filtered(lambda b: b.status not in ['done']).write({
+                'status': 'processing'
+            })
+
+    @api.depends('child_batch_import_ids', 'child_batch_import_ids.status')
+    def compute_status(self):
+        for rec in self:
+            if all([b.status == 'cancel' for b in rec.child_batch_import_ids]):
+                rec.status = 'cancel'
+            else:
+                status = 'draft'
+                for batch in rec.child_batch_import_ids:
+                    if batch.status == 'processing':
+                        status = 'processing'
+                        break
+                    if batch.status == 'done':
+                        status = 'done'
+                rec.status = status
+
+    @api.depends('child_batch_import_ids')
+    def _compute_number_of_split_file(self):
+        for rec in self:
+            rec.number_of_split_file = len(rec.child_batch_import_ids)
 
     def create_parent_batch_import(self, fields, columns, options, dryrun=False):
         if options.get('base_import_id'):
             base_import = self.env['base_import.import'].sudo().search([('id', '=', options.get('base_import_id'))], limit=1)
             if base_import:
+                attachment = self.env['ir.attachment'].create({
+                    'name': base_import.file_name,
+                    'datas': base64.encodebytes(base_import.file),
+                    'type': 'binary'
+                })
                 batch_import = self.env['parent.batch.import'].sudo().create({
                     'res_model': base_import.res_model,
-                    'file': base_import.file,
+                    # 'file': base_import.file,
+                    'attachment_id': attachment.id,
                     'file_name': base_import.file_name,
-                    # 'list_field': fields,
-                    # 'columns': columns,
-                    # 'options': options,
+                    'list_field': json.dumps(fields),
+                    'columns': json.dumps(columns),
+                    'options': json.dumps(options),
+                    'limit': options.get('limit'),
                     'dryrun': dryrun,
                     'status': 'draft',
                     'with_delay': int(options.get('with_delay')),
-                    # 'number_of_split_file': options.get('split_file'),
+                    'number_of_split_file': options.get('split_file'),
                 })
                 base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-                dst_url = "%s/web#id=%s&model=parent.batch.import&view_type=form" % (base_url, batch_import.id)
-                byte_chunks = self.split_csv_or_excel_file_from_bytes(base_import.file, options.get('limit'))
-                index = 1
-                for chunk in byte_chunks:
-                    # self.env['child.batch.import'].with_delay(priority=index, eta=int(options.get('with_delay'))).sudo().create({
-                    self.env['child.batch.import'].sudo().create({
-                        'sequence': index,
-                        'parent_batch_import_id': batch_import.id,
-                        'file': chunk,
-                        'file_name': f"{base_import.file_name.split('.')[0]}_{index}.{base_import.file_name.split('.')[-1]}",
-                        'status': 'draft',
-                        'skip': 0,
-                    })
-                    index = index + 1
-
+                menu = self.env.ref('forlife_advanced_batch_import.menu_parent_batch_import')
+                action = self.env.ref('forlife_advanced_batch_import.parent_batch_import_action')
+                dst_url = "%s/web#id=%s&menu_id=%s&action=%s&model=parent.batch.import&view_type=form" % (base_url, batch_import.id, menu.id, action.id)
+                if base_import.file_type == 'text/csv':
+                    self.split_parent_batch_import_csv(batch_import)
+                else:
+                    self.split_parent_batch_import_exel(batch_import)
                 return dst_url
         return False
 
-    def split_csv_or_excel_file_from_bytes(self,input_bytes, chunk_size):
-        """
-        Chia dữ liệu dạng byte thành các đoạn dữ liệu byte nhỏ dựa trên số lượng dòng đã cho.
+    def split_parent_batch_import_csv(self, batch_import=False):
+        if not batch_import:
+            batch_import = self
+        # Giải mã nội dung của attachment
+        decoded_data = base64.b64decode(batch_import.attachment_id.datas)
+        # Chuyển decoded_data thành đối tượng StringIO để đọc dữ liệu CSV
+        file_data = StringIO(decoded_data.decode('utf-8'))
+        # Đọc dữ liệu CSV vào DataFrame
+        df = pd.read_csv(file_data)
 
-        Tham số đầu vào:
-            - input_bytes (bytes): Dữ liệu đầu vào dạng byte.
-            - chunk_size (int): Số lượng dòng tối đa trong mỗi đoạn dữ liệu byte đầu ra.
+        # Tính số lượng file con cần tạo
+        if len(df) % batch_import.limit == 0:
+            num_files = len(df) // batch_import.limit
+        else:
+            num_files = len(df) // batch_import.limit + 1
 
-        Đầu ra:
-            - List[bytes]: Danh sách các đoạn dữ liệu byte đã chia nhỏ.
-        """
-        # Chuyển dữ liệu byte thành đối tượng DataFrame của pandas
-        df = pd.read_excel(BytesIO(input_bytes))
+        # Chia DataFrame thành các phần nhỏ
+        dfs = np.array_split(df, num_files)
 
-        # Chia dataframe thành các dataframe con dựa trên số lượng dòng đã cho
-        chunk_start = 0
-        chunk_end = chunk_size
-        byte_chunks = []
-        while chunk_start < len(df):
-            df_chunk = df.iloc[chunk_start:chunk_end]
-            # Kiểm tra xem dataframe con có dữ liệu không
-            if not df_chunk.empty:
-                # Chuyển DataFrame thành đối tượng BytesIO để ghi dữ liệu Excel vào
-                excel_bytes_io = BytesIO()
-                with pd.ExcelWriter(excel_bytes_io, engine='openpyxl') as writer:
-                    writer.book = writer.book
-                    writer.sheets = {ws.title: ws for ws in writer.sheets}
-                    df_chunk.to_excel(writer, index=False)
-                    writer.save()
-                # Lấy dữ liệu byte từ đối tượng BytesIO
-                byte_chunks.append(excel_bytes_io.getvalue())
-            chunk_start = chunk_end
-            chunk_end += chunk_size
+        # Lưu các phần nhỏ thành các attachment
+        attachments = []
+        for i, df_part in enumerate(dfs):
+            # Chuyển DataFrame thành dạng bytes
+            csv_bytes = df_part.to_csv(index=False).encode()
 
-        return byte_chunks
+            # Tạo attachment từ dữ liệu bytes
+            attachment_vals = {
+                'name': f"{batch_import.file_name.split('.')[0]}_{i + 1}.{batch_import.file_name.split('.')[-1]}",
+                'datas': base64.b64encode(csv_bytes),
+                'type': 'binary',
+            }
+            att = self.env['ir.attachment'].create(attachment_vals)
+            self.env['child.batch.import'].sudo().create({
+                'sequence': i,
+                'parent_batch_import_id': batch_import.id,
+                'attachment_id': att.id,
+                'file_name': f"{batch_import.file_name.split('.')[0]}_{i + 1}.{batch_import.file_name.split('.')[-1]}",
+                'status': 'draft',
+                'skip': 0,
+            })
+
+    def split_parent_batch_import_exel(self, batch_import=False):
+        if not batch_import:
+            batch_import = self
+        # Giải mã nội dung của attachment
+        decoded_data = base64.b64decode(batch_import.attachment_id.datas)
+
+        # Đọc dữ liệu của attachment vào DataFrame với Pandas
+        df = pd.read_excel(BytesIO(decoded_data))
+
+        chunk_size = batch_import.limit
+        # Chia DataFrame thành các chunk có số dòng là chunk_size
+        chunks = [df[i:i + chunk_size] for i in range(0, df.shape[0], chunk_size)]
+
+        # Lặp qua từng chunk và tạo attachment mới cho mỗi chunk
+        for i, chunk in enumerate(chunks):
+            # Tạo ExcelWriter để ghi dữ liệu vào file Excel
+            output = BytesIO()
+            writer = pd.ExcelWriter(output, engine='xlsxwriter')
+            chunk.to_excel(writer, index=False)
+            writer.close()
+            output.seek(0)
+
+            # Lấy dữ liệu đã ghi vào ExcelWriter và chuyển đổi sang dạng bytes
+            chunk_data = output.read()
+            chunk_data_base64 = base64.b64encode(chunk_data)
+
+            # Tạo attachment từ dữ liệu bytes
+            attachment_vals = {
+                'name': f"{batch_import.file_name.split('.')[0]}_{i + 1}.{batch_import.file_name.split('.')[-1]}",
+                'datas': chunk_data_base64,
+                'type': 'binary',
+            }
+            att = self.env['ir.attachment'].create(attachment_vals)
+            self.env['child.batch.import'].sudo().create({
+                'sequence': i,
+                'parent_batch_import_id': batch_import.id,
+                'attachment_id': att.id,
+                'file_name': f"{batch_import.file_name.split('.')[0]}_{i + 1}.{batch_import.file_name.split('.')[-1]}",
+                'status': 'draft',
+                'skip': 0,
+            })

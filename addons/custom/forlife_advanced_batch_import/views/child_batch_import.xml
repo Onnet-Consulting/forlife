@@ -6,16 +6,22 @@
             <field name="model">child.batch.import</field>
             <field name="arch" type="xml">
                 <form string="child_batch_import_form">
+                    <header>
+                        <button name="test_execute_import" type="object" string="Test Execute Import" class="oe_highlight"/>
+                        <button name="make_queue_job" type="object" string="Execute Import" class="oe_highlight"/>
+                        <button name="set_to_processing" type="object" string="Set to processing" class="oe_highlight" attrs="{'invisible':[('status','=','processing')]}"/>
+                        <field name="status" widget="statusbar" class="o_field_statusbar"
+                               options="{'clickable': '1'}"/>
+                    </header>
                     <sheet>
-                        <header>
-                            <field name="status" widget="statusbar" class="o_field_statusbar"
-                                   options="{'clickable': '1'}"/>
-                        </header>
                         <group>
-                            <field name="file" filename="file_name"/>
                             <field name="sequence"/>
+                            <field name="attachment_id"/>
                             <field name="parent_batch_import_id"/>
                             <field name="skip"/>
+                        </group>
+                        <group>
+                            <field name="log"/>
                         </group>
                     </sheet>
                 </form>
@@ -27,10 +33,11 @@
             <field name="arch" type="xml">
                 <tree string="child_batch_import_tree">
                     <field name="parent_batch_import_id"/>
-                    <field name="file" filename="file_name"/>
+                    <field name="attachment_id"/>
                     <field name="sequence"/>
                     <field name="skip"/>
                     <field name="status"/>
+                    <button name="set_to_processing" type="object" string="Set to Processing" class="oe_highlight"/>
                 </tree>
             </field>
         </record>

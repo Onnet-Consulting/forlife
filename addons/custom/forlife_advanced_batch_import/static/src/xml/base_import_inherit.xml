@@ -12,12 +12,12 @@
                     </label>
                 </div>
                 <br/>
-                <div>
-                    <label class="form-check-label" for="oe_import_split_file">Split origin file into N equal pieces before putting in batch import </label>
-                    <input type="text" class="oe_import_split_file"
-                           id="oe_import_split_file"/>
-                </div>
-                <br/>
+                <!--                <div>-->
+                <!--                    <label class="form-check-label" for="oe_import_split_file">Split origin file into N equal pieces before putting in batch import </label>-->
+                <!--                    <input type="text" class="oe_import_split_file"-->
+                <!--                           id="oe_import_split_file"/>-->
+                <!--                </div>-->
+                <!--                <br/>-->
                 <div>
                     <label class="form-check-label" for="oe_import_eta_time">Time execute between every batch</label>
                     <input type="text" class="oe_import_eta_time"
