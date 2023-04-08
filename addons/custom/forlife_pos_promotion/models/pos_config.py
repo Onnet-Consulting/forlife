@@ -80,7 +80,7 @@ class PosConfig(models.Model):
             is_new_customer = not order_partner.sudo().store_fo_ids.filtered(
                 lambda r: r.brand_id == code_id.program_id.brand_id)
             valid_date = code_id.referring_date_from <= check_date <= code_id.referring_date_to
-            has_reward = order_partner and code_partner and order_partner.id != code_partner.id and is_new_customer and valid_date
+            has_reward = bool(order_partner and code_partner and order_partner.id != code_partner.id and is_new_customer and valid_date)
         return {
             'successful': True,
             'payload': {

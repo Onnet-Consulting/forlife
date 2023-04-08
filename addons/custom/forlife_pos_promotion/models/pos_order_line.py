@@ -21,6 +21,8 @@ class PosPromotionLine(models.Model):
     qty = fields.Float('Quantity', related='order_line_id.qty', digits='Product Unit of Measure')
     discount_total = fields.Monetary('Discount Amount', readonly=True, compute='_compute_discount_total')
 
+    discount_based_on = fields.Char()
+    promotion_type = fields.Char()
     registering_tax = fields.Boolean(readonly=True)
 
     def name_get(self):
