@@ -38,6 +38,7 @@ class CommonCacheNotification(models.Model):
         selection=[('DELETE', 'DELETE'), ('UPDATE', 'UPDATE'), ('CREATE', 'CREATE')])
     change_vals = fields.Text(string="Fields Changed")
 
+
     @api.model
     def create(self, vals):
         res = super(CommonCacheNotification, self).create(vals)

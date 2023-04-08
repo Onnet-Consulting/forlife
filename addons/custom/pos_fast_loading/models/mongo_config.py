@@ -52,6 +52,13 @@ class PosFastLoadingMessage(models.TransientModel):
 
     text = fields.Text('Message')
 
+class PosProductCache(models.Model):
+    _name = "product.cache"
+    _description = " Pos Product cache"
+
+    store = fields.Many2one(string=_("store"), comodel_name="store")
+    data = fields.Binary(string="Pos Product Cache")
+    server_config = fields.Many2one(string=_("Server Config"), comodel_name="mongo.server.config")
 
 class MongoServerConfig(models.Model):
     _name = 'mongo.server.config'
@@ -83,7 +90,6 @@ class MongoServerConfig(models.Model):
     is_partner_synced = fields.Boolean('Is Partner Synced', default=False)
     is_pricelist_synced = fields.Boolean('Is Pricelist Synced', default=False)
 
-    pos_product_cache = fields.Binary(string="Pos Product Cache")
     pos_pricelist_cache = fields.Binary(string="Pos Pricelist Cache")
     pos_partner_cache = fields.Binary(string="Pos Partner Cache")
 
@@ -96,6 +102,12 @@ class MongoServerConfig(models.Model):
                                           ('postgres', 'Postgres'), ('mongo', 'Mongo')], default="postgres")
     pos_live_sync = fields.Selection(string="Pos Syncing", selection=[('realtime', 'Real Time Update'), (
         'notify', 'Only notify when Changes Occur'), ('reload', 'Apply changes on reloading')], default="notify")
+
+    pos_product_caches = fields.One2many(
+        string=_('Pos Product Caches'),
+        comodel_name='product.cache',
+        inverse_name='server_config',
+    )
 
     def write(self, vals):
         for obj in self:
@@ -223,22 +235,6 @@ class MongoServerConfig(models.Model):
                                     record.record_id)
                             else:
                                 product_record_ids.append(record.record_id)
-                        # elif record.model_name == 'res.partner':
-                        #     if record.operation == 'DELETE':
-                        #         partner_deleted_record_ids.append(
-                        #             record.record_id)
-                        #     else:
-                        #         partner_record_ids.append(record.record_id)
-                        elif record.model_name == 'product.pricelist.item':
-                            if record.operation == 'DELETE':
-                                price_deleted_record_ids.append(
-                                    record.record_id)
-                            elif record.operation == 'UPDATE':
-                                price_record_ids.append(record.record_id)
-                                price_deleted_record_ids.append(
-                                    record.record_id)
-                            else:
-                                price_record_ids.append(record.record_id)
 
                     load_pos_data_type = mongo_server_rec.load_pos_data_from
                     if load_pos_data_type == 'mongo':
@@ -277,14 +273,6 @@ class MongoServerConfig(models.Model):
                                                 del record['_id']
                                             partner_res.append(record)
                     else:
-                        if len(price_record_ids):
-                            binary_data = mongo_server_rec.pos_pricelist_cache
-                            json_data = json.loads(
-                                base64.decodebytes(binary_data).decode('utf-8'))
-                            for obj in json_data:
-                                if int(obj) in price_record_ids:
-                                    price_res.append(json_data.get(obj))
-
                         if len(product_record_ids):
                             binary_data = mongo_server_rec.pos_product_cache
                             json_data = json.loads(
@@ -292,22 +280,9 @@ class MongoServerConfig(models.Model):
                             for obj in json_data:
                                 if int(obj) in product_record_ids:
                                     product_res.append(json_data.get(obj))
-
-                        # if len(partner_record_ids):
-                        #     binary_data = mongo_server_rec.pos_partner_cache
-                        #     json_data = json.loads(
-                        #         base64.decodebytes(binary_data).decode('utf-8'))
-                        #     for obj in json_data:
-                        #         if int(obj) in partner_record_ids:
-                        #             partner_res.append(json_data.get(obj))
-
                     data_dict.update({
                         'products': product_res,
-                        'pricelist_items': price_res,
-                        # 'partners': partner_res,
                         'mongo_config': mongo_server_rec.cache_last_update_time,
-                        'price_deleted_record_ids': price_deleted_record_ids,
-                        # 'partner_deleted_record_ids': partner_deleted_record_ids,
                         'product_deleted_record_ids': product_deleted_record_ids
                     })
                 return data_dict
@@ -315,107 +290,8 @@ class MongoServerConfig(models.Model):
                 return data_dict
                 _logger.info("**********Exception*****************:%r", e)
 
-    def sync_partners(self):
-        mongo_server_rec = self.search([('active_record', '=', True)], limit=1)
-        if mongo_server_rec:
-            fields = ['name', 'street', 'city', 'country_id', 'vat', 'color', 'phone', 'zip', 'mobile', 'email', 'barcode', 'write_date',
-                      'property_account_position_id', 'property_product_pricelist', 'company_name', 'property_supplier_payment_term_id', 'active']
-            if self.partner_field_ids:
-                fields = fields + [str(data.name)
-                                   for data in self.partner_field_ids]
-            if self.partner_all_fields:
-                if mongo_server_rec.load_pos_data_from == 'postgres':
-                    customer_fields = self.env['ir.model'].sudo().search(
-                        [('model', '=', 'res.partner')]).field_id
-                    new_fields = [
-                        i.name for i in customer_fields if i.ttype != 'binary']
-                    temp_fields = set(fields).union(set(new_fields))
-                    fields = list(temp_fields)
-                else:
-                    fields = []
-                # fields = []
-            load_pos_data_type = mongo_server_rec.load_pos_data_from
-            partners_synced = 0
-            p_data = self.env['res.partner'].search([])
-            if load_pos_data_type == 'mongo':
-                client = self.get_client()
-                databases = client.list_database_names()
-                database = self._cr.dbname
-                if database in databases:
-                    db = client[database]
-                    db.partners.drop()
-                    partners_col = db.partners
-
-                    for count in range(math.ceil(len(p_data) / 1000)):
-                        partners_data = []
-                        data_to_add = p_data[count * 1000:(count + 1) * 1000]
-                        for record in range(math.ceil(len(data_to_add) / 100)):
-                            data_to_find = data_to_add[record *
-                                                       100:(record + 1) * 100]
-                            pro_data = data_to_find.read(fields)
-                            if len(pro_data):
-                                partners_data.extend(pro_data)
-                        partners_col.insert_many(partners_data)
-                    partners_synced = len(p_data)
-                else:
-                    db = client[database]
-                    partners_col = db.partners
-                    for count in range(math.ceil(len(p_data) / 1000)):
-                        partners_data = []
-                        data_to_add = p_data[count * 1000:(count + 1) * 1000]
-                        for record in range(math.ceil(len(data_to_add) / 100)):
-                            data_to_find = data_to_add[record *
-                                                       100:(record + 1) * 100]
-                            pro_data = data_to_find.read(fields)
-                            if len(pro_data):
-                                partners_data.extend(pro_data)
-                        partners_col.insert_many(partners_data)
-                    partners_synced = len(p_data)
-            else:
-                partner_data = {}
-                for count in range(math.ceil(len(p_data) / 1000)):
-                    partner_dict = {}
-                    data_to_add = p_data[count * 1000:(count + 1) * 1000]
-                    for record in range(math.ceil(len(data_to_add) / 100)):
-                        data_to_find = data_to_add[record * 100:(record + 1) * 100]
-                        pro_data = data_to_find.read(fields)
-                        for partner_conv_data in pro_data:
-                            partner_dict[partner_conv_data.get(
-                                'id')] = partner_conv_data
-                    partner_data.update(partner_dict)
-                partners_synced = len(p_data)
-
-                data = {'pos_partner_cache': base64.encodebytes(
-                    json.dumps(partner_data, default=date_utils.json_default).encode('utf-8'))}
-                mongo_server_rec.write(data)
-
-            records_to_delete = self.env['common.cache.notification'].search(
-                [('model_name', '=', 'res.partner')])
-            if len(records_to_delete):
-                records_to_delete.unlink()
-            mongo_server_rec.partner_last_update_time = datetime.now()
-            mongo_server_rec.is_partner_synced = True
-            try:
-                if mongo_server_rec.is_partner_synced and mongo_server_rec.is_pricelist_synced and mongo_server_rec.is_product_synced:
-                    mongo_server_rec.is_ordinary_loading = False
-                    mongo_server_rec.is_pos_data_synced = True
-                    self.env['common.cache.notification'].get_common_changes()
-                message = self.env['pos.fast.loading.message'].create(
-                    {'text': "{} Customers have been synced.".format(partners_synced)})
-                return {'name': _("Message"),
-                        'view_mode': 'form',
-                        'view_id': False,
-                        'view_type': 'form',
-                        'res_model': 'pos.fast.loading.message',
-                        'res_id': message.id,
-                        'type': 'ir.actions.act_window',
-                        'nodestroy': True,
-                        'target': 'new',
-                        'domain': '[]',
-                        }
-            except Exception as e:
-                _logger.info(
-                    "*********************Exception**************:%r", e)
+    def _get_products_by_store(self, store):
+        query = 'SELECT pp.*, pt.* FROM product_product pp JOIN product_template pt ON pt.id = pp.product_tmpl_id WHERE pp.id in (SELECT id FROM stock_quant WHERE location_id in (SELECT id FROM stock_location WHERE warehouse_id = 1) and quantity > 0)'
 
     def sync_products(self):
         start_time = time.time()
@@ -440,6 +316,7 @@ class MongoServerConfig(models.Model):
                     fields = []
             p_data = self.env['product.product'].search(
                 [['sale_ok', '=', True], ['available_in_pos', '=', True]])
+
             _logger.info("--- %s seconds in search---" %
                          (time.time() - start_time))
             load_pos_data_type = mongo_server_rec.load_pos_data_from
@@ -516,7 +393,7 @@ class MongoServerConfig(models.Model):
             if len(records_deleted):
                 records_deleted.unlink()
             try:
-                if mongo_server_rec.is_partner_synced and mongo_server_rec.is_pricelist_synced and mongo_server_rec.is_product_synced:
+                if mongo_server_rec.is_product_synced:
                     mongo_server_rec.is_ordinary_loading = False
                     mongo_server_rec.is_pos_data_synced = True
                     self.env['common.cache.notification'].get_common_changes()
@@ -539,167 +416,3 @@ class MongoServerConfig(models.Model):
             except Exception as e:
                 _logger.info(
                     "*********************Exception**************:%r", e)
-
-    def sync_pricelist_items(self):
-        mongo_server_rec = self.search([('active_record', '=', True)], limit=1)
-        # try:
-        if mongo_server_rec:
-            load_pos_data_type = mongo_server_rec.load_pos_data_from
-            pricelist_items_synced = 0
-            records = self.env['product.pricelist.item'].search([])
-            fields = ['__last_update', 'active', 'base', 'categ_id', 'base_pricelist_id', 'company_id', 'compute_price', 'create_date', 'create_uid', 'currency_id', 'date_end', 'date_start', 'display_name', 'fixed_price', 'id',
-                      'min_quantity', 'name', 'percent_price', 'price', 'price_discount', 'price_max_margin', 'price_min_margin', 'price_round', 'price_surcharge', 'pricelist_id', 'product_id', 'product_tmpl_id', 'write_date', 'write_uid']
-            if load_pos_data_type == 'mongo':
-                client = self.get_client()
-                databases = client.list_database_names()
-                database = self._cr.dbname
-                if database in databases:
-                    db = client[database]
-                    db.pricelist_items.drop()
-                    pricelist_items_col = db.pricelist_items
-                    new_data = []
-                    count = 0
-                    for data in records:
-                        field_data = data.read(fields)
-                        count += 1
-                        date_start, date_end = (False, False)
-                        if data.date_start:
-                            date_start = datetime(
-                                data.date_start.year, data.date_start.month, data.date_start.day) or False
-                        if data.date_end:
-                            date_end = datetime(
-                                data.date_end.year, data.date_end.month, data.date_end.day) or False
-                        if date_start:
-                            field_data[0]['date_start'] = date_start
-                        if date_end:
-                            field_data[0]['date_end'] = date_end
-                        new_data.extend(field_data)
-                    if len(new_data):
-                        for count in range(math.ceil(len(new_data) / 1000)):
-                            data_to_add = new_data[count * 1000:(count + 1) * 1000]
-                            pricelist_items_col.insert_many(data_to_add)
-                        pricelist_items_synced = len(new_data)
-
-                else:
-                    db = client[database]
-                    pricelist_items_col = db.pricelist_items
-                    new_data = []
-                    count = 0
-                    for data in records:
-                        field_data = data.read(fields)
-                        count += 1
-                        date_start, date_end = (False, False)
-                        if data.date_start:
-                            date_start = datetime(
-                                data.date_start.year, data.date_start.month, data.date_start.day) or False
-                        if data.date_end:
-                            date_end = datetime(
-                                data.date_end.year, data.date_end.month, data.date_end.day) or False
-                        if date_start:
-                            field_data[0]['date_start'] = date_start
-                        if date_end:
-                            field_data[0]['date_end'] = date_end
-                        new_data.extend(field_data)
-                    if len(new_data):
-                        for count in range(math.ceil(len(new_data) / 1000)):
-                            data_to_add = new_data[count * 1000:(count + 1) * 1000]
-                            pricelist_items_col.insert_many(data_to_add)
-                        pricelist_items_synced = len(new_data)
-            else:
-                pricelist_data = {}
-                for count in range(math.ceil(len(records) / 1000)):
-                    pricelist_dict = {}
-                    data_to_add = records[count * 1000:(count + 1) * 1000]
-                    for record in range(math.ceil(len(data_to_add) / 100)):
-                        data_to_find = data_to_add[record * 100:(record + 1) * 100]
-                        price_data = data_to_find.read([])
-                        for pricelist_conv_data in price_data:
-                            pricelist_dict[pricelist_conv_data.get(
-                                'id')] = pricelist_conv_data
-                    pricelist_data.update(pricelist_dict)
-                pricelist_items_synced = len(records)
-                data = {'pos_pricelist_cache': base64.encodebytes(
-                    json.dumps(pricelist_data, default=date_utils.json_default).encode('utf-8'))}
-                mongo_server_rec.write(data)
-            records_to_delete = self.env['common.cache.notification'].search(
-                [('model_name', '=', 'product.pricelist.item')])
-            if len(records_to_delete):
-                records_to_delete.unlink()
-            mongo_server_rec.price_last_update_time = datetime.now()
-            mongo_server_rec.is_pricelist_synced = True
-            try:
-                if mongo_server_rec.is_partner_synced and mongo_server_rec.is_pricelist_synced and mongo_server_rec.is_product_synced:
-                    mongo_server_rec.is_ordinary_loading = False
-                    mongo_server_rec.is_pos_data_synced = True
-                self.env['common.cache.notification'].get_common_changes()
-                message = self.env['pos.fast.loading.message'].create(
-                    {'text': "{} Pricelist Items have been synced.".format(pricelist_items_synced)})
-                return {'name': _("Message"),
-                        'view_mode': 'form',
-                        'view_id': False,
-                        'view_type': 'form',
-                        'res_model': 'pos.fast.loading.message',
-                        'res_id': message.id,
-                        'type': 'ir.actions.act_window',
-                        'nodestroy': True,
-                        'target': 'new',
-                        'domain': '[]',
-                        }
-            except Exception as e:
-                _logger.info(
-                    "*********************Exception**************:%r", e)
-
-    @api.model
-    def get_pricelist_items_from_mongo(self, **kwargs):
-        mongo_server_rec = self.search([('active_record', '=', True)], limit=1)
-        if mongo_server_rec:
-            client = mongo_server_rec.get_client()
-            try:
-                info = client.server_info()
-                if client:
-                    database = self._cr.dbname
-                    if database in client.list_database_names():
-                        db = client[database]
-                        pricelist_items_col = db.pricelist_items
-                        pricelist_items = pricelist_items_col.find(
-                            ({'id': {'$in': kwargs.get('pricelist_item_ids')}}))
-                        res = []
-                        for record in pricelist_items:
-                            if record.get('id'):
-                                if(record.get('_id')):
-                                    del record['_id']
-                                res.append(record)
-                        return res
-            except ServerSelectionTimeoutError:
-                return False
-            return False
-
-    @api.model
-    def get_customer_data_from_mongo(self, **kwargs):
-        mongo_server_rec = self.search([('active_record', '=', True)], limit=1)
-        if mongo_server_rec:
-            try:
-                if kwargs.get('client'):
-                    client = kwargs.get('client')
-                else:
-                    client = mongo_server_rec.get_client()
-                    info = client.server_info()
-                if client:
-                    database = self._cr.dbname
-                    if database in client.list_database_names():
-                        db = client[database]
-                        partner_col = db.partners
-                        partner_cur = partner_col.find()
-
-                        res = []
-                        for record in partner_col.find():
-                            if record.get('id'):
-                                if(record.get('_id')):
-                                    del record['_id']
-                                res.append(record)
-                        return res
-            except Exception as e:
-                _logger.info(
-                    "------------------except(*****************):%r", e)
-                return False
-            return False

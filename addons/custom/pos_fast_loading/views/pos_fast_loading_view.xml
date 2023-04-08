@@ -12,8 +12,6 @@
                     <header>
                         <button string="Test Connection" type="object" name="check_connection"  attrs="{'invisible' : [('load_pos_data_from', '=', 'postgres')]}"/>
                         <button string="Sync Products" type="object" name="sync_products" />
-                        <button string="Sync Customers" type="object" name="sync_partners" />
-                        <button string="Sync Pricelist" type="object" name="sync_pricelist_items" />
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">

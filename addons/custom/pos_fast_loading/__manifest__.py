@@ -25,7 +25,7 @@
     "website": "https://store.webkul.com/Odoo-POS-Fast-Loading.html",
     "description": """fast load, fast load data, data fast into pos, data faster loading, fast loading""",
     "live_test_url": "http://odoodemo.webkul.com/?module=pos_fast_loading&custom_url=/pos/auto",
-    "depends": ['point_of_sale'],
+    "depends": ['point_of_sale', 'forlife_point_of_sale'],
     "data": [
         'security/ir.model.access.csv',
         'views/pos_fast_loading_view.xml',
