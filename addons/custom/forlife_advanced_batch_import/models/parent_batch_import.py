@@ -1,10 +1,8 @@
 from odoo import api, fields, models
-import pandas as pd
+
 from io import BytesIO
 import base64
-import csv
 from io import StringIO
-import numpy as np
 import json
 
 
@@ -26,6 +24,29 @@ class ParentBatchImport(models.Model):
     number_of_split_file = fields.Integer(string="Number of split file", compute="_compute_number_of_split_file", store=True)
     with_delay = fields.Integer(string="Delay execute between every batch", default=10)
     child_batch_import_ids = fields.One2many(string="Children  Batch", comodel_name="child.batch.import", inverse_name='parent_batch_import_id')
+    done_batch_count = fields.Integer(string="Done Batch", compute="compute_batch_count")
+    total_batch = fields.Integer(string="Total Batch", compute="compute_batch_count")
+    progress_bar = fields.Integer(string="Progress Bar", compute='compute_batch_count')
+
+    @api.depends('name', 'sequence')
+    def _compute_progress_bar(self):
+        for u in self:
+            if u.name and u.sequence:
+                progress = 100
+            elif u.name:
+                progress = 50
+            else:
+                progress = 0
+            u.progress_bar = progress
+
+    @api.depends('child_batch_import_ids', 'child_batch_import_ids.status')
+    def compute_batch_count(self):
+        for rec in self:
+            total_batch = len(rec.child_batch_import_ids)
+            done_batch_count = len(rec.child_batch_import_ids.filtered(lambda b: b.status == 'done'))
+            rec.total_batch = total_batch
+            rec.done_batch_count = len(rec.child_batch_import_ids.filtered(lambda b: b.status == 'done'))
+            rec.progress_bar = (done_batch_count / total_batch) * 100
 
     def compute_display_name(self):
         for rec in self:
@@ -39,23 +60,21 @@ class ParentBatchImport(models.Model):
 
     def set_all_to_processing(self):
         for rec in self:
-            rec.child_batch_import_ids.filtered(lambda b: b.status not in ['done']).write({
-                'status': 'processing'
-            })
+            rec.child_batch_import_ids.filtered(lambda b: b.status not in ['done']).set_to_processing()
 
     @api.depends('child_batch_import_ids', 'child_batch_import_ids.status')
     def compute_status(self):
         for rec in self:
             if all([b.status == 'cancel' for b in rec.child_batch_import_ids]):
                 rec.status = 'cancel'
+            if all([b.status == 'done' for b in rec.child_batch_import_ids]):
+                rec.status = 'done'
             else:
                 status = 'draft'
                 for batch in rec.child_batch_import_ids:
                     if batch.status == 'processing':
                         status = 'processing'
                         break
-                    if batch.status == 'done':
-                        status = 'done'
                 rec.status = status
 
     @api.depends('child_batch_import_ids')
@@ -74,7 +93,6 @@ class ParentBatchImport(models.Model):
                 })
                 batch_import = self.env['parent.batch.import'].sudo().create({
                     'res_model': base_import.res_model,
-                    # 'file': base_import.file,
                     'attachment_id': attachment.id,
                     'file_name': base_import.file_name,
                     'list_field': json.dumps(fields),
@@ -93,11 +111,14 @@ class ParentBatchImport(models.Model):
                 if base_import.file_type == 'text/csv':
                     self.split_parent_batch_import_csv(batch_import)
                 else:
-                    self.split_parent_batch_import_exel(batch_import)
+                    self.split_parent_batch_import_exel(batch_import=batch_import, sheet_name=options.get('sheet_name') if options.get('sheet_name') else "Sheet1")
                 return dst_url
         return False
 
     def split_parent_batch_import_csv(self, batch_import=False):
+        import pandas as pd
+        import numpy as np
+
         if not batch_import:
             batch_import = self
         # Giải mã nội dung của attachment
@@ -116,8 +137,6 @@ class ParentBatchImport(models.Model):
         # Chia DataFrame thành các phần nhỏ
         dfs = np.array_split(df, num_files)
 
-        # Lưu các phần nhỏ thành các attachment
-        attachments = []
         for i, df_part in enumerate(dfs):
             # Chuyển DataFrame thành dạng bytes
             csv_bytes = df_part.to_csv(index=False).encode()
@@ -138,7 +157,8 @@ class ParentBatchImport(models.Model):
                 'skip': 0,
             })
 
-    def split_parent_batch_import_exel(self, batch_import=False):
+    def split_parent_batch_import_exel(self, batch_import=False, sheet_name='Sheet1'):
+        import pandas as pd
         if not batch_import:
             batch_import = self
         # Giải mã nội dung của attachment
@@ -156,7 +176,7 @@ class ParentBatchImport(models.Model):
             # Tạo ExcelWriter để ghi dữ liệu vào file Excel
             output = BytesIO()
             writer = pd.ExcelWriter(output, engine='xlsxwriter')
-            chunk.to_excel(writer, index=False)
+            chunk.to_excel(writer, sheet_name=sheet_name, index=False)
             writer.close()
             output.seek(0)
 

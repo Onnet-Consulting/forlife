@@ -24,6 +24,10 @@
                             <field name="with_delay"/>
                         </group>
                         <group>
+                            <field name="total_batch" invisible="1"/>
+                            <field name="done_batch_count" widget="gauge" options="{'max_field': 'total_batch'}"/>
+                        </group>
+                        <group>
                             <field name="child_batch_import_ids">
                                 <tree>
                                     <field name="sequence" widget="handle"/>
@@ -49,6 +53,7 @@
                     <field name="with_delay"/>
                     <field name="number_of_split_file"/>
                     <field name="status"/>
+                    <field name="progress_bar" widget="progressbar"/>
                 </tree>
             </field>
         </record>
