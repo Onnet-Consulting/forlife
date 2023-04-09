@@ -1174,18 +1174,19 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 Gui.showNotification(_t(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${CodeProgram.name}.`), 3000);
             };
         } else if (CodeProgram.reward_type == "code_percent") {
-            if (remaining_amount === false) {
-                remaining_amount = activatedCodeObj.remaining_amount;
-            }
-            let base_total_amount = LineList.quantity*LineList.price;
-            let disc_total_amount = round_decimals(base_total_amount * CodeProgram.disc_percent / 100, this.pos.currency.decimal_places);
+            var disc_percent = CodeProgram.disc_percent;
+            remaining_amount = activatedCodeObj.remaining_amount;
 
-            if (CodeProgram.disc_max_amount > 0) {
-                if (remaining_amount <= disc_total_amount) {
+            if (CodeProgram.discount_apply_on == "order" && remaining_amount < disc_percent * LineList.total_price / 100 && remaining_amount > 0) {
+                disc_percent = remaining_amount * 100 / LineList.total_price;
+            }
+
+            let base_total_amount = LineList.quantity*LineList.price;
+            let disc_total_amount = round_decimals(base_total_amount * disc_percent / 100, this.pos.currency.decimal_places);
+
+            if (CodeProgram.discount_apply_on == "specific_products" && CodeProgram.disc_max_amount > 0) {
+                if (0 < remaining_amount && remaining_amount <= disc_total_amount) {
                     disc_total_amount = remaining_amount;
-                    remaining_amount = 0;
-                } else {
-                    remaining_amount -= disc_total_amount;
                 }
             }
 
