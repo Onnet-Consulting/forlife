@@ -711,8 +711,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
         var oneCombo = [];
         var total_quantity = order_lines_has_valid_product.reduce((q, {quantity}) => q + quantity, 0);
-        var min_quantity_tmp = codeProgram.min_quantity
         if (total_quantity >= codeProgram.min_quantity) {
+            var oddComboNumber = (total_quantity-(total_quantity%codeProgram.min_quantity))/codeProgram.min_quantity;
+            var min_quantity_tmp = oddComboNumber*codeProgram.min_quantity;
             for (const ol of order_lines_has_valid_product) {
                 if (ol.quantity <= min_quantity_tmp) {
                     var quantity = ol.quantity;
@@ -734,7 +735,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     }
                 }
             }
-            count++;
+            count += oddComboNumber;
         }
         var total_price = to_discount_line_vals.reduce((p, {price, quantity}) => p + price*quantity, 0)
         for (const discount_line_val of to_discount_line_vals) {
