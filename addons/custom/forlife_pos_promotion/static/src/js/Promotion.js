@@ -1168,6 +1168,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
             if (disc_total_amount > 0) {
                 let originalPrice = LineList.price;
+                if (originalPrice*LineList.quantity <  disc_total_amount) {
+                    disc_total_amount = originalPrice*LineList.quantity;
+                }
                 let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, LineList.quantity);
                 LineList.price = newPrice;
                 LineList.promotion_usage_ids.push(new PromotionUsageLine(CodeProgram.id, code, null,originalPrice, newPrice, discAmountInLine, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on));
