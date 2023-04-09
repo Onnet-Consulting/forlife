@@ -610,7 +610,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     _filterOrderLinesToCheckCodePro(pro, order_lines) {
         if (pro.promotion_type == 'code' && pro.discount_based_on == 'unit_price') {
             return order_lines.filter(function(l) {
-                return l.promotion_usage_ids || l.promotion_usage_ids.length == 0 ? true : false;
+                return !(l.promotion_usage_ids && l.promotion_usage_ids.length) ? true : false;
             });
         } else if (pro.promotion_type == 'code' && pro.discount_based_on == 'discounted_price') {
             return order_lines.filter(function(l) {
@@ -1215,11 +1215,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             LineList.reward_products = {
                 'reward_product_ids': CodeProgram.reward_product_ids,
                 'qty': CodeProgram.reward_quantity
-            }
+            };
+            if (!LineList.promotion_usage_ids) { LineList.promotion_usage_ids = [] }
+            LineList.promotion_usage_ids.push(new PromotionUsageLine(CodeProgram.id, code, null, null, null, null, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on));
         } else if (CodeProgram.reward_type == "code_buy_x_get_cheapest") {
             LineList.reward_products = {
                 'qty': CodeProgram.reward_quantity
-            }
+            };
+            if (!LineList.promotion_usage_ids) { LineList.promotion_usage_ids = [] }
+            LineList.promotion_usage_ids.push(new PromotionUsageLine(CodeProgram.id, code, null, null, null, null, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on));
         }
 
         return [[LineList], remaining_amount];
