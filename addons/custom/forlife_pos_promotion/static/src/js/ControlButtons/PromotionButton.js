@@ -20,17 +20,17 @@ export class PromotionButton extends PosComponent {
         let [newLines, remainingOrderLines, combo_count] = order.computeForListOfProgram(order_lines, selectedProgramsList);
         let [newLinesCode, remainingOrderLinesCode, combo_count_Code] = order.computeForListOfCodeProgram(order_lines, selectedProgramsList, newLines);
         newLines = newLinesCode;
-        remainingOrderLines = remainingOrderLinesCode;
-        order.orderlines.forEach(line => {
+//        remainingOrderLines = remainingOrderLinesCode;
+        var removeOrderlines = [];
+        order.orderlines.forEach((line, index) => {
             let qty = line.get_quantity();
             let qty_orig = parseFloat(line.quantityStr);
             if (qty != qty_orig) {
                 line.set_quantity(line.get_quantity());
             };
-            if (line.quantity == 0) {
-                order.remove_orderline(line);
-            };
         });
+
+        order.orderlines = order.orderlines.filter(line => line.set_quantity > 0)
 
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {

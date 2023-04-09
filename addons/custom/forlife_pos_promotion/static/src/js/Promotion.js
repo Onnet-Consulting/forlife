@@ -389,6 +389,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     add_product(product, options) {
         super.add_product(...arguments);
         this._updateActivatedPromotionPrograms();
+
     }
 
     set_orderline_options(line, options) {
@@ -1398,10 +1399,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 //                    var to_apply_lines_other = Object.values(to_apply_lines);
                     for (const key of Object.keys(to_apply_lines)) {
                         for (let new_line of to_apply_lines[key]) {
-                            let options = this._getNewLineValuesAfterDiscount(new_line);
-                            if (options.quantity) {
-                                options.key_program = key;
-                                orderLines.push(this._createLineFromVals(options));
+                            if (!new_line.is_not_create) {
+                                let options = this._getNewLineValuesAfterDiscount(new_line);
+                                if (options.quantity) {
+                                    options.key_program = key;
+                                    orderLines.push(this._createLineFromVals(options));
+                                    new_line.is_not_create = true;
+                                }
                             }
                         }
                     }
@@ -1411,7 +1415,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 } else {
                     orderLines.sort((a,b) => b.product.lst_price - a.product.lst_price)
                 };
-                var [remaining, to_discount_line_vals, numberOfCombo, to_apply_lines_new] = this._checkNumberOfCode(program, orderLines, [], 0, to_apply_lines);
+                var [remaining, to_discount_line_vals, numberOfCombo, to_apply_lines_new] = this._checkNumberOfCode(program, orderLines, [], 0, false, to_apply_lines);
 
                 to_apply_lines = to_apply_lines_new;
                 combo_count[program.id] = numberOfCombo;
