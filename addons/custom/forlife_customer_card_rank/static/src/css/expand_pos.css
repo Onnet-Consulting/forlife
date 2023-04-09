@@ -1,0 +1,30 @@
+.discount-detail-checkbox {
+    width: 44px !important;
+}
+
+.card-rank-border {
+    flex: content;
+    border-collapse: collapse;
+    width: 100%;
+    text-align: left !important;
+}
+
+.show-discount_detail-popup {
+    max-width: 70% !important;
+}
+
+.discount-detail-header {
+    background: #076ef3;
+    color: white;
+    height: 40px;
+}
+
+.card-rank-border tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.order-line-detail {
+    position: relative;
+    max-height: 600px;
+    overflow: auto;
+}

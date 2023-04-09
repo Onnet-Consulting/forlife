@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="ShowDiscountDetailPopup" owl="1">
+        <div class="popup show-discount_detail-popup">
+            <header class="title">
+                Apply Card Rank
+            </header>
+            <main class="body">
+                <div class="order-line-detail">
+                    <table class="card-rank-border">
+                    <thead>
+                        <tr class="discount-detail-header">
+                            <th/>
+                            <th>Product</th>
+                            <th>Original price</th>
+                            <th>Promotions</th>
+                            <th>Card rank</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="props.order_lines" t-as="line" t-key="line.id">
+                            <tr>
+                                <input type="checkbox" onclick="return false;" class="discount-detail-checkbox"/>
+                                <td><t t-esc="line.product.display_name"/></td>
+                                <td><t t-esc="env.pos.format_currency(line.price)"/></td>
+                                <td>XXX</td>
+                                <td>XXX</td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+                </div>
+            </main>
+            <footer class="footer">
+                <div class="button cancel" t-on-click="cancel">
+                    Cancel
+                </div>
+                <div class="button confirm highlight" t-on-click="confirm">
+                    Apply
+                </div>
+            </footer>
+        </div>
+    </t>
+</templates>

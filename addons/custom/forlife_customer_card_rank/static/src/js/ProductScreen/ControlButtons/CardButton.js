@@ -16,17 +16,21 @@ export class CardButton extends PosComponent {
     }
 
     async onClick() {
+        const {confirmed, payload: res} = await this.showPopup('ShowDiscountDetailPopup', {
+            order: this.env.pos.get_order(),
+            order_lines: this.env.pos.get_order().get_orderlines(),
+        });
         const order = this.env.pos.get_order();
-        const current_rank = order.partner.card_rank_by_brand[this.env.pos.pos_branch[0].id];
-        const card_rank_program = this.env.pos.card_rank_program_by_rank_id[current_rank[0]];
-        if (!card_rank_program) {
-            await Gui.showPopup('ErrorPopup', {
-                'title': _t("Card Rank Program error"),
-                'body': _.str.sprintf(_t("Card rank program '%s' not found."), current_rank[1]),
-            });
-        } else {
-            order.action_apply_card_rank_program(card_rank_program);
-        }
+        // const current_rank = order.partner.card_rank_by_brand[this.env.pos.pos_branch[0].id];
+        // const card_rank_program = this.env.pos.card_rank_program_by_rank_id[current_rank[0]];
+        // if (!card_rank_program) {
+        //     await Gui.showPopup('ErrorPopup', {
+        //         'title': _t("Card Rank Program error"),
+        //         'body': _.str.sprintf(_t("Card rank program '%s' not found."), current_rank[1]),
+        //     });
+        // } else {
+        //     order.action_apply_card_rank_program(card_rank_program);
+        // }
     }
 }
 
