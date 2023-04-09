@@ -46,7 +46,7 @@ class ParentBatchImport(models.Model):
             done_batch_count = len(rec.child_batch_import_ids.filtered(lambda b: b.status == 'done'))
             rec.total_batch = total_batch
             rec.done_batch_count = len(rec.child_batch_import_ids.filtered(lambda b: b.status == 'done'))
-            rec.progress_bar = (done_batch_count / total_batch) * 100
+            rec.progress_bar = (done_batch_count / total_batch) * 100 if total_batch > 0 else 0
 
     def compute_display_name(self):
         for rec in self:
