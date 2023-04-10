@@ -21,7 +21,7 @@ export const PosPromotionProductScreen = (ProductScreen) =>
                     );
                 };
             };
-            if (validPrograms.length > 0) {
+            if (validPrograms.length > 0 && order.get_partner()) {
                 let programRewards = validPrograms.map((line) => {
                     return {program_name: line[2], program_id: line[1], line_id: line[0], isSelected: false};
                 });
