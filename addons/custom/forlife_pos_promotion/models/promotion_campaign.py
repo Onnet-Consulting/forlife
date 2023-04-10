@@ -149,7 +149,8 @@ class SurprisingRewardProduct(models.Model):
     to_check_product_ids = fields.Many2many(
         'product.product', string='To Check Products', required=True, domain="[('available_in_pos', '=', True)]")
     reward_code_program_id = fields.Many2one(
-        'promotion.program', 'Program Reward', domain="['|', ('with_code', '=', True), ('promotion_type', '=', 'code')]", required=True)
+        'promotion.program', 'Program Reward',
+        domain="[('with_code', '=', True), ('state', 'in', ['new', 'in_progress'])]", required=True)
     max_quantity = fields.Float('Maximum Quantity')
     issued_code_ids = fields.One2many('promotion.code', 'surprising_reward_line_id')
     issued_qty = fields.Float('Issued Code Quantity', compute='_compute_issued_qty')
