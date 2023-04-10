@@ -71,7 +71,7 @@ odoo.define('forlife_voucher.voucher', function (require) {
             };
             add_product(product, options){
                 this.remove_all_paymentlines()
-                super.add_product(product,options)
+                return super.add_product(product,options)
             }
 
 
@@ -109,7 +109,7 @@ odoo.define('forlife_voucher.voucher', function (require) {
             }
             set_quantity(quantity, keep_price){
                 this.remove_all_paymentlines()
-                super.set_quantity(quantity, keep_price)
+                return super.set_quantity(quantity, keep_price)
             }
 
         };
