@@ -26,6 +26,7 @@
         'data/ir_fields.xml',
         'data/res_partner_retail.xml',
         'data/hr_data.xml',
+        'data/barcode_rule.xml',
         'wizard/create_warehouse_partner_views.xml',
         'views/res_partner_group_views.xml',
         'views/res_partner_job_views.xml',

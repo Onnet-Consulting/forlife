@@ -99,7 +99,7 @@ class PromotionProgram(models.Model):
     discount_based_on = fields.Selection([
         ('unit_price', 'Unit Price'),
         ('discounted_price', 'Discounted Price')], string='Discount Based On', required=True, default='unit_price')
-    product_ids = fields.Many2many('product.product', string='Products')
+    product_ids = fields.Many2many('product.product', string='Products', domain="[('available_in_pos', '=', True)]")
     product_categ_ids = fields.Many2many('product.category', string='Product Categories')
     product_domain = fields.Char()
     min_quantity = fields.Float('Minimum Quantity', default=1)
@@ -137,10 +137,10 @@ class PromotionProgram(models.Model):
     code_ids = fields.One2many('promotion.code', 'program_id')
     code_count = fields.Integer(compute='_compute_code_count')
 
-    reward_for_referring = fields.Boolean('Rewards for Referring', copy=False, readonly=False)
-
-    discount_product_ids = fields.Many2many('product.product', 'promotion_program_discount_product_rel')
-    reward_product_ids = fields.Many2many('product.product', 'promotion_program_reward_product_rel')
+    discount_product_ids = fields.Many2many(
+        'product.product', 'promotion_program_discount_product_rel', domain="[('available_in_pos', '=', True)]")
+    reward_product_ids = fields.Many2many(
+        'product.product', 'promotion_program_reward_product_rel', domain="[('available_in_pos', '=', True)]")
     reward_quantity = fields.Float()
 
     disc_amount = fields.Float('Discount Amount')
@@ -154,7 +154,7 @@ class PromotionProgram(models.Model):
     tax_from_date = fields.Date('Registered Tax From')
     tax_to_date = fields.Date('Registered Tax To')
 
-    @api.constrains('promotion_type', 'combo_line_ids')
+    @api.constrains('promotion_type', 'combo_line_ids', 'reward_ids', 'reward_type')
     def _check_duplicate_product_in_combo(self):
         for program in self:
             if program.promotion_type == 'combo' and program.combo_line_ids:
@@ -164,7 +164,11 @@ class PromotionProgram(models.Model):
                     if couple[0] & couple[1]:
                         raise UserError(_('Products duplication occurs in the combo formula!'))
             if program.promotion_type == 'combo' and not program.combo_line_ids:
-                raise UserError(_('Combo Formular is not set!'))
+                raise UserError(_('%s: Combo Formular is not set!') % program.name)
+            if program.promotion_type == 'combo' and program.reward_ids and program.reward_type in ['combo_percent_by_qty', 'combo_fixed_price_by_qty']:
+                if len(program.reward_ids) != len(set(program.reward_ids.mapped('quantity_min'))):
+                    raise UserError(_('%s: Không được khai báo cùng số lượng trên các chi tiết combo!') % program.name)
+
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -264,7 +268,6 @@ class PromotionProgram(models.Model):
         if not self.promotion_type:
             self.reward_type = False
         elif self.promotion_type == 'combo':
-            self.with_code = False
             if self.reward_type and not self.reward_type.startswith('combo'):
                 self.reward_type = 'combo_amount'
         elif self.promotion_type == 'code':

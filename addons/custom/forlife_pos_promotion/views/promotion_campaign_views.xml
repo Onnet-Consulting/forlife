@@ -70,6 +70,31 @@
                                    mode="tree,kanban" colspan="4" nolabel="1">
                             </field>
                         </page>
+                        <page string="Surprising Reward" name="surprising_reward" colspan="4">
+                            <div>Nếu đơn hàng không chứa sản phẩm dưới đây, hệ thống sẽ tìm CT KM của các sản phẩm này và tặng mã KM cho Khách hàng</div>
+                            <field name="surprising_reward_product_ids"
+                                   context="{'active_test':False, 'default_campaign_id': active_id}"
+                                   mode="tree" colspan="4" nolabel="1" editable="bottom">
+                                <tree>
+                                    <field name="to_check_product_ids" widget="many2many_tags"/>
+                                    <field name="reward_code_program_id" domain="[('with_code', '=', True)]"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                    <field name="max_quantity"/>
+                                    <field name="issued_qty"/>
+                                </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <field name="to_check_product_ids" widget="many2many_tags"/>
+                                            <field name="reward_code_program_id" domain="[('with_code', '=', True)]"/>
+                                            <field name="active" widget="boolean_toggle"/>
+                                        <field name="max_quantity"/>
+                                        <field name="issued_qty"/>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
             </form>

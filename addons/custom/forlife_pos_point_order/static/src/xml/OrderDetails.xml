@@ -42,21 +42,18 @@
                         </tr>
                         <tr style="border: 1px solid black; text-align:left">
                             <th style="border: 1px solid black;width:25%">Còn lại</th>
-                            <th><t t-if="env.pos.selectedOrder.total_order_line_redisual">
-                                    <t t-esc="env.pos.selectedOrder.total_order_line_redisual"/>
-                                </t>
-                                <t t-else="">
-                                    <t t-esc="env.pos.selectedOrder.total_order_line_point_used"/>
-                                </t></th>
+                            <th>
+                                  <t t-esc="env.pos.selectedOrder.total_order_line_redisual"/>
+                            </th>
                         </tr>
-<!--                        <tr style="border: 1px solid black; text-align:left">-->
-<!--                            <th></th>-->
-<!--                            <th></th>-->
-<!--                            <th>Tổng tiền thanh toán</th>-->
-<!--                            <th>-->
-<!--                                <t t-esc="_total"/>-->
-<!--                            </th>-->
-<!--                        </tr>-->
+                        <!--                        <tr style="border: 1px solid black; text-align:left">-->
+                        <!--                            <th></th>-->
+                        <!--                            <th></th>-->
+                        <!--                            <th>Tổng tiền thanh toán</th>-->
+                        <!--                            <th>-->
+                        <!--                                <t t-esc="_total"/>-->
+                        <!--                            </th>-->
+                        <!--                        </tr>-->
                     </table>
 
                 </t>

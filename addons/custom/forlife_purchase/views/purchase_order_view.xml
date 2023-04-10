@@ -83,7 +83,7 @@
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="before">
                     <field name="partner_domain" invisible="1"/>
-                    <field name="partner_id" string="Nhà cung cấp" domain="partner_domain"/>
+                    <field name="partner_id" string="Nhà cung cấp"/>
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type"/>
                     <field name="purchase_code"/>

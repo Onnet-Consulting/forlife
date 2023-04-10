@@ -2,3 +2,4 @@ cryptography
 phonenumbers
 redis
 boto3
+pandas

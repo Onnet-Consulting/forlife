@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="SurpriseRewardPopup" owl="1">
+        <div class="popup popup-text popup-med-custom product-configurator-popup">
+            <header class="title">
+                <span>Bạn được tặng code của chương trình bất ngờ</span><br/>
+            </header>
+            <hr/>
+            <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
+                <ul>
+                    <t t-foreach="props.programRewards" t-as="option" t-key="option.program_id">
+                        <li class="program-item"  style="height: 100px; margin: 0px 0 10px 0">
+                            <input type="checkbox" name="programs"
+                                   t-att-id="option.program_id"
+                                   t-att-checked="'checked' ? option.isSelected : ''"
+                                   t-att-value="option.program_id"
+                                   t-on-click="() => this.selectItem(option)"
+                            />
+                            <label t-att-for="option.program_id">
+                                [<t t-esc="option.program_id"/>]
+                                <t t-esc="option.program_name"/>
+                            </label>
+                        </li>
+                    </t>
+                </ul>
+                <style>
+                </style>
+            </main>
+            <footer class="footer">
+                <div class="button highlight confirm" t-on-click="confirm">
+                    Apply
+                </div>
+                <div class="button cancel" t-on-click="cancel">
+                    Cancel
+                </div>
+            </footer>
+        </div>
+    </t>
+
+</templates>
