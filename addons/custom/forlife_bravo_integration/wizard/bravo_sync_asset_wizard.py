@@ -38,9 +38,7 @@ class BravoSyncAssetWizard(models.TransientModel):
             'LocationCode': 'location',
             'Quantity': 'quantity',
             'EmployeeCode': 'employee',
-            'ElavationGroup1': 'elavation_group_1',
-            'ElavationGroup2': 'elavation_group_2',
-            'ElavationGroup3': 'elavation_group_3',
+            'ElavationGroup3': 'category_product',
             'CompanyCode': 'company_id',
             'PushDate': 'bravo_create_date',
         }
@@ -83,12 +81,22 @@ class BravoSyncAssetWizard(models.TransientModel):
         analytic_account_codes = []
         asset_location_codes = []
         employee_codes = []
+        category_codes = []
         for records in data:
             for rec in records:
                 rec_value = dict(zip(bravo_assets_columns, rec))
-                analytic_account_codes.append(rec_value.get('DeptCode'))
-                asset_location_codes.append(rec_value.get('LocationCode'))
-                employee_codes.append(rec_value.get('EmployeeCode'))
+                bravo_dept_code = rec_value.get('DeptCode')
+                if bravo_dept_code:
+                    analytic_account_codes.append(bravo_dept_code)
+                bravo_location_code = rec_value.get('LocationCode')
+                if bravo_location_code:
+                    asset_location_codes.append(bravo_location_code)
+                bravo_employee_code = rec_value.get('EmployeeCode')
+                if bravo_employee_code:
+                    employee_codes.append(bravo_employee_code)
+                bravo_category_code = rec_value.get('ElavationGroup3')
+                if bravo_category_code:
+                    category_codes.append(bravo_category_code)
                 res.append(rec_value)
         if not res:
             return False
@@ -96,12 +104,14 @@ class BravoSyncAssetWizard(models.TransientModel):
         analytic_account_id_by_code = self.generate_analytic_account_id_by_code(company_data, analytic_account_codes)
         asset_location_id_by_code = self.generate_asset_location_id_by_code(asset_location_codes)
         employee_id_by_code = self.generate_hr_employee_id_by_code(company_data, employee_codes)
+        category_id_by_code = self.generate_product_category_id_by_code(category_codes)
 
         for record_value in res:
             record_value['Type'] = str(record_value['Type'])
-            record_value['DeptCode'] = analytic_account_id_by_code[record_value['DeptCode']]
-            record_value['LocationCode'] = asset_location_id_by_code[record_value['LocationCode']]
-            record_value['EmployeeCode'] = employee_id_by_code[record_value['EmployeeCode']]
+            record_value['DeptCode'] = analytic_account_id_by_code.get(record_value['DeptCode'])
+            record_value['LocationCode'] = asset_location_id_by_code.get(record_value['LocationCode'])
+            record_value['EmployeeCode'] = employee_id_by_code.get(record_value['EmployeeCode'])
+            record_value['ElavationGroup3'] = category_id_by_code.get(record_value['ElavationGroup3'])
             record_value['CompanyCode'] = company_id
 
         return res
@@ -109,6 +119,17 @@ class BravoSyncAssetWizard(models.TransientModel):
     def generate_company_id_by_code(self):
         companies = self.env['res.company'].search([('code', '!=', False)])
         return {comp.code: comp.id for comp in companies}
+
+    def generate_product_category_id_by_code(self, codes):
+        product_categories = self.env['product.category'].search([('code', 'in', codes)])
+        res = {}
+        for pc in product_categories:
+            res[pc.category_code] = pc.id
+
+        missing_codes = list(set(codes) - set(res.keys()))
+        if missing_codes:
+            raise ValidationError(_("Missing product category codes: %r") % missing_codes)
+        return res
 
     def generate_analytic_account_id_by_code(self, company_data, codes):
         analytic_accounts = self.env['account.analytic.account'].search([
@@ -120,7 +141,8 @@ class BravoSyncAssetWizard(models.TransientModel):
             res[aa.code] = aa.id
         missing_codes = list(set(codes) - set(res.keys()))
         if missing_codes:
-            raise ValidationError(_("Missing analytic codes: %r") % missing_codes)
+            raise ValidationError(
+                _("Missing analytic codes in company %s: %r") % (company_data.get('code'), missing_codes))
         return res
 
     def generate_asset_location_id_by_code(self, codes):
