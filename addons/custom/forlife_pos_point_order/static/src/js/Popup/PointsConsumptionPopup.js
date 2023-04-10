@@ -25,10 +25,13 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
             })
         }
 
-        cancel() {
+        delete_val() {
             console.log($('.o_input'))
             $('.o_input').val('')
-            this.env.posbus.trigger('', {
+        }
+
+        cancel() {
+            this.env.posbus.trigger('close-popup', {
                 popupId: this.props.id,
                 response: {confirmed: false, payload: null},
             });
