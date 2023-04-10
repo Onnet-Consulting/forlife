@@ -341,6 +341,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             await this.get_history_program_usages();
             this.activatedInputCodes = [];
             this._updateActivatedPromotionPrograms();
+            this._resetPromotionPrograms();
+            this._resetCartPromotionPrograms();
         };
     }
 
@@ -1029,18 +1031,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return [to_discount_line_vals, orderLines]
     }
 
-    // return: discount_amount
-    _get_discount_amount_cart_program(program, line) {
-        if (program.reward_type == 'cart_discount_percent') {
-            let disc_amount = line.price * program.disc_percent;
-            disc_amount = program.disc_max_amount > 0 && program.disc_max_amount < disc_amount && program.disc_max_amount || disc_amount;
-            return disc_amount;
-        }
-        else if (program.reward_type == 'cart_discount_fixed_price') {
-        }
-        else if (program.reward_type == 'cart_get_x_free') {
-        }
-    }
     // orderLine of Order: clone or real
     // listOfProgram
     /*
@@ -1117,8 +1107,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     _computeNewPriceForComboProgram(disc_total, base_total, prePrice, quantity) {
         let subTotalLine = prePrice * quantity;
         let discAmountInLine = base_total > 0.0 ? subTotalLine / base_total * disc_total : 0.0;
-        let discAmount = discAmountInLine / quantity;
-        let newPrice = (subTotalLine - discAmountInLine) / quantity;
+        let discAmount = round_decimals( discAmountInLine / quantity, this.pos.currency.decimal_places);
+        let newPrice = round_decimals( (subTotalLine - discAmountInLine) / quantity, this.pos.currency.decimal_places);
         return [newPrice, discAmount]
     }
 
@@ -1252,9 +1242,24 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (disc_total_amount > 0) {
                 for (let comboLine of comboLineList) {
                     let originalPrice = comboLine.price;
-                    let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
-                    comboLine.price = newPrice;
-                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+//                    let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                    if (comboLineList.indexOf(comboLine) == comboLineList.length-1) {
+                        let discounted = comboLineList.reduce((tmp_line, line) => {
+                            let tmp_pro = line.promotion_usage_ids.reduce((tmp, usage) => {
+                                if (usage.str_id == program.str_id) {
+                                    tmp += usage.discount_amount * line.quantity
+                                };
+                                return tmp;
+                            }, 0);
+                            tmp_line += tmp_pro;
+                            return tmp_line;
+                        }, 0);
+                        let remaining_amount = program.disc_amount - discounted;
+                        let newPrice = originalPrice - remaining_amount / comboLine.quantity
+                        let discAmount = remaining_amount / comboLine.quantity
+                        comboLine.price = newPrice;
+                        comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    }
                 };
             } else {
                 Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
