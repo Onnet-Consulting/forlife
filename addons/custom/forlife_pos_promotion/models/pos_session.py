@@ -60,8 +60,11 @@ class PosSession(models.Model):
             'search_params': {
                 'domain': [('campaign_id', 'in', self.config_id._get_promotion_campaign_ids().ids), ('active', '=', True)],
                 'fields': [
+                    'id',
                     'to_check_product_ids',
                     'reward_code_program_id',
+                    'max_quantity',
+                    'issued_qty'
                 ]
             }
         }

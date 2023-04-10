@@ -8,10 +8,10 @@ from odoo.exceptions import UserError, ValidationError
 class ProducAttributeValue(models.Model):
     _inherit = "product.attribute.value"
 
-    code = fields.Char(string="Code", required=True)
+    code = fields.Char(string="Mã", required=True)
 
     _sql_constraints = [
-        ('unique_code', 'UNIQUE(code)', 'Code must be unique!')
+        ('value_code_uniq', 'unique (code, attribute_id)', "Bạn không thể tạo hai mã có cùng giá trị cho cùng một thuộc tính.")
     ]
 
 

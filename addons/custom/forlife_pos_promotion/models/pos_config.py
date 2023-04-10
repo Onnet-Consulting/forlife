@@ -73,20 +73,14 @@ class PosConfig(models.Model):
                         'error_message': _('This coupon is expired or over maximum usages: (%s).', code),
                     },
                 }
+        has_reward = False
         if code_id.reward_for_referring:
             order_partner = self.env['res.partner'].browse(partner_id)
             code_partner = code_id.partner_id
             is_new_customer = not order_partner.sudo().store_fo_ids.filtered(
                 lambda r: r.brand_id == code_id.program_id.brand_id)
             valid_date = code_id.referring_date_from <= check_date <= code_id.referring_date_to
-            result = order_partner and code_partner and order_partner.id != code_partner and is_new_customer and valid_date
-            if not result:
-                return {
-                    'successful': False,
-                    'payload': {
-                        'error_message': _('Mã KM này không hợp lệ')
-                    },
-                }
+            has_reward = bool(order_partner and code_partner and order_partner.id != code_partner.id and is_new_customer and valid_date)
         return {
             'successful': True,
             'payload': {
@@ -94,7 +88,7 @@ class PosConfig(models.Model):
                 'code_id': code_id.id,
                 'coupon_partner_id': code_id.partner_id.id,
                 'remaining_amount': code_id.remaining_amount,
-                'reward_for_referring': code_id.reward_for_referring,
-                'reward_program_id': code_id.reward_program_id.id
+                'reward_for_referring': has_reward,
+                'reward_program_id': has_reward and code_id.reward_program_id.id
             },
         }

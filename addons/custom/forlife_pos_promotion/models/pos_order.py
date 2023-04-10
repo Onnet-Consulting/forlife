@@ -37,7 +37,7 @@ class PosOrder(models.Model):
 
         if order['data'].get('reward_for_referring', 0) and order['data'].get('referred_code_id', {}):
             code_data = order['data'].get('referred_code_id', {})
-            code = self.env['promotion.code'].browse(code_data['id'])
+            code = self.env['promotion.code'].sudo().browse(code_data['id'])
             referring_partner_id = code.partner_id
             partner = self.env['res.partner'].sudo().browse(partner_id)
             reward_program = self.env['promotion.program'].browse(code_data.get('reward_program_id', 0))
@@ -51,12 +51,14 @@ class PosOrder(models.Model):
             new_codes = self.env['promotion.code'].create(code_create_vals)
             new_codes.write({
                 'original_program_id': code.program_id.id,
-                'original_order_id': order_id
+                'original_order_id': order_id,
+                'original_code_id': code.id
             })
 
         # Kiểm tra và tạo Mã KM cho chương trình Quà tặng bất ngờ
         if order['data'].get('surprise_reward_program_id', 0):
             surprise_reward_program_id = order['data'].get('surprise_reward_program_id', 0)
+            surprising_reward_line_id = order['data'].get('surprising_reward_line_id', 0)
             surprise_program = self.env['promotion.program'].browse(surprise_reward_program_id)
             if surprise_program:
                 gen_code_wizard = self.env['promotion.generate.code'].create({
@@ -66,6 +68,7 @@ class PosOrder(models.Model):
                 customer = self.env['res.partner'].sudo().browse(partner_id)
                 new_code = self.env['promotion.code'].create(gen_code_wizard._get_coupon_values(customer, force_partner=True))
                 new_code.original_order_id = order_id
+                new_code.surprising_reward_line_id = surprising_reward_line_id
 
         return order_id
 

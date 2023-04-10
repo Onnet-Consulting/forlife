@@ -20,7 +20,7 @@ class PromotionGenerateCode(models.Model):
     valid_until = fields.Date()
     coupon_qty = fields.Integer(
         'Quantity', compute='_compute_coupon_qty', readonly=False, store=True)
-    reward_for_referring = fields.Boolean('Rewards for Referring', copy=False, readonly=False)
+    reward_for_referring = fields.Boolean('Reward for Referring', copy=False, readonly=False, default=False)
     referring_date_from = fields.Datetime('Refer Date From')
     referring_date_to = fields.Datetime('Refer Date To')
     reward_program_id = fields.Many2one('promotion.program', string='Referring Program Reward')

@@ -9,25 +9,29 @@ export const PosPromotionProductScreen = (ProductScreen) =>
         async _onClickPay() {
             const order = this.env.pos.get_order();
             order.surprise_reward_program_id = null;
+            order.surprising_reward_line_id = null;
             const inOrderProducts = order.get_orderlines().reduce((tmp, line) => {tmp.add(line.product.id); return tmp}, new Set());
             let toCheckRewardLines = this.env.pos.surprisingRewardProducts;
-            let inOrderProductsList = new Array(inOrderProducts);
+            let inOrderProductsList = new Array(...inOrderProducts);
             let validPrograms = [];
             for (let productLine of toCheckRewardLines) {
-                if (!(inOrderProductsList.some(product => productLine.to_check_product_ids.has(product)))) {
-                    validPrograms.push(this.env.pos.get_program_by_id(productLine.reward_code_program_id[0]));
+                if (!inOrderProductsList.some(product => productLine.to_check_product_ids.has(product)) && productLine.max_quantity > productLine.issued_qty) {
+                    validPrograms.push(
+                        [productLine.id, productLine.reward_code_program_id[0], productLine.reward_code_program_id[1]]
+                    );
                 };
             };
-            if (validPrograms.length > 0) {
-                let programRewards = validPrograms.map(p => {
-                    return {program: p, isSelected: false, id: p.id};
+            if (validPrograms.length > 0 && order.get_partner()) {
+                let programRewards = validPrograms.map((line) => {
+                    return {program_name: line[2], program_id: line[1], line_id: line[0], isSelected: false};
                 });
                 const { confirmed, payload } = await this.showPopup('SurpriseRewardPopup', {
                     title: this.env._t('Please select some rewards'),
                     programRewards: programRewards || [],
                 });
                 if (payload) {
-                    order.surprise_reward_program_id = payload.id;
+                    order.surprise_reward_program_id = payload.program_id;
+                    order.surprising_reward_line_id = payload.line_id;
                 }
 
             };
