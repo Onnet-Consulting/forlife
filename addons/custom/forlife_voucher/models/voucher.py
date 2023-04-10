@@ -51,6 +51,7 @@ class Voucher(models.Model):
     brand_id = fields.Many2one('res.brand', 'Brand', required=True)
     store_ids = fields.Many2many('store', string='Cửa hàng áp dụng')
     is_full_price_applies = fields.Boolean('Áp dụng nguyên giá')
+    using_limit = fields.Integer('Giới hạn sử dụng')
 
     @api.depends('price_used', 'price')
     def _compute_price_residual(self):
@@ -110,7 +111,7 @@ class Voucher(models.Model):
                     'value': False,
                 })
             else:
-                vourcher = self.sudo().search([('name','=', code['value'])], limit=1)
+                vourcher = self.sudo().search([('name', '=', code['value'])], limit=1)
                 if vourcher:
                     start_date = self._format_time_zone(vourcher.start_date)
                     end_date = self._format_time_zone(vourcher.end_date)
@@ -120,11 +121,13 @@ class Voucher(models.Model):
                     start_date_format = datetime.strptime(start_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
                     data.append({
                         'value': {
+                            'voucher_name': vourcher.name,
                             'voucher_id': vourcher.id,
                             'type': vourcher.type,
                             'end_date_not_format': end_date,
                             'end_date': end_date_format,
                             'price_residual': vourcher.price_residual,
+                            'price_residual_no_compute': vourcher.price_residual,
                             'price_used': vourcher.price_used,
                             'price_change': 0,
                             'brand_id': vourcher.brand_id.id,
@@ -134,13 +137,28 @@ class Voucher(models.Model):
                             'start_date': start_date_format,
                             'apply_contemp_time': vourcher.apply_contemp_time,
                             'product_apply_ids': vourcher.product_apply_ids.ids,
-                            'is_full_price_applies': vourcher.is_full_price_applies
+                            'is_full_price_applies': vourcher.is_full_price_applies,
+                            'using_limit': vourcher.program_voucher_id.using_limit,
+                            'program_voucher_id': vourcher.program_voucher_id.id,
+                            'product_voucher_name': vourcher.program_voucher_id.name
                         }
                     })
                 if not vourcher:
                     data.append({
                         'value': False,
                     })
+        # program_valid = {
+        # }
+        # for rec in data:
+        #     if rec['value']:
+        #         if not rec['value']['program_voucher_id'] in program_valid.keys():
+        #             program_valid[rec['value']['program_voucher_id']] = rec['value']['using_limit']
+        #
+        # for rec in data:
+        #     if rec['value']:
+        #         if not rec['value']['program_voucher_id'] in program.keys():
+        #             program[rec['value']['program_voucher_id']] = rec['value']['using_limit']
+
         return data
 
     def _format_time_zone(self, time):
@@ -165,8 +183,6 @@ class Voucher(models.Model):
                 if rec.end_date and rec.end_date < now:
                     rec.status_latest = rec.state
                     rec.state = 'expired'
-
-
 
     @api.model
     def create(self, vals_list):
