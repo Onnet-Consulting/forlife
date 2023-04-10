@@ -33,7 +33,7 @@ build-beta:
   script:
     - docker image prune -f
     - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
-    - docker-compose -f docker-compose-gitlab-ci.yml up -d --force-recreate
+    - docker-compose -f docker-compose-gitlab-ci.yml up -d
     - docker-compose restart
   tags:
     - build-beta
