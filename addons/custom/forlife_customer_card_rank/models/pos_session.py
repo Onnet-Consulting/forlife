@@ -18,12 +18,12 @@ class PosSession(models.Model):
             'to_date': p['to_date'],
             'card_rank_id': p['card_rank_id'][0],
             'card_rank_name': p['card_rank_id'][1],
-            'discounts': [{'from': disc[1], 'to': disc[2], 'disc': disc[0]}
-                          for disc in sorted([[p['original_price'], -1, 0],
-                                              [p['value1'], p['apply_value_from_1'], p['apply_value_to_1']],
-                                              [p['value2'], p['apply_value_from_2'], p['apply_value_to_2']],
-                                              [p['value3'], p['apply_value_from_3'], p['apply_value_to_3']]],
-                                             key=lambda r: r[0])[::-1] if disc[0] > 0],
+            'on_original_price': p['original_price'],
+            'extra_discount': [{'from': disc[1], 'to': disc[2], 'disc': disc[0]}
+                               for disc in sorted([[p['value1'], p['apply_value_from_1'], p['apply_value_to_1']],
+                                                   [p['value2'], p['apply_value_from_2'], p['apply_value_to_2']],
+                                                   [p['value3'], p['apply_value_from_3'], p['apply_value_to_3']]],
+                                                  key=lambda r: r[0])[::-1] if disc[0] > 0],
         } for p in loaded_data['member.card']}
         loaded_data.pop('member.card')
         if 'pos.branch' not in loaded_data:

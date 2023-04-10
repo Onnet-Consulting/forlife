@@ -73,7 +73,7 @@
                             <separator string="Card Rank Discount"/>
                             <div>
                                 <label for="original_price"/>
-                                extra discount (%)
+                                discount (%)
                                 <field name="original_price" class="oe_inline"/>
                             </div>
                             <div>Discounted from
