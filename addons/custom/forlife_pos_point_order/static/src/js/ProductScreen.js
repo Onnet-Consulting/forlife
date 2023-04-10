@@ -15,6 +15,14 @@ odoo.define('forlife_pos_point_order.ProductScreen', function (require) {
             });
         }
 
+        reassign_point(){
+                for(var i =0; i< this.currentOrder.orderlines.length; i++){
+                    this.currentOrder.orderlines[i].point = 0
+                }
+                this.currentOrder.total_order_line_point_used = 0
+                this.currentOrder.total_order_line_redisual = 0
+        }
+
         async onClickPartner() {
             // IMPROVEMENT: This code snippet is very similar to selectPartner of PaymentScreen.
             const currentPartner = this.currentOrder.get_partner();
@@ -39,15 +47,12 @@ odoo.define('forlife_pos_point_order.ProductScreen', function (require) {
                 var partner_rpc = await this.get_partner_point(id)
                 newPartner.total_points_available_format = partner_rpc.total_points_available_format
                 newPartner.total_points_available_forlife = partner_rpc.total_points_available_forlife
-                for(var i =0; i< this.currentOrder.orderlines.length; i++){
-                    this.currentOrder.orderlines[i].point = 0
-                }
-                this.currentOrder.total_order_line_point_used = 0
-                this.currentOrder.total_order_line_redisual = 0
+                this.reassign_point()
             }
             if (confirmed) {
                 this.currentOrder.set_partner(newPartner);
                 this.currentOrder.updatePricelist(newPartner);
+                this.reassign_point()
             }
         }
 

@@ -11,7 +11,7 @@ class PosOrder(models.Model):
 
     point_order = fields.Integer('Point Order', compute='_compute_point_order', store=True)
     point_event_order = fields.Integer('Point event Order', compute='_compute_point_order', store=True)
-    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True)
+    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True, help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
     item_total_point = fields.Integer(
         'Item Point Total', readonly=True, compute='_compute_item_total_point', store=True,
         help='Includes the total of product point and product event point')
@@ -43,9 +43,13 @@ class PosOrder(models.Model):
         HistoryPoint = self.env['partner.history.point']
         if not existing_order:
             pos = self.env['pos.order'].browse(pos_id)
+            store = pos._get_store_brand_from_program()
+            if store == 'format':
+                pos.partner_id.is_purchased_of_format = True
+            if store == 'forlife':
+                pos.partner_id.is_purchased_of_forlife = True
             if pos.partner_id.is_member_app_format or pos.partner_id.is_member_app_forlife:
                 if pos.program_store_point_id:
-                    store = pos._get_store_brand_from_program()
                     if store is not None:
                         history_values = pos._prepare_history_point_value(store)
                         HistoryPoint.sudo().create(history_values)
@@ -134,19 +138,19 @@ class PosOrder(models.Model):
                 branch_id = rec.program_store_point_id.brand_id.id
                 if rec.partner_id.is_purchased_of_forlife and branch_id == brand_tokyolife:
                     rec.point_order = int(
-                        money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) if rec.program_store_point_id.value_conversion > 0 else 0  # a
+                        money_value / rec.program_store_point_id.value_conversion) * rec.program_store_point_id.point_addition if rec.program_store_point_id.value_conversion > 0 else 0  # a
                 elif rec.partner_id.is_purchased_of_format and branch_id == brand_format:
                     rec.point_order = int(
-                        money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition) if rec.program_store_point_id.value_conversion > 0 else 0  # a
+                        money_value / rec.program_store_point_id.value_conversion) * rec.program_store_point_id.point_addition if rec.program_store_point_id.value_conversion > 0 else 0  # a
                 else:
                     rec.point_order = int(
-                        money_value / rec.program_store_point_id.value_conversion * rec.program_store_point_id.point_addition * rec.program_store_point_id.first_order) if rec.program_store_point_id.value_conversion > 0 else 0  # a
+                        money_value / rec.program_store_point_id.value_conversion) * rec.program_store_point_id.point_addition * rec.program_store_point_id.first_order if rec.program_store_point_id.value_conversion > 0 else 0  # a
                 event_valid = self.get_event_match(pos_order=rec)
                 if event_valid:
                     domain = literal_eval(event_valid.customer_conditions) if event_valid.customer_conditions else []
                     partner_condition = self.env['res.partner'].search(domain)
                     if rec.partner_id.id in partner_condition.ids:
-                        rec.point_event_order = int(money_value / event_valid.value_conversion * event_valid.point_addition)  # b
+                        rec.point_event_order = int(money_value / event_valid.value_conversion) * event_valid.point_addition  # b
                     else:
                         rec.point_event_order = 0
                 else:
