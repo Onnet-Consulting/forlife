@@ -16,16 +16,17 @@ class PosOrderLine(models.Model):
         for rec in self:
             rec.money_is_reduced = sum([dis.money_reduced for dis in rec.discount_details_lines])
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
-        if 'point' in vals_list and vals_list['point']:
-            vals_list['discount_details_lines'] = vals_list.get('discount_details_lines', []) + [
-                (0, 0, {
-                    'type': 'point',
-                    'listed_price': vals_list['price_unit'],
-                    'recipe': -vals_list['point']/1000,
-                })
-            ]
+        for idx, line in enumerate(vals_list):
+            if 'point' in line and line['point']:
+                vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
+                    (0, 0, {
+                        'type': 'point',
+                        'listed_price': line['price_unit'],
+                        'recipe': -line['point']/1000,
+                    })
+                ]
         return super(PosOrderLine, self).create(vals_list)
 
     def _export_for_ui(self, orderline):

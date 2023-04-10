@@ -13,6 +13,8 @@ class PosVoucherLine(models.Model):
     end_date = fields.Datetime('Ngày hết hạn', related='voucher_id.end_date')
     price_used = fields.Monetary('Giá trị đã dùng')
     price_residual = fields.Monetary('Giá trị còn lại', related='voucher_id.price_residual')
+    price_residual_no_compute = fields.Monetary('Giá trị còn lại ')
+    voucher_name = fields.Char('Tên')
     currency_id = fields.Many2one('res.currency', related='voucher_id.currency_id')
     brand_id = fields.Many2one('res.brand')
     partner = fields.Many2one('res.partner')
@@ -23,4 +25,7 @@ class PosVoucherLine(models.Model):
     apply_contemp_time = fields.Boolean()
     payment_method_id = fields.Many2one('pos.payment.method')
     price_change = fields.Monetary()
+    using_limit = fields.Integer('Giới hạn sử dụng')
+    program_voucher_id = fields.Many2one('program.voucher')
+    product_voucher_name = fields.Char('Product Voucher Name')
 
