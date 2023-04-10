@@ -20,14 +20,9 @@ odoo.define('forlife_customer_card_rank.ShowDiscountDetailPopup', function (requ
         confirm() {
             this.env.posbus.trigger('close-popup', {
                 popupId: this.props.id,
-                response: {confirmed: true, payload: this.actionApply()},
+                response: {confirmed: true, payload: null},
             });
         }
-
-        actionApply() {
-            return true;
-        }
-
     }
 
     ShowDiscountDetailPopup.template = "ShowDiscountDetailPopup";

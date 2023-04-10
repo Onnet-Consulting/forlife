@@ -6,7 +6,6 @@
     flex: content;
     border-collapse: collapse;
     width: 100%;
-    text-align: left !important;
 }
 
 .show-discount_detail-popup {
@@ -14,17 +13,26 @@
 }
 
 .discount-detail-header {
-    background: #076ef3;
+    background: #6d4870;
     color: white;
     height: 40px;
 }
 
 .card-rank-border tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #dad8d8;
 }
 
 .order-line-detail {
     position: relative;
     max-height: 600px;
     overflow: auto;
+    padding-right: 1px;
+}
+
+.product_name {
+    text-align: left !important;
+}
+
+.price {
+    text-align: right !important;
 }
