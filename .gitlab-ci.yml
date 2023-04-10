@@ -52,19 +52,6 @@ build-production:
     - build-production
   when: manual
 
-build-pilot-alpha:
-  stage: pilot-alpha
-  only:
-    refs:
-      - pilot-alpha
-  script:
-    - docker image prune -f
-    - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
-    - docker-compose -f docker-compose-gitlab-ci.yml up -d
-    - docker-compose restart
-  tags:
-    - build-pilot-alpha
-
 build-pilot-01:
   stage: pilot-01
   only:
