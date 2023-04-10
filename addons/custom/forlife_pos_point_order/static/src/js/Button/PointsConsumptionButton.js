@@ -72,6 +72,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
             var promotion = await this.promotion;
             var product_valid_apply_all = [];
             var product_valid = [];
+            var values = $('.o_input');
 //                các sản phẩm hợp lệ được cấu hình
             for (let i=0; i< order_lines.length;i++){
                     for(let j=0;j<promotion.point_consumption_ids.length;j++){
@@ -95,7 +96,8 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                 title: this.env._t('Tiêu điểm'),
                 confirmTitle: this.env._t('Xác nhận '),
                 divisionpoint: this.env._t('Chia điểm'),
-                cancelTitle: this.env._t('Xóa')
+                deleteTitle: this.env._t('Xóa'),
+                cancelTitle: this.env._t('Hủy bỏ'),
             });
             if (confirmed){
                 var tempResult = {}
