@@ -170,7 +170,7 @@ class BravoModelUpdateAction(models.AbstractModel):
         identity_key_values = self.bravo_get_identity_key_values()
 
         if not updated_values or not identity_key_values:
-            return False
+            return []
         update_table_name = self.bravo_get_table()
 
         set_query_params = []
@@ -243,7 +243,7 @@ class BravoModelDeleteAction(models.AbstractModel):
         identity_key_values = self.bravo_get_identity_key_values()
 
         if not identity_key_values:
-            return False
+            return []
         update_table_name = self.bravo_get_table()
 
         set_query_params = []
@@ -302,13 +302,16 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
     _inherit = ['bravo.model.insert.action']
     _description = 'Bravo Model Insert Exist Action'
 
+    def bravo_get_identity_key_names(self):
+        identity_keys = self.bravo_identity_fields_get()
+        return [bfield.bravo_name for bfield in identity_keys]
+
     def bravo_get_existing_records_sql_and_identity_keys(self):
         identity_key_values = self.bravo_get_identity_key_values()
         if not identity_key_values:
             return [], []
 
-        identity_keys = self.bravo_identity_fields_get()
-        identity_key_names = [bfield.bravo_name for bfield in identity_keys]
+        identity_key_names = self.bravo_get_identity_key_names()
         bravo_table = self.bravo_get_table()
         single_where_query_placeholder = [f"{ikey}=?" for ikey in identity_key_names]
         single_where_query_placeholder = f"({' and '.join(single_where_query_placeholder)})"

@@ -4,26 +4,41 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 import re
 
+CONTEXT_CATEGORY_KEY = 'product_category_level'
+
 
 class ProductCategory(models.Model):
     _name = 'product.category'
     _inherit = ['product.category', 'bravo.model']
 
     @api.model
-    def bravo_get_table_by_level(self, level):
-        if level == 4:
-            bravo_table = 'B20Structure'
-        elif level == 3:
-            bravo_table = 'B20ItemLine'
-        elif level == 2:
-            bravo_table = 'B20ItemGroup'
+    def bravo_get_table(self):
+        product_category_level = self.env.context.get(CONTEXT_CATEGORY_KEY)
+        if product_category_level:
+            if product_category_level == 4:
+                bravo_table = 'B20Structure'
+            elif product_category_level == 3:
+                bravo_table = 'B20ItemLine'
+            elif product_category_level == 2:
+                bravo_table = 'B20ItemGroup'
+            else:
+                bravo_table = 'B20Brand'
+            return bravo_table
         else:
-            bravo_table = 'B20Brand'
-        return bravo_table
+            return self._bravo_table
 
-    def bravo_get_values_by_level(self, level):
+    def bravo_get_identity_key_values(self):
         records = self.bravo_filter_records()
-        bravo_table = self.bravo_get_table_by_level(level)
+        res = []
+        for record in records:
+            value = {'Code': record.category_code}
+            res.append(value)
+        return res
+
+    def bravo_get_identity_key_names(self):
+        return ['Code']
+
+    def bravo_get_record_values(self, to_update=False):
         bravo_column_names = [
             "Code", "Name",
             "ItemAccount", "COGSAccount", "SalesAccount",
@@ -31,9 +46,10 @@ class ProductCategory(models.Model):
             "ItemAccount2", "COGSAccount2", "SalesAccount2",
             "ItemAccount3", "COGSAccount3", "SalesAccount3",
         ]
-        records = records.filtered(lambda rec: len(re.findall('/', rec.parent_path)) == level)
-        if not records:
-            return bravo_table, bravo_column_names, []
+        if not self:
+            if to_update:
+                return []
+            return bravo_column_names, []
         company_codes = ['1100', '1200', '1300', '1400']
         companies = self.env['res.company'].sudo().search([('code', 'in', company_codes)])
         company_by_code = {c.code: c for c in companies}
@@ -42,8 +58,13 @@ class ProductCategory(models.Model):
             raise ValidationError(_("Missing company codes: %r") % list(missing_company_codes))
 
         values = []
-        for record in records:
-            value = {"Code": record.category_code, "Name": record.name}
+        for record in self:
+            value = {"Name": record.name}
+            if not to_update:
+                value.update({
+                    "Code": record.category_code
+                })
+
             record_1200 = record.with_company(company_by_code['1200']).sudo()
             value.update({
                 "ItemAccount": record_1200.property_stock_valuation_account_id.code,
@@ -69,163 +90,78 @@ class ProductCategory(models.Model):
                 "SalesAccount3": record_1100.property_account_income_categ_id.code,
             })
             values.append(value)
-        return bravo_table, bravo_column_names, values
 
-    def get_bravo_insert_sql_by_level(self, level):
-        bravo_table, column_names, values = self.bravo_get_values_by_level(level)
+        if to_update:
+            return values
+        return bravo_column_names, values
+
+    def bravo_get_update_value_for_existing_record(self):
+        column_names, values = self.bravo_get_update_values(True)
+        if values:
+            return values[0]
+        return {}
+
+    def bravo_get_insert_values(self):
+        return self.bravo_get_record_values()
+
+    def bravo_get_update_values(self, values):
+        res = self.bravo_get_record_values(to_update=True)
+        if not res:
+            return {}
+        return res[0]
+
+    def bravo_filter_record_by_level(self, level):
+        return self.filtered(lambda rec: len(re.findall('/', rec.parent_path)) == level)
+
+    def bravo_get_inset_sql_all_level(self):
         queries = []
-        if not values:
-            return []
-        params = []
-        insert_column_names = column_names.copy()
-        single_record_values_placeholder = ['?'] * len(column_names)
-
-        for rec_value in values:
-            for fname in column_names:
-                params.append(rec_value.get(fname))
-
-        insert_default_value = self.bravo_get_default_insert_value()
-        for fname, fvalue in insert_default_value.items():
-            insert_column_names.append(fname)
-            single_record_values_placeholder.append(str(fvalue))
-
-        single_record_values_placeholder = "(" + ','.join(single_record_values_placeholder) + ")"
-        insert_column_names = "(" + ','.join(insert_column_names) + ")"
-
-        # LIMITATION params per request is 2100 -> so 2000 params per request is a reasonable number
-        num_param_per_row = len(column_names)
-        num_row_per_request = 2000 // num_param_per_row
-        offset = 0
-        while True:
-            sub_params = params[offset: num_row_per_request * num_param_per_row + offset]
-            actual_num_row = len(sub_params) // num_param_per_row
-            if actual_num_row <= 0:
-                break
-            insert_values_placholder = ','.join([single_record_values_placeholder] * actual_num_row)
-            sub_query = f"""
-                INSERT INTO {bravo_table} 
-                {insert_column_names}
-                VALUES {insert_values_placholder}
-                """
-            queries.append((sub_query, sub_params))
-            offset += num_param_per_row * actual_num_row
-
+        for level in [1, 2, 3, 4]:
+            records = self.bravo_filter_record_by_level(level)
+            insert_sql = records.with_context(**{CONTEXT_CATEGORY_KEY: level}).bravo_get_insert_sql()
+            queries.extend(insert_sql)
         return queries
 
     def bravo_get_insert_sql(self):
-        insert_sql_level_1 = self.get_bravo_insert_sql_by_level(1)
-        insert_sql_level_2 = self.get_bravo_insert_sql_by_level(2)
-        insert_sql_level_3 = self.get_bravo_insert_sql_by_level(3)
-        insert_sql_level_4 = self.get_bravo_insert_sql_by_level(4)
+        if self.env.context.get(CONTEXT_CATEGORY_KEY):
+            return super().bravo_get_insert_sql()
+        return self.bravo_get_inset_sql_all_level()
+
+    def bravo_get_update_sql_all_level(self):
         queries = []
-        queries.extend(insert_sql_level_1)
-        queries.extend(insert_sql_level_2)
-        queries.extend(insert_sql_level_3)
-        queries.extend(insert_sql_level_4)
+        for level in [1, 2, 3, 4]:
+            records = self.bravo_filter_record_by_level(level)
+            update_sql = records.with_context(**{CONTEXT_CATEGORY_KEY: level}).bravo_get_update_sql(None)
+            queries.extend(update_sql)
         return queries
 
-    def bravo_get_update_sql_by_level(self, level):
-        """1 update query -> 1 record instead of multiple records like other models"""
-        bravo_table, column_names, values = self.bravo_get_values_by_level(level)
-        if not values:
-            return []
+    def bravo_get_update_sql(self, values=None):
+        if self.env.context.get(CONTEXT_CATEGORY_KEY):
+            return super().bravo_get_update_sql(values)
+        return self.bravo_get_update_sql_all_level()
 
+    def bravo_get_insert_with_check_existing_sql_all_level(self):
         queries = []
-        identity_keys = self.bravo_identity_fields_get()
-        identity_key_names = {bfield.bravo_name: True for bfield in identity_keys}
-        update_default_value = self.bravo_get_default_update_value()
-        update_default_value_list = []
-        for dkey, dvalue in update_default_value.items():
-            update_default_value_list.append(f"{dkey}={dvalue}")
-        update_default_value = ", ".join(update_default_value_list)
-
-        for data in values:
-            set_query_params = []
-            set_query_placeholder = []
-            for key, value in data.items():
-                if identity_key_names.get(key):
-                    # don't update identity columns, it's really awkward
-                    continue
-                set_query_placeholder.append(f"{key}=?")
-                set_query_params.append(value)
-            set_query_placeholder.append(update_default_value)
-            set_query_placeholder = ','.join(set_query_placeholder)
-            where_query_placeholder = 'Code = ?'
-            where_query_param = [data.get('Code')]
-            query = f"""
-                UPDATE {bravo_table}
-                SET {set_query_placeholder}
-                WHERE {where_query_placeholder}
-            """
-            queries.append((query, set_query_params + where_query_param))
-
+        for level in [1, 2, 3, 4]:
+            records = self.bravo_filter_record_by_level(level)
+            update_sql = records.with_context(
+                **{CONTEXT_CATEGORY_KEY: level}).bravo_get_insert_with_check_existing_sql()
+            queries.extend(update_sql)
         return queries
 
-    def bravo_get_delete_sql_by_level(self, level):
-        records = self.bravo_filter_records()
-        bravo_table = self.bravo_get_table_by_level(level)
-        records = records.filtered(lambda rec: len(re.findall('/', rec.parent_path)) == level)
-        if not records:
-            return []
-        identity_key_values = [{'Code': rec.category_code} for rec in records]
-        set_query_params = []
-        set_query_placeholder = []
-        delete_default_value = self.bravo_get_default_delete_values()
-        for key, value in delete_default_value.items():
-            set_query_placeholder.append(f"{key}={value}")
-        set_query_placeholder = ','.join(set_query_placeholder)
+    def bravo_get_insert_with_check_existing_sql(self):
+        if self.env.context.get(CONTEXT_CATEGORY_KEY):
+            return super().bravo_get_insert_with_check_existing_sql()
+        return self.bravo_get_insert_with_check_existing_sql_all_level()
 
-        single_where_value = []
-        for upkey, upvalue in identity_key_values[0].items():
-            single_where_value.append(f"{upkey} = ?")
-        single_where_value = "(" + ' and '.join(single_where_value) + ")"
-
-        where_params = []
-        for value in identity_key_values:
-            for ivalue in value.values():
-                where_params.append(ivalue)
-
-        num_param_per_where_condition = max(len(identity_key_values[0].keys()), 1)
-        num_row_per_request = 2000 // num_param_per_where_condition
-        offset = 0
+    def bravo_get_delete_sql_all_level(self):
         queries = []
-
-        while True:
-            sub_where_params = where_params[offset: num_param_per_where_condition * num_row_per_request + offset]
-            actual_num_row = len(sub_where_params) // num_param_per_where_condition
-            if actual_num_row <= 0:
-                break
-            where_query_placholder = " or ".join([single_where_value] * actual_num_row)
-            query = f"""
-                        UPDATE {bravo_table}
-                        SET {set_query_placeholder}
-                        WHERE {where_query_placholder}
-                    """
-            queries.append((query, set_query_params + sub_where_params))
-            offset += num_param_per_where_condition * actual_num_row
-
+        for level in [1, 2, 3, 4]:
+            records = self.bravo_filter_record_by_level(level)
+            delete_sql = records.with_context(**{CONTEXT_CATEGORY_KEY: level}).bravo_get_delete_sql()
+            queries.extend(delete_sql)
         return queries
 
     def bravo_get_delete_sql(self):
-        delete_sql_level_1 = self.bravo_get_delete_sql_by_level(1)
-        delete_sql_level_2 = self.bravo_get_delete_sql_by_level(2)
-        delete_sql_level_3 = self.bravo_get_delete_sql_by_level(3)
-        delete_sql_level_4 = self.bravo_get_delete_sql_by_level(4)
-        queries = []
-        queries.extend(delete_sql_level_1)
-        queries.extend(delete_sql_level_2)
-        queries.extend(delete_sql_level_3)
-        queries.extend(delete_sql_level_4)
-        return queries
-
-    def bravo_get_update_sql(self, values):
-        update_sql_level_1 = self.bravo_get_update_sql_by_level(1)
-        update_sql_level_2 = self.bravo_get_update_sql_by_level(2)
-        update_sql_level_3 = self.bravo_get_update_sql_by_level(3)
-        update_sql_level_4 = self.bravo_get_update_sql_by_level(4)
-        queries = []
-        queries.extend(update_sql_level_1)
-        queries.extend(update_sql_level_2)
-        queries.extend(update_sql_level_3)
-        queries.extend(update_sql_level_4)
-        return queries
+        if self.env.context.get(CONTEXT_CATEGORY_KEY):
+            return super().bravo_get_delete_sql()
+        return self.bravo_get_delete_sql_all_level()
