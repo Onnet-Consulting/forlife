@@ -341,6 +341,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             await this.get_history_program_usages();
             this.activatedInputCodes = [];
             this._updateActivatedPromotionPrograms();
+            this._resetPromotionPrograms();
+            this._resetCartPromotionPrograms();
         };
     }
 
