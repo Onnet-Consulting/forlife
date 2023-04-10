@@ -6,6 +6,17 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_open_promotion_codes" icon="fa-ticket"
+                                attrs="{'invisible': [('issued_code_quantity', '=', 0)]}">
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="issued_code_quantity"/>
+                                </span>
+                                <span class="o_stat_text" >Referred Codes</span>
+                            </div>
+                        </button>
+                    </div>
                     <group>
                         <field name="name"/>
                         <field name="partner_id"/>
@@ -18,7 +29,11 @@
     <!--                    <field name="amount"/>-->
     <!--                    <field name="consumed_amount"/>-->
     <!--                    <field name="remaining_amount"/>-->
-    <!--                    <field name="reward_for_referring"/>-->
+                        <field name="reward_for_referring" attrs="{'invisible': [('reward_for_referring', '=', False)]}"/>
+                        <field name="referring_date_from" attrs="{'invisible': [('reward_for_referring', '=', False)]}"/>
+                        <field name="referring_date_to" attrs="{'invisible': [('reward_for_referring', '=', False)]}"/>
+                        <field name="reward_program_id" attrs="{'invisible': [('reward_for_referring', '=', False)]}"/>
+                        <field name="original_order_id" attrs="{'invisible': [('original_order_id', '=', False)]}"/>
                     </group>
                 </sheet>
             </form>
@@ -42,6 +57,9 @@
                     <field name="consumed_amount"/>
                     <field name="remaining_amount"/>
                     <field name="reward_for_referring"/>
+                    <field name="referring_date_from"/>
+                    <field name="referring_date_to"/>
+                    <field name="reward_program_id"/>
             </tree>
         </field>
     </record>

@@ -6,7 +6,7 @@ from odoo.exceptions import ValidationError
 class SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
-    vendor_code = fields.Char(related='partner_id.code')
+    vendor_code = fields.Char(related='partner_id.ref')
 
 
     @api.returns('self', lambda value: value.id)

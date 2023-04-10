@@ -19,6 +19,15 @@
                             <field name="valid_until" invisible="1"/>
                             <field name="limit_usage" attrs="{'invisible': [('limit_usage', '=', False)]}"/>
                             <field name="max_usage" attrs="{'invisible': [('limit_usage', '=', False)]}" force_save="1"/>
+
+                            <field name="reward_for_referring" widget="boolean_toggle"/>
+                            <field name="referring_date_from"
+                                   attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
+                            <field name="referring_date_to"
+                                   attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
+                            <field name="reward_program_id"
+                                   domain="[('with_code', '=', True)]"
+                                   attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
                         </group>
                     </group>
                 </sheet>

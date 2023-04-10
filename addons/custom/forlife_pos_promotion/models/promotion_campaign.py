@@ -102,6 +102,11 @@ class PromotionCampaign(models.Model):
     has_cart = fields.Boolean(compute='_compute_programs')
     has_pricelist = fields.Boolean(compute='_compute_programs')
 
+    # Surprising reward
+    surprising_reward_product_ids = fields.One2many(
+        'surprising.reward.product.line', 'campaign_id', string='Surprising Applied Products',
+        context={'active_test': False})
+
     @api.constrains('program_ids')
     def check_program(self):
         for campaign in self:
@@ -134,3 +139,21 @@ class PromotionCampaign(models.Model):
         }
         return action
 
+
+class SurprisingRewardProduct(models.Model):
+    _name = 'surprising.reward.product.line'
+    _description = 'Surprising Reward Product'
+
+    campaign_id = fields.Many2one('promotion.campaign', required=True)
+    active = fields.Boolean(default=True)
+    to_check_product_ids = fields.Many2many(
+        'product.product', string='To Check Products', required=True, domain="[('available_in_pos', '=', True)]")
+    reward_code_program_id = fields.Many2one(
+        'promotion.program', 'Program Reward', domain="['|', ('with_code', '=', True), ('promotion_type', '=', 'code')]", required=True)
+    max_quantity = fields.Float('Maximum Quantity')
+    issued_code_ids = fields.One2many('promotion.code', 'surprising_reward_line_id')
+    issued_qty = fields.Float('Issued Code Quantity', compute='_compute_issued_qty')
+
+    def _compute_issued_qty(self):
+        for line in self:
+            line.issued_qty = len(line.issued_code_ids)

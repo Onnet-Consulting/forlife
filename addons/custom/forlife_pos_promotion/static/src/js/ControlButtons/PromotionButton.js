@@ -20,23 +20,30 @@ export class PromotionButton extends PosComponent {
         let [newLines, remainingOrderLines, combo_count] = order.computeForListOfProgram(order_lines, selectedProgramsList);
         let [newLinesCode, remainingOrderLinesCode, combo_count_Code] = order.computeForListOfCodeProgram(order_lines, selectedProgramsList, newLines);
         newLines = newLinesCode;
-        remainingOrderLines = remainingOrderLinesCode;
-        order.orderlines.forEach(line => {
+//        remainingOrderLines = remainingOrderLinesCode;
+        var removeOrderlines = [];
+        order.orderlines.forEach((line, index) => {
             let qty = line.get_quantity();
             let qty_orig = parseFloat(line.quantityStr);
             if (qty != qty_orig) {
                 line.set_quantity(line.get_quantity());
             };
-            if (line.quantity == 0) {
-                order.remove_orderline(line);
-            };
         });
+
+        order.orderlines = order.orderlines.filter(line => line.set_quantity > 0)
 
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);
             if (options.quantity) {
                 order.orderlines.add(order._createLineFromVals(options));
+            }
+        }
+        // Kiểm tra phần thưởng cho chương trình giới thiệu KH mới
+        for (let program of selectedProgramsList) {
+            if (program.reward_for_referring) {
+                order.reward_for_referring = true;
+                order.referred_code_id = program.codeObj;
             }
         }
 //        for (let newLine of newLines) {
@@ -107,7 +114,9 @@ export class PromotionButton extends PosComponent {
             discounted_amount: 0.0,
             forecasted_discounted_amount: 0.0,
             reward_type: pro.program.reward_type,
-            reward_product_ids: pro.program.reward_product_ids
+            reward_product_ids: pro.program.reward_product_ids,
+            reward_for_referring: pro.program.reward_for_referring,
+            codeObj: pro.program.codeObj
         }));
 
         const { confirmed, payload } = await this.showPopup('ProgramSelectionPopup', {

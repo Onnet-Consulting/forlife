@@ -28,7 +28,7 @@
                                 <div t-if="program.to_discount_lines.length > 0"  style="display: inline-block;" class="btn-primary">
                                     <i title="Chọn SP giảm giá" t-on-click="() => this.select_reward(program)">Chọn SP giảm giá</i>
                                 </div>
-                                <div t-if="program.program.reward-type == 'cart_get_x_free'"  style="display: inline-block;" class="btn-primary">
+                                <div t-if="program.program.reward_type == 'cart_get_x_free'"  style="display: inline-block;" class="btn-primary">
                                     <i title="Chọn SP tặng" t-on-click="() => this.select_reward(program)">Chọn SP tặng</i>
                                 </div>
                                 <div t-if="!(program.program.reward_type == 'cart_get_x_free' or program.program.reward_type == 'cart_get_voucher' or program.to_discount_lines.length > 0)">
