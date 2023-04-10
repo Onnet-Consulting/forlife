@@ -11,7 +11,7 @@ class PosOrder(models.Model):
 
     point_order = fields.Integer('Point Order', compute='_compute_point_order', store=True)
     point_event_order = fields.Integer('Point event Order', compute='_compute_point_order', store=True)
-    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True)
+    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True, help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
     item_total_point = fields.Integer(
         'Item Point Total', readonly=True, compute='_compute_item_total_point', store=True,
         help='Includes the total of product point and product event point')
