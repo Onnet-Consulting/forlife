@@ -76,7 +76,12 @@ AVAILABLE_REPORT = {
     },
     'report.num14': {
         'module': 'Bán hàng',
-        'name': 'Tra cứu mã Code - voucher đã sử dụng',
+        'name': 'Tra cứu mã Code đã sử dụng',
         'reportTemplate': 'ReportNum14Template',
+    },
+    'report.num15': {
+        'module': 'Bán hàng',
+        'name': 'Tra cứu mã Voucher đã sử dụng',
+        'reportTemplate': 'ReportNum15Template',
     },
 }
