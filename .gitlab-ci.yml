@@ -64,3 +64,16 @@ build-pilot-alpha:
     - docker-compose restart
   tags:
     - build-pilot-alpha
+
+build-pilot-01:
+  stage: pilot-01
+  only:
+    refs:
+      - pilot-01
+  script:
+    - docker image prune -f
+    - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
+    - docker-compose -f docker-compose-gitlab-ci.yml up -d
+    - docker-compose restart
+  tags:
+    - build-pilot-01
