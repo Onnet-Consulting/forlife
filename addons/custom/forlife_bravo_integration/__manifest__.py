@@ -27,6 +27,7 @@
         'forlife_pos_app_member',
         'forlife_purchase',
         'forlife_stock',
+        'forlife_voucher',
     ],
     'auto_install': True,
 

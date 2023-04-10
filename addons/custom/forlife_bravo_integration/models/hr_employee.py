@@ -11,7 +11,8 @@ class HrEmployee(models.Model):
 
     br1 = BravoCharField(odoo_name="code", bravo_name="Code", identity=True)
     br2 = BravoCharField(odoo_name='name', bravo_name='Name')
-    br3 = BravoMany2oneField('hr.department', odoo_name='department_id', bravo_name='DeptCode', field_detail='code')
+    br3 = BravoMany2oneField('hr.department', odoo_name='department_id', bravo_name='DeptCode',
+                             field_detail='center_expense_id.code')
     br4 = BravoDateField(odoo_name='birthday', bravo_name='BirthDate')
     br5 = BravoCharField(odoo_name='work_email', bravo_name='Email')
     br6 = BravoCharField(odoo_name='mobile_phone', bravo_name='Tel')
