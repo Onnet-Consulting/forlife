@@ -84,4 +84,9 @@ AVAILABLE_REPORT = {
         'name': 'Tra cứu mã Voucher đã sử dụng',
         'reportTemplate': 'ReportNum15Template',
     },
+    'report.num16': {
+        'module': 'Kho',
+        'name': 'Chi tiết xuất nhập hàng',
+        'reportTemplate': 'ReportNum16Template',
+    },
 }
