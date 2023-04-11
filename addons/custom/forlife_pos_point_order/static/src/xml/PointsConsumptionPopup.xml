@@ -20,14 +20,36 @@
                                 <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
                                     <tr style="width:100%; border:1px solid black;">
                                         <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
-<!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
+                                        <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
                                         <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
                                         <td style="border:1px solid black;width:85px;">
                                             <t t-if="line_last and num_last">
-                                                <input style="width: 100%;text-align: center;" t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                                <t t-if="line.point">
+                                                   <input style="width: 100%;text-align: center;"
+                                                          t-att-data-value_id="line.get_taxed_lst_unit_price()"
+                                                          t-att-value="(-(line.point)/1000)/(line.quantity)" t-att-id="line.id"
+                                                          type="text" class="o_input"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <input style="width: 100%;text-align: center;"
+                                                           t-att-data-value_id="line.get_taxed_lst_unit_price()"
+                                                           t-att-id="line.id"
+                                                           type="text" class="o_input"/>
+                                                </t>
                                             </t>
                                             <t t-else="">
-                                                <input style="width: 100%;text-align: center;" t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                                <t t-if="line.point">
+                                                   <input style="width: 100%;text-align: center;"
+                                                          t-att-data-value_id="line.get_taxed_lst_unit_price()"
+                                                          t-att-value="(-(line.point)/1000)/(line.quantity)" t-att-id="line.id"
+                                                          type="text" class="o_input"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <input style="width: 100%;text-align: center;"
+                                                           t-att-data-value_id="line.get_taxed_lst_unit_price()"
+                                                           t-att-id="line.id"
+                                                           type="text" class="o_input"/>
+                                                </t>
                                             </t>
                                         </td>
                                     </tr>
@@ -36,11 +58,11 @@
                             </t>
                         </table>
                         <span style="color:red;" t-if="state.error_popup_flag" class="error-message">
-                            <t t-esc="error" />
+                            <t t-esc="error"/>
                         </span>
                         <span style="float:right; margin-right:27px;">
                         Tổng điểm :
-                            <span id="total" >
+                            <span id="total">
                             <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">
                                 <t t-if="branch.name == 'TokyoLife'">
                                     <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_forlife)"/>
@@ -63,14 +85,20 @@
                                 <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
                                     <tr style="width:100%; border:1px solid black;">
                                         <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
-<!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
+                                        <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
                                         <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
                                         <td style="border:1px solid black;width:85px;">
                                             <t t-if="line_last and num_last">
-                                                <input style="width: 100%;text-align: center;" t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                                <input style="width: 100%;text-align: center;"
+                                                       t-att-value="-(line.point)/1000"
+                                                       t-att-data-value_id="line.get_taxed_lst_unit_price()"
+                                                       t-att-id="line.id" type="text" class="o_input"/>
                                             </t>
                                             <t t-else="">
-                                                <input style="width: 100%;text-align: center;" t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                                <input style="width: 100%;text-align: center;"
+                                                       t-att-value="-(line.point)/1000"
+                                                       t-att-data-value_id="line.get_taxed_lst_unit_price()"
+                                                       t-att-id="line.id" type="text" class="o_input"/>
                                             </t>
                                         </td>
                                     </tr>
@@ -78,7 +106,7 @@
                             </t>
                         </table>
                         <span style="color:red;" t-if="state.error_popup_flag" class="error-message">
-                            <t t-esc="error" />
+                            <t t-esc="error"/>
                         </span>
                         <span style="float:right; margin-right:27px;">
                         Tổng điểm :
@@ -100,6 +128,9 @@
                 <div style="width:100%">
                     <div class="button cancel" t-on-click="cancel">
                         <t t-esc="props.cancelTitle"/>
+                    </div>
+                    <div class="button delete" t-on-click="delete_val">
+                        <t t-esc="props.deleteTitle"/>
                     </div>
                     <div class="button confirm highlight" t-on-click="division">
                         <t t-esc="props.divisionpoint"/>

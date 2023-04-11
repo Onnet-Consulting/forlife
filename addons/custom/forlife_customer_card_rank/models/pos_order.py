@@ -85,7 +85,7 @@ class PosOrder(models.Model):
     def _order_fields(self, ui_order):
         res = super()._order_fields(ui_order)
         if 'card_rank_program_id' not in res and ui_order.get('card_rank_program'):
-            res.update({'card_rank_program_id': ui_order.get('card_rank_program').get('id')})
+            res.update({'card_rank_program_id': ui_order.get('card_rank_program')})
         return res
 
     def accounting_card_rank_discount(self, total_amount_discount):
@@ -127,14 +127,15 @@ class PosOrderLine(models.Model):
     card_rank_applied = fields.Boolean('Card Rank Applied', default=False)
     card_rank_discount = fields.Float('Card Rank Discount', default=0)
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
-        if vals_list.get('card_rank_discount') and vals_list.get('card_rank_applied'):
-            vals_list['discount_details_lines'] = vals_list.get('discount_details_lines', []) + [
-                (0, 0, {
-                    'type': 'card',
-                    'listed_price': vals_list['price_unit'],
-                    'recipe': vals_list['card_rank_discount'],
-                })
-            ]
+        for idx, line in enumerate(vals_list):
+            if line.get('card_rank_discount') and line.get('card_rank_applied'):
+                vals_list[idx]['discount_details_lines'] = line.get('discount_details_lines', []) + [
+                    (0, 0, {
+                        'type': 'card',
+                        'listed_price': line['price_unit'],
+                        'recipe': - line['card_rank_discount'],
+                    })
+                ]
         return super(PosOrderLine, self).create(vals_list)

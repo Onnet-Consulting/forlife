@@ -5,8 +5,7 @@
             <t t-if="props.line.card_rank_applied">
                 <li class="info orderline-card-rank">
                     <i class="fa fa-id-card-o" role="img" aria-label="Discount Card" title="Discount Card"/>
-                    <span>&#160;-<t t-esc="env.pos.format_currency(props.line.get_card_rank_discount())"/></span>
-                    <span>&#160;(<t t-esc="props.line.card_rank_discount"/>%)</span>
+                    <span>&#160;<t t-esc="env.pos.format_currency(-props.line.get_card_rank_discount())"/></span>
                 </li>
             </t>
         </xpath>

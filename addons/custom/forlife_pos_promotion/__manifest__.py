@@ -25,6 +25,7 @@
         'point_of_sale.assets': [
             'forlife_pos_promotion/static/src/js/Promotion.js',
             'forlife_pos_promotion/static/src/js/ProductScreen.js',
+            'forlife_pos_promotion/static/src/js/PartnerListScreen.js',
             'forlife_pos_promotion/static/src/js/ControlButtons/PromotionButton.js',
             'forlife_pos_promotion/static/src/js/ControlButtons/EnterCodeButton.js',
             'forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js',
