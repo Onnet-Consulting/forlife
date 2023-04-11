@@ -66,6 +66,22 @@ const PosOrderCardRank = (Order) => class extends Order {
         }
     }
 
+    order_can_apply_card_rank() {
+        let res = false;
+        let partner = this.get_partner();
+        if (partner) {
+            let card_rank = partner.card_rank_by_brand[this.pos.pos_branch[0].id];
+            if (card_rank) {
+                let cr_program = this.pos.card_rank_program_by_rank_id[card_rank[0]] || {};
+                let customer_not_apply_ids = cr_program.customer_not_apply_ids || [];
+                if ((customer_not_apply_ids.length === 0) || (cr_program && customer_not_apply_ids.length > 0 && !customer_not_apply_ids.includes(partner.id))) {
+                    res = true;
+                }
+            }
+        }
+        return res;
+    }
+
 
 };
 Registries.Model.extend(Order, PosOrderCardRank);
