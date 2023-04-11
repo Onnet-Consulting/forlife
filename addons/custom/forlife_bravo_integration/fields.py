@@ -39,8 +39,11 @@ class BravoField(fields.Field):
         return {self.bravo_name: value or NONE_VALUE}
 
     def compute_update_value(self, value, model=Default):
-        odoo_name = self.odoo_name
-        return {self.bravo_name: model[odoo_name] or NONE_VALUE}
+        if self.bravo_default is not None:
+            value = self.bravo_default
+        else:
+            value = model[self.odoo_name]
+        return {self.bravo_name: value or NONE_VALUE}
 
 
 class BravoCharField(BravoField, fields.Char):
@@ -127,11 +130,14 @@ class BravoMany2oneField(BravoField, fields.Many2one):
         return {self.bravo_name: field_value or NONE_VALUE}
 
     def compute_update_value(self, value, model=Default):
-        res = super(BravoMany2oneField, self).compute_update_value(value)
+        res = super(BravoMany2oneField, self).compute_update_value(value, model=model)
         if not res:
             return res
         key, value = res.popitem()
-        field_value = model.env[self.comodel_name].browse(value)
+        if hasattr(value, '_name'):  # already an instance
+            field_value = value
+        else:
+            field_value = model.env[self.comodel_name].browse(value)
         for field_name in self.field_detail.split('.'):
             if not field_value:
                 break
@@ -152,7 +158,7 @@ class BravoSelectionField(BravoField, fields.Selection):
         return {key: self.mapping_selection.get(value) or NONE_VALUE}
 
     def compute_update_value(self, value, model=Default):
-        res = super(BravoSelectionField, self).compute_update_value(value)
+        res = super(BravoSelectionField, self).compute_update_value(value, model=model)
         if not res:
             return res
         key, value = res.popitem()
