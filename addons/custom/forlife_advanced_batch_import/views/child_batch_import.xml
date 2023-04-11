@@ -21,6 +21,9 @@
                             <field name="skip"/>
                         </group>
                         <group>
+                            <field name="complete_records"/>
+                            <field name="progress_bar" widget="progressbar"/>
+                            <field name="error_rows"/>
                             <field name="log"/>
                         </group>
                     </sheet>
@@ -36,6 +39,8 @@
                     <field name="attachment_id"/>
                     <field name="sequence"/>
                     <field name="skip"/>
+                    <field name="complete_records"/>
+                    <field name="progress_bar" widget="progressbar"/>
                     <field name="status"/>
                     <button name="set_to_processing" type="object" string="Set to Processing" class="oe_highlight"/>
                 </tree>

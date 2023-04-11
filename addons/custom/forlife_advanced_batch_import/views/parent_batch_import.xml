@@ -21,6 +21,7 @@
                             <field name="columns"/>
                             <field name="options"/>
                             <field name="dryrun"/>
+                            <field name="limit"/>
                             <field name="with_delay"/>
                         </group>
                         <group>
@@ -34,6 +35,7 @@
                                     <field name="attachment_id"/>
                                     <field name="skip"/>
                                     <field name="status"/>
+                                    <field name="progress_bar" widget="progressbar"/>
                                     <button name="set_to_processing" type="object" string="Set to processing" class="oe_highlight" attrs="{'invisible':[('status','=','processing')]}"/>
                                 </tree>
                             </field>

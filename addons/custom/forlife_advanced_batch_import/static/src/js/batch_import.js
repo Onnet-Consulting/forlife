@@ -13,6 +13,7 @@ odoo.define('advanced_batch_import.import', function (require) {
             import_options['split_file'] = parseInt(this.$('#oe_import_split_file').val() || 0);
             import_options['with_delay'] = parseInt(this.$('#oe_import_eta_time').val() || 0);
             import_options['sheet_name'] = this.$('#oe_import_sheet').val() || "Sheet1";
+            import_options['import_valid_skip_error'] = this.$('#oe_import_advanced_pass_valid_but_skip_error').prop('checked')
             return import_options
         },
         call_import: function (kwargs) {
@@ -64,14 +65,6 @@ odoo.define('advanced_batch_import.import', function (require) {
             }).then(function (results) {
                 console.log(results);
                 if (results) {
-                    // return Promise.resolve({
-                    //     'messages': [{
-                    //         type: 'info',
-                    //         record: false,
-                    //         message: "Queue Job batch import created , follow url : ".concat(results),
-                    //         url: results,
-                    //     }]
-                    // });
                     window.open(
                         results,
                         '_self' // <- This is what makes it open in a new window.
