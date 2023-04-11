@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+        <record model="ir.ui.view" id="assets_assets_form">
+            <field name="name">assets.assets.form</field>
+            <field name="model">assets.assets</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="type"/>
+                                <field name="code"/>
+                                <field name="card_no"/>
+                                <field name="item_code"/>
+                                <field name="company_id"/>
+                                <field name="location"/>
+                                <field name="unit"/>
+                                <field name="quantity"/>
+                                <field name="capacity"/>
+                                <field name="made_year"/>
+                                <field name="made_in"/>
+                            </group>
+                            <group>
+                                <field name="asset_account"/>
+                                <field name="use_ful_month"/>
+                                <field name="doc_date"/>
+                                <field name="original_cost"/>
+                                <field name="depr_debit_account"/>
+                                <field name="depr_credit_account"/>
+                                <field name="dept_code"/>
+                                <field name="comment"/>
+                                <field name="employee"/>
+                                <field name="category_product"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="assets_assets_tree">
+            <field name="name">assets.assets.tree</field>
+            <field name="model">assets.assets</field>
+            <field name="arch" type="xml">
+                <tree string="Tài sản">
+                                <field name="name"/>
+                                <field name="type"/>
+                                <field name="code"/>
+                                <field name="card_no"/>
+                                <field name="item_code"/>
+                                <field name="company_id"/>
+                                <field name="location"/>
+                                <field name="unit"/>
+                                <field name="quantity"/>
+                                <field name="capacity"/>
+                                <field name="made_year"/>
+                                <field name="made_in"/>
+                                <field name="category_product"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="res_assets_assets_action" model="ir.actions.act_window">
+            <field name="name">Tài sản</field>
+            <field name="res_model">assets.assets</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+</odoo>

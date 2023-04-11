@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="res_asset_location_view_tree" model="ir.ui.view">
+            <field name="name">res.asset.location.view.tree</field>
+            <field name="model">asset.location</field>
+            <field name="arch" type="xml">
+                <tree string="Asset Location" editable="top">
+                    <field name="location_code" required="1"/>
+                    <field name="location_name"/>
+                    <field name="location_address"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="res_asset_location_action" model="ir.actions.act_window">
+            <field name="name">Asset Location</field>
+            <field name="res_model">asset.location</field>
+            <field name="view_mode">tree</field>
+        </record>
+    </data>
+</odoo>
