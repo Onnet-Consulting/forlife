@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-<<<<<<< HEAD
-
-from odoo import models
-=======
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import datetime
 
