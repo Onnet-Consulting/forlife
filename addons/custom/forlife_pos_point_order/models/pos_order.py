@@ -48,15 +48,14 @@ class PosOrder(models.Model):
                 pos.partner_id.is_purchased_of_format = True
             if store == 'forlife':
                 pos.partner_id.is_purchased_of_forlife = True
-            if pos.partner_id.is_member_app_format or pos.partner_id.is_member_app_forlife:
-                if pos.program_store_point_id:
-                    if store is not None:
-                        history_values = pos._prepare_history_point_value(store)
-                        HistoryPoint.sudo().create(history_values)
-                        pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
-                        pos.action_point_addition()
-                        if pos.lines.filtered(lambda line: line.point != 0):
-                            pos.action_point_subtraction()
+            if pos.program_store_point_id:
+                if store is not None:
+                    history_values = pos._prepare_history_point_value(store)
+                    HistoryPoint.sudo().create(history_values)
+                    pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
+                    pos.action_point_addition()
+                    if pos.lines.filtered(lambda line: line.point != 0):
+                        pos.action_point_subtraction()
         return pos_id
 
     def btn_compensate_points_all(self, reason):
