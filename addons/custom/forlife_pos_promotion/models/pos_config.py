@@ -35,6 +35,15 @@ class PosConfig(models.Model):
             result[program_id] = applied_number
         return result
 
+    def load_promotion_valid_new_partner(self, partner_id, promotion_programs):
+        partner = self.env['res.partner'].sudo().browse(partner_id)
+        result = []
+        for program_id in promotion_programs:
+            program = self.env['promotion.program'].sudo().browse(int(program_id))
+            if program.exists() and partner in program.valid_customer_ids:
+                result.append(program_id)
+        return result
+
     def use_promotion_code(self, code, creation_date, partner_id):
         self.ensure_one()
         code_id = self.env['promotion.code'].search(
