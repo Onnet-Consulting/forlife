@@ -29,6 +29,7 @@
                     <field name="product_voucher_id"/>
                     <field name="phone_number"/>
                     <field name="status_latest"/>
+                    <field name="details"/>
                 </tree>
             </field>
         </record>
@@ -46,16 +47,19 @@
                             <field name="name"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="program_voucher_id" required="1"/>
-                            <field name="type"/>
-                            <field name="purpose_id" required="1"/>
-                            <field name="derpartment_id"/>
-                            <field name="apply_many_times"/>
-                            <field name="apply_contemp_time"/>
-                            <field name="is_full_price_applies"/>
-                            <field name="brand_id" required="1"/>
-                            <field name="store_ids" widget="many2many_tags" domain="[('brand_id','=', brand_id)]"/>
-                            <field name="product_apply_ids" widget="many2many_tags"/>
+                            <field name="type" readonly="True"/>
+                            <field name="purpose_id" required="1" readonly="True"/>
+                            <field name="derpartment_id" readonly="True"/>
+                            <field name="apply_many_times" readonly="True"/>
+                            <field name="apply_contemp_time" readonly="True"/>
+                            <field name="is_full_price_applies" readonly="True"/>
+                            <field name="brand_id" required="1" readonly="True"/>
+                            <field name="store_ids" widget="many2many_tags" domain="[('brand_id','=', brand_id)]" readonly="True"/>
+                            <field name="using_limit"/>
+                            <field name="product_apply_ids" widget="many2many_tags" readonly="True"/>
+                            <field name="product_voucher_id" readonly="True"/>
                             <field name="status_latest"/>
+                            <field name="details"/>
                         </group>
                         <group>
                             <field name="start_date" required="1"/>

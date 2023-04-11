@@ -13,6 +13,17 @@ odoo.define('forlife_voucher.PosPaymentScreenVoucher', function (require) {
             }
 
             async addNewPaymentLine({ detail: paymentMethod }) {
+                if(!this.env.pos.data_voucher){
+                    this.env.pos.data_voucher = false
+                }
+                if(!this.env.pos.count_popups){
+                    this.env.pos.count_popups = 0
+                }
+                var data_voucher = this.env.pos.data_voucher;
+//                if(this.env.pos.count_popups>1){
+//
+//                }
+                this.env.pos.count_popups = this.env.pos.count_popups + 1;
                 if(paymentMethod.is_voucher){
                     const {confirmed, payload: data} = await this.showPopup('VoucherPopup', {
                         confirm: this.env._t('Xác nhận'),
@@ -32,8 +43,8 @@ odoo.define('forlife_voucher.PosPaymentScreenVoucher', function (require) {
                                     data[i].value.payment_method_id = paymentMethod.id
                                 }
                             }
-                            this.currentOrder.addVoucherline(data)
-                            result.amount = price_used
+                            this.currentOrder.addVoucherline(data);
+                            result.amount = price_used;
                         }
                     }
                     if (result){

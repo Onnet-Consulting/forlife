@@ -10,9 +10,8 @@ export const PosPromotionProductScreen = (ProductScreen) =>
             const order = this.env.pos.get_order();
             order.surprise_reward_program_id = null;
             order.surprising_reward_line_id = null;
-            const inOrderProducts = order.get_orderlines().reduce((tmp, line) => {tmp.add(line.product.id); return tmp}, new Set());
+            const inOrderProductsList = order.get_orderlines().filter(l => l.quantity > 0).reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []);
             let toCheckRewardLines = this.env.pos.surprisingRewardProducts;
-            let inOrderProductsList = new Array(...inOrderProducts);
             let validPrograms = [];
             for (let productLine of toCheckRewardLines) {
                 if (!inOrderProductsList.some(product => productLine.to_check_product_ids.has(product)) && productLine.max_quantity > productLine.issued_qty) {
