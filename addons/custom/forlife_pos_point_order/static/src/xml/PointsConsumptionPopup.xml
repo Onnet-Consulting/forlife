@@ -27,7 +27,7 @@
                                                 <t t-if="line.point">
                                                    <input style="width: 100%;text-align: center;"
                                                           t-att-data-value_id="line.get_taxed_lst_unit_price()"
-                                                          t-att-value="-(line.point)/1000" t-att-id="line.id"
+                                                          t-att-value="(-(line.point)/1000)/(line.quantity)" t-att-id="line.id"
                                                           type="text" class="o_input"/>
                                                 </t>
                                                 <t t-else="">
@@ -41,7 +41,7 @@
                                                 <t t-if="line.point">
                                                    <input style="width: 100%;text-align: center;"
                                                           t-att-data-value_id="line.get_taxed_lst_unit_price()"
-                                                          t-att-value="-(line.point)/1000" t-att-id="line.id"
+                                                          t-att-value="(-(line.point)/1000)/(line.quantity)" t-att-id="line.id"
                                                           type="text" class="o_input"/>
                                                 </t>
                                                 <t t-else="">
