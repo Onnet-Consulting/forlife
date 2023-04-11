@@ -78,6 +78,7 @@
                             </div>
                             <field name="currency_id" invisible="1"/>
                             <field name="currency_symbol" invisible="1"/>
+                            <field name="campaign_id" readonly="1" required="1" force_save="1"/>
 <!--                            <field name="applicability" string="Use points on" groups="base.group_no_one" widget="radio" force_save="1"/>-->
 <!--                            <field name="customer_domain" widget="domain"-->
 <!--                                   options="{'model': 'res.partner', 'in_dialog': true}"/>-->
