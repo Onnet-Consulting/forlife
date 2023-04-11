@@ -26,4 +26,6 @@ class PosVoucherLine(models.Model):
     payment_method_id = fields.Many2one('pos.payment.method')
     price_change = fields.Monetary()
     using_limit = fields.Integer('Giới hạn sử dụng')
+    program_voucher_id = fields.Many2one('program.voucher')
+    product_voucher_name = fields.Char('Product Voucher Name')
 
