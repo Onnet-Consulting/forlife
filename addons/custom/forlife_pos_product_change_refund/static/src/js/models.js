@@ -38,7 +38,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             return this.partner ? this.partner.phone : "";
         }
         add_orderline(line){
-            if(line.order.is_change_product || line.order.is_refund_product){
+            if(line.order.is_change_product){
                 line.is_new_line = true
             }
             super.add_orderline(...arguments);
@@ -50,6 +50,12 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             }
             if(options.quantity_canbe_refund !== undefined){
                 orderline.quantity_canbe_refund = options.quantity_canbe_refund;
+            }
+            if(options.money_is_reduced !== 0){
+                orderline.money_is_reduced = options.money_is_reduced;
+            }
+            if(options.money_point_is_reduced !== 0){
+                orderline.money_point_is_reduced = options.money_point_is_reduced;
             }
             if (options.check_button) {
                 orderline.check_button = options.check_button;
@@ -70,6 +76,17 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             super.remove_orderline(...arguments);
         }
 
+//        get_total_with_tax() {
+//            var total = super.get_total_with_tax()
+//            var vals = 0
+//            if (this.is_change_product) {
+//                for (const line of this.orderlines){
+//                    vals += (line.money_point_is_reduced /line.quantity_canbe_refund) * line.quantity
+//                }
+//            }
+//            return total + vals;
+//        }
+
     }
     Registries.Model.extend(Order, OrderGetPhone);
 
@@ -81,10 +98,12 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.reason_refund_id = this.reason_refund_id || 0;
             // manhld
             this.approvalStatus = this.approvalStatus || false;
+            this.beStatus = this.beStatus || false;
             this.check_button = this.check_button || false;
+            this.is_new_line = this.is_new_line || false;
             this.handle_change_refund_id = this.handle_change_refund_id || undefined;
-            this.point_addition = this.point_addition || 0;
-            this.point_addition_event = this.point_addition_event || 0;
+            this.money_is_reduced = this.money_is_reduced || 0;
+            this.money_point_is_reduced = this.money_point_is_reduced || 0;
         }
         init_from_JSON(json) {
             super.init_from_JSON(...arguments);
@@ -93,10 +112,12 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.reason_refund_id = json.reason_refund_id;
             // manhld
             this.approvalStatus = json.approvalStatus || false;
+            this.beStatus = json.beStatus || false;
             this.check_button = json.check_button || false;
+            this.is_new_line = json.is_new_line || false;
             this.handle_change_refund_id = json.handle_change_refund_id || undefined;
-            this.point_addition = json.point_addition || 0;
-            this.point_addition_event = json.point_addition_event || 0;
+            this.money_is_reduced = json.money_is_reduced || 0;
+            this.money_point_is_reduced = json.money_point_is_reduced || 0;
         }
         clone() {
             let orderline = super.clone(...arguments);
@@ -105,10 +126,12 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             orderline.reason_refund_id = this.reason_refund_id;
             // manhld
             orderline.approvalStatus = this.approvalStatus;
+            orderline.beStatus = this.beStatus;
             orderline.check_button = this.check_button;
+            orderline.is_new_line = this.is_new_line;
             orderline.handle_change_refund_id = this.handle_change_refund_id;
-            orderline.point_addition = this.point_addition;
-            orderline.point_addition_event = this.point_addition_event;
+            orderline.money_is_reduced = this.money_is_reduced;
+            orderline.money_point_is_reduced = this.money_point_is_reduced;
             return orderline;
         }
         export_as_JSON() {
@@ -118,16 +141,42 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.reason_refund_id = this.reason_refund_id;
             // manhld
             json.approvalStatus = this.approvalStatus || false;
+            json.beStatus = this.beStatus || false;
             json.check_button = this.check_button || false;
+            json.is_new_line = this.is_new_line || false;
             json.handle_change_refund_id = this.handle_change_refund_id || undefined;
-            json.point_addition = this.point_addition || 0;
-            json.point_addition_event = this.point_addition_event || 0;
+            json.money_is_reduced = this.money_is_reduced || 0;
+            json.money_point_is_reduced = this.money_point_is_reduced || 0;
             return json;
         }
+
+//        get_price_with_tax() {
+//            var total = super.get_price_with_tax();
+//            var vals = 0
+//            if (this.order.is_change_product && !this.is_new_line) {
+//                vals += (this.money_point_is_reduced /this.quantity_canbe_refund) * this.quantity
+//            }
+//            return total + vals;
+//        }
     }
     Registries.Model.extend(Orderline, OrderLineAddField);
 
-     const ReasonRefundPosGlobalState = (PosGlobalState) => class extends PosGlobalState {
+    const ReasonRefundPosGlobalState = (PosGlobalState) => class extends PosGlobalState {
+        removeOrder(order) {
+            for (const line of order.get_orderlines()) {
+                if (line.handle_change_refund_id) {
+                    var args = {};
+                    args.id = line.handle_change_refund_id;
+                    this.env.services.rpc({
+                        model: 'handle.change.refund',
+                        method: 'cancel_rc_handle_change_refund',
+                        args: [args],
+                    })
+                }
+            }
+            super.removeOrder(...arguments);
+        }
+
         async _processData(loadedData) {
             await super._processData(...arguments);
             this.pos_reason_refund = loadedData['pos.reason.refund'];
