@@ -40,6 +40,7 @@
     ],
     'assets': {
         'point_of_sale.assets': [
+            'forlife_customer_card_rank/static/src/css/expand_pos.css',
             'forlife_customer_card_rank/static/src/js/**/*.js',
             'forlife_customer_card_rank/static/src/xml/**/*.xml',
         ],

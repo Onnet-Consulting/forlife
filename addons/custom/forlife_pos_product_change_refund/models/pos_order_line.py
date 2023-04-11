@@ -11,6 +11,12 @@ class PosOrderLine(models.Model):
     expire_change_refund_date = fields.Date('Expire change refund_date', compute='_compute_expire_change_refund_date')
     quantity_canbe_refund = fields.Integer('Quantity can be refund', compute='_compute_quantity_canbe_refund')
     reason_refund_id = fields.Many2one('pos.reason.refund', 'Reason Refund')
+    money_point_is_reduced = fields.Monetary('Money Point is reduced', compute='_compute_money_point_is_reduced_line')
+
+    @api.depends('discount_details_lines.money_reduced')
+    def _compute_money_point_is_reduced_line(self):
+        for rec in self:
+            rec.money_point_is_reduced = sum([dis.money_reduced for dis in rec.discount_details_lines.filtered(lambda x: x.type == 'point')])
 
     def _order_line_fields(self, line, session_id=None):
         res = super()._order_line_fields(line, session_id)
@@ -33,4 +39,7 @@ class PosOrderLine(models.Model):
         result['expire_change_refund_date'] = orderline.expire_change_refund_date
         result['quantity_canbe_refund'] = orderline.quantity_canbe_refund
         result['reason_refund_id'] = orderline.reason_refund_id
+        result['money_is_reduced'] = orderline.money_is_reduced
+        result['money_point_is_reduced'] = orderline.money_point_is_reduced
+        result['is_voucher_conditional'] = orderline.is_voucher_conditional
         return result

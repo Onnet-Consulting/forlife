@@ -17,7 +17,7 @@
                             <td><input type="number" class="input-change-refund change" t-on-change="onchangeValue"/></td>
                             <td></td>
                             <td></td>
-                            <td></td>
+                            <td><t t-esc="env.pos.format_currency(props.line.money_is_reduced)"/></td>
                             <td><t t-esc="props.line.quantity_canbe_refund"/></td>
                             <td><t t-esc="props.line.expire_change_refund_date"/></td>
                         </tr>
@@ -44,7 +44,7 @@
                     <t t-if="props.line.is_new_line">
                         <tr class="row-input-change-refund">
                             <td></td>
-                            <td><input class="input-change-refund new"/></td>
+                            <td><input type="number" class="input-change-refund new" t-on-change="onchangeValueNew"/></td>
                             <td></td>
                             <td></td>
                             <td></td>
