@@ -26,6 +26,7 @@
         'security/ir.model.access.csv',
         'views/parent_batch_import.xml',
         'views/child_batch_import.xml',
+        'data/queue_data.xml'
     ],
     'assets': {
         'web.assets_backend': [

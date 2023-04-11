@@ -62,4 +62,4 @@ redis_host=10.254.253.10
 password=forlife@123
 
 [queue_job]
-channels = root:2
+channels = root:12, import:10
