@@ -6,7 +6,7 @@ class PosOlDiscountDetails(models.Model):
 
     def get_money_reduced(self):
         if self.type == 'card':
-            return - (self.recipe * self.listed_price / 100) * self.pos_order_line_id.qty
+            return self.recipe
         return super().get_money_reduced()
 
     def get_name(self):
