@@ -4,15 +4,15 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Sarah Park, 2022
+# Sarah Park, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.5alpha1+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-20 09:48+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Sarah Park, 2022\n"
+"Last-Translator: Sarah Park, 2023\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -45,6 +45,8 @@ msgid ""
 "<i class=\"fa fa-fw o_button_icon fa-arrow-right\"/>\n"
 "                        Buy credits"
 msgstr ""
+"<i class=\"fa fa-fw o_button_icon fa-arrow-right\"/>\n"
+"                        크레딧 구입하기"
 
 #. module: account_invoice_extract
 #: model_terms:ir.ui.view,arch_db:account_invoice_extract.view_move_form_inherit_ocr
@@ -52,13 +54,8 @@ msgid ""
 "<i class=\"fa fa-fw o_button_icon fa-arrow-right\"/>\n"
 "                        Refresh"
 msgstr ""
-
-#. module: account_invoice_extract
-#: model_terms:ir.ui.view,arch_db:account_invoice_extract.view_move_form_inherit_ocr
-msgid ""
 "<i class=\"fa fa-fw o_button_icon fa-arrow-right\"/>\n"
-"                        Reload AI Data"
-msgstr ""
+"                        새로고침"
 
 #. module: account_invoice_extract
 #: model_terms:ir.ui.view,arch_db:account_invoice_extract.view_move_form_inherit_ocr
@@ -66,6 +63,8 @@ msgid ""
 "<i class=\"fa fa-fw o_button_icon fa-arrow-right\"/>\n"
 "                        Resend For Digitization"
 msgstr ""
+"<i class=\"fa fa-fw o_button_icon fa-arrow-right\"/>\n"
+"                        재전송하여 디지털 생성하기"
 
 #. module: account_invoice_extract
 #: model_terms:ir.ui.view,arch_db:account_invoice_extract.res_config_settings_view_form
@@ -87,9 +86,10 @@ msgstr "계정 청구서 추출 알림"
 msgid ""
 "All fields will be automated by Artificial Intelligence, it might take 5 "
 "seconds."
-msgstr ""
+msgstr "모든 필드는 인공 지능을 통해 자동화되며, 약 5초 정도 소요됩니다."
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #: model:ir.model.fields.selection,name:account_invoice_extract.selection__account_move__extract_state__error_status
 #, python-format
@@ -102,22 +102,18 @@ msgid "Attachment"
 msgstr "첨부 파일"
 
 #. module: account_invoice_extract
-#: code:addons/account_invoice_extract/models/account_invoice.py:0
-#, python-format
-msgid "Bill Date"
-msgstr "청구 일자"
-
-#. module: account_invoice_extract
-#: code:addons/account_invoice_extract/models/account_invoice.py:0
-#, python-format
-msgid "Bill Reference"
-msgstr "청구서 참고 정보"
-
-#. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "Bill is being Digitized"
 msgstr "디지털 작업된 청구서입니다"
+
+#. module: account_invoice_extract
+#: model:ir.model.fields,field_description:account_invoice_extract.field_account_bank_statement_line__extract_can_show_banners
+#: model:ir.model.fields,field_description:account_invoice_extract.field_account_move__extract_can_show_banners
+#: model:ir.model.fields,field_description:account_invoice_extract.field_account_payment__extract_can_show_banners
+msgid "Can show the ocr banners"
+msgstr "OCR 배너 표시 가능"
 
 #. module: account_invoice_extract
 #: model:ir.model.fields,field_description:account_invoice_extract.field_account_bank_statement_line__extract_can_show_resend_button
@@ -149,13 +145,14 @@ msgid "Config Settings"
 msgstr "설정 구성"
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "Couldn't reload AI data."
 msgstr "AI 정보를 불러올 수 없습니다."
 
 #. module: account_invoice_extract
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_invoice_extract/static/src/js/invoice_extract_form_renderer.js:0
 #, python-format
 msgid "Create"
@@ -172,12 +169,6 @@ msgid "Created on"
 msgstr "작성일자"
 
 #. module: account_invoice_extract
-#: code:addons/account_invoice_extract/models/account_invoice.py:0
-#, python-format
-msgid "Customer"
-msgstr "고객"
-
-#. module: account_invoice_extract
 #: model:ir.model.fields,field_description:account_invoice_extract.field_res_config_settings__extract_out_invoice_digitalization_mode
 msgid "Customer Invoices"
 msgstr "고객 청구서"
@@ -185,24 +176,24 @@ msgstr "고객 청구서"
 #. module: account_invoice_extract
 #: model:ir.model.fields,field_description:account_invoice_extract.field_res_company__extract_out_invoice_digitalization_mode
 msgid "Digitization mode on customer invoices"
-msgstr ""
+msgstr "고객 청구서 대상 디지털 변환 모드"
 
 #. module: account_invoice_extract
 #: model:ir.model.fields,field_description:account_invoice_extract.field_res_company__extract_in_invoice_digitalization_mode
 msgid "Digitization mode on vendor bills"
-msgstr ""
+msgstr "공급업체 청구서 대상 디지털 변환 모드"
 
 #. module: account_invoice_extract
 #: model:ir.model.fields.selection,name:account_invoice_extract.selection__res_company__extract_in_invoice_digitalization_mode__auto_send
 #: model:ir.model.fields.selection,name:account_invoice_extract.selection__res_company__extract_out_invoice_digitalization_mode__auto_send
 msgid "Digitize automatically"
-msgstr ""
+msgstr "자동으로 디지털 변환"
 
 #. module: account_invoice_extract
 #: model:ir.model.fields.selection,name:account_invoice_extract.selection__res_company__extract_in_invoice_digitalization_mode__manual_send
 #: model:ir.model.fields.selection,name:account_invoice_extract.selection__res_company__extract_out_invoice_digitalization_mode__manual_send
 msgid "Digitize on demand only"
-msgstr ""
+msgstr "지정할 경우에만 디지털 변환"
 
 #. module: account_invoice_extract
 #: model:ir.model.fields,field_description:account_invoice_extract.field_account_invoice_extract_words__display_name
@@ -213,7 +204,7 @@ msgstr "표시명"
 #: model:ir.model.fields.selection,name:account_invoice_extract.selection__res_company__extract_in_invoice_digitalization_mode__no_send
 #: model:ir.model.fields.selection,name:account_invoice_extract.selection__res_company__extract_out_invoice_digitalization_mode__no_send
 msgid "Do not digitize"
-msgstr ""
+msgstr "디지털 변환을 선택하지 않음"
 
 #. module: account_invoice_extract
 #: model_terms:ir.ui.view,arch_db:account_invoice_extract.res_config_settings_view_form
@@ -232,14 +223,7 @@ msgstr "오류 메시지"
 #: model:ir.model.fields,field_description:account_invoice_extract.field_account_move__extract_attachment_id
 #: model:ir.model.fields,field_description:account_invoice_extract.field_account_payment__extract_attachment_id
 msgid "Extract Attachment"
-msgstr ""
-
-#. module: account_invoice_extract
-#: model:ir.model.fields,field_description:account_invoice_extract.field_account_bank_statement_line__extract_populated_fields
-#: model:ir.model.fields,field_description:account_invoice_extract.field_account_move__extract_populated_fields
-#: model:ir.model.fields,field_description:account_invoice_extract.field_account_payment__extract_populated_fields
-msgid "Extract Populated Fields"
-msgstr ""
+msgstr "첨부 파일에서 추출"
 
 #. module: account_invoice_extract
 #: model:ir.model.fields,field_description:account_invoice_extract.field_account_bank_statement_line__extract_word_ids
@@ -283,12 +267,14 @@ msgid "Id of the request to IAP-OCR"
 msgstr "IAP-OCR 요청의 ID"
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "Invalid PDF (Conversion error)"
 msgstr ""
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "Invalid PDF (Unable to get page count)"
@@ -300,31 +286,22 @@ msgid "Invoice"
 msgstr "청구서"
 
 #. module: account_invoice_extract
-#: code:addons/account_invoice_extract/models/account_invoice.py:0
-#, python-format
-msgid "Invoice Date"
-msgstr "청구서 발행일"
-
-#. module: account_invoice_extract
 #: model:ir.actions.server,name:account_invoice_extract.ir_cron_ocr_parse_ir_actions_server
 #: model:ir.cron,cron_name:account_invoice_extract.ir_cron_ocr_parse
-#: model:ir.cron,name:account_invoice_extract.ir_cron_ocr_parse
 msgid "Invoice OCR: Parse Invoices"
-msgstr ""
+msgstr "청구서 OCR: 청구서 분석"
 
 #. module: account_invoice_extract
 #: model:ir.actions.server,name:account_invoice_extract.ir_cron_update_ocr_status_ir_actions_server
 #: model:ir.cron,cron_name:account_invoice_extract.ir_cron_update_ocr_status
-#: model:ir.cron,name:account_invoice_extract.ir_cron_update_ocr_status
 msgid "Invoice OCR: Update All Status"
 msgstr "청구서 OCR : 전체 상태 업데이트"
 
 #. module: account_invoice_extract
 #: model:ir.actions.server,name:account_invoice_extract.ir_cron_ocr_validate_ir_actions_server
 #: model:ir.cron,cron_name:account_invoice_extract.ir_cron_ocr_validate
-#: model:ir.cron,name:account_invoice_extract.ir_cron_ocr_validate
 msgid "Invoice OCR: Validate Invoices"
-msgstr ""
+msgstr "청구서 OCR: 청구서 확인"
 
 #. module: account_invoice_extract
 #: model:ir.model,name:account_invoice_extract.model_account_move
@@ -347,6 +324,7 @@ msgid "Last Updated on"
 msgstr "최근 갱신 일자"
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "No document name provided"
@@ -365,25 +343,32 @@ msgstr "불충분한 신용 한도"
 #. module: account_invoice_extract
 #: model:ir.model.fields,field_description:account_invoice_extract.field_account_invoice_extract_words__ocr_selected
 msgid "Ocr Selected"
-msgstr ""
+msgstr "OCR 선택"
+
+#. module: account_invoice_extract
+#: model_terms:ir.ui.view,arch_db:account_invoice_extract.view_move_form_inherit_ocr
+msgid "Reload AI Data"
+msgstr "AI 데이터 새로고침"
 
 #. module: account_invoice_extract
 #: model:ir.actions.server,name:account_invoice_extract.model_account_send_for_digitalization
 msgid "Send Bills for digitization"
-msgstr ""
+msgstr "디지털 변환을 위해 공급업체 청구서 전송"
 
 #. module: account_invoice_extract
 #: model_terms:ir.ui.view,arch_db:account_invoice_extract.view_move_form_inherit_ocr
 msgid "Send For Digitization"
-msgstr ""
+msgstr "디지털 변환을 위해 내보내기"
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "Server is currently under maintenance. Please retry later"
 msgstr "서버가 현재 유지 보수 중입니다. 나중에 다시 시도하십시오"
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "Server not available. Please retry later"
@@ -393,7 +378,7 @@ msgstr "서버를 사용할 수 없습니다. 나중에 다시 시도하십시�
 #: model:ir.model.fields,field_description:account_invoice_extract.field_res_company__extract_single_line_per_tax
 #: model:ir.model.fields,field_description:account_invoice_extract.field_res_config_settings__extract_single_line_per_tax
 msgid "Single Invoice Line Per Tax"
-msgstr ""
+msgstr "세금별 단일 청구서 내역"
 
 #. module: account_invoice_extract
 #: model:ir.model.fields,field_description:account_invoice_extract.field_account_bank_statement_line__extract_status_code
@@ -403,6 +388,7 @@ msgid "Status code"
 msgstr "상태 코드"
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid ""
@@ -412,30 +398,27 @@ msgstr ""
 
 #. module: account_invoice_extract
 #: model_terms:ir.ui.view,arch_db:account_invoice_extract.view_move_form_inherit_ocr
-msgid "The bill has been populated by AI."
-msgstr ""
-
-#. module: account_invoice_extract
-#: model_terms:ir.ui.view,arch_db:account_invoice_extract.view_move_form_inherit_ocr
 msgid ""
 "The data extraction is not finished yet. The extraction usually takes "
 "between 5 and 10 seconds."
-msgstr ""
+msgstr "데이터 추출이 아직 완료되지 않았습니다. 추출에는 보통 5 - 10초 정도가 소요됩니다. "
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "The document could not be found"
 msgstr "문서를 찾을 수 없습니다"
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "The document has been rejected because it is too small"
 msgstr ""
 
 #. module: account_invoice_extract
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_invoice_extract/static/src/xml/populated_fields_tooltip.xml:0
 #, python-format
 msgid "The following fields were populated by the OCR:"
@@ -447,6 +430,7 @@ msgid "To validate"
 msgstr "승인하기"
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "Unsupported image format"
@@ -456,12 +440,6 @@ msgstr "지원되지 않는 이미지 형식"
 #: model:ir.model.fields,field_description:account_invoice_extract.field_account_invoice_extract_words__user_selected
 msgid "User Selected"
 msgstr "선택한 사용자"
-
-#. module: account_invoice_extract
-#: code:addons/account_invoice_extract/models/account_invoice.py:0
-#, python-format
-msgid "Vendor"
-msgstr "공급업체"
 
 #. module: account_invoice_extract
 #: model:ir.model.fields,field_description:account_invoice_extract.field_res_config_settings__extract_in_invoice_digitalization_mode
@@ -519,7 +497,7 @@ msgid "Word Text"
 msgstr "단어"
 
 #. module: account_invoice_extract
-#. openerp-web
+#. odoo-javascript
 #: code:addons/account_invoice_extract/static/src/xml/populated_fields_tooltip.xml:0
 #, python-format
 msgid ""
@@ -533,12 +511,14 @@ msgid "You don't have enough credit to extract data from your invoice."
 msgstr "청구서에서 데이터를 추출하기에 충분한 크레딧이 없습니다."
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid "You must send the same quantity of documents and file names"
 msgstr "같은 양의 문서와 파일 이름을 보내야 합니다"
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid ""
@@ -546,6 +526,7 @@ msgid ""
 msgstr "PDF 파일이 비밀번호로 보호되고 있습니다. OCR에서 데이터를 추출할 수 없습니다"
 
 #. module: account_invoice_extract
+#. odoo-python
 #: code:addons/account_invoice_extract/models/account_invoice.py:0
 #, python-format
 msgid ""

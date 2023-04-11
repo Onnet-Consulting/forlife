@@ -4,6 +4,7 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
+# Sarah Park, 2023
 # 
 msgid ""
 msgstr ""
@@ -11,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:50+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Sarah Park, 2023\n"
 "Language-Team: Korean (https://www.transifex.com/odoo/teams/41243/ko/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -74,7 +75,7 @@ msgstr ""
 #. module: website_delivery_ups
 #: model:ir.model,name:website_delivery_ups.model_payment_provider
 msgid "Payment Provider"
-msgstr ""
+msgstr "결제대행업체"
 
 #. module: website_delivery_ups
 #: model:ir.model,name:website_delivery_ups.model_sale_order
@@ -109,14 +110,14 @@ msgstr ""
 #. module: website_delivery_ups
 #: model_terms:payment.provider,auth_msg:website_delivery_ups.payment_provider_ups_cod
 msgid "Your payment has been authorized."
-msgstr "귀하의 결제가 승인되었습니다."
+msgstr "결제가 승인되었습니다."
 
 #. module: website_delivery_ups
 #: model_terms:payment.provider,cancel_msg:website_delivery_ups.payment_provider_ups_cod
 msgid "Your payment has been cancelled."
-msgstr "귀하의 결제가 취소되었습니다."
+msgstr "결제가 취소되었습니다."
 
 #. module: website_delivery_ups
 #: model_terms:payment.provider,done_msg:website_delivery_ups.payment_provider_ups_cod
 msgid "Your payment has been successfully processed. Thank you!"
-msgstr "귀하의 결제가 성공적으로 처리되었습니다. 감사합니다."
+msgstr "성공적으로 결제가 완료되었습니다. 감사합니다."

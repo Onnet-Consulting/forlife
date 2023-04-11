@@ -174,7 +174,7 @@ msgstr "Perusahaan"
 #: code:addons/iot/static/src/views/box_list_view.xml:0
 #, python-format
 msgid "Connect"
-msgstr ""
+msgstr "Connect"
 
 #. module: iot
 #: model:ir.actions.act_window,name:iot.action_add_iot_box

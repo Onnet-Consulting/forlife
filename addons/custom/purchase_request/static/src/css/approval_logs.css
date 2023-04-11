@@ -1,0 +1,12 @@
+.approval_logs_note {
+    padding: 4px 5px;
+    border: 1px solid #D4D4D4;
+    margin-top: 5px;
+}
+.approval_logs_main_text {
+    color: black !important;
+    font-weight: 500 !important;
+}
+.hide_add_and_remove table tr td.o_field_x2many_list_row_add, .hide_add_and_remove table tr td.o_list_record_remove  {
+    display: none !important;
+}

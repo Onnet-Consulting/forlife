@@ -38,7 +38,7 @@ msgstr ""
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__active
 msgid "Active"
-msgstr ""
+msgstr "Aktief"
 
 #. module: worksheet
 #: code:addons/worksheet/models/worksheet_template.py:0
@@ -61,7 +61,7 @@ msgstr ""
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__company_ids
 msgid "Companies"
-msgstr ""
+msgstr "Maatskappye"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__create_uid
@@ -118,7 +118,7 @@ msgstr ""
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__name
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__report_view_id
@@ -128,7 +128,7 @@ msgstr ""
 #. module: worksheet
 #: model:ir.model.fields,field_description:worksheet.field_worksheet_template__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "Volgorde"
 
 #. module: worksheet
 #: code:addons/worksheet/models/worksheet_template.py:0

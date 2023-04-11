@@ -14,9 +14,10 @@
 # Martin Aavastik <martin@avalah.ee>, 2022
 # Algo Kärp <algokarp@gmail.com>, 2022
 # Eneli Õigus <enelioigus@gmail.com>, 2022
-# Leaanika Randmets, 2022
 # Patrick-Jordan Kiudorv, 2022
-# Jana Jaakson, 2022
+# Leaanika Randmets, 2022
+# Anna, 2023
+# Jana Jaakson, 2023
 # 
 msgid ""
 msgstr ""
@@ -24,7 +25,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:47+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Jana Jaakson, 2022\n"
+"Last-Translator: Jana Jaakson, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -54,6 +55,8 @@ msgstr "# töös tehnilisi muudatusi"
 #, python-format
 msgid "%(approval_name)s %(approver_name)s %(approval_status)s this ECO"
 msgstr ""
+"%(approval_name)s %(approver_name)s %(approval_status)s antud tehniline "
+"muudatus"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_type_dashboard_view_kanban
@@ -88,17 +91,17 @@ msgstr ""
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.view_document_file_kanban_mrp_plm
 msgid "<span class=\"bg-danger\">Archived</span>"
-msgstr ""
+msgstr "<span class=\"bg-danger\">Arhiveeritud</span>"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.view_document_file_kanban_mrp_plm
 msgid "<span class=\"bg-primary\">New</span>"
-msgstr ""
+msgstr "<span class=\"bg-primary\">Uus</span>"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "<span>Revision</span><br/>"
-msgstr ""
+msgstr "<span>Versioon</span><br/>"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_type__alias_defaults
@@ -199,7 +202,7 @@ msgstr "Kõik kinnitamised"
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__allow_change_kanban_state
 msgid "Allow Change Kanban State"
-msgstr ""
+msgstr "Luba muuta Kanbani olekut"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__allow_change_stage
@@ -320,7 +323,7 @@ msgstr "Manused"
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_approval__awaiting_my_validation
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
 msgid "Awaiting My Validation"
-msgstr "MInu kinnitust ootavad"
+msgstr "Minu kinnituse ootel"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
@@ -441,7 +444,7 @@ msgstr "Muudatused, mis tehti uues BOMis"
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "Changes made on the operation."
-msgstr ""
+msgstr "Operatsioonis tehtud muudatused. "
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__color
@@ -563,7 +566,7 @@ msgstr "Kirjeldus"
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco_stage__description
 msgid "Description and tooltips of the stage states."
-msgstr ""
+msgstr "Etappi olekute kirjeldused ja õpetused"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
@@ -578,7 +581,7 @@ msgstr "Erinevus vana BOMi ja uue BOMi versiooni vahel."
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__routing_change_ids
 msgid "Difference between old operation and new operation revision"
-msgstr ""
+msgstr "Erinevus vana ja uue operatsiooni versiooni vahel"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco__display_name
@@ -1061,7 +1064,7 @@ msgstr "Hilinenud tegevused"
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_production__latest_bom_id
 msgid "Latest Bom"
-msgstr ""
+msgstr "Viimane BoM"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__email_cc
@@ -1087,7 +1090,7 @@ msgid ""
 "              Gather the related documentation and receive the necessary approvals\n"
 "              before applying your changes."
 msgstr ""
-"Hallake ECOdega toodete ja tooteretseptide muudatusi.\n"
+"Hallake ECO toodete ja tooteretseptide muudatusi.\n"
 "              Koguge seotud dokumentatsiooni ning hankige vajalikke kinnitusi\n"
 "              enne muudatuste vastuvõtmist."
 
@@ -1177,7 +1180,7 @@ msgstr "Uus manuaalne muudatus"
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_routing_change__operation_id
 msgid "New or Previous Operation"
-msgstr ""
+msgstr "Uus või eelmine operatsioon"
 
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_eco_bom_change__new_product_qty
@@ -1218,7 +1221,7 @@ msgstr "Retsepti ei leitud. Loome ühe!"
 #: model_terms:ir.actions.act_window,help:mrp_plm.mrp_eco_action_product_tmpl
 #: model_terms:ir.actions.act_window,help:mrp_plm.mrp_eco_action_report
 msgid "No engineering change order found"
-msgstr "Insenerimuudatuste teateid pole"
+msgstr "Teated tehniliste muudatuste kohta puuduvad"
 
 #. module: mrp_plm
 #: model:ir.model.fields.selection,name:mrp_plm.selection__mrp_eco__priority__0
@@ -1278,7 +1281,7 @@ msgstr "Operatsioon"
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "Operation Changes"
-msgstr ""
+msgstr "Operatsiooni muudatused"
 
 #. module: mrp_plm
 #: code:addons/mrp_plm/models/mrp_eco.py:0
@@ -1300,7 +1303,7 @@ msgstr ""
 #. module: mrp_plm
 #: model:ir.model.fields,field_description:mrp_plm.field_mrp_document__origin_attachment_id
 msgid "Origin Attachment"
-msgstr ""
+msgstr "Algne manus"
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__legend_blocked
@@ -1309,6 +1312,8 @@ msgid ""
 "Override the default value displayed for the blocked state for kanban "
 "selection, when the ECO is in that stage."
 msgstr ""
+"Override the default value displayed for the blocked state for kanban "
+"selection, when the ECO is in that stage."
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__legend_done
@@ -1317,6 +1322,8 @@ msgid ""
 "Override the default value displayed for the done state for kanban "
 "selection, when the ECO is in that stage."
 msgstr ""
+"Override the default value displayed for the done state for kanban "
+"selection, when the ECO is in that stage."
 
 #. module: mrp_plm
 #: model:ir.model.fields,help:mrp_plm.field_mrp_eco__legend_normal
@@ -1325,6 +1332,8 @@ msgid ""
 "Override the default value displayed for the normal state for kanban "
 "selection, when the ECO is in that stage."
 msgstr ""
+"Override the default value displayed for the normal state for kanban "
+"selection, when the ECO is in that stage."
 
 #. module: mrp_plm
 #: model:ir.ui.menu,name:mrp_plm.menu_mrp_plm_dashboard
@@ -1601,7 +1610,7 @@ msgstr "Etapid"
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "Start Revision"
-msgstr ""
+msgstr "Alusta muudatust"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_search
@@ -1866,6 +1875,7 @@ msgid ""
 "You can define here labels that will be displayed for the state instead\n"
 "                            of the default labels."
 msgstr ""
+"Siin saate määratleda sildid, mida kuvatakse etappidel vaikesiltide asemel."
 
 #. module: mrp_plm
 #: code:addons/mrp_plm/models/mrp_eco.py:0
@@ -1883,7 +1893,7 @@ msgstr "Etapi muutmiseks on enne vaja saada vajalikud kinnitused."
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_view_form
 msgid "e.g. Awesome Product 2.0"
-msgstr ""
+msgstr "nt. Suurepärane toode 2.0"
 
 #. module: mrp_plm
 #: model_terms:ir.ui.view,arch_db:mrp_plm.mrp_eco_stage_view_form

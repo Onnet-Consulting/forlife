@@ -46,7 +46,7 @@ class HrEmployee(models.Model):
         self.ensure_one()
         if not self.address_home_id:
             # Prevent opening documents if the employee's address is not set or no user is linked.
-            raise ValidationError(_('You must set an address on the employee to use Documents features.'))
+            raise ValidationError(_('You must set a private address on the Employee in order to use Document\'s features.'))
         hr_folder = self._get_document_folder()
         action = self.env['ir.actions.act_window']._for_xml_id('documents.document_action')
         # Documents created within that action will be 'assigned' to the employee

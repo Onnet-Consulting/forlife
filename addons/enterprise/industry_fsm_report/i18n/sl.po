@@ -2,12 +2,19 @@
 # This file contains the translation of the following modules:
 # 	* industry_fsm_report
 # 
+# Translators:
+# Matjaz Mozetic <m.mozetic@matmoz.si>, 2022
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# matjaz k <matjaz@mentis.si>, 2022
+# Martin Trigaux, 2022
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-04 09:42+0000\n"
+"POT-Creation-Date: 2022-12-15 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +31,7 @@ msgstr ""
 
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.view_worksheet_template_kanban
-msgid "<span class=\"o_label\">Worksheets</span>"
+msgid "<span class=\"o_label ms-2\">Worksheets</span>"
 msgstr ""
 
 #. module: industry_fsm_report
@@ -40,12 +47,12 @@ msgstr ""
 #. module: industry_fsm_report
 #: model:ir.model.fields,field_description:industry_fsm_report.field_project_task__worksheet_color
 msgid "Color"
-msgstr ""
+msgstr "Barva"
 
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_custom_x_project_task_worksheet_template_2
 msgid "Comments"
-msgstr ""
+msgstr "Komentarji"
 
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.project_project_form_inherit_industry_fsm_report
@@ -67,13 +74,13 @@ msgstr ""
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_custom_x_project_task_worksheet_template_3
 msgid "Date"
-msgstr ""
+msgstr "Datum"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_x_custom_worksheet_x_project_task_worksheet_template_2
 #: model:ir.model.fields,field_description:industry_fsm_report.field_project_project__worksheet_template_id
 msgid "Default Worksheet"
-msgstr ""
+msgstr "Privzeto poročilo"
 
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_custom_x_project_task_worksheet_template_3
@@ -88,7 +95,7 @@ msgstr ""
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.view_worksheet_template_kanban
 msgid "Dropdown menu"
-msgstr ""
+msgstr "Spusti seznam"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_report_project_task_user_fsm
@@ -110,12 +117,17 @@ msgstr ""
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_custom_x_project_task_worksheet_template_3
 msgid "Manufacturer"
-msgstr ""
+msgstr "Proizvajalec"
+
+#. module: industry_fsm_report
+#: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_custom_x_project_task_worksheet_template_3
+msgid "Model"
+msgstr "Model"
 
 #. module: industry_fsm_report
 #: model_terms:ir.actions.act_window,help:industry_fsm_report.project_task_action_fsm_planning_groupby_worksheet
 msgid "No tasks found. Let's create one!"
-msgstr ""
+msgstr "Nobenega opravila ni najdenega. Kreirajte ga!"
 
 #. module: industry_fsm_report
 #: model_terms:ir.actions.act_window,help:industry_fsm_report.fsm_worksheets_action_settings
@@ -130,7 +142,7 @@ msgstr ""
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_project_project
 msgid "Project"
-msgstr ""
+msgstr "Projekt"
 
 #. module: industry_fsm_report
 #: model_terms:ir.actions.act_window,help:industry_fsm_report.project_task_action_fsm_planning_groupby_worksheet
@@ -140,17 +152,17 @@ msgstr ""
 #. module: industry_fsm_report
 #: model:ir.actions.server,name:industry_fsm_report.action_fsm_task_send_report
 msgid "Send Report"
-msgstr ""
+msgstr "Pošlji poročilo"
 
 #. module: industry_fsm_report
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_custom_x_project_task_worksheet_template_3
 msgid "Serial Number"
-msgstr ""
+msgstr "Serijska številka"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_project_task
 msgid "Task"
-msgstr ""
+msgstr "Opravilo"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_project_task_recurrence
@@ -171,12 +183,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.portal_my_task
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.worksheet_custom_page
 msgid "Worksheet"
-msgstr ""
+msgstr "Poročilo"
 
 #. module: industry_fsm_report
 #: model:ir.model.fields,field_description:industry_fsm_report.field_project_task__worksheet_count
 msgid "Worksheet Count"
-msgstr ""
+msgstr "Štetje poročil"
 
 #. module: industry_fsm_report
 #: model:ir.model,name:industry_fsm_report.model_worksheet_template
@@ -189,17 +201,17 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.report_project_task_user_fsm_view_search
 #: model_terms:ir.ui.view,arch_db:industry_fsm_report.view_project_project_filter_inherit_industry_fsm_report
 msgid "Worksheet Template"
-msgstr ""
+msgstr "Predloga poročila"
 
 #. module: industry_fsm_report
 #: model:ir.actions.act_window,name:industry_fsm_report.action_fsm_worksheets
 #: model:ir.actions.act_window,name:industry_fsm_report.fsm_worksheets_action_settings
 #: model:ir.ui.menu,name:industry_fsm_report.fsm_settings_worksheets
 msgid "Worksheet Templates"
-msgstr ""
+msgstr "Predloge poročil"
 
 #. module: industry_fsm_report
 #: model:ir.actions.act_window,name:industry_fsm_report.template_action_Default_Worksheet
 #: model:ir.actions.act_window,name:industry_fsm_report.template_action_Device_Installation_and_Maintenance
 msgid "Worksheets"
-msgstr ""
+msgstr "Poročila"

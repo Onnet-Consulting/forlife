@@ -196,6 +196,47 @@ tour.register('test_internal_picking_from_scratch', {test: true}, [
     { trigger: '.o_notification.border-success' } // Second call to write (change the dest. location).
 ]);
 
+tour.register('test_internal_picking_from_scratch_with_package', { test: true }, [
+    // Creates a first internal transfert (Section 1 -> Section 2).
+    { trigger: '.o_stock_barcode_main_menu', run: 'scan WH-INTERNAL' },
+    // Scans product1 and put it in P00001, then do the same for product2.
+    { trigger: '.o_barcode_client_action', run: 'scan product1' },
+    { trigger: '.o_barcode_line.o_selected', run: 'scan P00001' },
+    // Scans the destination.
+    { trigger: '.o_barcode_line .result-package', run: 'scan LOC-01-02-00' },
+    { trigger: '.o_barcode_line:not(.o_selected)', run: 'scan product2' },
+    { trigger: '.o_barcode_line[data-barcode="product2"].o_selected', run: 'scan P00001' },
+    { // Scans the destination.
+        trigger: '.o_barcode_line[data-barcode="product2"] .result-package', run: 'scan LOC-01-02-00',
+    },
+    { // Validates the internal picking.
+        trigger: '.o_barcode_line[data-barcode="product2"] .o_line_destination_location',
+        run: 'scan O-BTN.validate',
+    },
+    { trigger: '.o_notification.border-success' },
+    { trigger: '.o_notification button.o_notification_close' },
+
+    // Creates a second internal transfert (WH/Stock -> WH/Stock).
+    { trigger: '.o_stock_barcode_main_menu', run: 'scan WH-INTERNAL' },
+    { trigger: '.o_barcode_client_action', run: () => helper.assertLinesCount(0) },
+    // Scans a package with some quants and checks lines was created for its content.
+    { trigger: '.o_barcode_client_action', run: 'scan P00002' },
+    {
+        trigger: '.o_barcode_line + .o_barcode_line',
+        run: () => {
+            helper.assertLinesCount(2);
+            const $line1 = helper.getLine({ barcode: 'product1' });
+            const $line2 = helper.getLine({ barcode: 'product2' });
+            helper.assertLineQty($line1, "1");
+            helper.assertLineQty($line2, "2");
+        },
+    },
+    // Scans the destination location and validate the transfert.
+    { trigger: '.o_barcode_line.o_selected + .o_barcode_line.o_selected', run: 'scan LOC-01-02-00' },
+    { trigger: '.o_barcode_line:not(.o_selected)', run: 'scan O-BTN.validate' },
+    { trigger: '.o_notification.border-success' },
+]);
+
 tour.register('test_internal_picking_reserved_1', {test: true}, [
     {
         trigger: '.o_barcode_client_action',
@@ -1121,6 +1162,16 @@ tour.register('test_delivery_from_scratch_with_lots_1', {test: true}, [
     {
         trigger: '.o_field_widget[name="product_id"]',
     },
+    ...tour.stepUtils.discardBarcodeForm(),
+]);
+
+tour.register('test_delivery_from_scratch_with_incompatible_lot', {test: true}, [
+    {
+        trigger: '.o_barcode_client_action',
+        run: 'scan 0000000001',
+    },
+    tour.stepUtils.confirmAddingUnreservedProduct(),
+    { trigger: '.o_barcode_line:first-child .o_edit' },
     ...tour.stepUtils.discardBarcodeForm(),
 ]);
 
@@ -2872,13 +2923,13 @@ tour.register('test_put_in_pack_scan_package', {test: true}, [
         run: 'scan product1',
     },
     {
-        trigger: '.o_barcode_line[data-barcode="product1"] .qty-done:contains("1")',
+        trigger: '.o_barcode_line[data-barcode="product1"].o_selected .qty-done:contains("1")',
         run: 'scan PACK0000001',
     },
     {
-        trigger: '.o_barcode_line:contains("product1"):contains("PACK0000001")',
+        trigger: '.o_barcode_line:contains("product1").o_selected:contains("PACK0000001")',
         run: function() {
-            const $line1 = $('.o_barcode_line:contains("product1")');
+            const $line1 = $('.o_barcode_line.o_selected:contains("product1")');
             const product1_package = $line1.find('div[name="package"]').text().trim();
             helper.assert(product1_package, 'PACK0000001');
         }

@@ -5,7 +5,7 @@
 # Translators:
 # Lucia Pacheco <lpo@odoo.com>, 2022
 # Martin Trigaux, 2022
-# Braulio D. López Vázquez <bdl@odoo.com>, 2022
+# Braulio D. López Vázquez <bdl@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Braulio D. López Vázquez <bdl@odoo.com>, 2022\n"
+"Last-Translator: Braulio D. López Vázquez <bdl@odoo.com>, 2023\n"
 "Language-Team: Spanish (Mexico) (https://www.transifex.com/odoo/teams/41243/es_MX/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -871,8 +871,8 @@ msgid ""
 " define a default Survey Template related to this department."
 msgstr ""
 "Este campo se utiliza con el ajuste de Retroalimentación 360 en la "
-"aplicación de Evaluaciones, su objetivo es definir una plantilla de Encuesta"
-" predeterminada relacionada con este departamento."
+"aplicación Evaluaciones, su objetivo es definir una plantilla de Encuesta "
+"predeterminada relacionada con este departamento."
 
 #. module: hr_appraisal_survey
 #: model_terms:ir.ui.view,arch_db:hr_appraisal_survey.hr_appraisal_survey_button_form_view

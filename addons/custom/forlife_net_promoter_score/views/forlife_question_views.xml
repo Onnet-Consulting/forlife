@@ -24,32 +24,35 @@
             <field name="arch" type="xml">
                 <form string="forlife_question_form">
                     <sheet>
-                        <div class="oe_title">
-                            <label for="header" />
-                            <h1>
-                                <field name="header"/>
-                            </h1>
-                        </div>
+                        <group>
+                            <field name="header"/>
+                        </group>
                         <group>
                             <group>
                                 <field name="brand_id"/>
                                 <field name="start_date"/>
                                 <field name="finish_date"/>
+                            </group>
+                            <group>
                                 <field name="company_id" readonly="1" force_save="1"/>
                                 <field name="create_uid" readonly="1" force_save="1"/>
                                 <field name="create_date" readonly="1" force_save="1"/>
-                                <field name="banner"/>
-                                <field name="icon"/>
                             </group>
-                            <group>
-                                <field name="question1"/>
-                                <field name="sub_quest1"/>
-                                <field name="sub_quest2"/>
-                                <field name="question2"/>
-                                <field name="success1"/>
-                                <field name="success2"/>
-                                <field name="success3"/>
-                            </group>
+                        </group>
+                        <group string="Question">
+                            <field name="banner_question"/>
+                            <field name="icon"/>
+                            <field name="question1"/>
+                            <field name="sub_quest1"/>
+                            <field name="sub_quest2"/>
+                            <field name="rate"/>
+                            <field name="question2"/>
+                        </group>
+                        <group string="Success">
+                            <field name="banner_success"/>
+                            <field name="success1"/>
+                            <field name="success2"/>
+                            <field name="success3"/>
                         </group>
                     </sheet>
                 </form>

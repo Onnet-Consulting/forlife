@@ -40,7 +40,8 @@ class ResPartner(models.Model):
         ('female', 'Female'),
         ('other', 'Other')
     ], string='Gender')
-    ref = fields.Char(readonly=True, copy=False)
+
+    ref = fields.Char(readonly=True, copy=False, string='Mã')
     barcode = fields.Char(readonly=True, company_dependent=False)  # a partner has only one barcode
     phone = fields.Char(copy=False, string='Phone #1')
     mobile = fields.Char(string='Phone #2')

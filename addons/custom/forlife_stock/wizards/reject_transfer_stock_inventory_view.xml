@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<odoo>
+        <record id="transfer_stock_inventory_wizard_from" model="ir.ui.view">
+            <field name="name">reject.transfer.stock.inventory.form</field>
+            <field name="model">reject.transfer.stock.inventory</field>
+            <field name="arch" type="xml">
+                <form string="Lost Reason">
+                    <group class="oe_title">
+                        <field name="type_button_reject" invisible="1"/>
+                        <field name="rejection_reason" attrs="{'invisible':[('type_button_reject', '=', False)]}" />
+                        <field name="cancel_reason" attrs="{'invisible':[('type_button_reject', '=', True)]}"/>
+                    </group>
+                    <footer>
+                        <button name="action_reject_transfer_stock_inventory" string="Submit" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="transfer_stock_inventory_wizard" model="ir.actions.act_window">
+            <field name="name">Reject/Cancel Transfer Stock Inventory</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">reject.transfer.stock.inventory</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="transfer_stock_inventory_wizard_from"/>
+            <field name="target">new</field>
+        </record>
+</odoo>

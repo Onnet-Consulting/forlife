@@ -11,9 +11,9 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-23 08:24+0000\n"
+"POT-Creation-Date: 2022-12-15 13:30+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
 "Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Swedish (https://www.transifex.com/odoo/teams/41243/sv/)\n"
@@ -24,42 +24,42 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.js:0
 #, python-format
 msgid "%s days"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/settings_form_view/res_config_edition.xml:0
 #, python-format
 msgid "(Enterprise Edition)"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid ") with the instructions to follow"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.js:0
 #, python-format
 msgid "1 month"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/base_mobile.xml:0
 #, python-format
 msgid "Action"
 msgstr "Åtgärd"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/promote_studio.xml:0
 #: code:addons/web_enterprise/static/src/views/list/list_renderer_desktop.xml:0
 #, python-format
@@ -67,7 +67,7 @@ msgid "Add Custom Field"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/promote_studio.xml:0
 #: code:addons/web_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
 #, python-format
@@ -75,35 +75,35 @@ msgid "Add new fields and much more with"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/search_panel.xml:0
 #, python-format
 msgid "All"
 msgstr "Alla"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/control_panel.xml:0
 #, python-format
 msgid "CLEAR"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/js/views/view_dialogs.js:0
 #, python-format
 msgid "Clear"
 msgstr "Töm"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Click here to send an email"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/promote_studio.xml:0
 #: code:addons/web_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
 #, python-format
@@ -116,7 +116,7 @@ msgid "Contact"
 msgstr "Kontakt"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid ""
@@ -125,21 +125,28 @@ msgid ""
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/control_panel.xml:0
 #, python-format
 msgid "Control panel toolbar"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
+#: code:addons/web_enterprise/static/src/webclient/color_scheme/color_scheme_menu_items.js:0
+#, python-format
+msgid "Dark Mode"
+msgstr ""
+
+#. module: web_enterprise
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/settings_form_view/res_config_edition.xml:0
 #, python-format
 msgid "Database expiration:"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Dismiss"
@@ -151,14 +158,14 @@ msgid "Download (vCard)"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Error reason:"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/control_panel.xml:0
 #: code:addons/web_enterprise/static/src/legacy/xml/search_panel.xml:0
 #, python-format
@@ -171,14 +178,14 @@ msgid "HTTP Routing"
 msgstr "HTTP-rutt"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/navbar/navbar.js:0
 #, python-format
 msgid "Home menu"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/promote_studio.xml:0
 #: code:addons/web_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
 #, python-format
@@ -186,14 +193,14 @@ msgid "Install Odoo Studio"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Log in as an administrator to correct the issue."
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Login to your Odoo.com dashboard then unlink your previous database:"
@@ -205,35 +212,35 @@ msgid "Menu"
 msgstr "Meny"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/web_calendar.xml:0
 #, python-format
 msgid "No filter available"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/home_menu.xml:0
 #, python-format
 msgid "No result"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/settings_form_view/res_config_edition.xml:0
 #, python-format
 msgid "Odoo"
 msgstr "Odoo"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/settings_form_view/res_config_edition.xml:0
 #, python-format
 msgid "Odoo Enterprise Edition License V1.0"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/promote_studio.xml:0
 #: code:addons/web_enterprise/static/src/webclient/promote_studio_dialog/promote_studio_dialog.xml:0
 #, python-format
@@ -241,7 +248,7 @@ msgid "Odoo Studio"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
@@ -249,28 +256,28 @@ msgid "Odoo Support"
 msgstr "Odoo-stöd"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Paste code here"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/navbar/navbar.js:0
 #, python-format
 msgid "Previous view"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/js/views/barcode_fields.js:0
 #, python-format
 msgid "Quick search: %s"
 msgstr "Snabb sök: %s"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
@@ -280,28 +287,28 @@ msgid "Refresh subscription status"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Register your subscription"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/js/views/view_dialogs.js:0
 #, python-format
 msgid "Remove"
 msgstr "Ta bort"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Renew your subscription"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/control_panel.xml:0
 #: code:addons/web_enterprise/static/src/legacy/xml/search_panel.xml:0
 #, python-format
@@ -309,7 +316,7 @@ msgid "SEE RESULT"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/barcode_fields.xml:0
 #: code:addons/web_enterprise/static/src/legacy/xml/barcode_fields.xml:0
 #, python-format
@@ -317,14 +324,14 @@ msgid "Scan barcode"
 msgstr "Skanna streckkod"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Sending the instructions by email ..."
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid ""
@@ -333,21 +340,21 @@ msgid ""
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Subscription Code:"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/home_menu.xml:0
 #, python-format
 msgid "TIP"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid ""
@@ -355,7 +362,7 @@ msgid ""
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/enterprise_subscription_service.js:0
 #, python-format
 msgid ""
@@ -364,7 +371,7 @@ msgid ""
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid ""
@@ -373,35 +380,35 @@ msgid ""
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.js:0
 #, python-format
 msgid "This database has expired. "
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.js:0
 #, python-format
 msgid "This database will expire in %s. "
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.js:0
 #, python-format
 msgid "This demo database will expire in %s. "
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "To unlink it you can either:"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/control_panel.xml:0
 #: code:addons/web_enterprise/static/src/legacy/xml/control_panel.xml:0
 #, python-format
@@ -409,28 +416,28 @@ msgid "Today"
 msgstr "Idag"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Unable to send the instructions by email, please contact the"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Upgrade your subscription"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/legacy/xml/control_panel.xml:0
 #, python-format
 msgid "View switcher"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid ""
@@ -438,7 +445,7 @@ msgid ""
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid ""
@@ -447,49 +454,49 @@ msgid ""
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Your subscription code"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Your subscription is already linked to a database."
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "Your subscription was updated and is valid until"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "buy a subscription"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "or"
 msgstr "eller"
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/expiration_panel.xml:0
 #, python-format
 msgid "to the subscription owner (email:"
 msgstr ""
 
 #. module: web_enterprise
-#. openerp-web
+#. odoo-javascript
 #: code:addons/web_enterprise/static/src/webclient/home_menu/home_menu.xml:0
 #, python-format
 msgid "— open me anywhere with"

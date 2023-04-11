@@ -12,3 +12,4 @@ from . import stock_warehouse
 from . import hr_employee_base
 from . import res_users
 from . import hr_employee
+from . import store

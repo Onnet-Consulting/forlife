@@ -19,8 +19,6 @@ class CustomerPortal(portal.CustomerPortal):
 
     def _prepare_portal_layout_values(self):
         values = super(CustomerPortal, self)._prepare_portal_layout_values()
-        if values.get('sales_user', False):
-            values['title'] = _("Salesperson")
         return values
 
     def _prepare_home_portal_values(self, counters):

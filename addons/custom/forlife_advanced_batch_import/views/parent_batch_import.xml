@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="parent_batch_import_view_form" model="ir.ui.view">
+            <field name="name">parent_batch_import_view_form</field>
+            <field name="model">parent.batch.import</field>
+            <field name="arch" type="xml">
+                <form string="parent_batch_import_form">
+                    <header>
+                        <button name="split_parent_batch_import_csv" type="object" string="Split data" class="oe_highlight"/>
+                        <button name="set_all_to_daft" attrs="{'invisible':[('status','=','draft')]}" type="object" string="Set all to Draft" class="oe_highlight"/>
+                        <button name="set_all_to_processing" type="object" attrs="{'invisible':[('status','=','processing')]}" string="Set all to Processing" class="oe_highlight"/>
+                        <field name="status" widget="statusbar" class="o_field_statusbar"
+                               options="{'clickable': '1'}"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="res_model"/>
+                            <field name="attachment_id"/>
+                            <field name="list_field"/>
+                            <field name="columns"/>
+                            <field name="options"/>
+                            <field name="dryrun"/>
+                            <field name="with_delay"/>
+                        </group>
+                        <group>
+                            <field name="total_batch" invisible="1"/>
+                            <field name="done_batch_count" widget="gauge" options="{'max_field': 'total_batch'}"/>
+                        </group>
+                        <group>
+                            <field name="child_batch_import_ids">
+                                <tree>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="attachment_id"/>
+                                    <field name="skip"/>
+                                    <field name="status"/>
+                                    <button name="set_to_processing" type="object" string="Set to processing" class="oe_highlight" attrs="{'invisible':[('status','=','processing')]}"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="parent_batch_import_view_tree" model="ir.ui.view">
+            <field name="name">parent_batch_import_view_tree</field>
+            <field name="model">parent.batch.import</field>
+            <field name="arch" type="xml">
+                <tree string="parent_batch_import_tree">
+                    <field name="res_model"/>
+                    <field name="attachment_id"/>
+                    <field name="limit"/>
+                    <field name="with_delay"/>
+                    <field name="number_of_split_file"/>
+                    <field name="status"/>
+                    <field name="progress_bar" widget="progressbar"/>
+                </tree>
+            </field>
+        </record>
+        <record id="parent_batch_import_action" model="ir.actions.act_window">
+            <field name="name">Config Batch Import</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">parent.batch.import</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem
+                id="menu_advanced_batch_import"
+                name="Batch Import"
+                web_icon="forlife_advanced_batch_import,static/description/icon.png"
+                groups="base.group_system"
+        />
+        <!-- This Menu Item must have a parent and an action -->
+        <menuitem id="menu_parent_batch_import" name="Parent Batch Import" parent="menu_advanced_batch_import" action="parent_batch_import_action" sequence="1"/>
+    </data>
+</odoo>

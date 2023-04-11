@@ -9,7 +9,6 @@
                 <field name="ref2"/>
             </xpath>
             <xpath expr="//page[@id='aml_tab']/field/tree/field[@name='tax_tag_ids']" position="after">
-                <field name="analytic_account_id" groups="analytic.group_analytic_accounting" optional="hide"/>
                 <field name="project_code" optional="hide"/>
                 <field name="manufacture_order_code" optional="hide"/>
                 <field name="internal_order_code" optional="hide"/>

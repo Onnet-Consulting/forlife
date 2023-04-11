@@ -134,8 +134,12 @@ export class AbstractMacro {
      * Handle the case where an item is hidden in a tab of the form view notebook
      */
     searchInXmlDocNotebookTab(targetSelector) {
-        const page = this.targetXmlDoc.querySelector(targetSelector).closest('page');
-        const pageString = page.getAttribute('string');
+        const searchElement = this.targetXmlDoc.querySelector(targetSelector);
+        const page = searchElement ? searchElement.closest('page') : undefined;
+        const pageString = page ? page.getAttribute('string') : undefined;
+        if (!pageString) {
+            return;
+        }
         const pageEl = this.getFirstVisibleElement('.o_notebook .nav-link:not(.active)', (el) => el.textContent.includes(pageString));
         if (pageEl) {
             pageEl.click();

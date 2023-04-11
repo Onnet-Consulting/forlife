@@ -99,6 +99,89 @@ class TestKnowledgeArticleFields(KnowledgeCommonWData):
 
 
 @tagged('knowledge_internals')
+class TestKnowledgeArticleInternals(KnowledgeCommonWData):
+    """ Testing model/ORM overrides """
+
+    def test_name_get(self):
+        """ Test our custom name_get / name_search / name_create. """
+
+        KnowledgeArticle = self.env['knowledge.article']
+        icon_placeholder = KnowledgeArticle._get_no_icon_placeholder()
+
+        KnowledgeArticle.search([]).unlink()  # remove other articles to ease testing
+        [article_no_icon, article_icon] = KnowledgeArticle.create([{
+            'name': 'Article Without Icon',
+        }, {
+            'icon': '🚀',
+            'name': 'Article With Icon'
+        }])
+
+        self.assertEqual(
+            article_no_icon.display_name,
+            '%s Article Without Icon' % icon_placeholder
+        )
+
+        self.assertEqual(
+            article_icon.display_name,
+            '🚀 Article With Icon'
+        )
+
+        # test the 'ilike' operator
+        for search_input, expected_articles in zip(
+            ['Article With',
+             '🚀 Article With',
+             '%s Article With' % icon_placeholder,
+             '⭐ Test'],
+            [article_icon + article_no_icon,
+             article_icon,
+             article_no_icon,
+             KnowledgeArticle]
+        ):
+            self.assertEqual(
+                KnowledgeArticle.name_search(name=search_input, operator='ilike'),
+                expected_articles.name_get(),
+                "Not matching for input '%s'" % search_input,
+            )
+
+        # test the '=' operator
+        for search_input, expected_articles in zip(
+            ['Article Without Icon',
+             '%s Article Without Icon' % icon_placeholder,
+             'Article With Icon',
+             '🚀 Article With Icon',
+             '🚀 Article With',
+             '⭐ Test'],
+            [article_no_icon,
+             article_no_icon,
+             article_icon,
+             article_icon,
+             KnowledgeArticle,
+             KnowledgeArticle]
+        ):
+            self.assertEqual(
+                KnowledgeArticle.name_search(name=search_input, operator='='),
+                expected_articles.name_get(),
+                "Not matching for input '%s'" % search_input,
+            )
+
+        # now test the name_create custom implementation
+        for create_input, (expected_name, expected_icon) in zip(
+            ['a',
+             'Article Without Icon',
+             '%s Article With Icon' % icon_placeholder,
+             '🚀 Article With Icon'],
+            [('a', False),
+             ('Article Without Icon', False),
+             ('Article With Icon', icon_placeholder),
+             ('Article With Icon', '🚀')]
+        ):
+            # result of name_create is a name_get
+            new_article = KnowledgeArticle.browse(KnowledgeArticle.name_create(create_input)[0])
+            self.assertEqual(new_article.name, expected_name)
+            self.assertEqual(new_article.icon, expected_icon)
+
+
+@tagged('knowledge_internals')
 class TestKnowledgeArticleUtilities(KnowledgeCommonWData):
     """ Test data oriented utilities and tools for articles. """
 

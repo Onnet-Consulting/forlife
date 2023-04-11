@@ -22,7 +22,7 @@
                 <EMI_1>1</EMI_1>
                 <EMI_2>213123432</EMI_2>
                 <EMI_3>31</EMI_3>
-                <EMI_4>48</EMI_4>
+                <EMI_4>01</EMI_4>
                 <EMI_6>company_1_data</EMI_6>
                 <EMI_7>company_1_data</EMI_7>
                 <EMI_8></EMI_8>
@@ -272,7 +272,7 @@
                 <ITT>
                     <ITT_1>company_1_data</ITT_1>
                     <ITT_2>O-47</ITT_2>
-                    <ITT_3>48</ITT_3>
+                    <ITT_3>01</ITT_3>
                     <ITT_4>213123432</ITT_4>
                     <ITT_5>31</ITT_5>
                     <ITT_6>1</ITT_6>

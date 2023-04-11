@@ -28,7 +28,7 @@ msgstr "Gekanselleer"
 #. module: helpdesk_sale_loyalty
 #: model:ir.model.fields,field_description:helpdesk_sale_loyalty.field_helpdesk_sale_coupon_generate__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: helpdesk_sale_loyalty
 #: model_terms:ir.ui.view,arch_db:helpdesk_sale_loyalty.helpdesk_ticket_view_form_inherit_helpdesk_sale_coupon

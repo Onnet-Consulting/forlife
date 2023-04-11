@@ -1,5 +1,6 @@
 /** @odoo-module */
 
+import config from "web.config";
 import { ConfirmationDialog } from "@web/core/confirmation_dialog/confirmation_dialog";
 import { FormRenderer } from '@web/views/form/form_renderer';
 import { KnowledgeCoverDialog } from '@knowledge/components/cover_selector/knowledge_cover_dialog';
@@ -10,7 +11,7 @@ import PermissionPanel from '@knowledge/components/permission_panel/permission_p
 import { sprintf } from '@web/core/utils/strings';
 import { useService } from "@web/core/utils/hooks";
 
-const { onMounted, onPatched, useEffect, useRef, useState} = owl;
+const { onMounted, onPatched, onWillDestroy, useEffect, useRef, useState } = owl;
 
 export class KnowledgeArticleFormRenderer extends FormRenderer {
 
@@ -35,17 +36,22 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
 
         this.root = useRef('root');
         this.tree = useRef('tree');
-        
-        this.messagingService.get().then(messaging => {
+
+        this.loadEmoji = this.messagingService.get().then(messaging => {
             this.messaging = messaging;
+            this.messaging.messagingBus.addEventListener('knowledge_add_emoji', this._onAddEmoji);
+            this.messaging.messagingBus.addEventListener('knowledge_remove_emoji', this._onRemoveEmoji);
             if (this.messaging.emojiRegistry.isLoaded || this.messaging.emojiRegistry.isLoading) {
-                return;
+                return messaging;
+            } else {
+                this.messaging.emojiRegistry.loadEmojiData();
+                return messaging;
             }
-            this.messaging.emojiRegistry.loadEmojiData();
         });
         this._onAddEmoji = this._onAddEmoji.bind(this);
         this._onRemoveEmoji = this._onRemoveEmoji.bind(this);
-        
+
+        this.device = config.device;
         this.sidebarSize = localStorage.getItem('knowledgeArticleSidebarSize');
 
         onPatched(() => {
@@ -54,7 +60,7 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
                 this.triggerClickOnAddProperty = false;
                 this.root.el.querySelector('.o_field_property_add > button').click();
             }
-        })
+        });
 
         useEffect(() => {
             // ADSC: Make tree component with "t-on-" instead of adding these eventListeners
@@ -87,8 +93,6 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
                 }
             };
             this.tree.el.addEventListener('click', listener);
-            this.messaging.messagingBus.addEventListener('knowledge_add_emoji', this._onAddEmoji);
-            this.messaging.messagingBus.addEventListener('knowledge_remove_emoji', this._onRemoveEmoji);
 
             /**
              * Show/hide the Share Panel (invite, update members permissions, ...)
@@ -119,8 +123,6 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
 
             return () => {
                 this.tree.el.removeEventListener('click', listener);
-                this.messaging.messagingBus.removeEventListener('knowledge_add_emoji', this._onAddEmoji);
-                this.messaging.messagingBus.removeEventListener('knowledge_remove_emoji', this._onRemoveEmoji);
             };
         }, () => []);
 
@@ -132,12 +134,22 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
             if (body && !body.innerText.trim()) {
                 setTimeout(() => body.focus(), 0);
             }
+        });
+
+        useEffect(() => {
             // If the article has some properties set,
             // we should display the property panel that is hidden by default.
-            if (this.props.record.data.article_properties && !this.props.record.data.article_properties_is_empty) {
-                this.toggleProperties();
-                this.state.displayPropertyToggle = true;
-            }
+            const displayPropertyPanel = this.props.record.data.article_properties && this.props.record.data.article_properties.length > 0;
+            this.state.displayPropertyToggle = displayPropertyPanel;
+            this.state.displayPropertyPanel = displayPropertyPanel;
+        }, () => {
+            return [this.props.record.data.article_properties && this.props.record.data.article_properties.length > 0];
+        });
+
+        onWillDestroy(async () => {
+            const messaging = await this.loadEmoji;
+            messaging.messagingBus.removeEventListener('knowledge_add_emoji', this._onAddEmoji);
+            messaging.messagingBus.removeEventListener('knowledge_remove_emoji', this._onRemoveEmoji);
         });
     }
 
@@ -179,6 +191,9 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
      * Add a random icon to the article.
      */
     addIcon() {
+        if (!this.messaging || !this.messaging.knowledge) {
+            return;
+        }
         const icon = this.messaging.knowledge.randomEmojis[Math.floor(Math.random() * this.messaging.knowledge.randomEmojis.length)].codepoints;
         this._renderEmoji(icon, this.resId);
     }
@@ -187,16 +202,18 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
      * Open the Properties Panel and start to add the first property field.
      */
     addProperties(event) {
-        this.toggleProperties();
         // See onPatched: triggers a click when properties widget is ready and added
-        // in to DOM. It opens the panel directly.
+        // in to DOM. It adds a property directly.
         this.triggerClickOnAddProperty = true;
+        this.state.displayPropertyToggle = true;
+        this.state.displayPropertyPanel = true;
     }
 
     /**
      * Copy the current article in private section and open it.
      */
     async copyArticleAsPrivate() {
+        await this._saveIfDirty();
         const articleId = await this.orm.call(
             "knowledge.article",
             "action_make_private_copy",
@@ -244,13 +261,12 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
                     {stackPosition: 'replaceCurrentAction'}
                 );
             } else {
-                // toggle on/off the classes that highlight the selected article
-                document.querySelectorAll(`[data-article-id="${this.resId}"] > div`).forEach((previousArticle) => {
-                    previousArticle.classList.remove('o_article_active', 'fw-bold', 'text-900');
-                    const emoji = previousArticle.querySelector('.o_article_emoji');
-                    if (emoji) {
-                        emoji.classList.remove('o_article_emoji_active', 'text-900');
-                    }
+                // Ensures that all *selected* articles are unselected
+                document.querySelectorAll('.o_article_active').forEach((active) => {
+                    active.classList.remove('o_article_active', 'fw-bold', 'text-900');
+                });
+                document.querySelectorAll('.o_article_emoji_active').forEach((emoji) => {
+                    emoji.classList.remove('o_article_emoji_active', 'text-900');
                 });
 
                 document.querySelectorAll(`[data-article-id="${resId}"] > div`).forEach((currentArticle) => {
@@ -262,14 +278,39 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
                 });
 
                 // Force save if changes have been made before loading the new record
-                if (this.props.record.isDirty) {
-                    await this.props.record.save();
+                await this._saveIfDirty();
+
+                const scrollView = document.querySelector('.o_scroll_view_lg');
+                if (scrollView) {
+                    // hide the flicker
+                    scrollView.style.visibility = 'hidden';
+                    // Scroll up if we have a desktop screen
+                    scrollView.scrollTop = 0;
+                }
+
+                const mobileScrollView = document.querySelector('.o_knowledge_main_view');
+                if (mobileScrollView) {
+                    // Scroll up if we have a mobile screen
+                    mobileScrollView.scrollTop = 0;
                 }
 
                 // load the new record
-                await this.props.record.model.load({
-                    resId: resId,
-                });
+                try {
+                    await this.props.record.model.load({
+                        resId: resId,
+                    });
+                } catch (_) {
+                    this.actionService.doAction(
+                        await this.orm.call('knowledge.article', 'action_home_page', [false]),
+                        {stackPosition: 'replaceCurrentAction'}
+                    );
+                }
+
+                if (scrollView) {
+                    // Show loaded document
+                    scrollView.style.visibility = 'visible';
+                }
+
             }
         }
     }
@@ -310,12 +351,19 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
 
     /**
      * Add/Remove article from favorites and reload the favorite tree.
+     * One does not use "record.update" since the article could be in readonly.
      * @param {event} Event
      */
     async toggleFavorite(event) {
-        await this.props.record.update({is_user_favorite: !this.props.record.data.is_user_favorite});
+        // Save in case name has been edited, so that this new name is used
+        // when adding the article in the favorite section.
+        await this._saveIfDirty();
+        await this.orm.call(this.props.record.resModel, "action_toggle_favorite", [[this.resId]]);
+        // Load to have the correct value for 'is_user_favorite'.
+        await this.props.record.load();
+        // Rerender the favorite button.
+        await this.props.record.model.notify();
         // ADSC: move when tree component
-        await this.props.record.save({stayInEdition: true});
         let unfoldedFavoriteArticlesIds = localStorage.getItem('knowledge.unfolded.favorite.ids');
         unfoldedFavoriteArticlesIds = unfoldedFavoriteArticlesIds ? unfoldedFavoriteArticlesIds.split(";").map(Number) : [];
         const template = await this.rpc(
@@ -326,7 +374,9 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
             }
         );
         this.tree.el.querySelector('.o_favorite_container').innerHTML = template;
-        this._setTreeFavoriteListener();
+        if (!this.device.isMobile) {
+            this._setTreeFavoriteListener();
+        }
     }
 
 
@@ -384,9 +434,7 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
      */
     async _confirmMoveArticle(articleId, position, onSuccess, onReject) {
         // Force save if changes have been made before the move to.
-        if (this.props.record.isDirty) {
-            await this.props.record.save();
-        }
+        await this._saveIfDirty();
         try {
             const result = await this.orm.call(
                 'knowledge.article',
@@ -565,9 +613,7 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
         let unfoldedFavoriteArticlesIds = localStorage.getItem('knowledge.unfolded.favorite.ids');
         unfoldedFavoriteArticlesIds = unfoldedFavoriteArticlesIds ? unfoldedFavoriteArticlesIds.split(";").map(Number) : false;
         // Force save article if it's dirty to keep up to date the article data before rendering the tree
-        if (this.props.record.isDirty) {
-            await this.props.record.save();
-        }
+        await this._saveIfDirty();
         try {
             const htmlTree = await this.rpc(route,
                 {
@@ -577,8 +623,10 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
                 }
             );
             this.tree.el.innerHTML = htmlTree;
-            this._setTreeListener();
-            this._setTreeFavoriteListener();
+            if (!this.device.isMobile) {
+                this._setTreeListener();
+                this._setTreeFavoriteListener();
+            }
         } catch {
             this.tree.el.innerHTML = "";
         }
@@ -605,6 +653,12 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
      */
     _resizeNameInput(name) {
         this.root.el.querySelector('.o_breadcrumb_article_name_container > span').innerText = name;
+    }
+
+    async _saveIfDirty() {
+        if (this.props.record.isDirty) {
+            await this.props.record.save();
+        }
     }
 
     /**
@@ -848,6 +902,9 @@ export class KnowledgeArticleFormRenderer extends FormRenderer {
      * @private
      */
     _showEmojiPicker(ev) {
+        if (!this.messaging || !this.messaging.knowledge) {
+            return;
+        }
         const articleId = Number(ev.target.closest('.o_article_emoji_dropdown').dataset.articleId) || this.resId;
         this.messaging.knowledge.update({
             currentArticle: { id: articleId },

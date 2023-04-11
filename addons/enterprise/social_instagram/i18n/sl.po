@@ -2,12 +2,18 @@
 # This file contains the translation of the following modules:
 # 	* social_instagram
 # 
+# Translators:
+# Jasmina Macur <jasmina@hbs.si>, 2022
+# Grega Vavtar <grega@hbs.si>, 2022
+# Martin Trigaux, 2022
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0beta+e\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
+"Last-Translator: Martin Trigaux, 2022\n"
 "Language-Team: Slovenian (https://www.transifex.com/odoo/teams/41243/sl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -52,7 +58,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:social_instagram.field_social_post__instagram_access_token
 #: model:ir.model.fields,field_description:social_instagram.field_social_post_template__instagram_access_token
 msgid "Access Token"
-msgstr ""
+msgstr "Dostopni žeton"
 
 #. module: social_instagram
 #: code:addons/social_instagram/models/social_post.py:0
@@ -89,7 +95,7 @@ msgstr ""
 #. module: social_instagram
 #: model:ir.model,name:social_instagram.model_res_config_settings
 msgid "Config Settings"
-msgstr ""
+msgstr "Uredi nastavitve"
 
 #. module: social_instagram
 #: code:addons/social_instagram/controllers/main.py:0
@@ -114,7 +120,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:social_instagram.selection__social_media__media_type__instagram
 #: model:social.media,name:social_instagram.social_media_instagram
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #. module: social_instagram
 #: model:ir.model.fields,field_description:social_instagram.field_social_account__instagram_access_token
@@ -217,7 +223,7 @@ msgstr ""
 #: code:addons/social_instagram/static/src/xml/social_instagram_templates.xml:0
 #, python-format
 msgid "Likes"
-msgstr ""
+msgstr "Všečki"
 
 #. module: social_instagram
 #: model:ir.model.fields,field_description:social_instagram.field_social_media__media_type
@@ -260,7 +266,7 @@ msgstr ""
 #. module: social_instagram
 #: model:ir.model,name:social_instagram.model_social_media
 msgid "Social Media"
-msgstr ""
+msgstr "Socialni medij"
 
 #. module: social_instagram
 #: model:ir.model,name:social_instagram.model_social_post
@@ -275,7 +281,7 @@ msgstr ""
 #. module: social_instagram
 #: model:ir.model,name:social_instagram.model_social_stream
 msgid "Social Stream"
-msgstr ""
+msgstr "Socialni pretok"
 
 #. module: social_instagram
 #: model:ir.model,name:social_instagram.model_social_stream_post

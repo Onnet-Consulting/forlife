@@ -28,7 +28,7 @@ msgstr ""
 #. module: helpdesk_fsm
 #: model:ir.model.fields,field_description:helpdesk_fsm.field_helpdesk_create_fsm_task__company_id
 msgid "Company"
-msgstr ""
+msgstr "Maatskappy"
 
 #. module: helpdesk_fsm
 #: model:ir.model,name:helpdesk_fsm.model_helpdesk_ticket_convert_wizard
@@ -227,4 +227,4 @@ msgstr ""
 #. module: helpdesk_fsm
 #: model:ir.model.fields,field_description:helpdesk_fsm.field_helpdesk_create_fsm_task__name
 msgid "Title"
-msgstr ""
+msgstr "Titel"

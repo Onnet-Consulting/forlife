@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="stock_transfer_request_rule_on_write" model="base.automation">
+            <field name="name">Base Automation: stock transfer request rule on write</field>
+            <field name="model_id" ref="forlife_stock.model_stock_transfer_request"/>
+            <field name="state">code</field>
+            <field name="code" eval="'records.write({\'state\': \'done\'})'"/>
+            <field name="trigger">on_write</field>
+            <field name="trigger_field_ids" eval="[(6, 0, [ref('forlife_stock.field_stock_transfer_request__is_no_more_quantity')])]"/>
+            <field name="active" eval="True"/>
+            <field name="filter_pre_domain">[('is_no_more_quantity', '=', False)]</field>
+            <field name="filter_domain">[('is_no_more_quantity', '=', True)]</field>
+        </record>
+
+    </data>
+</odoo>

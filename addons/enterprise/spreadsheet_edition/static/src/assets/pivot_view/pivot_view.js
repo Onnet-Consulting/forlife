@@ -1,6 +1,8 @@
 /** @odoo-module **/
 
+import { registry } from "@web/core/registry";
 import { PivotController } from "@web/views/pivot/pivot_controller";
+import { unique } from "@web/core/utils/arrays";
 import { patch } from "@web/core/utils/patch";
 import { useService } from "@web/core/utils/hooks";
 import { PERIODS } from "@spreadsheet_edition/assets/helpers";
@@ -18,7 +20,11 @@ patch(PivotController.prototype, "pivot_spreadsheet", {
         this.notification = useService("notification");
         this.actionService = useService("action");
         onWillStart(async () => {
-            this.canInsertPivot = await this.userService.hasGroup("base.group_system");
+            const insertionGroups = registry.category("spreadsheet_view_insertion_groups").getAll();
+            const userGroups = await Promise.all(
+                insertionGroups.map((group) => this.userService.hasGroup(group))
+            );
+            this.canInsertPivot = userGroups.some((group) => group);
         });
     },
 
@@ -41,7 +47,10 @@ patch(PivotController.prototype, "pivot_spreadsheet", {
                 metaData: this.model.metaData,
                 searchParams: {
                     ...this.model.searchParams,
-                    context: omit(this.model.searchParams.context, ...Object.keys(this.userService.context)),
+                    context: omit(
+                        this.model.searchParams.context,
+                        ...Object.keys(this.userService.context)
+                    ),
                 },
                 name,
             },
@@ -52,5 +61,32 @@ patch(PivotController.prototype, "pivot_spreadsheet", {
             actionOptions,
         };
         this.env.services.dialog.add(SpreadsheetSelectorDialog, params);
+    },
+
+    hasDuplicatedGroupbys() {
+        const fullColGroupBys = this.model.metaData.fullColGroupBys;
+        const fullRowGroupBys = this.model.metaData.fullRowGroupBys;
+        if (
+            unique(fullColGroupBys).length < fullColGroupBys.length ||
+            unique(fullRowGroupBys).length < fullRowGroupBys.length ||
+            unique([...fullColGroupBys, ...fullRowGroupBys]).length <
+                fullColGroupBys.length + fullRowGroupBys.length
+        ) {
+            return true;
+        }
+        return false;
+    },
+
+    isInsertButtonDisabled() {
+        return (
+            !this.model.hasData() ||
+            this.model.metaData.activeMeasures.length === 0 ||
+            this.model.useSampleModel ||
+            this.hasDuplicatedGroupbys()
+        );
+    },
+
+    getTooltipTextForDuplicatedGroupbys() {
+        return _t("Pivot contains duplicate groupbys");
     },
 });

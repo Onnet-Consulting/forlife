@@ -549,6 +549,49 @@ tour.register('test_barcode_batch_delivery_1', {test: true}, [
     { trigger: '.o_notification.border-success' },
 ]);
 
+tour.register('test_barcode_batch_delivery_2_move_entire_package', {test: true}, [
+    // Should have 3 lines: 2 for product2 (one by picking) and 1 for the package pack1.
+    {
+        trigger: '.o_barcode_client_action',
+        run: function() {
+            helper.assertScanMessage('scan_product_or_package');
+            const lines = document.querySelectorAll('.o_barcode_line');
+            // Line for product2, delivery 1.
+            helper.assertLineBelongTo($(lines[0]), 'delivery_1');
+            helper.assertButtonIsVisible($(lines[0]), 'package_content', false);
+            helper.assertLineQuantityOnReservedQty(0, '0 / 5');
+            // Line for product2, delivery 2.
+            helper.assertLineBelongTo($(lines[1]), 'delivery_2');
+            helper.assertButtonIsVisible($(lines[1]), 'package_content', false);
+            helper.assertLineQuantityOnReservedQty(1, '0 / 5');
+            // Package line for delivery 1.
+            helper.assertLineBelongTo($(lines[2]), 'delivery_1');
+            helper.assertButtonIsVisible($(lines[2]), 'package_content');
+            helper.assertLineQuantityOnReservedQty(2, '0 / 1');
+        }
+    },
+
+    // Scans pack1 => Completes the corresponding package line.
+    { trigger: '.o_barcode_client_action', run: 'scan pack1' },
+    {
+        trigger: '.o_barcode_line:nth-child(3).o_line_completed',
+        run: function() {
+            helper.assertLineQuantityOnReservedQty(2, '1 / 1');
+        }
+    },
+
+    // Scans pack2 => Completes the two lines waiting for it.
+    { trigger: '.o_barcode_client_action', run: 'scan pack2' },
+    {
+        trigger: '.o_barcode_line.o_selected:nth-child(1)',
+        extra_trigger: '.o_barcode_line.o_selected:nth-child(2)',
+        run: function() {
+            helper.assertLineQuantityOnReservedQty(0, '5 / 5');
+            helper.assertLineQuantityOnReservedQty(1, '5 / 5');
+        }
+    },
+])
+
 tour.register('test_batch_create', {test: true}, [
     {
         trigger: '.o_stock_barcode_main_menu:contains("Barcode Scanning")',

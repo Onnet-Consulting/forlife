@@ -22,6 +22,7 @@
                   <ns2:Quarter t-if="Quarter" t-esc="Quarter"/>
                   <ns2:Month t-if="Month" t-esc="Month"/>
                </ns0:Period>
+               <ns0:IsNihil t-if="not country_taxes">1</ns0:IsNihil>
                <t t-foreach="country_taxes" t-as="country">
                   <ns0:OSSDeclarationInfo t-att-SequenceNumber="country_index + 1">
                      <ns2:MemberStateOfConsumption t-esc="country.code"/>

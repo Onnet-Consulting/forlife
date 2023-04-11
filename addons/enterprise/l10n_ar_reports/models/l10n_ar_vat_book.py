@@ -478,8 +478,10 @@ class ArgentinianReportCustomHandler(models.AbstractModel):
             lines = []
             vat_taxes = inv._get_vat()
 
-            # tipically this is for invoices with zero amount
-            if not vat_taxes and inv.l10n_latam_document_type_id.purchase_aliquots == 'not_zero':
+            # typically this is for invoices with zero amount
+            if not vat_taxes and any(t.tax_group_id.l10n_ar_vat_afip_code
+                                     and t.tax_group_id.l10n_ar_vat_afip_code != '0'
+                                     for t in inv.invoice_line_ids.mapped('tax_ids')):
                 lines.append(''.join(self._vat_book_get_tax_row(inv, 0.0, 3, 0.0, options, tax_type)))
 
             # we group by afip_code

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form_nhanh_connector" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.nhanh_connector</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="41"/>
+            <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='connectors_setting_container']" position="after">
+                    <div class="app_settings_block" data-string="NhanhVN" string="NhanhVN" data-key="nhanh_vn"
+                         groups="account.group_account_manager">
+                        <h2>NhanhVN Configuration</h2>
+
+                        <div class="row mt16 o_settings_container" id="nhanh_configuration">
+                            <div class="row mt16">
+                                <div>
+                                    <label class="o_form_label col-lg-2 o_light_label" for="nhanh_app_id"/>
+                                    <field name="nhanh_app_id" style="width:80%;word-wrap: break-word;"></field>
+                                </div>
+                                <div class="row mt16">
+                                    <label class="o_form_label col-lg-2 o_light_label" for="nhanh_secret_key" />
+                                    <field name="nhanh_secret_key" style="width:80%;word-wrap: break-word;"></field>
+                                </div>
+                                <div class="row mt16">
+                                    <label class="o_form_label col-lg-2 o_light_label" for="nhanh_return_link"/>
+                                    <field name="nhanh_return_link" style="width:80%;word-wrap: break-word;"></field>
+                                </div>
+                                <div class="row mt16">
+                                    <label class="o_form_label col-lg-2 o_light_label" for="link_get_access_code"/>
+                                    <field name="link_get_access_code" string="Link Get access code" style="width:80%;word-wrap: break-word;"></field>
+                                </div>
+                                <div class="row mt16">
+                                    <label class="o_form_label col-lg-2 o_light_label" for="nhanh_access_code"/>
+                                    <field name="nhanh_access_code" style="width:80%"></field>
+                                </div>
+                                <div class="row mt16">
+                                    <label class="o_form_label col-lg-2 o_light_label" for="nhanh_business_id"/>
+                                    <field name="nhanh_business_id" style="width:80%;word-wrap: break-word;" attrs="{'readonly': True}"></field>
+                                </div>
+                                <div class="row mt16">
+                                    <label class="o_form_label col-lg-2 o_light_label" for="nhanh_access_token"/>
+                                    <field name="nhanh_access_token" attrs="{'readonly': True}" style="width:80%;word-wrap: break-word;"></field>
+                                </div>
+                                <div class="row mt16">
+                                    <label class="o_form_label col-lg-2 o_light_label" for="nhanh_access_token_expired"/>
+                                    <field name="nhanh_access_token_expired" attrs="{'readonly': True}" style="width:60%"></field>
+                                </div>
+                            </div>
+                            <div class="col mt16">
+                                <button name="action_get_nhanh_access_token" string="Get Access Token" type="object" class="oe_highlight mr16" attrs="{'invisible': [('nhanh_access_code', '=', False)]}"/>
+                                <button name="check_connect_to_nhanh" string="Check Connection" type="object" class="oe_highlight mr16" attrs="{'invisible': [('nhanh_access_token', '=', False)]}"/>
+                                <button name="remove_nhanh_config" string="Remove Nhanh Configuration" type="object" class="btn-danger"
+                                        confirm="Are you sure to remove Nhanh's configuration"/>
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+        <record id="action_account_config" model="ir.actions.act_window">
+            <field name="name">Settings</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module' : 'nhanh_vn', 'bin_size': False}</field>
+        </record>
+
+    </data>
+</odoo>

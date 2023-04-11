@@ -7,10 +7,10 @@
 # Zsolt Godó <zsolttokio@gmail.com>, 2022
 # Ákos Nagy <akos.nagy@oregional.hu>, 2022
 # Krisztián Juhász <juhasz.krisztian@josafar.hu>, 2022
-# Tamás Németh <ntomasz81@gmail.com>, 2022
 # krnkris, 2022
 # gezza <geza.nagy@oregional.hu>, 2022
 # Martin Trigaux, 2022
+# Tamás Németh <ntomasz81@gmail.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -18,7 +18,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-20 09:47+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Tamás Németh <ntomasz81@gmail.com>, 2023\n"
 "Language-Team: Hungarian (https://www.transifex.com/odoo/teams/41243/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -294,7 +294,7 @@ msgstr "Igény előrejelzés részletei"
 #: code:addons/mrp_mps/static/src/components/line.xml:0
 #, python-format
 msgid "Forecast Report"
-msgstr ""
+msgstr "Előrejelzés kimutatás"
 
 #. module: mrp_mps
 #. openerp-web
@@ -362,7 +362,7 @@ msgstr "Frissítette"
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_product_forecast__write_date
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__write_date
 msgid "Last Updated on"
-msgstr "Frissítve ekkor"
+msgstr "Frissítve"
 
 #. module: mrp_mps
 #: model:ir.ui.menu,name:mrp_mps.mrp_mps_menu_planning
@@ -573,7 +573,7 @@ msgstr "Ütemezett dátum"
 #: model_terms:ir.ui.view,arch_db:mrp_mps.product_normal_form_view_mps
 #: model_terms:ir.ui.view,arch_db:mrp_mps.product_template_only_form_view_mps
 msgid "Schedules"
-msgstr ""
+msgstr "Ütemezések"
 
 #. module: mrp_mps
 #: model:ir.model.fields,field_description:mrp_mps.field_mrp_production_schedule__sequence

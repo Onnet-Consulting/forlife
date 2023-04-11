@@ -60,14 +60,14 @@ class OSSTaxReportTest(TestAccountReportsCommon):
             #   Name                        Net               Tax
             [   0,                            1,                2],
             [
-                ("Sales",                    '',              370),
+                ("Sales",                    '',              360),
                 ("France",                   '',              200),
                 ("20.0% FR VAT (20.0%)",   1000,              200),
                 ("Total France",             '',              200),
-                ("Luxembourg",               '',              170),
-                ("17.0% LU VAT (17.0%)",   1000,              170),
-                ("Total Luxembourg",         '',              170),
-                ("Total Sales",              '',              370),
+                ("Luxembourg",               '',              160),
+                ("16.0% LU VAT (16.0%)",   1000,              160),
+                ("Total Luxembourg",         '',              160),
+                ("Total Sales",              '',              360),
             ],
         )
 
@@ -110,8 +110,8 @@ class OSSTaxReportTest(TestAccountReportsCommon):
                     <ns2:FixedEstablishment>
                         <ns2:VATIdentificationNumber issuedBy="BE">0477472701</ns2:VATIdentificationNumber>
                     </ns2:FixedEstablishment>
-                    <ns2:VatRateType>17.0</ns2:VatRateType>
-                    <ns2:VatAmount currency="USD">170.0</ns2:VatAmount>
+                    <ns2:VatRateType>16.0</ns2:VatRateType>
+                    <ns2:VatAmount currency="USD">160.0</ns2:VatAmount>
                     <ns2:TaxableAmount currency="USD">1000.0</ns2:TaxableAmount>
                   </ns2:OSSDeclarationRows>
                   <ns2:CorrectionsInfo>

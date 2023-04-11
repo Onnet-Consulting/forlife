@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    	<record id="view_warehouse_inherit_forlife" model="ir.ui.view">
+            <field name="name">stock.warehouse.form.inherit</field>
+            <field name="model">stock.warehouse</field>
+            <field name="inherit_id" ref="stock.view_warehouse"/>
+            <field name="arch" type="xml">
+                <field name="code" position="after">
+                    <field name="name_internal"/>
+                    <field name="short_name_internal"/>
+                </field>
+                <xpath expr="//sheet/group[1]/group[2]/field[@name='company_id']" position="before">
+                    <field name="warehouse_code_internal"/>
+                </xpath>
+                <page name="technical_info" position="before">
+                    <page string="Information" name="general_info">
+                        <group>
+                            <group>
+                                <field name="brand_id"/>
+                                <field name="square"/>
+                                <field name="phone"/>
+                                <field name="manager_id"/>
+                                <field name="status_ids"/>
+                                <field name="id_deposit"/>
+                            </group>
+                            <group>
+                                <field name="sale_province_id"/>
+                                <field name="loc_province_id"/>
+                                <field name="weather_province_id"/>
+                            </group>
+                        </group>
+                	</page>
+                </page>
+            </field>
+        </record>
+
+        <!-- Type of Warehouse -->
+        <record id="stock_warehouse_type_view_tree" model="ir.ui.view">
+            <field name="name">stock.warehouse.type.view.tree</field>
+            <field name="model">stock.warehouse.type</field>
+            <field name="arch" type="xml">
+                <tree string="Type of Warehouse" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="stock_warehouse_type_view_search" model="ir.ui.view">
+                <field name="name">stock.warehouse.type.view.search</field>
+                <field name="model">stock.warehouse.type</field>
+                <field name="arch" type="xml">
+                    <search>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <separator/>
+                        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                    </search>
+                </field>
+            </record>
+
+        <record id="stock_warehouse_type_action" model="ir.actions.act_window">
+            <field name="name">Type of Warehouse</field>
+            <field name="res_model">stock.warehouse.type</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- Status of Warehouse -->
+        <record id="stock_warehouse_status_view_tree" model="ir.ui.view">
+            <field name="name">stock.warehouse.status.view.tree</field>
+            <field name="model">stock.warehouse.status</field>
+            <field name="arch" type="xml">
+                <tree string="Status of Warehouse" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="stock_warehouse_status_view_search" model="ir.ui.view">
+                <field name="name">stock.warehouse.status.view.search</field>
+                <field name="model">stock.warehouse.status</field>
+                <field name="arch" type="xml">
+                    <search>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <separator/>
+                        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                    </search>
+                </field>
+            </record>
+
+        <record id="stock_warehouse_status_action" model="ir.actions.act_window">
+            <field name="name">Status of Warehouse</field>
+            <field name="res_model">stock.warehouse.status</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- Brand -->
+        <record id="res_forlife_brand_view_tree" model="ir.ui.view">
+            <field name="name">res.forlife.brand.view.tree</field>
+            <field name="model">res.forlife.brand</field>
+            <field name="arch" type="xml">
+                <tree string="Brand" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="res_forlife_brand_view_search" model="ir.ui.view">
+                <field name="name">res.forlife.brand.view.search</field>
+                <field name="model">res.forlife.brand</field>
+                <field name="arch" type="xml">
+                    <search>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <separator/>
+                        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                    </search>
+                </field>
+            </record>
+
+        <record id="res_forlife_brand_action" model="ir.actions.act_window">
+            <field name="name">Brand</field>
+            <field name="res_model">res.forlife.brand</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- Sale Province -->
+        <record id="res_sale_province_view_tree" model="ir.ui.view">
+            <field name="name">res.sale.province.view.tree</field>
+            <field name="model">res.sale.province</field>
+            <field name="arch" type="xml">
+                <tree string="Sale Province" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="res_sale_province_view_search" model="ir.ui.view">
+                <field name="name">res.sale.province.view.search</field>
+                <field name="model">res.sale.province</field>
+                <field name="arch" type="xml">
+                    <search>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <separator/>
+                        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                    </search>
+                </field>
+            </record>
+
+        <record id="res_sale_province_action" model="ir.actions.act_window">
+            <field name="name">Sale Province</field>
+            <field name="res_model">res.sale.province</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- Location Province -->
+        <record id="res_location_province_view_tree" model="ir.ui.view">
+            <field name="name">res.location.province.view.tree</field>
+            <field name="model">res.location.province</field>
+            <field name="arch" type="xml">
+                <tree string="Location Province" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="res_location_province_view_search" model="ir.ui.view">
+                <field name="name">res.location.province.view.search</field>
+                <field name="model">res.location.province</field>
+                <field name="arch" type="xml">
+                    <search>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <separator/>
+                        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                    </search>
+                </field>
+            </record>
+
+        <record id="res_location_province_action" model="ir.actions.act_window">
+            <field name="name">Location Province</field>
+            <field name="res_model">res.location.province</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- Weather Province -->
+        <record id="res_weather_province_view_tree" model="ir.ui.view">
+            <field name="name">res.weather.province.view.tree</field>
+            <field name="model">res.weather.province</field>
+            <field name="arch" type="xml">
+                <tree string="Weather Province" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="res_weather_province_view_search" model="ir.ui.view">
+                <field name="name">res.weather.province.view.search</field>
+                <field name="model">res.weather.province</field>
+                <field name="arch" type="xml">
+                    <search>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <separator/>
+                        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                    </search>
+                </field>
+            </record>
+
+        <record id="res_weather_province_action" model="ir.actions.act_window">
+            <field name="name">Weather Province</field>
+            <field name="res_model">res.weather.province</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- District -->
+        <record id="res_state_district_view_tree" model="ir.ui.view">
+            <field name="name">res.state.district.view.tree</field>
+            <field name="model">res.state.district</field>
+            <field name="arch" type="xml">
+                <tree string="Weather Province" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="res_state_district_view_search" model="ir.ui.view">
+                <field name="name">res.state.district.view.search</field>
+                <field name="model">res.state.district</field>
+                <field name="arch" type="xml">
+                    <search>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <separator/>
+                        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                    </search>
+                </field>
+            </record>
+
+        <record id="res_state_district_action" model="ir.actions.act_window">
+            <field name="name">District</field>
+            <field name="res_model">res.state.district</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+    </data>
+</odoo>

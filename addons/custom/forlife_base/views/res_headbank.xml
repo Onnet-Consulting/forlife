@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+
+<!--        <record id="res_master_bank_view_form" model="ir.ui.view">-->
+<!--            <field name="name">res.master.bank.view.form</field>-->
+<!--            <field name="model">master.bank</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <form string="Asset Location" editable="top">-->
+<!--                    <field name="name"/>-->
+<!--                    <field name="bank_code"/>-->
+<!--                </form>-->
+<!--            </field>-->
+<!--        </record>-->
+        <record id="res_bank_level_view_form" model="ir.ui.view">
+            <field name="name">res.bank.level.view.form</field>
+            <field name="model">bank.level</field>
+            <field name="arch" type="xml">
+                <form string="Cấp độ" >
+                    <sheet>
+                        <group>
+                            <field name="code"/>
+                            <field name="level"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="res_master_bank_view_tree" model="ir.ui.view">
+            <field name="name">res.master.bank.view.tree</field>
+            <field name="model">res.headbank</field>
+            <field name="arch" type="xml">
+                <tree string="Asset Location" editable="top">
+                    <field name="name"/>
+                    <field name="bank_code"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_res_partner_master_bank_form">
+            <field name="name">Ngân hàng mẹ</field>
+            <field name="res_model">res.headbank</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create new record
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

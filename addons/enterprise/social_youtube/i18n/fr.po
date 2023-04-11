@@ -4,8 +4,8 @@
 # 
 # Translators:
 # Martin Trigaux, 2022
-# Jolien De Paepe, 2022
 # Cécile Collart <cco@odoo.com>, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -13,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:29+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Cécile Collart <cco@odoo.com>, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,13 +27,13 @@ msgid ""
 "'Uploads' Playlist ID provided by the YouTube API, this should never be set "
 "manually."
 msgstr ""
-"'ID des 'téléchargements' playlist fourni par l'API YouTube, cela ne doit "
+"L'ID des 'téléchargements' playlist fourni par l'API YouTube, cela ne doit "
 "jamais être défini manuellement."
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.youtube_preview
 msgid "123 Views •"
-msgstr "123 Vues •"
+msgstr "123 vues •"
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_stream_post_view_kanban
@@ -43,12 +43,12 @@ msgstr "<i class=\"fa fa-comments me-1\" title=\"Commentaires\"/>"
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_stream_post_view_kanban
 msgid "<i class=\"fa fa-thumbs-up me-1\" title=\"Likes\"/>"
-msgstr "<i class=\"fa fa-thumbs-up me-1\" title=\"Likes\"/>"
+msgstr "<i class=\"fa fa-thumbs-up me-1\" title=\"J'aime\"/>"
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.youtube_preview
 msgid "<span class=\"fw-bold\">Your YouTube Channel</span>"
-msgstr "<span class=\"fw-bold\">Votre Chaîne YouTube</span>"
+msgstr "<span class=\"fw-bold\">Votre chaîne YouTube</span>"
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_account_view_form
@@ -56,8 +56,8 @@ msgid ""
 "<span>These are stored up to 30 days and refreshed often to provide you an accurate depiction of reality. </span>\n"
 "                        <span>To delete these from Odoo, simply delete this account.</span>"
 msgstr ""
-"<span>Ceux-ci sont stockés jusqu'à 30 jours et actualisés souvent pour vous fournir une représentation précise de la réalité.</span>\n"
-"<span>Pour les supprimer d'Odoo, supprimez simplement ce compte.</span>²"
+"<span>Ceux-ci sont stockés jusqu'à 30 jours et souvent actualisés pour vous fournir une représentation précise de la réalité.</span>\n"
+"<span>Pour les supprimer d'Odoo, supprimez simplement ce compte.</span>"
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_account_view_form
@@ -104,7 +104,7 @@ msgstr "Auteur de l'image"
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_account_view_form
 msgid "By using our Social YouTube Application, you implicitly agree to the:"
 msgstr ""
-"En utilisant notre Application Social YouTube, vous acceptez implicitement :"
+"En utilisant notre application Social YouTube, vous acceptez implicitement :"
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_account_revoke_youtube_view_form
@@ -114,7 +114,7 @@ msgstr "Annuler"
 #. module: social_youtube
 #: model:social.stream.type,name:social_youtube.stream_type_youtube_channel_videos
 msgid "Channel"
-msgstr "Canal"
+msgstr "Chaîne"
 
 #. module: social_youtube
 #. openerp-web
@@ -131,13 +131,13 @@ msgid ""
 "Comments are marked as 'disabled' for this video. It could have been set as "
 "'private'."
 msgstr ""
-"Les commentaires sont marqués comme 'désactivés' pour cette vidéo. Il aurait"
-" pu être défini comme 'privé'."
+"Les commentaires sont marqués comme 'désactivés' pour cette vidéo. Elle "
+"aurait pu être défini comme 'privée'."
 
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_res_config_settings
 msgid "Config Settings"
-msgstr "Paramètres de config"
+msgstr "Paramètres de configuration"
 
 #. module: social_youtube
 #. openerp-web
@@ -251,7 +251,7 @@ msgstr "J'aime"
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_media__media_type
 msgid "Media Type"
-msgstr "Type de Média"
+msgstr "Type de réseau"
 
 #. module: social_youtube
 #. openerp-web
@@ -295,25 +295,25 @@ msgstr "Veuillez sélectionner un seul compte YouTube à la fois."
 #. module: social_youtube
 #: model:ir.model.fields.selection,name:social_youtube.selection__social_post__youtube_video_privacy__private
 msgid "Private"
-msgstr "Privé"
+msgstr "Privée"
 
 #. module: social_youtube
 #. openerp-web
 #: code:addons/social_youtube/static/src/js/social_youtube_upload_field.js:0
 #, python-format
 msgid "Processing..."
-msgstr "Traitement....."
+msgstr "En cours de traitement....."
 
 #. module: social_youtube
 #: model:ir.model.fields.selection,name:social_youtube.selection__social_post__youtube_video_privacy__public
 msgid "Public"
-msgstr "Public"
+msgstr "Publique"
 
 #. module: social_youtube
 #: code:addons/social_youtube/controllers/main.py:0
 #, python-format
 msgid "Reason:"
-msgstr "Motif:"
+msgstr "Motif :"
 
 #. module: social_youtube
 #: model:ir.model.fields,help:social_youtube.field_social_account__youtube_refresh_token
@@ -332,7 +332,7 @@ msgstr "Révoquer"
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_account_revoke_youtube_view_form
 msgid "Revoke & Delete"
-msgstr "Révoquer et supprimer"
+msgstr "Révoquer & Supprimer"
 
 #. module: social_youtube
 #: code:addons/social_youtube/models/social_account.py:0
@@ -384,17 +384,17 @@ msgstr ""
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_account
 msgid "Social Account"
-msgstr "Compte Social"
+msgstr "Compte social"
 
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_live_post
 msgid "Social Live Post"
-msgstr "Publication en Direct"
+msgstr "Post en direct"
 
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_media
 msgid "Social Media"
-msgstr "Médias sociaux"
+msgstr "Réseaux sociaux"
 
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_post
@@ -404,7 +404,7 @@ msgstr "Publication"
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_post_template
 msgid "Social Post Template"
-msgstr "Modèle de poste social"
+msgstr "Modèle de post social"
 
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_stream
@@ -414,7 +414,7 @@ msgstr "Flux social"
 #. module: social_youtube
 #: model:ir.model,name:social_youtube.model_social_stream_post
 msgid "Social Stream Post"
-msgstr "Publication du Flux Social"
+msgstr "Publication du flux social"
 
 #. module: social_youtube
 #: code:addons/social_youtube/models/social_post.py:0
@@ -482,7 +482,7 @@ msgstr "Inconnu"
 #. module: social_youtube
 #: model:ir.model.fields.selection,name:social_youtube.selection__social_post__youtube_video_privacy__unlisted
 msgid "Unlisted"
-msgstr "Non répertorié "
+msgstr "Non répertoriée"
 
 #. module: social_youtube
 #. openerp-web
@@ -523,8 +523,9 @@ msgid ""
 "Used to make comparisons when we need to restrict some features to a "
 "specific media ('facebook', 'twitter', ...)."
 msgstr ""
-"Utilisé pour établir des comparaisons lorsque l'on doit restreindre "
-"certaines fonctionnalités à un média spécifique (Facebook, Twitter,...) "
+"Utilisé pour faire des comparaisons lorsque nous devons restreindre "
+"certaines fonctionnalités à un réseau spécifique ('facebook', 'twitter', "
+"...)."
 
 #. module: social_youtube
 #: code:addons/social_youtube/models/social_post.py:0
@@ -540,7 +541,7 @@ msgstr "Description de la vidéo"
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_post__youtube_video_privacy
 msgid "Video Privacy"
-msgstr "Confidentialité Vidéo"
+msgstr "Confidentialité vidéo"
 
 #. module: social_youtube
 #: model_terms:ir.ui.view,arch_db:social_youtube.social_post_view_form
@@ -558,8 +559,7 @@ msgstr "Téléchargement de la vidéo"
 #: code:addons/social_youtube/models/social_stream_post.py:0
 #, python-format
 msgid "Video not found. It could have been removed from Youtube."
-msgstr ""
-"Vidéo non trouvée. Il est possible qu'elle ait été retirée de YouTube."
+msgstr "Vidéo non trouvée. Elle a pu être supprimée de Youtube."
 
 #. module: social_youtube
 #. openerp-web
@@ -580,7 +580,7 @@ msgstr "Oui, supprimer"
 #: code:addons/social_youtube/models/social_media.py:0
 #, python-format
 msgid "You don't have an active subscription. Please buy one here: %s"
-msgstr "Vous n'avez pas d'abonnement actif. Veuillez en acheter un ici: %s"
+msgstr "Vous n'avez pas d'abonnement actif. Veuillez en acheter un ici : %s"
 
 #. module: social_youtube
 #: code:addons/social_youtube/models/social_post.py:0
@@ -615,7 +615,7 @@ msgid ""
 "YouTube Channel ID provided by the YouTube API, this should never be set "
 "manually."
 msgstr ""
-"ID de chaîne YouTube fourni par l'API YouTube, cela ne doit jamais être "
+"ID de la chaîne YouTube fourni par l'API YouTube, cela ne doit jamais être "
 "défini manuellement."
 
 #. module: social_youtube
@@ -638,17 +638,17 @@ msgstr "Compte développeur YouTube"
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_stream_post__youtube_dislikes_count
 msgid "YouTube Dislikes"
-msgstr "Dislikes YouTube"
+msgstr "Je n'aime pas YouTube"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_stream_post__youtube_likes_count
 msgid "YouTube Likes"
-msgstr "Likes YouTube"
+msgstr "J'aime YouTube"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_social_stream_post__youtube_likes_ratio
 msgid "YouTube Likes Ratio"
-msgstr "Ratio des likes YouTube"
+msgstr "Ratio des j'aime YouTube"
 
 #. module: social_youtube
 #: model:ir.model.fields,field_description:social_youtube.field_res_config_settings__youtube_oauth_client_id

@@ -99,7 +99,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
             values.each(function( index ) {
               if(parseInt($(this).attr('data-value_id'))/1000 < parseInt($(this).val())){
                     self.state.error_popup_flag = true;
-                    self.error = self.env._t('Giá trị không hợp lệ!')
+                    self.error = self.env._t('Điểm sử dụng không được lớn hơn số điểm quy đổi của sản phẩm!')
                     $(this).css('color', 'red')
               };
             });
@@ -127,6 +127,11 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
                   point: parseInt($(this).val())
               })
             });
+            for(let i=0; i< obj.length; i++){
+                    if(!obj[i].point){
+                        obj[i].point=0
+                    }
+            }
             if(self.state.error_popup_flag) return;
             this.env.posbus.trigger('close-popup', {
                 popupId: this.props.id,

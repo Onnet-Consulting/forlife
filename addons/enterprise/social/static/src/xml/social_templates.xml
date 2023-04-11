@@ -431,7 +431,7 @@
     </t>
 
     <t t-name="social.NewContentRefreshBanner" owl="1">
-        <a class="o_social_stream_post_kanban_new_content alert alert-info mb-0 text-center border-bottom"
+        <a class="o_social_stream_post_kanban_new_content alert alert-info mb-0 text-center border-bottom py-2"
            t-att-class="{'d-none': !props.refreshRequired}" href="#" t-on-click="props.onClickRefresh">
             New content available
             <i class="fa fa-refresh ms-2 me-1"/>

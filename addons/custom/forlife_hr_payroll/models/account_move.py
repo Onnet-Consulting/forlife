@@ -13,7 +13,6 @@ class AccountMove(models.Model):
 class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
-    analytic_account_id = fields.Many2one('account.analytic.account', string='Cost Center')
     project_code = fields.Char(string='Project Code')
     manufacture_order_code = fields.Char(string='Manufacture Order Code')
     internal_order_code = fields.Char(string='Internal Order Code')

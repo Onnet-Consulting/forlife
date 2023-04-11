@@ -10,6 +10,7 @@ const interestingSelector = [
     "widget",
     ".dropdown",
     ".o_dropdown_kanban",
+    ".o_kanban_manage_button_section",
     "img.oe_kanban_avatar",
     ".o_kanban_record_body",
     ".o_kanban_record_bottom",
@@ -119,7 +120,7 @@ export class KanbanEditorCompiler extends KanbanCompiler {
 
     compileNode(node, params) {
         const nodeType = node.nodeType;
-        if (nodeType === 1 && isComponentNode(node)) {
+        if (nodeType === 1 && (isComponentNode(node) || node.getAttribute('studio_no_fetch'))) {
             return;
         }
 
@@ -251,4 +252,13 @@ export class KanbanEditorCompiler extends KanbanCompiler {
         avatarHook.textContent = _lt("Add an avatar");
         parentElement.appendChild(avatarHook);
     }
+
+    /**
+     * In v16, some views use forbidden owl directives (t-on) directly
+     * in the arch. In master, they will be removed. The validation is deactivated
+     * in the js_class used to render those archs, but as in studio we do not use
+     * the js_class, we have to disable the validation in the editor.
+     * @override
+     */
+    validateNode() {}
 }

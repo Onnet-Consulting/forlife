@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record
+			id="view_warehouse_inherit" model="ir.ui.view">
+			<field name="name">view.stock.warehouse</field>
+			<field name="model">stock.warehouse</field>
+			<field name="inherit_id" ref="stock.view_warehouse"/>
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='code']" position="after">
+					<field name="whs_code"/>
+					<field name="whs_type"/>
+					<span class="o_form_label o_td_label" name="address_name"><b>Address</b></span>
+					<div class="o_address_format">
+						<field name="street" placeholder="Street..." class="o_address_street" />
+						<field name="street2" placeholder="Street 2..." class="o_address_street" />
+						<field name="city" placeholder="City" class="o_address_city"/>
+						<field name="state_id" class="o_address_state" placeholder="State" options="{'no_open': True, 'no_quick_create': True}" />
+						<div name="partner_address_country" class="d-flex justify-content-between">
+							<field name="country_id" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" />
+						</div>
+					</div>
+				</xpath>
+				<xpath expr="//field[@name='partner_id']" position="after">
+					<field name="whs_latitude"/>
+					<field name="whs_longitude"/>
+					<field name="note"/>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</odoo>

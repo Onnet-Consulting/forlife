@@ -5,6 +5,7 @@
 # Translators:
 # Martin Trigaux, 2022
 # Cécile Collart <cco@odoo.com>, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
@@ -12,7 +13,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-11 15:05+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
-"Last-Translator: Cécile Collart <cco@odoo.com>, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,12 +24,12 @@ msgstr ""
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
 msgid "Accept payments with a Worldline payment terminal"
-msgstr "Acceptez les paiements avec un terminal de paiement Worldline"
+msgstr "Accepter les paiements avec un terminal de paiement Worldline"
 
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.res_config_view_form_inherit_pos_iot
 msgid "Accept payments with an Ingenico payment terminal"
-msgstr "Acceptez des paiements avec un terminal de paiement Ingenico"
+msgstr "Accepter des paiements avec un terminal de paiement Ingenico"
 
 #. module: pos_iot
 #. openerp-web
@@ -54,7 +55,7 @@ msgstr "Montant :"
 #. module: pos_iot
 #: model_terms:ir.ui.view,arch_db:pos_iot.pos_iot_config_view_form
 msgid "Barcode Scanners/Card Readers"
-msgstr "Lecteurs de codes à barres/Lecteurs de cartes"
+msgstr "Lecteurs de codes-barres/Lecteurs de cartes"
 
 #. module: pos_iot
 #: model:ir.model.fields,help:pos_iot.field_pos_config__iface_print_via_proxy
@@ -73,7 +74,7 @@ msgstr "Tiroir-caisse"
 #: code:addons/pos_iot/static/src/xml/IoTErrorPopup.xml:0
 #, python-format
 msgid "Click on Advanced/Show Details/Details/More information"
-msgstr "Cliquez sur Avancé/Afficher les détails/Détails/Plus d'information"
+msgstr "Cliquez sur Avancé/Afficher les détails/Détails/Plus d'informations"
 
 #. module: pos_iot
 #. openerp-web
@@ -83,8 +84,8 @@ msgid ""
 "Click on Proceed to .../Add Exception/Visit this website/Go on to the "
 "webpage"
 msgstr ""
-"Clicker sur procédé à .../ajouter Exception/ visiter ce site web/ continuer "
-"sur le page web"
+"Cliquer sur Procéder à .../Ajouter exception/Visiter ce site web/Continuer "
+"sur la page web"
 
 #. module: pos_iot
 #. openerp-web
@@ -96,7 +97,7 @@ msgstr "Fermez cette fenêtre et réessayez"
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_res_config_settings
 msgid "Config Settings"
-msgstr "Paramètres de config"
+msgstr "Paramètres de configuration"
 
 #. module: pos_iot
 #. openerp-web
@@ -162,7 +163,7 @@ msgid ""
 "Enable barcode scanning with a remotely connected barcode scanner and card "
 "swiping with a Vantiv card reader."
 msgstr ""
-"Permet d'activer la lecture des code-barres depuis un lecteur connecté à "
+"Permet d'activer la lecture de codes-barres depuis un lecteur connecté à "
 "distance et le glissement de cartes avec un lecteur de cartes Vantiv."
 
 #. module: pos_iot
@@ -257,7 +258,7 @@ msgstr ""
 #: code:addons/pos_iot/static/src/xml/LastTransactionStatus.xml:0
 #, python-format
 msgid "Last Transaction Status"
-msgstr "État de la dernière transaction"
+msgstr "Statut de la dernière transaction"
 
 #. module: pos_iot
 #. openerp-web
@@ -314,8 +315,8 @@ msgid ""
 "Please check the network connection and then check the status of the last "
 "transaction manually."
 msgstr ""
-"Veuillez vérifier la connexion réseau, puis vérifier manuellement l'état de "
-"la dernière transaction."
+"Veuillez vérifier la connexion réseau, puis vérifier manuellement le statut "
+"de la dernière transaction."
 
 #. module: pos_iot
 #. openerp-web
@@ -327,12 +328,12 @@ msgstr "Veuillez traiter ou annuler la transaction en cours."
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_config
 msgid "Point of Sale Configuration"
-msgstr "Paramétrage du point de vente"
+msgstr "Configuration du point de vente"
 
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_payment_method
 msgid "Point of Sale Payment Methods"
-msgstr "Modes de paiement au point de vente"
+msgstr "Modes de paiement du point de vente"
 
 #. module: pos_iot
 #: model:ir.model,name:pos_iot.model_pos_session
@@ -352,7 +353,7 @@ msgstr "Imprimante de reçu"
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_pos_config__iface_scan_via_proxy
 msgid "Scan via Proxy"
-msgstr "Scan via Proxy"
+msgstr "Scanner via Proxy"
 
 #. module: pos_iot
 #: model:ir.model.fields,help:pos_iot.field_pos_config__iface_customer_facing_display_via_proxy
@@ -366,7 +367,7 @@ msgstr ""
 #: code:addons/pos_iot/static/src/js/payment.js:0
 #, python-format
 msgid "Terminal Disconnected"
-msgstr "Terminé déconnecté"
+msgstr "Terminal déconnecté"
 
 #. module: pos_iot
 #. openerp-web
@@ -391,7 +392,7 @@ msgid ""
 "The transactions are processed by Worldline. Set your Worldline device on "
 "the related payment method."
 msgstr ""
-"Les transactions sont traitées par Worldline. Paramétrez votre appareil "
+"Les transactions sont traitées par Worldline. Configurez votre appareil "
 "Worldline sur le mode de paiement associé."
 
 #. module: pos_iot
@@ -425,7 +426,7 @@ msgstr "Worldline"
 #: code:addons/pos_iot/static/src/xml/LastTransactionStatus.xml:0
 #, python-format
 msgid "Worldline - Last Transaction Status"
-msgstr "Worldline - État de la dernière transaction"
+msgstr "Worldline - Statut de la dernière transaction"
 
 #. module: pos_iot
 #: model:ir.model.fields,field_description:pos_iot.field_res_config_settings__worldline_payment_terminal

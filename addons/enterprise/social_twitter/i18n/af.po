@@ -137,7 +137,7 @@ msgstr "Geskep op"
 #. module: social_twitter
 #: model:ir.model.fields,field_description:social_twitter.field_social_twitter_account__description
 msgid "Description"
-msgstr ""
+msgstr "Beskrywing"
 
 #. module: social_twitter
 #: model:ir.model.fields,field_description:social_twitter.field_social_twitter_account__display_name
@@ -241,7 +241,7 @@ msgstr ""
 #. module: social_twitter
 #: model:ir.model.fields,field_description:social_twitter.field_social_twitter_account__name
 msgid "Name"
-msgstr ""
+msgstr "Naam"
 
 #. module: social_twitter
 #: code:addons/social_twitter/models/social_stream.py:0

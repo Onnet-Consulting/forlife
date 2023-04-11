@@ -3,8 +3,8 @@
 # 	* hr_payroll_holidays
 # 
 # Translators:
-# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2022
 # Martin Trigaux, 2022
+# Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2022
 # 
 msgid ""
 msgstr ""
@@ -12,7 +12,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:22+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: Martin Trigaux, 2022\n"
+"Last-Translator: Alina Lisnenko <alina.lisnenko@erp.co.ua>, 2022\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -73,7 +73,7 @@ msgstr "Відпустка на вікладення"
 #. module: hr_payroll_holidays
 #: model:ir.actions.server,name:hr_payroll_holidays.ir_actions_server_mark_as_reported
 msgid "Mark as deferred"
-msgstr ""
+msgstr "Позначити як відкладений"
 
 #. module: hr_payroll_holidays
 #: model_terms:ir.actions.act_window,help:hr_payroll_holidays.hr_leave_work_entry_action
@@ -87,6 +87,8 @@ msgid ""
 "Not enough attendance work entries to report the time off %s. Please make "
 "the operation manually"
 msgstr ""
+"Недостатньо записів про відвідування, щоб повідомити про відпустку %s. Будь "
+"ласка, виконайте операцію вручну"
 
 #. module: hr_payroll_holidays
 #: code:addons/hr_payroll_holidays/models/hr_leave.py:0
@@ -108,7 +110,7 @@ msgstr "Статус розрахункового листа"
 #: code:addons/hr_payroll_holidays/models/hr_leave.py:0
 #, python-format
 msgid "Please create manually the work entry for %s"
-msgstr ""
+msgstr "Будь ласка, створіть вручну робочий запис для %s"
 
 #. module: hr_payroll_holidays
 #: model_terms:ir.ui.view,arch_db:hr_payroll_holidays.res_config_settings_view_form
@@ -184,13 +186,13 @@ msgstr "Відпустка"
 #: code:addons/hr_payroll_holidays/models/hr_payslip.py:0
 #, python-format
 msgid "Time Off To Defer"
-msgstr ""
+msgstr "Відпустка для відкладення"
 
 #. module: hr_payroll_holidays
 #: code:addons/hr_payroll_holidays/models/hr_payslip.py:0
 #, python-format
 msgid "Time Off Without Joined Document"
-msgstr ""
+msgstr "Відпустка без доданого документу"
 
 #. module: hr_payroll_holidays
 #: model:ir.actions.act_window,name:hr_payroll_holidays.hr_leave_action_open_to_defer

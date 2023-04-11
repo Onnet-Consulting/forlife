@@ -9,7 +9,7 @@
 # Michal Veselý <michal@veselyberanek.net>, 2022
 # karolína schusterová <karolina.schusterova@vdp.sk>, 2022
 # Martin Trigaux, 2022
-# trendspotter <jirka.p@volny.cz>, 2022
+# Jiří Podhorecký, 2023
 # 
 msgid ""
 msgstr ""
@@ -17,7 +17,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-23 08:24+0000\n"
 "PO-Revision-Date: 2022-09-22 05:47+0000\n"
-"Last-Translator: trendspotter <jirka.p@volny.cz>, 2022\n"
+"Last-Translator: Jiří Podhorecký, 2023\n"
 "Language-Team: Czech (https://www.transifex.com/odoo/teams/41243/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -103,7 +103,7 @@ msgstr ""
 #. module: industry_fsm_sale
 #: model_terms:ir.ui.view,arch_db:industry_fsm_sale.product_search_form_view_inherit_fsm_sale
 msgid "Added Products"
-msgstr ""
+msgstr "Přidané produkty"
 
 #. module: industry_fsm_sale
 #: model_terms:ir.ui.view,arch_db:industry_fsm_sale.worksheet_time_and_material
@@ -113,13 +113,13 @@ msgstr "Částka"
 #. module: industry_fsm_sale
 #: model:ir.model.constraint,message:industry_fsm_sale.constraint_project_project_fsm_imply_task_rate
 msgid "An FSM project must be billed at task rate or employee rate."
-msgstr ""
+msgstr "Projekt FSM musí být účtován podle úkolové nebo zaměstnanecké sazby."
 
 #. module: industry_fsm_sale
 #: code:addons/industry_fsm_sale/wizard/sale_make_invoice_advance.py:0
 #, python-format
 msgid "An invoice has been created: %s"
-msgstr ""
+msgstr "Faktura byla vytvořena: %s"
 
 #. module: industry_fsm_sale
 #: model:ir.model,name:industry_fsm_sale.model_account_analytic_line
@@ -150,7 +150,7 @@ msgstr ""
 #: code:addons/industry_fsm_sale/models/project_task.py:0
 #, python-format
 msgid "Choose Products"
-msgstr ""
+msgstr "Vyberte produkty"
 
 #. module: industry_fsm_sale
 #. openerp-web
@@ -160,6 +160,8 @@ msgid ""
 "Choose a <b>name</b> for your product <i>(e.g. Bolts, Screws, Boiler, "
 "etc.).</i>"
 msgstr ""
+"Vyberte <b>název</b> pro svůj produkt <i>(např. šrouby, vruty, kotel "
+"atd.).</i>"
 
 #. module: industry_fsm_sale
 #. openerp-web
@@ -169,6 +171,8 @@ msgid ""
 "Click on your product to add it to your <b>list of materials</b>. <i>Tip: "
 "for large quantities, click on the number to edit it directly.</i>"
 msgstr ""
+"Kliknutím na svůj produkt jej přidáte do <b>seznamu materiálů</b>. <i>Tip: V"
+" případě velkého množství klikněte na číslo a přímo jej upravte.</i>"
 
 #. module: industry_fsm_sale
 #: model:ir.model,name:industry_fsm_sale.model_res_config_settings
@@ -180,7 +184,7 @@ msgstr "Nastavení konfigurace"
 #: code:addons/industry_fsm_sale/static/src/js/tours/industry_fsm_sale_tour.js:0
 #, python-format
 msgid "Confirm the creation of your <b>invoice</b>."
-msgstr ""
+msgstr "Potvrďte vytvoření vaší <b>faktury</b>."
 
 #. module: industry_fsm_sale
 #: model_terms:ir.ui.view,arch_db:industry_fsm_sale.project_task_view_list_fsm_sale_inherit
@@ -191,7 +195,7 @@ msgstr "Vytvořit fakturu"
 #. module: industry_fsm_sale
 #: model_terms:ir.ui.view,arch_db:industry_fsm_sale.view_task_form2_inherit
 msgid "Create new quotation"
-msgstr ""
+msgstr "Vytvořit novou nabídku"
 
 #. module: industry_fsm_sale
 #: model_terms:ir.ui.view,arch_db:industry_fsm_sale.project_view_form_inherit
@@ -206,12 +210,12 @@ msgstr "Měna"
 #. module: industry_fsm_sale
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_sale_order_line__delivered_price_subtotal
 msgid "Delivered Subtotal"
-msgstr ""
+msgstr "Dodaný mezisoučet"
 
 #. module: industry_fsm_sale
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_sale_order_line__delivered_price_total
 msgid "Delivered Total"
-msgstr ""
+msgstr "Dodaný součet"
 
 #. module: industry_fsm_sale
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_sale_order_line__delivered_price_tax
@@ -226,7 +230,7 @@ msgstr "Popis"
 #. module: industry_fsm_sale
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_project_task__display_create_invoice_primary
 msgid "Display Create Invoice Primary"
-msgstr ""
+msgstr "Zobrazit Vytvoření faktury Primární"
 
 #. module: industry_fsm_sale
 #: model:ir.model.fields,field_description:industry_fsm_sale.field_project_task__display_create_invoice_secondary
@@ -290,6 +294,18 @@ msgstr "Hodiny"
 #: model:project.task.type,legend_normal:industry_fsm_sale.field_service_project_stage_0
 msgid "In Progress"
 msgstr "Probíhá"
+
+#. module: industry_fsm_sale
+#: code:addons/industry_fsm_sale/models/product_product.py:0
+#, python-format
+msgid "Invalid operator: %s"
+msgstr ""
+
+#. module: industry_fsm_sale
+#: code:addons/industry_fsm_sale/models/product_product.py:0
+#, python-format
+msgid "Invalid value: %s"
+msgstr ""
 
 #. module: industry_fsm_sale
 #: code:addons/industry_fsm_sale/models/project_task.py:0

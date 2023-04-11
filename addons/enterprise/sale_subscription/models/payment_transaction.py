@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import api, fields, models, Command
 
 
 class PaymentTransaction(models.Model):
@@ -21,9 +21,22 @@ class PaymentTransaction(models.Model):
         res = super()._reconcile_after_done()
         tx_to_invoice = self.env['payment.transaction']
         for tx in self:
-            if tx.sale_order_ids.filtered(lambda so: so.state in ('sale', 'done') and so.is_subscription) and not tx.invoice_ids:
+            if not tx.sale_order_ids.filtered(lambda so: so.state in ('sale', 'done') and so.is_subscription):
+                continue
+            draft_invoices = tx.sale_order_ids.order_line.invoice_lines.move_id.filtered(lambda am: am.state == 'draft')
+            # if we have a draft invoice corresponding to the same period, we don't invoice the SO
+            if draft_invoices:
+                invoicing_start = max(
+                    [l.subscription_start_date for l in draft_invoices.invoice_line_ids if l.subscription_start_date])
+                next_invoice_dates = tx.sale_order_ids.mapped('next_invoice_date')
+                if len(next_invoice_dates) == 1 and invoicing_start == next_invoice_dates[0]:
+                    # The next invoice date of the SO is not yet incremented, the nid should be equal to the
+                    # started invoicing period
+                    tx.invoice_ids = [Command.set(draft_invoices.ids)]
+            if not tx.invoice_ids:
                 tx_to_invoice |= tx
         tx_to_invoice._invoice_sale_orders()
+        tx_to_invoice.invoice_ids.filtered(lambda inv: inv.state == 'draft')._post()
         tx_to_invoice._send_invoice()
         return res
 
@@ -58,5 +71,5 @@ class PaymentTransaction(models.Model):
         # We have to do it here because when a client confirms and pay a SO from the portal with success_payment
         # The next_invoice_date won't be update by the reconcile_pending_transaction callback (do_payment is not called)
         # Create invoice
-        res = super(PaymentTransaction, transaction_to_invoice.with_context(subscription_force_next_invoice_date=True))._invoice_sale_orders()
+        res = super(PaymentTransaction, transaction_to_invoice)._invoice_sale_orders()
         return res

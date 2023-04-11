@@ -72,6 +72,24 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         })
         self.assertEqual(st_line._retrieve_partner(), self.env['res.partner'])
 
+    def test_retrieve_partner_from_partner_name(self):
+        """ Ensure the partner having a name fitting exactly the 'partner_name' is retrieved first.
+        This test create two partners that will be ordered in the lexicographic order when performing
+        a search. So:
+        row1: "Turlututu tsoin tsoin"
+        row2: "turlututu"
+
+        Since "turlututu" matches exactly (case insensitive) the partner_name of the statement line,
+        it should be suggested first.
+        """
+        _partner_a, partner_b = self.env['res.partner'].create([
+            {'name': "Turlututu tsoin tsoin"},
+            {'name': "turlututu"},
+        ])
+
+        st_line = self._create_st_line(1000.0, partner_id=None, partner_name="Turlututu")
+        self.assertEqual(st_line._retrieve_partner(), partner_b)
+
     def test_validation_new_aml_same_foreign_currency(self):
         income_exchange_account = self.env.company.income_currency_exchange_account_id
 
@@ -103,7 +121,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         # The amount is the same, no message under the 'amount' field.
         self.assert_form_extra_text_value(wizard.form_extra_text, False)
 
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         self.assertRecordValues(st_line.line_ids, [
             # pylint: disable=C0326
             {'account_id': st_line.journal_id.default_account_id.id,    'amount_currency': 1200.0,      'currency_id': self.company_data['currency'].id,    'balance': 1200.0,  'reconciled': False},
@@ -184,7 +202,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         self.assertRecordValues(wizard, [{'state': 'valid'}])
 
         # Reconcile
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         self.assertRecordValues(st_line.line_ids, [
             # pylint: disable=C0326
             {'account_id': st_line.journal_id.default_account_id.id,    'amount_currency': 1200.0,      'currency_id': self.company_data['currency'].id,    'balance': 1200.0,  'reconciled': False},
@@ -227,7 +245,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         # The amount is the same, no message under the 'amount' field.
         self.assert_form_extra_text_value(wizard.form_extra_text, False)
 
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         self.assertRecordValues(st_line.line_ids, [
             # pylint: disable=C0326
             {'account_id': st_line.journal_id.default_account_id.id,    'amount_currency': 1200.0,      'currency_id': self.company_data['currency'].id,    'balance': 1200.0,  'reconciled': False},
@@ -307,7 +325,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         self.assertRecordValues(wizard, [{'state': 'valid'}])
 
         # Reconcile
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         self.assertRecordValues(st_line.line_ids, [
             # pylint: disable=C0326
             {'account_id': st_line.journal_id.default_account_id.id,    'amount_currency': 1200.0,      'currency_id': self.company_data['currency'].id,    'balance': 1200.0,  'reconciled': False},
@@ -349,7 +367,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         # The amount is the same, no message under the 'amount' field.
         self.assert_form_extra_text_value(wizard.form_extra_text, False)
 
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         self.assertRecordValues(st_line.line_ids, [
             # pylint: disable=C0326
             {'account_id': st_line.journal_id.default_account_id.id,    'amount_currency': 1200.0,      'currency_id': self.company_data['currency'].id,    'balance': 1200.0,  'reconciled': False},
@@ -430,7 +448,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         self.assertRecordValues(wizard, [{'state': 'valid'}])
 
         # Reconcile
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         self.assertRecordValues(st_line.line_ids, [
             # pylint: disable=C0326
             {'account_id': st_line.journal_id.default_account_id.id,    'amount_currency': 1200.0,      'currency_id': self.company_data['currency'].id,    'balance': 1200.0,  'reconciled': False},
@@ -471,7 +489,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         # The amount is the same, no message under the 'amount' field.
         self.assert_form_extra_text_value(wizard.form_extra_text, False)
 
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         self.assertRecordValues(st_line.line_ids, [
             # pylint: disable=C0326
             {'account_id': st_line.journal_id.default_account_id.id,    'amount_currency': 1800.0,      'currency_id': self.company_data['currency'].id,    'balance': 1800.0,  'reconciled': False},
@@ -549,7 +567,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         self.assertRecordValues(wizard, [{'state': 'valid'}])
 
         # Reconcile
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         self.assertRecordValues(st_line.line_ids, [
             # pylint: disable=C0326
             {'account_id': st_line.journal_id.default_account_id.id,    'amount_currency': 1800.0,      'currency_id': self.company_data['currency'].id,    'balance': 1800.0,  'reconciled': False},
@@ -561,6 +579,69 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
             'amount_residual': 10800.0,
         }])
 
+    def test_validation_new_aml_multi_currencies_exchange_diff_custom_rates(self):
+        self.company_data['default_journal_bank'].currency_id = self.currency_data['currency']
+
+        self.env['res.currency.rate'].create([
+            {
+                'name': '2017-02-01',
+                'rate': 1.0683,
+                'currency_id': self.currency_data['currency'].id,
+                'company_id': self.env.company.id,
+            },
+            {
+                'name': '2017-03-01',
+                'rate': 1.0812,
+                'currency_id': self.currency_data['currency'].id,
+                'company_id': self.env.company.id,
+            },
+        ])
+
+        # 960.14 curr1 = 888.03 comp_curr
+        st_line = self._create_st_line(
+            -960.14,
+            date='2017-03-01',
+        )
+        # 112.7 curr1 == 105.49 comp_curr
+        inv_line1 = self._create_invoice_line(
+            'in_invoice',
+            currency_id=self.currency_data['currency'],
+            invoice_date='2017-02-01',
+            invoice_line_ids=[{'price_unit': 112.7}],
+        )
+        # 847.44 curr1 == 793.26 comp_curr
+        inv_line2 = self._create_invoice_line(
+            'in_invoice',
+            currency_id=self.currency_data['currency'],
+            invoice_date='2017-02-01',
+            invoice_line_ids=[{'price_unit': 847.44}],
+        )
+
+        wizard = self.env['bank.rec.widget'].with_context(default_st_line_id=st_line.id).new({})
+        wizard._action_add_new_amls(inv_line1)
+        wizard._action_add_new_amls(inv_line2)
+
+        self.assertRecordValues(wizard.line_ids, [
+            # pylint: disable=C0326
+            {'flag': 'liquidity',       'amount_currency': -960.14,     'balance': -888.03},
+            {'flag': 'new_aml',         'amount_currency': 112.7,       'balance': 105.49},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -1.25},
+            {'flag': 'new_aml',         'amount_currency': 847.44,      'balance': 793.26},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -9.47},
+        ])
+        wizard._action_remove_new_amls(inv_line1 + inv_line2)
+        wizard._action_add_new_amls(inv_line2)
+        wizard._action_add_new_amls(inv_line1)
+
+        self.assertRecordValues(wizard.line_ids, [
+            # pylint: disable=C0326
+            {'flag': 'liquidity',       'amount_currency': -960.14,     'balance': -888.03},
+            {'flag': 'new_aml',         'amount_currency': 847.44,      'balance': 793.26},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -9.47},
+            {'flag': 'new_aml',         'amount_currency': 112.7,       'balance': 105.49},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -1.25},
+        ])
+
     def test_validation_with_partner(self):
         partner = self.partner_a.copy()
 
@@ -571,7 +652,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         self.assertRecordValues(wizard, [{'state': 'valid'}])
 
         # Validate and check the statement line.
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         self.assertRecordValues(st_line, [{'partner_id': self.partner_a.id}])
         liquidity_line, _suspense_line, other_line = st_line._seek_for_lines()
         account = self.partner_a.property_account_receivable_id
@@ -590,8 +671,8 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
             invoice_line_ids=[{'price_unit': 1000.0}],
         )
         wizard._action_add_new_amls(inv_line)
-        wizard.button_validate(async_action=False)
-        liquidity_line, _suspense_line, other_line = st_line._seek_for_lines()
+        wizard.button_validate()
+        liquidity_line, suspense_line, other_line = st_line._seek_for_lines()
         self.assertRecordValues(st_line, [{'partner_id': partner.id}])
         self.assertRecordValues(liquidity_line + other_line, [
             # pylint: disable=C0326
@@ -615,7 +696,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
             invoice_line_ids=[{'price_unit': 300.0}],
         )
         wizard._action_add_new_amls(inv_line1 + inv_line2)
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         liquidity_line, _suspense_line, other_line = st_line._seek_for_lines()
         self.assertRecordValues(st_line, [{'partner_id': False}])
         self.assertRecordValues(liquidity_line + other_line, [
@@ -626,6 +707,18 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
             {'account_id': account.id,                      'partner_id': False,        'balance': -400.0},
         ])
         self.assertRecordValues(wizard, [{'state': 'reconciled'}])
+
+        # Clear the accounts set on the partner and reset the widget.
+        # The wizard should be invalid since we are not able to set an open balance.
+        partner.property_account_receivable_id = None
+        wizard.button_reset()
+        liquidity_line, suspense_line, other_line = st_line._seek_for_lines()
+        self.assertRecordValues(wizard.line_ids, [
+            # pylint: disable=C0326
+            {'flag': 'liquidity',       'account_id': liquidity_line.account_id.id},
+            {'flag': 'auto_balance',    'account_id': suspense_line.account_id.id},
+        ])
+        self.assertRecordValues(wizard, [{'state': 'invalid'}])
 
     def test_validation_using_custom_account(self):
         st_line = self._create_st_line(1000.0)
@@ -663,7 +756,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         self.assertRecordValues(wizard, [{'state': 'valid'}])
 
         # Validate and check the statement line.
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         liquidity_line, _suspense_line, other_line = st_line._seek_for_lines()
         self.assertRecordValues(liquidity_line + other_line, [
             # pylint: disable=C0326
@@ -864,7 +957,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         self.assertRecordValues(wizard, [{'state': 'valid'}])
 
         # Validate and check the statement line.
-        wizard.button_validate(async_action=False)
+        wizard.button_validate()
         self.assertRecordValues(st_line.line_ids, [
             # pylint: disable=C0326
             {'balance': 1000.0},
@@ -970,8 +1063,12 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
 
     def test_auto_reconcile_cron(self):
         self.env['account.reconcile.model'].search([('company_id', '=', self.company_data['company'].id)]).unlink()
+        cron = self.env.ref('account_accountant.auto_reconcile_bank_statement_line')
+        self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)]).unlink()
 
         st_line = self._create_st_line(1234.0, partner_id=self.partner_a.id, date='2017-01-01')
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 1)
+
         self._create_invoice_line(
             'out_invoice',
             invoice_date='2017-01-01',
@@ -989,6 +1086,7 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         with freeze_time('2017-01-01'):
             self.env['account.bank.statement.line']._cron_try_auto_reconcile_statement_lines()
         self.assertRecordValues(st_line, [{'is_reconciled': False, 'cron_last_check': False}])
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 1)
 
         rule.auto_reconcile = True
 
@@ -996,19 +1094,23 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
         with freeze_time('2017-06-01'):
             self.env['account.bank.statement.line']._cron_try_auto_reconcile_statement_lines()
         self.assertRecordValues(st_line, [{'is_reconciled': False, 'cron_last_check': False}])
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 1)
 
         # The CRON will auto-reconcile the line.
         with freeze_time('2017-01-02'):
             self.env['account.bank.statement.line']._cron_try_auto_reconcile_statement_lines()
         self.assertRecordValues(st_line, [{'is_reconciled': True, 'cron_last_check': fields.Datetime.from_string('2017-01-02 00:00:00')}])
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 1)
 
         st_line1 = self._create_st_line(1234.0, partner_id=self.partner_a.id, date='2018-01-01')
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 2)
         self._create_invoice_line(
             'out_invoice',
             invoice_date='2018-01-01',
             invoice_line_ids=[{'price_unit': 1234.0}],
         )
         st_line2 = self._create_st_line(1234.0, partner_id=self.partner_a.id, date='2018-01-01')
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 3)
         self._create_invoice_line(
             'out_invoice',
             invoice_date='2018-01-01',
@@ -1027,11 +1129,40 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
             {'is_reconciled': False, 'cron_last_check': fields.Datetime.from_string('2017-12-31 00:00:00')},
             {'is_reconciled': True, 'cron_last_check': fields.Datetime.from_string('2018-01-02 00:00:00')},
         ])
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 4)
 
         with freeze_time('2018-01-03'):
             self.env['account.bank.statement.line']._cron_try_auto_reconcile_statement_lines(batch_size=1)
 
         self.assertRecordValues(st_line1, [{'is_reconciled': True, 'cron_last_check': fields.Datetime.from_string('2018-01-03 00:00:00')}])
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 4)
+
+        st_line3 = self._create_st_line(1234.0, date='2018-01-01')
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 5)
+        self._create_invoice_line(
+            'out_invoice',
+            invoice_date='2018-01-01',
+            invoice_line_ids=[{'price_unit': 1234.0}],
+        )
+        st_line4 = self._create_st_line(1234.0, date='2018-01-01')
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 6)
+        self._create_invoice_line(
+            'out_invoice',
+            invoice_date='2018-01-01',
+            invoice_line_ids=[{'price_unit': 1234.0}],
+        )
+
+        # Make sure the CRON is no longer applicable.
+        rule.match_partner = True
+        rule.match_partner_ids = [Command.set(self.partner_a.ids)]
+        with freeze_time('2018-01-01'):
+            self.env['account.bank.statement.line']._cron_try_auto_reconcile_statement_lines(batch_size=1)
+
+        self.assertRecordValues(st_line3 + st_line4, [
+            {'is_reconciled': False, 'cron_last_check': fields.Datetime.from_string('2018-01-01 00:00:00')},
+            {'is_reconciled': False, 'cron_last_check': False},
+        ])
+        self.assertEqual(len(self.env['ir.cron.trigger'].search([('cron_id', '=', cron.id)])), 7)
 
     def test_duplicate_amls_constraint(self):
         st_line = self._create_st_line(1000.0)
@@ -1227,14 +1358,14 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
             # pylint: disable=C0326
             {'flag': 'liquidity',       'amount_currency': 4095.0,      'balance': 4095.0,      'account_id': liquidity_acc.id},
             {'flag': 'new_aml',         'amount_currency': -1656.0,     'balance': -276.0,      'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -3312.0,     'balance': -552.0,      'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -6624.0,     'balance': -1104.0,     'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -4968.0,     'balance': -828.0,      'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -165.6,      'balance': -41.4,       'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -138.05,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -3312.0,     'balance': -552.0,      'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -276.11,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -6624.0,     'balance': -1104.0,     'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -552.22,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -4968.0,     'balance': -828.0,      'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -414.16,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -165.6,      'balance': -41.4,       'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -0.01,       'account_id': income_exchange_account.id},
             {'flag': 'auto_balance',    'amount_currency': 347.76,      'balance': 86.95,       'account_id': suspense_acc.id},
         ])
@@ -1245,16 +1376,16 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
             # pylint: disable=C0326
             {'flag': 'liquidity',       'amount_currency': 4095.0,      'balance': 4095.0,      'account_id': liquidity_acc.id},
             {'flag': 'new_aml',         'amount_currency': -1656.0,     'balance': -276.0,      'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -3312.0,     'balance': -552.0,      'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -6624.0,     'balance': -1104.0,     'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -4968.0,     'balance': -828.0,      'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -165.6,      'balance': -41.4,       'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -331.2,      'balance': -82.8,       'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -138.05,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -3312.0,     'balance': -552.0,      'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -276.11,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -6624.0,     'balance': -1104.0,     'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -552.22,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -4968.0,     'balance': -828.0,      'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -414.16,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -165.6,      'balance': -41.4,       'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -0.01,       'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -331.2,      'balance': -82.8,       'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -0.01,       'account_id': income_exchange_account.id},
             {'flag': 'early_payment',   'amount_currency': 590.4,       'balance': 99.6,        'account_id': early_pay_acc.id},
             {'flag': 'early_payment',   'amount_currency': 88.56,       'balance': 14.94,       'account_id': tax_acc.id},
@@ -1409,16 +1540,16 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
             # pylint: disable=C0326
             {'flag': 'liquidity',       'amount_currency': 4110.0,      'balance': 4110.0,      'account_id': liquidity_acc.id},
             {'flag': 'new_aml',         'amount_currency': -1656.0,     'balance': -276.0,      'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -3312.0,     'balance': -552.0,      'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -6624.0,     'balance': -1104.0,     'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -4968.0,     'balance': -828.0,      'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -165.6,      'balance': -41.4,       'account_id': receivable_acc.id},
-            {'flag': 'new_aml',         'amount_currency': -331.2,      'balance': -82.8,       'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -137.34,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -3312.0,     'balance': -552.0,      'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -274.67,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -6624.0,     'balance': -1104.0,     'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -549.34,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -4968.0,     'balance': -828.0,      'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -412.01,     'account_id': income_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -165.6,      'balance': -41.4,       'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': 0.07,        'account_id': expense_exchange_account.id},
+            {'flag': 'new_aml',         'amount_currency': -331.2,      'balance': -82.8,       'account_id': receivable_acc.id},
             {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': 0.13,        'account_id': expense_exchange_account.id},
             {'flag': 'early_payment',   'amount_currency': 590.4,       'balance': 99.6,        'account_id': early_pay_acc.id},
             {'flag': 'early_payment',   'amount_currency': 0.0,         'balance': 47.76,       'account_id': foreign_exch_acc.id},
@@ -1570,15 +1701,125 @@ class TestBankRecWidget(TestBankRecWidgetCommon):
             # pylint: disable=C0326
             {'flag': 'liquidity',       'amount_currency': 4088.79,     'balance': 4088.79,    'account_id': liquidity_acc.id},
             {'flag': 'new_aml',         'amount_currency': -1645.2,     'balance': -274.2,     'account_id': receivable_acc.id},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -137.1,     'account_id': income_exchange_account.id},
             {'flag': 'new_aml',         'amount_currency': -3290.4,     'balance': -548.4,     'account_id': receivable_acc.id},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -274.2,     'account_id': income_exchange_account.id},
             {'flag': 'new_aml',         'amount_currency': -6580.8,     'balance': -1096.8,    'account_id': receivable_acc.id},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -548.4,     'account_id': income_exchange_account.id},
             {'flag': 'new_aml',         'amount_currency': -4935.6,     'balance': -822.6,     'account_id': receivable_acc.id},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -411.3,     'account_id': income_exchange_account.id},
             {'flag': 'new_aml',         'amount_currency': -164.52,     'balance': -41.13,     'account_id': receivable_acc.id},
             {'flag': 'new_aml',         'amount_currency': -329.04,     'balance': -82.26,     'account_id': receivable_acc.id},
-            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -137.1,     'account_id': income_exchange_account.id},
-            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -274.2,     'account_id': income_exchange_account.id},
-            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -548.4,     'account_id': income_exchange_account.id},
-            {'flag': 'exchange_diff',   'amount_currency': 0.0,         'balance': -411.3,     'account_id': income_exchange_account.id},
             {'flag': 'early_payment',   'amount_currency': 590.40,      'balance': 99.6,       'account_id': early_pay_acc.id},
             {'flag': 'early_payment',   'amount_currency': 0.0,         'balance': 48.00,      'account_id': foreign_exch_acc.id},
+        ])
+
+    def test_multi_currencies_with_custom_rate(self):
+        self.company_data['default_journal_bank'].currency_id = self.currency_data['currency']
+        st_line = self._create_st_line(1200.0) # rate 1:2
+        self.assertRecordValues(st_line.move_id.line_ids, [
+            # pylint: disable=C0326
+            {'amount_currency': 1200.0,     'balance': 600.0},
+            {'amount_currency': -1200.0,    'balance': -600.0},
+        ])
+
+        # invoice with currency_data and rate 1:2
+        invoice_line1 = self._create_invoice_line(
+            'out_invoice',
+            currency_id=self.currency_data['currency'],
+            invoice_date='2017-01-01',
+            invoice_line_ids=[{'price_unit': 300.0}], # = 150 USD
+        )
+
+        # Remove all rates.
+        self.currency_data['rates'].unlink()
+
+        wizard = self.env['bank.rec.widget'].with_context(default_st_line_id=st_line.id).new({})
+        self.assertRecordValues(wizard.line_ids, [
+            # pylint: disable=C0326
+            {'flag': 'liquidity',       'amount_currency': 1200.0,  'balance': 600.0},
+            {'flag': 'auto_balance',    'amount_currency': -1200.0, 'balance': -600.0},
+        ])
+
+        # invoice with currency_data_2 and rate 1:6
+        invoice_line2 = self._create_invoice_line(
+            'out_invoice',
+            currency_id=self.currency_data_2['currency'],
+            invoice_date='2016-01-01',
+            invoice_line_ids=[{'price_unit': 600.0}], # = 100 USD
+        )
+        # invoice with currency_data_2 and rate 1:4
+        invoice_line3 = self._create_invoice_line(
+            'out_invoice',
+            currency_id=self.currency_data_2['currency'],
+            invoice_date='2017-01-01',
+            invoice_line_ids=[{'price_unit': 400.0}], # = 100 USD
+        )
+
+        # Remove all rates.
+        self.currency_data_2['rates'].unlink()
+
+        # Ensure no conversion rate has been made.
+        wizard._action_add_new_amls(invoice_line1 + invoice_line2 + invoice_line3)
+        self.assertRecordValues(wizard.line_ids, [
+            # pylint: disable=C0326
+            {'flag': 'liquidity',       'amount_currency': 1200.0,  'balance': 600.0},
+            {'flag': 'new_aml',         'amount_currency': -300.0,  'balance': -150.0},
+            {'flag': 'new_aml',         'amount_currency': -600.0,  'balance': -100.0},
+            {'flag': 'new_aml',         'amount_currency': -400.0,  'balance': -100.0},
+            {'flag': 'auto_balance',    'amount_currency': -500.0,  'balance': -250.0},
+        ])
+
+    def test_partial_reconciliation_suggestion_with_mixed_invoice_and_refund(self):
+        """ Test the partial reconciliation suggestion is well recomputed when adding another
+        line. For example, when adding 2 invoices having an higher amount then a refund. In that
+        case, the partial on the second invoice should be removed since the difference is filled
+        by the newly added refund.
+        """
+        st_line = self._create_st_line(
+            1800.0,
+            date='2017-01-01',
+            foreign_currency_id=self.currency_data['currency'].id,
+            amount_currency=3600.0,
+        )
+
+        inv1 = self._create_invoice_line(
+            'out_invoice',
+            currency_id=self.currency_data['currency'],
+            invoice_date='2016-01-01',
+            invoice_line_ids=[{'price_unit': 2400.0}],
+        )
+        inv2 = self._create_invoice_line(
+            'out_invoice',
+            currency_id=self.currency_data['currency'],
+            invoice_date='2016-01-01',
+            invoice_line_ids=[{'price_unit': 2400.0}],
+        )
+        refund = self._create_invoice_line(
+            'out_refund',
+            currency_id=self.currency_data['currency'],
+            invoice_date='2016-01-01',
+            invoice_line_ids=[{'price_unit': 1200.0}],
+        )
+
+        wizard = self.env['bank.rec.widget'].with_context(default_st_line_id=st_line.id).new({})
+        wizard._action_add_new_amls(inv1 + inv2)
+        self.assertRecordValues(wizard.line_ids, [
+            # pylint: disable=C0326
+            {'flag': 'liquidity',       'amount_currency': 1800.0,  'balance': 1800.0},
+            {'flag': 'new_aml',         'amount_currency': -2400.0, 'balance': -800.0},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,     'balance': -400.0},
+            {'flag': 'new_aml',         'amount_currency': -1200.0, 'balance': -400.0},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,     'balance': -200.0},
+        ])
+        wizard._action_add_new_amls(refund)
+        self.assertRecordValues(wizard.line_ids, [
+            # pylint: disable=C0326
+            {'flag': 'liquidity',       'amount_currency': 1800.0,  'balance': 1800.0},
+            {'flag': 'new_aml',         'amount_currency': -2400.0, 'balance': -800.0},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,     'balance': -400.0},
+            {'flag': 'new_aml',         'amount_currency': -2400.0, 'balance': -800.0},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,     'balance': -400.0},
+            {'flag': 'new_aml',         'amount_currency': 1200.0,  'balance': 400.0},
+            {'flag': 'exchange_diff',   'amount_currency': 0.0,     'balance': 200.0},
         ])

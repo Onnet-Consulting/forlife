@@ -29,7 +29,7 @@ msgstr ""
 #. module: sale_renting_crm
 #: model:ir.model.fields,field_description:sale_renting_crm.field_crm_lead_rental__lead_id
 msgid "Associated Lead"
-msgstr ""
+msgstr "Povezani lid"
 
 #. module: sale_renting_crm
 #: model_terms:ir.ui.view,arch_db:sale_renting_crm.crm_lead_rental_view_form
@@ -49,7 +49,7 @@ msgstr ""
 #. module: sale_renting_crm
 #: model:ir.model.fields.selection,name:sale_renting_crm.selection__crm_lead_rental__action__create
 msgid "Create a new customer"
-msgstr ""
+msgstr "Kreiraj novog kupca"
 
 #. module: sale_renting_crm
 #: model_terms:ir.ui.view,arch_db:sale_renting_crm.crm_case_form_view_oppor
@@ -79,7 +79,7 @@ msgstr "Naziv za prikaz"
 #. module: sale_renting_crm
 #: model:ir.model.fields.selection,name:sale_renting_crm.selection__crm_lead_rental__action__nothing
 msgid "Do not link to a customer"
-msgstr ""
+msgstr "Nemoj povezivati sa kupcem"
 
 #. module: sale_renting_crm
 #: model:ir.model.fields,field_description:sale_renting_crm.field_crm_lead_rental__id
@@ -109,7 +109,7 @@ msgstr "Lid/Prodajna prilika"
 #. module: sale_renting_crm
 #: model:ir.model.fields.selection,name:sale_renting_crm.selection__crm_lead_rental__action__exist
 msgid "Link to an existing customer"
-msgstr ""
+msgstr "Poveži sa postojećim kupcem"
 
 #. module: sale_renting_crm
 #: model:ir.actions.act_window,name:sale_renting_crm.crm_lead_to_rental_action

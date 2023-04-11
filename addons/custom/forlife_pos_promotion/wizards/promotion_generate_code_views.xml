@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promotion_generate_wizard_view_form" model="ir.ui.view">
+        <field name="name">promotion.generate.code.view.form</field>
+        <field name="model">promotion.generate.code</field>
+        <field name="arch" type="xml">
+            <form string="Generate">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="program_id" invisible="1"/>
+                            <field name="promotion_type" invisible="1"/>
+                            <field name="mode" force_save="1"/>
+                            <field name="customer_domain" widget="domain" string="Domain"
+                                   options="{'model': 'res.partner', 'in_dialog': True}"
+                                   attrs="{'invisible': [('mode', '=', 'anonymous')]}"/>
+                            <field name="coupon_qty"
+                                   string="Quantity to generate" attrs="{'readonly': [('mode', '=', 'selected')], 'required': [('mode', '=', 'anonymous')]}"/>
+                            <field name="valid_until" invisible="1"/>
+                            <field name="limit_usage" attrs="{'invisible': [('limit_usage', '=', False)]}"/>
+                            <field name="max_usage" attrs="{'invisible': [('limit_usage', '=', False)]}" force_save="1"/>
+
+                            <field name="reward_for_referring" widget="boolean_toggle"/>
+                            <field name="referring_date_from"
+                                   attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
+                            <field name="referring_date_to"
+                                   attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
+                            <field name="reward_program_id"
+                                   domain="[('with_code', '=', True), ('state', 'in', ['new', 'in_progress'])]"
+                                   attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="generate_codes" type="object" class="btn-primary" data-hotkey="q">
+                        <span>
+                            Generate
+                        </span>
+                    </button>
+                    <button special="cancel" data-hotkey="z" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="promotion_generate_code_action" model="ir.actions.act_window">
+        <field name="name">Generate</field>
+        <field name="res_model">promotion.generate.code</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

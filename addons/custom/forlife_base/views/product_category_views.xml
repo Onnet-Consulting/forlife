@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="vproduct_category_form_view_inherit_forlife" model="ir.ui.view">
+            <field name="name">product.category.form.inherit</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <field name="parent_id" position="before">
+                    <field name="category_type_id"/>
+                </field>
+                <field name="parent_id" position="after">
+                    <field name="category_code"/>
+                </field>
+                <field name="property_account_expense_categ_id" position="after">
+                    <field name="default_account_manufacture"/>
+                </field>
+
+            </field>
+        </record>
+
+        <!-- Code of Product Category -->
+        <record id="product_category_code_view_tree" model="ir.ui.view">
+            <field name="name">product.category.code.view.tree</field>
+            <field name="model">product.category.code</field>
+            <field name="arch" type="xml">
+                <tree string="Code of Product Category" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="product_category_code_view_search" model="ir.ui.view">
+                <field name="name">product.category.code.view.search</field>
+                <field name="model">product.category.code</field>
+                <field name="arch" type="xml">
+                    <search>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <separator/>
+                        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                    </search>
+                </field>
+            </record>
+
+        <record id="product_category_code_action" model="ir.actions.act_window">
+            <field name="name">Code of Product Category</field>
+            <field name="res_model">product.category.code</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <!-- Type of Product Category -->
+        <record id="product_category_type_view_tree" model="ir.ui.view">
+            <field name="name">product.category.type.view.tree</field>
+            <field name="model">product.category.type</field>
+            <field name="arch" type="xml">
+                <tree string="Type of Product Category" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="product_category_type_view_search" model="ir.ui.view">
+                <field name="name">product.category.type.view.search</field>
+                <field name="model">product.category.type</field>
+                <field name="arch" type="xml">
+                    <search>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <separator/>
+                        <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                    </search>
+                </field>
+            </record>
+
+        <record id="product_category_type_action" model="ir.actions.act_window">
+            <field name="name">Type of Product Category</field>
+            <field name="res_model">product.category.type</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+    </data>
+</odoo>

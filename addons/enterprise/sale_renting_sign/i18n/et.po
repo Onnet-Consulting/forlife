@@ -6,8 +6,9 @@
 # Andre Roomet <andreroomet@gmail.com>, 2022
 # Triine Aavik <triine@avalah.ee>, 2022
 # Eneli Õigus <enelioigus@gmail.com>, 2022
-# Rivo Zängov <eraser@eraser.ee>, 2022
 # Jana Jaakson, 2022
+# Leaanika Randmets, 2022
+# Anna, 2023
 # 
 msgid ""
 msgstr ""
@@ -15,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-04 09:43+0000\n"
 "PO-Revision-Date: 2022-09-22 05:48+0000\n"
-"Last-Translator: Jana Jaakson, 2022\n"
+"Last-Translator: Anna, 2023\n"
 "Language-Team: Estonian (https://www.transifex.com/odoo/teams/41243/et/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,12 +27,14 @@ msgstr ""
 #. module: sale_renting_sign
 #: model:ir.model.fields,field_description:sale_renting_sign.field_sale_order__sign_request_count
 msgid "# of Signature Requests"
-msgstr ""
+msgstr "# allkirja taotlused"
 
 #. module: sale_renting_sign
 #: model_terms:ir.ui.view,arch_db:sale_renting_sign.message_signature_link
 msgid "A document has been signed and a copy attached to this order:"
 msgstr ""
+"Dokument on allkirjastatud ja selle koopia on lisatud käesolevale "
+"tellimusele:"
 
 #. module: sale_renting_sign
 #: model_terms:ir.ui.view,arch_db:sale_renting_sign.rental_sign_wizard_view_form
@@ -56,32 +59,32 @@ msgstr "Loonud"
 #. module: sale_renting_sign
 #: model:ir.model.fields,field_description:sale_renting_sign.field_rental_sign_wizard__create_date
 msgid "Created on"
-msgstr "Loomise kuupäev"
+msgstr "Loodud"
 
 #. module: sale_renting_sign
 #: model:ir.model.fields,field_description:sale_renting_sign.field_res_config_settings__rental_sign_tmpl_id
 msgid "Default Document"
-msgstr ""
+msgstr "Vaikimisi dokument"
 
 #. module: sale_renting_sign
 #: model:ir.model.fields,field_description:sale_renting_sign.field_res_company__rental_sign_tmpl_id
 msgid "Default Document Template for Rentals"
-msgstr ""
+msgstr "Rentimise vaikimisi dokumendimall"
 
 #. module: sale_renting_sign
 #: model:ir.model.fields,field_description:sale_renting_sign.field_rental_sign_wizard__display_name
 msgid "Display Name"
-msgstr "Näidatav nimi"
+msgstr "Kuvatav nimi"
 
 #. module: sale_renting_sign
 #: model:ir.model.fields,field_description:sale_renting_sign.field_rental_sign_wizard__template_id
 msgid "Document Template"
-msgstr "Dokumendi põhi"
+msgstr "Dokumendi mall"
 
 #. module: sale_renting_sign
 #: model_terms:ir.ui.view,arch_db:sale_renting_sign.rental_order_inherit_rental_sign
 msgid "Document(s) Signed"
-msgstr ""
+msgstr "Dokument(i) allkirjastatud"
 
 #. module: sale_renting_sign
 #: model:ir.model.fields,field_description:sale_renting_sign.field_rental_sign_wizard__id
@@ -120,38 +123,39 @@ msgstr "Müügitellimus"
 #: model:ir.model.fields,help:sale_renting_sign.field_res_config_settings__rental_sign_tmpl_id
 msgid "Set a default document template for all rentals in the current company"
 msgstr ""
+"Määra vaikimisi dokumendimall kõikide rentimiste jaoks selles ettevõttes."
 
 #. module: sale_renting_sign
 #: model_terms:ir.ui.view,arch_db:sale_renting_sign.rental_sign_wizard_view_form
 msgid "Sign Document"
-msgstr "Allkirjasta dokument"
+msgstr "Allkirjastamisetaotlus"
 
 #. module: sale_renting_sign
 #: model:ir.actions.act_window,name:sale_renting_sign.rental_sign_documents
 #: model_terms:ir.ui.view,arch_db:sale_renting_sign.rental_order_inherit_rental_sign
 #: model_terms:ir.ui.view,arch_db:sale_renting_sign.rental_sign_wizard_view_form
 msgid "Sign Documents"
-msgstr ""
+msgstr "Allkirjastamisetaotlused"
 
 #. module: sale_renting_sign
 #: model:ir.model,name:sale_renting_sign.model_rental_sign_wizard
 msgid "Sign Documents from a SO"
-msgstr ""
+msgstr "Allkirjasta dokumendid müügitellimuse pealt"
 
 #. module: sale_renting_sign
 #: model:ir.model,name:sale_renting_sign.model_sign_send_request
 msgid "Sign send request"
-msgstr ""
+msgstr "Allkirjastage saatmise taotlus"
 
 #. module: sale_renting_sign
 #: model:ir.model,name:sale_renting_sign.model_sign_request
 msgid "Signature Request"
-msgstr "Allkirjataotlus"
+msgstr "Allkirja päring"
 
 #. module: sale_renting_sign
 #: model:ir.model.fields,field_description:sale_renting_sign.field_sale_order__sign_request_ids
 msgid "Signature Requests"
-msgstr "Allkirjataotlused"
+msgstr "Allkirja päringud"
 
 #. module: sale_renting_sign
 #: model:ir.model.fields,help:sale_renting_sign.field_res_company__rental_sign_tmpl_id
@@ -160,8 +164,11 @@ msgid ""
 "from a rental order. You should select a template accessible to all Sign "
 "users."
 msgstr ""
+"See dokumendimall valitakse vaikimisi kui allkirjastate dokumente "
+"renditellimuselt. Vali mall, mis on kättesaadav kõikidele allkirjastamise "
+"kasutajatele."
 
 #. module: sale_renting_sign
 #: model_terms:ir.ui.view,arch_db:sale_renting_sign.res_config_settings_view_form
 msgid "Upload Template"
-msgstr ""
+msgstr "Lae mall"

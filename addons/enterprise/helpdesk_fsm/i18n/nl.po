@@ -39,12 +39,12 @@ msgstr "Helpdesktickets omzetten naar taken"
 #. module: helpdesk_fsm
 #: model:ir.model.fields,help:helpdesk_fsm.field_helpdesk_ticket__use_fsm
 msgid "Convert tickets into Field Service tasks"
-msgstr "Converteer tickets naar buitendienst-taken"
+msgstr "Tickets omzetten naar buitendienst-taken"
 
 #. module: helpdesk_fsm
 #: model_terms:ir.ui.view,arch_db:helpdesk_fsm.create_fsm_task_view_form
 msgid "Create & View Task"
-msgstr "Maak & bekijk taak"
+msgstr "Taak aanmaken & bekijken"
 
 #. module: helpdesk_fsm
 #: model_terms:ir.ui.view,arch_db:helpdesk_fsm.create_fsm_task_view_form
@@ -57,7 +57,7 @@ msgstr "Taak aanmaken"
 #: model:ir.model,name:helpdesk_fsm.model_helpdesk_create_fsm_task
 #, python-format
 msgid "Create a Field Service task"
-msgstr "Maak een buitendienst taak"
+msgstr "Een buitendienst-taak aanmaken"
 
 #. module: helpdesk_fsm
 #: model:ir.model.fields,field_description:helpdesk_fsm.field_helpdesk_create_fsm_task__create_uid
@@ -82,12 +82,12 @@ msgstr "Negeren"
 #. module: helpdesk_fsm
 #: model:ir.model.fields,field_description:helpdesk_fsm.field_helpdesk_create_fsm_task__display_name
 msgid "Display Name"
-msgstr "Schermnaam"
+msgstr "Weergavenaam"
 
 #. module: helpdesk_fsm
 #: model:ir.model.fields,field_description:helpdesk_fsm.field_project_task__display_helpdesk_ticket_button
 msgid "Display Ticket"
-msgstr "Toon ticket"
+msgstr "Ticket weergeven"
 
 #. module: helpdesk_fsm
 #: model:ir.model.fields,field_description:helpdesk_fsm.field_helpdesk_team__fsm_project_id
@@ -102,7 +102,7 @@ msgstr "Buitendienst"
 #. module: helpdesk_fsm
 #: model:ir.model.fields,field_description:helpdesk_fsm.field_helpdesk_ticket__fsm_task_count
 msgid "Fsm Task Count"
-msgstr "Buitendienst aantal taken"
+msgstr "Aantal buitendienst-taken"
 
 #. module: helpdesk_fsm
 #: model:ir.model,name:helpdesk_fsm.model_helpdesk_team
@@ -143,7 +143,7 @@ msgstr "Laatst bijgewerkt op"
 #. module: helpdesk_fsm
 #: model:ir.model.fields,field_description:helpdesk_fsm.field_project_task__helpdesk_ticket_id
 msgid "Original Ticket"
-msgstr "Origineel ticket"
+msgstr "Initieel ticket"
 
 #. module: helpdesk_fsm
 #: model:ir.model.fields,field_description:helpdesk_fsm.field_helpdesk_create_fsm_task__project_id
@@ -186,7 +186,7 @@ msgstr "Taak is gereed"
 #: code:addons/helpdesk_fsm/wizard/create_task.py:0
 #, python-format
 msgid "Task created"
-msgstr "Taak gemaakt"
+msgstr "Taak aangemaakt"
 
 #. module: helpdesk_fsm
 #: code:addons/helpdesk_fsm/controllers/portal.py:0

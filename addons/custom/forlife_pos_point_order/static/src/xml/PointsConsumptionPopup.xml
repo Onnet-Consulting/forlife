@@ -12,22 +12,22 @@
                     <t t-if="props.program_promotion.apply_all == true">
                         <table style="width:100%; border:1px solid black;">
                             <tr style="width:100%; border:1px solid black;">
-                                <th style="border:1px solid black;text">Tên sản phẩm</th>
-                                <th style="border:1px solid black;">Giá</th>
-                                <th style="border:1px solid black;">Điểm sử dụng</th>
+                                <th style="border:1px solid black;text-align: center; width:60%;">Sản phẩm</th>
+                                <th style="border:1px solid black;text-align: center;">Giá</th>
+                                <th style="border:1px solid black;text-align: center;">Điểm sử dụng</th>
                             </tr>
                             <t t-foreach="props.product_valid_apply_all" t-as="line" t-key="line.id">
                                 <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
                                     <tr style="width:100%; border:1px solid black;">
                                         <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
 <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
-                                        <td style="border:1px solid black;width:130px;text-align: right;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
+                                        <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
                                         <td style="border:1px solid black;width:85px;">
                                             <t t-if="line_last and num_last">
-                                                <input t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                                <input style="width: 100%;text-align: center;" t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
                                             </t>
                                             <t t-else="">
-                                                <input t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                                <input style="width: 100%;text-align: center;" t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
                                             </t>
                                         </td>
                                     </tr>
@@ -38,15 +38,15 @@
                         <span style="color:red;" t-if="state.error_popup_flag" class="error-message">
                             <t t-esc="error" />
                         </span>
-                        <span style="float:right; margin-right:34px;">
+                        <span style="float:right; margin-right:27px;">
                         Tổng điểm :
                             <span id="total" >
                             <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">
                                 <t t-if="branch.name == 'TokyoLife'">
-                                    <t t-esc="props.order.partner.total_points_available_forlife"/>
+                                    <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_forlife)"/>
                                 </t>
                                 <t t-if="branch.name == 'Format'">
-                                    <t t-esc="props.order.partner.total_points_available_format"/>
+                                    <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_format)"/>
                                 </t>
                             </t>
                             </span>
@@ -55,22 +55,22 @@
                     <t t-else="">
                         <table style="width:100%; border:1px solid black;">
                             <tr style="width:100%; border:1px solid black;">
-                                <th style="border:1px solid black;">Sản phẩm</th>
-                                <th style="border:1px solid black;">Giá</th>
-                                <th style="border:1px solid black;">Điểm sử dụng</th>
+                                <th style="border:1px solid black;text-align: center; width:60%;">Sản phẩm</th>
+                                <th style="border:1px solid black;text-align: center;">Giá</th>
+                                <th style="border:1px solid black;text-align: center;">Điểm sử dụng</th>
                             </tr>
                             <t t-foreach="props.product_valid" t-as="line" t-key="line.id">
                                 <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
                                     <tr style="width:100%; border:1px solid black;">
                                         <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
 <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
-                                        <td style="border:1px solid black;width:130px;text-align: right;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
+                                        <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
                                         <td style="border:1px solid black;width:85px;">
                                             <t t-if="line_last and num_last">
-                                                <input t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                                <input style="width: 100%;text-align: center;" t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
                                             </t>
                                             <t t-else="">
-                                                <input t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
+                                                <input style="width: 100%;text-align: center;" t-att-data-value_id="line.get_taxed_lst_unit_price()" t-att-id="line.id" type="text" class="o_input"/>
                                             </t>
                                         </td>
                                     </tr>
@@ -80,15 +80,15 @@
                         <span style="color:red;" t-if="state.error_popup_flag" class="error-message">
                             <t t-esc="error" />
                         </span>
-                        <span style="float:right; margin-right:34px;">
+                        <span style="float:right; margin-right:27px;">
                         Tổng điểm :
                             <span id="total">
                             <t t-foreach="env.pos.pos_branch" t-as="branch" t-key="branch.id">
                                 <t t-if="branch.name == 'TokyoLife'">
-                                    <t t-esc="props.order.partner.total_points_available_forlife"/>
+                                    <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_forlife)"/>
                                 </t>
                                 <t t-if="branch.name == 'Format'">
-                                    <t t-esc="props.order.partner.total_points_available_format"/>
+                                    <t t-esc="env.pos.format_currency_no_symbol(props.order.partner.total_points_available_format)"/>
                                 </t>
                             </t>
                             </span>

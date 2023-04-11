@@ -7,6 +7,8 @@ from markupsafe import Markup
 from itertools import groupby
 from .account_report import _raw_phonenumber, _get_xml_export_representative_node
 
+from stdnum.eu.vat import compact
+
 
 class PartnerVATListingCustomHandler(models.AbstractModel):
     _name = 'l10n_be.partner.vat.handler'
@@ -55,7 +57,7 @@ class PartnerVATListingCustomHandler(models.AbstractModel):
         def build_result_dict(query_res_lines):
             if current_groupby:
                 rslt = {
-                    'vat_number': query_res_lines[0]['vat'],
+                    'vat_number': compact(query_res_lines[0]['vat']),
                     'turnover': query_res_lines[0]['turnover'],
                     'vat_amount': query_res_lines[0]['vat_amount'],
                     'has_sublines': False,
@@ -86,16 +88,17 @@ class PartnerVATListingCustomHandler(models.AbstractModel):
         partner_ids = self.env['res.partner'].with_context(active_test=False).search([('vat', 'ilike', 'BE%')]).ids
 
         if not partner_ids:
-            return []
+            return [] if current_groupby else {'vat_number': None, 'turnover': 0, 'vat_amount': 0, 'has_sublines': False}
 
         tables, where_clause, where_params = report._query_get(options, 'strict_range')
 
         query = f'''
             SELECT
-                {'turnover_sub.grouping_key,refund_vat_sub.grouping_key,refund_base_sub.grouping_key,' if current_groupby else ''}
+                {'COALESCE(turnover_sub.grouping_key,refund_vat_sub.grouping_key,refund_base_sub.grouping_key) AS grouping_key,' if current_groupby else ''}
                 turnover_sub.partner_id, turnover_sub.name, turnover_sub.vat, turnover_sub.turnover,
-                refund_vat_sub.refund_base,
-                refund_base_sub.vat_amount, refund_base_sub.refund_vat_amount
+                COALESCE(refund_vat_sub.refund_base, 0) AS refund_base,
+                COALESCE(refund_base_sub.vat_amount, 0) AS vat_amount,
+                COALESCE(refund_base_sub.refund_vat_amount, 0) as refund_vat_amount
             FROM (
                 -- Turnover --
                 SELECT
@@ -114,9 +117,10 @@ class PartnerVATListingCustomHandler(models.AbstractModel):
                     AND aml_tag.account_account_tag_id IN %s
                     AND "account_move_line".partner_id IN %s
                     AND (
-                        ("account_move_line".move_id IS NULL AND "account_move_line".credit > 0)
-                        OR (inv.move_type IN ('out_refund', 'out_invoice') AND inv.state = 'posted')
+                        (inv.move_type = 'entry' AND "account_move_line".credit > 0)
+                        OR inv.move_type IN ('out_refund', 'out_invoice')
                     )
+                    AND inv.state = 'posted'
                     AND {where_clause}
                 GROUP BY
                     {f'"account_move_line".{current_groupby},' if current_groupby else ''}
@@ -124,7 +128,6 @@ class PartnerVATListingCustomHandler(models.AbstractModel):
             ) AS turnover_sub
 
             FULL JOIN (
-                -- Refund vat --
                 SELECT
                     {f'"account_move_line".{current_groupby} AS grouping_key,' if current_groupby else ''}
                     "account_move_line".partner_id,
@@ -141,9 +144,10 @@ class PartnerVATListingCustomHandler(models.AbstractModel):
                     AND aml_tag.account_account_tag_id IN %s
                     AND "account_move_line".partner_id IN %s
                     AND (
-                        ("account_move_line".move_id IS NULL AND "account_move_line".credit > 0)
-                        OR (inv.move_type = 'out_refund' AND inv.state = 'posted')
+                        (inv.move_type = 'entry' AND "account_move_line".credit > 0)
+                        OR inv.move_type = 'out_refund'
                     )
+                    AND inv.state = 'posted'
                     AND {where_clause}
                 GROUP BY
                     {f'"account_move_line".{current_groupby},' if current_groupby else ''}
@@ -153,7 +157,6 @@ class PartnerVATListingCustomHandler(models.AbstractModel):
             {'AND turnover_sub.grouping_key = refund_vat_sub.grouping_key' if current_groupby  else ''}
 
             LEFT JOIN (
-                -- Refund base
                 SELECT
                     {f'"account_move_line".{current_groupby} AS grouping_key,' if current_groupby else ''}
                     COALESCE("account_move_line".partner_id, inv.partner_id) AS partner_id,
@@ -168,9 +171,10 @@ class PartnerVATListingCustomHandler(models.AbstractModel):
                     aml_tag2.account_account_tag_id IN %s
                     AND COALESCE("account_move_line".partner_id, inv.partner_id) IN %s
                     AND (
-                        ("account_move_line".move_id IS NULL AND "account_move_line".credit > 0)
-                        OR (inv.move_type IN ('out_refund', 'out_invoice') AND inv.state = 'posted')
+                        (inv.move_type = 'entry' AND "account_move_line".credit > 0)
+                        OR inv.move_type IN ('out_refund', 'out_invoice')
                     )
+                    AND inv.state = 'posted'
                     AND {where_clause}
                 GROUP BY
                     {f'"account_move_line".{current_groupby},' if current_groupby else ''}
@@ -238,7 +242,7 @@ class PartnerVATListingCustomHandler(models.AbstractModel):
         # Precheck
         company = self.env.company
         company_vat = company.partner_id.vat
-        report = self.env['account.report'].browse(options['report_id'])
+        report = self.env['account.report'].with_context(print_mode=True).browse(options['report_id'])
 
         if not company_vat:
             raise UserError(_('No VAT number associated with your company.'))
@@ -280,7 +284,7 @@ class PartnerVATListingCustomHandler(models.AbstractModel):
         # Turnover and Farmer tags are not included
         options['date']['date_from'] = options['date']['date_from'][0:4] + '-01-01'
         options['date']['date_to'] = options['date']['date_to'][0:4] + '-12-31'
-        lines = report._get_lines(options)
+        lines = report.with_context(print_mode=True)._get_lines(options)
 
         data_client_info = ''
         seq = 0
@@ -343,9 +347,9 @@ class PartnerVATListingCustomHandler(models.AbstractModel):
 
         data_begin = Markup("""<?xml version="1.0" encoding="ISO-8859-1"?>
 <ns2:ClientListingConsignment xmlns="http://www.minfin.fgov.be/InputCommon" xmlns:ns2="http://www.minfin.fgov.be/ClientListingConsignment" ClientListingsNbr="1">
+    %(representative_node)s
     <ns2:ClientListing SequenceNumber="1" ClientsNbr="%(seq)s" DeclarantReference="%(dnum)s"
         TurnOverSum="%(sum_turnover).2f" VATAmountSum="%(sum_tax).2f">
-        %(representative_node)s
         <ns2:Declarant>
             <VATNumber>%(SenderId)s</VATNumber>
             <Name>%(comp_name)s</Name>

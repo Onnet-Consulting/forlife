@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="pos_order_form_inherit" model="ir.ui.view">
+        <field name="name">pos_order_form_inherit</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='fiscal_position_id']" position="after">
+                <field name="reward_voucher_id" attrs="{'invisible': [('reward_voucher_id', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//field[@name='lines']/form/group" position="after">
+                <div name="promotion_usage_ids">
+                    <label for="promotion_usage_ids"/>
+                    <field name="promotion_usage_ids">
+                        <tree>
+                            <field name="program_id"/>
+                            <field name="code_id"/>
+                            <field name="original_price"/>
+                            <field name="new_price"/>
+                            <field name="qty"/>
+                            <field name="discount_total" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                            <field name="registering_tax" />
+                        </tree>
+                        <form>
+                            <group>
+                                <field name="program_id"/>
+                                <field name="code_id"/>
+                                <field name="original_price"/>
+                                <field name="new_price"/>
+                                <field name="qty"/>
+                                <field name="discount_total" widget="monetary" options="{'currency_field': 'company_currency'}"/>
+                                <field name="registering_tax"/>
+                            </group>
+                        </form>
+                    </field>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='lines']/tree/field[@name='full_product_name']" position="after">
+                <field name="promotion_usage_ids" widget="many2many_tags"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

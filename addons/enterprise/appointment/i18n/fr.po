@@ -4,19 +4,19 @@
 # 
 # Translators:
 # gdp Odoo <gdp@odoo.com>, 2022
-# Martin Trigaux, 2022
 # bb76cd9ac0cb7e20167a14728edb858b, 2022
 # Camille Dantinne <cmd@odoo.com>, 2022
-# Jolien De Paepe, 2022
 # Cécile Collart <cco@odoo.com>, 2022
+# Martin Trigaux, 2022
+# Jolien De Paepe, 2023
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0beta+e\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-10 13:27+0000\n"
+"POT-Creation-Date: 2022-12-15 13:28+0000\n"
 "PO-Revision-Date: 2022-09-22 05:45+0000\n"
-"Last-Translator: Cécile Collart <cco@odoo.com>, 2022\n"
+"Last-Translator: Jolien De Paepe, 2023\n"
 "Language-Team: French (https://www.transifex.com/odoo/teams/41243/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -25,6 +25,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;\n"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid " (copy)"
@@ -33,7 +34,7 @@ msgstr " (copie)"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__appointment_count
 msgid "# Appointments"
-msgstr "Nombre de rendez-vous"
+msgstr "# Rendez-vous"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__appointment_count_report
@@ -52,12 +53,14 @@ msgid "#{day['today_cls'] and 'Today' or ''}"
 msgstr "#{day['today_cls'] and 'Today' or ''}"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "%s - Let's meet"
 msgstr "%s - Rencontrons-nous"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "%s with %s"
@@ -74,13 +77,14 @@ msgid "+3212345678"
 msgstr "+3212345678"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar.py:0
 #, python-format
 msgid ", All Day"
 msgstr ", toute la journée"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_svg.xml:0
 #, python-format
 msgid ""
@@ -181,7 +185,7 @@ msgstr ""
 "    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
 "    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
 "    <p>\n"
-"    Rendez-vous pris pour <t t-out=\"object.appointment_type_id.name or ''\">Technical Demo</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> avec <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t>.\n"
+"    Rendez-vous pris pour <t t-out=\"object.appointment_type_id.name or ''\">une démonstration technique</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> avec <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t>.\n"
 "    </p>\n"
 "    <div style=\"text-align: center; padding: 16px 0px 16px 0px;\">\n"
 "        <a t-attf-href=\"/calendar/meeting/join?token={{ object.access_token }}\" style=\"padding: 5px 10px; color: #FFFFFF; text-decoration: none; background-color: #875A7B; border: 1px solid #875A7B; border-radius: 3px\">\n"
@@ -198,7 +202,7 @@ msgstr ""
 "                    <t t-out=\"str(object.start.day) or ''\">1</t>\n"
 "                </div>\n"
 "                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
-"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">Janvier 2020</t>\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz if not object.allday else None, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">janvier 2020</t>\n"
 "                </div>\n"
 "                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-end-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-start-radius: 3px;\">\n"
 "                    <t t-if=\"not object.allday\">\n"
@@ -326,7 +330,7 @@ msgstr ""
 "    <t t-set=\"recurrent\" t-value=\"object.recurrence_id and not ctx.get('calendar_template_ignore_recurrence')\"/>\n"
 "    <t t-set=\"mail_tz\" t-value=\"object._get_mail_tz() or ctx.get('mail_tz')\"/>\n"
 "    <p>\n"
-"    Le rendez-vous pour <t t-out=\"object.appointment_type_id.name or ''\">Technical Demo</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> avec <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t> a été annulé.\n"
+"    Le rendez-vous pour <t t-out=\"object.appointment_type_id.name or ''\">une démonstration technique</t> <t t-if=\"object.appointment_type_id.category != 'custom'\"> avec <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t></t> a été annulé.\n"
 "    </p>\n"
 "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr>\n"
 "            <td width=\"130px;\" style=\"min-width: 130px;\">\n"
@@ -337,7 +341,7 @@ msgstr ""
 "                    <t t-out=\"str(object.start.day) or ''\">1</t>\n"
 "                </div>\n"
 "                <div style=\"font-size: 12px; text-align: center; font-weight: bold; color: #ffffff; background-color: #875A7B;\">\n"
-"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">Janvier 2020</t>\n"
+"                    <t t-out=\"format_datetime(dt=object.start, tz=mail_tz, dt_format=&quot;MMMM y&quot;, lang_code=object.env.lang) or ''\">janvier 2020</t>\n"
 "                </div>\n"
 "                <div style=\"border-collapse: separate; color: #5F5F5F; text-align: center; font-size: 12px; border-bottom-end-radius: 3px; font-weight: bold; border: 1px solid #875A7B; border-bottom-start-radius: 3px;\">\n"
 "                    <t t-if=\"not object.allday\">\n"
@@ -424,8 +428,8 @@ msgid ""
 "<i class=\"fa fa-warning\"/> You need to be part of an appointment type to "
 "be able to share a personal link."
 msgstr ""
-"<i class=\"fa fa-warning\"/>Vous devez faire partie d'un type de rendez-vous"
-" pour pouvoir partager un lien personnel."
+"<i class=\"fa fa-warning\"/> Vous devez faire partie d'un type de rendez-"
+"vous pour pouvoir partager un lien personnel."
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
@@ -473,7 +477,7 @@ msgid ""
 "                            Someone has booked the same time slot a few\n"
 "                            seconds before you."
 msgstr ""
-"<strong>Échec de la prise de rendez-vous.</strong>\n"
+"<strong>Échec de la prise de rendez-vous !</strong>\n"
 "                            Le créneau sélectionné n'est plus disponible.\n"
 "                            Quelqu'un a réservé ce créneau quelques\n"
 "                           secondes avant vous."
@@ -485,16 +489,17 @@ msgid ""
 "                            The selected timeslot is not available.\n"
 "                            It appears you already have another meeting with us at that date."
 msgstr ""
-"<strong>Échec de la prise de rendez-vous.</strong>\n"
+"<strong>Échec de la prise de rendez-vous !</strong>\n"
 "                            Le créneau sélectionné n'est pas disponible.\n"
-"                            Il semblerait que nous ayons déjà rendez-vous ensemble à cette date."
+"                            Il semblerait que vous ayez déjà un autre rendez-vous avec nous à cette date."
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "<strong>Your appointment has been successfully booked!</strong>"
-msgstr "<strong>Vous avez pris rendez-vous.</strong>"
+msgstr "<strong>Votre rendez-vous a été pris avec succès !</strong>"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar_view.py:0
 #, python-format
 msgid ""
@@ -506,7 +511,7 @@ msgstr ""
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_event__access_token
 msgid "Access Token"
-msgstr "Clé d'accès"
+msgstr "Jeton d'accès"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_needaction
@@ -516,7 +521,7 @@ msgstr "Nécessite une action"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__active
 msgid "Active"
-msgstr "Active"
+msgstr "Actif"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -525,9 +530,16 @@ msgid "Add a function here..."
 msgstr "Ajouter une fonction ici..."
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Add a specific appointment."
+msgstr "Ajouter un rendez-vous spécifique."
+
+#. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "Add an intro message here..."
-msgstr "Ajoutez un message d'introduction ici..."
+msgstr "Ajouter un message d'introduction ici..."
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -545,6 +557,7 @@ msgid "Administrator"
 msgstr "Administrateur"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "All"
@@ -557,6 +570,7 @@ msgid "All Appointments"
 msgstr "Tous les rendez-vous"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #: model:ir.model.fields,field_description:appointment.field_appointment_slot__allday
 #, python-format
@@ -581,16 +595,19 @@ msgstr ""
 "prédéfinie."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/calendar_view.py:0
 #, python-format
 msgid "An appointment type is needed to get the link."
 msgstr "Un type de rendez-vous est nécessaire pour obtenir le lien."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_slot.py:0
 #, python-format
 msgid "An unique type slot should have a start and end datetime"
-msgstr "Un créneau de type unique doit avoir une date de début et de fin"
+msgstr ""
+"Un créneau de type unique doit avoir un champ datetime de début et de fin"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_answer__name
@@ -618,7 +635,7 @@ msgid "Answers"
 msgstr "Réponses"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_type__category__anytime
 #, python-format
@@ -631,9 +648,12 @@ msgid "Any User"
 msgstr "Tout utilisateur"
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
+#, python-format
 msgid "Appointment"
 msgstr "Rendez-vous"
 
@@ -753,6 +773,7 @@ msgid "Appointment Types"
 msgstr "Type de rendez-vous"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/calendar_event.py:0
 #, python-format
 msgid "Appointment canceled by: %(partners)s"
@@ -761,7 +782,7 @@ msgstr "Rendez-vous annulé par : %(partners)s"
 #. module: appointment
 #: model:mail.template,name:appointment.appointment_booked_mail_template
 msgid "Appointment: Appointment Booked"
-msgstr "Rendez-vous : Rendez-vous réservé"
+msgstr "Rendez-vous : Rendez-vous pris"
 
 #. module: appointment
 #: model:mail.template,name:appointment.appointment_canceled_mail_template
@@ -800,6 +821,7 @@ msgid "Assignment Method"
 msgstr "Méthode d'assignation"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_slot.py:0
 #, python-format
 msgid ""
@@ -811,7 +833,7 @@ msgstr ""
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_attachment_count
 msgid "Attachment Count"
-msgstr "Compte des pièces jointes"
+msgstr "Nombre de pièces jointes"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -850,7 +872,10 @@ msgid "CC to"
 msgstr "CC à "
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
 #: model:ir.ui.menu,name:appointment.calendar_appointment_type_menu_action
+#, python-format
 msgid "Calendar"
 msgstr "Calendrier"
 
@@ -897,7 +922,7 @@ msgid "Chosen by the Customer"
 msgstr "Au choix du client"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Click in your calendar to pick meeting time proposals."
@@ -932,10 +957,11 @@ msgid "Connect"
 msgstr "Connecter"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
 msgid "Connect your Calendar"
-msgstr "Connectez votre calendrier"
+msgstr "Connecter votre calendrier"
 
 #. module: appointment
 #: model:onboarding.onboarding.step,title:appointment.appointment_onboarding_configure_calendar_provider_step
@@ -958,7 +984,7 @@ msgstr ""
 "est pris ou annulé, qu'ils soient présents ou non"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.js:0
 #, python-format
 msgid "Copied !"
@@ -968,13 +994,14 @@ msgstr "Copié !"
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_onboarding_link_view_form
 msgid "Copy Link &amp; Close"
-msgstr "Copier le lien et fermer"
+msgstr "Copier le lien & Fermer"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
 msgid "Create your first Appointment"
-msgstr "Créez votre premier rendez-vous"
+msgstr "Créer votre premier rendez-vous"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_answer__create_uid
@@ -1015,6 +1042,7 @@ msgid "Customer Preview"
 msgstr "Aperçu du client"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 #, python-format
@@ -1027,6 +1055,7 @@ msgid "Declined"
 msgstr "Refusé"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Default slots cannot be applied to the %s appointment type category."
@@ -1042,9 +1071,9 @@ msgid ""
 "        The one shot type is only used when an user create a custom appointment type for a client by\n"
 "        defining non-recurring time slot (e.g. 10th of April 2021 from 10 to 11 am) from its calendar."
 msgstr ""
-"Définit le type de créneau. Le slot récurrent est le type par défaut qui est utilisé pour\n"
+"Définit le type de créneau. Le créneau récurrent est le type par défaut qui est utilisé pour\n"
 "        les types de rendez-vous qui sont utilisés de manière récurrente, comme les rendez-vous médicaux.\n"
-"        Le type one shot est uniquement utilisé lorsqu'un utilisateur crée un type de rendez-vous personnalisé pour un client en\n"
+"        Le type créneau unique est uniquement utilisé lorsqu'un utilisateur crée un type de rendez-vous personnalisé pour un client en\n"
 "        définissant un créneau horaire non récurrent (par exemple, le 10 avril 2021 de 10 à 11 heures) à partir de son calendrier."
 
 #. module: appointment
@@ -1055,7 +1084,7 @@ msgstr "Soins dentaires"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "Details:"
-msgstr "Détails"
+msgstr "Détails :"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_appointment_slot__allday
@@ -1067,12 +1096,12 @@ msgstr ""
 "pour un type de créneau unique"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form_insert_link
 #, python-format
 msgid "Discard"
-msgstr "Annuler"
+msgstr "Ignorer"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_answer__display_name
@@ -1102,6 +1131,7 @@ msgid "Duration:"
 msgstr "Durée :"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "Email: %s"
@@ -1110,7 +1140,7 @@ msgstr "Email : %s"
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_appointment_slot__end_datetime
 msgid "End datetime for unique slot type management"
-msgstr "Date de fin pour la gestion du type de slot unique"
+msgstr "Datetime de fin pour la gestion du type de créneau unique"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_slot__end_hour
@@ -1159,7 +1189,7 @@ msgid "Front-End Display"
 msgstr "Affichage en frontend"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
@@ -1167,6 +1197,7 @@ msgid "Get Share Link"
 msgstr "Obtenir le lien de partage"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_onboarding_link_view_form
 #, python-format
@@ -1250,7 +1281,7 @@ msgstr "Si coché, de nouveaux messages demandent votre attention."
 #: model:ir.model.fields,help:appointment.field_appointment_type__message_has_error
 #: model:ir.model.fields,help:appointment.field_appointment_type__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
-msgstr "Si actif, certains messages ont une erreur de livraison."
+msgstr "Si coché, certains messages ont une erreur de livraison."
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_appointment_slot__restrict_to_user_ids
@@ -1262,7 +1293,7 @@ msgstr ""
 "Si défini, seuls les utilisateurs sélectionnés seront pris en compte pour ce créneau."
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/js/wysiwyg.js:0
 #, python-format
 msgid "Insert Appointment Link"
@@ -1277,7 +1308,7 @@ msgstr "Insérer un lien"
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_intro
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "Introduction Message"
-msgstr "Message de présentation"
+msgstr "Message d'introduction"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__appointment_invite_ids
@@ -1367,7 +1398,7 @@ msgid "Last Updated on"
 msgstr "Dernière mise à jour le"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Link Copied in your clipboard !"
@@ -1382,17 +1413,17 @@ msgstr "Générateur de liens"
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__book_url
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_invite_view_form
 msgid "Link URL"
-msgstr "URL du Lien"
+msgstr "URL du lien"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/js/appointment_invite_form_renderer.js:0
 #, python-format
 msgid "Link copied to clipboard!"
 msgstr "Lien copié dans le presse-papier !"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_onboarding_link_form_renderer.js:0
 #, python-format
 msgid "Link copied to clipboard."
@@ -1421,7 +1452,7 @@ msgstr "Lieu :"
 #. module: appointment
 #: model:onboarding.onboarding.step,done_text:appointment.appointment_onboarding_create_appointment_type_step
 msgid "Looks great! - Click to review"
-msgstr "Ça a l'air génial ! - Cliquez pour réviser"
+msgstr "Ça a l'air génial ! - Cliquer pour réviser"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_main_attachment_id
@@ -1434,6 +1465,7 @@ msgid "Me"
 msgstr "Moi"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #: code:addons/appointment/models/onboarding_onboarding_step.py:0
 #, python-format
@@ -1457,10 +1489,11 @@ msgid "Messages"
 msgstr "Messages"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/appointment.py:0
 #, python-format
 msgid "Mobile: %s"
-msgstr "Mobile: %s"
+msgstr "Mobile : %s"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_slot__weekday__1
@@ -1483,10 +1516,20 @@ msgid "My Links"
 msgstr "Mes liens"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Name"
 msgstr "Nom"
+
+#. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Navigation"
+msgstr "Navigation"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_calendar_alarm__default_for_new_appointment_type
@@ -1501,7 +1544,7 @@ msgstr "Aucun rendez-vous configuré"
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_type__avatars_display__hide
 msgid "No Picture"
-msgstr "Pas de photo"
+msgstr "Aucune photo"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__appointment_type_info_msg
@@ -1527,9 +1570,10 @@ msgstr "Aucun type de rendez-vous personnalisé n'a été créé !"
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_report
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_reporting
 msgid "No data yet!"
-msgstr "Pas de données"
+msgstr "Pas encore de données !"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "None"
@@ -1539,7 +1583,8 @@ msgstr "Aucun"
 #: model:ir.model.fields,help:appointment.field_calendar_event__alarm_ids
 msgid "Notifications sent to all attendees to remind of the meeting."
 msgstr ""
-"Notifications envoyées à tous les participants pour rappeler la réunion."
+"Notifications envoyées à tous les participants pour leur rappeler la "
+"réunion."
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_needaction_counter
@@ -1574,7 +1619,7 @@ msgstr "Étape du parcours d'intégration"
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_slot__slot_type__unique
 msgid "One Shot"
-msgstr "One Shot"
+msgstr "Créneau unique"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
@@ -1590,7 +1635,7 @@ msgstr "Rendez-vous en ligne"
 #. module: appointment
 #: model:ir.model,name:appointment.model_appointment_slot
 msgid "Online Appointment : Time Slot"
-msgstr "Rendez-vous en ligne: créneau horaire"
+msgstr "Rendez-vous en ligne : créneau horaire"
 
 #. module: appointment
 #: model:ir.actions.act_window,name:appointment.appointment_type_action
@@ -1611,6 +1656,7 @@ msgstr ""
 "sont autorisés dans vos liens."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_invite.py:0
 #, python-format
 msgid ""
@@ -1621,6 +1667,7 @@ msgstr ""
 "sont autorisés dans vos liens. Vous devez adapter %s."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Only one anytime appointment type is allowed for a specific user."
@@ -1634,7 +1681,7 @@ msgid "Options"
 msgstr "Options"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Our first availability is"
@@ -1646,6 +1693,7 @@ msgid "Outlook"
 msgstr "Outlook"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Past"
@@ -1654,12 +1702,12 @@ msgstr "Passé"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_question__placeholder
 msgid "Placeholder"
-msgstr "Zone de texte"
+msgstr "Placeholder"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "Please, select another date."
-msgstr "Choisissez une autre date."
+msgstr "Veuillez sélectionner une autre date."
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__suggested_staff_user_ids
@@ -1702,7 +1750,7 @@ msgstr "Questions"
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_question__question_type__radio
 msgid "Radio (one answer)"
-msgstr "Case d'option (une seule réponse possible)"
+msgstr "Radio (une seule réponse possible)"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_type__assign_method__random
@@ -1717,7 +1765,7 @@ msgstr "Récurrent"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__redirect_url
 msgid "Redirect URL"
-msgstr "Rediriger l'URL"
+msgstr "URL de redirection"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__reminder_ids
@@ -1736,6 +1784,7 @@ msgid "Required Answer"
 msgstr "Réponse obligatoire"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Responsible"
@@ -1749,7 +1798,7 @@ msgstr "Restreindre aux utilisateurs"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
 msgid "SCHEDULED"
-msgstr "PRÉVU"
+msgstr "PLANIFIÉ"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__message_has_sms_error
@@ -1765,7 +1814,7 @@ msgstr "Samedi"
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
 msgid "Schedule"
-msgstr "Planifier"
+msgstr "Programmer"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointments_list_layout
@@ -1773,10 +1822,17 @@ msgid "Schedule an Appointment"
 msgstr "Programmer un rendez-vous"
 
 #. module: appointment
+#. odoo-javascript
+#: code:addons/appointment/static/src/js/wysiwyg.js:0
+#, python-format
+msgid "Schedule an appointment."
+msgstr "Programmer un rendez-vous."
+
+#. module: appointment
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_report
 #: model_terms:ir.actions.act_window,help:appointment.calendar_event_action_reporting
 msgid "Schedule appointments to get statistics"
-msgstr "Planifiez des rendez-vous pour avoir des statistiques"
+msgstr "Programmez des rendez-vous pour avoir des statistiques"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_type__min_schedule_hours
@@ -1791,34 +1847,38 @@ msgstr "Ne pas programmer après (jours)"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "Scheduling"
-msgstr "Ordonnancement"
+msgstr "Programmation"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in All"
-msgstr "Chercher dans Tout"
+msgstr "Rechercher dans Tout"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Description"
-msgstr "Chercher dans Description"
+msgstr "Rechercher dans Description"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Name"
-msgstr "Recherche dans le nom"
+msgstr "Recherche dans Nom"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Search in Responsible"
 msgstr "Recherche dans Responsable"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #, python-format
 msgid "Select Dates"
@@ -1837,7 +1897,7 @@ msgstr "Nombre de rendez-vous sélectionnés"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_answer_input_view_search
 msgid "Selection Questions"
-msgstr "Questions de sélection"
+msgstr "Sélection de questions"
 
 #. module: appointment
 #: model:mail.template,description:appointment.appointment_canceled_mail_template
@@ -1859,7 +1919,7 @@ msgstr "Séquence"
 #. module: appointment
 #: model:onboarding.onboarding.step,title:appointment.appointment_onboarding_create_appointment_type_step
 msgid "Set your availabilities"
-msgstr "Définissez vos disponibilités"
+msgstr "Définir vos disponibilités"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
@@ -1869,7 +1929,7 @@ msgid "Share"
 msgstr "Partager"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
 #: code:addons/appointment/static/src/views/appointment_calendar/appointment_calendar_controller.xml:0
@@ -1878,6 +1938,7 @@ msgid "Share Availabilities"
 msgstr "Partager les disponibilités"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid "Share Link"
@@ -1908,17 +1969,17 @@ msgstr ""
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__short_code
 #: model:ir.model.fields,field_description:appointment.field_appointment_onboarding_link__short_code
 msgid "Short Code"
-msgstr "Code"
+msgstr "Code court"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__short_code_format_warning
 msgid "Short Code Format Warning"
-msgstr "Avertissement Format Code Court"
+msgstr "Avertissement format code court"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__short_code_unique_warning
 msgid "Short Code Unique Warning"
-msgstr "Avertissement Unique Code Court"
+msgstr "Avertissement unique code court"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_type__avatars_display__show
@@ -1938,10 +1999,10 @@ msgstr "Type de créneau"
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_appointment_type__message_intro
 msgid "Small description of the appointment type."
-msgstr "Courte description du type de rendez-vous."
+msgstr "Brève description du type de rendez-vous."
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
@@ -1949,14 +2010,14 @@ msgid "Sorry,"
 msgstr "Désolé,"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Sorry, we have no availability for an appointment."
-msgstr "Désolé, nous n'avons pas de disponibilité pour un rendez-vous."
+msgstr "Désolé, nous n'avons pas de disponibilités pour un rendez-vous."
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Sorry, we have no more slots available for this month."
@@ -1970,7 +2031,7 @@ msgstr "Utilisateurs spécifiques"
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_appointment_slot__start_datetime
 msgid "Start datetime for unique slot type management"
-msgstr "Date de début pour la gestion du type de créneau unique"
+msgstr "Datetime de début pour la gestion du type de créneau unique"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_slot__start_hour
@@ -1981,7 +2042,7 @@ msgstr "Heure de début"
 #: model:onboarding.onboarding.step,done_text:appointment.appointment_onboarding_configure_calendar_provider_step
 #: model:onboarding.onboarding.step,done_text:appointment.appointment_onboarding_preview_invite_step
 msgid "Step Completed! - Click to review"
-msgstr "Étape terminée ! - Cliquez pour réviser"
+msgstr "Étape terminée ! - Cliquer pour réviser"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_question__answer_input_ids
@@ -2025,12 +2086,14 @@ msgid "The end time must be later than the start time."
 msgstr "L'heure de fin doit être postérieure à l'heure de début."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "The field '%s' does not exist in the targeted model"
 msgstr "Le champ '%s' n'existe pas dans le modèle ciblé"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_invite.py:0
 #, python-format
 msgid "The following appointment type(s) have no staff assigned: %s."
@@ -2038,6 +2101,7 @@ msgstr ""
 "Les types de rendez-vous suivants n'ont pas de personnel affecté : %s."
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_question.py:0
 #, python-format
 msgid "The following question(s) do not have any selectable answers : %s"
@@ -2045,17 +2109,18 @@ msgstr ""
 "La ou les questions suivantes n'ont pas de réponses sélectionnables : %s"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid ""
 "The following users are in restricted slots but they are not part of the "
 "available staff: %s"
 msgstr ""
-"Les utilisateurs suivants sont dans des créneaux restreints mais ils ne font"
-" pas partie du personnel disponible : %s"
+"Les utilisateurs suivants sont dans des créneaux restreints, mais ils ne "
+"font pas partie du personnel disponible : %s"
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "Their first availability is"
@@ -2072,7 +2137,7 @@ msgid ""
 "This appointment type has no availabilities because it does not have any "
 "opening hours configured"
 msgstr ""
-"Ce type de rendez-vous n'a pas de disponibilités car il n'a pas d'heures "
+"Ce type de rendez-vous n'a pas de disponibilités, car il n'a pas d'heures "
 "d'ouverture configurées"
 
 #. module: appointment
@@ -2080,8 +2145,8 @@ msgstr ""
 msgid ""
 "This appointment type has no availabilities because it has no staff assigned"
 msgstr ""
-"Ce type de rendez-vous n'a pas de disponibilités car il n'a pas de personnel"
-" affecté"
+"Ce type de rendez-vous n'a pas de disponibilités, car il n'a pas de "
+"personnel affecté"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_info
@@ -2089,10 +2154,11 @@ msgid ""
 "This appointment type has no availabilities because it has no staff assigned"
 " and does not have any opening hours configured"
 msgstr ""
-"Ce type de rendez-vous n'a pas de disponibilités car il n'a pas de personnel"
-" affecté et n'a pas d'heures d'ouverture configurées"
+"Ce type de rendez-vous n'a pas de disponibilités, car il n'a pas de "
+"personnel affecté et n'a pas d'heures d'ouverture configurées"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/models/appointment_type.py:0
 #, python-format
 msgid ""
@@ -2146,17 +2212,17 @@ msgstr "Vers"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__access_token
 msgid "Token"
-msgstr "Token"
+msgstr "Jeton"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_kanban
 msgid "Total Meetings<br/>(Last 30 Days)"
-msgstr "Nombre total de rendez-vous <br/>(derniers 30 jours)"
+msgstr "Nombre total de rendez-vous <br/>(30 derniers jours)"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.portal_my_appointments
 msgid "Total:"
-msgstr "Total:"
+msgstr "Total :"
 
 #. module: appointment
 #: model:ir.model.fields.selection,name:appointment.selection__appointment_slot__weekday__2
@@ -2169,10 +2235,11 @@ msgid "Until (max)"
 msgstr "Jusqu'à (max)"
 
 #. module: appointment
+#. odoo-python
 #: code:addons/appointment/controllers/portal.py:0
 #, python-format
 msgid "Upcoming"
-msgstr "A venir"
+msgstr "À venir"
 
 #. module: appointment
 #: model:ir.model.fields,help:appointment.field_calendar_alarm__default_for_new_appointment_type
@@ -2199,9 +2266,9 @@ msgstr ""
 "\n"
 "- Site web : la catégorie par défaut, les personnes peuvent accéder et programmer le rendez-vous avec les utilisateurs depuis le site web\n"
 "\n"
-"- Personnalisé : l'utilisateur créera et partagera avec un autre utilisateur un type de rendez-vous personnalisé avec des créneaux horaires triés sur le volet\n"
+"- Personnalisé : l'utilisateur crée et partage avec un autre utilisateur un type de rendez-vous personnalisé avec des créneaux horaires triés sur le volet\n"
 "\n"
-"- À tout moment : l'utilisateur créera et partagera avec un autre utilisateur un type de rendez-vous couvrant tous ses créneaux horaires"
+"- À tout moment : l'utilisateur crée et partage avec un autre utilisateur un type de rendez-vous couvrant tous ses créneaux horaires"
 
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_invite__staff_user_ids
@@ -2241,7 +2308,7 @@ msgstr "Mercredi"
 #. module: appointment
 #: model:ir.model.fields,field_description:appointment.field_appointment_slot__weekday
 msgid "Week Day"
-msgstr "En semaine"
+msgstr "Jour de semaine"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
@@ -2306,12 +2373,12 @@ msgstr "par ex. \"Au cours de cette réunion, nous allons...\""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"I feel nauseous...\""
-msgstr "par exemple : \"je me sens mal...\""
+msgstr "par ex. \"je me sens mal...\""
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"Technical Demo\""
-msgstr "par ex. \"Demo technique\"."
+msgstr "par ex. \"Demonstration technique\"."
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
@@ -2322,17 +2389,17 @@ msgstr ""
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_type_view_form
 msgid "e.g. \"What are your symptoms ?\""
-msgstr "par exemple : \"quels sont mes symptômes ?\""
+msgstr "par ex. \"Quels sont mes symptômes ?\""
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "has no availability for an appointment."
-msgstr "n'a pas de disponibilité pour un rendez-vous."
+msgstr "n'a pas de disponibilités pour un rendez-vous."
 
 #. module: appointment
-#. openerp-web
+#. odoo-javascript
 #: code:addons/appointment/static/src/xml/appointment_no_slot.xml:0
 #, python-format
 msgid "has no more slots available for this month."
@@ -2346,7 +2413,7 @@ msgstr "heures avant"
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_validated
 msgid "hours from now!"
-msgstr "heures."
+msgstr "heures !"
 
 #. module: appointment
 #: model_terms:ir.ui.view,arch_db:appointment.appointment_form

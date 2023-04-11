@@ -8,7 +8,8 @@
 # 徐 文郁, 2022
 # digitalliuzg8888, 2022
 # Raymond Yu <cl_yu@hotmail.com>, 2022
-# Jeffery CHEN <jeffery9@gmail.com>, 2022
+# Jeffery CHEN Fan <jeffery9@gmail.com>, 2022
+# Emily Jia <eji@odoo.com>, 2023
 # 
 msgid ""
 msgstr ""
@@ -16,7 +17,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-10 13:27+0000\n"
 "PO-Revision-Date: 2022-09-22 05:49+0000\n"
-"Last-Translator: Jeffery CHEN <jeffery9@gmail.com>, 2022\n"
+"Last-Translator: Emily Jia <eji@odoo.com>, 2023\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/odoo/teams/41243/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,7 +30,7 @@ msgstr ""
 #: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
 #, python-format
 msgid "%s can't be inventoried. Only storable products can be inventoried."
-msgstr "无法%s进行清点。只能对可储存的产品进行清点。"
+msgstr "%s 不能盘点。只有可存储的产品可以盘点。"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
@@ -136,12 +137,12 @@ msgstr "<i class=\"fa fa-print\"/>打印条码命令"
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.res_config_settings_view_form
 msgid "<i class=\"fa fa-print\"/> Print barcode demo sheet"
-msgstr "<i class=\"fa fa-print\"/> 打印条码演示单"
+msgstr "<i class=\"fa fa-print\"/> 打印条码演示表"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
 msgid "<i class=\"fa fa-trash-o\"/> Delete"
-msgstr "<i class=\"fa fa-trash\"/>删除"
+msgstr "<i class=\"fa fa-trash-o\"/> 删除"
 
 #. module: stock_barcode
 #. openerp-web
@@ -150,7 +151,7 @@ msgstr "<i class=\"fa fa-trash\"/>删除"
 msgid ""
 "A product tracked by serial numbers can't have multiple quantities for the "
 "same serial number."
-msgstr "一个由序列号追踪的产品，不能有多个产品共用一个序列号。"
+msgstr " 由序列号追踪的产品，不能有多个产品共用 序列号。"
 
 #. module: stock_barcode
 #. openerp-web
@@ -176,7 +177,7 @@ msgstr "在每个产品后"
 #: model:ir.model.fields.selection,name:stock_barcode.selection__stock_picking_type__restrict_put_in_pack__optional
 #: model:ir.model.fields.selection,name:stock_barcode.selection__stock_picking_type__restrict_scan_dest_location__optional
 msgid "After group of Products"
-msgstr "每组产品后"
+msgstr "在每组产品后"
 
 #. module: stock_barcode
 #. openerp-web
@@ -209,7 +210,7 @@ msgstr "允许验证拣货单，即使尚未扫描任何内容（并且，立即
 msgid ""
 "An unexisting package type was scanned. This part of the barcode can't be "
 "processed."
-msgstr "扫描了一个不存在的包裹类型。条形码的这一部分不能被处理。"
+msgstr "扫描了 不存在的包裹类型。条形码的这一部分不能被处理。"
 
 #. module: stock_barcode
 #. openerp-web
@@ -348,7 +349,7 @@ msgstr "联系人"
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_quant_barcode
 msgid "Counted Quantity"
-msgstr "计数的计数"
+msgstr "计数的数量"
 
 #. module: stock_barcode
 #: model_terms:ir.actions.act_window,help:stock_barcode.stock_picking_action_kanban
@@ -528,10 +529,9 @@ msgstr "ID"
 #: code:addons/stock_barcode/models/stock_picking.py:0
 #, python-format
 msgid ""
-"If the source location must be scanned for each product, the destination "
-"location must be either scanned after each line too, either not scanned at "
-"all."
-msgstr "如果必须扫描每个产品的来源位置，则必须在每行之后扫描目标位置，或者都不扫描。"
+"If the source location must be scanned, then the destination location must "
+"either be scanned after each product or not scanned at all."
+msgstr "如果必须扫描来源地，则须在各产品之后扫描目标地点，或者完全不扫描。"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_picking_type_kanban
@@ -588,7 +588,7 @@ msgstr "最后更新时间"
 #: code:addons/stock_barcode/static/src/main_menu.js:0
 #, python-format
 msgid "Leave it"
-msgstr "离开它"
+msgstr "就这样"
 
 #. module: stock_barcode
 #: model:ir.model.fields,help:stock_barcode.field_stock_picking_type__restrict_scan_product
@@ -654,7 +654,7 @@ msgstr "没有扫描"
 #, python-format
 msgid ""
 "No internal operation type. Please configure one in warehouse settings."
-msgstr "没有内部作业类型。 请在仓库设置中配置一个。"
+msgstr "没有内部操作类型。 请在仓库设置中配置 。"
 
 #. module: stock_barcode
 #: code:addons/stock_barcode/controllers/stock_barcode.py:0
@@ -689,7 +689,7 @@ msgstr "不是预计的扫描"
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.picking_view_kanban_inherit_barcode
 msgid "Open picking"
-msgstr "打开分拣单"
+msgstr "打开拣货单"
 
 #. module: stock_barcode
 #: code:addons/stock_barcode/models/stock_picking.py:0
@@ -705,7 +705,7 @@ msgstr "打开拣货表单"
 #: model:ir.actions.act_window,name:stock_barcode.stock_picking_type_action_kanban
 #, python-format
 msgid "Operations"
-msgstr "作业"
+msgstr "操作"
 
 #. module: stock_barcode
 #: model:ir.model.fields.selection,name:stock_barcode.selection__stock_picking_type__restrict_scan_tracking_number__optional
@@ -821,7 +821,7 @@ msgstr "打印包裹"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Print Picking Operations"
-msgstr "打印拣货作业"
+msgstr "打印拣货操作"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_barcode_view_picking_type_form
@@ -891,7 +891,7 @@ msgstr "库存移动中计量单位的包装数量。"
 #. module: stock_barcode
 #: model:ir.model,name:stock_barcode.model_stock_quant
 msgid "Quants"
-msgstr "量化"
+msgstr "库存量"
 
 #. module: stock_barcode
 #. openerp-web
@@ -915,7 +915,7 @@ msgstr "扫描"
 #: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
 #, python-format
 msgid "Scan a location"
-msgstr "扫描一个位置条码"
+msgstr "扫描 位置条码"
 
 #. module: stock_barcode
 #. openerp-web
@@ -923,49 +923,49 @@ msgstr "扫描一个位置条码"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a lot number"
-msgstr "扫描一个批次号"
+msgstr "扫描 批次号"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a lot number or a packages then the destination location"
-msgstr "先扫描一个批次号或者包裹号，然后扫描目的位置。"
+msgstr "先扫描 批次号或者 包裹，然后扫描目的位置。"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a lot number then the destination location"
-msgstr "先扫描一个批次号，然后扫描目的位置。"
+msgstr "先扫描 批次号，然后扫描目的位置。"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a package"
-msgstr "扫描一个包裹号"
+msgstr "扫描 包裹"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a package or put in pack"
-msgstr "扫描一个包裹号或放入包裹"
+msgstr "扫描 包裹或放入包裹"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a package or the destination location"
-msgstr "扫描一个包裹号或者目的位置"
+msgstr "扫描 包裹或者目的位置"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a package, the destination location or another product"
-msgstr "扫描一个包裹号，目的位置或者另一个产品条码"
+msgstr "扫描 包裹，目的位置或者另 产品"
 
 #. module: stock_barcode
 #. openerp-web
@@ -973,7 +973,7 @@ msgstr "扫描一个包裹号，目的位置或者另一个产品条码"
 #: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
 #, python-format
 msgid "Scan a product"
-msgstr "扫描一个产品"
+msgstr "扫描 产品"
 
 #. module: stock_barcode
 #. openerp-web
@@ -994,62 +994,62 @@ msgstr "扫描来自 %s的产品"
 #: code:addons/stock_barcode/static/src/models/barcode_quant_model.js:0
 #, python-format
 msgid "Scan a product in %s or scan another location"
-msgstr "扫描一个来自 %s 的产品或者扫描一个库存位置"
+msgstr "扫描 来自 %s 的产品或者扫描另外 位置"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a product or a package"
-msgstr "扫描一个产品或者一个包裹号"
+msgstr "扫描 产品或者 包裹号"
 
 #. module: stock_barcode
 #: code:addons/stock_barcode/models/stock_picking.py:0
 #, python-format
 msgid "Scan a product or a package to filter the transfers."
-msgstr "通过扫描产品或包裹号过滤调拨单"
+msgstr "通过扫描产品或包裹过滤调拨。"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a product or another package"
-msgstr "扫描产品或者另一个包裹号"
+msgstr "扫描 产品或者另 包裹"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a product or the destination location."
-msgstr "扫描产品或者目的位置"
+msgstr "扫描 产品或者目的位置"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a product then the destination location"
-msgstr "扫描产品，然后扫描目的位置"
+msgstr "扫描 产品，然后扫描目的位置"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a product, a package or the destination location"
-msgstr "扫描产品，包裹号或者目的位置"
+msgstr "扫描 产品，包裹号或者目的位置"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a product, a package or the destination location."
-msgstr "扫描产品，包裹号或者目的位置"
+msgstr "扫描 产品，包裹号或者目的位置"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan a serial number"
-msgstr "扫描序列号码"
+msgstr "扫描 序列号码"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1185,14 +1185,14 @@ msgstr "扫描源位置"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "Scan the source location or a package"
-msgstr "扫描源位置，或扫描一个包裹"
+msgstr "扫描源位置，或扫描 包裹"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_model.js:0
 #, python-format
 msgid "Scan the source location, or scan a product"
-msgstr "扫描源位置，或扫描一个产品"
+msgstr "扫描源位置，或扫描 产品"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1242,7 +1242,7 @@ msgstr "报废"
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
 msgid "Select a Product"
-msgstr "选择一个产品"
+msgstr "选择 产品"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
@@ -1358,7 +1358,7 @@ msgstr "拣货早已完成"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "This picking is cancelled"
-msgstr "此拣货被取消"
+msgstr "此拣货已取消"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1393,7 +1393,7 @@ msgstr "调拨名称"
 #. module: stock_barcode
 #: model_terms:ir.actions.act_window,help:stock_barcode.stock_picking_action_kanban
 msgid "Transfers allow you to move products from one location to another."
-msgstr "调拨允许你将产品从一个位置移动到另外一个位置。"
+msgstr "调拨允许你将产品从 位置移动到另外 位置。"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.stock_move_line_product_selector
@@ -1454,14 +1454,14 @@ msgstr "错误的计量单位"
 msgid ""
 "You are expected to scan one or more products or a package available at the "
 "picking location"
-msgstr "你要扫描一个或多个产品或一个分拣单可获得的包裹"
+msgstr "你要扫描 或多个产品或 分拣单可获得的包裹"
 
 #. module: stock_barcode
 #. openerp-web
 #: code:addons/stock_barcode/static/src/models/barcode_model.js:0
 #, python-format
 msgid "You are expected to scan one or more products."
-msgstr "你需要扫描一个或多个产品。"
+msgstr "你需要扫描 或多个产品。"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1475,7 +1475,7 @@ msgstr "您应该扫描 %s 或者其他的源位置"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "You can't apply a package type. First, scan product or select a line"
-msgstr "你不能应用包裹类型。首先，扫描产品或选择一个行"
+msgstr "你不能应用包裹类型。首先，扫描产品或选择 行"
 
 #. module: stock_barcode
 #: model_terms:ir.ui.view,arch_db:stock_barcode.view_backorder_confirmation
@@ -1494,7 +1494,7 @@ msgstr "你必须扫描包裹或放入包裹"
 #: code:addons/stock_barcode/static/src/models/barcode_picking_model.js:0
 #, python-format
 msgid "You must scan a product"
-msgstr "必须扫描一个产品"
+msgstr "必须扫描 产品"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1545,7 +1545,7 @@ msgstr ""
 #: code:addons/stock_barcode/static/src/main_menu.xml:0
 #, python-format
 msgid "operation type"
-msgstr "作业类型"
+msgstr "操作类型"
 
 #. module: stock_barcode
 #. openerp-web
@@ -1597,7 +1597,7 @@ msgstr "从此位置创建新调拔。"
 #: code:addons/stock_barcode/static/src/main_menu.xml:0
 #, python-format
 msgid "to create a new transfer."
-msgstr "去创建一个新的调拨。"
+msgstr "去创建 新的调拨。"
 
 #. module: stock_barcode
 #. openerp-web

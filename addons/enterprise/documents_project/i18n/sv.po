@@ -5,9 +5,10 @@
 # Translators:
 # Kim Asplund <kim.asplund@gmail.com>, 2022
 # Martin Trigaux, 2022
-# Anders Wallenquist <anders.wallenquist@vertel.se>, 2022
 # Kristoffer Grundström <lovaren@gmail.com>, 2022
 # Chrille Hedberg <hedberg.chrille@gmail.com>, 2022
+# Mikael Åkerberg <mikael.akerberg@mariaakerberg.com>, 2023
+# Anders Wallenquist <anders.wallenquist@vertel.se>, 2023
 # 
 msgid ""
 msgstr ""
@@ -15,7 +16,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-09-27 15:41+0000\n"
 "PO-Revision-Date: 2022-09-22 05:46+0000\n"
-"Last-Translator: Chrille Hedberg <hedberg.chrille@gmail.com>, 2022\n"
+"Last-Translator: Anders Wallenquist <anders.wallenquist@vertel.se>, 2023\n"
 "Language-Team: Swedish (https://www.transifex.com/odoo/teams/41243/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,7 +42,7 @@ msgstr ""
 #. module: documents_project
 #: model:documents.workflow.rule,name:documents_project.documents_project_rule_ask_for_validation
 msgid "Ask for Validation"
-msgstr ""
+msgstr "Be om validering"
 
 #. module: documents_project
 #: model:ir.model,name:documents_project.model_ir_attachment
@@ -76,12 +77,12 @@ msgstr "Standardetiketter"
 #. module: documents_project
 #: model:documents.workflow.rule,name:documents_project.documents_project_rule_deprecate
 msgid "Deprecate"
-msgstr ""
+msgstr "Ogilla"
 
 #. module: documents_project
 #: model:documents.tag,name:documents_project.documents_project_status_deprecated
-msgid "Deprectated"
-msgstr ""
+msgid "Deprecated"
+msgstr "Avslutad"
 
 #. module: documents_project
 #: model:ir.model,name:documents_project.model_documents_document
@@ -110,7 +111,7 @@ msgstr ""
 #. module: documents_project
 #: model:ir.model,name:documents_project.model_documents_folder
 msgid "Documents Workspace"
-msgstr ""
+msgstr "Arbetsområde för dokument"
 
 #. module: documents_project
 #: model:documents.tag,name:documents_project.documents_project_status_draft
@@ -125,7 +126,7 @@ msgstr ""
 #. module: documents_project
 #: model:documents.workflow.rule,name:documents_project.documents_project_rule_mark_as_draft
 msgid "Mark As Draft"
-msgstr ""
+msgstr "Markera som utkast"
 
 #. module: documents_project
 #: code:addons/documents_project/models/folder.py:0
@@ -164,7 +165,7 @@ msgstr "Projekt"
 #: model:ir.model.fields,field_description:documents_project.field_project_project__shared_document_ids
 #: model:ir.model.fields,field_description:documents_project.field_project_task__shared_document_ids
 msgid "Shared Documents"
-msgstr ""
+msgstr "Delade dokument"
 
 #. module: documents_project
 #: model:ir.model.fields,field_description:documents_project.field_project_project__shared_document_count
@@ -284,4 +285,10 @@ msgstr ""
 #. module: documents_project
 #: model_terms:ir.ui.view,arch_db:documents_project.share_page
 msgid "documents shared"
+msgstr ""
+
+#. module: documents_project
+#: code:addons/documents_project/models/workflow.py:0
+#, python-format
+msgid "new %s from %s"
 msgstr ""

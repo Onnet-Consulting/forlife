@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="product_data_view_inherit">
+            <field name="name">product_data_view_inherit</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='general_information']//group" position="inside">
+                            <group>
+                                <field name="description_color"/>
+                                <field name="material_composition"/>
+                                <field name="cloth_code"/>
+                                <field name="collection"/>
+                                <field name="user_manual"/>
+                                <field name="daisai"/>
+                                <field name="date_start_business"/>
+                                <field name="date_end_business"/>
+                            </group>
+                            <group>
+                                <field name="note"/>
+                            </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

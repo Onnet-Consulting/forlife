@@ -3,7 +3,7 @@
     <data noupdate="1">
         <function model="account.chart.template" name="try_loading">
             <value eval="[ref('l10n_ke.l10nke_chart_template')]"/>
-            <value model="res.company" eval="obj().env.ref('l10n_ke_hr_payroll.res_company_ke')"/>
+            <value model="res.company" eval="obj().env.ref('l10n_ke.demo_company_ke')"/>
         </function>
     </data>
 </odoo>

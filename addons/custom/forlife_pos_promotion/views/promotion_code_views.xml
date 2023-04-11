@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promotion_code_view_form" model="ir.ui.view">
+        <field name="name">promotion.code.view.form</field>
+        <field name="model">promotion.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="action_open_promotion_codes" icon="fa-ticket"
+                                attrs="{'invisible': [('issued_code_quantity', '=', 0)]}">
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="issued_code_quantity"/>
+                                </span>
+                                <span class="o_stat_text" >Referred Codes</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <field name="name"/>
+                        <field name="partner_id"/>
+                        <field name="used_partner_ids"
+                               widget="many2many_tags"/>
+    <!--                    <field name="limit_usage"/>-->
+                        <field name="max_usage"/>
+                        <field name="use_count"/>
+                        <field name="order_ids" widget="many2many_tags"/>
+    <!--                    <field name="amount"/>-->
+    <!--                    <field name="consumed_amount"/>-->
+    <!--                    <field name="remaining_amount"/>-->
+                        <field name="reward_for_referring" attrs="{'invisible': [('reward_for_referring', '=', False)]}"/>
+                        <field name="referring_date_from" attrs="{'invisible': [('reward_for_referring', '=', False)]}"/>
+                        <field name="referring_date_to" attrs="{'invisible': [('reward_for_referring', '=', False)]}"/>
+                        <field name="reward_program_id" attrs="{'invisible': [('reward_for_referring', '=', False)]}"/>
+                        <field name="original_order_id" attrs="{'invisible': [('original_order_id', '=', False)]}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="promotion_code_view_tree" model="ir.ui.view">
+        <field name="name">promotion.code.view.tree</field>
+        <field name="model">promotion.code</field>
+        <field name="arch" type="xml">
+            <tree>
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="used_partner_ids"
+                           widget="many2many_tags"/>
+                    <field name="use_count"/>
+                    <field name="order_ids" widget="many2many_tags"/>
+                    <field name="limit_usage"/>
+                    <field name="max_usage"/>
+                    <field name="use_count"/>
+                    <field name="amount"/>
+                    <field name="consumed_amount"/>
+                    <field name="remaining_amount"/>
+                    <field name="reward_for_referring"/>
+                    <field name="referring_date_from"/>
+                    <field name="referring_date_to"/>
+                    <field name="reward_program_id"/>
+            </tree>
+        </field>
+    </record>
+    <record id="promotion_code_card_action" model="ir.actions.act_window">
+        <field name="name">Coupons</field>
+        <field name="res_model">promotion.code</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('program_id', '=', active_id)]</field>
+        <field name="context">{'create': False}</field>
+        <field name="help" type="html">
+            <h1>No Code Found.</h1>
+            <p>There haven't been any codes generated yet.</p>
+        </field>
+    </record>
+</odoo>

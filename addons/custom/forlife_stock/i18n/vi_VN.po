@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 16.0+e\n"
+"Project-Id-Version: Odoo Server 16.0+e-20230111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-10 07:08+0000\n"
-"PO-Revision-Date: 2023-02-10 07:08+0000\n"
+"POT-Creation-Date: 2023-03-16 08:50+0000\n"
+"PO-Revision-Date: 2023-03-16 08:50+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,31 +16,1285 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__access_warning
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__access_warning
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__access_warning
+msgid "Access warning"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_needaction
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_needaction
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__activity_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__activity_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__activity_ids
+msgid "Activities"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__activity_exception_decoration
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__activity_exception_decoration
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__activity_state
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__activity_state
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__activity_state
+msgid "Activity State"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__activity_type_icon
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__activity_type_icon
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__activity_type_icon
+msgid "Activity Type Icon"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__approval_logs_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__approval_logs_ids
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+msgid "Approval Logs"
+msgstr "Nhật ký phê duyệt"
+
+#. module: forlife_stock
+#: model:ir.model,name:forlife_stock.model_approval_logs_stock
+msgid "Approval Logs Stock"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__approval_user_id
+msgid "Approval User"
+msgstr ""
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_from_view
+msgid "Approve"
+msgstr "Phê duyệt"
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state__approved
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state_request__approved
+#: model:ir.model.fields.selection,name:forlife_stock.selection__hr_asset_transfer__state__approved
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__state__approved
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer_request__state__approved
+msgid "Approved"
+msgstr "Đã phê duyệt"
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.hr_asset_transfer_action
+#: model:ir.ui.menu,name:forlife_stock.asset_transfer
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_tree
+msgid "Asset Transfer"
+msgstr "Điều chuyển TSCĐ"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_search_view
+msgid "Asset Transfer Search"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_attachment_count
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_attachment_count
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+msgid "Back to draft"
+msgstr "Quay về dự thảo"
+
+#. module: forlife_stock
+#: model:ir.actions.server,name:forlife_stock.stock_transfer_request_rule_on_write_ir_actions_server
+msgid "Base Automation: stock transfer request rule on write"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state_request__cancel
+#: model:ir.model.fields.selection,name:forlife_stock.selection__hr_asset_transfer__state__cancel
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__state__cancel
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer_request__state__cancel
+#: model:ir.model.fields.selection,name:forlife_stock.selection__transfer_stock_inventory__state__cancel
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.reject_asset_wizard_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.reject_stock_request_wizard_from
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_popup_in_confirm_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_popup_out_confirm_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_from_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_wizard_from
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__code
+msgid "Code"
+msgstr "Mã"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location__code_location
+msgid "Code Location"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state__confirm
+msgid "Confirm"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__count_stock_transfer
+msgid "Count Stock Transfer"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__asset_date
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_tree
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_from_view
+msgid "Create Date"
+msgstr "Ngày tạo"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_tree
+msgid "Create Stock Transfer"
+msgstr ""
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+msgid "Create date"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__created_stock_transfer
+msgid "Created Stock Transfer"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__create_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__create_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__create_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_reject_stock_transfer_request__create_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__create_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__create_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__create_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__create_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__create_date
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__create_date
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__create_date
+#: model:ir.model.fields,field_description:forlife_stock.field_reject_stock_transfer_request__create_date
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__create_date
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__create_date
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__create_date
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__create_date
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__access_url
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__access_url
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__access_url
+msgid "Customer Portal URL"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_transfer_request_line__uom_id
+msgid "Default unit of measure used for all stock operations."
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__department_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__department_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+msgid "Department"
+msgstr "Phòng ban"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__department_from_id
+msgid "Department From"
+msgstr "Từ phòng ban"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__department_to_id
+msgid "Department To"
+msgstr "Đến phòng ban"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/hr_asset_transfer.py:0
+#, python-format
+msgid "Department from or department to is empty. Please check again!"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__description
+msgid "Description"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__is_diff_transfer
+msgid "Diff Transfer"
+msgstr "Chuyển khác"
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__document_type__difference_branch
+msgid "Difference Branch"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__display_name
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__display_name
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__display_name
+#: model:ir.model.fields,field_description:forlife_stock.field_reject_stock_transfer_request__display_name
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__display_name
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__display_name
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__display_name
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__display_name
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+msgid "Do you really want to cancel?"
+msgstr "Bạn có muốn hủy không"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+msgid "Document"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state__done
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state_request__done
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__state__done
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer_request__state__done
+#: model:ir.model.fields.selection,name:forlife_stock.selection__transfer_stock_inventory__state__approved
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+msgid "Done"
+msgstr "Hoàn thành"
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state__draft
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state_request__draft
+#: model:ir.model.fields.selection,name:forlife_stock.selection__hr_asset_transfer__state__draft
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__state__draft
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer_request__state__draft
+#: model:ir.model.fields.selection,name:forlife_stock.selection__transfer_stock_inventory__state__draft
+msgid "Draft"
+msgstr "Dự thảo"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__request_employee_id
+msgid "Employee"
+msgstr "Người yêu cầu"
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__document_type__excess_arising_lack_arise
+msgid "Excess Arising/Lack Arise"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_follower_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_follower_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_partner_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_partner_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__activity_type_icon
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__activity_type_icon
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model,name:forlife_stock.model_stock_transfer
+#: model:ir.model,name:forlife_stock.model_stock_transfer_request
+msgid "Forlife Stock Transfer"
+msgstr "Phiếu điều chuyển"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.view_groups_search
+msgid "Groups"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__has_message
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__has_message
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model,name:forlife_stock.model_hr_asset_transfer
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__hr_asset_transfer_line_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__hr_asset_transfer_id
+msgid "Hr Asset Transfer"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model,name:forlife_stock.model_hr_asset_transfer_line
+msgid "Hr Asset Transfer Line"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__id
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__id
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__id
+#: model:ir.model.fields,field_description:forlife_stock.field_reject_stock_transfer_request__id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__id
+msgid "ID"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__activity_exception_icon
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__activity_exception_icon
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__activity_exception_icon
+msgid "Icon"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__activity_exception_icon
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__activity_exception_icon
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__message_needaction
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__message_needaction
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__message_has_error
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__message_has_sms_error
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__message_has_error
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__message_has_sms_error
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__message_has_error
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__state__in_approve
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+msgid "In Approve"
+msgstr "Xác nhận nhập"
+
+#. module: forlife_stock
+#: model:ir.model,name:forlife_stock.model_stock_location
+msgid "Inventory Locations"
+msgstr "Địa điểm Kiểm kê"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_is_follower
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_is_follower
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__is_from_button
+msgid "Is From Button"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__is_no_more_quantity
+msgid "Is No More Quantity"
+msgstr ""
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/stock_transfer_request.py:0
+#, python-format
+msgid ""
+"It is mandatory to enter all the commodity information before confirming the"
+" stock transfer request!"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__function
+msgid "Job Position"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock____last_update
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer____last_update
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line____last_update
+#: model:ir.model.fields,field_description:forlife_stock.field_reject_stock_transfer_request____last_update
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type____last_update
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer____last_update
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line____last_update
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request____last_update
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__write_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__write_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__write_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_reject_stock_transfer_request__write_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__write_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__write_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__write_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__write_uid
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__write_date
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__write_date
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__write_date
+#: model:ir.model.fields,field_description:forlife_stock.field_reject_stock_transfer_request__write_date
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__write_date
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__write_date
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__write_date
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__write_date
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/stock_transfer_request.py:0
+#: code:addons/forlife_stock/models/stock_transfer_request.py:0
+#: code:addons/forlife_stock/models/stock_transfer_request.py:0
+#, python-format
+msgid "List Stock Transfer"
+msgstr ""
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.reject_stock_request_wizard_from
+msgid "Lost Reason"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_main_attachment_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_main_attachment_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_has_error
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_has_error
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__method_transfer
+msgid "Method"
+msgstr "Hình thức điều chuyển"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__my_activity_date_deadline
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__my_activity_date_deadline
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location_type__name
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__name
+msgid "Name"
+msgstr "Mã phiếu"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__activity_date_deadline
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__activity_date_deadline
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__activity_summary
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__activity_summary
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__activity_summary
+msgid "Next Activity Summary"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__activity_type_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__activity_type_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__activity_type_id
+msgid "Next Activity Type"
+msgstr ""
+
+#. module: forlife_stock
+#: model:stock.picking.type,name:forlife_stock.ho_picking_type_in
+msgid "Nhận hàng"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__note
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__note
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory__note
+msgid "Note"
+msgstr "Ghi chú"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+msgid "Note:"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_needaction_counter
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_needaction_counter
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_has_error_counter
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_has_error_counter
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__message_needaction_counter
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__message_needaction_counter
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__message_has_error_counter
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__message_has_error_counter
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state__open
+msgid "Open"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__state__out_approve
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+msgid "Out Approve"
+msgstr "Xác nhận xuất"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/stock_transfer.py:0
+#, python-format
+msgid ""
+"Output quantity is greater than or equal to the number of adjustments !!"
+msgstr ""
+
+#. module: forlife_stock
+#: model:stock.picking.type,name:forlife_stock.ho_picking_type_out
+msgid "Phiếu giao hàng"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__plan_quantity
+msgid "Plan Quantity"
+msgstr "Số lượng yêu cầu"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/stock_transfer_request.py:0
+#, python-format
+msgid "Plan quantity should not be less than or equal to 0 !!"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__access_url
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__access_url
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__access_url
+msgid "Portal Access URL"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__product_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__product_id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__product_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_from_view
+msgid "Product"
+msgstr "Sản phẩm"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__product_str_id
+msgid "Product Str"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__production_order_id
+msgid "Production Order"
+msgstr "Lệnh sản xuất"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__quantity
+msgid "Quantity"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__qty_in
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__qty_in
+msgid "Quantity In"
+msgstr "Số lượng nhập"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__qty_out
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__qty_out
+msgid "Quantity Out"
+msgstr "Số lượng xuất"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__qty_plan
+msgid "Quantity Plan"
+msgstr "Số lượng điều chuyển"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__qty_plan_tsq
+msgid "Quantity Plan Tsq"
+msgstr ""
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/stock_transfer.py:0
+#, python-format
+msgid "Quantity plan cannot be larger than the quantity plan of the ticket !!"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__quantity_reality_receive
+msgid "Quantity reality receive"
+msgstr "Số lượng thực nhận"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__quantity_reality_transfer
+msgid "Quantity reality transfer"
+msgstr "Số lượng thực xuất"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__quantity_remaining
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__quantity_remaining
+msgid "Quantity remaining"
+msgstr "Số lượng còn lại"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__name
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__name
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_search_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_tree
+msgid "Reference"
+msgstr "Mã phiếu"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+msgid "Reference Document"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state_request__reject
+#: model:ir.model.fields.selection,name:forlife_stock.selection__hr_asset_transfer__state__reject
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__state__reject
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer_request__state__reject
+#: model:ir.model.fields.selection,name:forlife_stock.selection__transfer_stock_inventory__state__reject
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_from_view
+msgid "Reject"
+msgstr "Từ chối"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__reject_reason
+msgid "Reject Reason"
+msgstr "Lý do từ chối"
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.reject_stock_request_wizard
+msgid "Reject Stock Transfer Request"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model,name:forlife_stock.model_reject_stock_transfer_request
+msgid "Reject stock transfer request"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_reject_stock_transfer_request__rejection_reason
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__rejection_reason
+msgid "Rejection Reason"
+msgstr "Lý do từ chối"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__request_approved_date
+msgid "Request Approved"
+msgstr "Ngày duyệt"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__request_date
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__request_date
+msgid "Request Date"
+msgstr "Ngày tạo"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__request_lines
+msgid "Request Lines"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__res_model
+msgid "Resource Model"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__activity_user_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__activity_user_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__activity_user_id
+msgid "Responsible User"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__message_has_sms_error
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__message_has_sms_error
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__document_type__same_branch
+msgid "Same Branch"
+msgstr "Cùng chi nhánh"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__access_token
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__access_token
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__access_token
+msgid "Security Token"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__selected_product_ids
+msgid "Selected Products"
+msgstr ""
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+msgid "Send"
+msgstr "Gửi duyệt"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/stock_transfer_request.py:0
+#, python-format
+msgid "Source Warehouse And Destination Warehouse must not overlap"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__state
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__state
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__state
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__state
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory__state
+msgid "Status"
+msgstr "Trạng thái"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__state_request
+msgid "Status Request"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__activity_state
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__activity_state
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.stock_location_type_action
+#: model:ir.model,name:forlife_stock.model_stock_location_type
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location__stock_location_type_id
+#: model:ir.ui.menu,name:forlife_stock.stock_location_type
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_location_type_tree
+msgid "Stock Location Type"
+msgstr "Loại địa điểm"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__stock_request_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__stock_request_id
+msgid "Stock Request"
+msgstr "Yêu cầu điều chuyển"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__work_from
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__work_from
+msgid "LSX From"
+msgstr "LSX từ"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__create_date
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__create_date
+msgid "Create Date"
+msgstr "Ngày tạo"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__work_to
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__work_to
+msgid "LSX To"
+msgstr "LSX tới"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__total_package
+msgid "Total Package (Number)"
+msgstr "Tổng số kiện"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__total_weight
+msgid "Total Weight (Kg)"
+msgstr "Tổng trọng lượng (Kg)"
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.stock_transfer_action
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__stock_transfer_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__stock_transfer_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__stock_transfer_ids
+#: model:ir.ui.menu,name:forlife_stock.stock_transfer
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_tree
+msgid "Stock Transfer"
+msgstr "Phiếu điều chuyển"
+
+#. module: forlife_stock
+#: model:ir.model,name:forlife_stock.model_stock_transfer_line
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__stock_transfer_line
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__stock_transfer_line_ids
+msgid "Stock Transfer Line"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.stock_transfer_request_action
+#: model:ir.model.fields,field_description:forlife_stock.field_approval_logs_stock__stock_transfer_request_id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__request_id
+#: model:ir.ui.menu,name:forlife_stock.stock_transfer_request_menu
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_tree
+msgid "Stock Transfer Request"
+msgstr "Phiếu yêu cầu điều chuyển"
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_search_view
+msgid "Stock Transfer Request Search"
+msgstr ""
+
+#. module: forlife_stock
+#: model_terms:ir.ui.view,arch_db:forlife_stock.reject_stock_request_wizard_from
+msgid "Submit"
+msgstr "Đồng ý"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/stock_transfer.py:0
+#, python-format
+msgid ""
+"The number of inputs is greater than or equal to the number of adjustments "
+"!!"
+msgstr ""
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/stock_transfer_request.py:0
+#, python-format
+msgid "The record is not in approved state"
+msgstr "Bản ghi không ở trạng thái phê duyệt"
+
+#. module: forlife_stock
+#: model:ir.model,name:forlife_stock.model_stock_picking
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__transfer_id
+msgid "Transfer"
+msgstr "Điều chuyển"
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__method_transfer__transfer_between_production_order
+msgid "Transfer Between Production Order"
+msgstr "Điều chuyển giữa lệnh sản xuất"
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__method_transfer__transfer_between_warehouse
+msgid "Transfer Between Warehouse"
+msgstr "Điều chuyển giữa các kho"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__reference_document_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+msgid "Transfer Request"
+msgstr "Yêu cầu điều chuyển"
+
+#. module: forlife_stock
+#: model:ir.model,name:forlife_stock.model_transfer_request_line
+msgid "Transfer Request Line"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__document_type
+msgid "Type"
+msgstr "Loại điều chuyển"
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__activity_exception_decoration
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__activity_exception_decoration
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__uom_id
+msgid "Unit"
+msgstr "Đơn vị"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__uom_id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__uom_id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__uom_from_id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__uom_to_id
+msgid "Uom"
+msgstr "Đơn vị"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__employee_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__employee_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock.hr_asset_transfer_form_view
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory__employee_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_from_view
+msgid "User"
+msgstr "Người tạo"
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__hr_asset_transfer__state__wait_approve
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer__state__wait_approve
+msgid "Wait Approve"
+msgstr "Chờ phê duyệt"
+
+#. module: forlife_stock
+#: model:ir.model.fields.selection,name:forlife_stock.selection__approval_logs_stock__state_request__wait_confirm
+#: model:ir.model.fields.selection,name:forlife_stock.selection__stock_transfer_request__state__wait_confirm
+#: model:ir.model.fields.selection,name:forlife_stock.selection__transfer_stock_inventory__state__wait_confirm
+msgid "Wait Confirm"
+msgstr "Chờ duyệt"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__website_message_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__website_message_ids
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_request__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,help:forlife_stock.field_hr_asset_transfer__website_message_ids
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer__website_message_ids
+#: model:ir.model.fields,help:forlife_stock.field_stock_transfer_request__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__location_id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__location_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+msgid "Whs From"
+msgstr "Từ kho"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer__location_dest_id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_request_line__location_dest_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_form
+msgid "Whs To"
+msgstr "Đến kho"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/hr_asset_transfer.py:0
+#, python-format
+msgid "Wrong value for department. Please check again!"
+msgstr "Sai phòng ban. Vui lòng chọn lại!"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/hr_asset_transfer.py:0
+#, python-format
+msgid "Wrong value for employee. Please check again!"
+msgstr "Trường nhân viên không khớp. Vui lòng chọn lại!"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/hr_asset_transfer.py:0
+#, python-format
+msgid "Wrong value for account analytic. Please check again!"
+msgstr "Trường trung tâm chi phí không khớp. Vui lòng chọn lại!"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/hr_asset_transfer.py:0
+#, python-format
+msgid "Wrong value for asset location. Please check again!"
+msgstr "Trường địa điểm không khớp. Vui lòng chọn lại!"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/hr_asset_transfer.py:0
+#, python-format
+msgid "Employee to is empty. Please check again!"
+msgstr "Trường tới nhân viên đang trống. Vui lòng chọn lại!"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/hr_asset_transfer.py:0
+#, python-format
+msgid "Account analytic to is empty. Please check again!"
+msgstr "Trường tới trung tâm chi phí đang trống. Vui lòng chọn lại!"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/hr_asset_transfer.py:0
+#, python-format
+msgid "Asset location to is empty. Please check again!"
+msgstr "Trường tới địa điểm đang trống. Vui lòng chọn lại!"
+
+#. module: forlife_stock
+#. odoo-python
+#: code:addons/forlife_stock/models/stock_transfer_request.py:0
+#, python-format
+msgid "You can only select 1 record"
+msgstr "Bạn chỉ được tạo 1 bản ghi "
+
+#. module: forlife_stock
+#: model:stock.picking.type,name:forlife_stock.ho_picking_type_internal
+msgid "Điều chuyển nội bộ"
+msgstr ""
+
+#. module: forlife_stock
+#: model:ir.ui.menu,name:forlife_stock.menu_id
+msgid "Other reasons for import and export"
+msgstr "Lý do nhập khác xuất khác"
+
+#. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_landed_cost__date
 msgid "Date"
 msgstr "Ngày Hoạch toán"
 
 #. module: forlife_stock
-#: model:ir.model.fields,help:forlife_stock.field_stock_picking__date_done
-msgid "Date at which the transfer has been processed or cancelled."
-msgstr "Ngày mà phiếu điều chuyển được xử lý hoặc hủy bỏ"
-
-#. module: forlife_stock
-#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__date_done
-msgid "Date of Transfer"
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_valuation_layer__x_move_date
+#: model_terms:ir.ui.view,arch_db:forlife_stock.view_move_line_tree_inherit
+#: model_terms:ir.ui.view,arch_db:forlife_stock.view_move_tree_inherit
+msgid "Date Done"
 msgstr "Ngày Hoạch toán"
 
 #. module: forlife_stock
-#: model:ir.model,name:forlife_stock.model_stock_landed_cost
-msgid "Stock Landed Cost"
-msgstr "Phí nhập kho"
+#: model:ir.actions.act_window,name:forlife_stock.transfer_stock_inventory_action
+#: model:ir.model,name:forlife_stock.model_transfer_stock_inventory
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__transfer_stock_inventory_id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__transfer_stock_inventory_id
+#: model:ir.ui.menu,name:forlife_stock.asset_transfer_stock_inventory_menu
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_tree
+msgid "Transfer Stock Inventory"
+msgstr "Kiểm kê cân tồn kho"
 
 #. module: forlife_stock
-#: model:ir.model,name:forlife_stock.model_stock_move
-msgid "Stock Move"
-msgstr "Dịch chuyển kho"
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory__location_id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__location_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_from_view
+msgid "Location"
+msgstr "Kho"
 
 #. module: forlife_stock
-#: model:ir.model,name:forlife_stock.model_stock_picking
-msgid "Transfer"
-msgstr "Điều chuyển"
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__product_from_id
+msgid "Product From"
+msgstr "Từ sản phẩm"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__unit_price_from
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__unit_price_to
+msgid "Unit Price"
+msgstr "Đơn giá"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__total_out
+msgid "Total Out"
+msgstr "Tổng tiền xuất"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__mrp_production_from_id
+msgid "MRP production from "
+msgstr "Từ lệnh sản xuất"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__product_to_id
+msgid "Product To"
+msgstr "Đến sản phẩm"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__total_in
+msgid "Total In"
+msgstr "Tổng tiền nhận"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__mrp_production_to_id
+msgid "MRP production to "
+msgstr "Đến lệnh sản xuất"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory__reason_cancel
+msgid "Reason Cancel"
+msgstr "Lý do hủy"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory__reason_reject
+msgid "Reason Reject"
+msgstr "Lý do từ chối"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__employee_from_id
+msgid "Employee From"
+msgstr "Từ nhân viên"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__employee_to_id
+msgid "Employee To"
+msgstr "Tới nhân viên"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__asset_location_from_id
+msgid "Asset Location From"
+msgstr "Từ địa điểm"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__asset_location_to_id
+msgid "Asset Location To"
+msgstr "Tới địa điểm"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__account_analytic_from_id
+msgid "Cost Center From"
+msgstr "Từ trung tâm chi phí"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__account_analytic_to_id
+msgid "Cost Center To"
+msgstr "Tới trung tâm chi phí"
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.inherit_stock_picking_for_other_export_form_view_action
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__other_export
+#: model:ir.ui.menu,name:forlife_stock.stock_picking_other_export_menu
+msgid "Other Export"
+msgstr "Xuất khác"
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.inherit_stock_picking_for_other_import_form_view_action
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__other_import
+#: model:ir.ui.menu,name:forlife_stock.stock_picking_other_import_menu
+msgid "Other Import"
+msgstr "Nhập khác"
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.forlife_reason_type_action
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location__reason_type_id
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__reason_type_id
+#: model:ir.ui.menu,name:forlife_stock.reason_type_menu
+msgid "Reason Type"
+msgstr "Loại lý do"
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.inherit_stock_picking_for_other_import_form_view_action
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__other_import
+#: model:ir.ui.menu,name:forlife_stock.stock_picking_other_import_menu
+msgid "Other Import"
+msgstr "Phiếu nhập khác"
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.inherit_stock_picking_for_other_export_form_view_action
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__other_export
+#: model:ir.ui.menu,name:forlife_stock.stock_picking_other_export_menu
+msgid "Other Export"
+msgstr "Phiếu xuất khác"
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.transfer_stock_inventory_action
+#: model:ir.model,name:forlife_stock.model_transfer_stock_inventory
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_picking__transfer_stock_inventory_id
+#: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory_line__transfer_stock_inventory_id
+#: model:ir.ui.menu,name:forlife_stock.asset_transfer_stock_inventory_menu
+#: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_tree
+msgid "Transfer Stock Inventory"
+msgstr "Tự kiểm kê cân tồn"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_location__is_price_unit
+msgid "Is Price Unit"
+msgstr "Có dùng đơn giá"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__reason_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock.reject_asset_wizard_form
+msgid "Reason"
+msgstr "Lý do"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_stock_move__occasion_code_id
+msgid "Occasion Code"
+msgstr "Vụ việc"

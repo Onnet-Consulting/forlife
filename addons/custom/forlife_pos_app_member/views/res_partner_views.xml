@@ -5,9 +5,9 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <field name="barcode" position="after">
-                <field name="ref" position="move"/>
-            </field>
+            <xpath expr="//span[@name='address_name']" position="before">
+                <field name="ref" string="Mã"/>
+            </xpath>
             <field name="vat" position="before">
                 <field name="group_id" required="1"/>
                 <field name="retail_type_ids" widget="many2many_tags" attrs="{'invisible': [('show_customer_type', '=', False)]}"/>
@@ -19,8 +19,7 @@
 
         </field>
     </record>
-
-    <record id="res_partner_form_email_inherit" model="ir.ui.view">
+        <record id="res_partner_form_email_inherit" model="ir.ui.view">
         <field name="name">res.partner.email</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="mail.res_partner_view_form_inherit_mail"/>
@@ -34,4 +33,6 @@
             </field>
         </field>
     </record>
+
+
 </odoo>

@@ -43,4 +43,4 @@ msgstr "通过"
 #. module: quality_mrp_workorder_iot
 #: model:ir.model.fields.selection,name:quality_mrp_workorder_iot.selection__iot_trigger__action__measure
 msgid "Take Measure"
-msgstr "采取措施"
+msgstr "称量"

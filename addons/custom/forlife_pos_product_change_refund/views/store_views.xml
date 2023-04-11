@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="store_view_form_inherit" model="ir.ui.view">
+            <field name="name">name</field>
+            <field name="model">store</field>
+            <field name="inherit_id" ref="forlife_point_of_sale.store_view_form"/>
+            <field name="arch" type="xml">
+                <field name="contact_id" position="after">
+                    <field name="number_month"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>

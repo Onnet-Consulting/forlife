@@ -43,7 +43,7 @@
         <field name="arch" type="xml">
             <form string="Campaign">
                 <header attrs="{'invisible': [('active', '=', False)]}">
-                    <button name="action_start_campaign" type="object" states="draft,stopped" class="btn-primary" string="Start" />
+                    <button name="action_start_campaign" type="object" class="btn-primary" string="Start" attrs="{'invisible': ['|', ('state', '=', 'running'), ('active', '=', False)]}" />
                     <button name="action_stop_campaign" type="object" states="running" class="btn-primary" string="Stop" />
                     <button name="%(marketing_campaign_test_action)d" type="action" attrs="{'invisible': ['|', ('marketing_activity_ids', '=', []), ('state', '=', 'stopped') ]}" class="btn-secondary" string="Launch a Test" />
                     <button name="sync_participants" type="object" states="running" class="btn-secondary" string="Generate participants" groups="base.group_no_one" confirm="Are you sure you want to proceed ?"/>
