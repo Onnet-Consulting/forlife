@@ -89,6 +89,7 @@ class PosConfig(models.Model):
                 'coupon_partner_id': code_id.partner_id.id,
                 'remaining_amount': code_id.remaining_amount,
                 'reward_for_referring': has_reward,
-                'reward_program_id': has_reward and code_id.reward_program_id.id
+                'reward_program_id': has_reward and code_id.reward_program_id.id,
+                'reward_program_name': code_id.reward_program_id.name or ''
             },
         }
