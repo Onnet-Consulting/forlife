@@ -9,6 +9,7 @@
     'category': 'Hidden',
     'depends': [
         'base',
+        'base_import',
         'hr',
         'contacts',
         'purchase',

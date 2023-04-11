@@ -52,17 +52,26 @@ odoo.define('forlife_pos_product_change_refund.Orderline', function(require) {
 
 			}
 
+			onchangeValueNew(event) {
+			    var self = this;
+			    self.props.line.set_quantity(parseInt(event.target.value) || 0);
+			}
+
 			async actUpdate(event) {
 			    var args = {};
                 args.id = this.props.line.handle_change_refund_id;
-                const return_price = await this.rpc({
+                var data_update = await this.rpc({
                     model: 'handle.change.refund',
                     method: 'get_data_update',
                     args: [args],
                 })
-               if (return_price) {
-                    this.props.line.set_unit_price(return_price);
-               }
+                if (data_update.status === 'approve') {
+                    this.props.line.set_unit_price(data_update.price);
+                    this.props.line.beStatus = true;
+                }
+                else {
+                    this.props.line.beStatus = false;
+                }
 			}
 
             async sendApprove(event) {
