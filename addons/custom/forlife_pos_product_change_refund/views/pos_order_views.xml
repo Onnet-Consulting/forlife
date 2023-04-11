@@ -5,8 +5,8 @@
         <field name="model">pos.order</field>
         <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='lines']/tree/field[@name='qty']" position="after">
-                <field name="quantity_refunded"/>
+            <xpath expr="//field[@name='lines']/tree/field[@name='money_is_reduced']" position="after">
+                <field name="money_point_is_reduced" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='fiscal_position_id']" position="after">
                 <field name="pay_point"/>

@@ -113,15 +113,20 @@ class PosOrder(models.Model):
                 history_tmp_points = partner_id.history_points_format_ids
             history_points = history_tmp_points.filtered(lambda x: x.point_order_type == 'reset_order')
             if history_points and history_points[0].date_order < old_orders[0].date_order:
+                # lấy chương trình tích điểm
                 points_promotion = old_orders.mapped('program_store_point_id')
                 if not points_promotion:
                     return
                 points_promotion = points_promotion[0]
+                # lấy giá trị quy đổi của chương trình dựa trên 1 điểm
                 coefficient = points_promotion.value_conversion / points_promotion.point_addition
                 for line in item.lines:
                     if line.refunded_orderline_id:
+                        # đơn hàng gốc
                         old_orderline = line.refunded_orderline_id
+                        # sl gốc
                         old_qty = old_orderline.qty
+                        # sl trả hiện tại
                         current_qty = abs(line.qty)
                         if old_orderline.point_addition > 0 or old_orderline.point_addition_event > 0:
                             point_product += ((old_orderline.point_addition + old_orderline.point_addition_event) * current_qty) / old_qty
