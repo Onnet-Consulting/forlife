@@ -3,3 +3,4 @@ phonenumbers
 redis
 pandas
 Werkzeug==0.16.1
+xlrd==1.2.0

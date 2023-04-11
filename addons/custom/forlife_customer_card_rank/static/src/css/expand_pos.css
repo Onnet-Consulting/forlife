@@ -1,0 +1,38 @@
+.discount-detail-checkbox {
+    width: 44px !important;
+}
+
+.card-rank-border {
+    flex: content;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.show-discount_detail-popup {
+    max-width: 70% !important;
+}
+
+.discount-detail-header {
+    background: #6d4870;
+    color: white;
+    height: 40px;
+}
+
+.card-rank-border tr:nth-child(even) {
+    background-color: #dad8d8;
+}
+
+.order-line-detail {
+    position: relative;
+    max-height: 600px;
+    overflow: auto;
+    padding-right: 1px;
+}
+
+.product_name {
+    text-align: left !important;
+}
+
+.price {
+    text-align: right !important;
+}

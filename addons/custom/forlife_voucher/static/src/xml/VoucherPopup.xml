@@ -4,9 +4,12 @@
         <div class="popup" style="max-width: 1150px !important">
             <header class="title">
                 <t t-esc="props.title"/>
+
             </header>
             <main class="body">
-                <table style="width:100%; border:1px solid black;">
+                <div class="my-custom-scrollbar my-custom-scrollbar-primary">
+
+                    <table style="width:100%; border:1px solid black;">
                             <tr style="width:100%;">
 
                                 <th style="border:1px solid black;text-align: center;width:15%;">Ưu tiên</th>
@@ -18,11 +21,21 @@
                                 <th style="border:1px solid black;text-align: center;">Thông báo</th>
                                 <th style="text-align: center;"></th>
                             </tr>
-                    <t t-foreach="[...Array(5).keys()]" t-as="num" t-key="num">
+                        <t t-foreach="[...Array(25).keys()]" t-as="num" t-key="num">
                             <tr style="width:100%;">
-                                <td style="border:1px solid black;"><input type="number" t-att-value-priority="num" style="width: 100%;text-align: center;" class="o_input_priority"/></td>
-                                <td style="border:1px solid black;width:130px;text-align: center;"><input style="width: 100%;text-align: center;text-transform: uppercase;" type="text" t-att-value-index="num" class="o_input_code"/></td>
-                                <t t-if="state.data &amp;&amp; state.error">
+                                <t t-if="env.pos.selectedOrder.data_voucher &amp;&amp; env.pos.selectedOrder.data_voucher[num].value != false">
+                                    <td style="border:1px solid black;"><input type="number" t-att-value="env.pos.selectedOrder.data_voucher[num].value.priority" t-att-value-priority="num" style="width: 100%;text-align: center;" class="o_input_priority"/></td>
+                                    <td style="border:1px solid black;width:130px;text-align: center;"><input style="width: 100%;text-align: center;text-transform: uppercase;" t-att-value="env.pos.selectedOrder.data_voucher[num].value.voucher_name" type="text" t-att-value-index="num" class="o_input_code"/></td>
+                                </t>
+                                <t t-elif="state.data_old &amp;&amp; state.data_old[num].value != fasle">
+                                    <td style="border:1px solid black;"><input type="number" readonly="True" t-att-value="state.data_old[num].value.priority" t-att-value-priority="num" style="width: 100%;text-align: center;" class="o_input_priority"/></td>
+                                    <td style="border:1px solid black;width:130px;text-align: center;"><input t-att-value="state.data_old[num].value.voucher_name" style="width: 100%;text-align: center;text-transform: uppercase;" type="text" t-att-value-index="num" class="o_input_code"/></td>
+                                </t>
+                                <t t-else="">
+                                    <td style="border:1px solid black;"><input type="number" t-att-value-priority="num" style="width: 100%;text-align: center;" class="o_input_priority"/></td>
+                                    <td style="border:1px solid black;width:130px;text-align: center;"><input style="width: 100%;text-align: center;text-transform: uppercase;" type="text" t-att-value-index="num" class="o_input_code"/></td>
+                                </t>
+                                <t t-if="state.data &amp;&amp; state.error &amp;&amp; !env.pos.selectedOrder.data_voucher">
                                     <t t-if="state.error[num] &amp;&amp; state.data[num]">
                                         <t t-if="state.data[num].value != false &amp;&amp; state.error[num].length ==0">
                                             <t t-if="state.data[num].value.type == 'v'">
@@ -31,39 +44,60 @@
                                             <t t-else="">
                                                 <td class="o_table_type" style="border:1px solid black;width:85px;">E-Điện tử</td>
                                             </t>
-                                            <td style="border:1px solid black;width:85px;" class="o_table_end_date"><t t-esc="state.data[num].value.end_date"/></td>
+                                            <td style="border:1px solid black;width:85px;"
+                                                class="o_table_end_date"><t t-esc="state.data[num].value.end_date"/></td>
                                             <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;" t-att-value="env.pos.format_currency(state.data[num].value.price_residual)"/></td>
                                             <td style="border:1px solid black;width:85px;">
-                                                    <input class="o_price_used" type="text" t-on-change="_onValueChange" style="width: 100%;text-align: center;" t-att-value="env.pos.format_currency(state.data[num].value.price_change)"/>
+                                                <input class="o_price_used" readonly="True" type="text"
+                                                       style="width: 100%;text-align: center;"
+                                                       t-att-value="env.pos.format_currency(state.data[num].value.price_change)"/>
                                             </td>
                                         </t>
                                         <t t-else="">
                                             <td class="o_table_type" style="border:1px solid black;width:85px;"></td>
-                                            <td class="o_table_end_date" style="border:1px solid black;width:85px;"></td>
+                                            <td class="o_table_end_date"
+                                                style="border:1px solid black;width:85px;"></td>
                                             <td style="border:1px solid black;width:85px;"><input class="o_price_residual"  type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
-                                            <td style="border:1px solid black;width:85px;"><input class="o_price_used"  type="text" style="width: 100%;text-align: center;"/></td>
+                                            <td style="border:1px solid black;width:85px;"><input class="o_price_used" readonly="True"  type="text" style="width: 100%;text-align: center;"/></td>
                                         </t>
                                     </t>
                                     <t t-else="">
                                             <td class="o_table_type" style="border:1px solid black;width:85px;"></td>
-                                            <td style="border:1px solid black;width:85px;" class="o_table_end_date"></td>
-                                            <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
-                                            <td style="border:1px solid black;width:85px;"><input class="o_price_used" type="text" style="width: 100%;text-align: center;"/></td>
+                                        <td style="border:1px solid black;width:85px;"
+                                            class="o_table_end_date"></td>
+                                        <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
+                                        <td style="border:1px solid black;width:85px;"><input class="o_price_used" type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
                                     </t>
 
+                                </t>
+                                <t t-elif="env.pos.selectedOrder.data_voucher &amp;&amp; env.pos.selectedOrder.data_voucher[num].value != false">
+                                            <t t-if="env.pos.selectedOrder.data_voucher[num].value.type == 'v'">
+                                                <td class="o_table_type" style="border:1px solid black;width:85px;">V-Giấy</td>
+                                            </t>
+                                            <t t-else="">
+                                                <td class="o_table_type" style="border:1px solid black;width:85px;">E-Điện tử</td>
+                                            </t>
+                                    <td class="o_table_end_date" style="border:1px solid black;width:85px;"><t t-esc="env.pos.selectedOrder.data_voucher[num].value.end_date"/></td>
+                                    <td style="border:1px solid black;width:85px;"><input class="o_price_residual" t-att-value="env.pos.format_currency(env.pos.selectedOrder.data_voucher[num].value.price_residual_no_compute)" type="text" style="width: 100%;text-align: center;"/></td>
+                                    <td style="border:1px solid black;width:85px;">
+                                            <input class="o_price_used" t-on-change="_onValueChange" t-att-value="env.pos.format_currency(env.pos.selectedOrder.data_voucher[num].value.price_used)" type="text" style="width: 100%;text-align: center;"/>
+                                    </td>
                                 </t>
                                 <t t-else="">
                                     <td class="o_table_type" style="border:1px solid black;width:85px;"></td>
                                     <td class="o_table_end_date" style="border:1px solid black;width:85px;"></td>
                                     <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
-                                    <td style="border:1px solid black;width:85px;"><input class="o_price_used" type="text" style="width: 100%;text-align: center;"/></td>
+                                    <td style="border:1px solid black;width:85px;"><input class="o_price_used" readonly="True" type="text" style="width: 100%;text-align: center;"/></td>
                                 </t>
+
                                 <t t-if="state.error[num]">
                                     <t t-if="state.error_continue[num] &amp;&amp; state.error_continue[num].length>0 &amp;&amp; state.error[num].length ==0">
-                                        <td class="o_table_error_continue" style="border:1px solid black;width:85px;color:blue;font-size: 12px;"><t t-esc="state.error_continue[num][0]"/></td>
+                                        <td class="o_table_error_continue"
+                                            style="border:1px solid black;width:85px;color:blue;font-size: 12px;"><t t-esc="state.error_continue[num][0]"/></td>
                                     </t>
                                     <t t-else="">
-                                        <td class="o_table_error" style="border:1px solid black;width:85px;color:red;font-size: 12px;"><t t-esc="state.error[num][0]"/></td>
+                                        <td class="o_table_error"
+                                            style="border:1px solid black;width:85px;color:red;font-size: 12px;"><t t-esc="state.error[num][0]"/></td>
                                     </t>
                                 </t>
                                 <t t-else="">
@@ -71,21 +105,46 @@
                                 </t>
                                 <td style="width:85px;"><a href="#" t-on-click.prevent="_deleteValue" class="o_delete" t-att-id="num">x</a> </td>
                             </tr>
-                    </t>
+
+                        </t>
+<!--                    </t>-->
                 </table>
+                </div>
             </main>
             <footer class="footer">
 
                 <div class="button cancel" t-on-click="cancel">
                     <t t-esc="props.cancel"/>
                 </div>
-                <div class="button confirm highlight" t-on-click="confirm">
+                    <div class="button confirm highlight" t-on-click="confirm">
                     <t t-esc="props.confirm"/>
-                </div>
-                <div class="button check highlight" t-on-click="check">
-                    <span>Kiểm tra</span>
-                </div>
+                    </div>
+
+                    <div class="button check highlight" t-on-click="check">
+                        <span>Kiểm tra</span>
+                    </div>
             </footer>
         </div>
+        <style>
+            .my-custom-scrollbar {
+                  position: relative;
+                  width: 100%;
+                  height: 300px;
+                  overflow: auto;
+            }
+        </style>
+        <script type="text/javascript">
+            var myCustomScrollbar = document.querySelector('.my-custom-scrollbar');
+            try{
+                var ps = new PerfectScrollbar(myCustomScrollbar);
+                var scrollbarY = myCustomScrollbar.querySelector('.ps__rail-y');
+
+                myCustomScrollbar.onscroll = function () {
+                  scrollbarY.style.cssText = `top: ${this.scrollTop}px!important; height: 400px; right: ${-this.scrollLeft}px`;
+                }
+            }catch(error){
+                console.log(error)
+            }
+        </script>
     </t>
 </templates>

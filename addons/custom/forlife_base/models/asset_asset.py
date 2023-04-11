@@ -5,7 +5,7 @@ class AssetsAssets(models.Model):
     _name = 'assets.assets'
 
     type = fields.Selection([('CCDC', '0'), ('TSCD', '1')], string='Type')
-    code = fields.Char('Code', size=24)
+    code = fields.Char('Code', size=24, required=True)
     card_no = fields.Char('CardNo', size=24)
     item_code = fields.Char('ItemCode', size=24)
     name = fields.Char('Name', size=192)
@@ -26,3 +26,7 @@ class AssetsAssets(models.Model):
     quantity = fields.Integer('Quantity')
     employee = fields.Many2one('hr.employee', string='Employee')
     category_product = fields.Many2one('product.category',string='Danh mục sản phẩm', domain=[('asset_group','=',True)])
+
+    _sql_constraints = [
+        ('unique_code', 'UNIQUE(code, company_id)', 'Mã nhóm phải là duy nhất trong cùng một công ty!')
+    ]
