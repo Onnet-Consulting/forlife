@@ -30,20 +30,20 @@ class ReportNum15(models.TransientModel):
         tz_offset = self.tz_offset
         sql = f"""
 select
-    (select name from store where id = (
-        select store_id from pos_config where id = (
+    (select name from store where id in (
+        select store_id from pos_config where id in (
             select config_id from pos_session where id = po.session_id
             ) 
         ) limit 1
     )                                                                   as store_name,
     hd.name                                                             as department,
-    to_char(po.date_order + '7 h'::interval, 'DD/MM/YYYY')              as date,
+    to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')    as date,
     po.pos_reference                                                    as invoice_num,
     rp.name                                                             as customer_name,
     vv.name                                                             as voucher,
     pv.name                                                             as program_name,
-    to_char(vv.start_date + '7 h'::interval, 'DD/MM/YYYY')              as start_date,
-    to_char(vv.end_date + '7 h'::interval, 'DD/MM/YYYY')                as end_date
+    to_char(vv.start_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')    as start_date,
+    to_char(vv.end_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')      as end_date
 from pos_voucher_line pvl
     join voucher_voucher vv on vv.id = pvl.voucher_id
     join program_voucher pv on pv.id = vv.program_voucher_id
