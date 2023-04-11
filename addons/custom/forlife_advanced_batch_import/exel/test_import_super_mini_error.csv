@@ -1,0 +1,6 @@
+id,name,is_company,company_name,country_id,state_id,zip,city,street,street2,phone,mobile,email,vat,bank_ids/bank,bank_ids/acc_number
+thang1,Thang1,1,,US,California,94523,Pleasant Hill,77 Santa Barbara Rd,,+3210588558,,azure@example.com,BE0477472701,,
+thang2,Thang2,1,,USSS,California,94538,Fremont,4557 De Silva St,,,+582126810538,vauxoo@yourcompany.example.com,,,
+thang3,Thang3,1,,US,California,94523,Pleasant Hill,77 Santa Barbara Rd,,+3210588558,,azure@example.com,BE0477472701,,
+thang4,Thang4,1,,US1,California,94523,Pleasant Hill,77 Santa Barbara Rd,,+3210588558,,azure@example.com,BE0477472701,,
+

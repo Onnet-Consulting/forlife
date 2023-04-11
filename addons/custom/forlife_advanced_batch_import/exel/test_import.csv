@@ -1,19 +1,19 @@
 name,is_company,company_name,country_id,state_id,zip,city,street,street2,phone,mobile,email,vat,bank_ids/bank,bank_ids/acc_number
-Deco Addict1,1,,US,California,94523,Pleasant Hill,77 Santa Barbara Rd,,3210588558,,azure@example.com,BE0477472701,GEBABEBB,12554641
+Deco Addict1,1,,US3,California,94523,Pleasant Hill,77 Santa Barbara Rd,,3210588558,,azure@example.com,BE0477472701,GEBABEBB,12554641
 Deco Addict2,1,,US,California,94538,Fremont,4557 De Silva St,,,582126810538,vauxoo@yourcompany.example.com,,,
 Deco Addict3,0,Azure Interior,US,California,94538,Fremont,4557 De Silva St,,,355-687-3262,brandon.freeman55@example.com,,BEBABEBB,321654987
 Deco Addict4,0,,US,California,zip,Pleasant Hill,78 Santa Barbara Rd,,1,,azure@example.com,BE0477472702,GEBABEBB,12554642
 Deco Addict5,0,,US,California,94524,Fremont,4558 De Silva St,,,1,vauxoo@yourcompany.example.com,,,
 Deco Addict6,0,Azure Interior,US,California,94539,Fremont,4558 De Silva St,,,355-687-3263,brandon.freeman55@example.com,,BEBABEBB,321654988
-Deco Addict7,0,,US,California,94539,Pleasant Hill,79 Santa Barbara Rd,,2,,azure@example.com,BE0477472703,GEBABEBB,12554643
-Deco Addict8,0,,US,California,zip,Fremont,4559 De Silva St,,,2,vauxoo@yourcompany.example.com,,,
-Deco Addict9,0,Azure Interior,US,California,94525,Fremont,4559 De Silva St,,,355-687-3264,brandon.freeman55@example.com,,BEBABEBB,321654989
-Deco Addict10,0,,US,California,94540,Pleasant Hill,80 Santa Barbara Rd,,3,,azure@example.com,BE0477472704,GEBABEBB,12554644
-Deco Addict11,0,,US,California,94540,Fremont,4560 De Silva St,,,3,vauxoo@yourcompany.example.com,,,
-Deco Addict12,0,Azure Interior,US,California,zip,Fremont,4560 De Silva St,,,355-687-3265,brandon.freeman55@example.com,,BEBABEBB,321654990
-Deco Addict13,0,,US,California,94526,Pleasant Hill,81 Santa Barbara Rd,,4,,azure@example.com,BE0477472705,GEBABEBB,12554645
-Deco Addict14,0,,US,California,94541,Fremont,4561 De Silva St,,,4,vauxoo@yourcompany.example.com,,,
-Deco Addict15,0,Azure Interior,US,California,94541,Fremont,4561 De Silva St,,,355-687-3266,brandon.freeman55@example.com,,BEBABEBB,321654991
+Deco Addict7,3,,US,California,94539,Pleasant Hill,79 Santa Barbara Rd,,2,,azure@example.com,BE0477472703,GEBABEBB,12554643
+Deco Addict8,3,,US,California,zip,Fremont,4559 De Silva St,,,2,vauxoo@yourcompany.example.com,,,
+Deco Addict9,3,Azure Interior,US,California,94525,Fremont,4559 De Silva St,,,355-687-3264,brandon.freeman55@example.com,,BEBABEBB,321654989
+Deco Addict10,3,,US,California,94540,Pleasant Hill,80 Santa Barbara Rd,,3,,azure@example.com,BE0477472704,GEBABEBB,12554644
+Deco Addict11,3,,US,California,94540,Fremont,4560 De Silva St,,,3,vauxoo@yourcompany.example.com,,,
+Deco Addict12,3,Azure Interior,US,California,zip,Fremont,4560 De Silva St,,,355-687-3265,brandon.freeman55@example.com,,BEBABEBB,321654990
+Deco Addict13,3,,US,California,94526,Pleasant Hill,81 Santa Barbara Rd,,4,,azure@example.com,BE0477472705,GEBABEBB,12554645
+Deco Addict14,3,,US,California,94541,Fremont,4561 De Silva St,,,4,vauxoo@yourcompany.example.com,,,
+Deco Addict15,3,Azure Interior,US,California,94541,Fremont,4561 De Silva St,,,355-687-3266,brandon.freeman55@example.com,,BEBABEBB,321654991
 Deco Addict16,0,,US,California,zip,Pleasant Hill,82 Santa Barbara Rd,,5,,azure@example.com,BE0477472706,GEBABEBB,12554646
 Deco Addict17,0,,US,California,94527,Fremont,4562 De Silva St,,,5,vauxoo@yourcompany.example.com,,,
 Deco Addict18,0,Azure Interior,US,California,94542,Fremont,4562 De Silva St,,,355-687-3267,brandon.freeman55@example.com,,BEBABEBB,321654992
@@ -22,7 +22,7 @@ Deco Addict20,0,,US,California,zip,Fremont,4563 De Silva St,,,6,vauxoo@yourcompa
 Deco Addict21,0,Azure Interior,US,California,94528,Fremont,4563 De Silva St,,,355-687-3268,brandon.freeman55@example.com,,BEBABEBB,321654993
 Deco Addict22,0,,US,California,94543,Pleasant Hill,84 Santa Barbara Rd,,7,,azure@example.com,BE0477472708,GEBABEBB,12554648
 Deco Addict23,0,,US,California,94543,Fremont,4564 De Silva St,,,7,vauxoo@yourcompany.example.com,,,
-Deco Addict24,0,Azure Interior,US,California,zip,Fremont,4564 De Silva St,,,355-687-3269,brandon.freeman55@example.com,,BEBABEBB,321654994
+Deco Addict24,0,Azure Interior,US33,California,zip,Fremont,4564 De Silva St,,,355-687-3269,brandon.freeman55@example.com,,BEBABEBB,321654994
 Deco Addict25,0,,US,California,94529,Pleasant Hill,85 Santa Barbara Rd,,8,,azure@example.com,BE0477472709,GEBABEBB,12554649
 Deco Addict26,0,,US,California,94544,Fremont,4565 De Silva St,,,8,vauxoo@yourcompany.example.com,,,
 Deco Addict27,0,Azure Interior,US,California,94544,Fremont,4565 De Silva St,,,355-687-3270,brandon.freeman55@example.com,,BEBABEBB,321654995
