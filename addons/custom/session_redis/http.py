@@ -59,7 +59,7 @@ def session_store(self):
     return RedisSessionStore(redis=redis_client, prefix=prefix,
                              expiration=expiration,
                              anon_expiration=anon_expiration,
-                             session_class=http.OpenERPSession)
+                             session_class=http.Session)
 
 
 def session_gc(session_store):
@@ -84,7 +84,7 @@ def copy_fs_sessions(path):
     from odoo.http import OpenERPSession
     from werkzeug.contrib.sessions import FilesystemSessionStore
     werkzeug_session_store = FilesystemSessionStore(path, session_class=OpenERPSession)
-    session_store = http.Root().session_store
+    session_store = http.Application().session_store
     filename_prefix_len = len('werkzeug_')
     filename_suffix_len = len('.sess')
 
@@ -103,7 +103,7 @@ if session_redis_config.get('active', True):
         _logger.debug("HTTP sessions stored in Redis with prefix '%s' on "
                       "%s:%s", prefix or '', host, port)
 
-    http.Root.session_store = session_store
+    http.Application.session_store = session_store
     http.session_gc = session_gc
 
     if is_true(session_redis_config.get('copy_existing_fs_sessions', False)):

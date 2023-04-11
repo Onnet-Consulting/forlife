@@ -5,6 +5,7 @@ import json
 import logging
 
 from werkzeug.contrib.sessions import SessionStore
+from odoo.service import security
 
 from . import json_encoding
 
@@ -96,3 +97,11 @@ class RedisSessionStore(SessionStore):
         keys = self.redis.keys('%s*' % self.prefix)
         _logger.debug("a listing redis keys has been called")
         return [key[len(self.prefix):] for key in keys]
+
+    def rotate(self, session, env):
+        self.delete(session)
+        session.sid = self.generate_key()
+        if session.uid and env:
+            session.session_token = security.compute_session_token(session, env)
+        session.should_rotate = False
+        self.save(session)
