@@ -239,6 +239,7 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             this.reset_unit_price();
             this.order._resetPromotionPrograms(false);
         };
+        this.order._resetCartPromotionPrograms(false);
         return result;
     }
 
@@ -466,6 +467,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         orderlines.forEach(line => line.promotion_usage_ids = []);
         orderlines.forEach(line => line.is_cart_discounted = false);
         this._updateActivatedPromotionPrograms();
+        Gui.showNotification(_.str.sprintf(`Chương trình Hóa đơn đã được đặt lại!`), 2000);
     }
 
     async _updateActivatedPromotionPrograms() {
