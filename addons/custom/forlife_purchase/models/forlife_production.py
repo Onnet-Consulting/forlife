@@ -147,7 +147,7 @@ class ForlifeProductionFinishedProduct(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu bom'),
-            'template': '/forlife_purchase/static/src/xlsx/template_forlife_bom.xlsx?download=true'
+            'template': '/forlife_purchase/static/src/xlsx/Template Bom.xlsx?download=true'
         }]
 
 

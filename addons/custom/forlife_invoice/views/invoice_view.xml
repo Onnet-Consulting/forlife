@@ -56,10 +56,10 @@
                     <field name="invoice_description"/>
                     <field name="reference"/>
                     <field name="currency_id"/>
-                    <field name="exchange_rate" attrs="{'invisible': [('purchase_type', '=', False)]}"/>
+                    <field name="exchange_rate"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_reference']" position="before">
-<!--                    <field name="invoice_payment_term_id" string="Chính sách thanh toán"/>-->
+                    <field name="payment_term_invoice" string="Chính sách thanh toán"/>
                     <field name="due_date"/>
                 </xpath>
                 <xpath expr="//div[@name='journal_div']" position="after">
@@ -73,7 +73,7 @@
                            attrs="{'readonly': [('is_check', '=', True)]}">
                         <tree editable="bottom" class="width-hh">
                             <field name="vendor_sup_invoice" invisible="1"/>
-                            <field name="purchase_order_id"/>
+                            <field name="purchase_order_id" invisible="1"/>
                             <field name="is_check_exchange_quantity" invisible="1"/>
                             <field name="is_check_is_passersby" invisible="1"/>
                             <field name="product_id"
@@ -132,18 +132,22 @@
                 <xpath expr="//field[@name='invoice_line_ids']//tree//field[@name='discount']" position="after">
                     <field name="tax_ids"/>
                 </xpath>
-                 <xpath expr="//notebook/page[@name='other_info']" position="attributes">
+                <xpath expr="//notebook/page[@name='other_info']" position="attributes">
                      <attribute name="invisible">1</attribute>
                  </xpath>
                 <xpath expr="//notebook/page[@name='other_info']" position="after">
-                    <page string="NCC vãng lại" name="supplier_info">
-<!--                        <field name="invoice_supplier_info_ids" class="width-hh" widget="one2many" mode="tree">-->
-<!--                            <tree editable="bottom">-->
-<!--                                <control>-->
-<!--                                    <create name="add" string="Add" readonly="1"/>-->
-<!--                                </control>-->
-<!--                            </tree>-->
-<!--                        </field>-->
+                    <field name="is_check_vendor_page" invisible="1"/>
+                    <page string="NCC vãng lại" name="supplier_info" attrs="{'invisible':[('is_check_vendor_page', '=', False)]}">
+                        <field name="vendor_back_ids" class="width-hh" widget="one2many" mode="tree">
+                            <tree editable="bottom">
+                                <control>
+                                    <create name="add" string="Add" readonly="1"/>
+                                </control>
+                                <field name="vendor"/>
+                                <field name="code_tax"/>
+                                <field name="street_ven"/>
+                            </tree>
+                        </field>
                     </page>
                 </xpath>
             </field>

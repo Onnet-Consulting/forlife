@@ -39,11 +39,8 @@ class PurchaseRequest(models.Model):
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company.id)
     # approval_logs_ids = fields.One2many('approval.logs', 'purchase_request_id')
 
-
     #check button orders_smart_button
     is_check_button_orders_smart_button = fields.Boolean(default=False)
-
-
 
     @api.model
     def load(self, fields, data):
@@ -68,24 +65,6 @@ class PurchaseRequest(models.Model):
             record.write({'state': 'cancel'})
 
     def approve_action(self):
-        # template_id = self.env.ref('purchase_request.approve_purchase_email_template').id
-        # template = self.env['mail.template'].browse(template_id)
-        # category = self.env.ref('base.module_category_inventory_purchase', raise_if_not_found=False)
-        # users = self.env['res.groups'].search([('category_id', '=', category.id)]).users
-        # for u in users:
-        #     if u.id != self._uid:
-        #         template.write({'email_to': u.id})
-        # template.send_mail(self.id, force_send=True)
-        # for rec in self:
-        #     rec.write({
-        #         'approval_logs_ids': [(0, 0, {
-        #             'res_model': rec._name,
-        #             'request_approved_date': date.today(),
-        #             'approval_user_id': rec.env.user.id,
-        #             'note': 'Approve',
-        #             'state': 'approved',
-        #         })],
-        #     })
         self.write({'state': 'approved'})
 
     def close_action(self):
@@ -152,8 +131,8 @@ class PurchaseRequest(models.Model):
         for group in order_lines_groups:
             domain = group['__domain']
             vendor_code = group['vendor_code']
-            production_id = group['production_id']
             product_type = group['product_type']
+            production_id = group['production_id']
             vendor_id = vendor_code[0] if vendor_code else False
             production = production_id[0] if production_id else False
             purchase_request_lines = self.env['purchase.request.line'].search(domain)
@@ -173,7 +152,8 @@ class PurchaseRequest(models.Model):
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
                     'purchase_uom': line.purchase_uom.id,
                     'request_purchases': line.purchase_request,
-                    'production_id': line.production_id.id
+                    'production_id': line.production_id.id,
+                    'account_analytic_id': line.account_analytic_id.id,
                 }))
                 po_ex_line_data.append((0, 0, {
                     'purchase_order_id': line.id,
@@ -188,6 +168,8 @@ class PurchaseRequest(models.Model):
             if po_line_data:
                 source_document = ', '.join(self.mapped('name'))
                 po_data = {
+                    'is_check_readonly_partner_id': True if vendor_id else False,
+                    'is_check_readonly_purchase_type': True if product_type else False,
                     'is_purchase_request': True,
                     'partner_id': vendor_id,
                     'purchase_type': product_type,
@@ -229,14 +211,14 @@ class PurchaseRequestLine(models.Model):
     asset_description = fields.Char(string="Asset description")
     description = fields.Char(string="Description", store=1, related='product_id.name')
     vendor_code = fields.Many2one('res.partner', string="Vendor")
-    production_id = fields.Many2one(string='Production Order Code', related='request_id.production_id', store=1)
+    production_id = fields.Many2one('forlife.production', string='Production Order Code')
     request_id = fields.Many2one('purchase.request')
-    date_planned = fields.Datetime(string='Expected Arrival', related='request_id.date_planned', store=1)
-    request_date = fields.Date(string='Request date', related='request_id.request_date')
+    date_planned = fields.Datetime(string='Expected Arrival')
+    request_date = fields.Date(string='Request date')
     purchase_quantity = fields.Integer('Quantity Purchase', digits='Product Unit of Measure', required=True)
     purchase_uom = fields.Many2one('uom.uom', string='UOM Purchase', related='product_id.uom_id', store=1)
     exchange_quantity = fields.Float('Exchange Quantity', required=True)
-    account_analytic_id = fields.Many2one(string='Account Analytic Account', related='request_id.account_analytic_id', store=1)
+    account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
     purchase_order_line_ids = fields.One2many('purchase.order.line', 'purchase_request_line_id')
     order_quantity = fields.Integer('Quantity Order', compute='_compute_order_quantity', store=1)
     is_no_more_quantity = fields.Boolean(compute='_compute_is_no_more_quantity', store=1)
@@ -251,6 +233,7 @@ class PurchaseRequestLine(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
+
 
     @api.depends('purchase_quantity', 'exchange_quantity')
     def _compute_product_qty(self):
@@ -268,6 +251,7 @@ class PurchaseRequestLine(models.Model):
     #         rec.order_quantity = sum(done_purchase_order_line.mapped('product_qty'))
 
     ### yêu cầu mới là full trạng thái đều update lại số lượng đã đặt bên ycmh
+
     @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.product_qty')
     def _compute_order_quantity(self):
         for rec in self:
