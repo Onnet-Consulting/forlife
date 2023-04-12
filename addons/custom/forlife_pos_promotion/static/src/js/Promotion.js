@@ -455,19 +455,22 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     _resetCartPromotionPrograms() {
-        this.reward_voucher_program_id = null;
-        this.cart_promotion_program_id = null;
         let to_remove_lines = this._get_reward_lines_of_cart_pro();
+        let has_cart_program = to_remove_lines.length > 0 || this.reward_voucher_program_id || this.cart_promotion_program_id;
         for (let line of to_remove_lines) {
             this.remove_orderline(line);
         };
+        this.reward_voucher_program_id = null;
+        this.cart_promotion_program_id = null;
         // TODO: Xác định reward line của CTKM nào
         let orderlines = this.orderlines.filter(line => line.is_cart_discounted);
         orderlines.forEach(line => line.reset_unit_price());
         orderlines.forEach(line => line.promotion_usage_ids = []);
         orderlines.forEach(line => line.is_cart_discounted = false);
         this._updateActivatedPromotionPrograms();
-        Gui.showNotification(_.str.sprintf(`Chương trình Hóa đơn đã được đặt lại!`), 2000);
+        if (has_cart_program) {
+            Gui.showNotification(_.str.sprintf(`Chương trình Hóa đơn đã được đặt lại!`), 2000);
+        };
     }
 
     async _updateActivatedPromotionPrograms() {
