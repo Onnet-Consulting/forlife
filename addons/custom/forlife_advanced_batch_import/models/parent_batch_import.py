@@ -1,4 +1,6 @@
 from odoo import api, fields, models
+from odoo.tools.mimetypes import guess_mimetype
+from odoo.addons.base_import.models.base_import import FILE_TYPE_DICT, _logger
 
 from io import BytesIO
 import base64
@@ -103,6 +105,17 @@ class ParentBatchImport(models.Model):
                     self.split_parent_batch_import_exel(batch_import=batch_import, sheet_name=options.get('sheet_name') if options.get('sheet_name') else "Sheet1")
                 return dst_url
         return False
+
+    def split_parent_batch(self):
+        for rec in self:
+            mimetype = rec.attachment_id.mimetype
+            (file_extension, handler, req) = FILE_TYPE_DICT.get(mimetype, (None, None, None))
+            try:
+                return getattr(rec, 'split_parent_batch_import_' + ('csv' if file_extension == 'csv' else 'exel'))()
+            except ValueError as e:
+                raise e
+            except Exception:
+                _logger.warning("Failed to read file '%s' (transient id %d) using guessed mimetype %s", self.file_name or '<unknown>', self.id, mimetype)
 
     def split_parent_batch_import_csv(self, batch_import=False):
         import pandas as pd
