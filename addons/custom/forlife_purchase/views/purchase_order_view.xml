@@ -154,7 +154,7 @@
                 <xpath expr="//field[@name='tax_totals']" position="after">
                     <field name="trade_discount"/>
                     <field name="total_trade_discount"/>
-                    <field name="is_done_picking"/>
+                    <field name="is_done_picking" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree" position="replace">
                     <tree editable="bottom" class="width-hh">
