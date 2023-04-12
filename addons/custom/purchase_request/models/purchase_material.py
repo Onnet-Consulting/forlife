@@ -1,6 +1,6 @@
 import json
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 
 
 class PurchaseMaterial(models.Model):
@@ -28,6 +28,13 @@ class PurchaseMaterial(models.Model):
         self.write({
             'status': 'cancel'
         })
+
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Tải xuống mẫu nguyên phụ liệu'),
+            'template': '/purchase_request/static/src/xlsx/template_materials.xlsx?download=true'
+        }]
 
 
 class PurchaseMaterialLine(models.Model):

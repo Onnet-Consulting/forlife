@@ -5,5 +5,6 @@
         <menuitem id="stock_location_type" parent="stock.menu_warehouse_config" action="forlife_stock.stock_location_type_action" name="Stock Location Type" sequence="2"/>
         <menuitem id="asset_transfer" parent="stock.menu_stock_warehouse_mgmt" action="forlife_stock.hr_asset_transfer_action" name="Asset Transfer" sequence="3"/>
         <menuitem id="asset_transfer_stock_inventory_menu" parent="stock.menu_stock_warehouse_mgmt" action="forlife_stock.transfer_stock_inventory_action" name="Transfer Stock Inventory" sequence="4"/>
+        <menuitem id="other_in_out_request" parent="stock.menu_stock_warehouse_mgmt" action="forlife_stock.forlife_other_in_out_request_action" name="Other In Out Request" sequence="5"/>
     </data>
 </odoo>

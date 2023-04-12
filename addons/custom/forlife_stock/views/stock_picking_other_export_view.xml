@@ -9,7 +9,7 @@
                     <field name="state" invisible="1"/>
                     <field name="other_export" invisible="1"/>
                     <field name="other_import" invisible="1"/>
-                    <field name="reason_type_id"/>
+                    <field name="reason_type_id" attrs="{'invisible': [('other_export', '=', False),('other_import', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', 'in', ('confirmed', 'assigned','done', 'cancel'))]}</attribute>
@@ -24,22 +24,22 @@
                     </attribute>
                 </xpath>
                 <xpath expr="//field[@name='location_dest_id'][2]" position="attributes">
-<!--                    <attribute name="domain">[]</attribute>-->
                     <attribute name="attrs">{'invisible': False}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='location_id'][2]" position="attributes">
-<!--                    <attribute name="domain">[]</attribute>-->
                     <attribute name="attrs">{'invisible': False}</attribute>
                 </xpath>
                 <xpath expr="//page[@name='operations']//field[@name='product_uom']" position="after">
                     <field name="name" required="0"/>
                     <field name="price_unit" attrs="{'column_invisible': [('parent.other_import', '!=', True)]}"/>
                     <field name="reason_id"/>
-                    <field name="occasion_code_id"/>
+                    <field name="occasion_code_id" string="Mã vụ việc"/>
+                    <field name="work_production" string="Lệnh sản xuất"/>
+                    <field name="account_analytic_id" string="Trung tâm chi phí"/>
                 </xpath>
-<!--                <xpath expr="//field[@name='picking_type_id']" position="attributes">-->
-<!--                    <attribute name="attrs">{'invisible': ['|', ('other_import', '=', True), '|', ('other_export', '=', True), ('hide_picking_type', '=', True)]}</attribute>-->
-<!--                </xpath>-->
+                <xpath expr="//field[@name='picking_type_id']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|', ('other_import', '=', True), '|', ('other_export', '=', True), ('hide_picking_type', '=', True)]}</attribute>
+                </xpath>
                 <xpath expr="//button[@name='button_validate'][hasclass('o_btn_validate')]" position="attributes">
                     <attribute name="attrs">{'invisible': ['|',
                         '&amp;', ('other_export', '=', True), '|', ('state', '!=', 'waiting'), ('show_validate', '=', False),
