@@ -104,15 +104,25 @@
                             <tree editable="bottom" class="width-hh width-first" create="0" delete="0">
                                 <field name="product_id" readonly="1"/>
                                 <field name="name" readonly="1"/>
-                                <field name="usd_amount" readonly="1"/>
-                                <field name="vnd_amount"/>
-                                <field name="hidden_amount" invisible="1"/>
-                                <field name="allocate"/>
-                                <field name="amt_allocate" readonly="1"/>
-                                <field name="total_vnd_amount" readonly="1"/>
-                                <field name="total_amt_allocate" readonly="1"/>
+                                <field name="transportation_costs_percent"/>
+                                <field name="transportation_costs" readonly="1"/>
+                                <field name="loading_costs_percent"/>
+                                <field name="loading_costs" readonly="1"/>
+                                <field name="custom_costs_percent"/>
+                                <field name="custom_costs" readonly="1"/>
                             </tree>
                         </field>
+                        <div class="xl-12 d-flex">
+                            <group class="xl-4">
+                                <field name="transportation_total"/>
+                            </group>
+                              <group class="xl-4">
+                                <field name="loading_total"/>
+                            </group>
+                              <group class="xl-4">
+                                <field name="custom_total"/>
+                            </group>
+                        </div>
                     </page>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="attributes">
@@ -126,10 +136,12 @@
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="before">
                     <field name="is_purchase_request" attrs="{'invisible': True}"/>
+                    <field name="is_check_readonly_partner_id" attrs="{'invisible': True}"/>
+                    <field name="is_check_readonly_purchase_type" attrs="{'invisible': True}"/>
                     <field name="partner_domain" invisible="1"/>
-                    <field name="partner_id" string="Nhà cung cấp" domain="partner_domain" required="1"/>
+                    <field name="partner_id" string="Nhà cung cấp" domain="partner_domain" attrs="{'readonly': [('is_check_readonly_partner_id', '=', True)]}"/>
                     <field name="is_passersby" invisible="1"/>
-                    <field name="purchase_type"/>
+                    <field name="purchase_type" attrs="{'readonly': [('is_check_readonly_purchase_type', '=', True)]}"/>
                      <field name="currency_id"/>
                     <field name="exchange_rate"/>
                     <field name="purchase_code"/>

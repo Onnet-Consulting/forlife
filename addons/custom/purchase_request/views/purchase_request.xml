@@ -54,10 +54,9 @@
                 <header>
                     <button string="Submit" name="submit_action"
                             type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
-                     <button string="Approve" name="approve_action" type="object"
+                    <button string="Approve" name="approve_action" type="object"
                             attrs="{'invisible':[ ('state', '!=', 'confirm')]}"
-                            groups="purchase_request.admin_purchase_request_group"
-                    />
+                            groups="purchase_request.admin_purchase_request_group"/>
                     <button string="Reject" name="%(purchase_request.reject_request_wizard)d"
                             type="action" attrs="{'invisible':[ ('state', '!=', 'confirm')]}"/>
                     <button string="Cancel" name="%(purchase_request.action_cancel_request_wizard)d"
@@ -104,7 +103,8 @@
                         <page string="Product">
                             <field name="order_lines" widget="section_and_note_one2many" mode="tree,kanban"
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'confirm', 'reject', 'approved', 'close'))]}"
-                                   context="{'default_request_date': request_date,'default_state': state, 'default_date_planned': date_planned}">
+                                   context="{'default_request_date': request_date,'default_state': state, 'default_date_planned': date_planned,
+                                   'default_production_id': production_id, 'default_account_analytic_id': account_analytic_id}">
                                 <tree editable="bottom" decoration-muted="is_no_more_quantity == True" class="width-hh width-first">
                                     <field name="is_close" string=" "/>
                                     <field name="product_id" domain="[('detailed_type', '!=', 'consu')]"/>
@@ -117,8 +117,8 @@
                                     <field name="purchase_uom" optional="show" readonly="0"/>
                                     <field name="product_qty" optional="show"/>
                                     <field name="vendor_code" optional="show" context="{'form': 'purchase_request_from_view'}"/>
-                                    <field name="production_id" optional="show"  readonly="0"/>
-                                    <field name="account_analytic_id" optional="show"  readonly="0"/>
+                                    <field name="production_id" optional="show"/>
+                                    <field name="account_analytic_id" optional="show"/>
                                     <field name="request_date" optional="show" readonly="1" force_save="1"/>
                                     <field name="date_planned" optional="show" readonly="0" force_save="1"/>
                                     <field name="order_quantity" optional="show"/>
