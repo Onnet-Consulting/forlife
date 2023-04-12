@@ -645,39 +645,6 @@ class PurchaseOrder(models.Model):
                                 'work_order': pol.production_id,
                                 'account_analytic_id': pol.account_analytic_id.id,
                             })
-            invoice_line = []
-            for r in rec.exchange_rate_line:
-                invoice_line_1561 = (
-                    0, 0,
-                    {'account_id': self.env.ref('forlife_purchase.account_account_debt').id, 'name': r.name,
-                     'debit': r.tax_amount + r.special_consumption_tax_amount,
-                     'credit': 0,
-                     })
-                invoice_line_3333 = (
-                    0, 0,
-                    {'account_id': self.env.ref('forlife_purchase.account_import_tax').id, 'name': r.name,
-                     'debit': 0,
-                     'credit': r.tax_amount,
-                     })
-                invoice_line_3332 = (
-                    0, 0,
-                    {'account_id': self.env.ref('forlife_purchase.account_excise_tax').id, 'name': r.name,
-                     'debit': 0,
-                     'credit': r.special_consumption_tax_amount,
-                     })
-                lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
-                invoice_line.extend(lines)
-            master_data_ac = {
-                'purchase_type': rec.purchase_type,
-                'reference': rec.name,
-                'currency_id': rec.currency_id.id,
-                'exchange_rate': rec.exchange_rate,
-                'date': datetime.datetime.now(),
-                'invoice_payment_term_id': rec.payment_term_id.id,
-                'due_date': rec.date_planned,
-                'invoice_line_ids': invoice_line
-            }
-            account = self.env['account.move'].create(master_data_ac)
         return self.action_view_invoice(moves)
 
     def _prepare_picking(self):
