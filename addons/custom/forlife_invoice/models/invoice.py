@@ -170,7 +170,7 @@ class AccountMoveLine(models.Model):
     exchange_quantity = fields.Float(string='Exchange Quantity', compute='_compute_value_exchange_quantity', store=1, readonly= False)
     request_code = fields.Char('Request code')
     vendor_sup_invoice = fields.Many2one(related='move_id.partner_id', store=1)
-    vendor_price = fields.Float(string='Vendor Price', compute='_compute_check_vendor_price' ,store=1)
+    vendor_price = fields.Float(string='Vendor Price', store=1)
     quantity = fields.Float(string='Quantity',
                             default=1.0, digits='Product Unit of Measure',
                             help="The optional quantity expressed by this line, eg: number of product sold. "
