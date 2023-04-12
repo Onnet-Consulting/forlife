@@ -401,11 +401,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         };
         const customer = this.partner;
         if (!program.valid_customer_ids.has(customer ? customer.id : 0)) {return false;};
-
-        if (program.to_date && program.to_date <= new Date()) {
+        const now = new Date(new Date().toLocaleString('en', {timeZone: 'UTC'}))
+        if (program.to_date && program.to_date <= now) {
             return false;
         };
-        if (program.from_date && program.from_date >= new Date()) {
+        if (program.from_date && program.from_date >= now) {
             return false;
         };
         var hasDate = program.applied_dates.has(this.creation_date.getDate()) || program.applied_dates.size == 0;
