@@ -22,6 +22,8 @@ class StockMove(models.Model):
         bravo_table = 'DEFAULT'
         if move_type == 'purchase_picking':
             bravo_table = 'B30AccDocPurchase'
+        elif move_type == 'sale_picking':
+            bravo_table = 'B30AccDocSales'
         return bravo_table
 
     @api.model
@@ -75,10 +77,70 @@ class StockMove(models.Model):
             bravo_column_names = list(bravo_data.keys())
         return bravo_column_names, moves_data
 
+    def get_sale_picking_data(self):
+        moves = self.filtered(lambda m: m.sale_line_id and m.account_move_ids)
+        bravo_column_names = []
+        moves_data = []
+        for idx, move in enumerate(moves, start=1):
+            picking = move.picking_id
+            picking_partner = picking.partner_id
+            account_move = move.account_move_ids[0]
+            quantity_done = move.quantity_done
+            product = move.product_id
+            bravo_data = {
+                "CompanyCode": picking.company_id.code,
+                'Stt': picking.id,
+                'IssueNo': picking.name,
+                'DocDate': move.date,
+                'CurrencyCode': account_move.currency_id.name,
+                'CustomerCode': picking_partner.ref,
+                'CustomerName': picking_partner.name,
+                'Address': picking_partner.contact_address_complete,
+                'TaxRegNo': picking_partner.vat,
+                'EmployeeCode': picking.user_id.employee_id.code,
+                'BuiltinOrder': idx,
+                'DebitAccount': False,
+                'CreditAccount2': False,
+                'ItemCode': product.barcode,
+                'ItemName': product.name,
+                'UnitCode': move.product_uom.code,
+                'Quantity9': quantity_done,
+                'Quantity': quantity_done,
+                'ConvertRate9': 1,
+                'WarehouseCode': move.location_id.warehouse_id.code,
+                'RowId': move.id
+            }
+            credit = 0
+            for acl in account_move.line_ids:
+                if acl.debit > 0:
+                    bravo_data.update({
+                        'DebitAccount': acl.account_id.code
+                    })
+                if acl.credit > 0:
+                    credit = acl.credit
+                    bravo_data.update({
+                        'CreditAccount2': acl.account_id.code
+                    })
+            bravo_data.update({
+                'OriginalUnitCost': credit / quantity_done if quantity_done else 0,
+                'UnitCost': credit / quantity_done if quantity_done else 0,
+                'OriginalAmount': credit,
+                'Amount': credit,
+            })
+
+            moves_data.append(bravo_data)
+            if bravo_column_names:
+                continue
+            bravo_column_names = list(bravo_data.keys())
+
+        return bravo_column_names, moves_data
+
     def bravo_get_insert_values(self):
         move_type = self.env.context.get(CONTEXT_MOVE_ACTION)
         if move_type == 'purchase_picking':
             return self.get_purchase_picking_data()
+        if move_type == 'sale_picking':
+            return self.get_sale_picking_data()
         return [], []
 
     def bravo_get_insert_sql_by_move_action(self):
@@ -86,6 +148,9 @@ class StockMove(models.Model):
         purchase_picking_query = self.with_context(**{CONTEXT_MOVE_ACTION: 'purchase_picking'}).bravo_get_insert_sql()
         if purchase_picking_query:
             queries.extend(purchase_picking_query)
+        sale_picking_query = self.with_context(**{CONTEXT_MOVE_ACTION: 'sale_picking'}).bravo_get_insert_sql()
+        if sale_picking_query:
+            queries.extend(sale_picking_query)
         return queries
 
     def bravo_get_insert_sql(self):
