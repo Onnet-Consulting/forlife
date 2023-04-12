@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-from datetime import datetime
+from datetime import datetime, time
 
 import gzip
 import base64
@@ -70,7 +70,7 @@ def connect_bkav(data):
             """
     proxies = get_proxies()
 
-    response = requests.post(URL_WEB_SERVICE_BKAV, headers=headers, data=soap_request)
+    response = requests.post(URL_WEB_SERVICE_BKAV, headers=headers, data=soap_request, timeout=3.5)
 
     mes = response.content.decode("utf-8")
 
@@ -105,6 +105,8 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     exists_bkav = fields.Boolean(default=False)
+    is_post_bkav = fields.Boolean(default=False, string="Post BKAV?")
+    company_type = fields.Selection(related="partner_id.company_type")
 
     def create_invoice_bkav(self):
         data = {
@@ -113,7 +115,7 @@ class AccountMove(models.Model):
                 {
                     "Invoice": {
                         "InvoiceTypeID": 1,
-                        "InvoiceDate": self.invoice_date.isoformat(),
+                        "InvoiceDate": self.invoice_date.isoformat() if self.invoice_date else '',
                         "BuyerName": self.partner_id.name,
                         "BuyerTaxCode": self.partner_id.vat or '',
                         "BuyerUnitName": self.partner_id.name or '',
@@ -178,7 +180,7 @@ class AccountMove(models.Model):
                 {
                     "Invoice": {
                         "InvoiceTypeID": 1,
-                        "InvoiceDate": self.invoice_date.isoformat(),
+                        "InvoiceDate": self.invoice_date.isoformat() if self.invoice_date else '',
                         "BuyerName": self.partner_id.name,
                         "BuyerTaxCode": self.partner_id.vat or '',
                         "BuyerUnitName": self.partner_id.name or '',
@@ -235,6 +237,12 @@ class AccountMove(models.Model):
         else:
             self.message_post(body=_('Successfully updated invoice on BKAV!'))
 
+    @api.model
+    def create(self, vals):
+        res = super().create(vals)
+        res.create_invoice_bkav()
+        return res
+
     def action_post(self):
         res = super().action_post()
         if self.exists_bkav:
@@ -242,3 +250,24 @@ class AccountMove(models.Model):
         else:
             self.create_invoice_bkav()
         return res
+
+    def post_invoice_to_bkav_end_day(self):
+        today = datetime.now().date()
+        start_of_day = datetime.combine(today, time.min)
+        end_of_day = datetime.combine(today, time.max)
+        invoices = self.search([('is_post_bkav', '=', False),
+                                ('create_date', '>=', start_of_day), ('create_date', '<=', end_of_day)])
+        invoice_lines = []
+        if len(invoices):
+            for inv in invoices:
+                invoice_lines.extend(inv.invoice_line_ids.ids)
+            inv_bkav = self.create({
+                'partner_id': self.env.ref('base.partner_admin').id,
+                'invoice_date': today,
+                'is_post_bkav': True,
+                'invoice_description': f"Hóa đơn bán lẻ cuối ngày {today.strftime('%Y/%m/%d')}",
+                'invoice_line_ids': [(6, 0, invoice_lines)],
+            })
+            if inv_bkav.exists_bkav:
+                for inv in invoices:
+                    inv.is_post_bkav = True
