@@ -294,7 +294,7 @@ class PurchaseOrder(models.Model):
                     'due_date': record.date_planned,
                     'invoice_line_ids': invoice_line
                 }
-                account = self.env['account.move'].create(master_data_ac)
+                account = self.env['account.move'].create(master_data_ac).action_post()
                 record.write({'custom_state': 'approved'})
             else:
                 data = {'partner_id': record.partner_id.id, 'purchase_type': record.purchase_type,
