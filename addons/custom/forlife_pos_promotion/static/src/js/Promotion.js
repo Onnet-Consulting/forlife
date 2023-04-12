@@ -344,6 +344,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         super.set_partner(partner);
         if (oldPartner !== this.get_partner()) {
             await this.get_history_program_usages();
+            await this.update_surprising_program();
             this.activatedInputCodes = [];
             this._updateActivatedPromotionPrograms();
             this._resetPromotionPrograms();
@@ -367,6 +368,28 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         }).then((result) => {
             self.historyProgramUsages = result || {};
         });
+    }
+
+    async update_surprising_program() {
+        var self = this;
+        const customer = this.get_partner();
+        let surprisingLines = this.pos.surprisingRewardProducts.map(l => l.id);
+        if (surprisingLines.length > 0) {
+            await this.pos.env.services.rpc({
+                model: 'pos.config',
+                method: 'update_surprising_program',
+                args: [
+                    [this.pos.config.id],
+                    surprisingLines
+                ],
+                kwargs: { context: session.user_context },
+            }).then((result) => {
+                for (let [line_id, issued_qty] of Object.entries(result)) {
+                    let line = this.pos.surprisingRewardProducts.find(r=>r.id == line_id);
+                    line.issued_qty = issued_qty;
+                };
+            });
+        };
     }
 
     _programIsApplicableAutomatically(program) {
