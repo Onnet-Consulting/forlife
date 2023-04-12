@@ -44,7 +44,7 @@ CardButton.template = 'CardButton';
 
 ProductScreen.addControlButton({
     component: CardButton, position: ['after', 'RefundButton'], condition: function () {
-        return this.partner && this.partner.card_rank_by_brand[this.env.pos.pos_branch[0].id] && this.env.pos.get_order().orderlines.length > 0 && !this.env.pos.get_order().card_rank_program;
+        return this.env.pos.get_order().order_can_apply_card_rank() && this.env.pos.get_order().orderlines.length > 0 && !this.env.pos.get_order().card_rank_program;
     }
 });
 
