@@ -50,25 +50,53 @@ class ReportNum16(models.TransientModel):
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
 
-        where_query = f"""
+        where_query = f""" where
             sm.company_id = {self.company_id.id}
             and sm.state = 'done'
-            and {format_date_query("sm.date", tz_offset)} between '{self.from_date}' and '{self.to_date}'\n
+            and {format_date_query("sm.date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
+            and sm.product_id = any (array{product_ids})
+            and (src_wh.id = any (array{warehouse_ids}) or des_wh.id = any (array{warehouse_ids}))
+            and pci.brand_id = {self.product_brand_id.id}\n
         """
-        if warehouse_ids:
-            where_query += f"and (src_wh.id = any (array{warehouse_ids.ids}) or des_wh.id = any (array{warehouse_ids.ids}))\n"
-        if product_ids:
-            where_query += f"and sm.product_id = any (array{product_ids})\n"
-        where_query += f" and pci.brand_id = {self.product_brand_id.id}\n"
-        # if self.product_group_ids:
-        #     where_query += f" and pci.product_group_id = any (array{self.product_group_ids.ids})\n"
-        # if self.product_line_ids:
-        #     where_query += f" and pci.product_line_id = any (array{self.product_line_ids.ids})\n"
-        # if self.product_texture_ids:
-        #     where_query += f" and pci.texture_id = any (array{self.product_texture_ids.ids})\n"
+        if self.product_group_ids:
+            where_query += f" and pci.product_group_id = any (array{self.product_group_ids.ids})\n"
+        if self.product_line_ids:
+            where_query += f" and pci.product_line_id = any (array{self.product_line_ids.ids})\n"
+        if self.product_texture_ids:
+            where_query += f" and pci.texture_id = any (array{self.product_texture_ids.ids})\n"
 
         query = f"""
-select to_char(date, 'DD/MM/YYYY') as date,
+with account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho bằng cate_id
+    select 
+        cate.id as cate_id,
+        aa.code as account_code
+    from product_category cate
+        left join ir_property ir on ir.res_id = concat('product.category,', cate.id)
+        left join account_account aa on concat('account.account,',aa.id) = ir.value_reference
+    where  ir.name='property_stock_valuation_account_id' and ir.company_id = {self.company_id.id}
+    order by cate.id 
+),
+product_cate_info as (
+    select 
+        pp.id     		                                                          as product_id,
+        texture.id 		                                                          as texture_id,
+        product_line.id                                                           as product_line_id,
+        product_group.id                                                          as product_group_id,
+        brand.id 		                                                          as brand_id,
+        texture.complete_name                                                     as complete_name,
+        pp.barcode                                                                as product_barcode,
+        pp.default_code                                                           as internal_ref,
+        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
+        (select account_code from account_by_categ_id where cate_id = texture.id) as account_code
+    from product_product pp 
+        left join product_template pt on pt.id = pp.product_tmpl_id
+        join product_category texture on texture.id = pt.categ_id
+        join product_category product_line on product_line.id = texture.parent_id
+        join product_category product_group on product_group.id = product_line.parent_id
+        join product_category brand on brand.id = product_group.parent_id
+    where pp.id = any (array{product_ids})
+)
+select to_char(sm.date, 'DD/MM/YYYY') as date,
        '' as so_ct,
        '' as wh_name,
        '' as so_ct2,
@@ -76,25 +104,32 @@ select to_char(date, 'DD/MM/YYYY') as date,
        '' as ma_khach,
        '' as ten_khach,
        '' as doi_tuong,
-       '' as nhom_hang,
-       '' as dong_hang,
-       '' as ket_cau,
-       '' as ma_vach,
-       '' as ma_hang,
-       '' as ten_hang,
+       split_part(pci.complete_name, ' / ', 2) as nhom_hang,
+       split_part(pci.complete_name, ' / ', 3) as dong_hang,
+       split_part(pci.complete_name, ' / ', 4) as ket_cau,
+       pci.product_barcode as ma_vach,
+       pci.internal_ref as ma_hang,
+       pci.product_name as ten_hang,
        '' as mau_sac,
        '' as kich_co,
        '' as nam_sx,
        '' as bo_suu_tap,
        '' as xuat_xu,
        '' as cac_thuoc_tinh,
-       '' as dv_tinh,
-       '' as nhap,
-       '' as xuat,
-       '' as ma_loai,
+       coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as dv_tinh,
+       sm.quantity_done as nhap,
+       sm.quantity_done as xuat,
+       pci.account_code as ma_loai,
        '' as ngay_to_khai,
-       '' as dien_giai
-from stock_move
+       sm.name as dien_giai
+from stock_move sm
+    left join uom_uom uom on uom.id = sm.product_uom
+    left join stock_location des_lc on sm.location_dest_id = des_lc.id
+    left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
+    left join stock_location src_lc on sm.location_id = src_lc.id
+    left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
+    left join product_cate_info pci on pci.product_id = sm.product_id
+{where_query}
 """
         return query
 
@@ -102,8 +137,8 @@ from stock_move
         self.ensure_one()
         values = dict(super().get_data())
         stock_wh = self.env['stock.warehouse']
-        product_ids = self.env['product.product'].search([]).ids if self.all_products else self.product_ids.ids
-        warehouse_ids = stock_wh.search([]) if self.all_warehouses else self.warehouse_ids
+        product_ids = (self.env['product.product'].search([]).ids or [-1]) if self.all_products else self.product_ids.ids
+        warehouse_ids = (stock_wh.search([]).ids or [-1]) if self.all_warehouses else self.warehouse_ids.ids
         query = self._get_query(product_ids, warehouse_ids)
         self._cr.execute(query)
         data = self._cr.dictfetchall()

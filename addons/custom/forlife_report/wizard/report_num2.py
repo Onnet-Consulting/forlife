@@ -116,7 +116,7 @@ from stock_product stp
     def get_data(self):
         self.ensure_one()
         values = dict(super().get_data())
-        product_ids = self.env['product.product'].search([]).ids if self.all_products else self.product_ids.ids
+        product_ids = (self.env['product.product'].search([]).ids or [-1]) if self.all_products else self.product_ids.ids
         warehouse_ids = self.env['stock.warehouse'].search([]) if self.all_warehouses else self.warehouse_ids
         query = self._get_query(product_ids, warehouse_ids)
         params = self._get_query_params(product_ids, warehouse_ids)

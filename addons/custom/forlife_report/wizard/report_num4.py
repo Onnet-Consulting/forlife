@@ -39,18 +39,15 @@ class ReportNum4(models.TransientModel):
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
 
-        where_query = """
-            sm.company_id = %s
+        where_query = f"""
+            sm.company_id = {self.company_id.id}
             and sm.state = 'done'
-            and pt.type = 'product'\n
-        """ % self.company_id.id
-        if warehouse_ids:
-            where_query += f"and (src_wh.id = any (array{warehouse_ids.ids}) or des_wh.id = any (array{warehouse_ids.ids}))\n"
-        if product_ids:
-            where_query += f"and sm.product_id = any (array{product_ids})\n"
-        if self.to_date:
-            where_query += f"""and {format_date_query("sm.date", tz_offset)} <= '{str(self.to_date)}'\n"""
-        where_query += f" and pci.brand_id = {self.product_brand_id.id}\n"
+            and pt.type = 'product'
+            and sm.product_id = any (array{product_ids})
+            and {format_date_query("sm.date", tz_offset)} <= '{str(self.to_date)}'
+            and (src_wh.id = any (array{warehouse_ids}) or des_wh.id = any (array{warehouse_ids}))
+            and pci.brand_id = {self.product_brand_id.id}\n
+        """
         if self.product_group_ids:
             where_query += f" and pci.product_group_id = any (array{self.product_group_ids.ids})\n"
         if self.product_line_ids:
@@ -88,7 +85,7 @@ stock as
         left join stock_warehouse des_wh on des_lc.parent_path like concat('%%/', des_wh.view_location_id, '/%%')
         left join stock_location src_lc on sm.location_id = src_lc.id
         left join stock_warehouse src_wh on src_lc.parent_path like concat('%%/', src_wh.view_location_id, '/%%')
-        left join product_cate_info pci on pci.product_id = pp.id
+        left join product_cate_info pci on pci.product_id = sm.product_id
     where {where_query}
     group by sm.product_id
     )
@@ -111,8 +108,8 @@ order by num
         self.ensure_one()
         values = dict(super().get_data())
         stock_wh = self.env['stock.warehouse']
-        product_ids = self.env['product.product'].search([]).ids if self.all_products else self.product_ids.ids
-        warehouse_ids = stock_wh.search([]) if self.all_warehouses else self.warehouse_ids
+        product_ids = (self.env['product.product'].search([]).ids or [-1]) if self.all_products else self.product_ids.ids
+        warehouse_ids = (stock_wh.search([]).ids or [-1]) if self.all_warehouses else self.warehouse_ids.ids
         query = self._get_query(product_ids, warehouse_ids)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
