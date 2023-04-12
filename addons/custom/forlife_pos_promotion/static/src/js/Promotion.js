@@ -239,7 +239,10 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             this.reset_unit_price();
             this.order._resetPromotionPrograms(false);
         };
-        this.order._resetCartPromotionPrograms(false);
+        if (this.pos.no_restrict_reset_program) {
+            this.order._resetCartPromotionPrograms(false);
+            this.pos.no_restrict_reset_program = false;
+        }
         return result;
     }
 
