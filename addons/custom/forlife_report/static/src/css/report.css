@@ -114,12 +114,17 @@ table.available-report-list {
 .button_export_right {
     float: right;
     border-block-color: green;
-    border-radius: 5px;
-    color: red;
-    border: #0b7b6c;
+    border-radius: 3px;
+    color: #FFF;
+    border: #017e84;
     font-weight: bold;
-    background: lightblue;
+    background: #017e84;
     font-size: medium;
+    text-transform: uppercase;
+}
+
+.button_export_right:hover {
+    background: #025257;
 }
 
 .report_table > thead {

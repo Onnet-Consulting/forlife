@@ -23,9 +23,9 @@
                         <field name="product_ids" attrs="{'invisible': [('all_products', '=', True)], 'required': [('all_products', '=', False)]}" widget="many2many_tags"/>
                         <field name="warehouse_ids" widget="many2many_tags" attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"/>
                         <field name="product_brand_id" required="1" class="oe_inline"/>
-                        <field name="product_group_ids" widget="many2many_tags"/>
-                        <field name="product_line_ids" widget="many2many_tags"/>
-                        <field name="product_texture_ids" widget="many2many_tags"/>
+                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]"/>
+                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', 'in', product_group_ids)]"/>
+                        <field name="product_texture_ids" widget="many2many_tags" domain="[('parent_id', 'in', product_line_ids)]"/>
                     </group>
                 </sheet>
             </form>

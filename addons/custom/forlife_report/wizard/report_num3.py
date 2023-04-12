@@ -32,17 +32,14 @@ class ReportNum3(models.TransientModel):
     @api.onchange('product_brand_id')
     def onchange_product_brand(self):
         self.product_group_ids = self.product_group_ids.filtered(lambda f: f.parent_id == self.product_brand_id.id)
-        return {'domain': {'product_group_ids': [('parent_id', '=', self.product_brand_id.id)]}}
 
     @api.onchange('product_group_ids')
     def onchange_product_group(self):
         self.product_line_ids = self.product_line_ids.filtered(lambda f: f.parent_id in self.product_group_ids.ids)
-        return {'domain': {'product_line_ids': [('parent_id', 'in', self.product_group_ids.ids)]}}
 
     @api.onchange('product_line_ids')
     def onchange_product_line(self):
         self.product_texture_ids = self.product_texture_ids.filtered(lambda f: f.parent_id in self.product_line_ids.ids)
-        return {'domain': {'product_texture_ids': [('parent_id', 'in', self.product_line_ids.ids)]}}
 
     def _get_query(self, product_ids, warehouse_ids):
         self.ensure_one()
