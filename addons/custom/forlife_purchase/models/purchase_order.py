@@ -8,7 +8,6 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT, format_amount, format_dat
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 import json
 from lxml import etree
-import simplejson
 
 
 class PurchaseOrder(models.Model):
@@ -29,7 +28,7 @@ class PurchaseOrder(models.Model):
         ('not_received', 'Not Received'),
         ('incomplete', 'Incomplete'),
         ('done', 'Done'),
-    ], string='Inventory Status', default='not_received', required=True, compute='compute_inventory_status')
+    ], string='Inventory Status', default='not_received', compute='compute_inventory_status')
     # purchase_description = fields.Char(string='Purchase Description')
     # request_date = fields.Date(string='Request date')
     purchase_code = fields.Char(string='Internal order number')
@@ -70,6 +69,8 @@ class PurchaseOrder(models.Model):
     account_analytic_ids = fields.Many2many('account.analytic.account', relation='account_analytic_ref',
                                             string="Cost Center")
     is_purchase_request = fields.Boolean(default=False)
+    is_check_readonly_partner_id = fields.Boolean()
+    is_check_readonly_purchase_type = fields.Boolean()
     source_document = fields.Char(string="Source Document")
     receive_date = fields.Datetime(string='Receive Date')
     note = fields.Char('Note')
@@ -80,6 +81,9 @@ class PurchaseOrder(models.Model):
     count_invoice_inter_company_customer = fields.Integer(compute='compute_count_invoice_inter_company_customer')
     count_delivery_inter_company = fields.Integer(compute='compute_count_delivery_inter_company')
     count_delivery_import_inter_company = fields.Integer(compute='compute_count_delivery_import_inter_company')
+    transportation_total = fields.Float(string='Transportation Total')
+    loading_total = fields.Float(string='Loading Total')
+    custom_total = fields.Float(string='Custom Total')
     is_done_picking = fields.Boolean(default=False, compute='compute_is_done_picking')
     date_order = fields.Datetime('Order Deadline', required=True, states=READONLY_STATES, index=True, copy=False,
                                  default=fields.Datetime.now,
@@ -522,7 +526,6 @@ class PurchaseOrder(models.Model):
             self.env['purchase.order.cost.line'].create({
                 'product_id': line.product_id.id,
                 'name': line.name,
-                'usd_amount': line.price_subtotal,
                 'purchase_order_id': self.id
             })
 
