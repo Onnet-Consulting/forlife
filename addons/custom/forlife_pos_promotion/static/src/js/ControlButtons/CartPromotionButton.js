@@ -35,15 +35,11 @@ export class CartPromotionButton extends PosComponent {
             let qty = line.get_quantity();
             let qty_orig = parseFloat(line.quantityStr);
             if (qty != qty_orig) {
+                this.env.pos.no_restrict_reset_program = true;
                 line.set_quantity(line.get_quantity());
             };
-            if (line.quantity == 0) {
-                toRemoveLines.push(line);
-            };
         });
-        for (let line of toRemoveLines) {
-            order.remove_orderline(line);
-        }
+        order.orderlines = order.orderlines.filter(line => line.quantity > 0)
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);

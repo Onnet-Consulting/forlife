@@ -101,14 +101,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
 
             var daysOfWeek = program.dayofweek_ids.reduce(function (accumulator, d) {
                 var day = self.dayofweekData.find((elem) => elem.id === d);
-                let code;
-                // Fix master data dayOfWeeks
-                if ([0, 1, 2, 3, 4, 5].includes(day.code)) {
-                    code = day.code + 1
-                } else if (day.code == 6) {
-                    code = 0
-                }
-                accumulator.add(code);
+                accumulator.add(day.code);
                 return accumulator
             }, new Set());
             program.applied_days = daysOfWeek;
@@ -239,7 +232,10 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             this.reset_unit_price();
             this.order._resetPromotionPrograms(false);
         };
-        this.order._resetCartPromotionPrograms(false);
+        if (this.pos.no_restrict_reset_program) {
+            this.order._resetCartPromotionPrograms(false);
+            this.pos.no_restrict_reset_program = false;
+        }
         return result;
     }
 
@@ -341,6 +337,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         super.set_partner(partner);
         if (oldPartner !== this.get_partner()) {
             await this.get_history_program_usages();
+            await this.update_surprising_program();
             this.activatedInputCodes = [];
             this._updateActivatedPromotionPrograms();
             this._resetPromotionPrograms();
@@ -366,6 +363,28 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         });
     }
 
+    async update_surprising_program() {
+        var self = this;
+        const customer = this.get_partner();
+        let surprisingLines = this.pos.surprisingRewardProducts.map(l => l.id);
+        if (surprisingLines.length > 0) {
+            await this.pos.env.services.rpc({
+                model: 'pos.config',
+                method: 'update_surprising_program',
+                args: [
+                    [this.pos.config.id],
+                    surprisingLines
+                ],
+                kwargs: { context: session.user_context },
+            }).then((result) => {
+                for (let [line_id, issued_qty] of Object.entries(result)) {
+                    let line = this.pos.surprisingRewardProducts.find(r=>r.id == line_id);
+                    line.issued_qty = issued_qty;
+                };
+            });
+        };
+    }
+
     _programIsApplicableAutomatically(program) {
 
         if (program.with_code) {
@@ -375,11 +394,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         };
         const customer = this.partner;
         if (!program.valid_customer_ids.has(customer ? customer.id : 0)) {return false;};
-
-        if (program.to_date && program.to_date <= new Date()) {
+        const now = new Date(new Date().toLocaleString('en', {timeZone: 'UTC'}))
+        if (program.to_date && program.to_date <= now) {
             return false;
         };
-        if (program.from_date && program.from_date >= new Date()) {
+        if (program.from_date && program.from_date >= now) {
             return false;
         };
         var hasDate = program.applied_dates.has(this.creation_date.getDate()) || program.applied_dates.size == 0;
@@ -442,7 +461,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let orderlines = this.orderlines.filter(line => line._isDiscountedComboProgram())
         orderlines.forEach(line => line.reset_unit_price());
         orderlines.forEach(line => line.promotion_usage_ids = []);
-
+        this.pos.promotionPrograms.forEach(p => {
+            p.reward_for_referring = false;
+            p.codeObj = null;
+        });
         this._updateActivatedPromotionPrograms();
     }
 
@@ -455,19 +477,22 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     _resetCartPromotionPrograms() {
-        this.reward_voucher_program_id = null;
-        this.cart_promotion_program_id = null;
         let to_remove_lines = this._get_reward_lines_of_cart_pro();
+        let has_cart_program = to_remove_lines.length > 0 || this.reward_voucher_program_id || this.cart_promotion_program_id;
         for (let line of to_remove_lines) {
             this.remove_orderline(line);
         };
+        this.reward_voucher_program_id = null;
+        this.cart_promotion_program_id = null;
         // TODO: Xác định reward line của CTKM nào
         let orderlines = this.orderlines.filter(line => line.is_cart_discounted);
         orderlines.forEach(line => line.reset_unit_price());
         orderlines.forEach(line => line.promotion_usage_ids = []);
         orderlines.forEach(line => line.is_cart_discounted = false);
         this._updateActivatedPromotionPrograms();
-        Gui.showNotification(_.str.sprintf(`Chương trình Hóa đơn đã được đặt lại!`), 2000);
+        if (has_cart_program) {
+            Gui.showNotification(_.str.sprintf(`Chương trình Hóa đơn đã được đặt lại!`), 2000);
+        };
     }
 
     async _updateActivatedPromotionPrograms() {
