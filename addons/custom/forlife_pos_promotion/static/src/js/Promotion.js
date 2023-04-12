@@ -445,7 +445,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let orderlines = this.orderlines.filter(line => line._isDiscountedComboProgram())
         orderlines.forEach(line => line.reset_unit_price());
         orderlines.forEach(line => line.promotion_usage_ids = []);
-
+        this.pos.promotionPrograms.forEach(p => {
+            p.reward_for_referring = false;
+            p.codeObj = null;
+        });
         this._updateActivatedPromotionPrograms();
     }
 
