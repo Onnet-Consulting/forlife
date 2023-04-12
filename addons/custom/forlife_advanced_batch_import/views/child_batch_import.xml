@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="child_batch_import_view_form" model="ir.ui.view">
+            <field name="name">child_batch_import_view_form</field>
+            <field name="model">child.batch.import</field>
+            <field name="arch" type="xml">
+                <form string="child_batch_import_form">
+                    <header>
+                        <button name="test_execute_import" type="object" string="Test Execute Import" class="oe_highlight"/>
+                        <button name="make_queue_job" type="object" string="Execute Import" class="oe_highlight"/>
+                        <button name="set_to_processing" type="object" string="Set to processing" class="oe_highlight" attrs="{'invisible':[('status','=','processing')]}"/>
+                        <field name="status" widget="statusbar" class="o_field_statusbar"
+                               options="{'clickable': '1'}"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="sequence"/>
+                            <field name="attachment_id"/>
+                            <field name="parent_batch_import_id"/>
+                            <field name="skip"/>
+                        </group>
+                        <group>
+                            <field name="complete_records"/>
+                            <field name="progress_bar" widget="progressbar"/>
+                            <field name="error_rows"/>
+                            <field name="log"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="child_batch_import_view_tree" model="ir.ui.view">
+            <field name="name">child_batch_import_view_tree</field>
+            <field name="model">child.batch.import</field>
+            <field name="arch" type="xml">
+                <tree string="child_batch_import_tree">
+                    <field name="parent_batch_import_id"/>
+                    <field name="attachment_id"/>
+                    <field name="sequence"/>
+                    <field name="skip"/>
+                    <field name="complete_records"/>
+                    <field name="progress_bar" widget="progressbar"/>
+                    <field name="status"/>
+                    <button name="set_to_processing" type="object" string="Set to Processing" class="oe_highlight"/>
+                </tree>
+            </field>
+        </record>
+        <record id="child_batch_import_action" model="ir.actions.act_window">
+            <field name="name">Child Batch Import</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">child.batch.import</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="menu_child_batch_import" name="Child Batch Import" parent="menu_advanced_batch_import" action="child_batch_import_action" sequence="2"/>
+
+
+    </data>
+</odoo>

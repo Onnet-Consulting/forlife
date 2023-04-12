@@ -79,7 +79,6 @@
                                     <field name="to_check_product_ids" widget="many2many_tags"/>
                                     <field name="reward_code_program_id" domain="[('with_code', '=', True)]"/>
                                     <field name="active" widget="boolean_toggle"/>
-                                    <field name="issued_qty"/>
                                     <field name="max_quantity"/>
                                     <field name="issued_qty"/>
                                 </tree>

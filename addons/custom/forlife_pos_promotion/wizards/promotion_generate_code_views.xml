@@ -26,7 +26,7 @@
                             <field name="referring_date_to"
                                    attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
                             <field name="reward_program_id"
-                                   domain="[('with_code', '=', True)]"
+                                   domain="[('with_code', '=', True), ('state', 'in', ['new', 'in_progress'])]"
                                    attrs="{'invisible': [('reward_for_referring', '=', False)], 'required': [('reward_for_referring', '=', True)]}"/>
                         </group>
                     </group>

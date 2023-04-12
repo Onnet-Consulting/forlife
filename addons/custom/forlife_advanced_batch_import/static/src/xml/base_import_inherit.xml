@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+    <t t-extend="ImportView.side_panel">
+        <t t-jquery="label.form-check-label" t-operation="after">
+            <div>
+                <input type="checkbox" id="oe_import_advanced_pass_valid_but_skip_error" class="form-check-input"/>
+                <label class="form-check-label" for="oe_import_advanced_pass_valid_but_skip_error">
+                        Import valid records/skip error
+                </label>
+            </div>
+        </t>
+        <t t-jquery="div.oe_import_debug_option" t-operation="after">
+            <div>
+                <h4 class="mt-3">Import through Batch Import (Queue Job)</h4>
+                <div title="Using Queue Job for manage batch import">
+                    <input type="checkbox" id="oe_import_advanced_batch_import" class="form-check-input"/>
+                    <label class="form-check-label" for="oe_import_advanced_batch_import">
+                        Batch Import (Queue Job)
+                    </label>
+                </div>
+                <br/>
+                <div>
+                    <label class="form-check-label" for="oe_import_eta_time">Delay time</label>
+                    <input type="text" class="oe_import_eta_time"
+                           id="oe_import_eta_time"/>
+                </div>
+            </div>
+        </t>
+    </t>
+</templates>

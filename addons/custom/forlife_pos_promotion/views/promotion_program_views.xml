@@ -78,6 +78,7 @@
                             </div>
                             <field name="currency_id" invisible="1"/>
                             <field name="currency_symbol" invisible="1"/>
+                            <field name="campaign_id" readonly="1" attrs="{'invisible': [('campaign_id', '=', False)]}"/>
 <!--                            <field name="applicability" string="Use points on" groups="base.group_no_one" widget="radio" force_save="1"/>-->
 <!--                            <field name="customer_domain" widget="domain"-->
 <!--                                   options="{'model': 'res.partner', 'in_dialog': true}"/>-->
@@ -282,6 +283,7 @@
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
                 <separator/>
                 <group expand="0" string="Group By">
+                    <filter string="Chiến dịch" name="campaign_id" domain="[]" context="{'group_by':'campaign_id'}"/>
                     <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
                     <filter string="Promotion Type" name="promotion_type" domain="[]" context="{'group_by':'promotion_type'}"/>
                 </group>

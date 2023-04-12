@@ -1,7 +1,12 @@
-from odoo.tools.translate import _
-from odoo import api, fields, models
-from odoo.tools import config, DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, pycompat
+
+# -*- coding: utf-8 -*-
+# Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 import datetime
+
+from odoo import api, fields, models
+from odoo.tools.translate import _
+from odoo.tools import config, DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, pycompat
 try:
     import xlrd
     try:
@@ -48,7 +53,7 @@ class Import(models.TransientModel):
                         if val_attribute_id and col_attribute <= colx:
                             check = True
                             if len(values) == col_attribute - 1:
-                                values += [dic_col[colx], value]
+                                values += [dic_col[colx], str(value).replace(' ', '')]
                                 rows.append(values)
                                 continue
                             values = []
@@ -84,7 +89,8 @@ class Import(models.TransientModel):
                         _("Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s") % {
                             'row': rowx,
                             'col': colx,
-                            'cell_value': xlrd.error_text_from_code.get(cell.value, _("unknown error code %s", cell.value))
+                            'cell_value': xlrd.error_text_from_code.get(cell.value,
+                                                                        _("unknown error code %s", cell.value))
                         }
                     )
                 else:
@@ -94,7 +100,5 @@ class Import(models.TransientModel):
                     values.append('')
             if any(x for x in values if x.strip()):
                 rows.append(values)
-
-
         # return the file length as first value
         return sheet.nrows, rows
