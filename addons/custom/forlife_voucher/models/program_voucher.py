@@ -42,7 +42,7 @@ class ProgramVoucher(models.Model):
 
     is_full_price_applies = fields.Boolean('Áp dụng nguyên giá')
 
-    using_limit = fields.Integer('Giới hạn sử dụng')
+    using_limit = fields.Integer('Giới hạn sử dụng', default=0)
 
     @api.depends('product_ids')
     def compute_product(self):

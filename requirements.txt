@@ -2,4 +2,4 @@ cryptography==2.8
 phonenumbers
 redis
 pandas
-pyodbc
+xlrd==1.2.0

@@ -26,18 +26,7 @@ class ParentBatchImport(models.Model):
     child_batch_import_ids = fields.One2many(string="Children  Batch", comodel_name="child.batch.import", inverse_name='parent_batch_import_id')
     done_batch_count = fields.Integer(string="Done Batch", compute="compute_batch_count")
     total_batch = fields.Integer(string="Total Batch", compute="compute_batch_count")
-    progress_bar = fields.Integer(string="Progress Bar", compute='compute_batch_count')
-
-    @api.depends('name', 'sequence')
-    def _compute_progress_bar(self):
-        for u in self:
-            if u.name and u.sequence:
-                progress = 100
-            elif u.name:
-                progress = 50
-            else:
-                progress = 0
-            u.progress_bar = progress
+    progress_bar = fields.Float('Progress Done (%)', digits=(16, 2), compute='compute_batch_count')
 
     @api.depends('child_batch_import_ids', 'child_batch_import_ids.status')
     def compute_batch_count(self):

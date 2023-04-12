@@ -59,7 +59,7 @@
                             </p>
                             <p t-if="program.reward_for_referring">
                                 <div style="font-style: italic; color: blue">Bạn được tặng mã KM cho CT:
-                                    <strong t-esc="this.env.pos.get_program_by_id(program.codeObj.reward_program_id).display_name"/>
+                                    <strong t-esc="program.codeObj.reward_program_name"/>
                                 </div>
                             </p>
                         </li>
