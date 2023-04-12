@@ -101,14 +101,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
 
             var daysOfWeek = program.dayofweek_ids.reduce(function (accumulator, d) {
                 var day = self.dayofweekData.find((elem) => elem.id === d);
-                let code;
-                // Fix master data dayOfWeeks
-                if ([0, 1, 2, 3, 4, 5].includes(day.code)) {
-                    code = day.code + 1
-                } else if (day.code == 6) {
-                    code = 0
-                }
-                accumulator.add(code);
+                accumulator.add(day.code);
                 return accumulator
             }, new Set());
             program.applied_days = daysOfWeek;
