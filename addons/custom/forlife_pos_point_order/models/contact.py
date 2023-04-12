@@ -9,8 +9,8 @@ _logger = logging.getLogger(__name__)
 class Contact(models.Model):
     _inherit = 'res.partner'
 
-    is_purchased_of_forlife = fields.Boolean('Is Purchased Forlife', compute='_comnpute_is_purchased')
-    is_purchased_of_format = fields.Boolean('Is Purchased Format', compute='_comnpute_is_purchased')
+    is_purchased_of_forlife = fields.Boolean('Is Purchased Forlife')
+    is_purchased_of_format = fields.Boolean('Is Purchased Format')
     is_member_app_forlife = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     is_member_app_format = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife', readonly=True)
@@ -23,17 +23,6 @@ class Contact(models.Model):
     point_forlife_reseted = fields.Boolean('Forlife was reseted', default=False)
     point_format_reseted = fields.Boolean('Format was reseted', default=False)
 
-    @api.depends('history_points_format_ids', 'history_points_forlife_ids')
-    def _comnpute_is_purchased(self):
-        for rec in self:
-            if len(rec.history_points_forlife_ids) >= 1:
-                rec.is_purchased_of_forlife = True
-            else:
-                rec.is_purchased_of_forlife = False
-            if len(rec.history_points_format_ids) >= 1:
-                rec.is_purchased_of_format = True
-            else:
-                rec.is_purchased_of_format = False
 
     @api.depends('history_points_format_ids', 'history_points_forlife_ids')
     def compute_point_total(self):

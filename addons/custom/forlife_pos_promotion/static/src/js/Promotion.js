@@ -35,7 +35,7 @@ export class PromotionUsageLine {
 }
 
 export class PosPromotionCode {
-    constructor(code, id, program_id, partner_id, remaining_amount, reward_for_referring, reward_program_id) {
+    constructor(code, id, program_id, partner_id, remaining_amount, reward_for_referring, reward_program_id, reward_program_name) {
         this.code = code;
         this.id = id || nextId--;
         this.program_id = program_id;
@@ -43,6 +43,7 @@ export class PosPromotionCode {
         this.remaining_amount = remaining_amount || 0;
         this.reward_for_referring = reward_for_referring;
         this.reward_program_id = reward_program_id;
+        this.reward_program_name = reward_program_name;
     }
 }
 
@@ -238,6 +239,7 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             this.reset_unit_price();
             this.order._resetPromotionPrograms(false);
         };
+        this.order._resetCartPromotionPrograms(false);
         return result;
     }
 
@@ -465,6 +467,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         orderlines.forEach(line => line.promotion_usage_ids = []);
         orderlines.forEach(line => line.is_cart_discounted = false);
         this._updateActivatedPromotionPrograms();
+        Gui.showNotification(_.str.sprintf(`Chương trình Hóa đơn đã được đặt lại!`), 2000);
     }
 
     async _updateActivatedPromotionPrograms() {
@@ -1509,7 +1512,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 payload.coupon_partner_id,
                 payload.remaining_amount,
                 payload.reward_for_referring,
-                payload.reward_program_id);
+                payload.reward_program_id,
+                payload.reward_program_name
+                );
             this.activatedInputCodes.push(codeObj);
             if (codeObj.reward_for_referring) {
                 let codeProgram = this.pos.promotionPrograms.find(p => p.id == codeObj.program_id);
