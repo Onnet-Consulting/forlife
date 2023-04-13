@@ -29,14 +29,19 @@ class PromotionCode(models.Model):
     amount = fields.Float()
     consumed_amount = fields.Float()
     remaining_amount = fields.Float(compute='_compute_remaining_amount', store=False)
-    reward_for_referring = fields.Boolean(related='program_id.reward_for_referring')
+    reward_for_referring = fields.Boolean('Rewards for Referring', copy=False, readonly=False)
+    referring_date_from = fields.Datetime('Refer From')
+    referring_date_to = fields.Datetime('Refer To')
+    reward_program_id = fields.Many2one('promotion.program', string='Program Reward')
+    original_program_id = fields.Many2one('promotion.program', string='Original Program', readonly=True)
+    original_order_id = fields.Many2one('pos.order', 'Original Order', readonly=True)
+
     referred_partner_id = fields.Many2one('res.partner')
     expiration_date = fields.Datetime()
 
     usage_line_ids = fields.One2many('promotion.usage.line', 'code_id')
     use_count = fields.Integer(compute='_compute_use_count_order', string='Number of Order Usage')
     order_ids = fields.Many2many('pos.order', compute='_compute_use_count_order', string='Order')
-
     def _compute_use_count_order(self):
         for code in self:
             order_ids = code.usage_line_ids.mapped('order_line_id.order_id')

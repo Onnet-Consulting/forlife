@@ -12,7 +12,9 @@ class PromotionPricelistItem(models.Model):
     _description = 'Promotion Pricelist Item'
 
     active = fields.Boolean(default=True)
-    program_id = fields.Many2one('promotion.program', string='Promotion Program', ondelete='cascade')
+    program_id = fields.Many2one(
+        'promotion.program', string='Promotion Program', ondelete='cascade', required=True,
+        domain="[('promotion_type', '=', 'pricelist')]")
     product_id = fields.Many2one('product.product', string='Product', domain="[('available_in_pos', '=', True)]", required=True)
     fixed_price = fields.Float('Fix price')
 

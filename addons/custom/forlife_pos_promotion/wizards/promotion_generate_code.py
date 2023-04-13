@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.tools.convert import safe_eval
 
 
@@ -20,7 +20,11 @@ class PromotionGenerateCode(models.Model):
     valid_until = fields.Date()
     coupon_qty = fields.Integer(
         'Quantity', compute='_compute_coupon_qty', readonly=False, store=True)
-    reward_for_referring = fields.Boolean(related='program_id.reward_for_referring')
+    reward_for_referring = fields.Boolean('Rewards for Referring', copy=False, readonly=False)
+    referring_date_from = fields.Datetime('Refer Date From')
+    referring_date_to = fields.Datetime('Refer Date To')
+    reward_program_id = fields.Many2one('promotion.program', string='Referring Program Reward')
+
     promotion_type = fields.Selection(related='program_id.promotion_type')
 
     limit_usage = fields.Boolean(string='Limit usage', related='program_id.limit_usage')
@@ -49,7 +53,7 @@ class PromotionGenerateCode(models.Model):
             else:
                 wizard.coupon_qty = wizard.coupon_qty or 0
 
-    def _get_coupon_values(self, partner):
+    def _get_coupon_values(self, partner, force_partner=False):
         self.ensure_one()
         program = self.program_id
         if program.reward_type in ('combo_amount', 'code_amount'):
@@ -58,18 +62,29 @@ class PromotionGenerateCode(models.Model):
             amount = program.disc_max_amount
         else:
             amount = 0.0
-        return {
+        result = {
             'program_id': self.program_id.id,
             'amount': amount,
-            'partner_id': partner.id if self.mode == 'selected' else False,
+            'partner_id': partner.id if self.mode == 'selected' or force_partner else False,
             'expiration_date': self.valid_until or self.program_id.to_date or False,
             'max_usage': self.max_usage
         }
+        if self.reward_for_referring:
+            result['reward_for_referring'] = self.reward_for_referring
+            result['referring_date_from'] = self.referring_date_from
+            result['referring_date_to'] = self.referring_date_to
+            result['reward_program_id'] = self.reward_program_id.id
+        return result
 
     @api.onchange('program_id')
     def onchange_program_id(self):
         if self.program_id.limit_usage:
             self.max_usage = self.program_id.max_usage
+
+    @api.onchange('referring_date_from', 'referring_date_to')
+    def onchange_referring_date_valid(self):
+        if self.referring_date_from and self.referring_date_to and self.referring_date_from > self.referring_date_to:
+            raise UserError(_('Ngày bắt đầu phải nhỏ hơn ngày kết thúc!'))
 
     def generate_codes(self):
         if any(not wizard.program_id for wizard in self):

@@ -137,8 +137,6 @@ class PromotionProgram(models.Model):
     code_ids = fields.One2many('promotion.code', 'program_id')
     code_count = fields.Integer(compute='_compute_code_count')
 
-    reward_for_referring = fields.Boolean('Rewards for Referring', copy=False, readonly=False)
-
     discount_product_ids = fields.Many2many('product.product', 'promotion_program_discount_product_rel')
     reward_product_ids = fields.Many2many('product.product', 'promotion_program_reward_product_rel')
     reward_quantity = fields.Float()
@@ -164,7 +162,7 @@ class PromotionProgram(models.Model):
                     if couple[0] & couple[1]:
                         raise UserError(_('Products duplication occurs in the combo formula!'))
             if program.promotion_type == 'combo' and not program.combo_line_ids:
-                raise UserError(_('Combo Formular is not set!'))
+                raise UserError(_('%s: Combo Formular is not set!') % program.name)
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -264,7 +262,6 @@ class PromotionProgram(models.Model):
         if not self.promotion_type:
             self.reward_type = False
         elif self.promotion_type == 'combo':
-            self.with_code = False
             if self.reward_type and not self.reward_type.startswith('combo'):
                 self.reward_type = 'combo_amount'
         elif self.promotion_type == 'code':
