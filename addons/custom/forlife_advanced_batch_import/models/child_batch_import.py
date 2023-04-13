@@ -21,13 +21,14 @@ class ChildBatchImport(models.Model):
     file = fields.Binary('File', help="File to check and/or import, raw binary (not base64)", attachment=True)
     file_name = fields.Char('File Name')
     file_type = fields.Char('File Type')
+    file_length = fields.Integer(string="File Length")
 
-    @api.depends('complete_records', 'parent_batch_import_id', 'parent_batch_import_id.limit')
+    @api.depends('complete_records', 'file_length')
     def _compute_progress_bar(self):
         for rec in self:
             complete = 0
-            if rec.complete_records and rec.parent_batch_import_id and rec.parent_batch_import_id.limit and rec.complete_records <= int(rec.parent_batch_import_id.limit):
-                complete = (rec.complete_records / int(rec.parent_batch_import_id.limit)) * 100
+            if rec.complete_records and rec.file_length > 0:
+                complete = (rec.complete_records / int(rec.file_length)) * 100
             rec.progress_bar = complete
 
     def make_queue_job(self):
@@ -64,17 +65,20 @@ class ChildBatchImport(models.Model):
                 else:
                     rec.status = 'error'
                     rec.log = json.dumps(result, ensure_ascii=False)
-                index_for_header = 1 if options.get('has_headers') else 0
+                index_for_header = 2 if options.get('has_headers') else 1
                 error_rows = list(dict.fromkeys([int(row.get('record')) + index_for_header for row in (result.get('messages') if result.get('messages') else [])]))
+                file_length = result.get('file_length') if result.get('file_length') else 0
                 if len(error_rows) > 0:
                     rec.write({
                         'error_rows': json.dumps(error_rows),
-                        'complete_records': rec.parent_batch_import_id.limit - len(error_rows) if (rec.parent_batch_import_id and rec.parent_batch_import_id.limit) else 0
+                        'complete_records': file_length - len(error_rows) if rec.file_length > 0 else 0,
+                        'file_length': file_length
                     })
                 else:
                     rec.write({
                         'error_rows': False,
-                        'complete_records': rec.parent_batch_import_id.limit if (rec.parent_batch_import_id and rec.parent_batch_import_id.limit) else 0
+                        'complete_records': rec.file_length,
+                        'file_length': file_length
                     })
             except Exception as e:
                 rec.status = 'error'

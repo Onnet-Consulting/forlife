@@ -113,5 +113,6 @@ class Import(models.TransientModel):
         # convert load's internal nextrow to the imported file's
         if import_result['nextrow']:  # don't update if nextrow = 0 (= no nextrow)
             import_result['nextrow'] += skip
+        import_result['file_length'] = len(merged_data)  # get length data
 
         return import_result

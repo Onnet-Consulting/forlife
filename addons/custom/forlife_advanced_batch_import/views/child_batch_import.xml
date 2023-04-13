@@ -20,6 +20,7 @@
                             <field name="file_name" invisible="1"/>
                             <field name="parent_batch_import_id"/>
                             <field name="skip"/>
+                            <field name="file_length"/>
                         </group>
                         <group>
                             <field name="complete_records"/>
@@ -41,6 +42,7 @@
                     <field name="sequence"/>
                     <field name="skip"/>
                     <field name="complete_records"/>
+                    <field name="file_length"/>
                     <field name="progress_bar" widget="progressbar"/>
                     <field name="status"/>
                     <button name="set_to_processing" type="object" string="Set to Processing" class="oe_highlight"/>
