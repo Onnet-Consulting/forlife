@@ -14,7 +14,8 @@ export const PosPromotionProductScreen = (ProductScreen) =>
             let toCheckRewardLines = this.env.pos.surprisingRewardProducts;
             let validPrograms = [];
             for (let productLine of toCheckRewardLines) {
-                if (!inOrderProductsList.some(product => productLine.to_check_product_ids.has(product)) && productLine.max_quantity > productLine.issued_qty) {
+                if (!inOrderProductsList.some(product => productLine.to_check_product_ids.has(product))
+                    && (productLine.max_quantity > productLine.issued_qty || productLine.max_quantity <= 0)) {
                     validPrograms.push(
                         [productLine.id, productLine.reward_code_program_id[0], productLine.reward_code_program_id[1]]
                     );
