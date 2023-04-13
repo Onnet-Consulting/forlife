@@ -232,10 +232,9 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             this.reset_unit_price();
             this.order._resetPromotionPrograms(false);
         };
-        if (this.pos.no_restrict_reset_program) {
-            this.order._resetCartPromotionPrograms(false);
-            this.pos.no_restrict_reset_program = false;
-        }
+        if (!this.pos.no_reset_program) {
+            this.order._resetCartPromotionPrograms();
+        };
         return result;
     }
 
