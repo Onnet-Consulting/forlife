@@ -89,4 +89,9 @@ AVAILABLE_REPORT = {
         'name': 'Chi tiết xuất nhập hàng',
         'reportTemplate': 'ReportNum16Template',
     },
+    'report.num17': {
+        'module': 'Bán hàng',
+        'name': 'Danh sách hóa đơn bán - đổi - trả',
+        'reportTemplate': 'ReportNum17Template',
+    },
 }
