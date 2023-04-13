@@ -44,6 +44,13 @@ class PosConfig(models.Model):
                 result.append(program_id)
         return result
 
+    def update_surprising_program(self, lines):
+        result = {}
+        line_rewards = self.env['surprising.reward.product.line'].browse(lines)
+        for line in line_rewards:
+            result[line.id] = line.issued_qty
+        return result
+
     def use_promotion_code(self, code, creation_date, partner_id):
         self.ensure_one()
         code_id = self.env['promotion.code'].search(
