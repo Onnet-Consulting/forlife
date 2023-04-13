@@ -61,7 +61,7 @@ class AccountMove(models.Model):
             if not credit_line:
                 continue
             credit_line = credit_line[0]
-            tax_line = (move.line_ids - credit_line).filtered(lambda m: m.tax_ids)
+            tax_line = (move.line_ids - credit_line).filtered(lambda m: m.tax_line_id)
             tax_line = tax_line[0] if tax_line else False
             move_partner = move.partner_id
             bravo_data = {
@@ -80,7 +80,7 @@ class AccountMove(models.Model):
                 "CreditAccount3": line.account_id.code,
                 "CreditAccount": credit_line.account_id.code,
                 "DebitAccount3": tax_line.account_id.code if tax_line else False,
-                "TaxCode": tax_line.tax_ids[0].code if tax_line else False,
+                "TaxCode": tax_line.tax_line_id.code if tax_line else False,
                 "OriginalAmount": line.price_subtotal,
                 'OriginalAmount3': line.price_total - line.price_subtotal,
                 'RowId': line.id
