@@ -36,9 +36,14 @@ class ReportNum17(models.TransientModel):
 
     def _get_query(self, store_ids):
         self.ensure_one()
-        user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
-        store = 'format' if self.brand_id.code == 'FMT' else 'forlife'
+        store_key = 'format' if self.brand_id.code == 'FMT' else 'forlife'
+        customer_condition = f"and (rp.ref ilike '%{self.customer}%' or rp.phone ilike '%{self.customer}%')" if self.customer else ''
+        order_filter_condition = f"""and (po.pos_reference ilike '%{self.order_filter}%'
+             or po.id in (select order_id from pos_order_line where product_id in (
+                select id from product_product where default_code ilike '%{self.order_filter}%'))
+             or po.id in (select order_id from promotion_usage_line where code_id in(
+                select id from promotion_code where name ilike '%{self.order_filter}%')))""" if self.order_filter else ''
         query = f"""
 select
     coalesce((select array[code, name] from store where id in (
@@ -81,7 +86,7 @@ select
      where order_id = po.id and qty < 0)                                        as tien_tra_lai,
     (select coalesce(sum(points_store), 0) * 1000 from (
         select points_store from partner_history_point
-        where store = 'forlife' and date_order < po.date_order
+        where store = '{store_key}' and date_order < po.date_order
     ) as xx)                                                                    as tien_tich_luy,
     coalesce((select points_fl_order from partner_history_point
      where pos_order_id = po.id), 0) * 1000                                     as tich_luy_hd,
@@ -154,6 +159,8 @@ from pos_order po
 where po.brand_id = {self.brand_id.id} and po.company_id = {self.company_id.id}
     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = any(array{store_ids})))
+    {customer_condition}
+    {order_filter_condition}
 """
         return query
 
