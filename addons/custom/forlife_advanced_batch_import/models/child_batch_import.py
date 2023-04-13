@@ -67,7 +67,7 @@ class ChildBatchImport(models.Model):
                     rec.log = json.dumps(result, ensure_ascii=False)
                 index_for_header = 2 if options.get('has_headers') else 1
                 error_rows = list(dict.fromkeys([int(row.get('record')) + index_for_header for row in (result.get('messages') if result.get('messages') else [])]))
-                file_length = result.get('file_length') if result.get('file_length') else 0
+                file_length = result.get('file_length') if result.get('file_length') else rec.parent_batch_import_id.limit
                 if len(error_rows) > 0:
                     rec.write({
                         'error_rows': json.dumps(error_rows),
