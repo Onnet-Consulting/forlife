@@ -16,7 +16,8 @@
                     <sheet>
                         <group>
                             <field name="sequence"/>
-                            <field name="attachment_id"/>
+                            <field name="file" filename="file_name"/>
+                            <field name="file_name" invisible="1"/>
                             <field name="parent_batch_import_id"/>
                             <field name="skip"/>
                         </group>
@@ -36,7 +37,7 @@
             <field name="arch" type="xml">
                 <tree string="child_batch_import_tree">
                     <field name="parent_batch_import_id"/>
-                    <field name="attachment_id"/>
+                    <field name="file_name"/>
                     <field name="sequence"/>
                     <field name="skip"/>
                     <field name="complete_records"/>

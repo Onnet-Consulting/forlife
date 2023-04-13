@@ -11,14 +11,16 @@ class ChildBatchImport(models.Model):
 
     sequence = fields.Integer(string="Sequence", default=1)
     parent_batch_import_id = fields.Many2one(string="Parent Batch", comodel_name="parent.batch.import", ondelete='cascade')
-    attachment_id = fields.Many2one(string="Attachment", comodel_name="ir.attachment")
-    file_name = fields.Char('File Name')
     skip = fields.Integer(string='Skip')
     log = fields.Text(string="Log")
     status = fields.Selection([('draft', 'Draft'), ('processing', 'Processing'), ('done', 'Done'), ('error', 'Error'), ('cancel', 'Cancel')], string='Status', default='draft')
     complete_records = fields.Integer(string="Complete Records")
     error_rows = fields.Text(string="Error Rows")
     progress_bar = fields.Float('Progress Done (%)', digits=(16, 2), compute='_compute_progress_bar')
+    # binary file
+    file = fields.Binary('File', help="File to check and/or import, raw binary (not base64)", attachment=True)
+    file_name = fields.Char('File Name')
+    file_type = fields.Char('File Type')
 
     @api.depends('complete_records', 'parent_batch_import_id', 'parent_batch_import_id.limit')
     def _compute_progress_bar(self):
@@ -37,9 +39,9 @@ class ChildBatchImport(models.Model):
         for rec in self:
             try:
                 base_import_from_batch = self.env['base_import.import'].sudo().create({
-                    'file': base64.b64decode(rec.attachment_id.datas),
+                    'file': base64.b64decode(rec.file),
                     'file_name': rec.file_name,
-                    'file_type': rec.attachment_id.mimetype,
+                    'file_type': rec.file_type,
                     'res_model': rec.parent_batch_import_id.res_model,
                 })
                 # trong trường hợp không phải là file nhỏ đầu tiên, thì sẽ không có has_headers
@@ -64,10 +66,15 @@ class ChildBatchImport(models.Model):
                     rec.log = json.dumps(result, ensure_ascii=False)
                 index_for_header = 1 if options.get('has_headers') else 0
                 error_rows = list(dict.fromkeys([int(row.get('record')) + index_for_header for row in (result.get('messages') if result.get('messages') else [])]))
-                if error_rows:
+                if len(error_rows) > 0:
                     rec.write({
                         'error_rows': json.dumps(error_rows),
                         'complete_records': rec.parent_batch_import_id.limit - len(error_rows) if (rec.parent_batch_import_id and rec.parent_batch_import_id.limit) else 0
+                    })
+                else:
+                    rec.write({
+                        'error_rows': False,
+                        'complete_records': rec.parent_batch_import_id.limit if (rec.parent_batch_import_id and rec.parent_batch_import_id.limit) else 0
                     })
             except Exception as e:
                 rec.status = 'error'
@@ -76,9 +83,9 @@ class ChildBatchImport(models.Model):
     def test_execute_import(self):
         for rec in self:
             base_import_from_batch = self.env['base_import.import'].sudo().create({
-                'file': base64.b64decode(rec.attachment_id.datas),
+                'file': base64.b64decode(rec.file),
                 'file_name': rec.file_name,
-                'file_type': rec.attachment_id.mimetype,
+                'file_type': rec.file_type,
                 'res_model': rec.parent_batch_import_id.res_model,
             })
             options = json.loads(rec.parent_batch_import_id.options)
