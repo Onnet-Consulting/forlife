@@ -105,7 +105,7 @@
                                    attrs="{'readonly': [('state', 'in', ('cancel', 'confirm', 'reject', 'approved', 'close'))]}"
                                    context="{'default_request_date': request_date,'default_state': state, 'default_date_planned': date_planned,
                                    'default_production_id': production_id, 'default_account_analytic_id': account_analytic_id}">
-                                <tree editable="bottom" decoration-muted="is_no_more_quantity == True" class="width-hh width-first">
+                                <tree editable="bottom" decoration-muted="is_no_more_quantity == True" class="width-hh">
                                     <field name="is_close" string=" "/>
                                     <field name="product_id" domain="[('detailed_type', '!=', 'consu')]"/>
                                     <field name="state" invisible="1"/>

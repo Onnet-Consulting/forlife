@@ -36,7 +36,7 @@
                                 <field name="reason_type_id"/>
                                 <field name="is_price_unit" attrs="{'invisible': [('type_other', '!=', 'incoming')]}"/>
                                 <field name="is_work_order"/>
-                                <field name="work_order" attrs="{'required': [('is_work_order', '=', True)],'invisible': [('is_work_order', '=', False)]}"/>
+<!--                                <field name="work_order" attrs="{'required': [('is_work_order', '=', True)],'invisible': [('is_work_order', '=', False)]}"/>-->
                             </group>
                         </group>
                         <group string="Thông tin kế toán">
