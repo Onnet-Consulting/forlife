@@ -28,8 +28,10 @@ class ProductProduct(models.Model):
     @api.model
     def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
         try:
-            mongo_server_rec = self.env['mongo.server.config'].search([('active_record','=',True)],limit=1)
+            store_id = self._context.get('store_id')
+            mongo_server_rec = self.env['mongo.server.config'].search([('active_record', '=', True), ('store_id', '=', store_id)], limit=1)
             is_indexed_updated = self._context.get('is_indexed_updated')
+
             if mongo_server_rec:
                 if is_indexed_updated and is_indexed_updated[0] and not is_indexed_updated[0].get('time') and mongo_server_rec.is_ordinary_loading and mongo_server_rec.is_updated:
                     return []

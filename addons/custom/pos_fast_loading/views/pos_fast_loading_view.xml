@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright (c) 2016-Present Webkul Software Pvt. Ltd. (<https://webkul.com/>) -->
-<!-- See LICENSE file for full copyright and licensing details. -->
-<!-- License URL : <https://store.webkul.com/license.html/> -->
 <odoo>
 
 	    <record id="view_mongo_config" model="ir.ui.view">
             <field name="name">mongo.server.config.form</field>
             <field name="model">mongo.server.config</field>
             <field name="arch" type="xml">
-                <form string="Incoming Mail Server">
+                <form>
                     <header>
-                        <button string="Test Connection" type="object" name="check_connection"  attrs="{'invisible' : [('load_pos_data_from', '=', 'postgres')]}"/>
                         <button string="Sync Products" type="object" name="sync_products" />
                     </header>
                     <sheet>
@@ -22,27 +18,18 @@
                             </button>
                         </div>
                         <group col="4">
-                            <field name="load_pos_data_from" required="1"/>
+                            <field name="name" />
                             <field name="pos_live_sync" required="1"/>
-                        </group>
-                        <group col="4" string="Mongo Config" attrs="{'invisible' : [('load_pos_data_from', '=', 'postgres')]}">
-                            <field name="mongo_host" attrs="{'required' : [('load_pos_data_from', '=', 'mongo')]}"/>
-                            <field name="mongo_port" attrs="{'required' : [('load_pos_data_from', '=', 'mongo')]}"/>
+                            <field name="store_id" />
                         </group>
                         <notebook>
                             <page string="Time Updates">
                                 <group col="4">
                                     <field name="product_last_update_time" readonly='1'/>
-                                    <field name="price_last_update_time" readonly='1'/>
-                                    <field name="partner_last_update_time" readonly='1'/>
                                     <field name="cache_last_update_time" readonly='1'/>
                                 </group>
                             </page>
                             <page string="Data Fields">
-                                <group string="Partner Fields" col="4">
-                                    <field name="partner_all_fields" />
-                                    <field name="partner_field_ids" widget="many2many_tags" attrs="{'invisible' : [('partner_all_fields', '=', True)]}"/>
-                                </group>
                                 <group col="4" string="Product Fields">
                                     <field name="product_all_fields" />
                                     <field name="product_field_ids" widget="many2many_tags" attrs="{'invisible' : [('product_all_fields', '=', True)]}"/>
@@ -51,8 +38,6 @@
                             <page string="Pos Cache" attrs="{'invisible' : True}">
                                 <group string="POS Cache Data" col="4">
                                     <field name="pos_product_cache" readonly="1"/>
-                                    <field name="pos_partner_cache" readonly="1" />
-                                    <field name="pos_pricelist_cache" readonly="1" />
                                 </group>
                             </page>
                         </notebook>
@@ -60,7 +45,6 @@
                 </form>
             </field>
         </record>
-
 
 
         <record id="view_mongo_config_tree" model="ir.ui.view">

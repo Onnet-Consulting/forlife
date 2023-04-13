@@ -99,7 +99,7 @@ odoo.define('pos_fast_loading.models', function (require) {
             var self = this;
             var params = {
                 model: "product.product",
-                context: _.extend({sync_from_mongo: true, is_indexed_updated: last_update}, {}),
+                context: _.extend({sync_from_mongo: true, is_indexed_updated: last_update, store_id: self.config.store_id[0]}, {}),
                 method: 'search_read',
                 fields: ['display_name', 'lst_price', 'standard_price', 'categ_id', 'pos_categ_id', 'taxes_id',
                  'barcode', 'default_code', 'to_weight', 'uom_id', 'description_sale', 'description',
