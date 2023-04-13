@@ -777,7 +777,7 @@ msgstr "Ngày nhận"
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__tolerance
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.inherit_purchase_order_form_view
 msgid "Tolerance"
-msgstr "Thời gian lưu lại"
+msgstr "Dung sai"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__source_document
@@ -1091,3 +1091,18 @@ msgstr "Hoàn thành"
 #: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__invoice_status__to_invoice
 msgid "Waiting Bills"
 msgstr "Dở dang"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__transportation_total
+msgid "Transportation Total"
+msgstr "Tổng chi phí vận chuyển"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__loading_total
+msgid "Loading Total"
+msgstr "Tổng chi phí bốc dỡ"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__custom_total
+msgid "Custom Total"
+msgstr "Tổng chi phí thông quan"
