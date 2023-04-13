@@ -68,9 +68,9 @@
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>
                         <button string="Approved" name="action_approved"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'confirm')]}"/>
-                        <button string="Reject" name="action_reject"
-                                type="object" attrs="{'invisible':[ ('custom_state', '!=', 'confirm')]}"
-                                groups="purchase_request.admin_purchase_request_group"/>
+                        <button string="Reject" name="%(forlife_purchase.reject_order_wizard)d"
+                                type="action" attrs="{'invisible':[ ('custom_state', '!=', 'confirm')]}"
+                                groups="purchase_request.admin_purchase_request_group" />
                         <button string="Cancel" name="action_cancel" type="object"
                                 attrs="{'invisible': [('custom_state', 'in', ('close', 'approved'))]}"/>
                         <button string="Close" name="action_close" type="object"
@@ -103,7 +103,7 @@
                         <field name="cost_line" widget="section_and_note_one2many">
                             <tree editable="bottom" class="width-hh width-first" create="0" delete="0">
                                 <field name="product_id" readonly="1"/>
-                                <field name="name" readonly="1"/>
+                                <field name="name" readonly="1" string='Mô tả'/>
                                 <field name="transportation_costs_percent"/>
                                 <field name="transportation_costs" readonly="1"/>
                                 <field name="loading_costs_percent"/>
@@ -160,6 +160,9 @@
                     <field name="payment_term_id" string="Chính sách thanh toán"/>
                     <field name="receive_date" required="1"/>
                 </xpath>
+                <xpath expr="//field[@name='date_planned']" position="replace">
+                    <field name="date_planned" required="1"/>
+                </xpath>
                 <xpath expr="//field[@name='date_order']" position="replace">
                     <field name="date_order" string="Order Date"/>
                 </xpath>
@@ -190,6 +193,7 @@
                                domain="[('detailed_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
                         <field name="name"/>
                         <field name="product_type" string="Type"/>
+                        <field name="request_purchases"/>
                         <field name="asset_code"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
                         <field name="asset_name"
@@ -262,7 +266,6 @@
                         <field name="price_total" invisible="1"/>
                         <field name="price_tax" invisible="1"/>
                         <field name="company_id" invisible="1"/>
-                        <field name="request_purchases"/>
                     </tree>
                 </xpath>
                 <xpath expr="//field[@name='notes']" position="attributes">

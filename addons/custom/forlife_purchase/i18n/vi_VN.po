@@ -777,7 +777,7 @@ msgstr "Ngày nhận"
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order_line__tolerance
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.inherit_purchase_order_form_view
 msgid "Tolerance"
-msgstr "Thời gian lưu lại"
+msgstr "Dung sai"
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_purchase_order__source_document

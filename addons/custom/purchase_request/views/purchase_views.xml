@@ -38,6 +38,7 @@
                     <field name="has_contract"/>
                     <field name="has_contract_commerce"/>
                     <field name="note"/>
+                    <field name="rejection_reason"  attrs="{'invisible': [('custom_state', '!=', 'reject')]}" string="Lý do từ chối"/>
                 </xpath>
                 <xpath expr="//div[@name='reminder']" position="attributes">
                     <attribute name="invisible">True</attribute>

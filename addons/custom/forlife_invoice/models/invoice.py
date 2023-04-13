@@ -288,10 +288,3 @@ class RespartnerVendor(models.Model):
 
 
 
-
-
-
-
-
-
-

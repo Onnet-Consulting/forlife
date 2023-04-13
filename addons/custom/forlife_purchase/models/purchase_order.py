@@ -59,7 +59,7 @@ class PurchaseOrder(models.Model):
     exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id')
     cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id')
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
-    location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
+    location_id = fields.Many2one('stock.location', string="Kho nhận", check_company=True)
     is_inter_company = fields.Boolean(default=False)
     partner_domain = fields.Char(compute='compute_partner_domain')
     partner_id = fields.Many2one('res.partner', string='Vendor', required=True, states=READONLY_STATES,
@@ -93,6 +93,7 @@ class PurchaseOrder(models.Model):
         ('to invoice', 'Waiting Bills'),
         ('invoiced', 'Fully Billed'),
     ], string='Billing Status', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
+    rejection_reason = fields.Char(string= "Lý do từ chối")
 
     def compute_inventory_status(self):
         for item in self:
@@ -350,7 +351,7 @@ class PurchaseOrder(models.Model):
                     }
                     order_line.append(data_product)
                 supplier_sales_order = self.supplier_sales_order(data, order_line)
-                record.write({'custom_state': 'approved'})
+                record.write({'custom_state': 'approved', 'inventory_status': 'done', 'invoice_status': 'invoiced'})
 
     def supplier_sales_order(self, data, order_line):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)

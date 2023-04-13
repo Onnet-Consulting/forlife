@@ -5,15 +5,15 @@ class PurchaseOrderCostLine(models.Model):
     _name = "purchase.order.cost.line"
     _description = 'Purchase Order Cost Line'
 
-    name = fields.Char(string='Name')
-    product_id = fields.Many2one('product.product', string='Product')
+    product_id = fields.Many2one('product.product', string='Sản phẩm')
+    name = fields.Char(string='Mô tả', related='product_id.name')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order')
-    transportation_costs_percent = fields.Float(string='% Transportation Costs')
-    transportation_costs = fields.Float(string='Transportation Costs', compute='compute_transportation_costs')
-    loading_costs_percent = fields.Float(string='% Loading Costs')
-    loading_costs = fields.Float(string='Loading Costs', compute='compute_loading_costs')
-    custom_costs_percent = fields.Float(string='% Custom Costs')
-    custom_costs = fields.Float(string='Custom Costs', compute='compute_custom_costs')
+    transportation_costs_percent = fields.Float(string='% Chi phí vận chuyển')
+    transportation_costs = fields.Float(string='Chi phí vận chuyển', compute='compute_transportation_costs')
+    loading_costs_percent = fields.Float(string='% Chi phí bốc dỡ')
+    loading_costs = fields.Float(string='Chi phí bốc dỡ ', compute='compute_loading_costs')
+    custom_costs_percent = fields.Float(string='% Chi phí thông quan')
+    custom_costs = fields.Float(string='Chi phí thông quan', compute='compute_custom_costs')
 
     @api.depends('purchase_order_id.transportation_total', 'transportation_costs_percent')
     def compute_transportation_costs(self):
