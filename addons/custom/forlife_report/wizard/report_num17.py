@@ -116,14 +116,37 @@ select
                 where is_voucher = true and company_id = {self.company_id.id}
                 )
         ), 0)                                                                   as tien_voucher,
-    po.cashier                                                                  as nguoi_lap,
+    (select name from res_partner where id = (
+        select partner_id from res_users where id = po.user_id))                as nguoi_lap,
     to_char(po.create_date, 'DD/MM/YYYY')                                       as ngay_lap,
     '' as nguoi_sua,
     '' as ngay_sua,
-    '' as so_ct_nhap,
-    '' as ngay_ct_nhap,
-    '' as nhan_vien,
-    '' as nhom_khach,
+    (select array_agg(pos_reference)
+    from pos_order where id in (
+        select order_id from pos_order_line where id in (
+            select refunded_orderline_id
+            from pos_order_line
+            where refunded_orderline_id notnull and order_id = po.id)
+        ))                                                                      as so_ct_nhap,
+    (select array_agg(to_char(date_order, 'DD/MM/YYYY'))
+    from pos_order where id in (
+        select order_id from pos_order_line where id in (
+            select refunded_orderline_id
+            from pos_order_line
+            where refunded_orderline_id notnull and order_id = po.id)
+        ))                                                                      as ngay_ct_nhap,
+    (select array_agg(name) from (
+        select distinct name from hr_employee where id in (
+            select employee_id from pos_order_line where order_id = po.id
+            )
+    ) as xx)                                                                    as nhan_vien,
+    (select array_agg(name) from (
+        select distinct name from res_partner_retail
+        where brand_id = 2 and id in (
+            select res_partner_retail_id from res_partner_res_partner_retail_rel
+            where res_partner_id = po.partner_id
+            )
+     ) as xx)                                                                   as nhom_khach,
     '' as ma_van_don,
     'Cửa hàng'                                                                  as kenh_ban
 from pos_order po
