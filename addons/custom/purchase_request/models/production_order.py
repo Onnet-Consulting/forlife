@@ -25,6 +25,14 @@ class ProductionOrder(models.Model):
                     [('product_id', '=', rec.product_id.id), ('id', '!=', rec.id)]) > 1:
                 raise ValidationError(_('Sản phẩm %s đã được khai báo nguyên phụ liệu/phân tách sản phẩm, bạn cần kiểm tra lại!') % rec.product_id.name)
 
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Tải xuống mẫu NPL'),
+            'template': '/purchase_request/static/src/xlsx/file import npl.xlsx?download=true'
+        }]
+
+
 class ProductionOrderLine(models.Model):
     _name = 'production.order.line'
     _description = 'Production Order Line'

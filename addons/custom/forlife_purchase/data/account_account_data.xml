@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="account_account_debt" model="account.account">
+            <field name="name">Nợ Tk</field>
+            <field name="code">1561</field>
+            <field name="account_type">off_balance</field>
+        </record>
+        <record id="account_import_tax" model="account.account">
+            <field name="name">Thuế nhập khẩu</field>
+            <field name="code">3333</field>
+            <field name="account_type">off_balance</field>
+        </record>
+        <record id="account_excise_tax" model="account.account">
+            <field name="name">Thuế tiêu thụ đặc biệt</field>
+            <field name="code">3332</field>
+            <field name="account_type">off_balance</field>
+        </record>
+    </data>
+</odoo>
