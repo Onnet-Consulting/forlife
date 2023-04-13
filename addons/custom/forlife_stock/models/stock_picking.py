@@ -54,6 +54,7 @@ class StockPicking(models.Model):
     other_export = fields.Boolean(default=False)
     other_import = fields.Boolean(default=False)
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
+
     location_id = fields.Many2one(
         'stock.location', "Source Location",
         compute="_compute_location_id", store=True, precompute=True, readonly=False,
@@ -116,6 +117,10 @@ class StockMove(models.Model):
 
     reason_id = fields.Many2one('stock.location')
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
+    work_production = fields.Many2one('forlife.production')
+    account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
+
+
 
     @api.onchange('product_id')
     def _onchange_product_id(self):

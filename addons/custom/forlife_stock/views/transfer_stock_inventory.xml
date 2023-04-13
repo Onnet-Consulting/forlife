@@ -41,7 +41,7 @@
                             context="{'click_button': 'reject'}"/>
                     <button string="Cancel" name="%(forlife_stock.transfer_stock_inventory_wizard)d"
                             type="action" attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject'))]}"
-                            context="{'click_button': 'cancel'}"/>
+                            context="{'click_button': 'cancel'}" confirm="Bạn có chắc chắn muốn hủy phiếu kiểm kê cân tồn không?"/>
                      <button string="Back to draft" name="action_draft"
                             type="object" attrs="{'invisible':[('state', '!=', 'wait_confirm')]}"/>
                     <field name="state" widget="statusbar"/>
@@ -60,7 +60,7 @@
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
                         <group>
-                            <field name="create_date" readonly="1" string="Create Date"/>
+                            <field name="create_date" string="Create Date"/>
                             <field name="reason_cancel" readonly="1" attrs="{'invisible':[('state', '!=', 'cancel')]}"/>
                             <field name="reason_reject" readonly="1" attrs="{'invisible':[('state', '!=', 'reject')]}"/>
                         </group>
@@ -69,7 +69,7 @@
                         <page string="Product">
                             <field name="transfer_stock_inventory_line_ids" widget="section_and_note_one2many"
                                    mode="tree" context="{'default_location_id': location_id}" required="1"
-                                   attrs="{'readonly': [('state', '!=', 'draft')]}">
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}" class="width-hh">
                                 <tree editable="bottom">
                                     <field name="product_from_id" domain="[('detailed_type', '=', 'product')]"
                                            options="{'no_create': True, 'no_edit': True}" required="1"/>
@@ -84,6 +84,7 @@
                                     <field name="qty_in" required="1" force_save="1"/>
                                     <field name="uom_to_id" readonly="1" required="1"/>
                                     <field name="unit_price_to" required="1"/>
+                                    <field name="cost_price" readonly="1"/>
                                     <field name="total_in"/>
                                     <field name="mrp_production_to_id"/>
                                 </tree>
