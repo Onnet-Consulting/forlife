@@ -94,6 +94,17 @@ class PurchaseOrder(models.Model):
         ('invoiced', 'Fully Billed'),
     ], string='Billing Status', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
     rejection_reason = fields.Char(string= "Lý do từ chối")
+    origin = fields.Char('Source Document', copy=False,
+                         help="Reference of the document that generated this purchase order "
+                              "request (e.g. a sales order)", compute='compute_origin')
+
+    @api.depends('source_document')
+    def compute_origin(self):
+        for item in self:
+            if item.source_document:
+                item.origin = item.source_document
+            else:
+                item.origin = False
 
     def compute_inventory_status(self):
         for item in self:
@@ -733,6 +744,7 @@ class PurchaseOrderLine(models.Model):
     tolerance = fields.Float(related='product_id.tolerance', string='Dung sai')
     received = fields.Integer(string='Received')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
+    description = fields.Char('Mô tả',related='product_id.name')
 
     _sql_constraints = [
         (
@@ -748,6 +760,12 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_id', 'supplier_id', 'is_passersby', 'free_good')
     def onchange_vendor_price(self):
+        if not self.is_passersby:
+            if self.product_id and self.supplier_id:
+                data = self.env['product.supplierinfo'].search([('partner_id', '=', self.supplier_id.id), (
+                    'product_tmpl_id', '=', self.product_id.product_tmpl_id.id)])
+                if data:
+                    self.exchange_quantity = data.amount_conversion
         if self.free_good:
             self.vendor_price = False
         else:
