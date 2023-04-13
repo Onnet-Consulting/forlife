@@ -63,11 +63,11 @@ class ChildBatchImport(models.Model):
                     rec.status = 'error'
                     rec.log = json.dumps(result, ensure_ascii=False)
                 index_for_header = 1 if options.get('has_headers') else 0
-                error_rows = [int(row.get('record')) + index_for_header for row in (result.get('messages') if result.get('messages') else [])]
+                error_rows = list(dict.fromkeys([int(row.get('record')) + index_for_header for row in (result.get('messages') if result.get('messages') else [])]))
                 if error_rows:
                     rec.write({
                         'error_rows': json.dumps(error_rows),
-                        'complete_records': rec.parent_batch_import_id.limit - len(result.get('messages')) if (rec.parent_batch_import_id and rec.parent_batch_import_id.limit) else 0
+                        'complete_records': rec.parent_batch_import_id.limit - len(error_rows) if (rec.parent_batch_import_id and rec.parent_batch_import_id.limit) else 0
                     })
             except Exception as e:
                 rec.status = 'error'
