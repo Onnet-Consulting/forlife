@@ -30,7 +30,7 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
                 for (let i = 0; i < orderLines.length; i++) {
                     let expire_change_refund_date = new Date(orderLines[i].expire_change_refund_date);
                     expire_change_refund_date.setHours(0, 0, 0, 0);
-                    if (orderLines[i] && expire_change_refund_date < today) {
+                    if (orderLines[i] && expire_change_refund_date < today && Math.abs(orderLines[i].quantity) > 0) {
                         lst_orderLine.push(orderLines[i]);
                     }
                 }
@@ -65,15 +65,17 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
                     }
                 })
                 if (!missReason) {
-                    var total_price = order.get_total_with_tax();
-                    if (total_price < 0) {
-                        const product_auto_id = await this.rpc({
-                            model: 'product.product',
-                            method: 'get_product_auto',
-                        })
-                        if (product_auto_id) {
-                            const product_auto = this.env.pos.db.get_product_by_id(product_auto_id);
-                            order.add_product(product_auto, {price: Math.abs(total_price)});
+                    if (currentOrder.is_change_product) {
+                        var total_price = order.get_total_with_tax();
+                        if (total_price < 0) {
+                            const product_auto_id = await this.rpc({
+                                model: 'product.product',
+                                method: 'get_product_auto',
+                            })
+                            if (product_auto_id) {
+                                const product_auto = this.env.pos.db.get_product_by_id(product_auto_id);
+                                order.add_product(product_auto, {price: Math.abs(total_price)});
+                            }
                         }
                     }
                     return await super._onClickPay(...arguments);

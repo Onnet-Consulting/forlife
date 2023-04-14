@@ -16,7 +16,8 @@
                     <sheet>
                         <group>
                             <field name="res_model"/>
-                            <field name="attachment_id"/>
+                            <field name="file" filename="file_name" widget="binary"/>
+                            <field name="file_name" invisible="1"/>
                             <field name="list_field"/>
                             <field name="columns"/>
                             <field name="options"/>
@@ -32,7 +33,7 @@
                             <field name="child_batch_import_ids">
                                 <tree>
                                     <field name="sequence" widget="handle"/>
-                                    <field name="attachment_id"/>
+                                    <field name="file_name"/>
                                     <field name="skip"/>
                                     <field name="status"/>
                                     <field name="progress_bar" widget="progressbar"/>
@@ -50,7 +51,7 @@
             <field name="arch" type="xml">
                 <tree string="parent_batch_import_tree">
                     <field name="res_model"/>
-                    <field name="attachment_id"/>
+                    <field name="file_name"/>
                     <field name="limit"/>
                     <field name="with_delay"/>
                     <field name="number_of_split_file"/>
