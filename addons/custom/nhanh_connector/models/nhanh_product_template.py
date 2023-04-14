@@ -13,7 +13,7 @@ class ProductNhanh(models.Model):
     _inherit = 'product.template'
 
     nhanh_id = fields.Integer(string="Id Nhanh.Vn")
-    code_product = fields.Char(string="Mã sản phẩm")
+    code_product = fields.Char(string="Mã kĩ thuật")
     ## Nếu tạo sản phẩm từ Odoo == True else == False
     check_data_odoo = fields.Boolean(string='Check dữ liệu từ odoo or Nhanh', default=True)
     width_product = fields.Float('Width')
