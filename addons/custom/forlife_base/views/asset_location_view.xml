@@ -6,9 +6,9 @@
             <field name="model">asset.location</field>
             <field name="arch" type="xml">
                 <tree string="Asset Location" editable="top">
-                    <field name="location_code" required="1"/>
-                    <field name="location_name"/>
-                    <field name="location_address"/>
+                    <field name="code" required="1"/>
+                    <field name="name"/>
+                    <field name="address"/>
                 </tree>
             </field>
         </record>
