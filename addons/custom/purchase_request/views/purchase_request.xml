@@ -123,6 +123,7 @@
                                     <field name="date_planned" optional="show" readonly="0" force_save="1"/>
                                     <field name="order_quantity" optional="show"/>
                                     <field name="is_no_more_quantity" invisible="1"/>
+                                    <field name="is_all_line" invisible="1"/>
                                     <field name="purchase_order_line_ids" widget="many2many_tags" invisible="1"/>
                                 </tree>
                             </field>

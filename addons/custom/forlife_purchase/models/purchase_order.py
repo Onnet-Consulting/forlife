@@ -1008,6 +1008,7 @@ class StockPicking(models.Model):
                     lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
                     invoice_line.extend(lines)
                 master_data_ac = {
+                    'ref': record.name,
                     'purchase_type': po.purchase_type,
                     'move_type': 'entry',
                     'reference': po.name,
