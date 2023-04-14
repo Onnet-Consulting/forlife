@@ -56,15 +56,19 @@ class Import(models.TransientModel):
                     cell_value = str(cell.value)
                     if dic_col and dic_col.get(colx, False):
                         if cell.value and cell_value.strip():
+                            cell_values = cell_value.split(',')
                             value_attrs = []
-                            val_attribute_id = self.env['product.attribute.value'].search(
-                                [('name', '=', cell_value.strip()), ('attribute_id.name', '=', dic_col[colx])])
-                            if not val_attribute_id:
-                                raise ValueError(_("Không tồn tại giá trị {} của thuộc tính {}".format(cell_value, dic_col[colx])))
+                            attr_val_ids = []
+                            for attr_val in cell_values:
+                                val_attribute_id = self.env['product.attribute.value'].search(
+                                [('name', '=', attr_val.strip()), ('attribute_id.name', '=', dic_col[colx])])
+                                if not val_attribute_id:
+                                    raise ValueError(_("Không tồn tại giá trị {} của thuộc tính {}".format(cell_value, dic_col[colx])))
+                                attr_val_ids.append(str(val_attribute_id.id))
                             for i in range(1, col_number):
                                 value_attrs.append('')
                             value_attrs.append(str(dic_col[colx]))
-                            value_attrs.append(str(val_attribute_id.id))
+                            value_attrs.append(','.join(attr_val_ids))
                             row_attrs.append(value_attrs)
                     else:
                         if cell.ctype is xlrd.XL_CELL_NUMBER:
