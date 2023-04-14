@@ -6,6 +6,56 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_picking']" position="before">
+                    <button name="action_view_invoice_ncc"
+                        string="Invoice"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-pencil-square-o"
+                        attrs="{'invisible': ['|', ('is_inter_company', '=', False), ('count_invoice_inter_company_ncc', '=', 0)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="count_invoice_inter_company_ncc"/>
+                            </span>
+                            <span class="o_stat_text">Hóa đơn nhà cung cấp</span>
+                        </div>
+                    </button>
+                    <button name="action_view_invoice_customer"
+                        string="Invoice"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-pencil-square-o"
+                        attrs="{'invisible': ['|', ('is_inter_company', '=', False), ('count_invoice_inter_company_customer', '=', 0)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="count_invoice_inter_company_customer"/>
+                            </span>
+                            <span class="o_stat_text">Hóa đơn khách hàng</span>
+                        </div>
+                    </button>
+                    <button
+                            class="oe_stat_button" name="action_view_picking_inter_company"
+                            type="object" icon="fa-truck"
+                            attrs="{'invisible': ['|', ('is_inter_company', '=', False), ('count_delivery_inter_company', '=', 0)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="count_delivery_inter_company"/>
+                            </span>
+                            <span class="o_stat_text">Xuất hàng</span>
+                        </div>
+                    </button>
+                    <button
+                            class="oe_stat_button" name="action_view_import_picking_inter_company"
+                            type="object" icon="fa-truck"
+                            attrs="{'invisible': ['|', ('is_inter_company', '=', False), ('count_delivery_inter_company', '=', 0)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="count_delivery_import_inter_company"/>
+                            </span>
+                            <span class="o_stat_text">Nhập hàng</span>
+                        </div>
+                    </button>
+                </xpath>
                 <xpath expr="//header" position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
@@ -13,14 +63,14 @@
                     <header>
                         <button name="action_create_invoice" string="Create Invoice"
                                 class="btn btn-primary ms-md-2" type="object"
-                                attrs="{'invisible':[('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>
+                                attrs="{'invisible':['|',('is_inter_company', '=', True),'|',('is_done_picking', '=', False),('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>
                         <button string="Submit" name="action_confirm"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>
                         <button string="Approved" name="action_approved"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'confirm')]}"/>
-                        <button string="Reject" name="action_reject"
-                                type="object" attrs="{'invisible':[ ('custom_state', '!=', 'confirm')]}"
-                                groups="purchase_request.admin_purchase_request_group"/>
+                        <button string="Reject" name="%(forlife_purchase.reject_order_wizard)d"
+                                type="action" attrs="{'invisible':[ ('custom_state', '!=', 'confirm')]}"
+                                groups="purchase_request.admin_purchase_request_group" />
                         <button string="Cancel" name="action_cancel" type="object"
                                 attrs="{'invisible': [('custom_state', 'in', ('close', 'approved'))]}"/>
                         <button string="Close" name="action_close" type="object"
@@ -31,83 +81,128 @@
                 </xpath>
                 <xpath expr="//notebook" position="inside">
                     <page string="Product Exchange Rate">
-                        <field name="exchange_rate_line" widget="section_and_note_one2many">
-                            <tree editable="bottom" class="width-hh width-first" create="0" delete="0">
+                        <field name="exchange_rate_line" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}" widget="section_and_note_one2many">
+                            <tree editable="bottom" class="width-hh" create="0" delete="0">
                                 <field name="product_id" readonly="1"/>
                                 <field name="name" readonly="1"/>
-                                <field name="usd_amount" readonly="1"/>
+                                <field name="usd_amount" readonly="1" invisible="1"/>
                                 <field name="vnd_amount" readonly="1"/>
                                 <field name="import_tax"/>
                                 <field name="tax_amount" readonly="1"/>
-                                <field name="total_vnd_amount" readonly="1"/>
+                                <field name="special_consumption_tax"/>
+                                <field name="special_consumption_tax_amount" readonly="1"/>
+                                <field name="vat_tax"/>
+                                <field name="vat_tax_amount" readonly="1"/>
+<!--                                <field name="total_vnd_amount" readonly="1"/>-->
                                 <field name="total_tax_amount" readonly="1"/>
                             </tree>
                         </field>
                     </page>
                     <page string="Product Cost" name="product_cost">
                         <field name="is_inter_company" invisible="1"/>
-                        <field name="cost_line" widget="section_and_note_one2many">
-                            <tree editable="bottom" class="width-hh width-first" create="0" delete="0">
+                        <field name="cost_line" widget="section_and_note_one2many" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}">
+                            <tree editable="bottom" class="width-hh" create="0" delete="0">
                                 <field name="product_id" readonly="1"/>
-                                <field name="name" readonly="1"/>
-                                <field name="usd_amount" readonly="1"/>
-                                <field name="vnd_amount"/>
-                                <field name="hidden_amount" invisible="1"/>
-                                <field name="allocate"/>
-                                <field name="amt_allocate" readonly="1"/>
-                                <field name="total_vnd_amount" readonly="1"/>
-                                <field name="total_amt_allocate" readonly="1"/>
+                                <field name="name" readonly="1" string='Mô tả'/>
+                                <field name="transportation_costs_percent"/>
+                                <field name="transportation_costs" readonly="1"/>
+                                <field name="loading_costs_percent"/>
+                                <field name="loading_costs" readonly="1"/>
+                                <field name="custom_costs_percent"/>
+                                <field name="custom_costs" readonly="1"/>
                             </tree>
                         </field>
+                        <div class="xl-12 d-flex" style="justify-content: end;">
+                            <group class="xl-4">
+                                <field name="transportation_total"/>
+                            </group>
+                              <group class="xl-4">
+                                <field name="loading_total"/>
+                            </group>
+                              <group class="xl-4">
+                                <field name="custom_total"/>
+                            </group>
+                        </div>
                     </page>
                 </xpath>
-                <!--                <xpath expr="//group[hasclass('oe_subtotal_footer')]" position="replace">-->
-                <!--                    <group>-->
-                <!--                        <group class="oe_subtotal_footer oe_right">-->
-                <!--                            <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>-->
-                <!--                            <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>-->
-                <!--                            <field name="total_discount" widget='monetary' options="{'currency_field': 'currency_id'}"/>-->
-                <!--                            <div class="oe_subtotal_footer_separator oe_inline">-->
-                <!--                                <label for="amount_total"/>-->
-                <!--                            </div>-->
-                <!--                            <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"-->
-                <!--                                   widget="monetary" options="{'currency_field': 'currency_id'}"/>-->
-                <!--                        </group>-->
-                <!--                    </group>-->
-                <!--                </xpath>-->
                 <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//field[@name='currency_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='date_approve']" position="attributes">
+                    <attribute name="readonly">'custom_state' not in ('draft', 'confirm') </attribute>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="readonly">'custom_state' not in ('draft', 'confirm') </attribute>
+                </xpath>
+                <xpath expr="//field[@name='origin']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='invoice_status']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='incoterm_id']" position="attributes">
+                    <attribute name="readonly">'custom_state' not in ('draft', 'confirm') </attribute>
+                </xpath>
+                <xpath expr="//field[@name='incoterm_location']" position="attributes">
+                     <attribute name="readonly">'custom_state' not in ('draft', 'confirm') </attribute>
+                </xpath>
+                 <xpath expr="//field[@name='incoterm_location']" position="attributes">
+                    <attribute name="string">Vị trí Incoterm</attribute>
+                </xpath>
+                <xpath expr="//field[@name='receipt_status']" position="attributes">
+                    <attribute name="string">Trạng thái biên nhận</attribute>
+                </xpath>
+                <xpath expr="//field[@name='fiscal_position_id']" position="attributes">
+                     <attribute name="readonly">'custom_state' not in ('draft', 'confirm') </attribute>
+                </xpath>
                 <xpath expr="//field[@name='currency_id']" position="before">
+                    <field name="is_purchase_request" attrs="{'invisible': True}"/>
+                    <field name="is_check_readonly_partner_id" attrs="{'invisible': True}"/>
+                    <field name="is_check_readonly_purchase_type" attrs="{'invisible': True}"/>
                     <field name="partner_domain" invisible="1"/>
-                    <field name="partner_id" string="Nhà cung cấp"/>
+                    <field name="partner_id" string="Nhà cung cấp" domain="partner_domain" attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="is_passersby" invisible="1"/>
-                    <field name="purchase_type"/>
-                    <field name="purchase_code"/>
+                    <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                     <field name="currency_id" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="exchange_rate" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
-                    <field name="exchange_rate"/>
                     <field name="active_manual_currency_rate" invisible="1"/>
                     <!--                    <field name="apply_manual_currency_exchange" invisible="1"/>-->
-                    <field name="manual_currency_exchange_rate"
-                           attrs="{'invisible': [('active_manual_currency_rate', '=', False)]}"/>
+<!--                    <field name="manual_currency_exchange_rate"-->
+<!--                           attrs="{'invisible': [('active_manual_currency_rate', '=', False)]}"/>-->
                 </xpath>
                 <xpath expr="//field[@name='date_order']" position="before">
                     <field name="has_contract"/>
                     <field name="has_invoice"/>
-                    <field name="location_id"/>
                 </xpath>
                 <xpath expr="//field[@name='date_order']" position="after">
-                    <field name="payment_term_id"/>
+                    <field name="payment_term_id" string="Chính sách thanh toán" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="receive_date" required="1" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                </xpath>
+                <xpath expr="//field[@name='date_planned']" position="replace">
+                    <field name="date_planned" required="1" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                </xpath>
+                <xpath expr="//field[@name='date_planned']" position="replace">
+                    <field name="date_planned" required="1"/>
                 </xpath>
                 <xpath expr="//field[@name='date_order']" position="replace">
-                    <field name="date_order" string="Order Date"/>
+                    <field name="date_order" string="Order Date" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                </xpath>
+                <xpath expr="//field[@name='tax_totals']" position="after">
+                    <field name="trade_discount"/>
+                    <field name="total_trade_discount"/>
+                    <field name="is_done_picking" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree" position="replace">
-                    <tree editable="bottom" class="width-hh width-first">
+                    <tree editable="bottom" class="width-hh">
                         <control>
                             <create name="add_product_control" string="Add a product"/>
                             <create name="add_section_control" string="Add a section"
@@ -115,6 +210,7 @@
                             <create name="add_note_control" string="Add a note"
                                     context="{'default_display_type': 'line_note'}"/>
                         </control>
+                        <field name="is_passersby" invisible="1"/>
                         <field name="display_type" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
                         <field name="state" invisible="1"/>
@@ -125,8 +221,10 @@
                         <field name="product_id"
                                context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
                                domain="[('detailed_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
-                        <field name="name"/>
+                        <field name="name" invisible="1"/>
+                        <field name="description"/>
                         <field name="product_type" string="Type"/>
+                        <field name="request_purchases"/>
                         <field name="asset_code"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
                         <field name="asset_name"
@@ -138,11 +236,11 @@
                         <field name="purchase_uom"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="exchange_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_passersby', '=', False)]}"/>
                         <field name="product_qty" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
                         <field name="vendor_price"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.is_passersby', '=', False)]}"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_passersby', '=', False)]}"
                                force_save="1"/>
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
@@ -150,11 +248,11 @@
                         <field name="product_uom" readonly="1"/>
                         <field name="location_id"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                        <field name="price_tax"/>
                         <field name="taxes_id" widget="many2many_tags"
                                domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id), ('country_id', '=', parent.tax_country_id)]"
                                context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}"
                                options="{'no_create': True}"/>
-                        <field name="price_tax"/>
                         <field name="discount_percent"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('readonly_discount_percent', '=', True)]}"
                                force_save="1"/>
@@ -165,9 +263,12 @@
                         <!--                           sum="discounted subtotal" optional="hide"/>-->
                         <field name="event_id" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"
                         />
+                        <field name="occasion_code_id" string="Mã vụ việc"/>
                         <field name="production_id" string="Manufacturing Order"/>
                         <field name="billed"/>
                         <field name="account_analytic_id" string="Cost Center"/>
+                        <field name="receive_date" string="Receive Date"/>
+                        <field name="tolerance" string="Tolerance"/>
                         <field name="readonly_discount" invisible="1"/>
                         <field name="readonly_discount_percent" invisible="1"/>
                         <field name="date_planned" invisible="1" attrs="{'required': [('display_type', '=', False)]}"
@@ -196,7 +297,6 @@
                         <field name="price_total" invisible="1"/>
                         <field name="price_tax" invisible="1"/>
                         <field name="company_id" invisible="1"/>
-                        <field name="request_purchases"/>
                     </tree>
                 </xpath>
                 <xpath expr="//field[@name='notes']" position="attributes">

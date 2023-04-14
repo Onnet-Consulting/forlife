@@ -7,12 +7,22 @@ class ProductTemplate(models.Model):
 
     number_days_change_refund = fields.Integer('Number days change/refurd')
     is_product_auto = fields.Boolean('Product Auto', default=False, copy=False)
+    is_voucher_auto = fields.Boolean('Voucher Auto', default=False, copy=False)
 
     @api.constrains('is_product_auto')
     def check_product_auto(self):
         for item in self:
-            product_id = self.search([('is_product_auto', '=', True), ('id', '!=', item.id)])
-            if product_id:
-                raise ValidationError(_("Product with information 'Product Auto' unique."))
+            if item.is_product_auto:
+                product_id = self.search([('is_product_auto', '=', True), ('id', '!=', item.id)])
+                if product_id:
+                    raise ValidationError(_("Product with information 'Product Auto' unique."))
+
+    @api.constrains('is_voucher_auto')
+    def check_voucher_auto(self):
+        for item in self:
+            if item.is_voucher_auto:
+                product_id = self.search([('is_voucher_auto', '=', True), ('id', '!=', item.id)])
+                if product_id:
+                    raise ValidationError(_("Product with information 'Voucher Auto' unique."))
 
 

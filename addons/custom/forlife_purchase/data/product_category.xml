@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="category_product_import_tax" model="product.category">
+            <field name="name">Danh mục thuế nhập khẩu</field>
+            <field name="category_code">3333000002</field>
+            <field name="property_valuation">real_time</field>
+            <field name="property_stock_account_input_categ_id" ref="l10n_vn.chart3333"/>
+        </record>
+        <record id="category_product_excise_tax" model="product.category">
+            <field name="name">Danh mục thuế tiêu thụ đặc biệt</field>
+            <field name="category_code">3332000001</field>
+            <field name="property_valuation">real_time</field>
+            <field name="property_stock_account_input_categ_id" ref="l10n_vn.chart3332"/>
+        </record>
+        <record id="product_import_tax" model="product.product">
+            <field name="name">Thuế nhập khẩu</field>
+<!--            <field name="code_product">tax3333000002</field>-->
+            <field name="categ_id" ref="forlife_purchase.category_product_import_tax"/>
+        </record>
+        <record id="product_excise_tax" model="product.product">
+            <field name="name">Thuế tiêu thụ đặc biệt</field>
+<!--            <field name="code_product">tax3332000001</field>-->
+            <field name="categ_id" ref="forlife_purchase.category_product_excise_tax"/>
+        </record>
+    </data>
+</odoo>
