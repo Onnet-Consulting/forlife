@@ -78,8 +78,7 @@ odoo.define('forlife_pos_product_change_refund.Orderline', function(require) {
                 var obj = {};
                 var line = {};
                 var order = this.env.pos.get_order();
-                obj.pos_order_id = order.backendId;
-                obj.name = order.name;
+                obj.pos_order_id = order.origin_pos_order_id;
                 obj.store = this.env.pos.config.store_id[0];
                 line.product_id = this.props.line.product.id;
                 line.price = this.props.line.price;
