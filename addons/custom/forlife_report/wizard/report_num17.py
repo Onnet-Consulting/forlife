@@ -52,7 +52,7 @@ select
             ) 
         ) limit 1
     ), array['', ''] )                                                          as chi_nhanh,
-    to_char(po.date_order, 'DD/MM/YYYY')                                        as ngay,
+    to_char(po.date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY')                                        as ngay,
     po.pos_reference                                                            as so_ct,
     rp.ref                                                                      as ma_kh,
     rp.phone                                                                    as sdt,
@@ -123,7 +123,7 @@ select
         ), 0)                                                                   as tien_voucher,
     (select name from res_partner where id = (
         select partner_id from res_users where id = po.user_id))                as nguoi_lap,
-    to_char(po.create_date, 'DD/MM/YYYY')                                       as ngay_lap,
+    to_char(po.create_date + '{tz_offset} h'::interval, 'DD/MM/YYYY')                                       as ngay_lap,
     '' as nguoi_sua,
     '' as ngay_sua,
     (select array_agg(pos_reference)
@@ -133,7 +133,7 @@ select
             from pos_order_line
             where refunded_orderline_id notnull and order_id = po.id)
         ))                                                                      as so_ct_nhap,
-    (select array_agg(to_char(date_order, 'DD/MM/YYYY'))
+    (select array_agg(to_char(date_order + '{tz_offset} h'::interval, 'DD/MM/YYYY'))
     from pos_order where id in (
         select order_id from pos_order_line where id in (
             select refunded_orderline_id
