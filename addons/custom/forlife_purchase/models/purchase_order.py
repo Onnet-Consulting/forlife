@@ -93,7 +93,7 @@ class PurchaseOrder(models.Model):
         ('to invoice', 'Waiting Bills'),
         ('invoiced', 'Fully Billed'),
     ], string='Billing Status', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
-    rejection_reason = fields.Char(string= "Lý do từ chối")
+    rejection_reason = fields.Char(string="Lý do từ chối")
     origin = fields.Char('Source Document', copy=False,
                          help="Reference of the document that generated this purchase order "
                               "request (e.g. a sales order)", compute='compute_origin')
@@ -118,17 +118,16 @@ class PurchaseOrder(models.Model):
             else:
                 item.inventory_status = 'not_received'
 
-
     def compute_is_done_picking(self):
-        for item in self:
-            pk = self.env['stock.picking'].search([('origin', '=', item.name)]).mapped('state')
+        for record in self:
+            pk = self.env['stock.picking'].search([('origin', '=', record.name)]).mapped('state')
             if pk:
                 if 'done' in pk:
-                    item.is_done_picking = True
+                    record.is_done_picking = True
                 else:
-                    item.is_done_picking = False
+                    record.is_done_picking = False
             else:
-                item.is_done_picking = False
+                record.is_done_picking = False
 
     @api.constrains('order_line')
     def constrains_order_line(self):
@@ -249,7 +248,6 @@ class PurchaseOrder(models.Model):
         else:
             self.total_trade_discount = False
 
-
     @api.depends('is_inter_company')
     def compute_partner_domain(self):
         for item in self:
@@ -277,40 +275,6 @@ class PurchaseOrder(models.Model):
                                     'work_production': orl.production_id.id,
                                     'account_analytic_id': orl.account_analytic_id.id
                                 })
-                invoice_line = []
-                for r in record.exchange_rate_line:
-                    invoice_line_1561 = (
-                        0, 0,
-                        {'account_id': self.env.ref('forlife_purchase.account_account_debt').id, 'name': r.name,
-                         'debit': r.tax_amount + r.special_consumption_tax_amount,
-                         'credit': 0,
-                         })
-                    invoice_line_3333 = (
-                        0, 0,
-                        {'account_id': self.env.ref('forlife_purchase.account_import_tax').id, 'name': r.name,
-                         'debit': 0,
-                         'credit': r.tax_amount,
-                         })
-                    invoice_line_3332 = (
-                        0, 0,
-                        {'account_id': self.env.ref('forlife_purchase.account_excise_tax').id, 'name': r.name,
-                         'debit': 0,
-                         'credit': r.special_consumption_tax_amount,
-                         })
-                    lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
-                    invoice_line.extend(lines)
-                master_data_ac = {
-                    'purchase_type': record.purchase_type,
-                    'move_type': 'entry',
-                    'reference': record.name,
-                    'currency_id': record.currency_id.id,
-                    'exchange_rate': record.exchange_rate,
-                    'date': datetime.datetime.now(),
-                    'invoice_payment_term_id': record.payment_term_id.id,
-                    'due_date': record.date_planned,
-                    'invoice_line_ids': invoice_line
-                }
-                account = self.env['account.move'].create(master_data_ac).action_post()
                 record.write({'custom_state': 'approved'})
             else:
                 data = {'partner_id': record.partner_id.id, 'purchase_type': record.purchase_type,
@@ -605,7 +569,7 @@ class PurchaseOrder(models.Model):
         # 2) group by (company_id, partner_id, currency_id) for batch creation
         new_invoice_vals_list = []
         for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
-        x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
+                x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
             origins = set()
             payment_refs = set()
             refs = set()
@@ -744,7 +708,7 @@ class PurchaseOrderLine(models.Model):
     tolerance = fields.Float(related='product_id.tolerance', string='Dung sai')
     received = fields.Integer(string='Received')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
-    description = fields.Char('Mô tả',related='product_id.name')
+    description = fields.Char('Mô tả', related='product_id.name')
 
     _sql_constraints = [
         (
@@ -936,7 +900,7 @@ class PurchaseOrderLine(models.Model):
             return
         seller_min_qty = self.product_id.seller_ids \
             .filtered(lambda r: r.partner_id == self.order_id.partner_id and (
-                    not r.product_id or r.product_id == self.product_id)) \
+                not r.product_id or r.product_id == self.product_id)) \
             .sorted(key=lambda r: r.min_qty)
         if seller_min_qty:
             self.product_qty = seller_min_qty[0].min_qty or 1.0
@@ -963,7 +927,7 @@ class PurchaseOrderLine(models.Model):
             self.order_id.location_id.id if self.order_id.location_id else False)
         if not location_dest_id:
             location_dest_id = (self.orderpoint_id and not (
-                        self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
+                    self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
         picking_line = picking.filtered(lambda p: p.location_dest_id and p.location_dest_id.id == location_dest_id)
         return {
             # truncate to 2000 to avoid triggering index limit error
@@ -1004,3 +968,55 @@ class AccountMove(models.Model):
         res = super().create(vals)
         return res
 
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
+
+    def button_validate(self):
+        res = super().button_validate()
+        for record in self:
+            po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)], limit=1)
+            if po:
+                invoice_line = []
+                for r in po.exchange_rate_line:
+                    if r.product_id.categ_id and r.product_id.categ_id.property_stock_valuation_account_id:
+                        account_1561 = r.product_id.categ_id.property_stock_valuation_account_id.id
+                    else:
+                        raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
+                    invoice_line_1561 = (
+                        0, 0,
+                        {
+                            'account_id': account_1561, 'name': r.name,
+                            'debit': r.tax_amount + r.special_consumption_tax_amount,
+                            'credit': 0,
+                        })
+                    invoice_line_3333 = (
+                        0, 0,
+                        {'account_id': self.env.ref(
+                            'forlife_purchase.product_import_tax').categ_id.property_stock_account_input_categ_id.id,
+                         'name': r.name,
+                         'debit': 0,
+                         'credit': r.tax_amount,
+                         })
+                    invoice_line_3332 = (
+                        0, 0,
+                        {'account_id': self.env.ref(
+                            'forlife_purchase.product_excise_tax').categ_id.property_stock_account_input_categ_id.id,
+                         'name': r.name,
+                         'debit': 0,
+                         'credit': r.special_consumption_tax_amount,
+                         })
+                    lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
+                    invoice_line.extend(lines)
+                master_data_ac = {
+                    'purchase_type': po.purchase_type,
+                    'move_type': 'entry',
+                    'reference': po.name,
+                    'currency_id': po.currency_id.id,
+                    'exchange_rate': po.exchange_rate,
+                    'date': datetime.datetime.now(),
+                    'invoice_payment_term_id': po.payment_term_id.id,
+                    'due_date': po.date_planned,
+                    'invoice_line_ids': invoice_line
+                }
+                account = self.env['account.move'].create(master_data_ac).action_post()
+        return res
