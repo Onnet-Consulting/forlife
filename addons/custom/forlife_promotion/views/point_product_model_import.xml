@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="point_product_model_import_form">
+        <field name="name">point.product.model.import.form</field>
+        <field name="model">point.product.model.import</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="point_addition"/>
+                        </group>
+                        <group>
+                            <field name="product_id"/>
+
+                            <field name="default_code"/>
+                        </group>
+                    </group>
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="point_product_model_import_tree">
+        <field name="name">point.product.model.import.tree</field>
+        <field name="model">point.product.model.import</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="point_addition"/>
+                <field name="product_id"/>
+                <field name="default_code"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
