@@ -1299,7 +1299,7 @@ msgstr "Tự kiểm kê cân tồn"
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_location__is_price_unit
 msgid "Is Price Unit"
-msgstr "Có dùng đơn giá"
+msgstr "Nhập tổng tiền"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_location__is_work_order

@@ -55,6 +55,15 @@ class StockPicking(models.Model):
     other_import = fields.Boolean(default=False)
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
 
+    stock_custom_location_ids = fields.One2many('stock.location', 'stock_custom_picking_id')
+    is_production_order = fields.Boolean(compute='compute_production_order')
+
+    @api.depends('location_id')
+    def compute_production_order(self):
+        for rec in self:
+            rec.is_production_order = rec.location_id.is_work_order
+
+
     location_id = fields.Many2one(
         'stock.location', "Source Location",
         compute="_compute_location_id", store=True, precompute=True, readonly=False,
@@ -71,6 +80,8 @@ class StockPicking(models.Model):
 
     date_done = fields.Datetime('Date of Transfer', copy=False, readonly=False, default=fields.Datetime.now,
                                 help="Date at which the transfer has been processed or cancelled.")
+
+
 
     def _action_done(self):
         old_date_done = self.date_done
@@ -115,9 +126,11 @@ class StockPicking(models.Model):
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
+
+    uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
     reason_id = fields.Many2one('stock.location')
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
-    work_production = fields.Many2one('forlife.production')
+    work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
 

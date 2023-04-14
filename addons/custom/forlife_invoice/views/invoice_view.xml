@@ -79,7 +79,7 @@
                             <field name="product_id"
                                    context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
                                    domain="[('detailed_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
-                            <field name="description" related="product_id.name"/>
+                            <field name="description" related="product_id.name" string="Mô tả"/>
                             <field name="type"/>
                             <field name="current_user"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>

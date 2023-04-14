@@ -195,11 +195,23 @@ class PurchaseRequest(models.Model):
         }
 
     is_no_more_quantity = fields.Boolean(compute='_compute_is_no_more_quantity', store=1)
+    is_close = fields.Boolean(compute='_compute_is_no_more_quantity', store=1)
 
-    @api.depends('order_lines', 'order_lines.is_no_more_quantity')
+    @api.depends('order_lines', 'order_lines.is_no_more_quantity', 'order_lines.is_close', 'state',
+                 'order_lines.order_quantity', 'order_lines.purchase_quantity')
     def _compute_is_no_more_quantity(self):
+        pr_line = self.env['purchase.request.line']
         for rec in self:
             rec.is_no_more_quantity = all(rec.order_lines.mapped('is_no_more_quantity'))
+            if rec.state == 'approved':
+                rec.is_close = all(rec.order_lines.mapped('is_close'))
+            close_true = pr_line.search([('is_close', '=', True), ('is_no_more_quantity', '=', False), ('request_id', '=', rec.id)])
+            more_true = pr_line.search([('is_no_more_quantity', '=', True), ('is_close', '=', False), ('request_id', '=', rec.id)])
+            false_all = pr_line.search([('is_no_more_quantity', '=', False), ('is_close', '=', False), ('request_id', '=', rec.id)])
+            if close_true and more_true in rec.order_lines:
+                rec.write({'state': 'close'})
+            if close_true and false_all in rec.order_lines:
+                rec.write({'state': 'approved'})
 
 class PurchaseRequestLine(models.Model):
     _name = "purchase.request.line"

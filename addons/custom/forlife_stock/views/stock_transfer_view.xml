@@ -81,7 +81,7 @@
                         <page string="Product">
                             <field name="stock_transfer_line" widget="section_and_note_one2many" mode="tree" context="{'default_stock_request_id': stock_request_id, 'default_work_from': work_from, 'default_work_to': work_to}"
                                    required="1">
-                                <tree editable="bottom" class="width-hh width-first">
+                                <tree editable="bottom" class="width-hh">
                                     <field name="is_from_button" invisible="1"/>
                                     <field name="product_str_id" invisible="1"/>
                                     <field name="product_id"  domain="[('detailed_type', '=', 'product')]" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
