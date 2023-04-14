@@ -10,7 +10,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="product_id"/>
+                            <field name="product_id" context="{'active_id_import': active_id, 'active_model': active_model}"/>
 
                             <field name="default_code"/>
                         </group>
