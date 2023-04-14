@@ -32,7 +32,7 @@ class StockMove(models.Model):
             'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
         }
 
-    def get_purchase_picking_data(self):
+    def bravo_get_purchase_picking_data(self):
         moves = self.filtered(lambda m: m.purchase_line_id and m.account_move_ids)
         bravo_column_names = []
         moves_data = []
@@ -77,7 +77,7 @@ class StockMove(models.Model):
             bravo_column_names = list(bravo_data.keys())
         return bravo_column_names, moves_data
 
-    def get_sale_picking_data(self):
+    def bravo_get_sale_picking_data(self):
         moves = self.filtered(lambda m: m.sale_line_id and m.account_move_ids)
         bravo_column_names = []
         moves_data = []
@@ -138,9 +138,9 @@ class StockMove(models.Model):
     def bravo_get_insert_values(self):
         move_type = self.env.context.get(CONTEXT_MOVE_ACTION)
         if move_type == 'purchase_picking':
-            return self.get_purchase_picking_data()
+            return self.bravo_get_purchase_picking_data()
         if move_type == 'sale_picking':
-            return self.get_sale_picking_data()
+            return self.bravo_get_sale_picking_data()
         return [], []
 
     def bravo_get_insert_sql_by_move_action(self):
