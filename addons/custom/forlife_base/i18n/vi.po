@@ -170,10 +170,7 @@ msgstr "Mã nội bộ"
 msgid "Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s"
 msgstr "Giá trị tại hàng %(row)s, cột %(col)s: %(cell_value)s không hợp lệ"
 
-#. module: forlife_base
-#: model:ir.model.fields,field_description:forlife_base.field_stock_warehouse__id_deposit
-msgid "Is deposit?"
-msgstr "Kho hàng ký gửi"
+
 
 #. module: forlife_base
 #: model:ir.actions.act_window,name:forlife_base.res_location_province_action
