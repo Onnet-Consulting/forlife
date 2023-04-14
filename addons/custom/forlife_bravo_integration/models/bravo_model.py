@@ -421,7 +421,8 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
         return update_queries + insert_queries
 
     @api.model
-    def bravo_insert_with_check_existing(self, queries):
+    def bravo_insert_with_check_existing(self, ):
+        queries = self.bravo_get_insert_with_check_existing_sql()
         if queries:
             self._execute_many(queries)
         return True
@@ -429,9 +430,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        queries = res.bravo_get_insert_with_check_existing_sql()
-        if queries:
-            self.env[self._name].sudo().with_delay().bravo_insert_with_check_existing(queries)
+        res.sudo().with_delay().bravo_insert_with_check_existing()
         return res
 
 
