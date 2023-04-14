@@ -9,4 +9,4 @@ class PointProductModelImport(models.Model):
     product_id = fields.Many2one('product.product', 'Sản phẩm')
     default_code = fields.Char('Mã nội bộ', related='product_id.default_code')
     point_addition = fields.Integer(string='Điểm cộng', related='points_product_id.point_addition')
-
+    points_promotion_id = fields.Many2one('points.promotion', related='points_product_id.points_promotion_id')
