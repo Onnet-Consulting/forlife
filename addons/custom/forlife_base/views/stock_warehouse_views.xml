@@ -22,7 +22,6 @@
                                 <field name="phone"/>
                                 <field name="manager_id"/>
                                 <field name="status_ids"/>
-                                <field name="id_deposit"/>
                             </group>
                             <group>
                                 <field name="sale_province_id"/>

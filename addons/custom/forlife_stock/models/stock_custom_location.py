@@ -11,7 +11,9 @@ class Location(models.Model):
     valuation_out_account = fields.Many2one("account.account", string="Tài khoản định giá tồn kho (xuất hàng)")
     valuation_in_account = fields.Many2one("account.account", string="Tài khoản định giá tồn kho (nhập hàng)")
     reason_type_id = fields.Many2one('forlife.reason.type')
-    work_order = fields.Many2one('forlife.production', string='Work Order')
+    # work_order = fields.Many2one('forlife.production', string='Work Order')
+
+    stock_custom_picking_id = fields.Many2one('stock.picking')
 
     is_price_unit = fields.Boolean(default=False)
     is_work_order = fields.Boolean(default=False)
@@ -40,6 +42,7 @@ class StockMove(models.Model):
     #
     #     return journal_id, acc_src, acc_dest, acc_valuation
 
+    # Hàm xử lý sinh bút toán nếu là nhâp khác xuất khác
     def _prepare_account_move_line(self, qty, cost, credit_account_id, debit_account_id, svl_id, description):
         """
         Generate the account.move.line values to post to track the stock valuation difference due to the
@@ -60,11 +63,13 @@ class StockMove(models.Model):
             credit_account_id = self.picking_id.location_id.valuation_out_account.id
             debit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
             debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
-                if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
+                if not self.picking_id.location_id.is_price_unit else self.price_unit
+                # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
         res = [(0, 0, line_vals) for line_vals in self._generate_valuation_lines_data(valuation_partner_id, qty, debit_value, credit_value,
                                                                                       debit_account_id, credit_account_id, svl_id, description).values()]
         return res
 
+    # Hàm xử lý sửa định giá theo Price unit mới
     def _get_in_svl_vals(self, forced_quantity):
         svl_vals_list = []
         for move in self:

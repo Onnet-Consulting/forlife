@@ -13,6 +13,9 @@
                 <field name="refund_point" readonly="1" force_save="1"/>
                 <field name="approved" readonly="1" force_save="1"/>
             </xpath>
+            <xpath expr="//field[@name='pricelist_id']" position="after">
+                <field name="voucher_id" options="{'no_create': 1, 'no_create_edit': 1}" readonly="1"/>
+            </xpath>
         </field>
     </record>
 </odoo>

@@ -29,22 +29,22 @@
                             <group>
                                 <field name="pos_order_id" invisible="1"/>
                                 <field name="origin_order"/>
-                                <field name="store_id" options="{'no_create': 1, 'no_create_edit': 1}"/>
+                                <field name="store_id" options="{'no_create': 1, 'no_create_edit': 1}" readonly="1"/>
                             </group>
                             <group>
                                 <field name="company_id" invisible="1"/>
                                 <field name="currency_id" invisible="1"/>
-                                <field name="send_approval_date"/>
+                                <field name="send_approval_date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             </group>
                         </group>
                         <notebook>
                             <page string="Product Details">
-                                <field name="line_ids">
-                                    <tree editable="bottom">
+                                <field name="line_ids" attrs="{'readonly': [('state', '!=', 'draft')]}">
+                                    <tree editable="bottom" create="0">
                                         <field name="company_id" invisible="1"/>
                                         <field name="currency_id" invisible="1"/>
-                                        <field name="product_id"/>
-                                        <field name="purchase_price"/>
+                                        <field name="product_id" readonly="1"/>
+                                        <field name="purchase_price" readonly="1"/>
                                         <field name="return_price"/>
                                         <field name="expire_change_refund_date"/>
                                         <field name="note"/>

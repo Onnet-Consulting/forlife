@@ -24,7 +24,7 @@ class AccountMove(models.Model):
     receiving_warehouse_id = fields.Many2one('stock.transfer', string='Receiving Warehouse')
     purchase_order_product_id = fields.Many2one('purchase.order', string='Purchase Order')
     purchase_order_id = fields.Many2one('purchase.order', string="Auto-Complete")
-    vendor_back_ids = fields.One2many('vendor.back', 'vendor_back_id', string='Vendor Back', compute='_compute_is_check_vendor_page')
+    vendor_back_ids = fields.One2many('vendor.back', 'vendor_back_id', string='Vendor Back', compute='_compute_is_check_vendor_page', readonly=False)
     payment_term_invoice = fields.Many2one('account.payment.term', string='Chính sách thanh toán')
 
     trade_discount = fields.Float(string='Chiết khấu thương mại(%)', compute='_compute_total_trade_discount_and_trade_discount', store=1)
@@ -169,7 +169,7 @@ class AccountMoveLine(models.Model):
             ex_sup_invoice_promo = self.env['res.partner'].search(
                 [('name', '=', rec.vendor_sup_invoice.name)], limit=1)
             price_sup_qty_min = self.env['product.supplierinfo'].search(
-                [('partner_id', '=', rec.vendor_sup_invoice.id), ('product_id', '=', rec.product_id.id)],
+                [('partner_id', '=', rec.vendor_sup_invoice.id), ('product_id', '=', rec.product_id.id), ('product_tmpl_id', '=', rec.product_id.name)],
                 limit=1)
             if ex_sup_invoice_promo and ex_sup_invoice_promo.is_passersby:
                 rec.is_check_exchange_quantity = True
@@ -279,13 +279,6 @@ class RespartnerVendor(models.Model):
                      ('code_tax', '=', record.code_tax),
                      ('street_ven', '=', record.street_ven)]) > 1:
                 raise ValidationError(_('Nhà cung cấp đã tồn tại !!'))
-
-
-
-
-
-
-
 
 
 
