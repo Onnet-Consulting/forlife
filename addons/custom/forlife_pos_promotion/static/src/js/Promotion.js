@@ -1263,6 +1263,19 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         comboLineList.forEach(line => {
             line['promotion_usage_ids'] = line['promotion_usage_ids'] == undefined ? [] : line['promotion_usage_ids'];
         });
+        function getDiscountedAmountAPart() {
+            return comboLineList.reduce((tmp_line, line) => {
+                let tmp_pro = line.promotion_usage_ids.reduce((tmp, usage) => {
+                    if (usage.str_id == program.str_id) {
+                        tmp += usage.discount_amount * line.quantity
+                    };
+                    return tmp;
+                }, 0);
+                tmp_line += tmp_pro;
+                return tmp_line;
+            }, 0);
+        };
+
         // Combo: Mua Combo, giảm tiền
         if (program.reward_type == 'combo_amount' && program.promotion_type == 'combo') {
             let base_total_amount = comboLineList.reduce((accumulator, l) => {accumulator += l.quantity*l.price; return accumulator;}, 0);
@@ -1308,9 +1321,20 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (disc_total_amount > 0) {
                 for (let comboLine of comboLineList) {
                     let originalPrice = comboLine.price;
-                    let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
-                    comboLine.price = newPrice;
-                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    if (comboLineList.indexOf(comboLine) == comboLineList.length-1) {
+                        let discounted = getDiscountedAmountAPart();
+                        let remaining_amount = disc_total_amount - discounted;
+                        let newPrice = originalPrice - remaining_amount / comboLine.quantity
+                        let discAmount = remaining_amount / comboLine.quantity
+                        comboLine.price = newPrice;
+                        comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    }
+                    else {
+                        let originalPrice = comboLine.price;
+                        let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                        comboLine.price = newPrice;
+                        comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    };
                 };
             } else {
                 Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
@@ -1324,9 +1348,20 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (disc_total_amount > 0) {
                 for (let comboLine of comboLineList) {
                     let originalPrice = comboLine.price;
-                    let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
-                    comboLine.price = newPrice;
-                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    if (comboLineList.indexOf(comboLine) == comboLineList.length-1) {
+                        let discounted = getDiscountedAmountAPart();
+                        let remaining_amount = disc_total_amount - discounted;
+                        let newPrice = originalPrice - remaining_amount / comboLine.quantity
+                        let discAmount = remaining_amount / comboLine.quantity
+                        comboLine.price = newPrice;
+                        comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    }
+                    else {
+                        let originalPrice = comboLine.price;
+                        let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                        comboLine.price = newPrice;
+                        comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    };
                 };
             } else {
                 Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
@@ -1353,9 +1388,20 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (disc_total_amount > 0) {
                 for (let comboLine of comboLineList) {
                     let originalPrice = comboLine.price;
-                    let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
-                    comboLine.price = newPrice;
-                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    if (comboLineList.indexOf(comboLine) == comboLineList.length-1) {
+                        let discounted = getDiscountedAmountAPart();
+                        let remaining_amount = disc_total_amount - discounted;
+                        let newPrice = originalPrice - remaining_amount / comboLine.quantity
+                        let discAmount = remaining_amount / comboLine.quantity
+                        comboLine.price = newPrice;
+                        comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    }
+                    else {
+                        let originalPrice = comboLine.price;
+                        let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                        comboLine.price = newPrice;
+                        comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    };
                 };
             } else {
                 Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
@@ -1380,9 +1426,20 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (disc_total_amount > 0) {
                 for (let comboLine of comboLineList) {
                     let originalPrice = comboLine.price;
-                    let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
-                    comboLine.price = newPrice;
-                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    if (comboLineList.indexOf(comboLine) == comboLineList.length-1) {
+                        let discounted = getDiscountedAmountAPart();
+                        let remaining_amount = disc_total_amount - discounted;
+                        let newPrice = originalPrice - remaining_amount / comboLine.quantity
+                        let discAmount = remaining_amount / comboLine.quantity
+                        comboLine.price = newPrice;
+                        comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    }
+                    else {
+                        let originalPrice = comboLine.price;
+                        let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                        comboLine.price = newPrice;
+                        comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                    };
                 };
             } else {
                 Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
