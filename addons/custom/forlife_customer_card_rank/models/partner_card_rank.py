@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _
+from datetime import timedelta
 import pytz
 
 
@@ -14,7 +15,7 @@ class PartnerCardRank(models.Model):
     customer_id = fields.Many2one("res.partner", string="Customer", required=True, ondelete='restrict')
     brand_id = fields.Many2one("res.brand", string="Brand", required=True)
     card_rank_id = fields.Many2one('card.rank', string='Rank', tracking=True, compute='compute_value', store=True)
-    accumulated_sales = fields.Integer('Accumulated Sales', default=0)
+    accumulated_sales = fields.Integer('Accumulated Sales', compute='compute_value', store=True)
     last_order_date = fields.Datetime('Last Order Date', compute='compute_value', store=True)
     line_ids = fields.One2many('partner.card.rank.line', inverse_name='partner_card_rank_id', string='Lines')
 
@@ -25,9 +26,16 @@ class PartnerCardRank(models.Model):
     @api.depends('line_ids')
     def compute_value(self):
         for line in self:
-            line.card_rank_id = line.line_ids and line.line_ids.sorted()[0].new_card_rank_id.id or self.env['card.rank'].search([], order='priority asc', limit=1).id
-            order = line.line_ids.sorted().filtered(lambda f: f.order_id)
-            line.last_order_date = order and order[0].order_date or False
+            line.card_rank_id = line.line_ids and line.line_ids.sorted()[0].new_card_rank_id.id\
+                                or self.env['member.card'].get_member_card_by_date(fields.Date.today(), self.brand_id.id).mapped('card_rank_id')[-1].id
+            records = line.line_ids.sorted().filtered(lambda f: f.value_to_upper > 0)
+            record = records and records[0] or False
+            if record:
+                line.last_order_date = record.order_date
+                line.accumulated_sales = sum(records.filtered(lambda f: f.order_date >= (record.order_date - timedelta(record.program_cr_id.time_set_rank))).mapped('value_to_upper'))
+            else:
+                line.last_order_date = False
+                line.accumulated_sales = 0
 
     def generate_card_rank_data(self):
         res = {}
