@@ -55,6 +55,7 @@ class ImportPartnerCardRank(models.TransientModel):
                     'value_to_upper': value_to_upper,
                     'value_up_rank': value_up_rank,
                     'order_date': order_date,
+                    'real_date': order_date,
                 })]
                 new_data.update({customer_id: new_data.get(customer_id, []) + val})
         if new_data:
