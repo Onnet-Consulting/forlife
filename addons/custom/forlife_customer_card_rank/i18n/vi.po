@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-10 08:45+0000\n"
-"PO-Revision-Date: 2023-04-10 08:45+0000\n"
+"POT-Creation-Date: 2023-04-15 03:54+0000\n"
+"PO-Revision-Date: 2023-04-15 03:54+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -100,6 +100,7 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__brand_id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__brand_id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__brand_id
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_filter
@@ -133,6 +134,7 @@ msgstr "Thương hiệu trên Khách hàng là duy nhất !"
 #. module: forlife_customer_card_rank
 #. odoo-javascript
 #: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/ShowDiscountDetailPopup.xml:0
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.import_partner_card_rank_view_form
 #, python-format
 msgid "Cancel"
 msgstr "Hủy"
@@ -239,6 +241,7 @@ msgstr "Danh bạ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__create_uid
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__create_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__create_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__create_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__create_uid
@@ -247,6 +250,7 @@ msgstr "Được tạo bởi"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__create_date
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__create_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__create_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__create_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__create_date
@@ -310,6 +314,7 @@ msgstr "Đã giảm giá từ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__display_name
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__display_name
@@ -365,6 +370,7 @@ msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__id
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__id
@@ -387,6 +393,27 @@ msgstr ""
 #: model:ir.model.fields,help:forlife_customer_card_rank.field_partner_card_rank__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
 msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.import_partner_card_rank_view_form
+msgid "Import"
+msgstr "Nhập"
+
+#. module: forlife_customer_card_rank
+#: model:ir.actions.act_window,name:forlife_customer_card_rank.import_partner_card_rank_action
+#: model:ir.ui.menu,name:forlife_customer_card_rank.import_partner_card_rank_menu
+msgid "Import Card Rank"
+msgstr "Nhập LS nâng hạng"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__import_file_name
+msgid "Import File Name"
+msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_import_partner_card_rank
+msgid "Import partner card rank"
+msgstr "Nhập LS hạng thẻ khách hàng"
 
 #. module: forlife_customer_card_rank
 #: model:ir.actions.server,name:forlife_customer_card_rank.ir_cron_action_inactive_member_card_program_ir_actions_server
@@ -428,6 +455,7 @@ msgstr "Sổ nhật ký"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank____last_update
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line____last_update
@@ -441,6 +469,7 @@ msgstr "Ngày mua gần nhất"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__write_uid
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__write_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__write_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__write_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__write_uid
@@ -449,6 +478,7 @@ msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__write_date
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__write_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__write_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__write_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__write_date
@@ -600,6 +630,13 @@ msgid "Partner Card Rank Line"
 msgstr "Chi tiết hạng thẻ"
 
 #. module: forlife_customer_card_rank
+#. odoo-python
+#: code:addons/forlife_customer_card_rank/wizard/import_partner_card_rank.py:0
+#, python-format
+msgid "Please upload file template before click Import button !"
+msgstr "Vui lòng tải lên file dữ liệu trước khi nhấn nút Nhập !"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_pos_order_line
 msgid "Point of Sale Order Lines"
 msgstr "Chi tiết đơn hàng bán lẻ"
@@ -694,6 +731,11 @@ msgid "Retail type not apply"
 msgstr "Loại khách lẻ không hưởng ưu đãi"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__row_start
+msgid "Row start"
+msgstr "Dòng bắt đầu"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_has_sms_error
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__message_has_sms_error
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__message_has_sms_error
@@ -761,6 +803,11 @@ msgstr "Doanh số của hạng '%s' phải nhỏ hơn doanh số của hạng '
 #, python-format
 msgid "Update Card Rank"
 msgstr "Điều chỉnh hạng"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__import_file
+msgid "Upload file"
+msgstr "Tải lên tệp"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__value1
@@ -854,6 +901,11 @@ msgstr "giảm giá thêm (%)"
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
 msgid "from"
 msgstr "từ"
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.import_partner_card_rank_view_form
+msgid "import_partner_card_rank_form"
+msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_form
