@@ -4,8 +4,8 @@ admin_passwd = jYcBQvl8t)
 csv_internal_sep = ,
 data_dir = /var/lib/odoo
 import_data_dir = /mnt/data-import/data
-db_host = 58.186.205.87
-db_maxconn = 10
+db_host = database
+db_maxconn = 128
 db_name = False
 db_password = zuiv34#@j1
 db_port = 5432
@@ -62,4 +62,4 @@ workers = 9
 ;password=forlife@123
 
 [queue_job]
-channels = root:42, import:40
+channels = root:22, import:20
