@@ -32,7 +32,7 @@ log_db = False
 log_db_level = warning
 log_handler = :INFO
 log_level = info
-logfile = /var/log/odoo/odoo-gromed.log
+logfile = /var/log/odoo/odoo.log
 logrotate = True
 longpolling_port = 8072
 max_cron_threads = 2
@@ -54,6 +54,12 @@ test_report_directory = False
 translate_modules = ['all']
 unaccent = False
 without_demo = False
+workers = 9
+
+;[session_redis]
+;active=true
+;redis_host=10.254.253.10
+;password=forlife@123
 
 [queue_job]
 channels = root:22, import:20
