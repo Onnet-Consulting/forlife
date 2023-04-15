@@ -7,7 +7,7 @@ Update: Force import valid records, and skip invalid records
 download file log invalid records
 ![img_1.png](img_1.png)
 ![img_2.png](img_2.png)
-
+![log_error.png](log_error.png)
 -----------------------------------
 
 Note : Odoo only reads up to 1 million records per import file, so if you have an import file with more than 1 million records, you should split it into smaller files before importing it into Odoo
