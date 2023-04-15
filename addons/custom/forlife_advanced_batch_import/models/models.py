@@ -137,12 +137,13 @@ class BaseModel(models.AbstractModel):
                         # Failed for some reason, perhaps due to invalid data supplied,
                         # rollback savepoint and keep going
                         errors += 1
-                    if errors >= 10 and (errors >= i / 10):
-                        messages.append({
-                            'type': 'warning',
-                            'message': _(u"Found more than 10 errors and more than one error per 10 records, interrupted to avoid showing too many errors.")
-                        })
-                        break
+                    # comment here to avoid interupt check error records
+                    # if errors >= 10 and (errors >= i / 10):
+                    #     messages.append({
+                    #         'type': 'warning',
+                    #         'message': _(u"Found more than 10 errors and more than one error per 10 records, interrupted to avoid showing too many errors.")
+                    #     })
+                    #     break
 
             # make 'flush' available to the methods below, in the case where XMLID
             # resolution fails, for instance
