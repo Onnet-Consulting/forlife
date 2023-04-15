@@ -311,7 +311,7 @@ class PromotionProgram(models.Model):
     def action_open_promotion_codes(self):
         self.ensure_one()
         action = self.env['ir.actions.act_window']._for_xml_id("forlife_pos_promotion.promotion_code_card_action")
-        action['name'] = _('Promotion Code')
+        action['name'] = _('Promotion Code') + (self.name and _(' of %s') % self.name) or '',
         action['display_name'] = action['name']
         action['context'] = {
             'program_type': self.promotion_type,
@@ -323,7 +323,7 @@ class PromotionProgram(models.Model):
     def action_open_issued_vouchers(self):
         self.ensure_one()
         return {
-            'name': _('Issued Vouchers'),
+            'name': _('Issued Vouchers') + (self.name and _(' of %s') % self.name) or '',
             'domain': [('id', 'in', self.voucher_ids.ids)],
             'res_model': 'voucher.voucher',
             'type': 'ir.actions.act_window',
@@ -334,7 +334,7 @@ class PromotionProgram(models.Model):
     def action_open_orders(self):
         self.ensure_one()
         return {
-            'name': _('Orders'),
+            'name': _('Orders') + (self.name and _(' of %s') % self.name) or '',
             'res_model': 'pos.order',
             'view_mode': 'tree,form',
             'views': [
@@ -347,7 +347,7 @@ class PromotionProgram(models.Model):
 
     def action_open_pricelist_items(self):
         return {
-            'name': _('Product Pricelist Items'),
+            'name': _('Product Pricelist Items') + (self.name and _(' of %s') % self.name) or '',
             'res_model': 'promotion.pricelist.item',
             'view_mode': 'tree',
             'views': [

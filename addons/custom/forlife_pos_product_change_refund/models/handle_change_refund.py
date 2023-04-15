@@ -11,8 +11,8 @@ class HandleChangeRefund(models.Model):
     _order = 'create_date desc'
 
     # name = fields.Char(_('Name'))
-    origin_order = fields.Char(_('Origin Order'))
     pos_order_id = fields.Many2one('pos.order', string=_('Pos Order'))
+    origin_order = fields.Char(_('Origin Order'), related='pos_order_id.pos_reference')
     send_approval_date = fields.Date(_('Send Approval Date'))
     store_id = fields.Many2one('store', _('Store'))
     state = fields.Selection(
@@ -32,7 +32,6 @@ class HandleChangeRefund(models.Model):
         lst_line = []
         vals = {
             'pos_order_id': data.get('pos_order_id'),
-            'origin_order': data.get('name'),
             'send_approval_date': fields.Date.today(),
             'store_id': data.get('store'),
             'state': 'draft',

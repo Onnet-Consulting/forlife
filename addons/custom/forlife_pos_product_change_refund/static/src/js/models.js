@@ -77,11 +77,11 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
         }
 
 //        get_total_with_tax() {
-//            var total = super.get_total_with_tax()
-//            var vals = 0
+//            var total = super.get_total_with_tax();
+//            var vals = 0;
 //            if (this.is_change_product) {
 //                for (const line of this.orderlines){
-//                    vals += (line.money_point_is_reduced /line.quantity_canbe_refund) * line.quantity
+//                    vals += (line.money_point_is_reduced /line.quantity_canbe_refund) * line.quantity;
 //                }
 //            }
 //            return total + vals;
@@ -152,9 +152,17 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
 
 //        get_price_with_tax() {
 //            var total = super.get_price_with_tax();
-//            var vals = 0
+//            var vals = 0;
 //            if (this.order.is_change_product && !this.is_new_line) {
-//                vals += (this.money_point_is_reduced /this.quantity_canbe_refund) * this.quantity
+//                vals += (this.money_point_is_reduced /this.quantity_canbe_refund) * this.quantity;
+//            }
+//            return total + vals;
+//        }
+//        get_price_without_tax() {
+//            var total = super.get_price_without_tax();
+//            var vals = 0;
+//            if (this.order.is_change_product && !this.is_new_line) {
+//                vals += (this.money_point_is_reduced /this.quantity_canbe_refund) * this.quantity;
 //            }
 //            return total + vals;
 //        }
@@ -162,21 +170,6 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
     Registries.Model.extend(Orderline, OrderLineAddField);
 
     const ReasonRefundPosGlobalState = (PosGlobalState) => class extends PosGlobalState {
-        removeOrder(order) {
-            for (const line of order.get_orderlines()) {
-                if (line.handle_change_refund_id) {
-                    var args = {};
-                    args.id = line.handle_change_refund_id;
-                    this.env.services.rpc({
-                        model: 'handle.change.refund',
-                        method: 'cancel_rc_handle_change_refund',
-                        args: [args],
-                    })
-                }
-            }
-            super.removeOrder(...arguments);
-        }
-
         async _processData(loadedData) {
             await super._processData(...arguments);
             this.pos_reason_refund = loadedData['pos.reason.refund'];

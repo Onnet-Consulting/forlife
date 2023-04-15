@@ -251,7 +251,7 @@ msgstr "Sản phẩm"
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_production_order__product_id
 msgid "Product"
-msgstr "Số phiếu"
+msgstr "Sản phẩm"
 
 #. module: purchase_request
 #: model:mail.template,name:purchase_request.approve_purchase_email_template
@@ -535,13 +535,6 @@ msgid "Approval Logs"
 msgstr "Nhật ký phê duyệt"
 
 #. module: purchase_request
-#: model:ir.actions.act_window,name:purchase_request.production_order_action
-#: model:ir.model,name:purchase_request.model_production_order
-#: model:ir.ui.menu,name:purchase_request.production_order
-msgid "Attach Ingredients/Product Separation"
-msgstr ""
-
-#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_order__has_contract_commerce
 msgid "Commerce Contract"
 msgstr "Có hóa đơn hay không?"
@@ -552,7 +545,7 @@ msgstr "Có hóa đơn hay không?"
 #: model:ir.model,name:purchase_request.model_production_order
 #: model:ir.ui.menu,name:purchase_request.production_order
 msgid "Attach Ingredients/Product Separation"
-msgstr "Đính kèm/Phân tách sản phẩm"
+msgstr "Đính kèm sản phẩm"
 
 #. module: purchase_request
 #: model:ir.model.fields.selection,name:purchase_request.selection__production_order__type__normal

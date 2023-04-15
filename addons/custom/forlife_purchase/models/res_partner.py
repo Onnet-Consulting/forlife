@@ -10,12 +10,14 @@ class ResPartner(models.Model):
         # Deletion forbidden (at least through unlink)
         return self.env.ref('product.product_category_all')
 
+    code = fields.Char(string='Code')  # Mã quản lý nhà cung cấp
     internal_code = fields.Char(string='Internal code')  # Mã theo dõi nội bộ
-    gender = fields.Selection(
-        [('male', 'Male'),
-         ('female', 'Female'),
-         ], string='Gender',
-        default='male')
+    supplier_group = fields.Many2one('res.supplier.group')
+    product_category_id = fields.Many2one(
+        'product.category', 'Product Category',
+        change_default=True, default=_get_default_category_id, group_expand='_read_group_categ_id',
+        required=True)
+    date_of_birth = fields.Date(string='Date Of Birth')
     is_passersby = fields.Boolean(defaul=False)
     is_inter_company_purchase = fields.Boolean(default=False)
 
