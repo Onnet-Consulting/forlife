@@ -19,7 +19,7 @@ odoo.define('forlife_pos_promotion.SurpriseRewardPopup', function (require) {
         selectItem(option) {
             option.isSelected = !option.isSelected;
             if (option.isSelected) {
-                let others = this.state.programRewards.filter(p => p.id != option.id);
+                let others = this.state.programRewards.filter(p => p.program_id != option.program_id);
                 others.forEach(option => {
                     option.isSelected = false;
                 });

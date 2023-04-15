@@ -1,6 +1,5 @@
 
 # -*- coding: utf-8 -*-
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import datetime
 
@@ -19,6 +18,12 @@ except ImportError:
 
 class Import(models.TransientModel):
     _inherit = 'base_import.import'
+
+    # FIXME: if other module override this method, re-check the context
+    def execute_import(self, fields, columns, options, dryrun=False):
+        if dryrun:
+            return super(Import, self.with_context(test_import=True)).execute_import(fields, columns, options, dryrun=dryrun)
+        return super(Import, self).execute_import(fields, columns, options, dryrun=dryrun)
 
     def _read_xls_book(self, book, sheet_name):
         if self.res_model == 'product.template':

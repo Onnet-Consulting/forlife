@@ -13,6 +13,5 @@
             <field name="filter_pre_domain">[('is_no_more_quantity', '=', False)]</field>
             <field name="filter_domain">[('is_no_more_quantity', '=', True)]</field>
         </record>
-
     </data>
 </odoo>

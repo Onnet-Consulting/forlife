@@ -22,6 +22,7 @@
 					</div>
 				</xpath>
 				<xpath expr="//field[@name='partner_id']" position="after">
+					<field name="whs_location"/>
 					<field name="whs_latitude"/>
 					<field name="whs_longitude"/>
 					<field name="note"/>

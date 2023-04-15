@@ -15,6 +15,7 @@ class PosOrder(models.Model):
     # is_change_order = fields.Boolean('Is Change Order', copy=False, default=False)
     refund_point = fields.Integer('Refund Point', compute="_compute_refund_point")
     pay_point = fields.Integer('Pay Point', compute="_compute_pay_point")
+    voucher_id = fields.Many2one('voucher.voucher', string='Voucher', copy=False)
 
     @api.model
     def search_change_order_ids(self, config_id, brand_id, store_id, domain, limit, offset, search_details):
@@ -35,7 +36,8 @@ class PosOrder(models.Model):
     def search_refund_order_ids(self, config_id, brand_id, store_id, domain, limit, offset, search_details):
         """Search for all orders that satisfy the given domain, limit and offset."""
         store_id = self.env['store'].sudo().search([('id', '=', store_id)], limit=1)
-        default_domain = [('brand_id', '=', brand_id), ('config_id.store_id', '=', store_id.id), '!', '|', ('state', '=', 'draft'), ('state', '=', 'cancelled')]
+        default_domain = [('brand_id', '=', brand_id), ('config_id.store_id', '=', store_id.id), '!', '|',
+                          ('state', '=', 'draft'), ('state', '=', 'cancelled')]
         if store_id.number_month != 0 and search_details.get('fieldName', False) == 'PHONE':
             start_date = fields.Date.today() - relativedelta(months=store_id.number_month)
             end_date = fields.Date.today()
@@ -51,6 +53,7 @@ class PosOrder(models.Model):
     def _process_order(self, order, draft, existing_order):
         pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
         HistoryPoint = self.env['partner.history.point']
+        Voucher = self.env['voucher.voucher']
         if pos_id:
             order = order['data']
             pos_session = self.env['pos.session'].browse(order['pos_session_id'])
@@ -64,7 +67,7 @@ class PosOrder(models.Model):
                 if pos_order_id.brand_id.id != brand_id.id:
                     pos_order_id.brand_id = brand_id
 
-        #     update history back order
+            # update history back order
             if pos.refund_point > 0 or pos.pay_point > 0:
                 if pos.partner_id.is_member_app_format or pos.partner_id.is_member_app_forlife:
                     if not pos.program_store_point_id:
@@ -73,7 +76,25 @@ class PosOrder(models.Model):
                     if store is not None:
                         history_values = pos._prepare_history_point_back_order_value(store, points_back=pos.pay_point)
                         HistoryPoint.sudo().create(history_values)
-                        pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
+                        pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
+                                                          store)
+
+        # create voucher
+        line_voucher_id = pos.lines.filtered(lambda x: x.product_id.is_voucher_auto)
+        if line_voucher_id:
+            program_voucher_id = line_voucher_id[0].product_id.program_voucher_id
+            price = line_voucher_id[0].price_unit
+            partner = pos.partner_id
+
+            # search program voucher
+
+            if program_voucher_id:
+                val_voucher = self._prepare_voucher(program_voucher_id, price, partner)
+                if val_voucher:
+                    voucher_id = Voucher.create(val_voucher)
+                    pos.write({
+                        'voucher_id': voucher_id.id if voucher_id else False
+                    })
         return pos.id
 
     @api.model
@@ -92,16 +113,18 @@ class PosOrder(models.Model):
             total = 0
             for line in item.lines:
                 qty_refund = abs(line.qty)
-                for discount_line in line.refunded_orderline_id.discount_details_lines.filtered(lambda x: x.type == 'point'):
-                    total += (discount_line.recipe/line.refunded_orderline_id.qty) * qty_refund
+                for discount_line in line.refunded_orderline_id.discount_details_lines.filtered(
+                        lambda x: x.type == 'point'):
+                    total += (discount_line.recipe / line.refunded_orderline_id.qty) * qty_refund
             item.refund_point = total
 
-    @api.depends('lines.refunded_orderline_id')
+    @api.depends('lines.refunded_orderline_id', 'lines.qty', 'refunded_order_ids')
     def _compute_pay_point(self):
         for item in self:
             item.pay_point = 0
-            point_product = 0
-            point_order = 0
+            point_product = 0  # X
+            point_order = 0  # Y
+            point_event_order = 0  # Q
 
             old_orders = item.refunded_order_ids
             if not old_orders:
@@ -120,24 +143,69 @@ class PosOrder(models.Model):
                 points_promotion = points_promotion[0]
                 # lấy giá trị quy đổi của chương trình dựa trên 1 điểm
                 coefficient = points_promotion.value_conversion / points_promotion.point_addition
-                for line in item.lines:
-                    if line.refunded_orderline_id:
-                        # đơn hàng gốc
-                        old_orderline = line.refunded_orderline_id
+
+                # lấy giá trị quy đổi của chương trình sự kiện
+                point_event_promotion = points_promotion.event_ids.filtered(
+                    lambda x: x.from_date <= old_orders[0].date_order and x.to_date >= old_orders[
+                        0].date_order)
+                coefficient_event = point_event_promotion[0].value_conversion / point_event_promotion[0].point_addition
+
+                lines_detail_event_points = item.lines.filtered(lambda x: x.refunded_orderline_id and (
+                            x.refunded_orderline_id.point_addition > 0 or x.refunded_orderline_id.point_addition_event > 0))
+                for line in lines_detail_event_points:
+                    if line.qty < 0:
+                        # chi tiết đơn hàng gốc
+                        old_ol = line.refunded_orderline_id
                         # sl gốc
-                        old_qty = old_orderline.qty
+                        old_qty = old_ol.qty
                         # sl trả hiện tại
                         current_qty = abs(line.qty)
-                        if old_orderline.point_addition > 0 or old_orderline.point_addition_event > 0:
-                            point_product += ((old_orderline.point_addition + old_orderline.point_addition_event) * current_qty) / old_qty
-                        else:
-                            point_order += line.price_unit * current_qty
-                if coefficient:
-                    point_order = point_order / coefficient
-            item.pay_point = point_product + point_order
+                        point_product += ((old_ol.point_addition + old_ol.point_addition_event) * current_qty) / old_qty
+
+                if lines_detail_event_points:
+                    lines_detail_points = item.lines.filtered(lambda x: x.refunded_orderline_id and (x.id not in lines_detail_event_points.ids))
+                    total_point_order = 0
+                    for line_1 in lines_detail_points:
+                        if line_1.qty < 0:
+                            # sl trả hiện tại
+                            current_qty_1 = abs(line_1.qty)
+                            total_point_order += line_1.price_unit * current_qty_1
+                    if coefficient:
+                        point_order += total_point_order // coefficient
+
+                    total_point_event_order = 0
+                    if old_orders[0].point_event_order > 0:
+                        for line_2 in lines_detail_points:
+                            if line_2.qty < 0:
+                                # sl trả hiện tại
+                                current_qty_2 = abs(line_2.qty)
+                                total_point_event_order += line_2.price_unit * current_qty_2
+                        if coefficient_event:
+                            point_event_order += total_point_event_order // coefficient_event
 
 
-    def _prepare_history_point_back_order_value(self, store, point_type='back_order', reason='', points_used=0, points_back=0):
+
+                # for line in item.lines:
+                #     if line.qty < 0:
+                #         if line.refunded_orderline_id:
+                #             # chi tiết đơn hàng gốc
+                #             old_orderline = line.refunded_orderline_id
+                #             # sl gốc
+                #             old_qty = old_orderline.qty
+                #             # sl trả hiện tại
+                #             current_qty = abs(line.qty)
+                #             if old_orderline.point_addition > 0 or old_orderline.point_addition_event > 0:
+                #                 point_product += ((old_orderline.point_addition + old_orderline.point_addition_event) * current_qty) / old_qty
+                #             else:
+                #                 total_point_order += line.price_unit * current_qty
+                #
+                # if coefficient:
+                #     point_order += total_point_order // coefficient
+
+            item.pay_point = point_product + point_order + point_event_order
+
+    def _prepare_history_point_back_order_value(self, store, point_type='back_order', reason='', points_used=0,
+                                                points_back=0):
         self.ensure_one()
         pos = self
 
@@ -146,13 +214,44 @@ class PosOrder(models.Model):
             'store': store,
             'pos_order_id': pos.id,
             'date_order': pos.date_order,
-            'points_fl_order':self.refund_point,
+            'points_fl_order': self.refund_point,
             'point_order_type': point_type,
             'reason': reason or pos.name or '',
             'points_used': abs(sum([line.point / 1000 for line in pos.lines])),  # go back to edit
             'points_back': points_back,
-            'points_store': pos.point_order + self.refund_point + pos.point_event_order + sum([x.point_addition for x in pos.lines]) + sum(
-                [x.point_addition_event for x in pos.lines]) - abs(sum([line.point / 1000 for line in pos.lines])) - points_back
+            'points_store': pos.point_order + self.refund_point + pos.point_event_order + sum(
+                [x.point_addition for x in pos.lines]) + sum(
+                [x.point_addition_event for x in pos.lines]) - abs(
+                sum([line.point / 1000 for line in pos.lines])) - points_back
         }
 
+    def _prepare_voucher(self, program_voucher_id, price, partner):
+        vals = {
+            'program_voucher_id': program_voucher_id.id,
+            'type': program_voucher_id.type,
+            'brand_id': program_voucher_id.brand_id.id,
+            'store_ids': [(6, False, program_voucher_id.store_ids.ids)],
+            'start_date': program_voucher_id.start_date,
+            'state': 'new',
+            'partner_id': partner.id,
+            'price': price,
+            'price_used': 0,
+            'price_residual': price - 0,
+            'derpartment_id': program_voucher_id.derpartment_id.id,
+            'end_date': program_voucher_id.end_date,
+            'apply_many_times': program_voucher_id.apply_many_times,
+            'apply_contemp_time': program_voucher_id.apply_contemp_time,
+            'product_voucher_id': program_voucher_id.product_id.id,
+            'purpose_id': program_voucher_id.purpose_id.id,
+            'product_apply_ids': [(6, False, program_voucher_id.product_apply_ids.ids)],
+            'is_full_price_applies': program_voucher_id.is_full_price_applies,
+            'using_limit': program_voucher_id.using_limit
+        }
+        return vals
 
+    # def _export_for_ui(self, order):
+    #     result = super(PosOrder, self)._export_for_ui(order)
+    #     result.update({
+    #         'voucherlines': [[0, 0, voucher] for voucher in order.pos_voucher_line_ids.export_for_ui()],
+    #     })
+    #     return result

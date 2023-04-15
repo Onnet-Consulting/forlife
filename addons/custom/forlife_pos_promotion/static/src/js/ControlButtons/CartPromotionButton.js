@@ -30,20 +30,9 @@ export class CartPromotionButton extends PosComponent {
         let orderLines = order.get_orderlines();
         let selections = this._prepareRewardData(optionPrograms);
         let [newLines, remainingOrderLines] = order.computeForListOfCartProgram(orderLines, selections);
-        let toRemoveLines = []
-        remainingOrderLines.forEach(line => {
-            let qty = line.get_quantity();
-            let qty_orig = parseFloat(line.quantityStr);
-            if (qty != qty_orig) {
-                line.set_quantity(line.get_quantity());
-            };
-            if (line.quantity == 0) {
-                toRemoveLines.push(line);
-            };
-        });
-        for (let line of toRemoveLines) {
-            order.remove_orderline(line);
-        }
+
+        this.env.pos.no_reset_program = true;
+        order.orderlines = order.orderlines.filter(line => line.quantity > 0)
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);
@@ -71,6 +60,15 @@ export class CartPromotionButton extends PosComponent {
                 order.cart_promotion_program_id = optionPro.program.id;
             }
         };
+
+        remainingOrderLines.forEach(line => {
+            let qty = line.get_quantity();
+            let qty_orig = parseFloat(line.quantityStr);
+            if (qty != qty_orig) {
+                line.set_quantity(line.get_quantity());
+            };
+        });
+        this.env.pos.no_reset_program = false;
     }
 
     async onClick() {

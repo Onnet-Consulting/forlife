@@ -16,15 +16,6 @@ class RejectPurchaseRequest(models.TransientModel):
                 'state': 'reject',
                 'rejection_reason': self.rejection_reason
             })
-            current_request.write({
-                'approval_logs_ids': [(0, 0, {
-                    'res_model': 'purchase.request',
-                    'request_approved_date': date.today(),
-                    'approval_user_id': self.env.user.id,
-                    'note': 'Reject',
-                    'state': 'reject',
-                })],
-            })
             return {
                 'name': ('purchase.request.from'),
                 'view_mode': 'form',

@@ -5,32 +5,27 @@ class PurchaseOrderCostLine(models.Model):
     _name = "purchase.order.cost.line"
     _description = 'Purchase Order Cost Line'
 
-    name = fields.Char(string='Name')
-    product_id = fields.Many2one('product.product', string='Product')
-    usd_amount = fields.Float(string='USD Amount')
-    vnd_amount = fields.Float(string='VND Amount')
-    hidden_amount = fields.Float(string='', compute='compute_vnd_amount')
-    allocate = fields.Float(string='Allocate')
-    amt_allocate = fields.Float(string='Amt Allocate', compute='compute_amt_allocate')
-    total_vnd_amount = fields.Float(string='Total VND Amount', compute='compute_vnd_amount')
-    total_amt_allocate = fields.Float(string='Total Amt Allocate', compute='compute_amt_allocate')
+    product_id = fields.Many2one('product.product', string='Sản phẩm')
+    name = fields.Char(string='Mô tả', related='product_id.name')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order')
+    transportation_costs_percent = fields.Float(string='% Chi phí vận chuyển')
+    transportation_costs = fields.Float(string='Chi phí vận chuyển', compute='compute_transportation_costs')
+    loading_costs_percent = fields.Float(string='% Chi phí bốc dỡ')
+    loading_costs = fields.Float(string='Chi phí bốc dỡ ', compute='compute_loading_costs')
+    custom_costs_percent = fields.Float(string='% Chi phí thông quan')
+    custom_costs = fields.Float(string='Chi phí thông quan', compute='compute_custom_costs')
 
-    @api.depends('amt_allocate', 'usd_amount', 'purchase_order_id.exchange_rate')
-    def compute_vnd_amount(self):
+    @api.depends('purchase_order_id.transportation_total', 'transportation_costs_percent')
+    def compute_transportation_costs(self):
         for rec in self:
-            rec.hidden_amount = rec.usd_amount * rec.purchase_order_id.exchange_rate
-            rec.total_vnd_amount = rec.vnd_amount + rec.amt_allocate
+            rec.transportation_costs = rec.purchase_order_id.transportation_total * rec.transportation_costs_percent
 
-    @api.depends('allocate', 'vnd_amount')
-    def compute_amt_allocate(self):
+    @api.depends('purchase_order_id.loading_total', 'loading_costs_percent')
+    def compute_loading_costs(self):
         for rec in self:
-            rec.amt_allocate = rec.vnd_amount * rec.allocate * 0.01
-            rec.total_amt_allocate = rec.amt_allocate
+            rec.loading_costs = rec.purchase_order_id.loading_total * rec.loading_costs_percent
 
-    @api.model
-    def create(self, vals):
-        line = super(PurchaseOrderCostLine, self).create(vals)
-        if line.hidden_amount:
-            line.write({'vnd_amount': line.hidden_amount})
-        return line
+    @api.depends('purchase_order_id.custom_total', 'custom_costs_percent')
+    def compute_custom_costs(self):
+        for rec in self:
+            rec.custom_costs = rec.purchase_order_id.custom_total * rec.custom_costs_percent
