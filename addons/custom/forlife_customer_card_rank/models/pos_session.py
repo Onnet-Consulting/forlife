@@ -55,3 +55,8 @@ class PosSession(models.Model):
 
     def _get_pos_ui_member_card(self, params):
         return self.env['member.card'].search_read(**params['search_params'])
+
+    def _loader_params_promotion_program(self):
+        result = super()._loader_params_promotion_program()
+        result['search_params']['fields'] += ['skip_card_rank']
+        return result

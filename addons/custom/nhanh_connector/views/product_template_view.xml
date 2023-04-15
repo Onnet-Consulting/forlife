@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="product.product_template_only_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='barcode']" position="before">
-                    <field name="code_product" required="True" attrs="{'readonly': [('id', '!=', False)]}"/>
+                    <field name="code_product" attrs="{'readonly': [('id', '!=', False)]}" />
                 </xpath>
             </field>
         </record>

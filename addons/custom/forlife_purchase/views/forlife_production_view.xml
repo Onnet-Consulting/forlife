@@ -5,11 +5,13 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <tree string="Forlife Production">
-                <!--                <field name="name"/>-->
                 <field name="code"/>
                 <field name="name"/>
+                <field name="implementation_department"/>
+                <field name="management_department"/>
+                <field name="production_department"/>
                 <field name="user_id"/>
-                <field name="create_date"/>
+                <field name="created_date"/>
                 <field name="company_id"/>
             </tree>
         </field>
@@ -28,10 +30,16 @@
                         <group>
                             <field name="code"/>
                             <field name="name"/>
+                            <field name="user_id"/>
+                            <field name="created_date"/>
+                            <field name="selected_product_ids" invisible="1"/>
                         </group>
                         <group>
-                            <field name="user_id"/>
-                            <field name="create_date"/>
+                            <field name="implementation_department"/>
+                            <field name="management_department"/>
+                            <field name="production_department"/>
+                            <field name="produced_from_date"/>
+                            <field name="to_date"/>
                         </group>
                     </group>
                     <notebook>
@@ -39,39 +47,18 @@
                             <field name="forlife_production_finished_product_ids" mode="tree"
                                    attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">
                                 <tree editable="bottom">
-                                    <field name="product_id"/>
+                                    <field name="forlife_production_id" invisible="1"/>
+                                    <field name="product_id" domain="[('id', 'not in', parent.selected_product_ids)]"/>
                                     <field name="description"/>
                                     <field name="produce_qty"/>
                                     <field name="uom_id"/>
-                                    <field name="unit_price"/>
-                                    <field name="stock_qty"/>
+                                    <field name="unit_price" force_save="1"/>
+                                    <field name="stock_qty" readonly="1"/>
                                     <field name="remaining_qty"/>
-                                    <field name="forlife_bom_ids" widget="many2many_tags"/>
+                                    <button name="action_open_bom" string="BOM" type="object"/>
                                 </tree>
                             </field>
                         </page>
-<!--                        <page string="Materials" name="materials">-->
-<!--                            <field name="forlife_production_material_ids" mode="tree"-->
-<!--                                   attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">-->
-<!--                                <tree editable="bottom">-->
-<!--                                    <field name="product_id"/>-->
-<!--                                    <field name="description"/>-->
-<!--                                    <field name="quantity"/>-->
-<!--                                    <field name="uom_id"/>-->
-<!--                                </tree>-->
-<!--                            </field>-->
-<!--                        </page>-->
-<!--                        <page string="Service Costs" name="service_costs">-->
-<!--                            <field name="forlife_production_service_cost_ids" mode="tree"-->
-<!--                                   attrs="{'readonly': [('state', 'in', ('confirm', 'approved', 'done'))]}">-->
-<!--                                <tree editable="bottom">-->
-<!--                                    <field name="currency_id" invisible="1"/>-->
-<!--                                    <field name="product_id"/>-->
-<!--                                    <field name="description"/>-->
-<!--                                    <field name="prices" widget="monetary" options="{'currency_field': 'currency_id'}"/>-->
-<!--                                </tree>-->
-<!--                            </field>-->
-<!--                        </page>-->
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
@@ -81,6 +68,119 @@
                 </div>
             </form>
         </field>
+    </record>
+
+    <record id="forlife_production_bom_view_search" model="ir.ui.view">
+        <field name="name">forlife.production.bom.search</field>
+        <field name="model">forlife.production</field>
+        <field name="arch" type="xml">
+            <search string="Worksheet Template Search">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="create_date"/>
+                <field name="company_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="forlife_production_finished_tree" model="ir.ui.view">
+        <field name="name">forlife.production.finished.tree</field>
+        <field name="model">forlife.production.finished.product</field>
+        <field name="arch" type="xml">
+            <tree string="" duplicate="0">
+                <field name="forlife_production_id"/>
+                <field name="description"/>
+                <field name="implementation_department"/>
+                <field name="management_department"/>
+                <field name="production_department"/>
+                <field name="product_id"/>
+                <field name="unit_price"/>
+                <field name="create_date"/>
+                <field name="write_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="forlife_production_finished_form" model="ir.ui.view">
+            <field name="name">forlife.production.finished.form</field>
+            <field name="model">forlife.production.finished.product</field>
+            <field name="arch" type="xml">
+                <form string="" duplicate="0">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="forlife_production_id" readonly="1"/>
+                                <field name="product_id" readonly="1"/>
+                                <field name="produce_qty" readonly="1"/>
+                                <field name="implementation_department" />
+                                <field name="management_department" />
+                                <field name="production_department" />
+                            </group>
+                            <group>
+                                <field name="forlife_production_name"/>
+                                <field name="description"/>
+                                <field name="uom_id"/>
+                                <field name="write_date"/>
+                            </group>
+                            <group class="d-flex">
+                                <field name="unit_price" readonly="1"/>
+                                <button name="update_price" string="Cập nhật giá" type="object"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Materials" name="materials">
+                                <field name="forlife_bom_material_ids" mode="tree" string="Nguyên vật liệu">
+                                    <tree editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="description"/>
+                                        <field name="uom_id"/>
+                                        <field name="production_uom_id"/>
+                                        <field name="conversion_coefficient"/>
+                                        <field name="rated_level"/>
+                                        <field name="loss"/>
+                                        <field name="total"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Ingredients" name="ingredients">
+                                <field name="forlife_bom_ingredients_ids" mode="tree" string="Phụ liệu">
+                                    <tree editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="description"/>
+                                        <field name="uom_id"/>
+                                        <field name="production_uom_id"/>
+                                        <field name="conversion_coefficient"/>
+                                        <field name="rated_level"/>
+                                        <field name="loss"/>
+                                        <field name="total"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Service Costs" name="service_costs">
+                                <field name="forlife_bom_service_cost_ids" mode="tree" string="Chi phí dịch vụ">
+                                    <tree editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="rated_level"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+    <record id="forlife_production_finished_action" model="ir.actions.act_window">
+        <field name="name">BOM</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">forlife.production.finished.product</field>
+        <field name="view_mode">tree,form</field>
     </record>
 
     <record id="forlife_production_action" model="ir.actions.act_window">

@@ -13,19 +13,11 @@ class ProductNhanh(models.Model):
     _inherit = 'product.template'
 
     nhanh_id = fields.Integer(string="Id Nhanh.Vn")
-    code_product = fields.Char(string="Code Product")
+    code_product = fields.Char(string="Mã sản phẩm")
     ## Nếu tạo sản phẩm từ Odoo == True else == False
     check_data_odoo = fields.Boolean(string='Check dữ liệu từ odoo or Nhanh', default=True)
     width_product = fields.Float('Width')
     height_product = fields.Float('Height')
-
-
-
-    @api.model
-    def create(self, vals):
-        res = super().create(vals)
-        self.synchronized_create_product(res)
-        return res
 
     def synchronized_create_product(self, res):
         if res.check_data_odoo == True:

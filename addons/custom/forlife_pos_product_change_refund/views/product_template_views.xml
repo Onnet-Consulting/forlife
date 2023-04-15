@@ -15,6 +15,10 @@
                         <field name="is_product_auto"/>
                         <label for="is_product_auto"/>
                     </span>
+                    <span class="d-inline-block">
+                        <field name="is_voucher_auto"/>
+                        <label for="is_voucher_auto"/>
+                    </span>
                 </xpath>
             </field>
         </record>
