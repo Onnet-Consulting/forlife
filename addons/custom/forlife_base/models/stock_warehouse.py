@@ -59,4 +59,3 @@ class StockWarehouse(models.Model):
     weather_province_id = fields.Many2one("res.weather.province", string="Weather Province", copy=False)
     manager_id = fields.Many2one('hr.employee', string="Manager", copy=False)
     status_ids = fields.Many2one('stock.warehouse.status', string="Status", copy=False)
-    id_deposit = fields.Boolean(string="Is deposit?", default=False)
