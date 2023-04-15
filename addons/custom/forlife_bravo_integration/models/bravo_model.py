@@ -420,6 +420,8 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
         insert_queries = newly_records.bravo_get_insert_sql()
         return update_queries + insert_queries
 
+
+# TODO : tối ưu hóa lại chỗ này, hạn chế tối đa số queue job sinh ra khi update dữ liệu (hiện tại tạo 1 partner -> 3 jobs)
     @api.model
     def bravo_insert_with_check_existing(self, ):
         queries = self.bravo_get_insert_with_check_existing_sql()
