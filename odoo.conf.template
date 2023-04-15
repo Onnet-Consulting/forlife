@@ -54,7 +54,7 @@ test_report_directory = False
 translate_modules = ['all']
 unaccent = False
 without_demo = False
-workers = 9
+workers = 18
 
 ;[session_redis]
 ;active=true
@@ -62,4 +62,4 @@ workers = 9
 ;password=forlife@123
 
 [queue_job]
-channels = root:42, import:40
+channels = root:22, import:20
