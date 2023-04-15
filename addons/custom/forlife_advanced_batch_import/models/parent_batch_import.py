@@ -54,7 +54,7 @@ class ParentBatchImport(models.Model):
 
     def set_all_to_processing(self):
         for rec in self:
-            rec.child_batch_import_ids.filtered(lambda b: b.status not in ['done']).set_to_processing()
+            rec.child_batch_import_ids.filtered(lambda b: b.status not in ['done']).set_to_processing(delay_time=rec.with_delay)
 
     @api.depends('child_batch_import_ids', 'child_batch_import_ids.status')
     def compute_status(self):

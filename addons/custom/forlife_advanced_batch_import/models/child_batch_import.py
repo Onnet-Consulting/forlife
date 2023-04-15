@@ -36,10 +36,10 @@ class ChildBatchImport(models.Model):
                 complete = (rec.complete_records / int(rec.file_length)) * 100
             rec.progress_bar = complete
 
-    def make_queue_job(self):
+    def make_queue_job(self, delay_time=0):
         for rec in self:
             # tạo job queue theo sequence và delay time
-            result = rec.with_delay(priority=rec.sequence, eta=rec.parent_batch_import_id.with_delay).batch_execute_import()
+            result = rec.with_delay(priority=rec.sequence, eta=delay_time).batch_execute_import()
 
     def batch_execute_import(self):
         for rec in self:
@@ -121,11 +121,13 @@ class ChildBatchImport(models.Model):
                 })
             rec.make_file_log_invalid_records()
 
-    def set_to_processing(self):
+    def set_to_processing(self, delay_time=0):
+        index = 1
         for rec in self:
             rec.status = 'processing'
             rec.log = False
-            rec.make_queue_job()
+            rec.make_queue_job(delay_time=index * delay_time)
+            index = index + 1
 
     def make_file_log_invalid_records(self):
         for rec in self:
