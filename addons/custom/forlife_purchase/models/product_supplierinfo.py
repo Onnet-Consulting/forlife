@@ -34,3 +34,9 @@ class SupplierInfo(models.Model):
                      ('product_tmpl_id', '=', record.product_tmpl_id.id),
                      ('id', '!=', record.id)]) > 1:
                 raise ValidationError(_('Bảng giá nhà cung cấp đã tồn tại sản phẩm !!'))
+
+    @api.constrains('amount_conversion')
+    def _check_amount_conversion_positive(self):
+        for record in self:
+            if record.amount_conversion < 0:
+                raise models.ValidationError("Số lượng quy đổi phải là số dương!")

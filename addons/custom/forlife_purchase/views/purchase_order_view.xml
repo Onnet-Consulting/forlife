@@ -315,7 +315,7 @@
                     <field name="custom_state" decoration-success="custom_state == 'approved'" widget="badge"/>
                 </xpath>
                 <xpath expr="//field[@name='invoice_status']" position="before">
-                    <field name="inventory_status"/>
+                    <field name="inventory_status" attrs="{'invisible': [('purchase_type', '!=', 'product')]}"/>
                     <field name="date_order"/>
                 </xpath>
             </field>
