@@ -35,11 +35,13 @@ class Import(models.TransientModel):
         sheet = book.sheet_by_name(sheet_name)
         rows = []
         dic_col = {}
+        attributes = {}
         for rowx, row in enumerate(map(sheet.row, range(1)), 1):
             for colx, cell in enumerate(row, 1):
                 attribute_id = self.env['product.attribute'].search([('name', '=', str(cell.value))])
                 if attribute_id:
                     dic_col[colx] = str(cell.value)
+                    attributes[colx] = attribute_id
         col_number = 0
         for rowx, row in enumerate(map(sheet.row, range(sheet.nrows)), 1):
             values = []
@@ -60,11 +62,14 @@ class Import(models.TransientModel):
                             value_attrs = []
                             attr_val_ids = []
                             for attr_val in cell_values:
-                                val_attribute_id = self.env['product.attribute.value'].search(
-                                [('name', '=', attr_val.strip()), ('attribute_id.name', '=', dic_col[colx])])
-                                if not val_attribute_id:
-                                    raise ValueError(_("Không tồn tại giá trị {} của thuộc tính {}".format(cell_value, dic_col[colx])))
-                                attr_val_ids.append(str(val_attribute_id.id))
+                                attr = attributes[colx]
+                                list_attr_vals = attr.value_ids
+                                val_attribute_id = 0
+                                for val in list_attr_vals:
+                                    if val.name == attr_val.strip():
+                                        val_attribute_id = val.id
+                                    # raise ValueError(_("Không tồn tại giá trị {} của thuộc tính {}".format(cell_value, dic_col[colx])))
+                                attr_val_ids.append(str(val_attribute_id))
                             for i in range(1, col_number):
                                 value_attrs.append('')
                             value_attrs.append(str(dic_col[colx]))
