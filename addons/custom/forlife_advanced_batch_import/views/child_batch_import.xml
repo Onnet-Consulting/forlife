@@ -26,6 +26,8 @@
                             <field name="complete_records"/>
                             <field name="progress_bar" widget="progressbar"/>
                             <field name="error_rows"/>
+                            <field name="file_invalid_records_name" invisible="1"/>
+                            <field name="file_invalid_records" filename="file_invalid_records_name" style="color:red"/>
                             <field name="log"/>
                         </group>
                     </sheet>
@@ -36,7 +38,9 @@
             <field name="name">child_batch_import_view_tree</field>
             <field name="model">child.batch.import</field>
             <field name="arch" type="xml">
-                <tree string="child_batch_import_tree">
+                <tree string="child_batch_import_tree"
+                      decoration-danger="status=='error'"
+                      decoration-success="status=='done'">
                     <field name="parent_batch_import_id"/>
                     <field name="file_name"/>
                     <field name="sequence"/>
@@ -44,15 +48,34 @@
                     <field name="complete_records"/>
                     <field name="file_length"/>
                     <field name="progress_bar" widget="progressbar"/>
-                    <field name="status"/>
+                    <field name="file_invalid_records_name"/>
+                    <field name="status" widget="badge"/>
                     <button name="set_to_processing" type="object" string="Set to Processing" class="oe_highlight"/>
                 </tree>
             </field>
         </record>
+        <record id="child_batch_import_view_search" model="ir.ui.view">
+            <field name="name">Child batch Search view</field>
+            <field name="model">child.batch.import</field>
+            <field name="arch" type="xml">
+                <search string="Child batch Search view">
+                    <field name="parent_batch_import_id"/>
+                    <field name="file_name"/>
+                    <filter string="Error Batch" name="error_batch" domain="[('status', '=', 'error')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Parent Batch" name="group_by_parent_batch_import_id" context="{'group_by': 'parent_batch_import_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
         <record id="child_batch_import_action" model="ir.actions.act_window">
             <field name="name">Child Batch Import</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">child.batch.import</field>
+            <field name="context">{
+                "search_default_group_by_parent_batch_import_id": 1}
+            </field>
             <field name="view_mode">tree,form</field>
         </record>
         <menuitem id="menu_child_batch_import" name="Child Batch Import" parent="menu_advanced_batch_import" action="child_batch_import_action" sequence="2"/>
