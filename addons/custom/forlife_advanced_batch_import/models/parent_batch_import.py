@@ -52,6 +52,10 @@ class ParentBatchImport(models.Model):
                 'status': 'draft'
             })
 
+    def test_all(self):
+        for rec in self:
+            rec.child_batch_import_ids.make_queue_test_batch(delay_time=rec.with_delay)
+
     def set_all_to_processing(self):
         for rec in self:
             rec.child_batch_import_ids.filtered(lambda b: b.status not in ['done']).set_to_processing(delay_time=rec.with_delay)
