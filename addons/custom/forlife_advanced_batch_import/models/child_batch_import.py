@@ -36,10 +36,10 @@ class ChildBatchImport(models.Model):
                 complete = (rec.complete_records / int(rec.file_length)) * 100
             rec.progress_bar = complete
 
-    def make_queue_job(self):
+    def make_queue_job(self, delay_time=0):
         for rec in self:
             # tạo job queue theo sequence và delay time
-            result = rec.with_delay(priority=rec.sequence, eta=rec.parent_batch_import_id.with_delay).batch_execute_import()
+            result = rec.with_delay(priority=rec.sequence, eta=delay_time).batch_execute_import()
 
     def batch_execute_import(self):
         for rec in self:
@@ -121,11 +121,13 @@ class ChildBatchImport(models.Model):
                 })
             rec.make_file_log_invalid_records()
 
-    def set_to_processing(self):
+    def set_to_processing(self, delay_time=0):
+        index = 1
         for rec in self:
             rec.status = 'processing'
             rec.log = False
-            rec.make_queue_job()
+            rec.make_queue_job(delay_time=index * delay_time)
+            index = index + 1
 
     def make_file_log_invalid_records(self):
         for rec in self:
@@ -133,10 +135,8 @@ class ChildBatchImport(models.Model):
             (file_extension, handler, req) = FILE_TYPE_DICT.get(mimetype, (None, None, None))
             try:
                 return getattr(rec, 'make_file_log_invalid_records_' + ('csv' if file_extension == 'csv' else 'exel'))()
-            except ValueError as e:
-                raise e
-            except Exception:
-                _logger.warning("Failed make log file for origin file '%s' (transient id %d) using guessed mimetype %s", self.file_name or '<unknown>')
+            except Exception as e:
+                rec.log = str(e)
 
     def make_file_log_invalid_records_csv(self):
         import pandas as pd
@@ -147,9 +147,18 @@ class ChildBatchImport(models.Model):
                 df = pd.read_csv(StringIO(decoded_data.decode('utf-8')))
                 # Lọc các hàng cần giữ lại
                 filtered_df = df[df.index.isin(error_rows)]
+                # log error messages
+                error_dict = {}
+                for message in json.loads(rec.log).get('messages'):
+                    if int(message.get('record')) not in error_dict:
+                        error_dict[int(message.get('record'))] = str(message.get('message'))
+                    else:
+                        error_dict[int(message.get('record'))] = str(error_dict.get(message.get('record'))) + " + " + str(message.get('message'))
+                error_rows = [value for value in error_dict.values()]
+                filtered_df = filtered_df.assign(Error=error_rows)
 
                 output_data = filtered_df.to_csv(index=False)
-                encoded_output_data = base64.b64encode(output_data).decode('utf-8')
+                encoded_output_data = base64.b64encode(output_data.encode('utf-8')).decode('utf-8')
                 rec.write({
                     'file_invalid_records_name': f"{rec.file_name.split('.')[0]}_invalid_records.{rec.file_name.split('.')[-1]}",
                     'file_invalid_records': encoded_output_data
@@ -165,6 +174,16 @@ class ChildBatchImport(models.Model):
                 df = pd.read_excel(BytesIO(decoded_data))
                 # Lọc các hàng cần giữ lại
                 filtered_df = df[df.index.isin(error_rows)]
+                # log error messages
+                error_dict = {}
+                for message in json.loads(rec.log).get('messages'):
+                    if int(message.get('record')) not in error_dict:
+                        error_dict[int(message.get('record'))] = str(message.get('message'))
+                    else:
+                        error_dict[int(message.get('record'))] = str(error_dict.get(message.get('record'))) + " + " + str(message.get('message'))
+                error_rows = [value for value in error_dict.values()]
+                filtered_df = filtered_df.assign(Error=error_rows)
+
                 output = BytesIO()
                 writer = pd.ExcelWriter(output, engine='xlsxwriter')
                 filtered_df.to_excel(writer, sheet_name=sheet_name, index=False)
