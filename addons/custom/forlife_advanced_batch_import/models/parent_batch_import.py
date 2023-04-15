@@ -114,7 +114,7 @@ class ParentBatchImport(models.Model):
             except ValueError as e:
                 raise e
             except Exception:
-                _logger.warning("Failed to split file '%s'", self.file_name or '<unknown>')
+                _logger.error("Failed to split file '%s'", self.file_name or '<unknown>')
 
     def split_parent_batch_import_csv(self, batch_import=False):
         import pandas as pd
