@@ -10,7 +10,7 @@ class ProgramVoucher(models.Model):
 
     name = fields.Char('Program Voucher Name', required=True)
 
-    program_voucher_code = fields.Char('Voucher Program Code', store=True, copy=False, readonly=True, default='New')
+    program_voucher_code = fields.Char('Voucher Program Code', store=True, copy=False, readonly=False, default='New')
 
     type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True)
 
@@ -89,20 +89,20 @@ class ProgramVoucher(models.Model):
     def create(self, vals):
         if 'program_voucher_line_ids' not in vals or not vals['program_voucher_line_ids']:
             raise UserError(_('Please set the infomation of Vourcher!'))
-        last_record = self.get_last_sequence()
-        if last_record:
-            #change character of sequence
-            code = last_record.program_voucher_code
-            if code[1:] == '999':
-                seq = self.env['ir.sequence'].search([('code', '=', 'program.voucher')])
-                vals_seq = {
-                    'prefix': self.change_prefix_sequence(code[0]),
-                    'number_next_actual': 1,
-
-                }
-                seq.write(vals_seq)
-        if vals.get('program_voucher_code', 'New') == 'New':
-            vals['program_voucher_code'] = self.env['ir.sequence'].next_by_code('program.voucher') or 'New'
+        # last_record = self.get_last_sequence()
+        # if last_record:
+        #     #change character of sequence
+        #     code = last_record.program_voucher_code
+        #     if code[1:] == '999':
+        #         seq = self.env['ir.sequence'].search([('code', '=', 'program.voucher')])
+        #         vals_seq = {
+        #             'prefix': self.change_prefix_sequence(code[0]),
+        #             'number_next_actual': 1,
+        #
+        #         }
+        #         seq.write(vals_seq)
+        # if vals.get('program_voucher_code', 'New') == 'New':
+        #     vals['program_voucher_code'] = self.env['ir.sequence'].next_by_code('program.voucher') or 'New'
         return super(ProgramVoucher, self).create(vals)
 
     def get_last_sequence(self):
