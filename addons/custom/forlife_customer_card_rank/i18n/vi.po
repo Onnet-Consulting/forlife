@@ -686,6 +686,11 @@ msgid "Program Name"
 msgstr "Tên chương trình"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_promotion_program
+msgid "Promotion Program"
+msgstr "Chương trình Khuyến mãi"
+
+#. module: forlife_customer_card_rank
 #. odoo-javascript
 #: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/ShowDiscountDetailPopup.xml:0
 #, python-format
@@ -747,6 +752,11 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_filter
 msgid "Search"
 msgstr "Tìm kiếm"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_promotion_program__skip_card_rank
+msgid "Skip card rank"
+msgstr "Không tính hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__from_date
