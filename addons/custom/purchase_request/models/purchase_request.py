@@ -142,8 +142,8 @@ class PurchaseRequest(models.Model):
             for line in purchase_request_lines:
                 if line.purchase_quantity == line.order_quantity:
                     continue
-                if line.is_no_more_quantity or line.is_close:
-                    continue
+                # if line.is_no_more_quantity or line.is_close:
+                #     continue
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
@@ -194,30 +194,29 @@ class PurchaseRequest(models.Model):
             'domain': [('id', 'in', purchase_order.ids)],
         }
 
-    is_no_more_quantity = fields.Boolean(compute='_compute_is_no_more_quantity', store=1)
-    is_close = fields.Boolean(compute='_compute_is_no_more_quantity', store=1)
+    is_no_more_quantity = fields.Boolean(compute='_compute_true_false_is_check', store=1)
+    is_close = fields.Boolean(compute='_compute_true_false_is_check', store=1)
+    is_all_line = fields.Boolean(compute='_compute_true_false_is_check', store=1)
 
-    @api.depends('order_lines', 'order_lines.is_no_more_quantity', 'order_lines.is_close', 'state',
-                 'order_lines.order_quantity', 'order_lines.purchase_quantity')
-    def _compute_is_no_more_quantity(self):
-        pr_line = self.env['purchase.request.line']
+    @api.depends('order_lines', 'order_lines.is_no_more_quantity', 'order_lines.is_all_line', 'order_lines.is_close',
+                 'order_lines.is_all_line', 'state')
+    def _compute_true_false_is_check(self):
         for rec in self:
-            rec.is_no_more_quantity = all(rec.order_lines.mapped('is_no_more_quantity'))
-            if rec.state == 'approved':
+            if rec.state == 'confirm':
                 rec.is_close = all(rec.order_lines.mapped('is_close'))
-            close_true = pr_line.search([('is_close', '=', True), ('is_no_more_quantity', '=', False), ('request_id', '=', rec.id)])
-            more_true = pr_line.search([('is_no_more_quantity', '=', True), ('is_close', '=', False), ('request_id', '=', rec.id)])
-            false_all = pr_line.search([('is_no_more_quantity', '=', False), ('is_close', '=', False), ('request_id', '=', rec.id)])
-            if close_true and more_true in rec.order_lines:
-                rec.write({'state': 'close'})
-            if close_true and false_all in rec.order_lines:
-                rec.write({'state': 'approved'})
+            rec.is_no_more_quantity = all(rec.order_lines.mapped('is_no_more_quantity'))
+            rec.is_all_line = all(rec.order_lines.mapped('is_all_line'))
+            if rec.state == 'close':
+                if rec.order_lines.mapped('is_all_line'):
+                    rec.state = 'approved'
+                if not rec.order_lines.mapped('is_all_line'):
+                    rec.state = 'close'
 
 class PurchaseRequestLine(models.Model):
     _name = "purchase.request.line"
     _description = "Purchase Request Line"
 
-    is_close = fields.Boolean('')
+    is_close = fields.Boolean('', default=False)
     product_id = fields.Many2one('product.product', string="Product", required=True)
     product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     asset_description = fields.Char(string="Asset description")
@@ -246,7 +245,6 @@ class PurchaseRequestLine(models.Model):
                    ('close', 'Close'),
                    ])
 
-
     @api.depends('purchase_quantity', 'exchange_quantity')
     def _compute_product_qty(self):
         for line in self:
@@ -255,18 +253,13 @@ class PurchaseRequestLine(models.Model):
             else:
                 line.product_qty = line.purchase_quantity
 
-    # ### yêu cầu cũ là lọc theo trạng thái purchase
-    # @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.state')
-    # def _compute_order_quantity(self):
-    #     for rec in self:
-    #         done_purchase_order_line = rec.purchase_order_line_ids.filtered(lambda r: r.state == 'purchase')
-    #         rec.order_quantity = sum(done_purchase_order_line.mapped('product_qty'))
-
-    ### yêu cầu mới là full trạng thái đều update lại số lượng đã đặt bên ycmh
-
     @api.depends('purchase_order_line_ids', 'purchase_order_line_ids.product_qty')
     def _compute_order_quantity(self):
         for rec in self:
+            # ### yêu cầu cũ là lọc theo trạng thái purchase
+            # done_purchase_order_line = rec.purchase_order_line_ids.filtered(lambda r: r.state == 'purchase')
+            # rec.order_quantity = sum(done_purchase_order_line.mapped('product_qty'))
+            ### yêu cầu mới là full trạng thái đều update lại số lượng đã đặt bên ycmh
             rec.order_quantity = sum(rec.purchase_order_line_ids.mapped('product_qty'))
 
     @api.depends('purchase_quantity', 'order_quantity')
@@ -282,9 +275,19 @@ class PurchaseRequestLine(models.Model):
             if item.exchange_quantity <= 0:
                 raise ValidationError('Exchange quantity must be greater than 0!')
 
+    is_all_line = fields.Boolean('', compute='_compute_is_all_line', store=1)
 
-
-
+    @api.depends('is_close', 'is_no_more_quantity')
+    def _compute_is_all_line(self):
+        for rec in self:
+            if not rec.is_close and not rec.is_no_more_quantity:
+                rec.is_all_line = False
+            if not rec.is_close and rec.is_no_more_quantity:
+                rec.is_all_line = True
+            if rec.is_close and not rec.is_no_more_quantity:
+                rec.is_all_line = True
+            if rec.is_close and rec.is_no_more_quantity:
+                rec.is_all_line = True
 
 class ApprovalLogs(models.Model):
     _name = 'approval.logs'
