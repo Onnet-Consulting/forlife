@@ -1,5 +1,4 @@
 from odoo import api, fields, models
-from odoo.tools.mimetypes import guess_mimetype
 from odoo.addons.base_import.models.base_import import FILE_TYPE_DICT, _logger
 
 from io import BytesIO
@@ -17,7 +16,7 @@ class ParentBatchImport(models.Model):
     res_model = fields.Char(string="Model")
     # attachment_id = fields.Many2one(string="Attachment", comodel_name="ir.attachment")
     # binary file
-    file = fields.Binary('File', help="File to check and/or import, raw binary (not base64)", attachment=True)
+    file = fields.Binary('File', help="File to check and/or import", attachment=True)
     file_name = fields.Char('File Name')
     file_type = fields.Char('File Type')
 
@@ -83,7 +82,7 @@ class ParentBatchImport(models.Model):
             if base_import:
                 batch_import = self.env['parent.batch.import'].sudo().create({
                     'res_model': base_import.res_model,
-                    'file':  base64.b64encode(base_import.file),
+                    'file': base64.b64encode(base_import.file),
                     'file_name': base_import.file_name,
                     'file_type': base_import.file_type,
                     'list_field': json.dumps(fields),
@@ -115,7 +114,7 @@ class ParentBatchImport(models.Model):
             except ValueError as e:
                 raise e
             except Exception:
-                _logger.warning("Failed to read file '%s' (transient id %d) using guessed mimetype %s", self.file_name or '<unknown>', self.id, mimetype)
+                _logger.warning("Failed to split file '%s'", self.file_name or '<unknown>')
 
     def split_parent_batch_import_csv(self, batch_import=False):
         import pandas as pd
@@ -143,13 +142,6 @@ class ParentBatchImport(models.Model):
             # Chuyển DataFrame thành dạng bytes
             csv_bytes = df_part.to_csv(index=False).encode()
 
-            # Tạo attachment từ dữ liệu bytes
-            # attachment_vals = {
-            #     'name': f"{batch_import.file_name.split('.')[0]}_{i + 1}.{batch_import.file_name.split('.')[-1]}",
-            #     'datas': base64.b64encode(csv_bytes),
-            #     'type': 'binary',
-            # }
-            # att = self.env['ir.attachment'].create(attachment_vals)
             self.env['child.batch.import'].sudo().create({
                 'sequence': i,
                 'file': base64.b64encode(csv_bytes),
