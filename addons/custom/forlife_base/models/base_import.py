@@ -55,8 +55,11 @@ class Import(models.TransientModel):
                 col_number = len(values) - 1
             else:
                 for colx, cell in enumerate(row, 1):
-                    cell_value = str(cell.value)
+                    cell_value = cell.value
                     if dic_col and dic_col.get(colx, False):
+                        if type(cell_value) == float:
+                            cell_value = int(cell_value)
+                        cell_value = str(cell_value)
                         if cell.value and cell_value.strip():
                             cell_values = cell_value.split(',')
                             value_attrs = []
