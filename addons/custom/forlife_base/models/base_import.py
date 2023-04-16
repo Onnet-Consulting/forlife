@@ -66,10 +66,8 @@ class Import(models.TransientModel):
                                 list_attr_vals = attr.value_ids
                                 val_attribute_id = 0
                                 for val in list_attr_vals:
-                                    if val.name == attr_val.strip():
+                                    if val.code == attr_val.strip():
                                         val_attribute_id = val.id
-                                if not val_attribute_id:
-                                    val_attribute_id = cell_value
                                     # raise ValueError(_("Không tồn tại giá trị {} của thuộc tính {}".format(cell_value, dic_col[colx])))
                                 attr_val_ids.append(str(val_attribute_id))
                             for i in range(1, col_number):
