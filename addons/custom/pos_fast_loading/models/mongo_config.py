@@ -63,30 +63,16 @@ class MongoServerConfig(models.Model):
     mongo_port = fields.Char(string="Port")
     product_field_ids = fields.Many2many('ir.model.fields', 'product_mapping_with_mongo', string="Additional Product Fields",
                                          domain="[('model_id.model','=','product.product'),('name','not in',['display_name', 'list_price', 'lst_price', 'standard_price', 'categ_id', 'pos_categ_id', 'taxes_id','barcode', 'default_code', 'to_weight', 'uom_id', 'description_sale', 'description','product_tmpl_id','tracking'])]")
-    partner_field_ids = fields.Many2many('ir.model.fields', 'customer_mapping_with_mongo', string="Additional Partner Fields",
-                                         domain="[('model_id.model','=','res.partner'),('name','not in',['name','street','city','state_id','country_id','vat','phone','zip','mobile','email','barcode','write_date','property_account_position_id','property_product_pricelist'])]")
-    collection_data = fields.One2many(
-        string='Loaded Record',
-        comodel_name='model.data.record',
-        inverse_name='mongo_config',
-    )
-
     store_id = fields.Many2one(string=_("store"), comodel_name="store", required=True)
 
     product_last_update_time = fields.Datetime('Product Last Sync Time')
     cache_last_update_time = fields.Datetime('Cache Last Sync Time')
     price_last_update_time = fields.Datetime('Price Last Sync Time')
-    partner_last_update_time = fields.Datetime('Customer Last Sync Time')
     is_updated = fields.Boolean("Is updated", default=False)
-    partner_all_fields = fields.Boolean('All Partner Fields', default=False)
     product_all_fields = fields.Boolean('All Products Fields', default=False)
 
     is_product_synced = fields.Boolean('Is Product Synced', default=False)
-    is_partner_synced = fields.Boolean('Is Partner Synced', default=False)
-    is_pricelist_synced = fields.Boolean('Is Pricelist Synced', default=False)
 
-    pos_pricelist_cache = fields.Binary(string="Pos Pricelist Cache")
-    pos_partner_cache = fields.Binary(string="Pos Partner Cache")
     pos_product_cache = fields.Binary(string="Pos Product Cache")
 
     is_ordinary_loading = fields.Boolean(
@@ -113,13 +99,9 @@ class MongoServerConfig(models.Model):
             if obj.load_pos_data_from != vals.get('load_pos_data_from') and vals.get('load_pos_data_from'):
                 vals.update({
                     'product_last_update_time': False,
-                    'cache_last_update_time': False,
-                    'price_last_update_time': False,
                     'partner_last_update_time': False,
                     'is_ordinary_loading': True,
                     'is_product_synced': False,
-                    'is_pricelist_synced': False,
-                    'is_partner_synced': False
                 })
         res = super(MongoServerConfig, self).write(vals)
         return res
@@ -131,146 +113,169 @@ class MongoServerConfig(models.Model):
             self.active_record = True
 
     @api.model
-    def get_data_on_sync(self, kwargs):
-        pos_mongo_config = kwargs.get('mongo_cache_last_update_time')
-        mongo_server_rec = self.search([('active_record', '=', True)], limit=1)
+    def get_products_change(self, kwargs):
+        data_dict = {}
+        last_update_time = kwargs.get('mongo_cache_last_update_time')
+        config_id = self.env['pos.config'].browse(kwargs.get('config_id'))
+        mongo_server_rec = self.search([('store_id', '=', config_id.store_id.id)], limit=1)
         if mongo_server_rec:
             data_dict = {
                 'products': [],
-                'pricelist_items': [],
-                'partners': [],
                 'mongo_config': mongo_server_rec.cache_last_update_time,
-                'price_deleted_record_ids': [],
-                'partner_deleted_record_ids': [],
                 'product_deleted_record_ids': [],
                 'sync_method': mongo_server_rec.pos_live_sync
             }
-            try:
-                ctx = self._context.copy()
-                ctx.update({
-                    'company_id': kwargs.get('company_id'),
+            query = '''
+                WITH sl AS (SELECT id FROM stock_location WHERE warehouse_id = %(warehouse_id)s)
+                SELECT pp.id AS ppid, SUM(sq.quantity) FROM stock_quant sq 
+                JOIN product_product pp ON pp.id = sq.product_id 
+                JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                JOIN sl ON sl.id = sq.location_id
+                WHERE sq.write_date >= %(last_update_time)s OR pp.write_date >= %(last_update_time)s OR pt.write_date >= %(last_update_time)s
+                GROUP BY ppid;
+            '''
+            self.env.cr.execute(query, {'warehouse_id': mongo_server_rec.store_id.warehouse_id.id, 'last_update_time': last_update_time})
+            data = self.env.cr.fetchall()
+            product_of_store = {id[0]: id[1] for id in data}
+            product_ids_of_store = tuple(product_of_store.keys())
+
+            product_res = []
+            product_fields = ['display_name', 'list_price', 'lst_price', 'standard_price', 'categ_id', 'pos_categ_id',
+                              'taxes_id',
+                              'barcode', 'default_code', 'to_weight', 'uom_id', 'description_sale', 'description',
+                              'product_tmpl_id', 'tracking', 'active', 'available_in_pos', '__last_update']
+
+            if mongo_server_rec.product_field_ids:
+                product_fields = list(set(
+                    product_fields + [str(data.name) for data in mongo_server_rec.product_field_ids]))
+
+            if mongo_server_rec.product_all_fields:
+                fields = self.env['ir.model'].sudo().search(
+                    [('model', '=', 'product.product')]).field_id
+                new_fields = [i.name for i in fields if i.ttype != 'binary']
+                temp_fields = set(product_fields).union(set(new_fields))
+                product_fields = list(temp_fields)
+            products_change = self.env['product.product'].sudo().search([('id', 'in', product_ids_of_store)])
+            if len(products_change):
+                product_record_ids = []
+                json_data = json.loads(base64.decodebytes(mongo_server_rec.pos_product_cache).decode('utf-8')) if mongo_server_rec.pos_product_cache else False
+                for obj in json_data:
+                    if int(obj) in product_ids_of_store:
+                        product_res.append(json_data.get(obj))
+                for product_change in products_change:
+                    pro_data = product_change.sudo().with_company(
+                        self.env['res.company'].browse(self._context.get('company_id'))).read(product_fields)
+                    if len(pro_data):
+                        product_data = pro_data[0]
+                    if len(product_data) and json_data:
+                        product_data["qty_available"] = product_of_store.get(product_data.get('id'), 0)
+                        json_data[product_data.get("id")] = product_data
+                        product_record_ids.append(product_data)
+                data = {
+                    'pos_product_cache': base64.encodebytes(
+                        json.dumps(json_data, default=date_utils.json_default).encode('utf-8')),
+                    'product_last_update_time': datetime.now(),
+                    'cache_last_update_time': datetime.now(),
+                    'is_product_synced': True
+                }
+                mongo_server_rec.write(data)
+                data_dict.update({
+                    'products': product_record_ids,
+                    'mongo_config': mongo_server_rec.cache_last_update_time,
                 })
-                self.env['common.cache.notification'].with_context(ctx).get_common_changes()
-                new_cache_records = self.env['common.cache.notification'].search(
-                    [('create_date', '>=', pos_mongo_config)])
+        return data_dict
 
-                if new_cache_records:
-                    product_record_ids = []
-                    product_deleted_record_ids = []
-                    product_res = []
-                    for record in new_cache_records:
-                        if record.model_name == 'product.product':
-                            if record.operation == 'DELETE':
-                                product_deleted_record_ids.append(
-                                    record.record_id)
-                            else:
-                                product_record_ids.append(record.record_id)
 
-                    if len(product_record_ids):
-                        binary_data = mongo_server_rec.pos_product_cache
-                        json_data = json.loads(
-                            base64.decodebytes(binary_data).decode('utf-8'))
-                        for obj in json_data:
-                            if int(obj) in product_record_ids:
-                                product_res.append(json_data.get(obj))
-                    data_dict.update({
-                        'products': product_res,
-                        'mongo_config': mongo_server_rec.cache_last_update_time,
-                        'product_deleted_record_ids': product_deleted_record_ids
-                    })
-                return data_dict
-            except Exception as e:
-                return data_dict
-                _logger.info("**********Exception*****************:%r", e)
 
     def _get_products_by_store(self, store):
-        # query = 'SELECT pp.id AS ppid, pt.id AS ptid, SUM(sq.quantity) FROM stock_quant sq JOIN product_product pp ON pp.id = sq.product_id JOIN product_template pt ON pt.id = pp.product_tmpl_id WHERE sq.location_id in (SELECT id FROM stock_location WHERE warehouse_id = 1) and quantity > 0 GROUP BY ppid, ptid'
-        query = '''SELECT pp.id FROM product_product pp JOIN product_template pt ON pt.id = pp.product_tmpl_id WHERE pp.id in (SELECT id FROM stock_quant WHERE location_id in (SELECT id FROM stock_location WHERE warehouse_id =  %(warehouse_id)s) and quantity > 0) AND pt.sale_ok = true AND pt.available_in_pos = true;'''
+        query = '''
+                    WITH sl AS (SELECT id FROM stock_location WHERE warehouse_id = %(warehouse_id)s)
+                    SELECT pp.id AS ppid, SUM(sq.quantity) FROM stock_quant sq 
+                    JOIN product_product pp ON pp.id = sq.product_id 
+                    JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                    JOIN sl ON sl.id = sq.location_id
+                    GROUP BY ppid;
+                '''
         self.env.cr.execute(query, {'warehouse_id': store.warehouse_id.id})
         data = self.env.cr.fetchall()
-        return data
+        return {id[0]: id[1] for id in data}
 
     def sync_products(self):
         start_time = time.time()
-        mongo_server_rec = self.search([('active_record', '=', True)], limit=1)
-        if mongo_server_rec and self.store_id.warehouse_id:
-            fields = ['active', 'display_name', 'list_price', 'lst_price', 'standard_price', 'categ_id', 'pos_categ_id', 'taxes_id',
-                      'barcode', 'default_code', 'to_weight', 'uom_id', 'description_sale', 'description', 'company_id',
-                      'product_tmpl_id', 'tracking', 'available_in_pos']
-            if mongo_server_rec.product_field_ids:
-                fields = list(set(fields + [str(data.name)
-                                            for data in self.product_field_ids]))
-            if self.product_all_fields:
-                if mongo_server_rec.load_pos_data_from == 'postgres':
-                    product_fields = self.env['ir.model'].sudo().search(
-                        [('model', '=', 'product.product')]).field_id
-                    new_fields = [
-                        i.name for i in product_fields if i.ttype != 'binary']
-                    temp_fields = set(fields).union(set(new_fields))
-                    fields = list(temp_fields)
-                else:
-                    fields = []
+        for mongo_server_rec in self:
+            if mongo_server_rec and mongo_server_rec.store_id.warehouse_id:
+                product_ids = self._get_products_by_store(mongo_server_rec.store_id)
+                p_data = self.env['product.product'].search([['id', 'in', tuple(product_ids.keys())]])
+                fields = ['active', 'display_name', 'list_price', 'lst_price', 'standard_price', 'categ_id', 'pos_categ_id', 'taxes_id',
+                          'barcode', 'default_code', 'to_weight', 'uom_id', 'description_sale', 'description', 'company_id',
+                          'product_tmpl_id', 'tracking', 'available_in_pos']
+                if mongo_server_rec.product_field_ids:
+                    fields = list(set(fields + [str(data.name)
+                                                for data in self.product_field_ids]))
+                if self.product_all_fields:
+                    if mongo_server_rec.load_pos_data_from == 'postgres':
+                        product_fields = self.env['ir.model'].sudo().search(
+                            [('model', '=', 'product.product')]).field_id
+                        new_fields = [
+                            i.name for i in product_fields if i.ttype != 'binary']
+                        temp_fields = set(fields).union(set(new_fields))
+                        fields = list(temp_fields)
+                    else:
+                        fields = []
 
-            product_ids = self._get_products_by_store(self.store_id)
-            p_data = self.env['product.product'].search([['id', 'in', product_ids]])
+                _logger.info("--- %s seconds in search---" %
+                             (time.time() - start_time))
 
-            _logger.info("--- %s seconds in search---" %
-                         (time.time() - start_time))
-
-            products_data = {}
-            for count in range(math.ceil(len(p_data) / 1000)):
-                product_dict = {}
-                data_to_add = p_data[count * 1000:(count + 1) * 1000]
-                for record in range(math.ceil(len(data_to_add) / 100)):
-                    data_to_find = data_to_add[record * 100:(record + 1) * 100]
-                    pro_data = data_to_find.read(fields)
-                    _logger.info("--- %s seconds in each read ---" %
-                                 (time.time() - start_time))
-                    for product_conv_data in pro_data:
-                        product_dict[product_conv_data.get(
-                            'id')] = product_conv_data
-                    # product_dict = {product_conv_data['id']:product_conv_data for product_conv_data in pro_data}
-                products_data.update(product_dict)
-                _logger.info("--- %s seconds in each update ---" %
-                             ((time.time() - start_time),))
-            products_synced = len(p_data)
-            _logger.info("--- %s seconds in read ---" %
-                         (time.time() - start_time))
-            data = {
-                'pos_product_cache': base64.encodebytes(json.dumps(products_data, default=date_utils.json_default).encode('utf-8')),
-                'product_last_update_time': datetime.now(),
-                'cache_last_update_time': datetime.now(),
-                'is_product_synced': True
-            }
-            mongo_server_rec.write(data)
-            self._cr.commit()
-            _logger.info("--- %s seconds in write---" %
-                         (time.time() - start_time))
-            records_deleted = self.env['common.cache.notification'].search(
-                [('model_name', '=', 'product.product')])
-            if len(records_deleted):
-                records_deleted.unlink()
-            try:
-                if mongo_server_rec.is_product_synced:
-                    mongo_server_rec.is_ordinary_loading = False
-                    mongo_server_rec.is_pos_data_synced = True
-                    self.env['common.cache.notification'].get_common_changes()
-                # mongo_server_rec.product_last_update_time = datetime.now()
-                # mongo_server_rec.is_product_synced = True
-                message = self.env['pos.fast.loading.message'].create(
-                    {'text': "{} Products have been synced.".format(products_synced)})
-                _logger.info("--- %s seconds ---" % (time.time() - start_time))
-                return {'name': _("Message"),
-                        'view_mode': 'form',
-                        'view_id': False,
-                        'view_type': 'form',
-                        'res_model': 'pos.fast.loading.message',
-                        'res_id': message.id,
-                        'type': 'ir.actions.act_window',
-                        'nodestroy': True,
-                        'target': 'new',
-                        'domain': '[]',
-                        }
-            except Exception as e:
-                _logger.info(
-                    "*********************Exception**************:%r", e)
+                products_data = {}
+                for count in range(math.ceil(len(p_data) / 1000)):
+                    product_dict = {}
+                    data_to_add = p_data[count * 1000:(count + 1) * 1000]
+                    for record in range(math.ceil(len(data_to_add) / 100)):
+                        data_to_find = data_to_add[record * 100:(record + 1) * 100]
+                        pro_data = data_to_find.read(fields)
+                        _logger.info("--- %s seconds in each read ---" %
+                                     (time.time() - start_time))
+                        for product_conv_data in pro_data:
+                            product_conv_data["qty_available"] = product_ids.get(product_conv_data.get('id'), 0)
+                            product_dict[product_conv_data.get(
+                                'id')] = product_conv_data
+                        # product_dict = {product_conv_data['id']:product_conv_data for product_conv_data in pro_data}
+                    products_data.update(product_dict)
+                    _logger.info("--- %s seconds in each update ---" %
+                                 ((time.time() - start_time),))
+                products_synced = len(p_data)
+                _logger.info("--- %s seconds in read ---" %
+                             (time.time() - start_time))
+                data = {
+                    'pos_product_cache': base64.encodebytes(json.dumps(products_data, default=date_utils.json_default).encode('utf-8')),
+                    'product_last_update_time': datetime.now(),
+                    'cache_last_update_time': datetime.now(),
+                    'is_product_synced': True
+                }
+                mongo_server_rec.write(data)
+                self._cr.commit()
+                _logger.info("--- %s seconds in write---" %
+                             (time.time() - start_time))
+                try:
+                    if mongo_server_rec.is_product_synced:
+                        mongo_server_rec.is_ordinary_loading = False
+                        mongo_server_rec.is_pos_data_synced = True
+                    # mongo_server_rec.product_last_update_time = datetime.now()
+                    # mongo_server_rec.is_product_synced = True
+                    message = self.env['pos.fast.loading.message'].create(
+                        {'text': "{} Products have been synced.".format(products_synced)})
+                    _logger.info("--- %s seconds ---" % (time.time() - start_time))
+                    return {'name': _("Message"),
+                            'view_mode': 'form',
+                            'view_id': False,
+                            'view_type': 'form',
+                            'res_model': 'pos.fast.loading.message',
+                            'res_id': message.id,
+                            'type': 'ir.actions.act_window',
+                            'nodestroy': True,
+                            'target': 'new',
+                            'domain': '[]',
+                            }
+                except Exception as e:
+                    _logger.info(
+                        "*********************Exception**************:%r", e)

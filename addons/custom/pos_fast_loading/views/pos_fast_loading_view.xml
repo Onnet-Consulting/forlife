@@ -69,23 +69,6 @@
         </record>
 
 
-
-
-
-
-        <record id="common_cache_operation_tree_view" model="ir.ui.view">
-            <field name="name">Common Cache</field>
-            <field name="model">common.cache.notification</field>
-            <field name="arch" type="xml">
-                <tree string="Common Cache" create="0" default_order="id desc">
-                    <field name="record_id"/>
-                    <field name="operation"/>
-                    <field name="state"/>
-                    <field name="change_vals"/>
-                </tree>
-            </field>
-        </record>
-
         
 		<record id="pos_fast_loading_message_form" model="ir.ui.view">
             <field name="name">pos_fast_loading_message_form</field>
@@ -109,14 +92,7 @@
             <field name="view_mode">form</field>
             <field name="target">new</field>
         </record>
-		
 
-        <record id="common_cache_operation_action" model="ir.actions.act_window">
-            <field name="name">Common Cache Notification</field>
-            <field name="res_model">common.cache.notification</field>
-            <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="common_cache_operation_tree_view"></field>
-        </record>
 
 
         <record id="view_record_model_data" model="ir.ui.view">
@@ -148,14 +124,6 @@
             action="action_view_mongo_form"
             name="Pos Fast Loading Setup"
             sequence="14"
-            groups="point_of_sale.group_pos_manager"
-        />
-        <menuitem
-            parent="pos_fast_loading.pos_fast_loading_root"
-            id="pos_common_cache_action_tree"
-            action="common_cache_operation_action"
-            name="Pos Common Cache"
-            sequence="15"
             groups="point_of_sale.group_pos_manager"
         />
 

@@ -29,7 +29,6 @@
     "data": [
         'security/ir.model.access.csv',
         'views/pos_fast_loading_view.xml',
-        'data/cron.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

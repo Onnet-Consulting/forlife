@@ -40,14 +40,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
       if (!self.env.pos.config.enable_pos_longpolling) {
         if (self.env.pos.db.mongo_config.pos_live_sync == "notify")
           $(".session_update").show();
-        if (
-          !self.interval_id &&
-          self.env.pos.db &&
-          self.env.pos.db.mongo_config &&
-          self.env.pos.db.mongo_config.pos_live_sync != "reload"
-        ) {
-          self.start_cache_polling();
-        }
       }
       $(".session_update").click();
       var request = window.indexedDB.open("Product", 1);
@@ -63,7 +55,7 @@ odoo.define("pos_fast_loading.chrome", function (require) {
       var self = this;
       rpc
         .query({
-          method: "get_data_on_sync",
+          method: "get_products_change",
           model: "mongo.server.config",
           args: [
             {
@@ -151,36 +143,15 @@ odoo.define("pos_fast_loading.chrome", function (require) {
         if (!self.env.pos.config.enable_pos_longpolling) {
           // *********************Adding and Updating the Products*******************************
           self.updatePosProducts(products, product_deleted_record_ids);
-
-          // *********************Adding and Updating Pricelist Item to pos*********************
-          self.updatePricePos(pricelist_items, price_deleted_record_ids);
-
-          // *********************Adding and Updating Partner to pos*********************
-
-          // self.updatePartnerPos(partners, partner_deleted_record_ids);
         }
-
-        // ************************ Partners deleted from indexedDB***************************
-        // self.updatePartnerIDB(partners, partner_deleted_record_ids);
 
         // **********************Updating Time In IndexedDB************************************
         self.updateCacheTimeIDB();
 
-        // *********** Pricelist item Deleted and Updated from indexedDB**********************
-        self.updatePriceIDB(pricelist_items, price_deleted_record_ids);
 
         // ***********Products deleted from indexedDB*****************************************
         self.updateProductsIDB(products, product_deleted_record_ids);
 
-        // ***********************************************************************************
-        if (!self.env.pos.config.enable_pos_longpolling) {
-          $(".session_update .fa-refresh").css({
-            color: "rgb(94, 185, 55)",
-          });
-          if (!self.interval_id) {
-            self.start_cache_polling();
-          }
-        }
       } else {
         console.log("product not updated");
       }
