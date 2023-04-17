@@ -16,7 +16,7 @@ class PosSession(models.Model):
     @api.model
     def _pos_ui_models_to_load(self):
         res = super(PosSession, self)._pos_ui_models_to_load()
-        if res.get('res.partner', False):
+        if 'res.partner' in res:
             res.remove('res.partner')
 
         return res
