@@ -11,7 +11,8 @@ class PosOrder(models.Model):
 
     point_order = fields.Integer('Point Order', compute='_compute_point_order', store=True)
     point_event_order = fields.Integer('Point event Order', compute='_compute_point_order', store=True)
-    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True, help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
+    total_point = fields.Integer('Total Point', readonly=True, compute='_compute_total_point', store=True,
+                                 help='Điểm cộng đơn hàng + Điểm sự kiện đơn + Điểm cộng + Điểm sự kiện')
     item_total_point = fields.Integer(
         'Item Point Total', readonly=True, compute='_compute_item_total_point', store=True,
         help='Includes the total of product point and product event point')
@@ -146,7 +147,7 @@ class PosOrder(models.Model):
                         money_value / rec.program_store_point_id.value_conversion) * rec.program_store_point_id.point_addition * rec.program_store_point_id.first_order if rec.program_store_point_id.value_conversion > 0 else 0  # a
                 event_valid = self.get_event_match(pos_order=rec)
                 if event_valid:
-                    domain = [('id', 'in',[x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id','=',event_valid.id)])])]
+                    domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
                     partner_condition = self.env['res.partner'].search(domain)
                     if rec.partner_id.id in partner_condition.ids:
                         rec.point_event_order = int(money_value / event_valid.value_conversion) * event_valid.point_addition  # b
@@ -156,7 +157,8 @@ class PosOrder(models.Model):
                     rec.point_event_order = 0
 
     def get_event_match(self, pos_order):
-        point_events = pos_order.program_store_point_id.event_ids.filtered(lambda x: x.from_date <= pos_order.date_order <= x.to_date and x.state == 'effective')
+        point_events = pos_order.program_store_point_id.event_ids.filtered(lambda x: x.from_date <= pos_order.date_order <= x.to_date and x.state == 'effective' and (
+                    not x.store_ids or pos_order.config_id.store_id.id in x.store_ids.ids))
         time = pos_order.date_order
         time = time.strftime("%Y-%m-%d %H:%M:%S")
         create_Date = self._format_time_zone(time)
@@ -199,8 +201,6 @@ class PosOrder(models.Model):
 
     @api.model
     def get_program_promotion(self, data):
-        # if self._context.get('from_PointsConsumption'):
-        #     data = data[0]
         if self._context.get('from_PointsConsumptionPos'):
             create_Date = data['date_order'].replace('T', ' ')[:19]
         else:
@@ -213,15 +213,14 @@ class PosOrder(models.Model):
         #         "limit 1".format(store.id, create_Date, create_Date, store.brand_id.id)
         # self._cr.execute(query)
         # program_promotion = self.env.cr.fetchall()
-        # print(program_promotion)
         program_promotion = self.env['points.promotion'].sudo().search(
-            [('store_ids', 'in', store.id), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date), ('to_date', '>=', create_Date),
+            ['|', ('store_ids', 'in', store.id), ('store_ids', '=', False), ('state', '=', 'in_progress'), ('from_date', '<=', create_Date),
+             ('to_date', '>=', create_Date),
              ('brand_id', '=', store.brand_id.id)], limit=1)
+        print(program_promotion)
         if self._context.get('from_PointsConsumptionPos'):
             dict_point_consumption_ids = []
             for r in program_promotion.point_consumption_ids:
-                # dict_point_consumption_ids['id'] = r.product_id.id
-                # dict_point_consumption_ids['name'] = r.product_id.name
                 dict_point_consumption_ids.append({
                     'id': r.id,
                     'name': r.name,
@@ -288,7 +287,7 @@ class PosOrder(models.Model):
         for tax in product.taxes_id.filtered(lambda t: t.type_tax_use == 'sale'):
             number_tax += tax.amount
         total_tax = 1 + number_tax / 100
-        point_tax = abs(point)/total_tax
+        point_tax = abs(point) / total_tax
         return round(point_tax)
 
     def get_total_point_reduced(self):
@@ -296,7 +295,6 @@ class PosOrder(models.Model):
 
     def get_fee_tax_reduced_line(self):
         return self.get_total_point_reduced() - self.get_value_entry_reduced_point()
-
 
     def action_point_subtraction(self):
         move_vals = {
@@ -335,6 +333,6 @@ class PosOrder(models.Model):
         result = super(PosOrder, self)._export_for_ui(order)
         result.update({
             'total_order_line_point_used': order.total_order_line_point_used,
-            'total_order_line_redisual':order.total_order_line_redisual
+            'total_order_line_redisual': order.total_order_line_redisual
         })
         return result
