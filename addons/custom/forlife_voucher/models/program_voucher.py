@@ -89,8 +89,8 @@ class ProgramVoucher(models.Model):
 
     @api.model
     def create(self, vals):
-        if 'program_voucher_line_ids' not in vals or not vals['program_voucher_line_ids']:
-            raise UserError(_('Please set the infomation of Vourcher!'))
+        # if 'program_voucher_line_ids' not in vals or not vals['program_voucher_line_ids']:
+        #     raise UserError(_('Please set the infomation of Vourcher!'))
         # last_record = self.get_last_sequence()
         # if last_record:
         #     #change character of sequence
