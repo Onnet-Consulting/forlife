@@ -22,6 +22,7 @@ class PosOrder(models.Model):
         'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
     total_order_line_point_used = fields.Integer()
     total_order_line_redisual = fields.Integer()
+    allow_for_point = fields.Boolean()
 
     @api.depends('lines', 'lines.point_addition', 'lines.point_addition_event')
     def _compute_item_total_point(self):
@@ -193,10 +194,11 @@ class PosOrder(models.Model):
     @api.model
     def _order_fields(self, ui_order):
         data = super(PosOrder, self)._order_fields(ui_order)
-        if data['partner_id']:
+        if data['partner_id'] and 'allow_for_point' in ui_order and ui_order.get('allow_for_point') is True:
             program_promotion = self.get_program_promotion(data)
             if program_promotion:
                 data['program_store_point_id'] = program_promotion.id
+                data['allow_for_point'] = ui_order.get('allow_for_point', False)
         return data
 
     @api.model
@@ -333,6 +335,7 @@ class PosOrder(models.Model):
         result = super(PosOrder, self)._export_for_ui(order)
         result.update({
             'total_order_line_point_used': order.total_order_line_point_used,
-            'total_order_line_redisual': order.total_order_line_redisual
+            'total_order_line_redisual': order.total_order_line_redisual,
+            'allow_for_point': order.allow_for_point
         })
         return result
