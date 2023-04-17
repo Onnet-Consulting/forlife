@@ -12,7 +12,7 @@ class PointsPromotion(models.Model):
 
     name = fields.Char('Program Name', required=True)
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
-    store_ids = fields.Many2many('store', string='Stores', required=True)
+    store_ids = fields.Many2many('store', string='Stores')
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
     first_order = fields.Integer('First Order', default=0)
