@@ -40,17 +40,9 @@ odoo.define("pos_fast_loading.chrome", function (require) {
       if (!self.env.pos.config.enable_pos_longpolling) {
         if (self.env.pos.db.mongo_config.pos_live_sync == "notify")
           $(".session_update").show();
-        if (
-          !self.interval_id &&
-          self.env.pos.db &&
-          self.env.pos.db.mongo_config &&
-          self.env.pos.db.mongo_config.pos_live_sync != "reload"
-        ) {
-          self.start_cache_polling();
-        }
       }
       $(".session_update").click();
-      var request = window.indexedDB.open("Product", 2);
+      var request = window.indexedDB.open("Product", 1);
       request.onupgradeneeded = function (event) {
           var db = event.target.result;
           var productsStore = db.createObjectStore('products', {
@@ -63,7 +55,7 @@ odoo.define("pos_fast_loading.chrome", function (require) {
       var self = this;
       rpc
         .query({
-          method: "get_data_on_sync",
+          method: "get_products_change",
           model: "mongo.server.config",
           args: [
             {
@@ -126,8 +118,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
                         color: "#ff5656",
                       });
                       if (result.data) {
-                        console.log('start_cache_polling');
-                        console.log(result);
                         self.post_rechecking_process(result.data);
                       }
                     }
@@ -153,36 +143,15 @@ odoo.define("pos_fast_loading.chrome", function (require) {
         if (!self.env.pos.config.enable_pos_longpolling) {
           // *********************Adding and Updating the Products*******************************
           self.updatePosProducts(products, product_deleted_record_ids);
-
-          // *********************Adding and Updating Pricelist Item to pos*********************
-          self.updatePricePos(pricelist_items, price_deleted_record_ids);
-
-          // *********************Adding and Updating Partner to pos*********************
-
-          // self.updatePartnerPos(partners, partner_deleted_record_ids);
         }
-
-        // ************************ Partners deleted from indexedDB***************************
-        // self.updatePartnerIDB(partners, partner_deleted_record_ids);
 
         // **********************Updating Time In IndexedDB************************************
         self.updateCacheTimeIDB();
 
-        // *********** Pricelist item Deleted and Updated from indexedDB**********************
-        self.updatePriceIDB(pricelist_items, price_deleted_record_ids);
 
         // ***********Products deleted from indexedDB*****************************************
         self.updateProductsIDB(products, product_deleted_record_ids);
 
-        // ***********************************************************************************
-        if (!self.env.pos.config.enable_pos_longpolling) {
-          $(".session_update .fa-refresh").css({
-            color: "rgb(94, 185, 55)",
-          });
-          if (!self.interval_id) {
-            self.start_cache_polling();
-          }
-        }
       } else {
         console.log("product not updated");
       }
@@ -224,12 +193,9 @@ odoo.define("pos_fast_loading.chrome", function (require) {
         var using_company_currency =
           self.env.pos.config.currency_id[0] ===
           self.env.pos.company.currency_id[0];
-        console.log('using_company_currency');
         // var conversion_rate = self.env.pos.currency.rate / self.env.pos.company_currency.rate;
         var conversion_rate = 1;
-        console.log('conversion_rate');
         var new_products = _.map(products, function (product) {
-          console.log('new_products');
           if (!using_company_currency) {
             product.lst_price = round_pr(
               product.lst_price * conversion_rate,
@@ -239,12 +205,9 @@ odoo.define("pos_fast_loading.chrome", function (require) {
           product.categ = _.findWhere(self.env.pos.product_categories, {
             id: product.categ_id[0],
           });
-          console.log('check product');
-          console.log(product);
           var new_product = new models.Product(product);
           new_product.pos = self.env.pos;
           new_product.applicablePricelistItems = {};
-          console.log(self.env.pos.db);
           for (let pricelist of self.env.pos.pricelists) {
             for (const pricelistItem of pricelist.items) {
               if (pricelistItem.product_id) {
@@ -259,7 +222,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
               }
             }
           }
-          console.log(new_product);
           return new_product;
         });
         var stored_categories = self.env.pos.db.product_by_category_id;
@@ -392,7 +354,7 @@ odoo.define("pos_fast_loading.chrome", function (require) {
         if (!("indexedDB" in window)) {
           console.log("This browser doesn't support IndexedDB");
         } else {
-          var request = window.indexedDB.open("Product", 2);
+          var request = window.indexedDB.open("Product", 1);
           request.onsuccess = function (event) {
             var db = event.target.result;
             var transaction = db.transaction("products", "readwrite");
@@ -568,10 +530,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
     updatePricePos(pricelist_items, price_deleted_record_ids) {
       var self = this;
       var delete_price_data = [];
-      console.log('pricelist_items');
-      console.log(pricelist_items);
-      console.log('price_deleted_record_ids.length');
-      console.log(price_deleted_record_ids.length);
       if (
         (pricelist_items && pricelist_items.length) ||
         (price_deleted_record_ids && price_deleted_record_ids.length)
@@ -598,8 +556,6 @@ odoo.define("pos_fast_loading.chrome", function (require) {
             pricelist.items = pricelist_new_items;
           } else pricelist.items = new_pricelist_items;
           new_pricelist_items
-          console.log('new_pricelist_items');
-          console.log(new_pricelist_items);
         });
       }
     }

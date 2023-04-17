@@ -44,6 +44,8 @@ class ProgramVoucher(models.Model):
 
     using_limit = fields.Integer('Giới hạn sử dụng', default=0)
 
+    details = fields.Char('Diễn giải')
+
     @api.depends('product_ids')
     def compute_product(self):
         for rec in self:

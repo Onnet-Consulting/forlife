@@ -64,24 +64,25 @@ class ResPartner(models.Model):
         for rec in self:
             rec.parsed_mobile = get_valid_phone_number(rec.mobile) if rec.mobile else False
 
-    @api.constrains('phone')
-    def _check_phone(self):
-        for rec in self:
-            if rec.phone and not is_valid_phone_number(rec.phone):
-                raise ValidationError(_('Invalid phone number - %s') % rec.phone)
-
+    # FIXME: uncomment 2 constrains below when go production
+    # @api.constrains('phone')
+    # def _check_phone(self):
+    #     for rec in self:
+    #         if rec.phone and not is_valid_phone_number(rec.phone):
+    #             raise ValidationError(_('Invalid phone number - %s') % rec.phone)
+    #
     @api.constrains('group_id', 'phone')
     def _check_required_phone_in_group(self):
         retail_customer_group = self.env.ref('forlife_pos_app_member.partner_group_c')
         for rec in self:
             if not rec.phone and rec.group_id == retail_customer_group:
                 raise ValidationError(_("Phone number is required for group %s") % retail_customer_group.name)
-
-    @api.constrains('mobile')
-    def _check_mobile(self):
-        for rec in self:
-            if rec.mobile and not is_valid_phone_number(rec.mobile):
-                raise ValidationError(_('Invalid mobile number - %s') % rec.mobile)
+    #
+    # @api.constrains('mobile')
+    # def _check_mobile(self):
+    #     for rec in self:
+    #         if rec.mobile and not is_valid_phone_number(rec.mobile):
+    #             raise ValidationError(_('Invalid mobile number - %s') % rec.mobile)
 
     @api.depends('group_id')
     def _compute_show_retail_types(self):

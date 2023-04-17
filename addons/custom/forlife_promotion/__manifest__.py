@@ -17,6 +17,7 @@
 
     'depends': [
         'forlife_point_of_sale',
+        'forlife_purchase'
     ],
 
     'data': [
@@ -29,6 +30,8 @@
         'views/event_views.xml',
         'views/points_product_views.xml',
         'views/points_product_line_views.xml',
+        'views/contact_event_follow.xml',
+        'views/point_product_model_import.xml',
 
         'views/menuitem.xml',
     ]

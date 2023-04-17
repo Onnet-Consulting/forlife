@@ -18,6 +18,7 @@
                     <field name="end_date"/>
                     <field name="store_ids" widget="many2many_tags"/>
                     <field name="product_id" required="1"/>
+                    <field name="details"/>
                 </tree>
             </field>
         </record>
@@ -52,6 +53,7 @@
                             <field name="store_ids" widget="many2many_tags" domain="[('brand_id','=', brand_id)]"/>
                             <field name="product_apply_ids" widget="many2many_tags"/>
                             <field name="product_id" required="1"/>
+                            <field name="details"/>
                         </group>
                         <notebook>
                             <page name="voucher" string="Voucher">
