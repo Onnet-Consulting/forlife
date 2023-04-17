@@ -53,7 +53,6 @@ class Voucher(models.Model):
     is_full_price_applies = fields.Boolean('Áp dụng nguyên giá')
     using_limit = fields.Integer('Giới hạn sử dụng', default=0)
 
-    details = fields.Char('Diễn giải')
 
     @api.depends('price_used', 'price')
     def _compute_price_residual(self):

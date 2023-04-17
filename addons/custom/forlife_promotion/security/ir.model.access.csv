@@ -11,3 +11,5 @@ access_month_data_user,month.data user,model_month_data,base.group_user,1,0,0,0
 access_dayofmonth_data_user,dayofmonth.data user,model_dayofmonth_data,base.group_user,1,0,0,0
 access_dayofweek_data_user,dayofweek.data user,model_dayofweek_data,base.group_user,1,0,0,0
 access_hour_data_user,hour.data user,model_hour_data,base.group_user,1,0,0,0
+access_contact_event_follow,access_contact_event_follow,model_contact_event_follow,base.group_user,1,1,1,1
+access_point_product_model_import,access_point_product_model_import,model_point_product_model_import,base.group_user,1,1,1,1

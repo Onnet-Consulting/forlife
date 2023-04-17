@@ -12,6 +12,16 @@ odoo.define('forlife_voucher.PosPaymentScreenVoucher', function (require) {
                 super.setup();
             }
 
+            deletePaymentLine(event) {
+                var self = this;
+                const { cid } = event.detail;
+                const line = this.paymentLines.find((line) => line.cid === cid);
+                if(line.payment_method.is_voucher){
+                    self.currentOrder.voucherlines = false
+                }
+                super.deletePaymentLine(event)
+            }
+
             async addNewPaymentLine({ detail: paymentMethod }) {
                 if(!this.env.pos.data_voucher){
                     this.env.pos.data_voucher = false
