@@ -33,7 +33,7 @@ class ChildBatchImport(models.Model):
             if rec.parent_batch_import_id.limit:
                 rec.write({
                     'file_length': rec.parent_batch_import_id.limit,
-                    'complete_records': rec.parent_batch_import_id.limit - len(json.loads(rec.error_rows))
+                    'complete_records': rec.parent_batch_import_id.limit - (len(json.loads(rec.error_rows)) if rec.error_rows else 0)
                 })
 
     def rec_file_csv(self, file):
