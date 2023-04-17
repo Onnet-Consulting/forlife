@@ -14,7 +14,8 @@
         'purchase_stock',
         'forlife_pos_app_member',
         'web_domain_field',
-        'l10n_vn'
+        'l10n_vn',
+        'forlife_invoice',
     ],
     "data": [
         'data/product_category.xml',

@@ -30,8 +30,8 @@ class SaleOrder(models.Model):
 
     def action_confirm(self):
         res = super().action_confirm()
-        queries = self.bravo_get_insert_with_check_existing_sql()
-        self.env['sale.order'].sudo().with_delay().bravo_insert_with_check_existing(queries)
+        queries = self.bravo_get_insert_sql()
+        self.env['sale.order'].sudo().with_delay().bravo_insert(queries)
         return res
 
     @api.model
