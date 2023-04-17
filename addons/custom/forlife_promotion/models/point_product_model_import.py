@@ -12,7 +12,7 @@ class PointProductModelImport(models.Model):
     points_promotion_id = fields.Many2one('points.promotion', related='points_product_id.points_promotion_id')
 
     _sql_constraints = [
-        ('unique_product_id', 'UNIQUE(product_id)', 'Product must be unique!')
+        ('unique_product_id', 'UNIQUE(product_id, points_product_id)', 'Product must be unique!')
     ]
 
     def name_get(self):

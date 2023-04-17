@@ -6,3 +6,4 @@ access_member_card_user,member.card user,model_member_card,base.group_user,1,0,0
 access_partner_card_rank,partner.card.rank,model_partner_card_rank,base.group_user,1,0,0,0,
 access_partner_card_rank_line_manager,partner.card.rank.line manager,model_partner_card_rank_line,forlife_customer_card_rank.update_card_rank,1,0,1,0
 access_partner_card_rank_line,partner.card.rank.line,model_partner_card_rank_line,base.group_user,1,0,0,0
+access_import_partner_card_rank,import.partner.card.rank,model_import_partner_card_rank,base.group_system,1,1,1,0

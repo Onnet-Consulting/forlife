@@ -8,7 +8,7 @@ class Import(models.TransientModel):
 
     # Override this function for additional context for func load()
     def execute_import(self, fields, columns, options, dryrun=False):
-        if not self._context.get('import_valid_skip_error'):
+        if not options.get('import_valid_skip_error'):
             return super(Import, self).execute_import(fields, columns, options, dryrun=dryrun)
         else:
             """ Actual execution of the import

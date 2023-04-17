@@ -12,10 +12,10 @@ class PosOrder(models.Model):
 
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
-        self.with_delay().update_partner_card_rank()
+        self.update_partner_card_rank()
         if self.card_rank_program_id:
             total_amount_discount = abs(sum(self.mapped('lines.discount_details_lines').filtered(lambda f: f.type == 'card').mapped('money_reduced')))
-            self.with_delay().accounting_card_rank_discount(total_amount_discount) if total_amount_discount else None
+            self.accounting_card_rank_discount(total_amount_discount) if total_amount_discount else None
         return res
 
     def update_partner_card_rank(self):
@@ -44,19 +44,14 @@ class PosOrder(models.Model):
                     (self.partner_id.retail_type_ids and any(retail_type in program.partner_retail_ids for retail_type in self.partner_id.retail_type_ids)):
                 is_rank = True
                 value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
-                if program.time_set_rank != 0:
-                    total_value_to_up = value_to_upper_order + sum(partner_card_rank.line_ids.filtered(lambda f: f.order_id and f.order_date >= (self.date_order - timedelta(days=program.time_set_rank))).mapped('value_to_upper'))
-                else:
-                    total_value_to_up = value_to_upper_order + sum(partner_card_rank.line_ids.filtered(lambda f: f.order_id).mapped('value_to_upper'))
+                total_value_to_up = value_to_upper_order + sum(partner_card_rank.line_ids.filtered(lambda f: f.order_date >= (self.date_order - timedelta(days=program.time_set_rank))).mapped('value_to_upper'))
                 if new_rank.priority >= program.card_rank_id.priority:
                     self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id, total_value_to_up, program.id)
-                    partner_card_rank.sudo().write({'accumulated_sales': total_value_to_up})
                     self.save_order_to_program(program)
                     break
                 else:
                     if total_value_to_up >= program.min_turnover:
                         self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id, total_value_to_up, program.id)
-                        partner_card_rank.sudo().write({'accumulated_sales': total_value_to_up})
                         self.save_order_to_program(program)
                         break
         if is_rank:
@@ -91,7 +86,7 @@ class PosOrder(models.Model):
     def accounting_card_rank_discount(self, total_amount_discount):
         values = self._prepare_cr_discount_account_move()
         values['line_ids'] = self._prepare_cr_discount_account_move_line(total_amount_discount)
-        res = self.env['account.move'].create(values)
+        res = self.env['account.move'].sudo().create(values)
         return res.action_post() if res else False
 
     def _prepare_cr_discount_account_move(self):
