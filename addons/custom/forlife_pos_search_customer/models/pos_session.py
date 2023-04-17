@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import models
+from odoo import models, api
 from odoo.osv import expression
 
 class PosSession(models.Model):
@@ -13,5 +13,10 @@ class PosSession(models.Model):
         search_params['search_params']['domain'] = domain
         return self.env['res.partner'].search_read(**search_params['search_params'])
 
+    @api.model
+    def _pos_ui_models_to_load(self):
+        res = super(PosSession, self)._pos_ui_models_to_load()
+        if res.get('res.partner', False):
+            res.remove('res.partner')
 
-
+        return res
