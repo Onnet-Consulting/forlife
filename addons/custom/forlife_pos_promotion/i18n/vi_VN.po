@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-14 01:50+0000\n"
-"PO-Revision-Date: 2023-04-14 01:50+0000\n"
+"POT-Creation-Date: 2023-04-17 03:41+0000\n"
+"PO-Revision-Date: 2023-04-17 03:41+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -233,8 +233,10 @@ msgstr "Đã lưu trữ"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__limit_usage_per_customer
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__limit_usage_per_order
+#: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__limit_usage_per_program
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__max_usage_per_customer
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__max_usage_per_order
+#: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__max_usage_per_program
 msgid "Based on qty of combo/product"
 msgstr "Dựa trên số lượng sản phẩm hoặc combo"
 
@@ -896,23 +898,28 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__limit_usage
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage
-msgid "Limit Usage"
-msgstr "Giới hạn sử dụng"
+msgid "Limit Order Usage"
+msgstr "Giới hạn số đơn sử dụng"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__limit_usage
 msgid "Limit usage"
-msgstr "Giới hạn sử dụng"
+msgstr "Số đơn tối đa"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage_per_customer
 msgid "Limit usage per Customer"
-msgstr "Giới hạn dùng trên mỗi khách"
+msgstr "Giới hạn sử dụng mỗi khách"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage_per_order
 msgid "Limit usage per Order"
-msgstr "Giới hạn dùng trên mỗi đơn"
+msgstr "Giới hạn sử dụng mỗi đơn"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage_per_program
+msgid "Limit usage per Program"
+msgstr "Giới hạn sử dụng mỗi CT"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__disc_max_amount
@@ -926,8 +933,12 @@ msgid "Max Discount Amount must be positive."
 msgstr "Số tiền giảm tối đa phải là số dương"
 
 #. module: forlife_pos_promotion
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__max_usage
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__max_usage
+msgid "Max Order Number"
+msgstr "Số lần sử dụng tối đa"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__max_usage
 msgid "Max Usage"
 msgstr "Số lần sử dụng tối đa"
 
@@ -937,19 +948,24 @@ msgid "Max Usage must be positive."
 msgstr "Giới hạn sử dụng tối đã phải là số dương"
 
 #. module: forlife_pos_promotion
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__max_usage
-msgid "Max usage per Code"
-msgstr "Tối đa lần sử dụng mỗi mã KM"
-
-#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__max_usage_per_customer
-msgid "Max usage per Customer"
-msgstr "Giới hạn dùng trên mỗi khách"
+msgid "Max qty per Customer"
+msgstr "SL tối đa trên mỗi khách"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__max_usage_per_order
-msgid "Max usage per Order"
-msgstr "Giới hạn dùng trên mỗi đơn"
+msgid "Max qty per Order"
+msgstr "SL tối đa trên mỗi đơn"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__max_usage_per_program
+msgid "Max qty per Program"
+msgstr "SL tối đa trên mỗi CT"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__max_usage
+msgid "Max usage per Code"
+msgstr "Số lần sử dụng mỗi mã KM"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
