@@ -13,10 +13,7 @@ class PosSession(models.Model):
         search_params['search_params']['domain'] = domain
         return self.env['res.partner'].search_read(**search_params['search_params'])
 
-    @api.model
-    def _pos_ui_models_to_load(self):
-        res = super(PosSession, self)._pos_ui_models_to_load()
-        if 'res.partner' in res:
-            res.remove('res.partner')
-
-        return res
+    def _load_model(self, model):
+        if model == 'res.partner':
+            return []
+        return super(PosSession, self)._load_model(model)
