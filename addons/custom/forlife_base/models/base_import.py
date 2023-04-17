@@ -111,6 +111,9 @@ class Import(models.TransientModel):
                 values.append(row_attrs[0][-2])
                 values.append(row_attrs[0][-1])
                 row_attrs.pop(0)
+            else:
+                values.append('')
+                values.append('')
             rows.append(values)
             rows += row_attrs
         return len(rows), rows
