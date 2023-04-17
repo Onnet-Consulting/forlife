@@ -44,6 +44,8 @@ class ProgramVoucher(models.Model):
 
     using_limit = fields.Integer('Giới hạn sử dụng', default=0)
 
+    details = fields.Char('Diễn giải')
+
     @api.depends('product_ids')
     def compute_product(self):
         for rec in self:
@@ -119,46 +121,24 @@ class ProgramVoucher(models.Model):
                         for i in range(rec.count):
                             self.env['voucher.voucher'].create({
                                 'program_voucher_id': self.id,
-                                'type':self.type,
-                                'brand_id':self.brand_id.id,
-                                'store_ids': [(6, False, self.store_ids.ids)],
                                 'start_date':self.start_date,
                                 'state':'new',
                                 'partner_id': p.id,
                                 'price': rec.price,
                                 'price_used': 0,
                                 'price_residual': rec.price - 0,
-                                'derpartment_id': self.derpartment_id.id,
                                 'end_date':self.end_date,
-                                'apply_many_times': self.apply_many_times,
-                                'apply_contemp_time':self.apply_contemp_time,
-                                'product_voucher_id': self.product_id.id,
-                                'purpose_id': self.purpose_id.id,
-                                'product_apply_ids': [(6, False, self.product_apply_ids.ids)],
-                                'is_full_price_applies': self.is_full_price_applies,
-                                'using_limit':self.using_limit
                             })
                 if not rec.partner_ids:
                     for i in range(rec.count):
                         self.env['voucher.voucher'].create({
                             'program_voucher_id': self.id,
-                            'type': self.type,
-                            'brand_id': self.brand_id.id,
-                            'store_ids': [(6, False, self.store_ids.ids)],
                             'start_date': self.start_date,
                             'state': 'new',
                             'price': rec.price,
                             'price_used': 0,
                             'price_residual': rec.price - 0,
-                            'derpartment_id': self.derpartment_id.id,
                             'end_date': self.end_date,
-                            'apply_many_times': self.apply_many_times,
-                            'apply_contemp_time': self.apply_contemp_time,
-                            'product_voucher_id': self.product_id.id,
-                            'purpose_id':self.purpose_id.id,
-                            'product_apply_ids': [(6, False, self.product_apply_ids.ids)],
-                            'is_full_price_applies': self.is_full_price_applies,
-                            'using_limit':self.using_limit
                         })
         else:
             raise UserError(_("Vui lòng thêm dòng thông tin cho vourcher!"))

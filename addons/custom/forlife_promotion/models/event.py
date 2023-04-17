@@ -26,29 +26,34 @@ class Event(models.Model):
     is_lock_change_points_promotion = fields.Boolean('Lock Change Points Promotion', default=False)
     points_product_existed = fields.Text(string='Points Product Existed', default='[]')
     brand_id = fields.Many2one('res.brand', string='Brand', related='points_promotion_id.brand_id', store=False)
-    partner_ids = fields.Many2many('res.partner',string='Danh sách khách hàng')
-    partner_count = fields.Integer(string='Count partner', compute='_compute_list_partner', store=True)
+    # partner_ids = fields.Many2many('res.partner',string='Danh sách khách hàng')
+    partner_count = fields.Integer(string='Count partner', compute='_compute_list_partner')
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
 
-    @api.depends('partner_ids')
+    # new action for import
     def _compute_list_partner(self):
         for rec in self:
-            rec.partner_count = len(rec.partner_ids)
+            rec.partner_count = self.env['contact.event.follow'].search_count([('event_id', '=', self.id)])
 
     def action_view_partner(self):
-        self.ensure_one()
+        ctx = dict(self._context)
+        ctx.update({
+            'default_event_id': self.id,
+        })
         return {
             'name': _('Khách hàng'),
-            'domain': [('id', 'in', self.partner_ids.ids)],
-            'res_model': 'res.partner',
+            'domain': [('event_id', '=', self.id)],
+            'res_model': 'contact.event.follow',
             'type': 'ir.actions.act_window',
             'view_id': False,
             'view_mode': 'tree,form',
+            'context': ctx,
         }
 
+    # new action for import
 
     @api.onchange('points_promotion_id')
     def onchange_points_promotion(self):

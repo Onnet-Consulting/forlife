@@ -28,7 +28,7 @@ class PartnerCardRank(models.Model):
         for line in self:
             line.card_rank_id = line.line_ids and line.line_ids.sorted()[0].new_card_rank_id.id\
                                 or self.env['member.card'].get_member_card_by_date(fields.Date.today(), self.brand_id.id).mapped('card_rank_id')[-1].id
-            records = line.line_ids.sorted().filtered(lambda f: f.value_to_upper > 0)
+            records = line.line_ids.sorted().filtered(lambda f: f.value_to_upper != 0)
             record = records and records[0] or False
             if record:
                 line.last_order_date = record.order_date

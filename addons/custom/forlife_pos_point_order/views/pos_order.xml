@@ -71,5 +71,15 @@
         <!--                </field>-->
         <!--            </field>-->
         <!--        </record>-->
+        <record model="ir.ui.view" id="view_pos_order_tree_extend">
+            <field name="name">view.pos.order.tree.extend</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="allow_compensate_point"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
