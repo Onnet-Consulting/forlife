@@ -13,7 +13,8 @@ class AccountMove(models.Model):
         res = super()._post(soft=soft)
         posted_moves = self.filtered(lambda m: m.state == 'posted')
         insert_queries = posted_moves.bravo_get_insert_sql()
-        self.env[self._name].sudo().with_delay().bravo_insert(insert_queries)
+        # FIXME: insert sql have value on to prevent job execute with empty function
+        self.env[self._name].sudo().with_delay().bravo_execute_query(insert_queries)
         return res
 
     @api.model

@@ -11,11 +11,11 @@ class BravoModelCore(models.AbstractModel):
     _bravo_table = 'BravoTable'
 
     @api.model
-    def bravo_get_table(self):
+    def bravo_get_table(self, **kwargs):
         return self._bravo_table
 
     @api.model
-    def bravo_get_filter_domain(self):
+    def bravo_get_filter_domain(self, **kwargs):
         """Get domain to filter records before execute any action"""
         return []
 
@@ -60,6 +60,11 @@ class BravoModelCore(models.AbstractModel):
             values.append(value)
         return values
 
+    @api.model
+    def bravo_execute_query(self, queries):
+        self._execute_many(queries)
+        return True
+
 
 class BravoModelInsertAction(models.AbstractModel):
     _name = 'bravo.model.insert.action'
@@ -74,7 +79,7 @@ class BravoModelInsertAction(models.AbstractModel):
             'Active': 1,
         }
 
-    def bravo_get_insert_values(self):
+    def bravo_get_insert_values(self, **kwargs):
         records = self.bravo_filter_records()
         bravo_fields = self.bravo_fields_get()
         bravo_column_names = [bfield.bravo_name for bfield in bravo_fields]
@@ -88,13 +93,13 @@ class BravoModelInsertAction(models.AbstractModel):
             values.append(value)
         return bravo_column_names, values
 
-    def bravo_get_insert_sql(self):
-        column_names, values = self.bravo_get_insert_values()
+    def bravo_get_insert_sql(self, **kwargs):
+        column_names, values = self.bravo_get_insert_values(**kwargs)
         queries = []
 
         if not values:
             return queries
-        insert_table = self.bravo_get_table()
+        insert_table = self.bravo_get_table(**kwargs)
         params = []
         insert_column_names = column_names.copy()
         single_record_values_placeholder = ['?'] * len(column_names)
@@ -162,7 +167,7 @@ class BravoModelUpdateAction(models.AbstractModel):
                 bravo_values.update(bvalue)
         return bravo_values
 
-    def bravo_get_update_sql(self, values):
+    def bravo_get_update_sql(self, values, **kwargs):
         """
         @param dict values: odoo updated value (or bravo updated value)
         """
@@ -171,7 +176,7 @@ class BravoModelUpdateAction(models.AbstractModel):
 
         if not updated_values or not identity_key_values:
             return []
-        update_table_name = self.bravo_get_table()
+        update_table_name = self.bravo_get_table(**kwargs)
 
         set_query_params = []
         set_query_placeholder = []
@@ -222,7 +227,7 @@ class BravoModelUpdateAction(models.AbstractModel):
         res = super().write(values)
         queries = self.bravo_get_update_sql(values)
         if queries:
-            self.env[self._name].sudo().with_delay().bravo_update(queries)
+            self.env[self._name].sudo().with_delay().bravo_execute_query(queries)
         return res
 
 
@@ -239,12 +244,12 @@ class BravoModelDeleteAction(models.AbstractModel):
             'Active': 0,
         }
 
-    def bravo_get_delete_sql(self):
+    def bravo_get_delete_sql(self, **kwargs):
         identity_key_values = self.bravo_get_identity_key_values()
 
         if not identity_key_values:
             return []
-        update_table_name = self.bravo_get_table()
+        update_table_name = self.bravo_get_table(**kwargs)
 
         set_query_params = []
         set_query_placeholder = []
@@ -293,7 +298,7 @@ class BravoModelDeleteAction(models.AbstractModel):
         queries = self.sudo().bravo_get_delete_sql()
         res = super().unlink()
         if queries:
-            self.env[self._name].sudo().with_delay().bravo_delete(queries)
+            self.env[self._name].sudo().with_delay().bravo_execute_query(queries)
         return res
 
 
@@ -306,13 +311,13 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
         identity_keys = self.bravo_identity_fields_get()
         return [bfield.bravo_name for bfield in identity_keys]
 
-    def bravo_get_existing_records_sql_and_identity_keys(self):
+    def bravo_get_existing_records_sql_and_identity_keys(self, **kwargs):
         identity_key_values = self.bravo_get_identity_key_values()
         if not identity_key_values:
             return [], []
 
         identity_key_names = self.bravo_get_identity_key_names()
-        bravo_table = self.bravo_get_table()
+        bravo_table = self.bravo_get_table(**kwargs)
         single_where_query_placeholder = [f"{ikey}=?" for ikey in identity_key_names]
         single_where_query_placeholder = f"({' and '.join(single_where_query_placeholder)})"
         where_query_params = []
@@ -377,12 +382,12 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
             return False
         return values[0]
 
-    def bravo_get_update_sql_for_existing_single_record(self):
+    def bravo_get_update_sql_for_existing_single_record(self, **kwargs):
         self.ensure_one()
         updated_value = self.bravo_get_update_value_for_existing_record()
         default_update_value = self.bravo_get_default_insert_value()
         identity_key_value = self.bravo_get_identity_key_values_single_record()
-        bravo_table = self.bravo_get_table()
+        bravo_table = self.bravo_get_table(kwargs)
         set_query_placeholder = []
         where_query_placeholder = []
         query_params = []
@@ -412,7 +417,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
             queries.append(rec.bravo_get_update_sql_for_existing_single_record())
         return queries
 
-    def bravo_get_insert_with_check_existing_sql(self):
+    def bravo_get_insert_with_check_existing_sql(self, **kwargs):
         existing_records, newly_records = self.bravo_separate_records_before_insert()
         # update records existed queries
         update_queries = existing_records.bravo_get_update_sql_for_existing_multiple_records()
@@ -420,10 +425,9 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
         insert_queries = newly_records.bravo_get_insert_sql()
         return update_queries + insert_queries
 
-
-# TODO : tối ưu hóa lại chỗ này, hạn chế tối đa số queue job sinh ra khi update dữ liệu (hiện tại tạo 1 partner -> 3 jobs)
     @api.model
     def bravo_insert_with_check_existing(self):
+        # fixme: push all function  bravo_get_insert_with_check_existing_sql to job queue
         queries = self.bravo_get_insert_with_check_existing_sql()
         if queries:
             self._execute_many(queries)
