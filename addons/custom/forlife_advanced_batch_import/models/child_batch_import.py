@@ -28,6 +28,14 @@ class ChildBatchImport(models.Model):
     file_invalid_records = fields.Binary(string="Invalid Records", attachment=True)
     file_invalid_records_name = fields.Char('Invalid records file')
 
+    def update_file_length_and_complete_records(self):
+        for rec in self:
+            if rec.parent_batch_import_id.limit:
+                rec.write({
+                    'file_length': rec.parent_batch_import_id.limit,
+                    'complete_records': rec.parent_batch_import_id.limit - len(json.loads(rec.error_rows))
+                })
+
     def rec_file_csv(self, file):
         import pandas as pd
         self.ensure_one()
@@ -111,8 +119,8 @@ class ChildBatchImport(models.Model):
                     file_length = result.get('file_length') if result.get('file_length') else rec.parent_batch_import_id.limit
                     if len(error_rows) > 0:
                         complete_records = 0
-                        if result.get('ids') and len(result.get('ids')) > 0:
-                            complete_records = len(result.get('ids'))
+                        if file_length < len(error_rows):
+                            complete_records = file_length - len(error_rows)
                         rec.write({
                             'error_rows': json.dumps([row + index_for_header for row in error_rows]),
                             'complete_records': complete_records,
@@ -125,6 +133,7 @@ class ChildBatchImport(models.Model):
                             'file_length': file_length
                         })
                     rec.make_file_log_invalid_records(error_rows=error_rows)
+                    base_import_from_batch.unlink()
             except Exception as e:
                 rec.status = 'error'
                 rec.log = str(e)
@@ -151,7 +160,7 @@ class ChildBatchImport(models.Model):
                         if message.get('record'):
                             if message.get('record') not in error_rows:
                                 error_rows.append(message.get('record'))
-                file_length = result.get('file_length') if result.get('file_length') else rec.parent_batch_import_id.limit
+                file_length = rec.parent_batch_import_id.limit
                 if len(error_rows) > 0:
                     rec.write({
                         'error_rows': json.dumps([row + index_for_header for row in error_rows]),
@@ -165,6 +174,7 @@ class ChildBatchImport(models.Model):
                         'log': json.dumps(result, ensure_ascii=False)
                     })
                 rec.make_file_log_invalid_records(error_rows=error_rows)
+                base_import_from_batch.unlink()
 
     def set_to_processing(self, delay_time=0):
         index = 1
