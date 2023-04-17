@@ -171,7 +171,6 @@ msgid "Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s"
 msgstr "Giá trị tại hàng %(row)s, cột %(col)s: %(cell_value)s không hợp lệ"
 
 
-
 #. module: forlife_base
 #: model:ir.actions.act_window,name:forlife_base.res_location_province_action
 #: model:ir.model,name:forlife_base.model_res_location_province

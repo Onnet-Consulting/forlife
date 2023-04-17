@@ -31,6 +31,11 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
+                       <div class="oe_button_box" name="button_box">
+                            <button name="action_view_product_point" type="object" class="oe_stat_button" icon="fa-list">
+                                <field name="product_count" widget="statinfo" string="Sản phẩm"/>
+                            </button>
+                        </div>
                         <group>
                             <group>
                                 <field name="point_addition" attrs="{'readonly': [('state', '!=', 'new')]}"/>
