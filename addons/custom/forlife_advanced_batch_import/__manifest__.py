@@ -26,7 +26,6 @@
         'security/ir.model.access.csv',
         'views/parent_batch_import.xml',
         'views/child_batch_import.xml',
-        'data/data.xml',
     ],
     'assets': {
         'web.assets_backend': [
