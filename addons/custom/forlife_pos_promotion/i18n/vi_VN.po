@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-17 03:41+0000\n"
-"PO-Revision-Date: 2023-04-17 03:41+0000\n"
+"POT-Creation-Date: 2023-04-18 02:35+0000\n"
+"PO-Revision-Date: 2023-04-18 02:35+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -899,27 +899,34 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__limit_usage
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage
 msgid "Limit Order Usage"
-msgstr "Giới hạn số đơn sử dụng"
+msgstr "Giới hạn sử dụng"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__limit_usage
 msgid "Limit usage"
-msgstr "Số đơn tối đa"
+msgstr "Giới hạn sử dụng"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage_per_customer
 msgid "Limit usage per Customer"
-msgstr "Giới hạn sử dụng mỗi khách"
+msgstr "Giới hạn dùng trên mỗi khách"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage_per_order
 msgid "Limit usage per Order"
-msgstr "Giới hạn sử dụng mỗi đơn"
+msgstr "Giới hạn dùng trên mỗi đơn"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage_per_program
 msgid "Limit usage per Program"
 msgstr "Giới hạn sử dụng mỗi CT"
+
+#. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/ProductScreen.js:0
+#, python-format
+msgid "Limited Promotion Validation Error"
+msgstr "Lỗi giới hạn áp dụng CTKM"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__disc_max_amount
@@ -965,7 +972,7 @@ msgstr "SL tối đa trên mỗi CT"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__max_usage
 msgid "Max usage per Code"
-msgstr "Số lần sử dụng mỗi mã KM"
+msgstr "Tối đa lần sử dụng mỗi mã KM"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
@@ -1836,6 +1843,15 @@ msgstr "lần"
 #: code:addons/forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml:0
 #, python-format
 msgid "Đã chọn:"
+msgstr ""
+
+#. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/ProductScreen.js:0
+#, python-format
+msgid ""
+"Đã vượt quá giới hạn áp dụng của CTKM: ${invalidProgram[0].display_name}. "
+"${msg}"
 msgstr ""
 
 #. module: forlife_pos_promotion

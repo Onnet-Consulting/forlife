@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from itertools import groupby
 
 from odoo import models, fields, _
 from odoo.osv.expression import OR
@@ -25,14 +26,29 @@ class PosConfig(models.Model):
             ('program_id', 'in', programs)
         ])
         result = dict()
-        programs = {key: 0 for key in programs}
+        value_programs = {key: 0 for key in programs}
         for usage in usages:
-            programs[usage.program_id.id] += usage.order_line_id.qty
-        for (program_id, qty) in programs.items():
+            value_programs[usage.program_id.id] += usage.order_line_id.qty
+        for (program_id, qty) in value_programs.items():
             program = self.env['promotion.program'].browse(program_id)
             applied_number = qty / program.qty_per_combo \
                 if program.promotion_type == 'combo' and program.qty_per_combo > 0 else qty
             result[program_id] = applied_number
+
+        # Get history limit qty per program
+        self.env.invalidate_all()
+        combo_program_ids = self.env['promotion.program'].browse(programs).filtered(
+            lambda p: p.limit_usage_per_program and p.promotion_type == 'combo')
+        limited_program_usages = self.env['promotion.usage.line'].search([('program_id', 'in', combo_program_ids.ids)])
+        limited_program_usages = groupby(limited_program_usages, lambda line: line.program_id)
+        all_usage_promotions = {}
+        for program, usages in limited_program_usages:
+            usages_list = list(usages)
+            qty = sum([usage.order_line_id.qty for usage in usages_list])
+            applied_number = qty / program.qty_per_combo \
+                if program.promotion_type == 'combo' and program.qty_per_combo > 0 else qty
+            all_usage_promotions[program.id] = applied_number
+        result['all_usage_promotions'] = all_usage_promotions
         return result
 
     def load_promotion_valid_new_partner(self, partner_id, promotion_programs):

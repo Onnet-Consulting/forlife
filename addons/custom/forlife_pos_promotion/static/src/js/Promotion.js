@@ -318,7 +318,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.activatedPricelistItem = new Set(json.activatedPricelistItem);
         this.activatedInputCodes = json.activatedInputCodes;
         this.get_history_program_usages();
-        this.historyProgramUsages = this.historyProgramUsages != undefined ? this.historyProgramUsages : {};
+        this.historyProgramUsages = this.historyProgramUsages != undefined ? this.historyProgramUsages : {all_usage_promotions: {}};
         this.reward_voucher_program_id = json.reward_promotion_voucher_id;
         this.cart_promotion_program_id = json.cart_promotion_program_id || null;
         this.reward_for_referring = json.reward_for_referring || null;
@@ -358,7 +358,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             ],
             kwargs: { context: session.user_context },
         }).then((result) => {
-            self.historyProgramUsages = result || {};
+            self.historyProgramUsages = result || {all_usage_promotions: {}};
         });
     }
 
@@ -776,7 +776,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count, to_apply_lines];
     }
 
-    // TODO: Fix: sau tách các dòng đã có khuyến mãi, số tiền tổng khuyến mãi phỉa được tính lại cho chính xác theo tỷ lệ số lượng
     /*
     * recursion function
     * return {number} count of  combo
@@ -812,6 +811,14 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let historyUsed = (this.historyProgramUsages || {})[comboProgram.id] || 0;
             let applied_per_customer = historyUsed + (this._getNumberOfComboApplied()[comboProgram.id] || 0.0) + count;
             if  (comboProgram.limit_usage_per_customer && applied_per_customer >= comboProgram.max_usage_per_customer) {
+                return result;
+            };
+        };
+        // Check if there is a limitation of number of combo applied program per program
+        if (comboProgram.limit_usage_per_program && this.historyProgramUsages) {
+            let historyUsed = (this.historyProgramUsages.all_usage_promotions || {})[comboProgram.id] || 0;
+            let applied_per_program = historyUsed + (this._getNumberOfComboApplied()[comboProgram.id] || 0.0) + count;
+            if  (applied_per_program >= comboProgram.max_usage_per_program) {
                 return result;
             };
         };
@@ -867,6 +874,33 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
         };
         return [orderLines, to_discount_line_vals, qty]
+    }
+
+    _validateLimitUsagePromotion() {
+        let applied_combo_pros = this._getNumberOfComboApplied();
+        for (let [program_id, applied_qty_on_order] of Object.entries(applied_combo_pros)) {
+            let program = this.pos.get_program_by_id(program_id);
+            if (program.promotion_type=='combo' && program.limit_usage_per_order) {
+                if  (applied_qty_on_order > program.max_usage_per_order) {
+                    return [program, 'limit_usage_per_order', program.max_usage_per_order];
+                };
+            };
+            if (program.promotion_type=='combo' && program.limit_usage_per_customer) {
+                let historyUsed = (this.historyProgramUsages || {})[comboProgram.id] || 0;
+                let applied_per_customer = historyUsed + applied_qty_on_order;
+                if  (applied_per_customer > program.max_usage_per_customer) {
+                    return [program, 'limit_usage_per_customer', program.max_usage_per_customer - historyUsed];
+                };
+            };
+            if (program.promotion_type=='combo' && program.limit_usage_per_program) {
+                let historyUsed = (this.historyProgramUsages.all_usage_promotions || {})[program.id] || 0;
+                let applied_per_program = historyUsed + applied_qty_on_order;
+                if  (applied_per_program > program.max_usage_per_program) {
+                    return [program, 'limit_usage_per_program', program.max_usage_per_program - historyUsed];
+                };
+            };
+        };
+        return false;
     }
 
     _compute_discounted_total_clone(line) {
