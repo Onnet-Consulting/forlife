@@ -32,6 +32,7 @@
         'views/points_product_line_views.xml',
         'views/contact_event_follow.xml',
         'views/point_product_model_import.xml',
+        'views/point_product_line_model_import.xml',
 
         'views/menuitem.xml',
     ]

@@ -8,3 +8,4 @@ from . import points_product_line
 from . import event
 from . import contact_event_follow
 from . import point_product_model_import
+from . import point_product_line_model_import

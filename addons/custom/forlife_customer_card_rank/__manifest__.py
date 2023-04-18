@@ -23,6 +23,7 @@
         'forlife_pos_app_member',
         'forlife_pos_promotion',
         'forlife_pos_point_order',
+        'queue_job',
     ],
 
     'data': [
