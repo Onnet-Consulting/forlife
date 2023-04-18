@@ -4,6 +4,18 @@ from odoo import api, fields, models, _
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT as DDF, DEFAULT_SERVER_DATE_FORMAT as DF
 from datetime import datetime, timedelta
 import xlrd
+import pytz
+
+
+def convert_localize_datetime(value, tz):
+    tz_name = tz or 'UTC'
+    utc_datetime = pytz.utc.localize(value, is_dst=False)
+    try:
+        context_tz = pytz.timezone(tz_name)
+        localized_datetime = utc_datetime.astimezone(context_tz)
+    except Exception:
+        localized_datetime = utc_datetime
+    return localized_datetime
 
 
 class ResUtility(models.AbstractModel):
@@ -40,7 +52,8 @@ class ResUtility(models.AbstractModel):
                         _("Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s") % {
                             'row': rowx,
                             'col': colx,
-                            'cell_value': xlrd.error_text_from_code.get(cell.value, _("unknown error code %s") % cell.value)
+                            'cell_value': xlrd.error_text_from_code.get(cell.value,
+                                                                        _("unknown error code %s") % cell.value)
                         }
                     )
                 else:

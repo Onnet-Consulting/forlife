@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="100"/>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='recaptcha']" position="after">
+                <div class="col-12 col-lg-6 o_setting_box" id="mssql_config">
+                    <div class="o_setting_right_pane">
+                        <span class="o_form_label">SQL Server Integration (MSSQL)</span>
+                        <div class="content-group mt16">
+                            <div class="text-muted mb8">
+                                SQL Server database connection parameters
+                            </div>
+                            <label for="mssql_driver" class="col-lg-3 o_light_label"/>
+                            <field name="mssql_driver"/>
+                        </div>
+                        <div class="content-group">
+                            <label for="mssql_host" class="col-lg-3 o_light_label"/>
+                            <field name="mssql_host"/>
+                        </div>
+                        <div class="content-group">
+                            <label for="mssql_database" class="col-lg-3 o_light_label"/>
+                            <field name="mssql_database"/>
+                        </div>
+                        <div class="content-group">
+                            <label for="mssql_username" class="col-lg-3 o_light_label"/>
+                            <field name="mssql_username"/>
+                        </div>
+                        <div class="content-group">
+                            <label for="mssql_password" class="col-lg-3 o_light_label"/>
+                            <field name="mssql_password" password="True"/>
+                        </div>
+                    </div>
+                </div>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>

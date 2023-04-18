@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="promotion_program_view_tree_inherit" model="ir.ui.view">
+            <field name="name">promotion.program.view.tree.inherit</field>
+            <field name="model">promotion.program</field>
+            <field name="inherit_id" ref="forlife_pos_promotion.promotion_program_view_tree"/>
+            <field name="arch" type="xml">
+
+                <field name="active" position="after">
+                    <field name="skip_card_rank" widget="boolean_toggle" force_save="1" readonly="1" attrs="{'invisible': [('promotion_type', '!=', 'pricelist')]}"/>
+                </field>
+
+            </field>
+        </record>
+
+        <record id="promotion_program_view_form_inherit" model="ir.ui.view">
+            <field name="name">promotion.program.view.form.inherit</field>
+            <field name="model">promotion.program</field>
+            <field name="inherit_id" ref="forlife_pos_promotion.promotion_program_view_form"/>
+            <field name="arch" type="xml">
+
+                <field name="company_id" position="before">
+                    <field name="skip_card_rank" attrs="{'invisible': [('promotion_type', '!=', 'pricelist')]}"/>
+                </field>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

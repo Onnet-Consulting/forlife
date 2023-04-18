@@ -16,6 +16,7 @@
                  <xpath expr="//field[@name='usage']" position="before">
                      <field name="code_location" attrs="{'invisible':[('id', '=', False)]}"/>
                      <field name="code"/>
+                     <field name="id_deposit"/>
                  <field name="stock_location_type_id" required="1" />
             </xpath>
         </field>

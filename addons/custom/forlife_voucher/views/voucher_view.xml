@@ -29,7 +29,6 @@
                     <field name="product_voucher_id"/>
                     <field name="phone_number"/>
                     <field name="status_latest"/>
-                    <field name="details"/>
                 </tree>
             </field>
         </record>
@@ -59,7 +58,6 @@
                             <field name="product_apply_ids" widget="many2many_tags" readonly="True"/>
                             <field name="product_voucher_id" readonly="True"/>
                             <field name="status_latest"/>
-                            <field name="details"/>
                         </group>
                         <group>
                             <field name="start_date" required="1"/>

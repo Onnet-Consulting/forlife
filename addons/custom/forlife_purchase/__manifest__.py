@@ -13,10 +13,11 @@
         'forlife_base',
         'purchase_stock',
         'forlife_pos_app_member',
-        'web_domain_field'
+        'web_domain_field',
+        'l10n_vn',
     ],
     "data": [
-        'data/account_account_data.xml',
+        'data/product_category.xml',
         'data/barcode_country_data.xml',
         # 'data/stock_warehouse_type.xml',
         'security/purchase_security.xml',

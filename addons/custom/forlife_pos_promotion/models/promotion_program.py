@@ -60,14 +60,17 @@ class PromotionProgram(models.Model):
         # ('cheapest_product', 'Cheapest Products'),
     ], string='Discount Apply On', required=True, default='order')
 
-    limit_usage = fields.Boolean(string='Limit Usage')
-    max_usage = fields.Integer()
+    limit_usage = fields.Boolean(string='Limit Order Usage')
+    max_usage = fields.Integer(string='Max Order Number')
 
     limit_usage_per_order = fields.Boolean(string='Limit usage per Order', help='Based on qty of combo/product')
-    max_usage_per_order = fields.Integer(string='Max usage per Order', help='Based on qty of combo/product')
+    max_usage_per_order = fields.Integer(string='Max qty per Order', help='Based on qty of combo/product')
 
     limit_usage_per_customer = fields.Boolean(string='Limit usage per Customer', help='Based on qty of combo/product')
-    max_usage_per_customer = fields.Integer(string='Max usage per Customer', help='Based on qty of combo/product')
+    max_usage_per_customer = fields.Integer(string='Max qty per Customer', help='Based on qty of combo/product')
+
+    limit_usage_per_program = fields.Boolean(string='Limit usage per Program', help='Based on qty of combo/product')
+    max_usage_per_program = fields.Integer(string='Max qty per Program', help='Based on qty of combo/product')
 
     state = fields.Selection(related='campaign_id.state', store=True, readonly=True)
 
@@ -311,7 +314,7 @@ class PromotionProgram(models.Model):
     def action_open_promotion_codes(self):
         self.ensure_one()
         action = self.env['ir.actions.act_window']._for_xml_id("forlife_pos_promotion.promotion_code_card_action")
-        action['name'] = _('Promotion Code')
+        action['name'] = _('Promotion Code') + (self.name and _(' of %s') % self.name) or '',
         action['display_name'] = action['name']
         action['context'] = {
             'program_type': self.promotion_type,
@@ -323,7 +326,7 @@ class PromotionProgram(models.Model):
     def action_open_issued_vouchers(self):
         self.ensure_one()
         return {
-            'name': _('Issued Vouchers'),
+            'name': _('Issued Vouchers') + (self.name and _(' of %s') % self.name) or '',
             'domain': [('id', 'in', self.voucher_ids.ids)],
             'res_model': 'voucher.voucher',
             'type': 'ir.actions.act_window',
@@ -334,7 +337,7 @@ class PromotionProgram(models.Model):
     def action_open_orders(self):
         self.ensure_one()
         return {
-            'name': _('Orders'),
+            'name': _('Orders') + (self.name and _(' of %s') % self.name) or '',
             'res_model': 'pos.order',
             'view_mode': 'tree,form',
             'views': [
@@ -347,7 +350,7 @@ class PromotionProgram(models.Model):
 
     def action_open_pricelist_items(self):
         return {
-            'name': _('Product Pricelist Items'),
+            'name': _('Product Pricelist Items') + (self.name and _(' of %s') % self.name) or '',
             'res_model': 'promotion.pricelist.item',
             'view_mode': 'tree',
             'views': [

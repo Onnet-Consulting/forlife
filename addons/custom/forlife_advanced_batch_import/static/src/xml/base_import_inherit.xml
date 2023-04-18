@@ -2,7 +2,7 @@
 
 <templates xml:space="preserve">
     <t t-extend="ImportView.side_panel">
-        <t t-jquery="label.form-check-label" t-operation="after">
+        <t t-jquery="div.o_import_formatting" t-operation="before">
             <div>
                 <input type="checkbox" id="oe_import_advanced_pass_valid_but_skip_error" class="form-check-input"/>
                 <label class="form-check-label" for="oe_import_advanced_pass_valid_but_skip_error">

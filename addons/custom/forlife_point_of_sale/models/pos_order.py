@@ -8,8 +8,8 @@ class PosOrder(models.Model):
 
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
-        if not self.partner_id.store_fo_ids.filtered(lambda f: f.brand_id == self.config_id.store_id.brand_id):
-            self.with_delay().create_store_first_order()
+        if self.partner_id and self.config_id.store_id and not self.partner_id.store_fo_ids.filtered(lambda f: f.brand_id == self.config_id.store_id.brand_id):
+            self.create_store_first_order()
         return res
 
     def create_store_first_order(self):
