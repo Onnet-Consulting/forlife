@@ -31,21 +31,42 @@ class Import(models.TransientModel):
 
         return super(Import, self)._read_xls_book(book, sheet_name)
 
+    def _get_barcode_from_db(self, list_barcode=[]):
+        query = 'SELECT barcode FROM product_template WHERE barcode in %(list_barcode)s'
+        self.env.cr.execute(query, {'list_barcode': tuple(list_barcode)})
+        data = self.env.cr.fetchall()
+        return [barcode[0] for barcode in data]
+
     def _read_xls_book_product(self, book, sheet_name):
         sheet = book.sheet_by_name(sheet_name)
         rows = []
         dic_col = {}
         attributes = {}
-        for rowx, row in enumerate(map(sheet.row, range(1)), 1):
+        col_barcode = -1
+        list_barcodes = []
+        barcode_exits = []
+
+        for rowx, row in enumerate(map(sheet.row, range(sheet.nrows)), 1):
             for colx, cell in enumerate(row, 1):
-                attribute_id = self.env['product.attribute'].search([('name', '=', str(cell.value))])
-                if attribute_id:
-                    dic_col[colx] = str(cell.value)
-                    attributes[colx] = attribute_id
+                if rowx == 1:
+                    if 'Barcode' == str(cell.value):
+                        col_barcode = colx
+                    attribute_id = self.env['product.attribute'].search([('name', '=', str(cell.value))])
+                    if attribute_id:
+                        dic_col[colx] = str(cell.value)
+                        attributes[colx] = attribute_id
+                elif col_barcode > -1:
+                    if colx == col_barcode:
+                        list_barcodes.append(str(cell.value))
+
+        if list_barcodes:
+            barcode_exits = self._get_barcode_from_db(list_barcodes)
+
         col_number = 0
         for rowx, row in enumerate(map(sheet.row, range(sheet.nrows)), 1):
             values = []
             row_attrs = []
+            add_row = True
             if rowx == 1 and dic_col:
                 for colx, cell in enumerate(row, 1):
                     if not dic_col.get(colx, False):
@@ -56,6 +77,10 @@ class Import(models.TransientModel):
             else:
                 for colx, cell in enumerate(row, 1):
                     cell_value = cell.value
+                    if colx == col_barcode:
+                        if str(cell_value) in barcode_exits:
+                            add_row = False
+                            break
                     if dic_col and dic_col.get(colx, False):
                         if type(cell_value) == float:
                             cell_value = int(cell_value)
@@ -102,7 +127,8 @@ class Import(models.TransientModel):
                                     'row': rowx,
                                     'col': colx,
                                     'cell_value': xlrd.error_text_from_code.get(cell.value,
-                                                                                _("unknown error code %s", cell.value))
+                                                                                _("unknown error code %s",
+                                                                                  cell.value))
                                 }
                             )
                         else:
@@ -114,6 +140,8 @@ class Import(models.TransientModel):
                 else:
                     values.append('')
                     values.append('')
-            rows.append(values)
+            if add_row:
+                rows.append(values)
             rows += row_attrs
+
         return len(rows), rows
