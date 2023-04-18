@@ -18,7 +18,7 @@
                         </button>
                     </div>
                     <group>
-                        <field name="name"/>
+                        <field name="name" required="1"/>
                         <field name="partner_id"/>
                         <field name="used_partner_ids"
                                widget="many2many_tags"/>

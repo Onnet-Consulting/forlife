@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import random
+import unicodedata
 from uuid import uuid4
 
 from odoo import models, fields, api, _
@@ -9,15 +11,21 @@ class PromotionCode(models.Model):
     _description = 'Promotion Code'
     _rec_name = 'name'
 
-    @api.model
-    def _generate_code(self):
-        """
-        Barcode identifiable codes.
-        """
-        return '044' + str(uuid4())[7:-18]
+    def _get_code(self):
+        letters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789'
+        code = ''.join(random.choices(letters, k=8))
+        if self.env['promotion.code'].search([('name', 'like', code)]):
+            self._get_code()
+        else:
+            return code
+
+    @api.depends('program_id')
+    def _compute_code(self):
+        for code in self:
+            code.name = str(code.program_id.id) + '-' + self._get_code()
 
     program_id = fields.Many2one('promotion.program', ondelete='cascade')
-    name = fields.Char(default=lambda self: self._generate_code(), required=True)
+    name = fields.Char(compute='_compute_code', store=True, readonly=False)
     partner_id = fields.Many2one('res.partner')
     used_partner_ids = fields.Many2many('res.partner', 'promotion_code_used_res_partner_rel', readonly=True)
     # Nếu được gán Partner thì dùng 1 lần duy nhất
@@ -46,6 +54,11 @@ class PromotionCode(models.Model):
     usage_line_ids = fields.One2many('promotion.usage.line', 'code_id')
     use_count = fields.Integer(compute='_compute_use_count_order', string='Number of Order Usage')
     order_ids = fields.Many2many('pos.order', compute='_compute_use_count_order', string='Order')
+
+    @api.onchange('name')
+    def onchange_name(self):
+        if self.name:
+            self.name = unicodedata.normalize('NFKD', self.name.upper()).encode('ascii', 'ignore')
 
     def _compute_use_count_order(self):
         for code in self:
