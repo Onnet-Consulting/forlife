@@ -1046,6 +1046,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     _apply_cart_program_to_orderline(program, to_discount_lines) {
+        let code = null;
+        let activatedCodeObj = this.activatedInputCodes.find(c => c.program_id === program.id)
+        if (activatedCodeObj) {code = activatedCodeObj.id};
         if (program.reward_type == 'cart_get_voucher') {
             // pass
         }
@@ -1056,7 +1059,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let newPrice = originalPrice - discAmount;
                 line.price = newPrice;
                 line.promotion_usage_ids.push(new PromotionUsageLine(
-                program.id, null, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
                 line.is_cart_discounted = true;
             }
         }
@@ -1067,7 +1070,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let discAmount = originalPrice - newPrice;
                 line.price = newPrice;
                 line.promotion_usage_ids.push(new PromotionUsageLine(
-                program.id, null, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
                 line.is_cart_discounted = true;
             }
         }
@@ -1078,7 +1081,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let discAmount = originalPrice - newPrice
                 line.price = newPrice;
                 line.promotion_usage_ids.push(new PromotionUsageLine(
-                program.id, null, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
                 line.is_cart_discounted = true;
             }
         }
