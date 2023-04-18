@@ -12,6 +12,7 @@ class ProductProduct(models.Model):
     _inherit = ['product.product', 'bravo.model']
     _bravo_table = 'B20Item'
 
+    # FIXME: have not finish yet
     def bravo_get_identity_key_values(self):
         records = self.bravo_filter_records()
         res = []
