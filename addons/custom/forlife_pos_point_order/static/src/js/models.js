@@ -76,12 +76,14 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 super.init_from_JSON(...arguments);
                 this.total_order_line_point_used = json.total_order_line_point_used;
                 this.total_order_line_redisual = json.total_order_line_redisual;
+                this.allow_for_point = json.allow_for_point;
             }
 
             clone() {
                 let order = super.clone(...arguments);
                 order.total_order_line_point_used = this.total_order_line_point_used;
                 order.total_order_line_redisual = this.total_order_line_redisual;
+                order.allow_for_point = this.allow_for_point;
                 return order;
             }
 
@@ -89,6 +91,7 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 const json = super.export_as_JSON(...arguments);
                 json.total_order_line_point_used = this.total_order_line_point_used;
                 json.total_order_line_redisual = this.total_order_line_redisual;
+                json.allow_for_point = this.allow_for_point;
                 var total = this.get_total_with_tax();
                 var totalWithoutTax = this.get_total_without_tax() - this.get_total_point_without_tax();
                 var taxAmount = total - totalWithoutTax;

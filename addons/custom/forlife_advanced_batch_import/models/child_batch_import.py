@@ -28,6 +28,27 @@ class ChildBatchImport(models.Model):
     file_invalid_records = fields.Binary(string="Invalid Records", attachment=True)
     file_invalid_records_name = fields.Char('Invalid records file')
 
+    def rec_file_csv(self, file):
+        import pandas as pd
+        self.ensure_one()
+        # Giải mã nội dung của attachment
+        decoded_data = base64.b64decode(file)
+        # Chuyển decoded_data thành đối tượng StringIO để đọc dữ liệu CSV
+        file_data = StringIO(decoded_data.decode('utf-8'))
+        # Đọc dữ liệu CSV vào DataFrame
+        df = pd.read_csv(file_data)
+        return df
+
+    def rec_file_exel(self, file):
+        import pandas as pd
+        self.ensure_one()
+        # Giải mã nội dung của attachment
+        decoded_data = base64.b64decode(file)
+
+        # Đọc dữ liệu của attachment vào DataFrame với Pandas
+        df = pd.read_excel(BytesIO(decoded_data))
+        return df
+
     @api.depends('complete_records', 'file_length')
     def _compute_progress_bar(self):
         for rec in self:
@@ -102,6 +123,7 @@ class ChildBatchImport(models.Model):
                             'file_length': file_length
                         })
                     rec.make_file_log_invalid_records(error_rows=error_rows)
+                    base_import_from_batch.unlink()
             except Exception as e:
                 rec.status = 'error'
                 rec.log = str(e)
@@ -142,6 +164,7 @@ class ChildBatchImport(models.Model):
                         'log': json.dumps(result, ensure_ascii=False)
                     })
                 rec.make_file_log_invalid_records(error_rows=error_rows)
+                base_import_from_batch.unlink()
 
     def set_to_processing(self, delay_time=0):
         index = 1

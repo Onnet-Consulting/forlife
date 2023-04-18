@@ -94,7 +94,7 @@ class Contact(models.Model):
         point_promotion_format_id = self.env['points.promotion'].search([('brand_id', '=', brand_format_id.id), ('state', '=', 'in_progress')], limit=1)
 
         # Reset Forlife point
-        reset_forlife_partners = self.search([('reset_day_of_point_forlife', '<=', now), ('point_forlife_reseted', '=', False)])
+        reset_forlife_partners = self.search([('reset_day_of_point_forlife', '<=', now), ('point_forlife_reseted', '=', False),('total_points_available_forlife','>',0)])
         if reset_forlife_partners:
             # vals = {'point_forlife_reseted': True}
             vals = {}
@@ -144,7 +144,7 @@ class Contact(models.Model):
             reset_forlife_partners.write(vals)
 
         # Reset Format point
-        reset_format_partners = self.search([('reset_day_of_point_format', '<=', now), ('point_format_reseted', '=', False)])
+        reset_format_partners = self.search([('reset_day_of_point_format', '<=', now), ('point_format_reseted', '=', False),('total_points_available_format','>',0)])
         if reset_format_partners:
             # vals = {'point_format_reseted': True}
             vals = {}

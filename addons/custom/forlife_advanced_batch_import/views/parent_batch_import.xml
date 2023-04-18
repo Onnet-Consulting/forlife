@@ -8,6 +8,7 @@
                 <form string="parent_batch_import_form">
                     <header>
                         <button name="split_parent_batch" type="object" string="Split data" class="oe_highlight"/>
+                        <button name="merge_file_log_errors" type="object" string="Merge Error Files" class="oe_highlight"/>
                         <button name="test_all" type="object" string="Test All" class="oe_highlight"/>
                         <button name="set_all_to_daft" attrs="{'invisible':[('status','=','draft')]}" type="object" string="Set all to Draft" class="oe_highlight"/>
                         <button name="set_all_to_processing" type="object" attrs="{'invisible':[('status','=','processing')]}" string="Set all to Processing" class="oe_highlight"/>
@@ -25,6 +26,9 @@
                             <field name="dryrun"/>
                             <field name="limit"/>
                             <field name="with_delay"/>
+                            <field name="file_invalid_records" filename="file_invalid_records_name" style="color:red"/>
+                            <field name="file_invalid_records_name" invisible="1"/>
+                            <field name="log"/>
                         </group>
                         <group>
                             <field name="total_batch" invisible="1"/>
@@ -58,8 +62,9 @@
                     <field name="limit"/>
                     <field name="with_delay"/>
                     <field name="number_of_split_file"/>
+                    <field name="file_invalid_records_name"/>
                     <field name="status"/>
-                    <field name="progress_bar" widget="progressbar"/>
+                    <!--                    <field name="progress_bar" widget="progressbar"/>-->
                 </tree>
             </field>
         </record>

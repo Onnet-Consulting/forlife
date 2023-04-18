@@ -29,9 +29,46 @@ class ParentBatchImport(models.Model):
     number_of_split_file = fields.Integer(string="Number of split file", compute="_compute_number_of_split_file", store=True)
     with_delay = fields.Integer(string="Delay execute between every batch", default=10)
     child_batch_import_ids = fields.One2many(string="Children  Batch", comodel_name="child.batch.import", inverse_name='parent_batch_import_id')
-    done_batch_count = fields.Integer(string="Done Batch", compute="compute_batch_count")
-    total_batch = fields.Integer(string="Total Batch", compute="compute_batch_count")
-    progress_bar = fields.Float('Progress Done (%)', digits=(16, 2), compute='compute_batch_count')
+    done_batch_count = fields.Integer(string="Done Batch", compute="compute_batch_count", store=True)
+    total_batch = fields.Integer(string="Total Batch", compute="compute_batch_count", store=True)
+    progress_bar = fields.Float('Progress Done (%)', digits=(16, 2), compute='compute_batch_count', store=True)
+    file_invalid_records = fields.Binary(string="Invalid Records", attachment=True)
+    file_invalid_records_name = fields.Char('Invalid records file')
+    log = fields.Text(string="Log")
+
+    def merge_file_log_errors(self):
+        import pandas as pd
+        for rec in self:
+            sheet_name = json.loads(rec.options).get('sheet_name') if json.loads(rec.options).get('sheet_name') else "Sheet1"
+            mimetype = rec.file_type
+            (file_extension, handler, req) = FILE_TYPE_DICT.get(mimetype, (None, None, None))
+            if rec.child_batch_import_ids:
+                concat_data_frames = []
+                for batch in rec.child_batch_import_ids:
+                    if batch.file_invalid_records:
+                        if file_extension == 'csv':
+                            concat_data_frames.append(batch.rec_file_csv(batch.file_invalid_records))
+                        else:
+                            concat_data_frames.append(batch.rec_file_exel(batch.file_invalid_records))
+                if len(concat_data_frames) > 0:
+                    merged_df = pd.concat(concat_data_frames, axis=0, ignore_index=True)
+                    encoded_output_data = False
+                    if file_extension == 'csv':
+                        output_data = merged_df.to_csv(index=False)
+                        encoded_output_data = base64.b64encode(output_data.encode('utf-8')).decode('utf-8')
+                    else:
+                        output = BytesIO()
+                        writer = pd.ExcelWriter(output, engine='xlsxwriter')
+                        merged_df.to_excel(writer, sheet_name=sheet_name, index=False)
+                        writer.close()
+                        output.seek(0)
+
+                        chunk_data = output.read()
+                        encoded_output_data = base64.b64encode(chunk_data)
+                    rec.write({
+                        'file_invalid_records_name': f"{rec.file_name.split('.')[0]}_invalid_records.{rec.file_name.split('.')[-1]}",
+                        'file_invalid_records': encoded_output_data
+                    })
 
     @api.depends('child_batch_import_ids', 'child_batch_import_ids.status')
     def compute_batch_count(self):
@@ -106,6 +143,9 @@ class ParentBatchImport(models.Model):
                     self.split_parent_batch_import_csv(batch_import)
                 else:
                     self.split_parent_batch_import_exel(batch_import=batch_import, sheet_name=options.get('sheet_name') if options.get('sheet_name') else "Sheet1")
+                # clean base_import.import to release memory before swap to batch import
+                base_import.unlink()
+
                 return dst_url
         return False
 

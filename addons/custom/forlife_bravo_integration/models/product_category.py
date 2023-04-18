@@ -12,8 +12,8 @@ class ProductCategory(models.Model):
     _inherit = ['product.category', 'bravo.model']
 
     @api.model
-    def bravo_get_table(self):
-        product_category_level = self.env.context.get(CONTEXT_CATEGORY_KEY)
+    def bravo_get_table(self, **kwargs):
+        product_category_level = kwargs.get(CONTEXT_CATEGORY_KEY)
         if product_category_level:
             if product_category_level == 4:
                 bravo_table = 'B20Structure'
@@ -101,7 +101,7 @@ class ProductCategory(models.Model):
             return values[0]
         return {}
 
-    def bravo_get_insert_values(self):
+    def bravo_get_insert_values(self, **kwargs):
         return self.bravo_get_record_values()
 
     def bravo_get_update_values(self, values):
@@ -117,51 +117,50 @@ class ProductCategory(models.Model):
         queries = []
         for level in [1, 2, 3, 4]:
             records = self.bravo_filter_record_by_level(level)
-            insert_sql = records.with_context(**{CONTEXT_CATEGORY_KEY: level}).bravo_get_insert_sql()
+            insert_sql = records.bravo_get_insert_sql(**{CONTEXT_CATEGORY_KEY: level})
             queries.extend(insert_sql)
         return queries
 
-    def bravo_get_insert_sql(self):
-        if self.env.context.get(CONTEXT_CATEGORY_KEY):
-            return super().bravo_get_insert_sql()
+    def bravo_get_insert_sql(self, **kwargs):
+        if kwargs.get(CONTEXT_CATEGORY_KEY):
+            return super().bravo_get_insert_sql(**kwargs)
         return self.bravo_get_inset_sql_all_level()
 
     def bravo_get_update_sql_all_level(self):
         queries = []
         for level in [1, 2, 3, 4]:
             records = self.bravo_filter_record_by_level(level)
-            update_sql = records.with_context(**{CONTEXT_CATEGORY_KEY: level}).bravo_get_update_sql(None)
+            update_sql = records.bravo_get_update_sql(None, **{CONTEXT_CATEGORY_KEY: level})
             queries.extend(update_sql)
         return queries
 
-    def bravo_get_update_sql(self, values=None):
-        if self.env.context.get(CONTEXT_CATEGORY_KEY):
-            return super().bravo_get_update_sql(values)
+    def bravo_get_update_sql(self, values=None, **kwargs):
+        if kwargs.get(CONTEXT_CATEGORY_KEY):
+            return super().bravo_get_update_sql(values, **kwargs)
         return self.bravo_get_update_sql_all_level()
 
     def bravo_get_insert_with_check_existing_sql_all_level(self):
         queries = []
         for level in [1, 2, 3, 4]:
             records = self.bravo_filter_record_by_level(level)
-            update_sql = records.with_context(
-                **{CONTEXT_CATEGORY_KEY: level}).bravo_get_insert_with_check_existing_sql()
+            update_sql = records.bravo_get_insert_with_check_existing_sql(**{CONTEXT_CATEGORY_KEY: level})
             queries.extend(update_sql)
         return queries
 
-    def bravo_get_insert_with_check_existing_sql(self):
-        if self.env.context.get(CONTEXT_CATEGORY_KEY):
-            return super().bravo_get_insert_with_check_existing_sql()
+    def bravo_get_insert_with_check_existing_sql(self, **kwargs):
+        if kwargs.get(CONTEXT_CATEGORY_KEY):
+            return super().bravo_get_insert_with_check_existing_sql(**kwargs)
         return self.bravo_get_insert_with_check_existing_sql_all_level()
 
     def bravo_get_delete_sql_all_level(self):
         queries = []
         for level in [1, 2, 3, 4]:
             records = self.bravo_filter_record_by_level(level)
-            delete_sql = records.with_context(**{CONTEXT_CATEGORY_KEY: level}).bravo_get_delete_sql()
+            delete_sql = records.bravo_get_delete_sql(**{CONTEXT_CATEGORY_KEY: level})
             queries.extend(delete_sql)
         return queries
 
-    def bravo_get_delete_sql(self):
-        if self.env.context.get(CONTEXT_CATEGORY_KEY):
-            return super().bravo_get_delete_sql()
+    def bravo_get_delete_sql(self, **kwargs):
+        if kwargs.get(CONTEXT_CATEGORY_KEY):
+            return super().bravo_get_delete_sql(**kwargs)
         return self.bravo_get_delete_sql_all_level()

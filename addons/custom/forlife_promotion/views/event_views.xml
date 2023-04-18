@@ -34,10 +34,10 @@
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                        <button name="action_view_partner" type="object" class="oe_stat_button" icon="fa-male" attrs="{'invisible': [('partner_count', '=', 0)]}">
-                            <field name="partner_count" widget="statinfo" string="Khách hàng"/>
-                        </button>
-                </div>
+                            <button name="action_view_partner" type="object" class="oe_stat_button" icon="fa-male">
+                                <field name="partner_count" widget="statinfo" string="Khách hàng"/>
+                            </button>
+                        </div>
                         <group>
                             <group>
                                 <field name="points_promotion_id" domain="[('state', 'in', ('new', 'in_progress'))]" invisible="context.get('default_is_lock_change_points_promotion', False)"
@@ -45,9 +45,7 @@
                                 <field name="name" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="from_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
                                 <field name="to_date" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                <field name="store_ids" widget="many2many_tags" attrs="{'readonly': [('state', '!=', 'new')]}" options="{'no_create': True}" domain="[('brand_id', '=', brand_id)]"/>
-                                <field name="customer_conditions" attrs="{'readonly': [('state', '!=', 'new')]}" widget="domain" options="{'model': 'res.partner'}"/>
-                                <field name="partner_ids" widget="many2many_tags"/>
+                                <field name="store_ids" widget="many2many_tags" attrs="{'readonly': [('state', 'not in', ['new','effective'])]}" options="{'no_create': True}" domain="[('brand_id', '=', brand_id)]"/>
                                 <field name="is_lock_change_points_promotion" invisible="1"/>
                             </group>
                             <group>

@@ -27,7 +27,8 @@
                                                 <t t-if="line.point">
                                                    <input style="width: 100%;text-align: center;"
                                                           t-att-data-value_id="line.get_taxed_lst_unit_price()"
-                                                          t-att-value="(-(line.point)/1000)/(line.quantity)" t-att-id="line.id"
+                                                          t-att-value="Math.floor((-(line.point)/1000)/(line.quantity)) +(-(line.point)/1000)%(line.quantity)"
+                                                          t-att-id="line.id"
                                                           type="text" class="o_input"/>
                                                 </t>
                                                 <t t-else="">
@@ -41,7 +42,7 @@
                                                 <t t-if="line.point">
                                                    <input style="width: 100%;text-align: center;"
                                                           t-att-data-value_id="line.get_taxed_lst_unit_price()"
-                                                          t-att-value="(-(line.point)/1000)/(line.quantity)" t-att-id="line.id"
+                                                          t-att-value="Math.floor((-(line.point)/1000)/(line.quantity))" t-att-id="line.id"
                                                           type="text" class="o_input"/>
                                                 </t>
                                                 <t t-else="">
@@ -90,13 +91,13 @@
                                         <td style="border:1px solid black;width:85px;">
                                             <t t-if="line_last and num_last">
                                                 <input style="width: 100%;text-align: center;"
-                                                       t-att-value="-(line.point)/1000"
+                                                       t-att-value="Math.floor((-(line.point)/1000)/(line.quantity))+(-(line.point)/1000)%(line.quantity)"
                                                        t-att-data-value_id="line.get_taxed_lst_unit_price()"
                                                        t-att-id="line.id" type="text" class="o_input"/>
                                             </t>
                                             <t t-else="">
                                                 <input style="width: 100%;text-align: center;"
-                                                       t-att-value="-(line.point)/1000"
+                                                       t-att-value="Math.floor((-(line.point)/1000)/(line.quantity))"
                                                        t-att-data-value_id="line.get_taxed_lst_unit_price()"
                                                        t-att-id="line.id" type="text" class="o_input"/>
                                             </t>
