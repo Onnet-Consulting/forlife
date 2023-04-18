@@ -12,7 +12,6 @@
             <field name="method">bravo_execute_query</field>
             <field name="channel_id" ref="channel_bravo"/>
             <field name="retry_pattern" eval="{1: 10}"/>
-            <field name="name">Bravo: execute queries</field>
         </record>
 
         <record id="job_function_insert_data" model="queue.job.function">
@@ -20,7 +19,6 @@
             <field name="method">bravo_insert_with_check_existing</field>
             <field name="channel_id" ref="channel_bravo"/>
             <field name="retry_pattern" eval="{1: 10}"/>
-            <field name="name">Bravo: execute insert query with check existed records first</field>
         </record>
 
     </data>
