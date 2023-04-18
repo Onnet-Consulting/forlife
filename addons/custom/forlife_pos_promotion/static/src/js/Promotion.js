@@ -886,7 +886,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 };
             };
             if (program.promotion_type=='combo' && program.limit_usage_per_customer) {
-                let historyUsed = (this.historyProgramUsages || {})[comboProgram.id] || 0;
+                let historyUsed = (this.historyProgramUsages || {})[program.id] || 0;
                 let applied_per_customer = historyUsed + applied_qty_on_order;
                 if  (applied_per_customer > program.max_usage_per_customer) {
                     return [program, 'limit_usage_per_customer', program.max_usage_per_customer - historyUsed];
