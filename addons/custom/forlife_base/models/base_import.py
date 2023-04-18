@@ -50,7 +50,7 @@ class Import(models.TransientModel):
                 for colx, cell in enumerate(row, 1):
                     if not dic_col.get(colx, False):
                         values.append(str(cell.value))
-                values.append("Thuộc tính sản phẩm / Thuộc tính")
+                values.append("Thuộc tính sản phẩm / Thuộc tính / ID Cơ sở dữ liệu")
                 values.append("Thuộc tính sản phẩm / Giá trị / ID Cơ sở dữ liệu")
                 col_number = len(values) - 1
             else:
@@ -75,7 +75,7 @@ class Import(models.TransientModel):
                                 attr_val_ids.append(str(val_attribute_id))
                             for i in range(1, col_number):
                                 value_attrs.append('')
-                            value_attrs.append(str(dic_col[colx]))
+                            value_attrs.append(str(attr.id))
                             value_attrs.append(','.join(attr_val_ids))
                             row_attrs.append(value_attrs)
                     else:
