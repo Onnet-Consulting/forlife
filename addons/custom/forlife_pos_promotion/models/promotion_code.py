@@ -7,6 +7,7 @@ from odoo import models, fields, api, _
 
 
 class PromotionCode(models.Model):
+    _inherit = ['mail.thread']
     _name = 'promotion.code'
     _description = 'Promotion Code'
     _rec_name = 'name'
@@ -25,21 +26,21 @@ class PromotionCode(models.Model):
             code.name = str(code.program_id.id) + '-' + self._get_code()
 
     program_id = fields.Many2one('promotion.program', ondelete='cascade')
-    name = fields.Char(compute='_compute_code', store=True, readonly=False)
+    name = fields.Char(compute='_compute_code', store=True, readonly=False, tracking=True)
     partner_id = fields.Many2one('res.partner')
     used_partner_ids = fields.Many2many('res.partner', 'promotion_code_used_res_partner_rel', readonly=True)
     # Nếu được gán Partner thì dùng 1 lần duy nhất
     # Nếu không gán Partner thì dùng được nhiều lần dựa trên giới hạn sử dụng
 
     limit_usage = fields.Boolean(related='program_id.limit_usage')
-    max_usage = fields.Integer()
+    max_usage = fields.Integer(tracking=True)
 
-    amount = fields.Float()
-    consumed_amount = fields.Float()
+    amount = fields.Float(tracking=True)
+    consumed_amount = fields.Float(tracking=True)
     remaining_amount = fields.Float(compute='_compute_remaining_amount', store=False)
     reward_for_referring = fields.Boolean('Reward for Referring', copy=False, readonly=False)
-    referring_date_from = fields.Datetime('Refer From')
-    referring_date_to = fields.Datetime('Refer To')
+    referring_date_from = fields.Datetime('Refer From', tracking=True)
+    referring_date_to = fields.Datetime('Refer To', tracking=True)
     reward_program_id = fields.Many2one('promotion.program', string='Program Reward')
     original_program_id = fields.Many2one('promotion.program', string='Original Program', readonly=True)
     original_order_id = fields.Many2one('pos.order', 'Original Order', readonly=True)
