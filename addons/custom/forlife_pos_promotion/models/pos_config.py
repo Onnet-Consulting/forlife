@@ -36,7 +36,6 @@ class PosConfig(models.Model):
             result[program_id] = applied_number
 
         # Get history limit qty per program
-        self.env.invalidate_all()
         combo_program_ids = self.env['promotion.program'].browse(programs).filtered(
             lambda p: p.limit_usage_per_program and p.promotion_type == 'combo')
         limited_program_usages = self.env['promotion.usage.line'].search([('program_id', 'in', combo_program_ids.ids)])
