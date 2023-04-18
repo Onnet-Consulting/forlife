@@ -143,6 +143,9 @@ class ParentBatchImport(models.Model):
                     self.split_parent_batch_import_csv(batch_import)
                 else:
                     self.split_parent_batch_import_exel(batch_import=batch_import, sheet_name=options.get('sheet_name') if options.get('sheet_name') else "Sheet1")
+                # clean base_import.import to release memory before swap to batch import
+                base_import.unlink()
+
                 return dst_url
         return False
 
