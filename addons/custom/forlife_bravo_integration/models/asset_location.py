@@ -12,4 +12,3 @@ class AssetLocation(models.Model):
     br1 = BravoCharField(odoo_name='code', bravo_name='Code', identity=True)
     br2 = BravoCharField(odoo_name='name', bravo_name='Name')
     br3 = BravoCharField(odoo_name='address', bravo_name='Address')
-    
