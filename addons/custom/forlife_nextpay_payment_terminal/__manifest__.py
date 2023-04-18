@@ -18,4 +18,9 @@
     'data': [
         'views/res_config_settings_views.xml',
     ],
+    'assets': {
+        'point_of_sale.assets': [
+            'forlife_nextpay_payment_terminal/static/**/*',
+        ],
+    },
 }

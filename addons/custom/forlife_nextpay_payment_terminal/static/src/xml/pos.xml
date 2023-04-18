@@ -102,19 +102,4 @@
         </tr>
     </t>
 
-    <t t-name="VNPayQrCodePopupWidget">
-		<div class="modal-dialog">
-            <div class="popup popup-confirm" style="height: 425px; width: 400px;">
-				<p class="title" style="background-color: rgb(110,200,155); color: #fff;">VNPay QR Code</p>
-                <div class='div-container'>
-                    <img class="border border-dark rounded" t-att-src="widget.options.qr_uri"/>
-                </div>
-                <div class="footer" style="background-color: rgb(110,200,155); color: #fff;">
-                    <div class="button confirm" style="background-color: #0075AC; color: #fff;">
-                        Ok
-                    </div>
-                </div>
-			</div>
-		</div>
-    </t>
 </templates>

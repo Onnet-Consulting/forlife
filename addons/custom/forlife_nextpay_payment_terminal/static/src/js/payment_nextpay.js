@@ -1,18 +1,19 @@
-odoo.define('forlife_pos_payment_terminal.payment_nextpay', function (require) {
+odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
     'use strict';
 
-    let core = require('web.core');
-    let rpc = require('web.rpc');
-    let PaymentInterface = require('point_of_sale.PaymentInterface');
+    const core = require('web.core');
+    const rpc = require('web.rpc');
+    const PaymentInterface = require('point_of_sale.PaymentInterface');
+    const {Gui} = require('point_of_sale.Gui');
 
-    let _t = core._t;
+    const _t = core._t;
 
     let PaymentNextPay = PaymentInterface.extend({
         get_request_data: function (data) {
             let pos_config = this.pos.config;
             let nextpay_url = pos_config.nextpay_url;
             let nextpay_secret_key = pos_config.nextpay_secret_key;
-            let nextpay_merchant_id = pos_config.nextpay_merchant_id;
+            let nextpay_merchant_id = parseInt(pos_config.nextpay_merchant_id);
 
             data = CryptoJS.enc.Utf8.parse(JSON.stringify(data));
             nextpay_secret_key = CryptoJS.enc.Utf8.parse(nextpay_secret_key);
@@ -26,8 +27,8 @@ odoo.define('forlife_pos_payment_terminal.payment_nextpay', function (require) {
             }
         },
 
-        send_payment_request: function (cid) {
-            this._super.apply(this, arguments);
+        send_payment_request: async function (cid) {
+            await this._super.apply(this, arguments);
             return this._nextpay_pay();
         },
 
@@ -61,7 +62,7 @@ odoo.define('forlife_pos_payment_terminal.payment_nextpay', function (require) {
             let pos_id = this.get_pos_id();
             let order = this.pos.get_order();
             let payment_line = order.selected_paymentline;
-            let customer = order.get_client() || '';
+            let customer = order.get_partner() || '';
             let transaction_id = payment_line.unique_id;
             return {
                 "serviceName": "ADD_ORDER_INFOR",
@@ -85,7 +86,7 @@ odoo.define('forlife_pos_payment_terminal.payment_nextpay', function (require) {
             }
         },
 
-        _nextpay_pay: function () {
+        _nextpay_pay: async function () {
             let self = this;
             if (this.pos.get_order().selected_paymentline.amount <= 0) {
                 this._show_error(_t('Cannot process transaction with negative or zero amount.'))
@@ -97,9 +98,8 @@ odoo.define('forlife_pos_payment_terminal.payment_nextpay', function (require) {
             let payment_data = this._nextpay_pay_data();
             let request_data = this.get_request_data(payment_data);
 
-            return this._call_nextpay(request_data.url, request_data.body).then(function (response) {
-                return self._nextpay_handle_response(response);
-            })
+            const response = await this._call_nextpay(request_data.url, request_data.body);
+            return self._nextpay_handle_response(response);
         },
 
         _nextpay_cancel: function () {
@@ -146,7 +146,7 @@ odoo.define('forlife_pos_payment_terminal.payment_nextpay', function (require) {
             if (!title) {
                 title = _t('NextPay Error');
             }
-            this.pos.gui.show_popup('error', {
+            Gui.showPopup('ErrorPopup', {
                 'title': title,
                 'body': msg,
             });

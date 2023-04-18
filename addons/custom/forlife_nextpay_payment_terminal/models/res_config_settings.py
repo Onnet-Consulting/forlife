@@ -9,4 +9,5 @@ class ResConfigSettings(models.TransientModel):
     pos_show_nextpay_config = fields.Boolean(related='pos_config_id.show_nextpay_config')
     pos_nextpay_url = fields.Char(related='pos_config_id.nextpay_url', readonly=False)
     pos_nextpay_secret_key = fields.Char(related='pos_config_id.nextpay_secret_key', readonly=False)
-    pos_nextpay_merchant_id = fields.Integer(related='pos_config_id.nextpay_merchant_id', readonly=False)
+    pos_nextpay_merchant_id = fields.Char(related='pos_config_id.nextpay_merchant_id', readonly=False)
+    pos_nextpay_pos_id = fields.Char(related='pos_config_id.nextpay_pos_id')
