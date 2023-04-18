@@ -101,7 +101,7 @@ class ProductCategory(models.Model):
             return values[0]
         return {}
 
-    def bravo_get_insert_values(self):
+    def bravo_get_insert_values(self, **kwargs):
         return self.bravo_get_record_values()
 
     def bravo_get_update_values(self, values):
@@ -162,5 +162,5 @@ class ProductCategory(models.Model):
 
     def bravo_get_delete_sql(self, **kwargs):
         if kwargs.get(CONTEXT_CATEGORY_KEY):
-            return super().bravo_get_delete_sql()
+            return super().bravo_get_delete_sql(**kwargs)
         return self.bravo_get_delete_sql_all_level()
