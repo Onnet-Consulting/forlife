@@ -125,6 +125,7 @@ class ChildBatchImport(models.Model):
                             'file_length': file_length
                         })
                     rec.make_file_log_invalid_records(error_rows=error_rows)
+                    base_import_from_batch.unlink()
             except Exception as e:
                 rec.status = 'error'
                 rec.log = str(e)
@@ -165,6 +166,7 @@ class ChildBatchImport(models.Model):
                         'log': json.dumps(result, ensure_ascii=False)
                     })
                 rec.make_file_log_invalid_records(error_rows=error_rows)
+                base_import_from_batch.unlink()
 
     def set_to_processing(self, delay_time=0):
         index = 1
