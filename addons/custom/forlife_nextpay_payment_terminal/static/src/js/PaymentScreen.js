@@ -114,6 +114,12 @@ odoo.define('forlife_nextpay_payment_terminal.PaymentScreen', function (require)
                 return super._sendPaymentRequest(...arguments);
             }
 
+            async _sendPaymentRequest({ detail: line }) {
+                NumberBuffer.capture();
+                await super._sendPaymentRequest(...arguments);
+                line.set_payment_status('waitingCapture');
+            }
+
             /**
              * @override
              */
