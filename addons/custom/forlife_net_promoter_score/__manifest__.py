@@ -19,7 +19,6 @@
         'point_of_sale',
         'forlife_point_of_sale',
         'forlife_telegram_integration',
-        'queue_job',
         'report_xlsx',
     ],
 

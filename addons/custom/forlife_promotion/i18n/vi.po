@@ -363,10 +363,6 @@ msgstr "Được tạo bởi"
 msgid "Created on"
 msgstr "Được tạo vào"
 
-#. module: forlife_promotion
-#: model:ir.model.fields,field_description:forlife_promotion.field_event__customer_conditions
-msgid "Customer Conditions"
-msgstr "Điều kiện khách hàng"
 
 #. module: forlife_promotion
 #: model:ir.model,name:forlife_promotion.model_dayofmonth_data

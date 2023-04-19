@@ -157,17 +157,29 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     get_discount_detail(cr_program) {
-        let original_price = this.get_original_price();
-        let quantity = this.get_quantity();
         let total_discounted = (this.get_total_discounted() || 0) - (this.get_point() || 0);
-        let card_rank_disc = cr_program.on_original_price * (quantity * original_price) / 100;
-        let promotion_pricelist = this.pos.promotionPricelistItems.find(p => p.product_id === this.product.id);
-        if (promotion_pricelist && promotion_pricelist.valid_customer_ids.has(this.order.get_partner().id)) {
-            let pricelist_disc = (1 - (promotion_pricelist.fixed_price / original_price)) * 100;
-            for (let line of cr_program.extra_discount) {
-                if (pricelist_disc > line.from && pricelist_disc <= line.to) {
-                    card_rank_disc = card_rank_disc + (line.disc * (quantity * original_price - card_rank_disc) / 100);
+        let original_price = this.get_original_price();
+        let card_rank_disc = 0;
+        let check_skip_cr = false;
+        if (this.promotion_usage_ids.length > 0) {
+            for (let promotion of this.promotion_usage_ids) {
+                if (this.pos.promotion_program_by_id[promotion.program_id].skip_card_rank === true) {
+                    check_skip_cr = true;
                     break;
+                }
+            }
+        }
+        if (check_skip_cr === false) {
+            let quantity = this.get_quantity();
+            card_rank_disc = cr_program.on_original_price * (quantity * original_price) / 100;
+            let promotion_pricelist = this.pos.promotionPricelistItems.find(p => p.product_id === this.product.id);
+            if (promotion_pricelist && promotion_pricelist.valid_customer_ids.has(this.order.get_partner().id)) {
+                let pricelist_disc = (1 - (promotion_pricelist.fixed_price / original_price)) * 100;
+                for (let line of cr_program.extra_discount) {
+                    if (pricelist_disc > line.from && pricelist_disc <= line.to) {
+                        card_rank_disc = card_rank_disc + (line.disc * (quantity * original_price - card_rank_disc) / 100);
+                        break;
+                    }
                 }
             }
         }

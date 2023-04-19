@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="contact_event_follow_tree">
+        <field name="name">contact.event.follow.tree</field>
+        <field name="model">contact.event.follow</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="partner_id"/>
+                <field name="event_id"/>
+                <field name="internal_code"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="contact_event_follow_form">
+        <field name="name">contact.event.follow.form</field>
+        <field name="model">contact.event.follow</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="event_id"/>
+                        </group>
+                        <group>
+                            <field name="partner_id"/>
+
+                            <field name="internal_code"/>
+                        </group>
+                    </group>
+
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+</odoo>

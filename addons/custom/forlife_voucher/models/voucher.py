@@ -16,9 +16,9 @@ class Voucher(models.Model):
 
     name = fields.Char('Code', compute='_compute_name', store=True)
     program_voucher_id = fields.Many2one('program.voucher', 'Program name')
-    purpose_id = fields.Many2one('setup.voucher', 'Purpose', required=True)
+    purpose_id = fields.Many2one('setup.voucher', 'Purpose', related='program_voucher_id.purpose_id')
     currency_id = fields.Many2one('res.currency', compute='_compute_currency_field')  # related currency of program voucher
-    type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Loại', required=True)
+    type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Loại', related='program_voucher_id.type')
     state = fields.Selection([('new', 'New'), ('sold', 'Sold'), ('valid', 'Valid'), ('off value', 'Off Value'), ('expired', 'Expired')], string='State', required=True,
                              tracking=True, default='new')
     price = fields.Monetary('Mệnh giá')
@@ -26,9 +26,9 @@ class Voucher(models.Model):
     price_residual = fields.Monetary('Giá trị còn lại', compute='_compute_price_residual', store=True)
     start_date = fields.Datetime('Start date')
     end_date = fields.Datetime('End date', tracking=True)
-    apply_many_times = fields.Boolean('Apply many times')
+    apply_many_times = fields.Boolean('Apply many times', related='program_voucher_id.apply_many_times')
 
-    apply_contemp_time = fields.Boolean('Áp dụng đồng thời')
+    apply_contemp_time = fields.Boolean('Áp dụng đồng thời', related='program_voucher_id.apply_contemp_time')
 
     purchase_id = fields.Many2one('purchase.order', 'Đơn hàng mua')
 
@@ -45,15 +45,14 @@ class Voucher(models.Model):
     partner_id = fields.Many2one('res.partner')
     phone_number = fields.Char(copy=False, string='Phone')
 
-    product_voucher_id = fields.Many2one('product.template', 'Product Voucher')
-    product_apply_ids = fields.Many2many('product.template', string='Sản phẩm áp dụng')
-    derpartment_id = fields.Many2one('hr.department', 'Department Code', required=True)
-    brand_id = fields.Many2one('res.brand', 'Brand', required=True)
-    store_ids = fields.Many2many('store', string='Cửa hàng áp dụng')
-    is_full_price_applies = fields.Boolean('Áp dụng nguyên giá')
-    using_limit = fields.Integer('Giới hạn sử dụng', default=0)
+    product_voucher_id = fields.Many2one('product.template', 'Product Voucher', related='program_voucher_id.product_id')
+    product_apply_ids = fields.Many2many('product.template', string='Sản phẩm áp dụng', related='program_voucher_id.product_apply_ids')
+    derpartment_id = fields.Many2one('hr.department', 'Department Code', related='program_voucher_id.derpartment_id')
+    brand_id = fields.Many2one('res.brand', 'Brand', related='program_voucher_id.brand_id')
+    store_ids = fields.Many2many('store', string='Cửa hàng áp dụng', related='program_voucher_id.store_ids')
+    is_full_price_applies = fields.Boolean('Áp dụng nguyên giá', related='program_voucher_id.is_full_price_applies')
+    using_limit = fields.Integer('Giới hạn sử dụng', default=0, related='program_voucher_id.using_limit')
 
-    details = fields.Char('Diễn giải')
 
     @api.depends('price_used', 'price')
     def _compute_price_residual(self):
@@ -171,11 +170,11 @@ class Voucher(models.Model):
         create_Date = utcmoment.astimezone(pytz.timezone(tz))
         return create_Date
 
-    @api.constrains('phone_number')
-    def _check_phone(self):
-        for rec in self:
-            if rec.phone_number and not is_valid_phone_number(rec.phone_number):
-                raise ValidationError(_('Invalid phone number - %s') % rec.phone_number)
+    # @api.constrains('phone_number')
+    # def _check_phone(self):
+    #     for rec in self:
+    #         if rec.phone_number and not is_valid_phone_number(rec.phone_number):
+    #             raise ValidationError(_('Invalid phone number - %s') % rec.phone_number)
 
     def check_due_date_voucher(self):
         now = datetime.now()
