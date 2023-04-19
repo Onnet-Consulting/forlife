@@ -647,7 +647,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         } else if (pro.promotion_type == 'code' && pro.discount_based_on == 'discounted_price') {
             return order_lines.filter(function(l) {
                 if (l.promotion_usage_ids && l.promotion_usage_ids.length) {
-                    return l.promotion_usage_ids.some(p => p.promotion_type == 'pricelist' || (p.promotion_type == 'pricelist' && p.discount_based_on == 'unit_price')) ? true : false;
+                    if (l.price == 0 || l.is_reward_line) {return false}
+                    if (l.promotion_usage_ids.some(p => p.str_id == pro.str_id)) {return false}
+                    else {return true};
+//                    return l.promotion_usage_ids.some(p => p.promotion_type == 'pricelist' || (p.promotion_type == 'pricelist' && p.discount_based_on == 'unit_price')) ? true : false;
                 } else {return true};
             });
         };
@@ -1514,6 +1517,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                         };
                     };
                 };
+            }
+            else if (program.promotion_type == 'code') {
+                let [code_to_apply_lines, remaining, code_count] = this.computeForListOfCodeProgram(orderLines, [program], to_apply_lines);
+                Object.assign(combo_count, code_count);
+                Object.assign(to_apply_lines, code_to_apply_lines);
             }
             // Pricelist Program
             else if (program.promotion_type == 'pricelist') {

@@ -5,7 +5,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
     const Registries = require('point_of_sale.Registries');
     const { _lt } = require('@web/core/l10n/translation');
 
-    const { useState } = owl;
+    const { useState, onMounted } = owl;
 
     class ProgramSelectionPopup extends AbstractAwaitablePopup {
 
@@ -17,7 +17,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 discount_amount_order: this.props.discount_amount_order || 0,
             });
             this.combo_details = {}
-            this.selectItem(undefined);
+            onMounted(this.selectItem);
         }
 
         // Thể hiện thứ tự áp dụng các CTKM, index=1 đối với CTKM nào được áp dụng đầu tiên
@@ -103,11 +103,9 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             not_selected_programs.forEach(p => p.discounted_amount = 0.0);
 
             let [newLinesToApply, remainingLines, combo_count] = this.env.pos.get_order().computeForListOfProgram(clone_order_lines, selectedPrograms);
-
-            let [newLinesToApplyCode, remainingLinesCode, code_count] = this.env.pos.get_order().computeForListOfCodeProgram(clone_order_lines, selectedPrograms, newLinesToApply);
-
-            newLinesToApply = newLinesToApplyCode;
-            remainingLines = remainingLinesCode
+//            let [newLinesToApplyCode, remainingLinesCode, code_count] = this.env.pos.get_order().computeForListOfCodeProgram(clone_order_lines, selectedPrograms, newLinesToApply);
+//            newLinesToApply = newLinesToApplyCode;
+//            remainingLines = remainingLinesCode
 
             this.setComboDetails(newLinesToApply);
 
@@ -140,6 +138,10 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 let [newLinesToApplyNoSelected, ol, combo_count] = this.env.pos.get_order()
                         .computeForListOfProgram(remaining_clone_order_lines, [notSelectProgram]);
 
+//                let [newLinesToApplyNoSelectedCode, olCode, code_count] = this.env.pos.get_order()
+//                    .computeForListOfCodeProgram(remaining_clone_order_lines, [notSelectProgram], newLinesToApplyNoSelected);
+
+//               this.setComboDetails(newLinesToApplyNoSelectedCode);
                this.setComboDetails(newLinesToApplyNoSelected);
 
                 this.state.programs.forEach(p => {
