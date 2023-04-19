@@ -16,7 +16,7 @@ class NextPayController(http.Controller):
             return checked_data
 
         raw_data = checked_data.get('raw_data')
-        pos_config._notify_nextpay_payment_response(raw_data)
+        pos_config.sudo()._notify_nextpay_payment_response(raw_data)
         return {
             "resCode": 200,
             "message": "Success",

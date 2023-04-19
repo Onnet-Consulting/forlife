@@ -36,16 +36,13 @@ class PosConfig(models.Model):
             config.nextpay_pos_id = str(config.id).zfill(6)
 
     def _get_nextpay_channel_name(self):
-        """
-        Return full channel name as combination, POS Config ID and const CHANNEL
-        """
         self.ensure_one()
-        return json.dumps(['nextpay_payment_response', self.id])
+        return '["{}","{}"]'.format("nextpay_payment_response", self.id)
 
     def _notify_nextpay_payment_response(self, message):
         self.ensure_one()
         notifications = [
-            [self._get_nextpay_channel_name(), 'pos.config/payment_response', message]
+            [self._get_nextpay_channel_name(), 'pos.config/nextpay_payment_response', message]
         ]
         self.env['bus.bus']._sendmany(notifications)
         return True

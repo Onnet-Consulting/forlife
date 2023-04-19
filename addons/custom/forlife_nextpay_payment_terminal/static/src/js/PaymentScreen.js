@@ -13,57 +13,50 @@ odoo.define('forlife_nextpay_payment_terminal.PaymentScreen', function (require)
                 this.env.services.bus_service.addChannel(this._getNextPayChannelName());
                 this.env.services.bus_service.addEventListener(
                     "notification",
-                    this._onNotification.bind(this)
+                    this._on_payment_response_notification.bind(this)
                 );
             }
 
             _getNextPayChannelName() {
                 return JSON.stringify([
                     "nextpay_payment_response",
-                    this.env.pos.config.id,
+                    String(this.env.pos.config.id),
                 ]);
             }
 
-            _onNotification({detail: notifications}) {
-                let payloads = [];
-                console.log('received data', notifications);
-                for (const {payload, type} of notifications) {
-                    if (type === "pos.config/payment_response") {
-                        payloads.push(payload);
-                    }
+            _on_payment_response_notification({detail: notifications}) {
+                if (!notifications) return false;
+                const {payload, type} = notifications[0];
+                if (type === "pos.config/nextpay_payment_response") {
+                    return this._handle_nextpay_response(payload);
                 }
-                this._handleNotification(payloads);
-            }
-
-            _handleNotification(payloads) {
-                // update payment line here
-                console.log('ez=>>>>>>>>>>>>>>>')
-                console.log(payloads)
-                // this.on_nextpay_payment_transaction_update(payloads);
+                return false
             }
 
             // double check this function
-            on_nextpay_payment_transaction_update(data) {
-                let self = this;
-                let order = this.get_order();
-                if (!this.gui) return false;
-                let payment_screen = this.gui.screen_instances.payment
+            _handle_nextpay_response(payload) {
+                const self = this;
+                let order = this.currentOrder;
+                const {orderId, transStatus, issuerCode, transCode} = payload;
 
                 let selected_payment_line = order.get_paymentlines().filter((line) => {
-                    let payment_transaction_id = line.unique_id;
-                    return payment_transaction_id === data.orderId;
+                    return line.unique_id === orderId;
                 })
 
                 if (selected_payment_line.length > 0) {
                     selected_payment_line = selected_payment_line[0];
-                    let transaction_code = data.transStatus;
-                    if (transaction_code === 100) {
+                    let current_payment_status = selected_payment_line.get_payment_status()
+                    if (current_payment_status === 'done') return true;
+                    if (current_payment_status === 'retry') return false;
+                    if (transStatus === 100) {
                         selected_payment_line.set_payment_status('done');
-                        selected_payment_line.transaction_id = data.orderId;
-                        selected_payment_line.card_type = data.issuerCode || '';
-                        payment_screen.render_paymentlines();
+                        selected_payment_line.transaction_id = transCode;
+                        selected_payment_line.card_type = issuerCode;
                     } else {
-                        selected_payment_line.payment_method.payment_terminal._show_error("Something went wrong, please re-check on NextPay");
+                        this.showPopup('ErrorPopup', {
+                            title: this.env._t('NextPay payment terminal'),
+                            body: this.env._t("Something went wrong, can't finish the payment on NextPay payment terminal"),
+                        });
                         selected_payment_line.set_payment_status('retry');
                     }
                 }
@@ -75,20 +68,16 @@ odoo.define('forlife_nextpay_payment_terminal.PaymentScreen', function (require)
              *
              * @override
              */
-            async validateOrder(isForceValidate) {
-                NumberBuffer.capture();
-                return super.validateOrder(...arguments);
-            }
+            // async validateOrder(isForceValidate) {
+            //     NumberBuffer.capture();
+            //     return super.validateOrder(...arguments);
+            // }
 
             /**
              * Finish any pending input before sending a request to a terminal.
              *
              * @override
              */
-            async _sendPaymentRequest({detail: line}) {
-                NumberBuffer.capture();
-                return super._sendPaymentRequest(...arguments);
-            }
 
             async _sendPaymentRequest({detail: line}) {
                 NumberBuffer.capture();
