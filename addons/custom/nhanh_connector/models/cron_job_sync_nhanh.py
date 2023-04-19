@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import json
+
 import psycopg2
 import datetime
 import logging
@@ -154,7 +156,7 @@ class SaleOrder(models.Model):
         _logger.info("----------------Start Sync customer from NhanhVn --------------------")
 
         today = datetime.datetime.today().strftime("%y/%m/%d")
-        previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+        previous_day = (datetime.datetime.today() - datetime.timedelta(days=10)).strftime("%Y-%m-%d")
         _logger.info(f'Today is: {today}, Previous day is: {previous_day}')
         ## Check tồn tại data url
         nhanh_configs = self.get_nhanh_configs()
@@ -162,8 +164,9 @@ class SaleOrder(models.Model):
                 or 'nhanh_connector.nhanh_access_token' not in nhanh_configs:
             _logger.info(f'Nhanh configuration does not set')
             return False
+        data = "'{" + f'"fromDate":"{previous_day}","toDate":"{today}"' + "}'"
         query_params = {
-            'data': "'{" + f'"fromDate":"{previous_day}","toDate":"{today}"' + "}'"
+            'data': data
         }
 
         list_number_phone = list(self.env['res.partner'].search([]).mapped('phone'))
