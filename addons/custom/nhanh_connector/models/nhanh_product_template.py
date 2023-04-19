@@ -19,6 +19,12 @@ class ProductNhanh(models.Model):
     width_product = fields.Float('Width')
     height_product = fields.Float('Height')
 
+    @api.model
+    def create(self, vals):
+        res = super().create(vals)
+        self.synchronized_create_product(res)
+        return res
+
     def synchronized_create_product(self, res):
         if res.check_data_odoo == True:
             nhanh_configs = constant.get_nhanh_configs(self)
@@ -28,6 +34,7 @@ class ProductNhanh(models.Model):
                     res.name) + '","code":"' + str(res.code_product) + '", "barcode": "' + str(
                     res.barcode if res.barcode else None ) + '", "price": "' + str(int(res.list_price)) + '", "shippingWeight": "' + str(
                     int(res.weight)) + '", "status": "' + 'New' + '"}]'
+
                 try:
                     res_server = self.post_data_nhanh(data)
                     status_nhanh = 1

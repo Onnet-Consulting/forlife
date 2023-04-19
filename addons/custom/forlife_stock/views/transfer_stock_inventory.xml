@@ -29,12 +29,12 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Send" name="action_wait_confirm"
+                    <button string="Gửi duyệt" name="action_wait_confirm"
                             type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
                     <button string="Approve" name="action_approve"
                             type="object"
                             attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject', 'approved'))]}"
-                            confirm="Do you really want to approve the balance sheet?"/>
+                            confirm="Bạn có thực sự muốn phê duyệt cân đối tồn kho?"/>
                     <button string="Reject" name="%(forlife_stock.transfer_stock_inventory_wizard)d"
                             type="action"
                             attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject', 'approved'))]}"
@@ -42,11 +42,23 @@
                     <button string="Cancel" name="%(forlife_stock.transfer_stock_inventory_wizard)d"
                             type="action" attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject'))]}"
                             context="{'click_button': 'cancel'}" confirm="Bạn có chắc chắn muốn hủy phiếu kiểm kê cân tồn không?"/>
-                     <button string="Back to draft" name="action_draft"
+                     <button string="Trở về nháp" name="action_draft"
                             type="object" attrs="{'invisible':[('state', '!=', 'wait_confirm')]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_import_other" type="object" class="oe_stat_button" icon="fa-truck">
+                            <div class="o_stat_info">
+                                Nhập khác
+                            </div>
+                        </button>
+                        <button name="action_export_other" type="object" class="oe_stat_button" icon="fa-truck">
+                            <div class="o_stat_info">
+                                Xuất khác
+                            </div>
+                        </button>
+                    </div>
                     <h1>
                         <field name="code" required="1" readonly="1"/>
                     </h1>
@@ -56,8 +68,7 @@
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="location_id" string="Location" required="1"
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="note" required="1"
-                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="note" required="1"/>
                         </group>
                         <group>
                             <field name="create_date" string="Create Date"/>
