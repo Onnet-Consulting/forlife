@@ -20,12 +20,13 @@ odoo.define('forlife_nextpay_payment_terminal.PaymentScreen', function (require)
             _getNextPayChannelName() {
                 return JSON.stringify([
                     "nextpay_payment_response",
-                    String(this.env.pos.config.id),
+                    this.env.pos.config.id,
                 ]);
             }
 
             _onNotification({detail: notifications}) {
                 let payloads = [];
+                console.log('received data', notifications);
                 for (const {payload, type} of notifications) {
                     if (type === "pos.config/payment_response") {
                         payloads.push(payload);
@@ -36,7 +37,9 @@ odoo.define('forlife_nextpay_payment_terminal.PaymentScreen', function (require)
 
             _handleNotification(payloads) {
                 // update payment line here
-                this.on_nextpay_payment_transaction_update(payloads);
+                console.log('ez=>>>>>>>>>>>>>>>')
+                console.log(payloads)
+                // this.on_nextpay_payment_transaction_update(payloads);
             }
 
             // double check this function

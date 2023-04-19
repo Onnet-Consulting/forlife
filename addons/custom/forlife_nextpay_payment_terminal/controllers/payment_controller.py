@@ -7,7 +7,7 @@ import json
 
 class NextPayController(http.Controller):
 
-    @http.route('/nextpay/ipn', type='json', auth='public', methods=['POST'])
+    @http.route('/nextpay/ipn', type='raw_json', auth='public', methods=['POST'])
     def received_nextpay_payment_transaction_status(self):
         checked_data = self.check_request_data()
         pos_config = checked_data.get('pos_config')
