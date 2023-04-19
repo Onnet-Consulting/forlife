@@ -63,40 +63,12 @@ odoo.define('forlife_nextpay_payment_terminal.PaymentScreen', function (require)
             }
 
 
-            /**
-             * Finish any pending input before trying to validate.
-             *
-             * @override
-             */
-            // async validateOrder(isForceValidate) {
-            //     NumberBuffer.capture();
-            //     return super.validateOrder(...arguments);
-            // }
-
-            /**
-             * Finish any pending input before sending a request to a terminal.
-             *
-             * @override
-             */
-
             async _sendPaymentRequest({detail: line}) {
                 NumberBuffer.capture();
                 await super._sendPaymentRequest(...arguments);
                 line.set_payment_status('waitingCapture');
             }
 
-            /**
-             * @override
-             */
-            // deletePaymentLine(event) {
-            //     const {cid} = event.detail;
-            //     const line = this.paymentLines.find((line) => line.cid === cid);
-            //     if (line.mercury_data) {
-            //         this.do_reversal(line, false);
-            //     } else {
-            //         super.deletePaymentLine(event);
-            //     }
-            // }
 
         };
 
