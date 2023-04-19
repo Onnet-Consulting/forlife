@@ -9,12 +9,12 @@
                 <xpath expr="//page[@name='general_information']//field[@name='detailed_type']" position="after">
                     <field name="barcode_country"/>
                 </xpath>
-                <xpath expr="//div[@name='options']" position="inside">
-                    <span class="d-inline-block">
-                        <field name="pos_ok"/>
-                        <label for="pos_ok"/>
-                    </span>
-                </xpath>
+<!--                <xpath expr="//div[@name='options']" position="inside">-->
+<!--                    <span class="d-inline-block">-->
+<!--                        <field name="pos_ok"/>-->
+<!--                        <label for="pos_ok"/>-->
+<!--                    </span>-->
+<!--                </xpath>-->
                 <xpath expr="//field[@name='barcode']" position="after">
 <!--                    <field name="product_company_id"/>-->
                     <field name="expiration_date"/>
