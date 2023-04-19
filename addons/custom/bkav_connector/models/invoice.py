@@ -105,7 +105,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     exists_bkav = fields.Boolean(default=False)
-    is_post_bkav = fields.Boolean(default=False, string="Post BKAV?")
+    is_post_bkav = fields.Boolean(default=False, string="Tạo hóa đơn cuối ngày BKAV?")
     company_type = fields.Selection(related="partner_id.company_type")
 
     def create_invoice_bkav(self):
@@ -170,7 +170,7 @@ class AccountMove(models.Model):
         if response.get('status') == '1':
             self.message_post(body=(response.get('message')))
         else:
-            self.message_post(body=_('Successfully created invoice on BKAV!'))
+            self.message_post(body=_('Đã tạo thành công hóa đơn trên BKAV!!'))
             self.exists_bkav = True
 
     def update_invoice_bkav(self):
@@ -235,7 +235,40 @@ class AccountMove(models.Model):
         if response.get('status') == '1':
             self.message_post(body=(response.get('message')))
         else:
-            self.message_post(body=_('Successfully updated invoice on BKAV!'))
+            self.message_post(body=_('Đã cập nhật thành công hóa đơn trên BKAV!!'))
+
+
+    def cancel_invoice_bkav(self):
+        data_delete = {
+            "CmdType": 202,
+            "CommandObject": [{
+                "PartnerInvoiceID": self.id,
+            }]
+        }
+        response = connect_bkav(data_delete)
+        if response.get('status') == '1':
+            self.message_post(body=(response.get('message')))
+        else:
+            self.message_post(body=_('Đã Hủy thành công hóa đơn trên BKAV!!'))
+
+    def delete_invoice_bkav(self):
+        data_delete = {
+            "CmdType": 301,
+            "CommandObject": [{
+                "PartnerInvoiceID": self.id,
+            }]
+        }
+        response = connect_bkav(data_delete)
+        if response.get('status') == '1':
+            self.message_post(body=(response.get('message')))
+        else:
+            self.message_post(body=_('Đã xóa thành công hóa đơn trên BKAV!!'))
+
+    def unlink(self):
+        res = super().action_post()
+        if self.exists_bkav:
+            self.delete_invoice_bkav()
+        return res
 
     @api.model
     def create(self, vals):

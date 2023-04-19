@@ -63,6 +63,9 @@ class StockPicking(models.Model):
 
     stock_custom_location_ids = fields.One2many('stock.location', 'stock_custom_picking_id')
     is_production_order = fields.Boolean(compute='compute_production_order')
+    move_ids_without_package = fields.One2many(
+        'stock.move', 'picking_id', string="Hoạt động", compute='_compute_move_without_package',
+        inverse='_set_move_without_package', compute_sudo=True)
 
     @api.depends('location_id')
     def compute_production_order(self):
@@ -73,7 +76,7 @@ class StockPicking(models.Model):
     location_id = fields.Many2one(
         'stock.location', "Source Location",
         compute="_compute_location_id", store=True, precompute=True, readonly=False,
-        check_company=True, required=True,
+        check_company=True,
         domain=_domain_location_id,
         states={'done': [('readonly', True)]})
 
@@ -129,31 +132,26 @@ class StockPicking(models.Model):
         return True
 
     @api.model
-    def get_import_templates(self):
-        if self.env.context.get('default_other_import'):
-            return [{
-                'label': _('Tải xuống mẫu phiếu nhập khác'),
-                'template': '/forlife_stock/static/src/xlsx/template_pnk.xlsx?download=true'
-            }]
-        else:
-            return [{
-                'label': _('Tải xuống mẫu phiếu xuất khác'),
-                'template': '/forlife_stock/static/src/xlsx/template_pxk.xlsx?download=true'
-            }]
-
-
+    def load(self, fields, data):
+        list_fields = ['move_ids_without_package/location_id', 'move_ids_without_package/location_dest_id']
+        list_data = [data[0][1], data[0][2]]
+        fields.extend(list_fields)
+        for rec in data:
+            rec.extend(list_data)
+            rec[8] = ''
+        return super().load(fields, data)
 
     @api.model
     def get_import_templates(self):
         if self.env.context.get('default_other_import'):
             return [{
                 'label': _('Tải xuống mẫu phiếu nhập khác'),
-                'template': '/forlife_stock/static/src/xlsx/template_phieu_nk.xlsx?download=true'
+                'template': '/forlife_stock/static/src/xlsx/mau_nhap_khac.xlsx?download=true'
             }]
         else:
             return [{
                 'label': _('Tải xuống mẫu phiếu xuất khác'),
-                'template': '/forlife_stock/static/src/xlsx/template_phieu_xk.xlsx?download=true'
+                'template': '/forlife_stock/static/src/xlsx/mau_xuat_khac.xlsx?download=true'
             }]
 
 
@@ -164,12 +162,31 @@ class StockMove(models.Model):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
+    name = fields.Char(required=False)
+    product_id = fields.Many2one(
+        'product.product', 'Product',
+        check_company=True,
+        domain="[('type', 'in', ['product', 'consu']), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+        index=True,
+        states={'done': [('readonly', True)]})
     uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
+    amount_total = fields.Float(string='Thành tiền')
     reason_type_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
     work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
+    location_id = fields.Many2one(
+        'stock.location', "Địa điểm nguồn",
+        auto_join=True, index=True,
+        check_company=True,
+        help="Sets a location if you produce at a fixed location. This can be a partner location if you subcontract the manufacturing operations.")
+
+    location_dest_id = fields.Many2one(
+        'stock.location', 'Địa điểm đích',
+        auto_join=True, index=True,
+        check_company=True,
+        help="Location where the system will stock the finished products.")
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
@@ -178,4 +195,5 @@ class StockMove(models.Model):
                 r.reason_id = r.picking_id.location_id.id \
                     if r.picking_id.other_import else r.picking_id.location_dest_id.id
                 r.reason_type_id = r.picking_id.reason_type_id.id
+                r.name = r.product_id.name
 
