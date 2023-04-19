@@ -64,7 +64,7 @@
                     <field name="number_of_split_file"/>
                     <field name="file_invalid_records_name"/>
                     <field name="status"/>
-                    <field name="progress_bar" widget="progressbar"/>
+                    <!--                    <field name="progress_bar" widget="progressbar"/>-->
                 </tree>
             </field>
         </record>

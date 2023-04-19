@@ -13,7 +13,8 @@ class AccountMove(models.Model):
         res = super()._post(soft=soft)
         posted_moves = self.filtered(lambda m: m.state == 'posted')
         insert_queries = posted_moves.bravo_get_insert_sql()
-        self.env[self._name].sudo().with_delay().bravo_insert(insert_queries)
+        # FIXME: insert sql have value on to prevent job execute with empty function
+        self.env[self._name].sudo().with_delay().bravo_execute_query(insert_queries)
         return res
 
     @api.model
@@ -30,7 +31,7 @@ class AccountMove(models.Model):
             'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
         }
 
-    def get_sale_bill_data(self):
+    def bravo_get_sale_bill_data(self):
         move_lines = self.mapped('invoice_line_ids').filtered(lambda ml: ml.sale_line_ids)
         bravo_column_names = []
         moves_data = []
@@ -51,13 +52,13 @@ class AccountMove(models.Model):
                 "EmployeeCode": move.invoice_user_id.employee_id.code,
             }
 
-    def get_purchase_journal_data(self):
+    def bravo_get_purchase_journal_data(self):
         move_lines = self.mapped('line_ids').filtered(lambda ml: ml.purchase_line_id)
         bravo_column_names = []
         moves_data = []
         for idx, line in enumerate(move_lines, start=1):
             move = line.move_id
-            credit_line = move.line_ids.filtered(lambda m:m.credit>0)
+            credit_line = move.line_ids.filtered(lambda m: m.credit > 0)
             if not credit_line:
                 continue
             credit_line = credit_line[0]
@@ -95,7 +96,7 @@ class AccountMove(models.Model):
     def bravo_get_insert_values(self):
         journal_type = self.env.context.get(CONTEXT_JOURNAL_ACTION)
         if journal_type == 'purchase_journal':
-            return self.get_purchase_journal_data()
+            return self.bravo_get_purchase_journal_data()
         return [], []
 
     def bravo_get_insert_sql_by_journal_action(self):
