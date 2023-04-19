@@ -170,11 +170,11 @@ class Voucher(models.Model):
         create_Date = utcmoment.astimezone(pytz.timezone(tz))
         return create_Date
 
-    @api.constrains('phone_number')
-    def _check_phone(self):
-        for rec in self:
-            if rec.phone_number and not is_valid_phone_number(rec.phone_number):
-                raise ValidationError(_('Invalid phone number - %s') % rec.phone_number)
+    # @api.constrains('phone_number')
+    # def _check_phone(self):
+    #     for rec in self:
+    #         if rec.phone_number and not is_valid_phone_number(rec.phone_number):
+    #             raise ValidationError(_('Invalid phone number - %s') % rec.phone_number)
 
     def check_due_date_voucher(self):
         now = datetime.now()
