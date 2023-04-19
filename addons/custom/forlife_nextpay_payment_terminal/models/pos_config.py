@@ -1,6 +1,12 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+from base64 import b64decode
+from base64 import b64encode
+import json
+
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
 
 
 class PosConfig(models.Model):
@@ -28,3 +34,33 @@ class PosConfig(models.Model):
     def _compute_nextpay_pos_id(self):
         for config in self:
             config.nextpay_pos_id = str(config.id).zfill(6)
+
+    def _get_nextpay_channel_name(self):
+        """
+        Return full channel name as combination, POS Config ID and const CHANNEL
+        """
+        self.ensure_one()
+        return json.dumps(['nextpay_payment_response', self.id])
+
+    def _notify_nextpay_payment_response(self, message):
+        self.ensure_one()
+        notifications = [
+            [self._get_nextpay_channel_name(), 'pos.config/payment_response', message]
+        ]
+        self.env['bus.bus']._sendmany(notifications)
+        return True
+
+    @api.model
+    def aes_ecb_encrypt(self, key, raw):
+        key = key.encode('utf-8')
+        raw = json.dumps(raw).encode('utf-8')
+        raw = pad(raw, AES.block_size)
+        cipher = AES.new(key, AES.MODE_ECB)
+        return b64encode(cipher.encrypt(raw)).decode('utf-8')
+
+    @api.model
+    def aes_ecb_decrypt(self, key, enc):
+        key = key.encode("utf-8")
+        enc = b64decode(enc)
+        cipher = AES.new(key, AES.MODE_ECB)
+        return unpad(cipher.decrypt(enc), AES.block_size).decode('utf-8')

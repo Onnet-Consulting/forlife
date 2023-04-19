@@ -33,9 +33,9 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
             return false; // return falsy value to prevent original method set line to 'done' status
         },
 
-        send_payment_cancel: function (order, cid) {
+        send_payment_cancel: async function (order, cid) {
             this._super.apply(this, arguments);
-            return this._nextpay_cancel();
+            return await this._nextpay_cancel();
         },
 
         close: function () {
@@ -54,8 +54,6 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
         },
 
         get_pos_id: function () {
-            // NextPay Terminal require PoS ID has minimum 3 character
-            // so we need padding here
             return this.pos.config.nextpay_pos_id;
         },
 
@@ -103,18 +101,14 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
             return self._nextpay_handle_response(response);
         },
 
-        _nextpay_cancel: function () {
+        _nextpay_cancel: async function () {
             let line = this.pos.get_order().selected_paymentline;
             if (line) {
                 let cancel_payment_data = this._nextpay_cancel_data();
                 let request_data = this.get_request_data(cancel_payment_data);
-                return this._call_nextpay(request_data.url, request_data.body).then(function (response) {
-                    return Promise.resolve();
-                }).catch(function (error) {
-                    return Promise.resolve();
-                })
+                return await this._call_nextpay(request_data.url, request_data.body);
             }
-            return Promise.resolve();
+            return false;
         },
 
         _call_nextpay: function (url, request_data) {
@@ -128,6 +122,7 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
             }).catch(this._handle_odoo_connection_failure.bind(this));
         },
 
+        // fixme: need a way to handle payment line that pending forever (because nextpay didn't send any request back)
         _nextpay_handle_response: function (response) {
             let line = this.pos.get_order().selected_paymentline;
             if (response.resCode !== 200) {
