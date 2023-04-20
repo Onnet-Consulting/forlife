@@ -15,8 +15,7 @@ class VNPayController(http.Controller):
         if not pos_config:
             return checked_data
 
-        channel_name = 'vnpay_transaction_sync'
-        pos_config._send_to_channel(channel_name, request_data)
+        pos_config._notify_vnpay_payment_response(request_data)
         return {
             'code': "200",
             "message": "success",
