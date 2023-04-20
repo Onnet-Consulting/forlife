@@ -47,6 +47,7 @@ class PosConfig(models.Model):
         self.env['bus.bus']._sendmany(notifications)
         return True
 
+    # encode and decode aes 128 online: https://encode-decode.com/aes-128-ecb-encrypt-online/
     @api.model
     def aes_ecb_encrypt(self, key, raw):
         key = key.encode('utf-8')
@@ -61,3 +62,4 @@ class PosConfig(models.Model):
         enc = b64decode(enc)
         cipher = AES.new(key, AES.MODE_ECB)
         return unpad(cipher.decrypt(enc), AES.block_size).decode('utf-8')
+
