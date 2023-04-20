@@ -46,21 +46,21 @@ class Import(models.TransientModel):
         list_barcodes = []
         barcode_exits = []
 
-        for rowx, row in enumerate(map(sheet.row, range(sheet.nrows)), 1):
+        for rowx, row in enumerate(map(sheet.row, range(1)), 1):
             for colx, cell in enumerate(row, 1):
                 if rowx == 1:
-                    if 'Barcode' == str(cell.value):
-                        col_barcode = colx
+                    # if 'Barcode' == str(cell.value):
+                    #     col_barcode = colx
                     attribute_id = self.env['product.attribute'].search([('name', '=', str(cell.value))])
                     if attribute_id:
                         dic_col[colx] = str(cell.value)
                         attributes[colx] = attribute_id
-                elif col_barcode > -1:
-                    if colx == col_barcode:
-                        list_barcodes.append(str(cell.value))
+                # elif col_barcode > -1:
+                #     if colx == col_barcode:
+                #         list_barcodes.append(str(cell.value))
 
-        if list_barcodes:
-            barcode_exits = self._get_barcode_from_db(list_barcodes)
+        # if list_barcodes:
+        #     barcode_exits = self._get_barcode_from_db(list_barcodes)
 
         col_number = 0
         for rowx, row in enumerate(map(sheet.row, range(sheet.nrows)), 1):
@@ -77,10 +77,10 @@ class Import(models.TransientModel):
             else:
                 for colx, cell in enumerate(row, 1):
                     cell_value = cell.value
-                    if colx == col_barcode:
-                        if str(cell_value) in barcode_exits:
-                            add_row = False
-                            break
+                    # if colx == col_barcode:
+                    #     if str(cell_value) in barcode_exits:
+                    #         add_row = False
+                    #         break
                     if dic_col and dic_col.get(colx, False):
                         if type(cell_value) == float:
                             cell_value = int(cell_value)
