@@ -78,8 +78,8 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
         _nextpay_pay: async function () {
             let self = this;
             let line = this.pos.get_order().selected_paymentline;
-            line.received_nextpay_response = false;
-            line.sent_payment_to_nextpay = false;
+            line.nextpay_received_response = false;
+            line.nextpay_sent_payment = false;
             if (line.amount <= 0) {
                 this._show_error(_t('Cannot process transaction with negative or zero amount.'));
                 line.set_payment_status('retry');
@@ -122,18 +122,18 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
         _handle_nextpay_received_payment_request_response: function (response) {
             let line = this.pos.get_order().selected_paymentline;
             let self = this;
-            line.received_nextpay_response = true;
-            line.sent_payment_to_nextpay = true;
+            line.nextpay_received_response = true;
+            line.nextpay_sent_payment = true;
             if (response.resCode !== 200) {
                 let msg = response.message;
                 this._show_error(_.str.sprintf(_t('An unexpected error occurred. Message from NextPay: %s'), msg));
                 line.set_payment_status('retry');
             } else {
                 line.set_payment_status('waitingCapture');
-                clearTimeout(this.waiting_nextpay_transaction_response_timeout);
-                this.waiting_nextpay_transaction_response_timeout = setTimeout(function () {
+                clearTimeout(this.nextpay_waiting_transaction_response_timeout);
+                this.nextpay_waiting_transaction_response_timeout = setTimeout(function () {
                     let line = self.pos.get_order().selected_paymentline;
-                    if (line && line.sent_payment_to_nextpay) {
+                    if (line && line.nextpay_sent_payment) {
                         line.set_payment_status('timeout');
                     }
                 }, 60000)
@@ -144,7 +144,7 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
         _handle_odoo_connection_failure: function (error) {
             let line = this.pos.get_order().selected_paymentline;
             if (line) {
-                line.received_nextpay_response = false;
+                line.nextpay_received_response = false;
                 line.set_payment_status('retry');
             }
             this._show_error(_.str.sprintf('Could not connect to the Odoo server.\n' +
