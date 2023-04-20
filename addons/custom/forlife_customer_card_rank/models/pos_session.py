@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+import json
 
 
 class PosSession(models.Model):
@@ -24,7 +25,7 @@ class PosSession(models.Model):
                                                    [p['value2'], p['apply_value_from_2'], p['apply_value_to_2']],
                                                    [p['value3'], p['apply_value_from_3'], p['apply_value_to_3']]],
                                                   key=lambda r: r[0])[::-1] if disc[0] > 0],
-            'customer_not_apply_ids': p['customer_not_apply_ids'],
+            'customer_not_apply': json.loads(p['customer_not_apply']),
         } for p in loaded_data['member.card']}
         loaded_data.pop('member.card')
         if 'pos.branch' not in loaded_data:
@@ -48,7 +49,7 @@ class PosSession(models.Model):
                 ],
                 'fields': [
                     'id', 'name', 'from_date', 'to_date', 'card_rank_id', 'original_price', 'apply_value_from_1', 'apply_value_to_1', 'value1',
-                    'apply_value_from_2', 'apply_value_to_2', 'value2', 'apply_value_from_3', 'apply_value_to_3', 'value3', 'customer_not_apply_ids',
+                    'apply_value_from_2', 'apply_value_to_2', 'value2', 'apply_value_from_3', 'apply_value_to_3', 'value3', 'customer_not_apply',
                 ],
             }
         }
