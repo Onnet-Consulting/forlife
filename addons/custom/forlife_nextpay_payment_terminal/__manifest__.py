@@ -23,4 +23,7 @@
             'forlife_nextpay_payment_terminal/static/**/*',
         ],
     },
+    'external_dependencies': {
+        'python': ['pycryptodome'],
+    },
 }
