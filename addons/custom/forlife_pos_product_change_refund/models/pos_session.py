@@ -9,6 +9,7 @@ class PosSession(models.Model):
         values = super(PosSession, self)._loader_params_product_product()
 
         values['search_params']['fields'].append('is_product_auto')
+        values['search_params']['fields'].append('is_voucher_auto')
         return values
 
     def load_pos_data(self):
