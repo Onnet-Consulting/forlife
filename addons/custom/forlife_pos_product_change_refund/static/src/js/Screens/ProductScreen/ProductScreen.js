@@ -17,6 +17,19 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
             }
         }
 
+        async _getAddProductOptions(product, base_code) {
+            var data = await super._getAddProductOptions(...arguments);
+            if (this.currentOrder.is_change_product) {
+                var total_price = this.currentOrder.get_total_with_tax();
+                if (total_price < 0) {
+                    if (product.is_voucher_auto) {
+                        data.price = Math.abs(total_price);
+                    }
+                }
+            }
+            return data;
+        }
+
         async _onClickPay() {
             // manhld
             var self = this;

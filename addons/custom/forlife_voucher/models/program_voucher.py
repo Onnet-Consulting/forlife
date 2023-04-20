@@ -127,6 +127,7 @@ class ProgramVoucher(models.Model):
                                 'price_residual': rec.price - 0,
                                 'end_date':self.end_date,
                             })
+                    self.program_voucher_line_ids = [(5, self.program_voucher_line_ids.ids)]
                 if not rec.partner_ids:
                     for i in range(rec.count):
                         self.env['voucher.voucher'].create({
@@ -138,6 +139,7 @@ class ProgramVoucher(models.Model):
                             'price_residual': rec.price - 0,
                             'end_date': self.end_date,
                         })
+                    self.program_voucher_line_ids = [(5, self.program_voucher_line_ids.ids)]
         else:
             raise UserError(_("Vui lòng thêm dòng thông tin cho vourcher!"))
 

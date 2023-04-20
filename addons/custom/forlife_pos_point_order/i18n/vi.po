@@ -23,7 +23,7 @@ msgstr "Bút toán tích điểm"
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__allow_compensate_point
 msgid "Allow Compensate Point"
-msgstr ""
+msgstr "Cho phép tích điểm bù"
 
 #. module: forlife_pos_point_order
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_pos_compensate_point_order
