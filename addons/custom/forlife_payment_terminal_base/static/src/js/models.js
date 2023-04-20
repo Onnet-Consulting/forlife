@@ -1,8 +1,8 @@
-odoo.define('forlife_point_of_sale.models', function (require) {
+odoo.define('forlife_payment_terminal_base.models', function (require) {
     const {Payment} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
 
-    const PosCustomPayment = (Payment) => class PosCustomPayment extends Payment {
+    const PaymentTerminalBase = (Payment) => class PaymentTerminalBase extends Payment {
         constructor(obj, options) {
             super(obj, options);
             this.unique_id = this.unique_id || `${this.pos.config.id}_${(+new Date()).toString()}`;
@@ -20,7 +20,7 @@ odoo.define('forlife_point_of_sale.models', function (require) {
         }
     }
 
-    Registries.Model.extend(Payment, PosCustomPayment);
+    Registries.Model.extend(Payment, PaymentTerminalBase);
 
 
 });
