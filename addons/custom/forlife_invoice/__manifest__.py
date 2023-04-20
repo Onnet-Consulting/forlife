@@ -10,7 +10,8 @@
         'purchase',
         'base',
         'forlife_purchase',
-        'forlife_stock'
+        'forlife_stock',
+        'bkav_connector',
     ],
     "data": [
         'views/invoice_view.xml',

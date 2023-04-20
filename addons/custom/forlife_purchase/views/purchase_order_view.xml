@@ -242,7 +242,7 @@
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
-                        <field name="product_uom" readonly="1"/>
+                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="location_id"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="taxes_id" widget="many2many_tags"
@@ -259,14 +259,14 @@
                                force_save="1"/>
                         <!--                    <field name="price_subtotal" string="Discounted Subtotal" widget="monetary"-->
                         <!--                           sum="discounted subtotal" optional="hide"/>-->
-                        <field name="event_id" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"
+<!--                        <field name="event_id" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"-->
                         />
-                        <field name="occasion_code_id" string="Mã vụ việc"/>
+                        <field name="occasion_code_id" string="Mã vụ việc" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="production_id" string="Manufacturing Order"/>
                         <field name="account_analytic_id" string="Cost Center"/>
-                        <field name="receive_date" string="Receive Date"/>
+                        <field name="receive_date" string="Receive Date" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="tolerance" string="Tolerance"/>
-                        <field name="received" attrs="{'invisible': [('received', '=', False)]}"/>
+                        <field name="received" attrs="{'column_invisible': ['|',('received', '=', False),('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="billed" attrs="{'invisible': [('billed', '=', False)]}"/>
                         <field name="readonly_discount" invisible="1"/>
                         <field name="readonly_discount_percent" invisible="1"/>
@@ -292,7 +292,6 @@
                                groups="product.group_stock_packaging" optional="show"/>
                         <button name="action_purchase_history" type="object" icon="fa-history" title="Purchase History"
                                 attrs="{'invisible': [('id', '=', False)]}"/>
-                        <field name="price_subtotal" widget="monetary"/>
                         <field name="price_total" invisible="1"/>
                         <field name="price_tax" invisible="1"/>
                         <field name="company_id" invisible="1"/>
@@ -331,7 +330,7 @@
             </field>
         </record>
         <record id="action_purchase_order_not_inter_company_cost" model="ir.actions.act_window">
-            <field name="name">Đơn mua hàng nội bộ</field>
+            <field name="name">Đơn mua hàng nội địa</field>
             <field name="res_model">purchase.order</field>
             <field name="view_mode">tree,form</field>
             <field name="view_ids" eval="[(5, 0, 0),
@@ -357,7 +356,7 @@
                   action="forlife_purchase.action_purchase_order_is_inter_company" name="Purchase Order Inter Company" sequence="1"/>
         <!--        Menu Not Inter Company-->
         <menuitem id="menu_purchase_order_not_inter_company_cost" parent="purchase.menu_procurement_management"
-                  action="forlife_purchase.action_purchase_order_not_inter_company_cost" name="Đơn mua hàng nội bộ" sequence="2"/>
+                  action="forlife_purchase.action_purchase_order_not_inter_company_cost" name="Đơn mua hàng nội địa" sequence="2"/>
         <menuitem id="menu_purchase_order_not_inter_company_tax" parent="purchase.menu_procurement_management"
                   action="forlife_purchase.action_purchase_order_not_inter_company_tax" name="Đơn mua hàng nhập khẩu" sequence="2"/>
 

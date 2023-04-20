@@ -211,8 +211,11 @@ class PurchaseOrder(models.Model):
     ## Compute field action hearder
     def compute_count_invoice_inter_company_customer(self):
         for item in self:
-            item.count_invoice_inter_company_customer = len(
-                self.data_account_move([('reference', '=', item.name), ('is_from_ncc', '=', False)]))
+            data = self.data_account_move([('reference', '=', item.name), ('is_from_ncc', '=', False)])
+            if data:
+                item.count_invoice_inter_company_customer = len(data)
+            else:
+                item.count_invoice_inter_company_customer = False
 
     def data_account_move(self, domain):
         account_move = self.env['account.move'].search(domain)
@@ -389,8 +392,6 @@ class PurchaseOrder(models.Model):
             for spl, pol, sol in zip(data_stp_out.move_ids_without_package, order_line, data_so.order_line):
                 spl.write({'quantity_done': pol.get('product_quantity')})
                 sol.write({'qty_delivered': spl.quantity_done})
-            data_stp_out.with_context({'skip_immediate': True}).button_validate()
-
             for item in data_so.picking_ids:
                 item.write({
                     'location_id': data.get('source_location_id'),
@@ -408,6 +409,7 @@ class PurchaseOrder(models.Model):
                 'reference': data_so.name,
                 'is_from_ncc': True
             })
+
             invoice_ncc.action_post()
             invoice_customer.write({
                 'invoice_date': datetime.datetime.now(),
@@ -417,7 +419,8 @@ class PurchaseOrder(models.Model):
                 'is_from_ncc': False
             })
             invoice_customer.action_post()
-            ## Tạo mới phiếu nhập hàng
+            ## Tạo mới phiếu nhập hàng và xác nhận phiếu xuất
+            data_stp_out.with_context({'skip_immediate': True}).button_validate()
             for st in data_all_picking:
                 st_picking_in = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
                     data_all_picking[st]).button_validate()
@@ -525,113 +528,155 @@ class PurchaseOrder(models.Model):
     def action_create_invoice(self):
         """Create the invoice associated to the PO.
         """
-        precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+        if len(self) > 1 and self[0].type_po_cost in ('cost', 'tax'):
+            result = self.create_multi_invoice_vendor()
+        else:
+            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
 
-        # 1) Prepare invoice vals and clean-up the section lines
-        invoice_vals_list = []
+            # 1) Prepare invoice vals and clean-up the section lines
+            invoice_vals_list = []
+            sequence = 10
+            for order in self:
+                if order.custom_state != 'approved':
+                    raise UserError(
+                        _('Tạo hóa đơn không hợp lệ!'))
+                # Disable because custom state
+                # if order.invoice_status != 'to invoice':
+                #     continue
+                order = order.with_company(order.company_id)
+                pending_section = None
+                # Invoice values.
+                invoice_vals = order._prepare_invoice()
+                # Invoice line values (keep only necessary sections).
+                for line in order.order_line:
+                    data_line = {'sequence': sequence, 'price_subtotal': line.price_subtotal,
+                                 'promotions': line.free_good,
+                                 'exchange_quantity': line.exchange_quantity,
+                                 'quantity': line.product_qty,
+                                 'vendor_price': line.vendor_price,
+                                 'warehouse': line.location_id.id,
+                                 'discount': line.discount_percent,
+                                 'event_id': line.event_id.id,
+                                 'work_order': line.production_id.id,
+                                 'account_analytic_id': line.account_analytic_id.id,
+                                 'request_code': line.request_purchases,
+                                 'quantity_purchased': line.purchase_quantity,
+                                 'discount_invoice': line.discount,
+                                 'taxes_id': line.taxes_id.id,
+                                 'tax_amount': line.price_tax,
+                                 'uom_id': line.product_uom.id,
+                                 'price_unit': line.price_unit}
+                    if line.display_type == 'line_section':
+                        pending_section = line
+                        continue
+                    # Current value always = 0
+                    # if not float_is_zero(line.qty_to_invoice, precision_digits=precision):
+                    if pending_section:
+                        line_vals = pending_section._prepare_account_move_line()
+                        line_vals.update(data_line)
+                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                        sequence += 1
+                        pending_section = None
+                    line_vals = line._prepare_account_move_line()
+                    line_vals.update(data_line)
+                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                    sequence += 1
+                invoice_vals_list.append(invoice_vals)
+
+            if not invoice_vals_list:
+                raise UserError(
+                    _('There is no invoiceable line. If a product has a control policy based on received quantity, please make sure that a quantity has been received.'))
+
+            # 2) group by (company_id, partner_id, currency_id) for batch creation
+            new_invoice_vals_list = []
+            for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
+                    x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
+                origins = set()
+                payment_refs = set()
+                refs = set()
+                ref_invoice_vals = None
+                # request_co = []
+                # request_co.append((0, 0, {
+                #     'request_code': self.source_document
+                # }))
+                for invoice_vals in invoices:
+                    if not ref_invoice_vals:
+                        ref_invoice_vals = invoice_vals
+                    else:
+                        ref_invoice_vals['invoice_line_ids'] += invoice_vals['invoice_line_ids']
+                    origins.add(invoice_vals['invoice_origin'])
+                    payment_refs.add(invoice_vals['payment_reference'])
+                    refs.add(invoice_vals['ref'])
+                ref_invoice_vals.update({
+                    'purchase_type': self.purchase_type if len(self) == 1 else 'product',
+                    'reference': ', '.join(self.mapped('name')),
+                    'ref': ', '.join(refs)[:2000],
+                    'invoice_origin': ', '.join(origins),
+                    'is_check': True,
+                    # 'invoice_line_ids': request_co,
+                    'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
+                })
+                new_invoice_vals_list.append(ref_invoice_vals)
+            invoice_vals_list = new_invoice_vals_list
+
+            # 3) Create invoices.
+            moves = self.env['account.move']
+            AccountMove = self.env['account.move'].with_context(default_move_type='in_invoice')
+            for vals in invoice_vals_list:
+                moves |= AccountMove.with_company(vals['company_id']).create(vals)
+            # 4) Some moves might actually be refunds: convert them if the total amount is negative
+            # We do this after the moves have been created since we need taxes, etc. to know if the total
+            # is actually negative or not
+            moves.filtered(
+                lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
+            return self.action_view_invoice(moves)
+
+    def create_multi_invoice_vendor(self):
         sequence = 10
+        vals_all_invoice = {}
         for order in self:
+            if order.inventory_status != 'done' and order.purchase_type == 'product':
+                raise ValidationError(
+                    'Phiếu nhận hàng của đơn mua hàng %s có thể chưa hoàn thành/chưa có!' % (order.name))
             if order.custom_state != 'approved':
                 raise UserError(
                     _('Tạo hóa đơn không hợp lệ!'))
-            # Disable because custom state
-            # if order.invoice_status != 'to invoice':
-            #     continue
-            order = order.with_company(order.company_id)
-            pending_section = None
-            # Invoice values.
-            invoice_vals = order._prepare_invoice()
-            # Invoice line values (keep only necessary sections).
             for line in order.order_line:
-                if line.display_type == 'line_section':
-                    pending_section = line
-                    continue
-                # Current value always = 0
-                # if not float_is_zero(line.qty_to_invoice, precision_digits=precision):
-                if pending_section:
-                    line_vals = pending_section._prepare_account_move_line()
-                    line_vals.update({'sequence': sequence})
-                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                    sequence += 1
-                    pending_section = None
-                line_vals = line._prepare_account_move_line()
-                line_vals.update({'sequence': sequence})
-                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                data_line = {'sequence': sequence, 'price_subtotal': line.price_subtotal,
+                             'promotions': line.free_good,
+                             'exchange_quantity': line.exchange_quantity,
+                             'quantity': line.product_qty,
+                             'vendor_price': line.vendor_price,
+                             'warehouse': line.location_id.id,
+                             'discount': line.discount_percent,
+                             'event_id': line.event_id.id,
+                             'work_order': line.production_id.id,
+                             'account_analytic_id': line.account_analytic_id.id,
+                             'request_code': line.request_purchases,
+                             'quantity_purchased': line.purchase_quantity,
+                             'discount_invoice': line.discount,
+                             'taxes_id': line.taxes_id.id,
+                             'tax_amount': line.price_tax,
+                             'uom_id': line.product_uom.id,
+                             'price_unit': line.price_unit}
                 sequence += 1
-            invoice_vals_list.append(invoice_vals)
-
-        if not invoice_vals_list:
-            raise UserError(
-                _('There is no invoiceable line. If a product has a control policy based on received quantity, please make sure that a quantity has been received.'))
-
-        # 2) group by (company_id, partner_id, currency_id) for batch creation
-        new_invoice_vals_list = []
-        for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
-                x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
-            origins = set()
-            payment_refs = set()
-            refs = set()
-            ref_invoice_vals = None
-            # request_co = []
-            # request_co.append((0, 0, {
-            #     'request_code': self.source_document
-            # }))
-            for invoice_vals in invoices:
-                if not ref_invoice_vals:
-                    ref_invoice_vals = invoice_vals
+                key = order.purchase_type
+                invoice_vals = order._prepare_invoice()
+                invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.datetime.now()})
+                order = order.with_company(order.company_id)
+                line_vals = line._prepare_account_move_line()
+                line_vals.update(data_line)
+                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                if vals_all_invoice.get(key):
+                    vals_all_invoice.get(key)['invoice_line_ids'].append((0, 0, line_vals))
                 else:
-                    ref_invoice_vals['invoice_line_ids'] += invoice_vals['invoice_line_ids']
-                origins.add(invoice_vals['invoice_origin'])
-                payment_refs.add(invoice_vals['payment_reference'])
-                refs.add(invoice_vals['ref'])
-            ref_invoice_vals.update({
-                'reference': ', '.join(self.mapped('name')),
-                'ref': ', '.join(refs)[:2000],
-                'invoice_origin': ', '.join(origins),
-                'is_check': True,
-                # 'invoice_line_ids': request_co,
-                'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
-            })
-            new_invoice_vals_list.append(ref_invoice_vals)
-        invoice_vals_list = new_invoice_vals_list
-
-        # 3) Create invoices.
+                    vals_all_invoice.update({
+                        key: invoice_vals
+                    })
         moves = self.env['account.move']
-        AccountMove = self.env['account.move'].with_context(default_move_type='in_invoice')
-        for vals in invoice_vals_list:
-            moves |= AccountMove.with_company(vals['company_id']).create(vals)
-        # 4) Some moves might actually be refunds: convert them if the total amount is negative
-        # We do this after the moves have been created since we need taxes, etc. to know if the total
-        # is actually negative or not
-        moves.filtered(
-            lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
-        ## update thêm data vào line hóa đơn hóa đơn
-        for rec in self:
-            account_move = self.env['account.move'].search([('invoice_origin', '=', rec.name)])
-            if account_move:
-                for pol in rec.order_line:
-                    for item in account_move.invoice_line_ids:
-                        if pol.product_id == item.product_id:
-                            item.write({
-                                'price_subtotal': pol.price_subtotal,
-                                'promotions': pol.free_good,
-                                'exchange_quantity': pol.exchange_quantity,
-                                'quantity': pol.product_qty,
-                                'vendor_price': pol.vendor_price,
-                                'warehouse': pol.location_id.id,
-                                'discount': pol.discount_percent,
-                                'event_id': pol.event_id.id,
-                                'work_order': pol.production_id,
-                                'account_analytic_id': pol.account_analytic_id.id,
-                                'request_code': pol.request_purchases,
-                                'quantity_purchased': pol.purchase_quantity,
-                                'discount_invoice': pol.discount,
-                                'taxes_id': pol.taxes_id.id,
-                                'tax_amount': pol.price_tax,
-                                'uom_id': pol.product_uom.id,
-                                'price_unit': pol.price_unit,
-                            })
-        return self.action_view_invoice(moves)
+        for data in vals_all_invoice:
+            move = moves.create(vals_all_invoice.get(data)).action_post()
+        return True
 
     def _prepare_picking(self):
         if not self.group_id:
@@ -717,6 +762,11 @@ class PurchaseOrderLine(models.Model):
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     description = fields.Char('Mô tả', related='product_id.name')
 
+    @api.constrains('taxes_id')
+    def constrains_taxes_id(self):
+        for item in self:
+            if len(item.taxes_id) > 1:
+                raise ValidationError('Bạn chỉ chọn được 1 giá trị thuế')
 
     _sql_constraints = [
         (
@@ -728,12 +778,13 @@ class PurchaseOrderLine(models.Model):
 
     def compute_received(self):
         for item in self:
-            if item .order_id:
+            if item.order_id:
                 st_picking = self.env['stock.picking'].search(
                     [('origin', '=', item.order_id.name), ('state', '=', 'done')])
                 if st_picking:
                     acc_move_line = self.env['stock.move'].search(
-                        [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped('quantity_done')
+                        [('picking_id', 'in', st_picking.ids), ('product_id', '=', item.product_id.id)]).mapped(
+                        'quantity_done')
                     item.received = sum(acc_move_line)
                 else:
                     item.received = False
@@ -758,7 +809,7 @@ class PurchaseOrderLine(models.Model):
     def onchange_unit_price(self):
         self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity > 0 else False
 
-    @api.onchange('product_id', 'supplier_id', 'is_passersby', 'free_good')
+    @api.onchange('product_id', 'supplier_id', 'is_passersby',)
     def onchange_vendor_price(self):
         if not self.is_passersby:
             if self.product_id and self.supplier_id:
@@ -766,8 +817,6 @@ class PurchaseOrderLine(models.Model):
                     'product_tmpl_id', '=', self.product_id.product_tmpl_id.id)])
                 if data:
                     self.exchange_quantity = data.amount_conversion
-        if self.free_good:
-            self.vendor_price = False
         else:
             if not self.is_passersby:
                 if self.product_id and self.supplier_id:
@@ -775,6 +824,11 @@ class PurchaseOrderLine(models.Model):
                         'product_tmpl_id', '=', self.product_id.product_tmpl_id.id)])
                     if data:
                         self.vendor_price = data.price
+
+    @api.onchange('free_good')
+    def onchange_vendor_prices(self):
+        if self.free_good:
+            self.vendor_price = False
 
     @api.onchange('product_id', 'order_id')
     def onchange_receive_date(self):
@@ -998,11 +1052,13 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     is_from_ncc = fields.Boolean('From Ncc')
+    reference = fields.Char
 
     @api.model
     def create(self, vals):
         res = super().create(vals)
         return res
+
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
@@ -1010,7 +1066,8 @@ class StockPicking(models.Model):
     def button_validate(self):
         res = super().button_validate()
         for record in self:
-            po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)], limit=1)
+            po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],
+                                                   limit=1)
             if po:
                 invoice_line = []
                 if po.type_po_cost == 'tax':
@@ -1050,7 +1107,7 @@ class StockPicking(models.Model):
                     data_sum = sum(data_line)
                     if data_sum <= 0:
                         raise ValidationError('Tổng tiền của sản phẩm là 0')
-                    for item,total in zip(data_in_line, data_line):
+                    for item, total in zip(data_in_line, data_line):
                         if item.product_id.categ_id and item.product_id.categ_id.property_stock_valuation_account_id:
                             account_1561 = item.product_id.categ_id.property_stock_valuation_account_id.id
                         else:
@@ -1085,7 +1142,7 @@ class StockPicking(models.Model):
                     'exchange_rate': po.exchange_rate,
                     'date': datetime.datetime.now(),
                     'invoice_payment_term_id': po.payment_term_id.id,
-                    'due_date': po.date_planned,
+                    'invoice_date_due': po.date_planned,
                     'invoice_line_ids': invoice_line,
                     'restrict_mode_hash_table': False
                 }

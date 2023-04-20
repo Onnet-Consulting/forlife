@@ -42,6 +42,21 @@
                 <xpath expr="//label[@for='ref']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="//field[@name='purchase_vendor_bill_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//label[@for='purchase_vendor_bill_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='date']" position="attributes">
+                    <attribute name="required">0</attribute>
+                </xpath>
+<!--                <xpath expr="//field[@name='company_type']" position="attributes">-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </xpath>-->
+<!--                <xpath expr="//label[@for='company_type']" position="attributes">-->
+<!--                    <attribute name="invisible">1</attribute>-->
+<!--                </xpath>-->
                 <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="domain">[('active', '=', True)]</attribute>
                     <attribute name="required">1</attribute>
@@ -61,7 +76,7 @@
                 </xpath>
                 <xpath expr="//field[@name='payment_reference']" position="before">
                     <field name="payment_term_invoice" string="Chính sách thanh toán"/>
-                    <field name="due_date"/>
+                    <field name="invoice_date_due" string="Hạn xử lý"/>
                 </xpath>
                 <xpath expr="//div[@name='journal_div']" position="after">
                     <field name="partner_domain" invisible="1"/>
@@ -76,7 +91,6 @@
                            attrs="{'readonly': [('is_check', '=', True)]}">
                         <tree editable="bottom" class="width-hh">
                             <field name="vendor_sup_invoice" invisible="1"/>
-<!--                            <field name="purchase_order_id" invisible="1"/>-->
                             <field name="is_check_exchange_quantity" invisible="1"/>
                             <field name="is_check_is_passersby" invisible="1"/>
                             <field name="product_id"
@@ -102,7 +116,7 @@
                             <field name="vendor_price"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_check_is_passersby', '=', False)]}"
                                    force_save="1"/>
-                            <field name="price_unit"/>
+                            <field name="price_unit" required="1"/>
                             <field name="warehouse"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="discount_invoice" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
@@ -110,7 +124,7 @@
                             <field name="taxes_id" optional="show"/>
                             <field name="tax_amount"/>
                             <field name="price_subtotal"/>
-                            <field name="work_order"
+                            <field name="work_order" domain="[('state', '=', 'approved')]"
                                    attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')]}"/>
                             <field name="event_id"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
@@ -187,13 +201,45 @@
                         <field name="vendor_back_ids" class="width-hh" widget="one2many" mode="tree">
                             <tree editable="bottom">
                                 <control>
-                                    <create name="add" string="Add" readonly="1"/>
+                                    <create name="add" string="Thêm mới" readonly="1"/>
                                 </control>
                                 <field name="vendor"/>
                                 <field name="code_tax"/>
                                 <field name="street_ven"/>
                             </tree>
                         </field>
+                    </page>
+                    <field name="exists_bkav" invisible="1"/>
+                    <page string="e-Invoice" name="e_invoice" attrs="{'invisible':[('exists_bkav', '=', False)]}">
+                        <field name="is_check_cancel" invisible="1"/>
+                        <field name="e_invoice_ids" class="width-hh" widget="one2many" mode="tree">
+                            <tree editable="bottom">
+                                <control>
+                                    <create name="add" string="Thêm mới" readonly="1"/>
+                                </control>
+                                <field name="number_e_invoice"/>
+                                <field name="date_start_e_invoice"/>
+                                <field name="state_e_invoice"/>
+                            </tree>
+                        </field>
+                        <div class="xl-12 d-flex" style="justify-content: end;"
+                             attrs="{'invisible':[('exists_bkav', '=', False)]}">
+                            <div style="padding: 40px;" attrs="{'invisible':[('is_check_cancel', '=', True)]}">
+                                <button name="getting_invoice_status" type="object"
+                                        string="Cập nhật trạng thái"
+                                        class="oe_highlight"/>
+                            </div>
+                            <div style="padding: 40px;">
+                                <button name="action_download_view_e_invoice" type="object"
+                                        string="Xem và tải xuống HĐĐT"
+                                        class="oe_highlight"/>
+                            </div>
+                            <div style="padding: 40px;" attrs="{'invisible':[('is_check_cancel', '=', True)]}">
+                                <button name="cancel_invoice" type="object"
+                                        string="Hủy HĐĐT trên BKAV"
+                                        class="oe_highlight"/>
+                            </div>
+                        </div>
                     </page>
                 </xpath>
             </field>
