@@ -73,8 +73,8 @@ const PosOrderCardRank = (Order) => class extends Order {
             let card_rank = partner.card_rank_by_brand[this.pos.pos_branch[0].id];
             if (card_rank) {
                 let cr_program = this.pos.card_rank_program_by_rank_id[card_rank[0]] || {};
-                let customer_not_apply_ids = cr_program.customer_not_apply_ids || [];
-                if ((customer_not_apply_ids.length === 0) || (cr_program && customer_not_apply_ids.length > 0 && !customer_not_apply_ids.includes(partner.id))) {
+                let customer_not_apply = cr_program.customer_not_apply || [];
+                if ((customer_not_apply.length === 0) || (cr_program && customer_not_apply.length > 0 && !customer_not_apply.includes(partner.id))) {
                     res = true;
                 }
             }
