@@ -60,18 +60,12 @@ class StockPicking(models.Model):
     other_export = fields.Boolean(default=False)
     other_import = fields.Boolean(default=False)
     transfer_stock_inventory_id = fields.Many2one('transfer.stock.inventory')
-
+    other_import_export_request_id = fields.Many2one('forlife.other.in.out.request', string="Other Import Export Request")
     stock_custom_location_ids = fields.One2many('stock.location', 'stock_custom_picking_id')
-    is_production_order = fields.Boolean(compute='compute_production_order')
+
     move_ids_without_package = fields.One2many(
         'stock.move', 'picking_id', string="Hoạt động", compute='_compute_move_without_package',
         inverse='_set_move_without_package', compute_sudo=True)
-
-    @api.depends('location_id')
-    def compute_production_order(self):
-        for rec in self:
-            rec.is_production_order = rec.location_id.is_work_order
-
 
     location_id = fields.Many2one(
         'stock.location', "Source Location",
@@ -133,11 +127,10 @@ class StockPicking(models.Model):
 
     @api.model
     def load(self, fields, data):
-        list_fields = ['move_ids_without_package/location_id', 'move_ids_without_package/location_dest_id']
-        list_data = [data[0][1], data[0][2]]
+        list_fields = ['move_ids_without_package/product_id', 'move_ids_without_package/location_id', 'move_ids_without_package/location_dest_id']
         fields.extend(list_fields)
         for rec in data:
-            rec.extend(list_data)
+            rec.extend([rec[7], rec[1], rec[2]])
             rec[8] = ''
         return super().load(fields, data)
 
@@ -158,6 +151,11 @@ class StockPicking(models.Model):
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
+    def _action_confirm(self, merge=True, merge_into=False):
+        moves = super(StockMove, self)._action_confirm(merge=False, merge_into=merge_into)
+        moves._create_quality_checks()
+        return moves
+
     def _domain_reason_id(self):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
@@ -176,6 +174,8 @@ class StockMove(models.Model):
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
     work_production = fields.Many2one('forlife.production', string='Lệnh sản xuất')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
+    is_production_order = fields.Boolean(default=False, compute='compute_production_order')
+    is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
     location_id = fields.Many2one(
         'stock.location', "Địa điểm nguồn",
         auto_join=True, index=True,
@@ -187,6 +187,12 @@ class StockMove(models.Model):
         auto_join=True, index=True,
         check_company=True,
         help="Location where the system will stock the finished products.")
+
+    @api.depends('reason_id')
+    def compute_production_order(self):
+        for rec in self:
+            rec.is_production_order = rec.reason_id.is_work_order
+            rec.is_amount_total = rec.reason_id.is_price_unit
 
     @api.onchange('product_id')
     def _onchange_product_id(self):

@@ -155,8 +155,8 @@ class SaleOrder(models.Model):
         ## Danh sách khách hàng
         _logger.info("----------------Start Sync customer from NhanhVn --------------------")
 
-        today = datetime.datetime.today().strftime("%y/%m/%d")
-        previous_day = (datetime.datetime.today() - datetime.timedelta(days=10)).strftime("%Y-%m-%d")
+        today = datetime.datetime.today().strftime("%Y-%m-%d")
+        previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
         _logger.info(f'Today is: {today}, Previous day is: {previous_day}')
         ## Check tồn tại data url
         nhanh_configs = self.get_nhanh_configs()
@@ -165,8 +165,11 @@ class SaleOrder(models.Model):
             _logger.info(f'Nhanh configuration does not set')
             return False
         data = "'{" + f'"fromDate":"{previous_day}","toDate":"{today}"' + "}'"
+        data = data[1:-1]
+        data = data.replace("\\\\", "\\")
+        data_json = json.dumps(data)
         query_params = {
-            'data': data
+            'data': data_json
         }
 
         list_number_phone = list(self.env['res.partner'].search([]).mapped('phone'))

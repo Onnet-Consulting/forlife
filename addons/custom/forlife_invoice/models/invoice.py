@@ -1,8 +1,26 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
+import re
 import json
 
+def check_email(val):
+    if val:
+        match = re.match('^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', val)
+        if match == None:
+            return False
+        else:
+            return True
+    return False
+
+def check_length_255(val):
+    if val:
+        length = len(val)
+        if length > 255:
+            return False
+        else:
+            return True
+    return False
 
 class AccountMove(models.Model):
     _inherit = "account.move"
@@ -14,9 +32,7 @@ class AccountMove(models.Model):
         ('service', 'Service'),
         ('asset', 'Asset'),
     ], string='PO Type', default='product', required=1)
-    number_bills = fields.Char(string='Number bills')
-    bill_date = fields.Datetime(string='Bill Date')
-    due_date = fields.Datetime(string='Due Date')
+    number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string="Exchange Rate", default=1)
     accounting_date = fields.Datetime(string='Accounting Date')
@@ -44,17 +60,25 @@ class AccountMove(models.Model):
                                 string='Invoice Cost Line',
                                 compute='_compute_record_for_exchange_rate_line_and_cost_line',
                                 store=1)
+    ##tab e-invoice-bkav
+    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice', compute='_compute_e_invoice_ids_exists_bkav')
+
+    @api.depends('exists_bkav')
+    def _compute_e_invoice_ids_exists_bkav(self):
+        for rec in self:
+            data_e_invoice = self.env['e.invoice'].search([('e_invoice_id', '=', rec.id)], limit=1)
+            if rec.exists_bkav:
+                self.env['e.invoice'].create({
+                    'number_e_invoice': rec.invoice_no,
+                    'date_start_e_invoice': rec.create_date,
+                    'state_e_invoice': rec.invoice_state_e,
+                    'e_invoice_id': rec.id,
+                })
+            rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
+
     transportation_total = fields.Float(string='Tổng chi phí vận chuyển')
     loading_total = fields.Float(string='Tổng chi phí bốc dỡ')
     custom_total = fields.Float(string='Tổng chi phí thông quan')
-
-    # @api.depends('purchase_order_product_id')
-    # def _compute_stock_pinking_domain_by_purchase_order_product_id(self):
-    #     for rec in self:
-    #         order_lines_ids = rec.receiving_warehouse_id.filtered(lambda r: r.state == 'done').ids
-    #         print(order_lines_ids,111111111111111111111111111)
-
-
 
     @api.depends('partner_id')
     def _compute_partner_domain(self):
@@ -129,13 +153,20 @@ class AccountMove(models.Model):
             'invoice_line_ids': [(6, 0, order_invoice_line_ids)]
         })
 
-    @api.constrains('exchange_rate', 'trade_discount')
+    @api.constrains('exchange_rate', 'trade_discount', 'number_bills')
     def constrains_exchange_rare(self):
         for item in self:
             if item.exchange_rate < 0:
                 raise ValidationError('Tỷ giá không được âm!')
             if item.trade_discount < 0:
                 raise ValidationError('Chiết khấu thương mại không được âm!')
+            if item.number_bills:
+                if not check_email(item.number_bills):
+                    raise ValidationError(_("Số hóa đơn không hợp lệ!!"))
+                elif not check_length_255(item.email):
+                    raise ValidationError(_('Số hóa đơn không được dài hơn 255 ký tự!!'))
+                else:
+                    return False
 
     @api.depends('trade_discount', 'total_trade_discount')
     def _compute_total_trade_discount_and_trade_discount(self):
@@ -425,5 +456,16 @@ class InvoiceCostLine(models.Model):
     def compute_custom_costs(self):
         for rec in self:
             rec.custom_costs = rec.invoice_cost_id.custom_total * rec.custom_costs_percent
+
+class eInvoice(models.Model):
+    _name = 'e.invoice'
+    _description = 'e Invoice'
+
+    e_invoice_id = fields.Many2one('account.move', string='e invoice')
+
+    number_e_invoice = fields.Char('Số HĐĐT')
+    date_start_e_invoice = fields.Char('Ngày phát hành HĐĐT')
+    state_e_invoice = fields.Char('Trạng thái HĐĐT', related='e_invoice_id.invoice_state_e')
+
 
 
