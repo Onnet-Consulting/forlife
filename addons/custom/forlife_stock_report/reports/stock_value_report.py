@@ -671,3 +671,5 @@ class StockValueReport(models.TransientModel):
             raise ValidationError(_('Date from must be the first day of month'))
         if self.date_to.day != calendar.monthrange(self.date_to.year, self.date_to.month)[1]:
             raise ValidationError(_('Date to must be the last day of month'))
+        if not self.detail_ids:
+            raise ValidationError(_('Please get report before update quant period'))
