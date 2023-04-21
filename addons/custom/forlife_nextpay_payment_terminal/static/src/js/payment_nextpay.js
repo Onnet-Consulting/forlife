@@ -91,7 +91,7 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
             let payment_data = this._nextpay_pay_data();
             let request_data = this.get_request_data(payment_data);
 
-            const response = await this._call_nextpay(request_data.url, request_data.body);
+            let response = await this._call_nextpay(request_data.url, request_data.body);
             return self._handle_nextpay_received_payment_request_response(response);
         },
 
@@ -126,7 +126,7 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
             let self = this;
             line.nextpay_received_response = true;
             line.nextpay_sent_payment = true;
-            if (response.resCode !== 200) {
+            if (!response || response.resCode !== 200) {
                 let msg = response.message;
                 this._show_error(_.str.sprintf(_t('An unexpected error occurred. Message from NextPay: %s'), msg));
                 line.set_payment_status('retry');
@@ -138,7 +138,7 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
                     if (line && line.nextpay_sent_payment) {
                         line.set_payment_status('timeout');
                     }
-                }, 60000)
+                }, self.transaction_timeout)
             }
             return true;
         },

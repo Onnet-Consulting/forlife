@@ -8,27 +8,35 @@ odoo.define('forlife_nextpay_payment_terminal.models', function (require) {
             this.nextpay_received_response = false;
             this.nextpay_sent_payment = false;
             this.nextpay_waiting_transaction_response_timeout = false;
+            this.transaction_timeout = 60000;
         }
 
         init_from_JSON(json) {
             super.init_from_JSON(...arguments);
             this.nextpay_received_response = json.nextpay_received_response;
             this.nextpay_sent_payment = json.nextpay_sent_payment;
-            if (json.nextpay_waiting_transaction_response_timeout) {
-                clearTimeout(json.nextpay_waiting_transaction_response_timeout);
-            }
+            this.init_nextpay_transaction_response_timeout();
         }
 
         export_as_JSON() {
             return _.extend(super.export_as_JSON(...arguments), {
                 nextpay_received_response: this.nextpay_received_response,
                 nextpay_sent_payment: this.nextpay_sent_payment,
-                nextpay_waiting_transaction_response_timeout: this.nextpay_waiting_transaction_response_timeout
             });
+        }
+
+        init_nextpay_transaction_response_timeout() {
+            clearTimeout(this.nextpay_waiting_transaction_response_timeout);
+            const self = this;
+            if (this.get_payment_status() === 'waitingCapture' && this.nextpay_sent_payment) {
+                this.nextpay_waiting_transaction_response_timeout = setTimeout(function () {
+                    self.set_payment_status('done');
+                }, self.transaction_timeout)
+            }
         }
     }
 
     Registries.Model.extend(Payment, PosNextPayPayment);
 
-    
+
 });
