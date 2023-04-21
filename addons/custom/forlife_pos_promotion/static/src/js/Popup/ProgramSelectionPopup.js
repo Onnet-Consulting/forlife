@@ -164,15 +164,10 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 //               this.setComboDetails(newLinesToApplyNoSelectedCode);
                this.setComboDetails(newLinesToApplyNoSelected);
 
-                this.state.programs.forEach(p => {
-                    if (combo_count.hasOwnProperty(p.id)) {
-                        p.forecastedNumber = combo_count[p.id];
-                        p.forecasted_discounted_amount = 0.0;
-                    };
-                });
                 let discountedLinesNoSelect = Object.values(newLinesToApplyNoSelected).reduce((tmp, arr) => {tmp.push(...arr); return tmp;}, []);
                 let noSelectedOption = not_selected_programs.find(op => op.id == notSelectProgram.str_id);
 
+                noSelectedOption.forecastedNumber = combo_count[notSelectProgram.id];
                 noSelectedOption.forecasted_discounted_amount = discountedLinesNoSelect.reduce((tmp, line) => {
                     let per_line = line.promotion_usage_ids.reduce((tmp_line, u) => {
                         if (u.str_id == noSelectedOption.id) {
