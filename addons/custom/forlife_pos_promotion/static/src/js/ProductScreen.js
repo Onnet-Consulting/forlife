@@ -35,7 +35,22 @@ export const PosPromotionProductScreen = (ProductScreen) =>
                 }
 
             };
-            return super._onClickPay(...arguments);
+            await order.get_history_program_usages()
+            let invalidProgram = order._validateLimitUsagePromotion();
+            if (invalidProgram) {
+                let msg = '';
+                if (invalidProgram[1] == 'limit_usage_per_order') {
+                    msg = `Chỉ ${invalidProgram[1]} combo / 1 đơn hàng`
+                } else {
+                    msg = `Khả dụng: ${invalidProgram[2]} combo`
+                };
+                this.showPopup('ErrorPopup', {
+                    title: this.env._t('Limited Promotion Validation Error'),
+                    body: this.env._t(`Đã vượt quá giới hạn áp dụng của CTKM: ${invalidProgram[0].display_name}. ${msg}`),
+                });
+            } else {
+                return super._onClickPay(...arguments);
+            };
         }
     };
 
