@@ -42,7 +42,6 @@ class PointsProduct(models.Model):
             'view_mode': 'tree,form',
             'context': ctx,
         }
-
     def _compute_name(self):
         for line in self:
             line.name = _('%s products') % len(line.product_ids)

@@ -14,15 +14,13 @@
         'base',
         'stock',
         'stock_account',
-        'stock_landed_costs'
+        'stock_landed_costs',
+        'quality_control'
     ],
     "data": [
         'data/data_stock_location_type.xml',
         'data/forlife_reason_type_data.xml',
         'data/data_stock_location.xml',
-        'security/ir.model.access.csv',
-        'reports/outgoing_value_diff_report.xml',
-        'reports/stock_incoming_outgoing_report.xml',
         'wizards/reject_stock_transfer_request_view.xml',
         'wizards/reject_transfer_stock_inventory_view.xml',
         'wizards/reject_asset_transfer.xml',

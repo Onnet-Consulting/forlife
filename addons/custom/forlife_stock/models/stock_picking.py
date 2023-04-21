@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 from odoo.addons.stock.models.stock_picking import Picking as InheritPicking
+from odoo.exceptions import ValidationError
 
 
 def _action_done(self):
@@ -40,12 +41,7 @@ InheritPicking._action_done = _action_done
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
-
-    @api.model
-    def default_get(self, default_fields):
-        res = super().default_get(default_fields)
-        res['picking_type_id'] = self.env.ref('stock.picking_type_in').id
-        return res
+    _order = 'create_date desc'
 
     def _domain_location_id(self):
         if self.env.context.get('default_other_import'):
@@ -83,14 +79,23 @@ class StockPicking(models.Model):
 
     date_done = fields.Datetime('Date of Transfer', copy=False, readonly=False, default=fields.Datetime.now,
                                 help="Date at which the transfer has been processed or cancelled.")
-
-
+    picking_type_id = fields.Many2one(
+        'stock.picking.type', 'Operation Type',
+        required=False, readonly=False, index=True,
+        states={'draft': [('readonly', False)]})
 
     def _action_done(self):
-        old_date_done = self.date_done
+        old_date_done = {
+            item.id: item.date_done for item in self
+        }
+        # old_date_done = self.date_done
         res = super(StockPicking, self)._action_done()
-        if old_date_done != self.date_done:
-            self.date_done = old_date_done
+        for record in self:
+            if old_date_done.get(record.id) == record.date_done:
+                continue
+            record.date_done = old_date_done.get(record.id)
+        # if old_date_done != self.date_done:
+        #     self.date_done = old_date_done
         return res
 
     def write(self, vals):
@@ -126,15 +131,6 @@ class StockPicking(models.Model):
         return True
 
     @api.model
-    def load(self, fields, data):
-        list_fields = ['move_ids_without_package/product_id', 'move_ids_without_package/location_id', 'move_ids_without_package/location_dest_id']
-        fields.extend(list_fields)
-        for rec in data:
-            rec.extend([rec[7], rec[1], rec[2]])
-            rec[8] = ''
-        return super().load(fields, data)
-
-    @api.model
     def get_import_templates(self):
         if self.env.context.get('default_other_import'):
             return [{
@@ -160,12 +156,39 @@ class StockMove(models.Model):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
-    name = fields.Char(required=False)
+    name = fields.Char('Description', required=False)
+    company_id = fields.Many2one(
+        'res.company', 'Company',
+        default=lambda self: self.env.company,
+        index=True, required=False)
+    product_uom_qty = fields.Float(
+        'Demand',
+        digits='Product Unit of Measure',
+        default=1.0, required=False, states={'done': [('readonly', True)]},
+        help="This is the quantity of products from an inventory "
+             "point of view. For moves in the state 'done', this is the "
+             "quantity of products that were actually moved. For other "
+             "moves, this is the quantity of product that is planned to "
+             "be moved. Lowering this quantity does not generate a "
+             "backorder. Changing this quantity on assigned moves affects "
+             "the product reservation, and should be done with care.")
+    product_uom = fields.Many2one(
+        'uom.uom', "UoM", required=False, domain="[('category_id', '=', product_uom_category_id)]",
+        compute="_compute_product_uom", store=True, readonly=False, precompute=True,
+    )
+    procure_method = fields.Selection([
+        ('make_to_stock', 'Default: Take From Stock'),
+        ('make_to_order', 'Advanced: Apply Procurement Rules')], string='Supply Method',
+        default='make_to_stock', required=False, copy=False,
+        help="By default, the system will take from the stock in the source location and passively wait for availability. "
+             "The other possibility allows you to directly create a procurement on the source location (and thus ignore "
+             "its current stock) to gather products. If we want to chain moves and have this one to wait for the previous, "
+             "this second option should be chosen.")
     product_id = fields.Many2one(
         'product.product', 'Product',
         check_company=True,
         domain="[('type', 'in', ['product', 'consu']), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-        index=True,
+        index=True, required=False,
         states={'done': [('readonly', True)]})
     uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
     amount_total = fields.Float(string='Thành tiền')
@@ -177,16 +200,18 @@ class StockMove(models.Model):
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
     location_id = fields.Many2one(
-        'stock.location', "Địa điểm nguồn",
-        auto_join=True, index=True,
+        'stock.location', 'Source Location',
+        auto_join=True, index=True, required=False,
         check_company=True,
         help="Sets a location if you produce at a fixed location. This can be a partner location if you subcontract the manufacturing operations.")
-
     location_dest_id = fields.Many2one(
-        'stock.location', 'Địa điểm đích',
-        auto_join=True, index=True,
+        'stock.location', 'Destination Location',
+        auto_join=True, index=True, required=False,
         check_company=True,
         help="Location where the system will stock the finished products.")
+    date = fields.Datetime(
+        'Date Scheduled', default=fields.Datetime.now, index=True, required=False,
+        help="Scheduled date until move is done, then date of actual move processing")
 
     @api.depends('reason_id')
     def compute_production_order(self):

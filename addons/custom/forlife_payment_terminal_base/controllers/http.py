@@ -3,7 +3,7 @@
 from odoo.http import JsonRPCDispatcher
 
 
-class RawRPCDispatcher(JsonRPCDispatcher):
+class RawJsonRPCDispatcher(JsonRPCDispatcher):
     routing_type = 'raw_json'
 
     def _response(self, result=None, error=None):

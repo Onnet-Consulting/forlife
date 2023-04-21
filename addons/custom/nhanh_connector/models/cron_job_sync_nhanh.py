@@ -37,7 +37,7 @@ class SaleOrder(models.Model):
     def start_sync_order_from_nhanh(self):
         _logger.info("----------------Start Sync orders from NhanhVn --------------------")
         # Get datetime today and previous day
-        today = datetime.datetime.today().strftime("%y/%m/%d")
+        today = datetime.datetime.today().strftime("%y-%m-%d")
         previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
         _logger.info(f'Today is: {today}, Previous day is: {previous_day}')
         # Set up API information
@@ -47,15 +47,16 @@ class SaleOrder(models.Model):
                 or 'nhanh_connector.nhanh_access_token' not in nhanh_configs:
             _logger.info(f'Nhanh configuration does not set')
             return False
-        query_params = {
-            'data': "'{" + f'"fromDate":"{previous_day}","toDate":"{today}"' + "}'"
+        data = {
+            "fromDate": previous_day,
+            "toDate": today,
         }
         url = f"{NHANH_BASE_URL}/order/index?version=2.0&appId={constant.get_params(self)['appId']}" \
               f"&businessId={constant.get_params(self)['businessId']}&accessToken={constant.get_params(self)['accessToken']}" \
-              f"&data={query_params['data']}"
+              # f"&data={query_params['data']}"
         # Get all orders from previous day to today from Nhanh.vn
         try:
-            res_server = requests.post(url)
+            res_server = requests.post(url, json= json.dumps(data))
             res = res_server.json()
         except Exception as ex:
             _logger.info(f'Get orders from NhanhVn error {ex}')
@@ -164,20 +165,18 @@ class SaleOrder(models.Model):
                 or 'nhanh_connector.nhanh_access_token' not in nhanh_configs:
             _logger.info(f'Nhanh configuration does not set')
             return False
-        data = "'{" + f'"fromDate":"{previous_day}","toDate":"{today}"' + "}'"
-        data = data[1:-1]
-        data = data.replace("\\\\", "\\")
-        data_json = json.dumps(data)
-        query_params = {
-            'data': data_json
+
+        data = {
+            "fromDate": previous_day,
+            "toDate": today,
         }
 
         list_number_phone = list(self.env['res.partner'].search([]).mapped('phone'))
-        url = self.get_link_nhanh('customer', 'search', query_params['data'])
+        url = self.get_link_nhanh('customer', 'search', data)
         if url:
             status_post = 1
             try:
-                res_server = requests.post(url)
+                res_server = requests.post(url, json=json.dumps(data))
                 res = res_server.json()
             except Exception as ex:
                 status_post = 0
@@ -328,7 +327,7 @@ class SaleOrder(models.Model):
             return False
         url = f"{constant.base_url()}/{category}/{type_get}?version={constant.get_params(self)['version']}&appId={constant.get_params(self)['appId']}" \
               f"&businessId={constant.get_params(self)['businessId']}&accessToken={constant.get_params(self)['accessToken']}" \
-              f"&data={data}"
+              # f"&data={data}"
         return url
 
     def search_product(self, domain_product):
