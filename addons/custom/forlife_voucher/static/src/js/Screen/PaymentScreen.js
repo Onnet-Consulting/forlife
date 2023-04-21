@@ -43,6 +43,9 @@ odoo.define('forlife_voucher.PosPaymentScreenVoucher', function (require) {
                     if(!confirmed){
                         return;
                     }
+                    if(this.env.pos.selectedOrder.data_voucher){
+                       this.currentOrder.remove_all_paymentlines();
+                    }
                     let result = this.currentOrder.add_paymentline(paymentMethod);
                     var price_used = 0;
                     if(confirmed){
