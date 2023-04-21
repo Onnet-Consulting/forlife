@@ -2,6 +2,7 @@
 
 import base64
 import pytz
+import calendar
 
 from io import BytesIO
 from xlsxwriter.workbook import Workbook
@@ -24,6 +25,7 @@ class StockValueReport(models.TransientModel):
     _name = 'stock.value.report'
     _description = 'Stock Value Report'
 
+    name = fields.Char('Name', translate=True)
     date_from = fields.Date('From Date', required=True)
     date_to = fields.Date('To Date', default=fields.Date.context_today, required=True)
     detail_ids = fields.One2many('stock.value.report.detail', 'report_id', 'Detail')
@@ -31,15 +33,15 @@ class StockValueReport(models.TransientModel):
 
     # file sql
     def init(self):
-        outgoing_value_diff_report = read_sql_file('./forlife_stock/sql_functions/outgoing_value_diff_report.sql')
+        outgoing_value_diff_report = read_sql_file('./forlife_stock_report/sql_functions/outgoing_value_diff_report.sql')
         outgoing_value_diff_account_report = read_sql_file(
-            './forlife_stock/sql_functions/outgoing_value_diff_account_report.sql')
+            './forlife_stock_report/sql_functions/outgoing_value_diff_account_report.sql')
         stock_incoming_outgoing_report = read_sql_file(
-            './forlife_stock/sql_functions/stock_incoming_outgoing_report.sql')
+            './forlife_stock_report/sql_functions/stock_incoming_outgoing_report.sql')
         stock_incoming_outgoing_account_report = read_sql_file(
-            './forlife_stock/sql_functions/stock_incoming_outgoing_account_report.sql')
+            './forlife_stock_report/sql_functions/stock_incoming_outgoing_account_report.sql')
         outgoing_value_diff_account_report_picking_type = read_sql_file(
-            './forlife_stock/sql_functions/outgoing_value_diff_account_report_picking_type.sql')
+            './forlife_stock_report/sql_functions/outgoing_value_diff_account_report_picking_type.sql')
         self.env.cr.execute(outgoing_value_diff_report)
         self.env.cr.execute(outgoing_value_diff_account_report)
         self.env.cr.execute(stock_incoming_outgoing_report)
@@ -65,6 +67,7 @@ class StockValueReport(models.TransientModel):
             'target': 'new',
         }
 
+    # bảng kê chênh lệch giá trị xuất
     def action_get_outgoing_value_diff_report(self):
         # must be utc time
         current_tz = pytz.timezone(self.env.context.get('tz'))
@@ -262,6 +265,7 @@ class StockValueReport(models.TransientModel):
 
         return self.action_download_excel(base64.encodebytes(xlsx_data), _('Outgoing Value Different Report'))
 
+    # bảng kê nhập xuất tồn
     def action_get_stock_incoming_outgoing_report(self):
         # must be utc time
         current_tz = pytz.timezone(self.env.context.get('tz'))
@@ -409,7 +413,7 @@ class StockValueReport(models.TransientModel):
                           style_excel['style_right_data_float'])
             wssheet.write(row, 5, total_incoming_quantity if total_incoming_quantity != 0 else '',
                           style_excel['style_right_data_float'])
-            wssheet.write(row, 6, total_incoming_quantity if total_incoming_quantity != 0 else '',
+            wssheet.write(row, 6, total_incoming_value if total_incoming_value != 0 else '',
                           style_excel['style_right_data_float'])
             wssheet.write(row, 7, total_odoo_outgoing_quantity if total_odoo_outgoing_quantity != 0 else '',
                           style_excel['style_right_data_float'])
@@ -458,7 +462,8 @@ class StockValueReport(models.TransientModel):
 
         return self.action_download_excel(base64.encodebytes(xlsx_data), _('Stock Incoming Outgoing Report'))
 
-    def action_export_outgoing_value_diff_picking_type_report(self):
+    # bảng kê chênh lệch giá trị xuất theo item
+    def action_export_outgoing_value_diff_item_report(self):
         # define function
         def write_header(wssheet, picking_type_name):
             # --------------------------------------Header Table----------------------------------------------
@@ -476,7 +481,7 @@ class StockValueReport(models.TransientModel):
                 col += 2
 
             # --------------------------------------Title---------------------------------------------------
-            wssheet.merge_range(1, 0, 1, col - 1, _('Outgoing Value Different Report based on Picking Type'), style_excel['style_title'])
+            wssheet.merge_range(1, 0, 1, col - 1, _('Outgoing Value Different Report based on Item'), style_excel['style_title'])
             wssheet.write(3, (col - 1) // 2 - 1, 'Kỳ báo cáo', style_excel['style_header_bold'])
             wssheet.write(3, (col - 1) // 2, f'Từ ngày: {self.date_from.strftime("%d/%m/%Y")}', style_excel['style_left_data_string'])
             wssheet.write(3, (col - 1) // 2 + 1, f'Đến ngày: {self.date_to.strftime("%d/%m/%Y")}', style_excel['style_left_data_string'])
@@ -563,7 +568,7 @@ class StockValueReport(models.TransientModel):
         buf.seek(0)
         xlsx_data = buf.getvalue()
 
-        return self.action_download_excel(base64.encodebytes(xlsx_data), _('Outgoing Value Different Report based on Picking Type'))
+        return self.action_download_excel(base64.encodebytes(xlsx_data), _('Outgoing Value Different Report based on Item'))
 
     def action_create_invoice(self):
         self._cr.execute(f"""
@@ -621,3 +626,48 @@ class StockValueReport(models.TransientModel):
             }
             self.env['account.move'].create(move_vals)
 
+    def action_create_quant_period(self):
+        # validate report
+        self.validate_report_create_quant()
+        # must be utc time
+        current_tz = pytz.timezone(self.env.context.get('tz'))
+        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
+        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
+        self._cr.execute(f"""
+                    DELETE FROM stock_quant_period WHERE period_end_date = %s;
+                    INSERT INTO stock_quant_period (
+                                                period_end_date,
+                                                product_id,
+                                                currency_id,
+                                                closing_quantity,
+                                                price_unit,
+                                                closing_value,
+                                                create_uid,
+                                                create_date,
+                                                write_uid,
+                                                write_date)
+                    SELECT %s,
+                            product_id,
+                            %s,
+                            closing_quantity,
+                            closing_value,
+                            (case when closing_quantity = 0 then 0
+                                    else closing_value / closing_quantity
+                            end) price_unit,
+                            %s,
+                            %s,
+                            %s,
+                            %s
+                    FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s)
+                """, (
+        str(self.date_to), str(self.date_to), self.env.company.currency_id.id, self.env.user.id, datetime.utcnow(), self.env.user.id,
+        datetime.utcnow(), utc_datetime_from, utc_datetime_to, self.env.company.id))
+
+    def validate_report_create_quant(self):
+        # check period check report
+        if not (self.date_from.month == self.date_to.month and self.date_from.year == self.date_to.year):
+            raise ValidationError(_('Period check report must be in 1 month'))
+        if self.date_from.day != 1:
+            raise ValidationError(_('Date from must be the first day of month'))
+        if self.date_to.day != calendar.monthrange(self.date_to.year, self.date_to.month)[1]:
+            raise ValidationError(_('Date to must be the last day of month'))

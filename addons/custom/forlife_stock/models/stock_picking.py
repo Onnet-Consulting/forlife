@@ -87,10 +87,17 @@ class StockPicking(models.Model):
 
 
     def _action_done(self):
-        old_date_done = self.date_done
+        old_date_done = {
+            item.id: item.date_done for item in self
+        }
+        # old_date_done = self.date_done
         res = super(StockPicking, self)._action_done()
-        if old_date_done != self.date_done:
-            self.date_done = old_date_done
+        for record in self:
+            if old_date_done.get(record.id) == record.date_done:
+                continue
+            record.date_done = old_date_done.get(record.id)
+        # if old_date_done != self.date_done:
+        #     self.date_done = old_date_done
         return res
 
     def write(self, vals):
