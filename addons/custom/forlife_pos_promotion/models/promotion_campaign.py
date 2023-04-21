@@ -13,7 +13,7 @@ class PromotionConfiguration(models.AbstractModel):
 
     sequence = fields.Integer(default=10)
 
-    brand_id = fields.Many2one('res.brand', string='Brand', required=True)
+    brand_id = fields.Many2one('res.brand', string='Brand')
     store_ids = fields.Many2many('store', string='Stores', required=True, domain="[('brand_id','=',brand_id)]")
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
