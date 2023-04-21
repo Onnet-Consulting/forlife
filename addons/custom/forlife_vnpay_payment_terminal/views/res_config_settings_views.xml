@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="pos_config_form_view" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.point_of_sale</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='iface_tipproduct']/.." position="after">
+                    <field name="pos_show_vnpay_config" invisible="1"/>
+                    <h2 attrs="{'invisible': [('pos_show_vnpay_config', '=', False)]}">VNPay Terminal Payment</h2>
+                    <div class="row mt16 o_settings_container"
+                         attrs="{'invisible': [('pos_show_vnpay_config', '=', False)]}">
+                        <div class="col-12 col-lg-6 o_setting_box" id="vnpay_terminal_payment">
+                            <div class="o_setting_right_pane">
+                                <label for="pos_vnpay_url"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="pos_vnpay_url" class="o_light_label"
+                                               attrs="{'required': [('pos_show_vnpay_config', '=', True)]}"/>
+                                    </div>
+                                </div>
+
+                                <label for="pos_vnpay_secret_code"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="pos_vnpay_secret_code" class="o_light_label"
+                                               attrs="{'required': [('pos_show_vnpay_config', '=', True)]}" password="True"/>
+                                    </div>
+                                </div>
+
+                                <label for="pos_vnpay_ipn_secret_code"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="pos_vnpay_ipn_secret_code" class="o_light_label"
+                                               attrs="{'required': [('pos_show_vnpay_config', '=', True)]}" password="True"/>
+                                    </div>
+                                </div>
+
+                                <label for="pos_vnpay_merchant_code"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="pos_vnpay_merchant_code" class="o_light_label"
+                                               attrs="{'required': [('pos_show_vnpay_config', '=', True)]}"/>
+                                    </div>
+                                </div>
+
+                                <label for="pos_vnpay_terminal_code"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="pos_vnpay_terminal_code" class="o_light_label"
+                                               attrs="{'required': [('pos_show_vnpay_config', '=', True)]}"/>
+                                    </div>
+                                </div>
+
+                                <label for="pos_vnpay_merchant_method_code_card"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="pos_vnpay_merchant_method_code_card" class="o_light_label"
+                                               attrs="{'required': [('pos_show_vnpay_config', '=', True)]}"/>
+                                    </div>
+                                </div>
+
+                                <label for="pos_vnpay_success_url"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="pos_vnpay_success_url" class="o_light_label"
+                                               attrs="{'required': [('pos_show_vnpay_config', '=', True)]}"/>
+                                    </div>
+                                </div>
+
+                                <label for="pos_vnpay_cancel_url"/>
+                                <div class="content-group">
+                                    <div class="mt16">
+                                        <field name="pos_vnpay_cancel_url" class="o_light_label"
+                                               attrs="{'required': [('pos_show_vnpay_config', '=', True)]}"/>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
