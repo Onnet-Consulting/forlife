@@ -38,6 +38,29 @@ odoo.define('forlife_payment_terminal_base.PaymentScreen', function (require) {
                 line.set_payment_status('done');
             }
 
+            get_payment_line_by_unique_id(unique_id) {
+                try {
+                    let data = unique_id.split('_');
+                    if (data.length !== 3) {
+                        return false;
+                    }
+                    let order_uid = data[1];
+
+                    // because cashier be able to switch between order,
+                    // so we cannot get the correct order by calling this.currentOrder
+                    let order_of_payment_line = _.find(this.env.pos.get_order_list(), order => {
+                        return order.uid === order_uid;
+                    })
+                    if (!order_of_payment_line) return false;
+                    return _.find(order_of_payment_line.get_paymentlines(), payment_line => {
+                        return payment_line.unique_id === unique_id;
+                    })
+                } catch (err) {
+                    return false
+                }
+
+            }
+
         };
 
     Registries.Component.extend(PaymentScreen, PaymentTerminalScreen);

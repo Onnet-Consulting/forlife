@@ -37,6 +37,4 @@ odoo.define('forlife_nextpay_payment_terminal.models', function (require) {
     }
 
     Registries.Model.extend(Payment, PosNextPayPayment);
-
-
 });
