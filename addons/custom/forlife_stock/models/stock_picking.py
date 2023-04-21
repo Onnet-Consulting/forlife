@@ -40,7 +40,7 @@ InheritPicking._action_done = _action_done
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
-
+    _order = 'create_date desc'
     @api.model
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
@@ -130,7 +130,7 @@ class StockPicking(models.Model):
         list_fields = ['move_ids_without_package/product_id', 'move_ids_without_package/location_id', 'move_ids_without_package/location_dest_id']
         fields.extend(list_fields)
         for rec in data:
-            rec.extend([rec[7], rec[1], rec[2]])
+            rec.extend([rec[7], rec[14], rec[14]])
             rec[8] = ''
         return super().load(fields, data)
 
