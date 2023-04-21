@@ -1,37 +1,46 @@
 # -*- coding: utf-8 -*-
+import random
+import unicodedata
 from uuid import uuid4
 
 from odoo import models, fields, api, _
 
 
 class PromotionCode(models.Model):
+    _inherit = ['mail.thread']
     _name = 'promotion.code'
     _description = 'Promotion Code'
     _rec_name = 'name'
 
-    @api.model
-    def _generate_code(self):
-        """
-        Barcode identifiable codes.
-        """
-        return '044' + str(uuid4())[7:-18]
+    def _get_code(self):
+        letters = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789'
+        code = ''.join(random.choices(letters, k=8))
+        if self.env['promotion.code'].search([('name', 'like', code)]):
+            self._get_code()
+        else:
+            return code
+
+    @api.depends('program_id')
+    def _compute_code(self):
+        for code in self:
+            code.name = str(code.program_id.id) + '-' + self._get_code()
 
     program_id = fields.Many2one('promotion.program', ondelete='cascade')
-    name = fields.Char(default=lambda self: self._generate_code(), required=True)
+    name = fields.Char(compute='_compute_code', store=True, readonly=False, tracking=True)
     partner_id = fields.Many2one('res.partner')
     used_partner_ids = fields.Many2many('res.partner', 'promotion_code_used_res_partner_rel', readonly=True)
     # Nếu được gán Partner thì dùng 1 lần duy nhất
     # Nếu không gán Partner thì dùng được nhiều lần dựa trên giới hạn sử dụng
 
     limit_usage = fields.Boolean(related='program_id.limit_usage')
-    max_usage = fields.Integer()
+    max_usage = fields.Integer(tracking=True)
 
-    amount = fields.Float()
-    consumed_amount = fields.Float()
+    amount = fields.Float(tracking=True)
+    consumed_amount = fields.Float(tracking=True)
     remaining_amount = fields.Float(compute='_compute_remaining_amount', store=False)
     reward_for_referring = fields.Boolean('Reward for Referring', copy=False, readonly=False)
-    referring_date_from = fields.Datetime('Refer From')
-    referring_date_to = fields.Datetime('Refer To')
+    referring_date_from = fields.Datetime('Refer From', tracking=True)
+    referring_date_to = fields.Datetime('Refer To', tracking=True)
     reward_program_id = fields.Many2one('promotion.program', string='Program Reward')
     original_program_id = fields.Many2one('promotion.program', string='Original Program', readonly=True)
     original_order_id = fields.Many2one('pos.order', 'Original Order', readonly=True)
@@ -46,6 +55,11 @@ class PromotionCode(models.Model):
     usage_line_ids = fields.One2many('promotion.usage.line', 'code_id')
     use_count = fields.Integer(compute='_compute_use_count_order', string='Number of Order Usage')
     order_ids = fields.Many2many('pos.order', compute='_compute_use_count_order', string='Order')
+
+    @api.onchange('name')
+    def onchange_name(self):
+        if self.name:
+            self.name = unicodedata.normalize('NFKD', self.name.upper()).encode('ascii', 'ignore')
 
     def _compute_use_count_order(self):
         for code in self:

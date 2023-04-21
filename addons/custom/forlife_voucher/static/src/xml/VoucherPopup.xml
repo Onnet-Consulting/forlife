@@ -18,6 +18,7 @@
                                 <th style="border:1px solid black;text-align: center;">Ngày hết hạn</th>
                                 <th style="border:1px solid black;text-align: center;">Giá trị còn lại</th>
                                 <th style="border:1px solid black;text-align: center;">Giá trị sử dụng</th>
+                                <th style="border:1px solid black;text-align: center;">Tên phòng ban</th>
                                 <th style="border:1px solid black;text-align: center;">Thông báo</th>
                                 <th style="text-align: center;"></th>
                             </tr>
@@ -52,6 +53,7 @@
                                                        style="width: 100%;text-align: center;"
                                                        t-att-value="env.pos.format_currency(state.data[num].value.price_change)"/>
                                             </td>
+                                            <td style="border:1px solid black;width:85px;"><span class="derpartmentname"><t t-esc="state.data[num].value.derpartment_name"/></span></td>
                                         </t>
                                         <t t-else="">
                                             <td class="o_table_type" style="border:1px solid black;width:85px;"></td>
@@ -59,6 +61,7 @@
                                                 style="border:1px solid black;width:85px;"></td>
                                             <td style="border:1px solid black;width:85px;"><input class="o_price_residual"  type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
                                             <td style="border:1px solid black;width:85px;"><input class="o_price_used" readonly="True"  type="text" style="width: 100%;text-align: center;"/></td>
+                                            <td style="border:1px solid black;width:85px;"></td>
                                         </t>
                                     </t>
                                     <t t-else="">
@@ -67,6 +70,7 @@
                                             class="o_table_end_date"></td>
                                         <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
                                         <td style="border:1px solid black;width:85px;"><input class="o_price_used" type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
+                                        <td style="border:1px solid black;width:85px;"></td>
                                     </t>
 
                                 </t>
@@ -82,12 +86,14 @@
                                     <td style="border:1px solid black;width:85px;">
                                             <input class="o_price_used" t-on-change="_onValueChange" t-att-value="env.pos.format_currency(env.pos.selectedOrder.data_voucher[num].value.price_used)" type="text" style="width: 100%;text-align: center;"/>
                                     </td>
+                                    <td style="border:1px solid black;width:85px;"><span class="derpartmentname"><t t-esc="env.pos.selectedOrder.data_voucher[num].value.derpartment_name"/></span></td>
                                 </t>
                                 <t t-else="">
                                     <td class="o_table_type" style="border:1px solid black;width:85px;"></td>
                                     <td class="o_table_end_date" style="border:1px solid black;width:85px;"></td>
                                     <td style="border:1px solid black;width:85px;"><input class="o_price_residual" type="text" readonly="True" style="width: 100%;text-align: center;"/></td>
                                     <td style="border:1px solid black;width:85px;"><input class="o_price_used" readonly="True" type="text" style="width: 100%;text-align: center;"/></td>
+                                    <td style="border:1px solid black;width:85px;"></td>
                                 </t>
 
                                 <t t-if="state.error[num]">

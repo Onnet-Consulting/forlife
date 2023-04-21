@@ -22,7 +22,7 @@ class PointProductModelImport(models.Model):
     def create(self, vals_list):
         for idx, line in enumerate(vals_list):
             if ('active_model' in self._context and self._context.get('active_model')) and ('active_id' in self._context and self._context.get('active_id')):
-                points_product = self.env[self._context.get('active_model')].sudo().search([('id','=',int(self._context.get('active_id')))])
+                points_product = self.env['points.product'].sudo().search([('id','=',int(self._context.get('default_points_product_id')))])
                 points_product.product_ids = [(4, int(vals_list[idx]['product_id']))]
         return super(PointProductModelImport, self).create(vals_list)
 

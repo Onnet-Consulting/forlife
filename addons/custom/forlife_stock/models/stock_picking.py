@@ -42,18 +42,6 @@ InheritPicking._action_done = _action_done
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
     _order = 'create_date desc'
-    @api.model
-    def default_get(self, default_fields):
-        res = super().default_get(default_fields)
-        if self.env.user.company_id:
-            pk_type = self.env['stock.picking.type'].search([('company_id', '=', self.env.user.company_id.id)], limit=1)
-            if pk_type:
-                res['picking_type_id'] = self.env.ref('stock.picking_type_in').id
-            else:
-                raise ValidationError(_("Bạn phải chọn loại giao nhận thuộc công ty của người dùng"))
-        else:
-            raise ValidationError(_("Người dùng không thuộc công ty nào"))
-        return res
 
     def _domain_location_id(self):
         if self.env.context.get('default_other_import'):
@@ -91,14 +79,23 @@ class StockPicking(models.Model):
 
     date_done = fields.Datetime('Date of Transfer', copy=False, readonly=False, default=fields.Datetime.now,
                                 help="Date at which the transfer has been processed or cancelled.")
-
-
+    picking_type_id = fields.Many2one(
+        'stock.picking.type', 'Operation Type',
+        required=False, readonly=False, index=True,
+        states={'draft': [('readonly', False)]})
 
     def _action_done(self):
-        old_date_done = self.date_done
+        old_date_done = {
+            item.id: item.date_done for item in self
+        }
+        # old_date_done = self.date_done
         res = super(StockPicking, self)._action_done()
-        if old_date_done != self.date_done:
-            self.date_done = old_date_done
+        for record in self:
+            if old_date_done.get(record.id) == record.date_done:
+                continue
+            record.date_done = old_date_done.get(record.id)
+        # if old_date_done != self.date_done:
+        #     self.date_done = old_date_done
         return res
 
     def write(self, vals):
@@ -159,7 +156,34 @@ class StockMove(models.Model):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
-    name = fields.Char(required=False)
+    name = fields.Char('Description', required=False)
+    company_id = fields.Many2one(
+        'res.company', 'Company',
+        default=lambda self: self.env.company,
+        index=True, required=False)
+    product_uom_qty = fields.Float(
+        'Demand',
+        digits='Product Unit of Measure',
+        default=1.0, required=False, states={'done': [('readonly', True)]},
+        help="This is the quantity of products from an inventory "
+             "point of view. For moves in the state 'done', this is the "
+             "quantity of products that were actually moved. For other "
+             "moves, this is the quantity of product that is planned to "
+             "be moved. Lowering this quantity does not generate a "
+             "backorder. Changing this quantity on assigned moves affects "
+             "the product reservation, and should be done with care.")
+    product_uom = fields.Many2one(
+        'uom.uom', "UoM", required=False, domain="[('category_id', '=', product_uom_category_id)]",
+        compute="_compute_product_uom", store=True, readonly=False, precompute=True,
+    )
+    procure_method = fields.Selection([
+        ('make_to_stock', 'Default: Take From Stock'),
+        ('make_to_order', 'Advanced: Apply Procurement Rules')], string='Supply Method',
+        default='make_to_stock', required=False, copy=False,
+        help="By default, the system will take from the stock in the source location and passively wait for availability. "
+             "The other possibility allows you to directly create a procurement on the source location (and thus ignore "
+             "its current stock) to gather products. If we want to chain moves and have this one to wait for the previous, "
+             "this second option should be chosen.")
     product_id = fields.Many2one(
         'product.product', 'Product',
         check_company=True,
