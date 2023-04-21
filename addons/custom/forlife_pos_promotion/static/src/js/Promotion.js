@@ -422,6 +422,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         line.promotion_usage_ids = options.promotion_usage_ids || [];
         line.is_cart_discounted = options.is_cart_discounted || false;
         line.is_reward_line = options.is_reward_line || false;
+        line.is_not_create = options.is_not_create || false;
     }
 
     async _initializePromotionPrograms(v) {
@@ -647,7 +648,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         } else if (pro.promotion_type == 'code' && pro.discount_based_on == 'discounted_price') {
             return order_lines.filter(function(l) {
                 if (l.promotion_usage_ids && l.promotion_usage_ids.length) {
-                    return l.promotion_usage_ids.some(p => p.promotion_type == 'pricelist' || (p.promotion_type == 'pricelist' && p.discount_based_on == 'unit_price')) ? true : false;
+                    if (l.price == 0 || l.is_reward_line) {return false}
+                    if (l.promotion_usage_ids.some(p => p.str_id == pro.str_id)) {return false}
+                    else {return true};
+//                    return l.promotion_usage_ids.some(p => p.promotion_type == 'pricelist' || (p.promotion_type == 'pricelist' && p.discount_based_on == 'unit_price')) ? true : false;
                 } else {return true};
             });
         };
@@ -835,7 +839,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     oneCombo.push({
                         product: ol.product,
                         quantity: qty_taken_on_candidate,
-                        price: ol.product.lst_price,
+                        price: ol.price,
                         isNew: true,
                         promotion_usage_ids: [...ol.promotion_usage_ids]
                     });
@@ -1469,8 +1473,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     // Compute and Apply Order With list of Combo Program
-    computeForListOfProgram(orderLines, listOfComboProgram) {
-        let to_apply_lines = {};
+    computeForListOfProgram(orderLines, listOfComboProgram, to_apply_lines) {
+        to_apply_lines = to_apply_lines || {};
         let combo_count = {};
         for (const program of listOfComboProgram) {
             // Combo Program
@@ -1515,6 +1519,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     };
                 };
             }
+            else if (program.promotion_type == 'code') {
+                let [code_to_apply_lines, remaining, code_count] = this.computeForListOfCodeProgram(orderLines, [program], to_apply_lines);
+                Object.assign(combo_count, code_count);
+                Object.assign(to_apply_lines, code_to_apply_lines);
+            }
             // Pricelist Program
             else if (program.promotion_type == 'pricelist') {
                 let [ols, to_discount_line_vals, qty] = this._checkQtyOfProductForPricelist(program, orderLines);
@@ -1533,37 +1542,38 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     computeForListOfCodeProgram(orderLines, listOfComboProgram, to_apply_lines) {
         let to_apply_lines_code = {};
         let combo_count = {};
+        let orderLinesToCheck = [...orderLines];
         for (const program of listOfComboProgram) {
             // Combo Program
             if (program.promotion_type == 'code') {
                 if (to_apply_lines) {
-                    orderLines.forEach((line, index) => {
+                    orderLinesToCheck.forEach((line, index) => {
                         if (line.quantity == 0) {
-                            orderLines.splice(index, 1);
+                            orderLinesToCheck.splice(index, 1);
                         };
                     });
 
 //                    var to_apply_lines_other = Object.values(to_apply_lines);
                     for (const key of Object.keys(to_apply_lines)) {
                         for (let new_line of to_apply_lines[key]) {
-                            if (!new_line.is_not_create) {
                                 let options = this._getNewLineValuesAfterDiscount(new_line);
                                 if (options.quantity) {
+                                    options.is_not_create = true;
                                     options.key_program = key;
-                                    orderLines.push(this._createLineFromVals(options));
+                                    orderLinesToCheck.push(this._createLineFromVals(options));
                                     new_line.is_not_create = true;
                                 }
-                            }
+
                         }
                     }
                 }
                 if (program.reward_type == 'code_amount') {
-                    orderLines.sort((a,b) => a.product.lst_price - b.product.lst_price)
+                    orderLinesToCheck.sort((a,b) => a.product.lst_price - b.product.lst_price)
                 } else {
-                    orderLines.sort((a,b) => b.product.lst_price - a.product.lst_price)
+                    orderLinesToCheck.sort((a,b) => b.product.lst_price - a.product.lst_price)
                 };
-                var [remaining, to_discount_line_vals, numberOfCombo, to_apply_lines_new] = this._checkNumberOfCode(program, orderLines, [], 0, false, to_apply_lines);
-
+                var [remaining, to_discount_line_vals, numberOfCombo, to_apply_lines_new] = this._checkNumberOfCode(program, orderLinesToCheck, [], 0, false, to_apply_lines);
+                orderLinesToCheck = orderLinesToCheck.filter(l => !l.is_not_create);
                 to_apply_lines = to_apply_lines_new;
                 combo_count[program.id] = numberOfCombo;
 
@@ -1670,7 +1680,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             quantity: arg['quantity'],
             is_reward_line: arg.is_reward_line,
             merge: false,
-            is_cart_discounted: arg.is_cart_discounted
+            is_cart_discounted: arg.is_cart_discounted,
+            is_not_create: arg.is_not_create
         }
     }
 
