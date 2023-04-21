@@ -1,6 +1,7 @@
 from odoo import api, fields, models, _
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 from odoo.addons.stock.models.stock_picking import Picking as InheritPicking
+from odoo.exceptions import ValidationError
 
 
 def _action_done(self):
@@ -44,7 +45,14 @@ class StockPicking(models.Model):
     @api.model
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
-        res['picking_type_id'] = self.env.ref('stock.picking_type_in').id
+        if self.env.user.company_id:
+            pk_type = self.env['stock.picking.type'].search([('company_id', '=', self.env.user.company_id.id)], limit=1)
+            if pk_type:
+                res['picking_type_id'] = self.env.ref('stock.picking_type_in').id
+            else:
+                raise ValidationError(_("Bạn phải chọn loại giao nhận thuộc công ty của người dùng"))
+        else:
+            raise ValidationError(_("Người dùng không thuộc công ty nào"))
         return res
 
     def _domain_location_id(self):
@@ -126,15 +134,6 @@ class StockPicking(models.Model):
         return True
 
     @api.model
-    def load(self, fields, data):
-        list_fields = ['move_ids_without_package/product_id', 'move_ids_without_package/location_id', 'move_ids_without_package/location_dest_id']
-        fields.extend(list_fields)
-        for rec in data:
-            rec.extend([rec[7], rec[14], rec[14]])
-            rec[8] = ''
-        return super().load(fields, data)
-
-    @api.model
     def get_import_templates(self):
         if self.env.context.get('default_other_import'):
             return [{
@@ -165,7 +164,7 @@ class StockMove(models.Model):
         'product.product', 'Product',
         check_company=True,
         domain="[('type', 'in', ['product', 'consu']), '|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-        index=True,
+        index=True, required=False,
         states={'done': [('readonly', True)]})
     uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
     amount_total = fields.Float(string='Thành tiền')
@@ -177,16 +176,18 @@ class StockMove(models.Model):
     is_production_order = fields.Boolean(default=False, compute='compute_production_order')
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
     location_id = fields.Many2one(
-        'stock.location', "Địa điểm nguồn",
-        auto_join=True, index=True,
+        'stock.location', 'Source Location',
+        auto_join=True, index=True, required=False,
         check_company=True,
         help="Sets a location if you produce at a fixed location. This can be a partner location if you subcontract the manufacturing operations.")
-
     location_dest_id = fields.Many2one(
-        'stock.location', 'Địa điểm đích',
-        auto_join=True, index=True,
+        'stock.location', 'Destination Location',
+        auto_join=True, index=True, required=False,
         check_company=True,
         help="Location where the system will stock the finished products.")
+    date = fields.Datetime(
+        'Date Scheduled', default=fields.Datetime.now, index=True, required=False,
+        help="Scheduled date until move is done, then date of actual move processing")
 
     @api.depends('reason_id')
     def compute_production_order(self):

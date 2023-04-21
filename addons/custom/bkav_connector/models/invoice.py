@@ -122,7 +122,7 @@ class AccountMoveBKAV(models.Model):
     _inherit = 'account.move'
 
     exists_bkav = fields.Boolean(default=False, copy=False)
-    is_post_bkav = fields.Boolean(default=False, string="Tạo hóa đơn cuối ngày BKAV?", copy=False)
+    is_post_bkav = fields.Boolean(default=False, string="Post BKAV?", copy=False)
     company_type = fields.Selection(related="partner_id.company_type")
     sequence = fields.Integer(string='Sequence', default=lambda self: self.env['ir.sequence'].next_by_code('account.move.sequence'))
 
@@ -214,7 +214,6 @@ class AccountMoveBKAV(models.Model):
         except Exception as ex:
             _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
             return False
-        print(response, 12312321312312)
         if response.get('status') == '1':
             try:
                 self.message_post(body=(response.get('message')))
@@ -383,7 +382,6 @@ class AccountMoveBKAV(models.Model):
             _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
             return False
         self.data_status = response
-        print(self.data_status,32189312983129013901)
 
     def getting_invoice_history(self):
         data = {
@@ -415,12 +413,13 @@ class AccountMoveBKAV(models.Model):
                 _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
                 return False
         else:
-            try:
-                self.create_invoice_bkav()
-                self.getting_invoice_status
-            except Exception as ex:
-                _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
-                return False
+            if self.is_post_bkav:
+                try:
+                    self.create_invoice_bkav()
+                    self.getting_invoice_status()
+                except Exception as ex:
+                    _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
+                    return False
         return res
 
     def unlink(self):
@@ -433,20 +432,17 @@ class AccountMoveBKAV(models.Model):
         today = datetime.now().date()
         start_of_day = datetime.combine(today, time.min)
         end_of_day = datetime.combine(today, time.max)
-        _logger.info(f'Today is: {today}, Start day is: {start_of_day},End day is: {end_of_day}')
         invoices = self.search([('is_post_bkav', '=', False),
                                 ('create_date', '>=', start_of_day), ('create_date', '<=', end_of_day)])
         invoice_lines = []
         if len(invoices):
             for inv in invoices:
                 invoice_lines.extend(inv.invoice_line_ids.ids)
-            inv_bkav = self.create({
-                'partner_id': self.env.ref('base.partner_admin').id,
-                'invoice_date': today,
-                'is_post_bkav': True,
-                'invoice_description': f"Hóa đơn bán lẻ cuối ngày {today.strftime('%Y/%m/%d')}",
-                'invoice_line_ids': [(6, 0, invoice_lines)],
-            })
-            if inv_bkav.exists_bkav:
-                for inv in invoices:
-                    inv.is_post_bkav = True
+                inv_bkav = self.create({
+                    'partner_id': self.env.ref('base.partner_admin').id,
+                    'invoice_date': today,
+                    'is_post_bkav': True,
+                    'invoice_description': f"Hóa đơn bán lẻ cuối ngày {today.strftime('%Y/%m/%d')}",
+                    'invoice_line_ids': [(6, 0, invoice_lines)],
+                }).action_post()
+           
