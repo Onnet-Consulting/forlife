@@ -8,8 +8,10 @@ class PosConfig(models.Model):
 
     show_vnpay_config = fields.Boolean(compute='_compute_show_vnpay_config')
     vnpay_url = fields.Char(string='VNPay Endpoint')
-    vnpay_secret_code = fields.Char(string='VNPay Secret Code')
-    vnpay_ipn_secret_code = fields.Char(string="VNPay IPN Secret Code")
+    vnpay_secret_code = fields.Char(string='VNPay Secret Code',
+                                    help="Use to create checksum in payment transaction request")
+    vnpay_ipn_secret_code = fields.Char(string="VNPay IPN Secret Code",
+                                        help="Use to check VNPay response though IPN controller")
     vnpay_merchant_code = fields.Char(string='VNPay Merchant Code', help='merchantCode')
     vnpay_terminal_code = fields.Char(string='VNPay Terminal Code', help='terminalCode')
     vnpay_merchant_method_code_card = fields.Char(string='VNPay Merchant Method Code (Card)',

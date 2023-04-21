@@ -15,6 +15,7 @@ odoo.define('forlife_vnpay_payment_terminal.payment', function (require) {
             let s = "000000000" + num;
             return s.substring(s.length - size);
         },
+
         get_current_utc_datetime_values_by_datetime(datetime = new Date()) {
             // return UTC datetime values
             const pad = this.padding;
@@ -35,11 +36,12 @@ odoo.define('forlife_vnpay_payment_terminal.payment', function (require) {
                 millisecond
             };
         },
+
         get_expired_date: function () {
             let next_day = new Date();
             next_day.setDate(next_day.getDate() + 1)
             let day, month, year, hour, minute, second;
-            ({day, month, year, hour, minute, second} = utils.get_current_utc_datetime_values_by_datetime(next_day));
+            ({day, month, year, hour, minute, second} = this.get_current_utc_datetime_values_by_datetime(next_day));
             year = year.toString().slice(-2);
             return `${year}${month}${day}${hour}${minute}`;
         },
@@ -119,6 +121,10 @@ odoo.define('forlife_vnpay_payment_terminal.payment', function (require) {
             this._super.apply(this, arguments);
             await this._vnpay_pay();
             return false;
+        },
+
+        send_payment_cancel: async function (cid) {
+            return await this._super.apply(this, arguments);
         },
 
         _call_vnpay: async function (url, request_data) {
