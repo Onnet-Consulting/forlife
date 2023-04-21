@@ -34,7 +34,7 @@ class ProgramVoucher(models.Model):
 
     product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse', domain=[('voucher','=',True)])
 
-    product_apply_ids = fields.Many2many('product.template', string='Sản phẩm áp dụng')
+    product_apply_ids = fields.Many2many('product.product', string='Sản phẩm áp dụng')
 
     product_ids = fields.One2many('product.template', 'program_voucher_id')
 
