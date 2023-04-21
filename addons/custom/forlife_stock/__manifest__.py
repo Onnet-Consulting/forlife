@@ -14,7 +14,8 @@
         'base',
         'stock',
         'stock_account',
-        'stock_landed_costs'
+        'stock_landed_costs',
+        'quality_control'
     ],
     "data": [
         'data/data_stock_location_type.xml',
