@@ -294,7 +294,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         }
                         let check_product = false;
                         for(let j = 0; j< this.env.pos.selectedOrder.orderlines.length; j++){
-                            if(data[i].value.product_apply_ids.length > 0 && data[i].value.product_apply_ids.includes(this.env.pos.selectedOrder.orderlines[j].product.product_tmpl_id) == true){
+                            if(data[i].value.product_apply_ids.length > 0 && data[i].value.product_apply_ids.includes(this.env.pos.selectedOrder.orderlines[j].product.id) == true){
                                 if(data[i].value.is_full_price_applies == true && 'point' in this.env.pos.selectedOrder.orderlines[j] && this.env.pos.selectedOrder.orderlines[j].point){
                                     error_continue.push("Sản phẩm "+ this.env.pos.selectedOrder.orderlines[j].product.display_name +" nếu muốn sử dụng voucher sẽ cần được xóa chương trình khuyến mại trên giỏ hàng!")
                                 }
@@ -333,7 +333,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                 if(codes[i].value != false && data[i].value != false){
                    gia_tri_con_lai_ban_dau = data[i].value.price_residual
                    this.env.pos.selectedOrder.orderlines.forEach(function(item){
-                        if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.product_tmpl_id)) && !(item.point && data[i].value.is_full_price_applies)){
+                        if((!data[i].value.has_condition || data[i].value.product_apply_ids.includes(item.product.id)) && !(item.point && data[i].value.is_full_price_applies)){
                             let item_id = item.id.toString()
                             if(!so_tien_da_tra[item_id]){
                                 so_tien_da_tra[item_id] = 0;
@@ -348,7 +348,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                                 so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
                                 data[i].value.price_residual = 0;
                             }
-                            if(data[i].value.product_apply_ids.includes(item.product.product_tmpl_id)){
+                            if(data[i].value.product_apply_ids.includes(item.product.id)){
                                 list_id_product_apply_condition.push(item.id)
                             }
                         }
