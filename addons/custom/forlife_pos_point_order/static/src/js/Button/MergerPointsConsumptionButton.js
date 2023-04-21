@@ -7,23 +7,23 @@ odoo.define('forlife_pos_point_order.MergerPointsConsumptionButton', function (r
     const Registries = require('point_of_sale.Registries');
     const {useListener} = require("@web/core/utils/hooks");
     const rpc = require('web.rpc');
-
+    const {onMounted, useRef, useState} = owl;
 
     class MergerPointsConsumptionButton extends PosComponent {
         setup() {
             super.setup();
+            this.state = useState({ status: false });
             useListener('click', this.onClick);
         }
 
         async onClick() {
-            if(!this.env.pos.allowForPoint){
-                this.env.pos.allowForPoint = true;
-                $('#trigger').css('background-color', 'yellow')
-            }else if(this.env.pos.allowForPoint == false){
-                this.env.pos.allowForPoint = true;
+            if(!this.state.status){
+                this.state.status = true;
+                this.env.pos.selectedOrder.allow_for_point = true
                 $('#trigger').css('background-color', 'yellow')
             }else{
-                this.env.pos.allowForPoint = false;
+                this.state.status = false;
+                this.env.pos.selectedOrder.allow_for_point = false
                 $('#trigger').css('background-color', '')
             }
         }

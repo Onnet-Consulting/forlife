@@ -17,11 +17,12 @@ class PosOrder(models.Model):
         'Item Point Total', readonly=True, compute='_compute_item_total_point', store=True,
         help='Includes the total of product point and product event point')
     program_store_point_id = fields.Many2one('points.promotion', 'Program Store Point')
-    allow_compensate_point = fields.Boolean(compute='_allow_compensate_point')
+    allow_compensate_point = fields.Boolean(compute='_allow_compensate_point', store=True)
     point_addition_move_ids = fields.Many2many(
         'account.move', 'pos_order_account_move_point_addition', string='Point Addition Move', readonly=True)
     total_order_line_point_used = fields.Integer()
     total_order_line_redisual = fields.Integer()
+    allow_for_point = fields.Boolean()
 
     @api.depends('lines', 'lines.point_addition', 'lines.point_addition_event')
     def _compute_item_total_point(self):
@@ -81,6 +82,80 @@ class PosOrder(models.Model):
             self.env['partner.history.point'].sudo().create(history_values)
             pos_order.partner_id._compute_reset_day(pos_order.date_order, pos_order.program_store_point_id.point_expiration, store)
             pos_order.action_point_addition()
+
+    is_check_allow_compensate_point = fields.Boolean(compute='_compute_check_pos_order_compensate_point')
+
+    @api.depends('partner_id','config_id.store_id.brand_id')
+    def _compute_check_pos_order_compensate_point(self):
+        for pos_order in self:
+            brand_pos_id = pos_order.config_id.store_id.brand_id.id
+            if not pos_order.partner_id:
+                pos_order.is_check_allow_compensate_point = False
+            elif (brand_pos_id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id and self.env.ref(
+                    'forlife_pos_app_member.res_partner_retail_format_app', raise_if_not_found=False).id not in pos_order.partner_id.retail_type_ids.ids) or (
+                    brand_pos_id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id and self.env.ref(
+                'forlife_pos_app_member.res_partner_retail_tokyolife_app', raise_if_not_found=False).id not in pos_order.partner_id.retail_type_ids.ids):
+                pos_order.is_check_allow_compensate_point = False
+            elif not pos_order.allow_compensate_point:
+                pos_order.is_check_allow_compensate_point = False
+            else:
+                pos_order.is_check_allow_compensate_point = True
+
+    def check_pos_order_compensate_point(self):
+        for pos_order in self:
+            brand_pos_id = pos_order.config_id.store_id.brand_id.id
+            if not pos_order.partner_id:
+                raise UserError(_('Đơn hàng này chưa chọn khách hàng !'))
+            elif (brand_pos_id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id and self.env.ref(
+                    'forlife_pos_app_member.res_partner_retail_format_app', raise_if_not_found=False).id not in pos_order.partner_id.retail_type_ids.ids) or (
+                    brand_pos_id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id and self.env.ref(
+                'forlife_pos_app_member.res_partner_retail_tokyolife_app', raise_if_not_found=False).id not in pos_order.partner_id.retail_type_ids.ids):
+                raise UserError(_('Khách hàng này chưa cài app!'))
+            elif not pos_order.allow_compensate_point:
+                raise UserError(_(f"Đơn hàng này đã được tích điểm"))
+
+    def check_pos_order_compensate_point_from_list(self):
+        list_partner_empty = []
+        list_partner_empty_app = []
+        list_order_empty_app = []
+        list_order_has_point = []
+        list_order_no_program_points_order = []
+        for pos_order in self:
+            brand_pos_id = pos_order.config_id.store_id.brand_id.id
+            if not pos_order.partner_id:
+                list_partner_empty.append(pos_order.name)
+            elif (brand_pos_id == self.env.ref('forlife_point_of_sale.brand_format',raise_if_not_found=False).id
+                  and self.env.ref('forlife_pos_app_member.res_partner_retail_format_app',raise_if_not_found=False).id not in pos_order.partner_id.retail_type_ids.ids) \
+                    or (brand_pos_id == self.env.ref('forlife_point_of_sale.brand_tokyolife',raise_if_not_found=False).id
+                        and self.env.ref('forlife_pos_app_member.res_partner_retail_tokyolife_app', raise_if_not_found=False).id not in pos_order.partner_id.retail_type_ids.ids):
+                list_partner_empty_app.append(pos_order.partner_id.name)
+                list_order_empty_app.append(pos_order.name)
+                # raise UserError(_('Khách hàng chưa cài app!'))
+            elif not pos_order.allow_compensate_point:
+                list_order_has_point.append(pos_order.name)
+                # raise UserError(_(f"Đơn hàng này đã được tích điểm"))
+            elif not pos_order.program_store_point_id or pos_order.program_store_point_id.state == 'in_progress':
+                list_order_no_program_points_order.append(pos_order.name)
+        if list_partner_empty:
+            raise UserError(_('Đơn hàng {} chưa chọn khách hàng !'.format(', '.join(list_order_has_point))))
+        elif list_partner_empty_app:
+            raise UserError(_('Khách hàng {} tại đơn hàng {} chưa cài app! !'.format(', '.join(list_partner_empty_app),', '.join(list_order_empty_app))))
+        elif list_order_has_point:
+            raise UserError(_('Đơn hàng {} đã được tích điểm!'.format(', '.join(list_order_has_point))))
+        elif list_order_no_program_points_order:
+            raise UserError(_('Đơn hàng {} không có chương trình tích điểm nào phù hợp!'.format(', '.join(list_order_no_program_points_order))))
+        else:
+            ctx = dict(self._context)
+            view_id_form = self.env['ir.ui.view'].search([('name', '=', 'view.pos.compensate.point.order')])
+            return {
+                'name': _('Compensate Point'),
+                'res_model': 'pos.compensate.point.order',
+                'type': 'ir.actions.act_window',
+                'views': [(view_id_form.id, 'form')],
+                'target': 'new',
+                'view_mode': 'form',
+                'context': ctx,
+            }
 
     def _prepare_history_point_value(self, store: str, point_type='new', reason='', points_used=0, points_back=0):
         self.ensure_one()
@@ -193,10 +268,11 @@ class PosOrder(models.Model):
     @api.model
     def _order_fields(self, ui_order):
         data = super(PosOrder, self)._order_fields(ui_order)
-        if data['partner_id']:
+        if data['partner_id'] and 'allow_for_point' in ui_order and ui_order.get('allow_for_point') is True:
             program_promotion = self.get_program_promotion(data)
             if program_promotion:
                 data['program_store_point_id'] = program_promotion.id
+                data['allow_for_point'] = ui_order.get('allow_for_point', False)
         return data
 
     @api.model
@@ -333,6 +409,7 @@ class PosOrder(models.Model):
         result = super(PosOrder, self)._export_for_ui(order)
         result.update({
             'total_order_line_point_used': order.total_order_line_point_used,
-            'total_order_line_redisual': order.total_order_line_redisual
+            'total_order_line_redisual': order.total_order_line_redisual,
+            'allow_for_point': order.allow_for_point
         })
         return result

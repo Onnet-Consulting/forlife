@@ -11,8 +11,8 @@ class PosOrder(models.Model):
 
     brand_id = fields.Many2one('res.brand', string='Brand')
     approved = fields.Boolean('Approved', default=False, copy=False)
-    # is_refund_order = fields.Boolean('Is Refund Order', copy=False, default=False)
-    # is_change_order = fields.Boolean('Is Change Order', copy=False, default=False)
+    is_refund_order = fields.Boolean('Is Refund Order', copy=False, default=False)
+    is_change_order = fields.Boolean('Is Change Order', copy=False, default=False)
     refund_point = fields.Integer('Refund Point', compute="_compute_refund_point")
     pay_point = fields.Integer('Pay Point', compute="_compute_pay_point")
     voucher_id = fields.Many2one('voucher.voucher', string='Voucher', copy=False)
@@ -104,18 +104,27 @@ class PosOrder(models.Model):
             values.update({
                 'approved': ui_order['approved'] or False,
             })
+            if ui_order.get('is_change_product'):
+                values.update({
+                    'is_change_order': ui_order.get('is_change_product') or False,
+                })
+            if ui_order.get('is_refund_product'):
+                values.update({
+                    'is_refund_order': ui_order.get('is_refund_product') or False,
+                })
         return values
 
-    @api.depends('lines.refunded_orderline_id', 'lines.qty')
+    @api.depends('lines.refunded_orderline_id', 'lines.qty', 'is_refund_order', 'is_change_order')
     def _compute_refund_point(self):
         for item in self:
             item.refund_point = 0
             total = 0
-            for line in item.lines:
-                qty_refund = abs(line.qty)
-                for discount_line in line.refunded_orderline_id.discount_details_lines.filtered(
-                        lambda x: x.type == 'point'):
-                    total += (discount_line.recipe / line.refunded_orderline_id.qty) * qty_refund
+            if item.is_refund_order:
+                for line in item.lines:
+                    qty_refund = abs(line.qty)
+                    for discount_line in line.refunded_orderline_id.discount_details_lines.filtered(
+                            lambda x: x.type == 'point'):
+                        total += (discount_line.recipe / line.refunded_orderline_id.qty) * qty_refund
             item.refund_point = total
 
     @api.depends('lines.refunded_orderline_id', 'lines.qty', 'refunded_order_ids')

@@ -18,6 +18,7 @@ class StockTransfer(models.Model):
     work_to = fields.Many2one('forlife.production',string="LSX To")
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
     employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id, required=1)
+    department_id = fields.Many2one('hr.department', string="Phòng ban", related='employee_id.department_id')
     reference_document_id = fields.Many2one('stock.transfer.request', string="Transfer Request")
     production_order_id = fields.Many2one('production.order', string="Production Order")
     create_date = fields.Datetime(string='Create Date', default=lambda self: fields.datetime.now())
