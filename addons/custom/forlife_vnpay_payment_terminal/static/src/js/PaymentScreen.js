@@ -29,17 +29,14 @@ odoo.define('forlife_vnpay_payment_terminal.PaymentScreen', function (require) {
             }
 
             _handle_vnpay_transaction_result_response(payload) {
-                const self = this;
-                console.log('all payload here vnpay', payload);
+                let selected_payment_line = this.get_payment_line_by_unique_id(orderId);
+                const {responseCode, transactionCode, bankCode, responseMessage} = payload;
 
-                let order = this.currentOrder;
-                const {clientTransactionCode, responseCode, transactionCode, bankCode, responseMessage} = payload;
-
-                let selected_payment_line = order.get_paymentlines().filter((line) => {
-                    return line.unique_id === clientTransactionCode;
-                })
-                if (selected_payment_line.length > 0) {
-                    selected_payment_line = selected_payment_line[0];
+                if (selected_payment_line) {
+                    clearTimeout(selected_payment_line.vnpay_waiting_transaction_response_timeout);
+                    selected_payment_line.vnpay_received_response = true;
+                    let current_payment_status = selected_payment_line.get_payment_status()
+                    if (selected_payment_line.vnpay_received_response && ['done', 'retry'].includes(current_payment_status)) return true;
                     if (responseCode === '200') {
                         selected_payment_line.set_payment_status('done');
                         selected_payment_line.transaction_id = transactionCode;

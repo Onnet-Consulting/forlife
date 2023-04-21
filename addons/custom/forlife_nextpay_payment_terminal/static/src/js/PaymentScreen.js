@@ -33,8 +33,8 @@ odoo.define('forlife_nextpay_payment_terminal.PaymentScreen', function (require)
                 let selected_payment_line = this.get_payment_line_by_unique_id(orderId);
 
                 if (selected_payment_line) {
-                    selected_payment_line.nextpay_received_response = true;
                     clearTimeout(selected_payment_line.nextpay_waiting_transaction_response_timeout);
+                    selected_payment_line.nextpay_received_response = true;
                     let current_payment_status = selected_payment_line.get_payment_status()
                     // prevent handle response repeatedly
                     if (selected_payment_line.nextpay_received_response && ['done', 'retry'].includes(current_payment_status)) return true;
