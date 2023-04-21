@@ -138,7 +138,7 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
                     if (line && line.nextpay_sent_payment) {
                         line.set_payment_status('timeout');
                     }
-                }, self.transaction_timeout)
+                }, line.transaction_timeout)
             }
             return true;
         },
