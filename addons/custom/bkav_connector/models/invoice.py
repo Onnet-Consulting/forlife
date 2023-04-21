@@ -85,9 +85,13 @@ def connect_bkav(data):
     cipher2 = AES.new(encryption_key, AES.MODE_CBC, iv)
     plaintext = cipher2.decrypt(decoded_string)
     plaintext = plaintext.rstrip(plaintext[-4:])
-    decode = gzip.decompress(plaintext).decode()
+    try:
+        decode = gzip.decompress(plaintext).decode()
+    except Exception as ex:
+        _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
+        return False
     response_bkav = json.loads(decode)
-    print(response_bkav,96568954543)
+
 
     if response_bkav['Status'] == 0:
         if type(response_bkav['Object']) == int:
@@ -146,7 +150,6 @@ class AccountMoveBKAV(models.Model):
                                             ('14', 'Chờ điều chỉnh chiết khấu'),
                                             ('15', 'Điều chỉnh chiết khấu')])
 
-    @api.model
     def create_invoice_bkav(self):
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
         data = {
@@ -206,7 +209,11 @@ class AccountMoveBKAV(models.Model):
             ]
         }
         self.getting_invoice_status()
-        response = connect_bkav(data)
+        try:
+            response = connect_bkav(data)
+        except Exception as ex:
+            _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
+            return False
         print(response, 12312321312312)
         if response.get('status') == '1':
             try:
@@ -401,15 +408,19 @@ class AccountMoveBKAV(models.Model):
     def action_post(self):
         res = super().action_post()
         if self.exists_bkav:
-            self.update_invoice_bkav()
+            try:
+                self.update_invoice_bkav()
+                self.getting_invoice_status()
+            except Exception as ex:
+                _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
+                return False
         else:
-            self.create_invoice_bkav()
-        return res
-
-    def unlink(self):
-        res = super().action_post()
-        if self.exists_bkav:
-            self.delete_invoice()
+            try:
+                self.create_invoice_bkav()
+                self.getting_invoice_status
+            except Exception as ex:
+                _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
+                return False
         return res
 
     def unlink(self):

@@ -81,7 +81,7 @@ class PurchaseOrder(models.Model):
     count_invoice_inter_company_customer = fields.Integer(compute='compute_count_invoice_inter_company_customer')
     count_delivery_inter_company = fields.Integer(compute='compute_count_delivery_inter_company')
     count_delivery_import_inter_company = fields.Integer(compute='compute_count_delivery_import_inter_company')
-    cost_total = fields.Float(string='Tổng chi phí')
+    cost_total = fields.Float(string='Tổng chi phí', compute='compute_cost_total')
     is_done_picking = fields.Boolean(default=False, compute='compute_is_done_picking')
     date_order = fields.Datetime('Order Deadline', required=True, states=READONLY_STATES, index=True, copy=False,
                                  default=fields.Datetime.now,
@@ -97,7 +97,7 @@ class PurchaseOrder(models.Model):
                               "request (e.g. a sales order)", compute='compute_origin')
     type_po_cost = fields.Selection([('tax', 'Tax'), ('cost', 'Cost')])
 
-    @api.depends('cost_line', 'cost_line.expensive_amount_total')
+    @api.depends('cost_line', 'cost_line.expensive_total')
     def compute_cost_total(self):
         for item in self:
             item.cost_total = sum(item.cost_line.mapped('expensive_total'))
