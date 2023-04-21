@@ -30,6 +30,9 @@
                     <attribute name="attrs">{'invisible': True}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="nolabel">0</attribute>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', True)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='product_uom']" position="attributes">
