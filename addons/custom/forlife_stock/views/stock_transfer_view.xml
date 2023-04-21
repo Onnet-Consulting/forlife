@@ -59,6 +59,7 @@
                     <group>
                         <group>
                             <field name="employee_id" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                            <field name="department_id"/>
                             <field name="document_type" invisible="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                             <field name="method_transfer" invisible="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                             <field name="location_id" domain="[('usage', '=', 'internal')]" string="Whs From" required="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>

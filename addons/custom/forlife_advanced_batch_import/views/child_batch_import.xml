@@ -8,6 +8,7 @@
                 <form string="child_batch_import_form">
                     <header>
                         <button name="test_execute_import" type="object" string="Test Execute Import" class="oe_highlight"/>
+                        <button name="make_file_log_invalid_records_exel" type="object" string="Recompute Log File" class="oe_highlight"/>
                         <button name="make_queue_job" type="object" string="Execute Import" class="oe_highlight"/>
                         <button name="set_to_processing" type="object" string="Set to processing" class="oe_highlight" attrs="{'invisible':[('status','=','processing')]}"/>
                         <field name="status" widget="statusbar" class="o_field_statusbar"

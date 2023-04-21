@@ -13,10 +13,10 @@ class StockTransferRequest(models.Model):
     _description = 'Forlife Stock Transfer'
 
     name = fields.code = fields.Char(string="Name", default="New", copy=False)
-    request_date = fields.Datetime(string="Request Date", default=lambda self: fields.datetime.now())
+    request_date = fields.Datetime(string="Request Date", default=lambda self: fields.datetime.now(), required=True)
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
-    request_employee_id = fields.Many2one('hr.employee', string="Employee")
-    department_id = fields.Many2one('hr.department', string="Department")
+    request_employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
+    department_id = fields.Many2one('hr.department', string="Department", required=True)
     state = fields.Selection(
         tracking=True,
         string="Status",
@@ -46,7 +46,7 @@ class StockTransferRequest(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu yêu cầu điều chuyển'),
-            'template': '/forlife_stock/static/src/xlsx/Import YCDC.xlsx?download=true'
+            'template': '/forlife_stock/static/src/xlsx/import_ycdc_inventorys.xlsx?download=true'
         }]
 
     def action_wait_confirm(self):
@@ -227,7 +227,7 @@ class TransferRequestLine(models.Model):
     _description = 'Transfer Request Line'
 
     product_id = fields.Many2one('product.product', string="Product", required=True)
-    uom_id = fields.Many2one('uom.uom', string='Uom', required=True, related='product_id.uom_id')
+    uom_id = fields.Many2one('uom.uom', string='Đơn vị', required=True, related='product_id.uom_id')
     location_id = fields.Many2one('stock.location', string="Whs From", required=True)
     location_dest_id = fields.Many2one('stock.location', string="Whs To", required=True)
     request_id = fields.Many2one('stock.transfer.request', string="Stock Transfer Request", required=True,
