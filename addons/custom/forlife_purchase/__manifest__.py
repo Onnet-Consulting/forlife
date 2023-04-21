@@ -12,9 +12,11 @@
         'base',
         'forlife_base',
         'purchase_stock',
+        # 'purchase_request',
+        # 'forlife_invoice',
         'forlife_pos_app_member',
         'web_domain_field',
-        'l10n_vn',
+        'l10n_vn'
     ],
     "data": [
         'data/product_category.xml',

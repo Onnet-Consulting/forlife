@@ -449,9 +449,14 @@ msgstr "Ngày yêu cầu"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__date_planned
+msgid "Is Close"
+msgstr "Đã Đóng"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__date_planned
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__date_planned
 msgid "Expected Arrival"
-msgstr "Hạn xử lý"
+msgstr "Ngày nhận hàng dự kiến"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__account_analytic_id
@@ -461,7 +466,7 @@ msgstr "Trung tâm chi phí"
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_qty
 msgid "Quantity"
-msgstr "Số lượng"
+msgstr "Số lượng quy đổi tồn kho"
 
 #. module: purchase_request
 #: model:ir.model.fields.selection,name:purchase_request.selection__approval_logs__state__confirm
