@@ -58,12 +58,13 @@ class MemberCard(models.Model):
 
     @api.depends('retail_type_not_apply_ids')
     def _compute_customer(self):
-        partners = self.env['res.partner'].search_read([('retail_type_ids', '!=', False)], ['id', 'retail_type_ids'])
+        # partners = self.env['res.partner'].search_read([('retail_type_ids', '!=', False)], ['id', 'retail_type_ids'])
         for line in self:
-            if line.retail_type_not_apply_ids:
-                line.customer_not_apply = json.dumps([x['id'] for x in partners if any([i in x['retail_type_ids'] for i in line.retail_type_not_apply_ids.ids])])
-            else:
-                line.customer_not_apply = json.dumps([])
+            line.customer_not_apply = json.dumps([])
+            # if line.retail_type_not_apply_ids:
+            #     line.customer_not_apply = json.dumps([x['id'] for x in partners if any([i in x['retail_type_ids'] for i in line.retail_type_not_apply_ids.ids])])
+            # else:
+            #     line.customer_not_apply = json.dumps([])
 
     @api.constrains("from_date", "to_date", 'active', 'min_turnover', 'card_rank_id')
     def validate_time(self):
