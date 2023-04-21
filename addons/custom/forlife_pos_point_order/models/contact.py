@@ -13,8 +13,8 @@ class Contact(models.Model):
     is_purchased_of_format = fields.Boolean('Is Purchased Format')
     is_member_app_forlife = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     is_member_app_format = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
-    reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife', readonly=True)
-    reset_day_of_point_format = fields.Datetime('Day Reset Format', readonly=True)
+    reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife')
+    reset_day_of_point_format = fields.Datetime('Day Reset Format')
     total_points_available_forlife = fields.Integer('Total Points Availible', compute='compute_point_total')
     total_points_available_format = fields.Integer('Total Points Availible', compute='compute_point_total')
     history_points_format_ids = fields.One2many('partner.history.point', 'partner_id', string='History Point Store', domain=[('store', '=', 'format')], readonly=True)
@@ -94,12 +94,13 @@ class Contact(models.Model):
         point_promotion_format_id = self.env['points.promotion'].search([('brand_id', '=', brand_format_id.id), ('state', '=', 'in_progress')], limit=1)
 
         # Reset Forlife point
-        reset_forlife_partners = self.search([('reset_day_of_point_forlife', '<=', now), ('point_forlife_reseted', '=', False),('total_points_available_forlife','>',0)])
+        reset_forlife_partners = self.search([('reset_day_of_point_forlife', '<=', now), ('point_forlife_reseted', '=', False)])
+        reset_forlife_partners = reset_forlife_partners.filtered(lambda x: x.total_points_available_forlife > 0)
         if reset_forlife_partners:
             # vals = {'point_forlife_reseted': True}
             vals = {}
             # create journal entries
-            if point_promotion_forlife_id:
+            if point_promotion_forlife_id and reset_forlife_partners:
                 move_line_vals = [(0, 0, {
                     'account_id': point_promotion_forlife_id.point_customer_id.property_account_receivable_id.id,
                     'partner_id': point_promotion_forlife_id.point_customer_id.id,
@@ -145,11 +146,12 @@ class Contact(models.Model):
 
         # Reset Format point
         reset_format_partners = self.search([('reset_day_of_point_format', '<=', now), ('point_format_reseted', '=', False),('total_points_available_format','>',0)])
+        reset_format_partners.filtered(lambda x: x.total_points_available_format > 0)
         if reset_format_partners:
             # vals = {'point_format_reseted': True}
             vals = {}
             # create journal entries
-            if point_promotion_format_id:
+            if point_promotion_format_id and reset_format_partners:
                 move_line_vals = [(0, 0, {
                     'account_id': point_promotion_format_id.point_customer_id.property_account_receivable_id.id,
                     'partner_id': point_promotion_format_id.point_customer_id.id,

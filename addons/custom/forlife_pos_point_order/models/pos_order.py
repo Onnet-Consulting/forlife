@@ -46,9 +46,10 @@ class PosOrder(models.Model):
         if not existing_order:
             pos = self.env['pos.order'].browse(pos_id)
             store = pos._get_store_brand_from_program()
-            if store == 'format':
+            brand_pos_id = pos.config_id.store_id.brand_id.id
+            if brand_pos_id == self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id:
                 pos.partner_id.is_purchased_of_format = True
-            if store == 'forlife':
+            if brand_pos_id == self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id:
                 pos.partner_id.is_purchased_of_forlife = True
             if pos.program_store_point_id:
                 if store is not None:
