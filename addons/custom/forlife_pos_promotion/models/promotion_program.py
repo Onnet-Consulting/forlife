@@ -133,7 +133,7 @@ class PromotionProgram(models.Model):
         'product.product', domain="[('product_tmpl_id', '=', voucher_product_id)]", string='Voucher Product Variant')
     voucher_price = fields.Monetary(string='Voucher Price', currency_field='currency_id')
     voucher_apply_product_ids = fields.Many2many(
-        'product.template', related='voucher_program_id.product_apply_ids', string='Applicable Products')
+        'product.product', related='voucher_program_id.product_apply_ids', string='Applicable Products')
     voucher_ids = fields.One2many('voucher.voucher', 'promotion_program_id')
     voucher_count = fields.Integer(compute='_compute_voucher_count')
 

@@ -107,11 +107,16 @@ class PromotionCampaign(models.Model):
         'surprising.reward.product.line', 'campaign_id', string='Surprising Applied Products',
         context={'active_test': False})
 
-    @api.constrains('program_ids')
+    _sql_constraints = [
+        ('campaign_check_date', 'CHECK(from_date <= to_date)', 'End date may not be before the starting date.')]
+
+    @api.constrains('program_ids', 'from_date', 'to_date')
     def check_program(self):
         for campaign in self:
             if any([program.promotion_type == 'combo' and not program.combo_line_ids for program in campaign.program_ids]):
                 raise UserError(_('Combo\'s Formular must be set for the program!'))
+            if campaign.from_date > campaign.to_date:
+                raise UserError('Chiến dịch "%s": Ngày bắt đầu phải nhỏ hơn ngày kết thúc!' % self.name or '')
 
     def _compute_programs(self):
         for campaign in self:
