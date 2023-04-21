@@ -30,6 +30,8 @@ odoo.define('forlife_vnpay_payment_terminal.PaymentScreen', function (require) {
 
             _handle_vnpay_transaction_result_response(payload) {
                 const self = this;
+                console.log('all payload here vnpay', payload);
+
                 let order = this.currentOrder;
                 const {clientTransactionCode, responseCode, transactionCode, bankCode, responseMessage} = payload;
 
@@ -51,7 +53,6 @@ odoo.define('forlife_vnpay_payment_terminal.PaymentScreen', function (require) {
                     }
                 }
             }
-
 
             async _sendPaymentRequest({detail: line}) {
                 NumberBuffer.capture();

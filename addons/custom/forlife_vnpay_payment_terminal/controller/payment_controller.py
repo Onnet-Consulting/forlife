@@ -4,6 +4,7 @@ from odoo import http
 from odoo.http import request
 from hashlib import sha256
 from operator import itemgetter
+import json
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -13,29 +14,29 @@ class VNPayController(http.Controller):
 
     @http.route('/vnpay/ipn', type='raw_json', auth='public', methods=['POST'])
     def received_vnpay_payment_transaction_status(self):
-        request_data = request.jsonrequest
-        checked_data = self.check_request_data(request_data)
-        pos_config = checked_data.get('pos_config')
+        request_data = self.check_request_data()
+        pos_config = request_data.get('pos_config')
         if not pos_config:
-            return checked_data
+            return request_data
 
-        pos_config._notify_vnpay_payment_response(request_data)
+        raw_data = request_data.get('raw_data')
+        pos_config._notify_vnpay_payment_response(raw_data)
         return {
             'code': "200",
             "message": "success",
             "traceId": ""
         }
 
-    def check_request_data(self, data):
+    def check_request_data(self):
         try:
+            data = json.loads(request.httprequest.get_data(as_text=True))
             client_transaction_code, merchant_method_code, order_code = itemgetter(
                 'clientTransactionCode', 'merchantMethodCode', 'orderCode')(data)
             amount, transaction_code, response_code = itemgetter(
                 'amount', 'transactionCode', 'responseCode')(data)
 
-            client_transaction_code = ''
             pos_config_id = client_transaction_code.split('_')[0]
-            if client_transaction_code or not pos_config_id.isdigit():
+            if not client_transaction_code or not pos_config_id.isdigit():
                 return {
                     'code': '400',
                     'message': 'invalid transaction code',
@@ -53,7 +54,8 @@ class VNPayController(http.Controller):
                     'traceId': ""
                 }
             return {
-                'pos_config': pos_config
+                'pos_config': pos_config,
+                'raw_data': data
             }
         except Exception as e:
             _logger.error(str(e))

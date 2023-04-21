@@ -161,7 +161,7 @@ odoo.define('forlife_vnpay_payment_terminal.payment', function (require) {
                     if (line && line.vnpay_sent_payment) {
                         line.set_payment_status('timeout');
                     }
-                }, 60000)
+                }, self.transaction_timeout)
             }
             return true;
         },
@@ -175,7 +175,6 @@ odoo.define('forlife_vnpay_payment_terminal.payment', function (require) {
             this._show_error(_.str.sprintf('Could not connect to the Odoo server.\n' +
                 'Please check your internet connection and try again. \n%s'), JSON.stringify(error));
         },
-
 
         _show_error: function (msg, title) {
             if (!title) {

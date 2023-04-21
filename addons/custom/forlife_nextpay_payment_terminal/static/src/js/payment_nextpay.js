@@ -9,6 +9,8 @@ odoo.define('forlife_nextpay_payment_terminal.payment', function (require) {
 
     const _t = core._t;
 
+    // FIXME: if cashier swtich to another order , how to process the payment line of old order
+
     let PaymentNextPay = PaymentInterface.extend({
         send_payment_request: async function (cid) {
             await this._super.apply(this, arguments);
