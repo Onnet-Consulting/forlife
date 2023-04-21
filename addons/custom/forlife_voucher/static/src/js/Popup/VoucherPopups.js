@@ -137,6 +137,11 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                   $(this).val('')
               }
             });
+            $('.derpartmentname').each(function( index ) {
+              if(index == ev.currentTarget.id){
+                  $(this).val('')
+              }
+            });
             var id = parseInt(ev.currentTarget.id)
             for(let i = 0; i< data.length; i++){
                 if(i == id){
@@ -251,6 +256,13 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     error.push("Không tìm thấy mã voucher hợp lệ!")
                 }
                 if(codes[i].value != false && data[i].value != false){
+                        for (let j = i + 1; j < data.length; j++) {
+                            if(data[j].value.voucher_id){
+                                if (data[i].value.voucher_id === data[j].value.voucher_id) {
+                                    error.push("Trùng mã Voucher!")
+                                }
+                            }
+                        }
                         if(obj_count_program[data[i].value.program_voucher_id] > data[i].value.using_limit){
                             error.push("Chương trình "+data[i].value.product_voucher_name+ "chỉ cho phép sử dụng tối đa "+data[i].value.using_limit+" Voucher!")
                         }
