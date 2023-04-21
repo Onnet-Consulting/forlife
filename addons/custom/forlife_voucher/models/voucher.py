@@ -46,7 +46,7 @@ class Voucher(models.Model):
     phone_number = fields.Char(copy=False, string='Phone')
 
     product_voucher_id = fields.Many2one('product.template', 'Product Voucher', related='program_voucher_id.product_id')
-    product_apply_ids = fields.Many2many('product.template', string='Sản phẩm áp dụng', related='program_voucher_id.product_apply_ids')
+    product_apply_ids = fields.Many2many('product.product', string='Sản phẩm áp dụng', related='program_voucher_id.product_apply_ids')
     derpartment_id = fields.Many2one('hr.department', 'Department Code', related='program_voucher_id.derpartment_id')
     brand_id = fields.Many2one('res.brand', 'Brand', related='program_voucher_id.brand_id')
     store_ids = fields.Many2many('store', string='Cửa hàng áp dụng', related='program_voucher_id.store_ids')
