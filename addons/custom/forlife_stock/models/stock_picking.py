@@ -42,18 +42,6 @@ InheritPicking._action_done = _action_done
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
     _order = 'create_date desc'
-    @api.model
-    def default_get(self, default_fields):
-        res = super().default_get(default_fields)
-        if self.env.user.company_id:
-            pk_type = self.env['stock.picking.type'].search([('company_id', '=', self.env.user.company_id.id)], limit=1)
-            if pk_type:
-                res['picking_type_id'] = self.env.ref('stock.picking_type_in').id
-            else:
-                raise ValidationError(_("Bạn phải chọn loại giao nhận thuộc công ty của người dùng"))
-        else:
-            raise ValidationError(_("Người dùng không thuộc công ty nào"))
-        return res
 
     def _domain_location_id(self):
         if self.env.context.get('default_other_import'):
@@ -91,8 +79,10 @@ class StockPicking(models.Model):
 
     date_done = fields.Datetime('Date of Transfer', copy=False, readonly=False, default=fields.Datetime.now,
                                 help="Date at which the transfer has been processed or cancelled.")
-
-
+    picking_type_id = fields.Many2one(
+        'stock.picking.type', 'Operation Type',
+        required=False, readonly=False, index=True,
+        states={'draft': [('readonly', False)]})
 
     def _action_done(self):
         old_date_done = self.date_done
