@@ -46,7 +46,7 @@
                             </group>
                         </group>
                         <group>
-                            <field name="product_ids" context="{'product_exist_list': product_existed}">
+                            <field name="product_ids" attrs="{'readonly': [('state', '!=', 'new')]}" context="{'product_exist_list': product_existed}">
                                 <tree edit="0">
                                     <field name="default_code"/>
                                     <field name="name"/>

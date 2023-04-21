@@ -20,7 +20,6 @@ class PointProductModelImport(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        print(self._context)
         for idx, line in enumerate(vals_list):
             if ('active_model' in self._context and self._context.get('active_model')) and ('active_id' in self._context and self._context.get('active_id')):
                 points_product = self.env['points.product'].sudo().search([('id','=',int(self._context.get('default_points_product_id')))])
