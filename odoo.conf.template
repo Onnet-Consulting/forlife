@@ -5,7 +5,7 @@ csv_internal_sep = ,
 data_dir = /var/lib/odoo
 import_data_dir = /mnt/data-import/data
 db_host = database
-db_maxconn = 128
+db_maxconn = 10
 db_name = False
 db_password = zuiv34#@j1
 db_port = 5432
@@ -54,7 +54,7 @@ test_report_directory = False
 translate_modules = ['all']
 unaccent = False
 without_demo = False
-workers = 9
+workers = 96
 
 ;[session_redis]
 ;active=true
