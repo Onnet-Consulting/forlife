@@ -64,7 +64,7 @@ class MemberCard(models.Model):
             if line.retail_type_not_apply_ids:
                 line.customer_not_apply = base64.b64encode((json.dumps([x['id'] for x in partners if any([i in x['retail_type_ids'] for i in line.retail_type_not_apply_ids.ids])])).encode('utf-8'))
             else:
-                line.customer_not_apply = base64.b64encode((json.dumps([])).encode('utf-8'))
+                line.customer_not_apply = False
 
     @api.constrains("from_date", "to_date", 'active', 'min_turnover', 'card_rank_id')
     def validate_time(self):
