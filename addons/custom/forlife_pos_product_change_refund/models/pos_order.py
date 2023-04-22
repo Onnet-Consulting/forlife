@@ -15,7 +15,7 @@ class PosOrder(models.Model):
     is_change_order = fields.Boolean('Is Change Order', copy=False, default=False)
     refund_point = fields.Integer('Refund Point', compute="_compute_refund_point")
     pay_point = fields.Integer('Pay Point', compute="_compute_pay_point")
-    voucher_id = fields.Many2one('voucher.voucher', string='Voucher', copy=False)
+    voucher_id = fields.Many2one('voucher.voucher', string='Voucher Exchange', copy=False)
 
     @api.model
     def search_change_order_ids(self, config_id, brand_id, store_id, domain, limit, offset, search_details):
@@ -241,7 +241,7 @@ class PosOrder(models.Model):
             'brand_id': program_voucher_id.brand_id.id,
             'store_ids': [(6, False, program_voucher_id.store_ids.ids)],
             'start_date': program_voucher_id.start_date,
-            'state': 'new',
+            'state': 'sold',
             'partner_id': partner.id,
             'price': price,
             'price_used': 0,
@@ -258,9 +258,3 @@ class PosOrder(models.Model):
         }
         return vals
 
-    # def _export_for_ui(self, order):
-    #     result = super(PosOrder, self)._export_for_ui(order)
-    #     result.update({
-    #         'voucherlines': [[0, 0, voucher] for voucher in order.pos_voucher_line_ids.export_for_ui()],
-    #     })
-    #     return result
