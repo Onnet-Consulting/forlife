@@ -24,7 +24,7 @@
     </record>
 
     <record id="model_pos_order_check" model="ir.actions.server">
-        <field name="name">Check Compensate Point</field>
+        <field name="name">Tích điểm bù</field>
         <field name="model_id" ref="point_of_sale.model_pos_order"/>
         <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
         <field name="binding_view_types">list</field>
@@ -40,8 +40,6 @@
         <field name="res_model">pos.compensate.point.order</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
-        <field name="binding_view_types">list</field>
     </record>
 
 </odoo>
