@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <t t-name="ReportHeader">
+        <div class="header">
+            <div class="btn_back fa fa-2x fa-chevron-left" title="Back" aria-label="Back"/>
+            <div class="title">
+                <t t-esc="widget.reportTitle"/>
+            </div>
+            <t t-if="widget.reportPager">
+                <t t-call="ReportPager"/>
+            </t>
+            <t t-else="">
+                <span/>
+            </t>
+        </div>
+    </t>
+
+    <t t-name="ReportTitle">
+        <thead>
+            <tr>
+                <t t-foreach="widget.titles" t-as="title">
+                    <th>
+                        <t t-esc="title"/>
+                    </th>
+                </t>
+            </tr>
+        </thead>
+    </t>
+
+    <t t-name="DetailReportTitle">
+        <thead>
+            <tr>
+                <t t-foreach="titles" t-as="title">
+                    <th>
+                        <t t-esc="title"/>
+                    </th>
+                </t>
+            </tr>
+        </thead>
+    </t>
+
+    <t t-name="ButtonExportExcel">
+        <div>
+            <span style="color: red;">
+                <t t-if="widget.total_records > 0">Có
+                    <t t-esc="widget.total_records"/>
+                    bản ghi được tìm thấy
+                </t>
+                <t t-else="">Không có bản ghi nào</t>
+            </span>
+            <t t-if="widget.total_records > 0">
+                <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel"
+                        t-att-button-id="widget.report_type_id" t-att-filename="widget.report_filename">Xuất Excel
+                </button>
+            </t>
+        </div>
+    </t>
+
+    <t t-name="ReportPager">
+        <div class="pagination">
+            <t t-if="widget.total_records > 0">
+                <span class="o_current_page_num report_hidden">
+                    <t t-esc="options.page_num"/>
+                </span>
+                <span class="o_pager_counter">
+                    <span class="o_pager_value">
+                        <t t-esc="options.start_record"/>-
+                        <t t-esc="options.end_record"/>
+                    </span>
+                    /
+                    <span class="o_pager_limit">
+                        <t t-esc="options.total_records"/>
+                    </span>
+                </span>
+                <button type="button" class="fa fa-chevron-left btn btn-secondary o_pager_previous" t-att="att_prev"
+                        aria-label="Previous" title="Previous" tabindex="-1"/>
+                <button type="button" class="fa fa-chevron-right btn btn-secondary o_pager_next" t-att="att_next"
+                        aria-label="Next" title="Next" tabindex="-1"/>
+            </t>
+            <t t-else="">
+                <span class="o_pager_limit" style="color: red;">
+                    Dữ liệu trống
+                </span>
+            </t>
+        </div>
+    </t>
+
+    <t t-name="ReportBase">
+        <!-- Set variables here for later use -->
+        <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+        <div id="report-template">
+            <t t-call="ReportHeader"/>
+            <t t-if="widget.reportPager == false">
+                <t t-call="ButtonExportExcel"/>
+            </t>
+            <div id="main-content">
+            </div>
+        </div>
+    </t>
+
+    <t t-name="AvailableReport">
+        <table class="table-sm table-hover table-striped table o_list_table available-report-list report_table">
+            <thead>
+                <tr>
+                    <th>STT</th>
+                    <th>Module</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <t t-set="num" t-value="1"/>
+                <t t-foreach="widget.report_info" t-as="report">
+                    <tr>
+                        <td>
+                            <t t-esc="num"/>
+                        </td>
+                        <td>
+                            <t t-esc="report.module"/>
+                        </td>
+                        <td>
+                            <t t-esc="report.name"/>
+                        </td>
+                    </tr>
+                    <t t-set="num" t-value="num + 1"/>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</odoo>
