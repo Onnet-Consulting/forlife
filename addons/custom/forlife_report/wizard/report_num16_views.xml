@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num16_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num16</field>
+        <field name="arch" type="xml">
+            <form string="Report stock move" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="all_products"/>
+                            <field name="all_warehouses"/>
+                        </group>
+                        <group>
+                            <field name="from_date" class="oe_inline"/>
+                            <field name="to_date" class="oe_inline"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="product_ids" attrs="{'invisible': [('all_products', '=', True)], 'required': [('all_products', '=', False)]}" widget="many2many_tags"/>
+                        <field name="warehouse_ids" widget="many2many_tags" attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"/>
+                        <field name="product_brand_id" required="1" class="oe_inline"/>
+                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]"/>
+                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', 'in', product_group_ids)]"/>
+                        <field name="product_texture_ids" widget="many2many_tags" domain="[('parent_id', 'in', product_line_ids)]"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num16_window_action" model="ir.actions.act_window">
+        <field name="name">Report stock move</field>
+        <field name="res_model">report.num16</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num16_menu"
+              action="report_num16_window_action"
+              parent="report_menu_stock"
+              sequence="16"/>
+</odoo>
