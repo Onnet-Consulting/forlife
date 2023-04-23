@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'queue_job', 'base_import', 'forlife_base'],
+    'depends': ['base', 'queue_job', 'base_import'],
 
     # always loaded
     'data': [
