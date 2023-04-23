@@ -8,7 +8,7 @@
             <field name="state">code</field>
             <field name="code">
             if records:
-                res = records.with_delay().button_validate()
+                res = records.with_delay(channel='import', priority=1, eta=0).button_validate()
             </field>
         </record>
 </odoo>
