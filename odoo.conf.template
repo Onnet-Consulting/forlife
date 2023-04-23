@@ -62,4 +62,4 @@ workers = 96
 ;password=forlife@123
 
 [queue_job]
-channels = root:22, import:20
+channels = root:52, import:50

@@ -9,7 +9,7 @@
             <field name="code">
             if records:
                 for record in records:
-                    record.with_delay().button_validate()
+                    record.with_delay(channel='import', priority=1, eta=0).button_validate()
             </field>
         </record>
 </odoo>
