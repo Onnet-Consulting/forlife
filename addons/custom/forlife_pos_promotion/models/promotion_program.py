@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import base64
 import itertools
+import json
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -109,6 +111,8 @@ class PromotionProgram(models.Model):
     valid_product_ids = fields.Many2many(
         'product.product', compute='_compute_valid_product_ids', string='Valid Products')
     product_count = fields.Integer(compute='_compute_valid_product_ids', string='Valid Product Counts')
+    json_valid_product_ids = fields.Binary(
+        compute='_compute_json_valid_product_ids', string='Json Valid Products', store=True)
 
     # Cart
     order_amount_min = fields.Float()
@@ -172,7 +176,6 @@ class PromotionProgram(models.Model):
                 if len(program.reward_ids) != len(set(program.reward_ids.mapped('quantity_min'))):
                     raise UserError(_('%s: Không được khai báo cùng số lượng trên các chi tiết combo!') % program.name)
 
-
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
         ('check_dates_tax_register', 'CHECK (tax_from_date <= tax_to_date)', 'End date may not be before the starting date.'),
@@ -223,6 +226,13 @@ class PromotionProgram(models.Model):
             else:
                 line.valid_product_ids = self.env['product.product']
             line.product_count = len(line.valid_product_ids)
+
+    @api.depends('product_ids', 'product_categ_ids')
+    def _compute_json_valid_product_ids(self):
+        for pro in self:
+            product_ids = pro.valid_product_ids.ids or []
+            product_ids_json_encode = base64.b64encode(json.dumps(product_ids).encode('utf-8'))
+            pro.json_valid_product_ids = product_ids_json_encode
 
     def _compute_total_order_count(self):
         self.total_order_count = 0
@@ -296,6 +306,11 @@ class PromotionProgram(models.Model):
             if bool(self.env['promotion.usage.line'].search([('program_id', '=', program.id)])):
                 raise UserError(_('Can not unlink program which is already used!'))
         return super().unlink()
+
+    def action_recompute_new_field_binary(self):
+        self.search([])._compute_json_valid_product_ids()
+        self.search([]).combo_line_ids._compute_json_valid_product_ids()
+        return True
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")

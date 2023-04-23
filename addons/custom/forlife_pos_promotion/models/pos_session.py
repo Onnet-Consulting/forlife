@@ -94,7 +94,7 @@ class PosSession(models.Model):
                     'promotion_type',
                     'with_code',
                     'discount_based_on',
-                    'valid_product_ids',
+                    'json_valid_product_ids',
                     'valid_customer_ids',
                     'min_quantity',
                     'order_amount_min',
@@ -118,7 +118,7 @@ class PosSession(models.Model):
         return {
             'search_params': {
                 'domain': [('program_id', 'in', self.config_id._get_promotion_program_ids().ids)],
-                'fields': ['program_id', 'valid_product_ids', 'quantity']
+                'fields': ['program_id', 'json_valid_product_ids', 'quantity']
             }
         }
 

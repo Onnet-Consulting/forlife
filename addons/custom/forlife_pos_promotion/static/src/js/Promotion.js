@@ -78,7 +78,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             if (program.to_date) {
                 program.to_date = new Date(program.to_date);
             };
-            program.valid_product_ids = new Set(program.valid_product_ids);
+            let valid_product_ids = JSON.parse(atob(program.json_valid_product_ids));
+            program.valid_product_ids = new Set(valid_product_ids);
             program.valid_customer_ids = new Set(program.valid_customer_ids);
             program.discount_product_ids = new Set(program.discount_product_ids);
             program.reward_product_ids = new Set(program.reward_product_ids);
@@ -122,7 +123,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             program.display_name = program.name
         };
         for (const item of this.promotionComboLines) {
-            item.valid_product_ids = new Set(item.valid_product_ids);
+            let cl_valid_product_ids = JSON.parse(atob(item.json_valid_product_ids));
+            item.valid_product_ids = new Set(cl_valid_product_ids);
             item.program_id = item.program_id[0];
             item.program = this.promotion_program_by_id[item.program_id];
             item.program.comboFormula.push(item);
