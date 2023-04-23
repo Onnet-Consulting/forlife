@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num10_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num10</field>
+        <field name="arch" type="xml">
+            <form string="Up Rank History" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                            <field name="from_rank_id" class="oe_inline"/>
+                            <field name="to_rank_id" class="oe_inline" domain="[('id', '!=', from_rank_id)]"/>
+                        </group>
+                        <group>
+                            <field name="brand_id"/>
+                            <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags"/>
+                            <field name="customer_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num10_window_action" model="ir.actions.act_window">
+        <field name="name">Up Rank History</field>
+        <field name="res_model">report.num10</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num10_menu"
+              action="report_num10_window_action"
+              parent="report_menu_card_rank"
+              sequence="0"/>
+</odoo>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum12Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum12MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum12MainTemplate">
+        <div class="oe_max_height_500">
+            <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="ReportTitle"/>
+                <tbody>
+                    <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                    <t t-set="num" t-value="1"/>
+                    <t t-foreach="widget.data" t-as="line">
+                        <tr class="show-detail" t-att-id="num - 1">
+                            <td><t t-esc="num"/></td>
+                            <td><t t-esc="line.store_name"/></td>
+                            <td><t t-esc="line.rank_name"/></td>
+                            <td><t t-esc="format_decimal(line.total_customer, 0)"/></td>
+                        </tr>
+                        <t t-set="num" t-value="num + 1"/>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+        <br/>
+        <div id="value-detail">
+        </div>
+    </t>
+
+    <t t-name="ReportValueDetailTemplate">
+        <button class="oe_tab">Detail</button>
+        <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Xuất Excel</button>
+        <div class="oe_max_height_500">
+            <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="DetailReportTitle"/>
+                <tbody>
+                    <t t-set="num" t-value="1"/>
+                    <t t-foreach="data" t-as="line">
+                        <tr>
+                            <td><t t-esc="num"/></td>
+                            <td><t t-esc="line.store_name"/></td>
+                            <td><t t-esc="line.customer_info[0]"/></td>
+                            <td><t t-esc="line.customer_info[1]"/></td>
+                            <td><t t-esc="line.customer_info[2]"/></td>
+                            <td><t t-esc="line.customer_info[3]"/></td>
+                            <td><t t-esc="line.last_order_date"/></td>
+                            <td><t t-esc="format_decimal(line.dt_dh_gn, 0)"/></td>
+                            <td><t t-esc="line.rank_name"/></td>
+                            <td><t t-esc="format_decimal(line.tong_dt_ms, 0)"/></td>
+                            <td><t t-esc="line.tg_khong_ms"/></td>
+                        </tr>
+                        <t t-set="num" t-value="num + 1"/>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+    </t>
+</template>

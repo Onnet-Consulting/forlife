@@ -1,5 +1,6 @@
 from odoo import api, fields, models, _
 import json
+import base64
 
 
 class PosSession(models.Model):
@@ -25,7 +26,7 @@ class PosSession(models.Model):
                                                    [p['value2'], p['apply_value_from_2'], p['apply_value_to_2']],
                                                    [p['value3'], p['apply_value_from_3'], p['apply_value_to_3']]],
                                                   key=lambda r: r[0])[::-1] if disc[0] > 0],
-            'customer_not_apply': json.loads(p['customer_not_apply']),
+            'customer_not_apply': json.loads(base64.b64decode(p['customer_not_apply']).decode()) if p['customer_not_apply'] else [],
         } for p in loaded_data['member.card']}
         loaded_data.pop('member.card')
         if 'pos.branch' not in loaded_data:

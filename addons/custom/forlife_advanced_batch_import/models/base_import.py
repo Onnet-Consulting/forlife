@@ -1,6 +1,6 @@
 import datetime
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.addons.base_import.models.base_import import ImportValidationError, _logger
 from odoo.tools import config, DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, pycompat
 import psycopg2
@@ -175,7 +175,10 @@ class Import(models.TransientModel):
                         else dt.strftime(DEFAULT_SERVER_DATE_FORMAT)
                     )
                 elif cell.ctype is xlrd.XL_CELL_BOOLEAN:
-                    values.append(u'True' if cell.value else u'False')
+                    if cell.value:
+                        values.append(u'True' if cell.value else u'False')
+                    else:
+                        values.append(cell.value)
                 elif cell.ctype is xlrd.XL_CELL_ERROR:
                     raise ValueError(
                         _("Invalid cell value at row %(row)s, column %(col)s: %(cell_value)s") % {
@@ -192,3 +195,4 @@ class Import(models.TransientModel):
 
         # return the file length as first value
         return sheet.nrows, rows
+

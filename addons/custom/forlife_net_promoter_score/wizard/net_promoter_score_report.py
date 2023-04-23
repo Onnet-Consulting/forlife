@@ -6,6 +6,7 @@ import copy
 from datetime import timedelta
 
 REPORT_HEADER = ['STT', 'Chi nhánh', 'Mã chi nhánh', 'Khu vực', 'Mã KH', 'Tên KH', 'Mã HĐ', 'Ngày mua hàng', 'Ngày đánh giá', 'Đánh giá', 'Bình luận', 'Trạng thái']
+COLUMN_WIDTHS = [8, 30, 20, 12, 15, 30, 25, 16, 16, 12, 40, 12]
 POP_INDEX_IN_FORM_REPORT = (3, 2)  # xóa cột khu vực và mã chi nhánh trên phom báo cáo
 DATA_NOT_FOUND = f'<tr style="text-align: center; color: #000000;"><td colspan="{len(REPORT_HEADER) - len(POP_INDEX_IN_FORM_REPORT)}"><h3>Không tìm thấy bản ghi nào !</h3></td></tr>'
 MIN_RECORD_PER_PAGE = 80
@@ -14,7 +15,8 @@ MAX_RECORD_PER_PAGE = 200
 
 class NetPromoterScoreReport(models.TransientModel):
     _name = 'net.promoter.score.report'
-    _description = 'Net Promoter Score Report'
+    _inherit = 'report.base'
+    _description = 'NPS Report'
 
     def _default_header(self):
         result = self.get_view_header()
@@ -157,7 +159,7 @@ class NetPromoterScoreReport(models.TransientModel):
         return records, values
 
     def prepare_report_data(self, records):
-        data = [REPORT_HEADER] if not self._context.get('pop_colum', False) else []
+        data = []
         row = 1
         for line in records:
             val = [str(row), line.store_name, line.store_code, line.areas, line.customer_code, line.customer_name, line.invoice_number,
@@ -191,3 +193,20 @@ class NetPromoterScoreReport(models.TransientModel):
         if self.record_per_page != record_per_page:
             values.update({'record_per_page': record_per_page})
         return values
+
+    def generate_xlsx_report(self, workbook):
+        data, values = self.filter_data([], {})
+        formats = self.get_format_workbook(workbook)
+        sheet = workbook.add_worksheet(self._description)
+        sheet.set_row(0, 25)
+        for idx, title in enumerate(REPORT_HEADER):
+            sheet.write(0, idx, title, formats.get('title_format'))
+            sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
+        row = 1
+        for value in data:
+            for i, val in enumerate(value):
+                if i in (0, 7, 8, 9, 11):
+                    sheet.write(row, i, val, formats.get('center_format'))
+                else:
+                    sheet.write(row, i, val, formats.get('normal_format'))
+            row += 1

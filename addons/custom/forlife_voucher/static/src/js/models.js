@@ -28,7 +28,7 @@ odoo.define('forlife_voucher.voucher', function (require) {
         class extends Order {
             constructor(obj, options) {
                 super(...arguments);
-                this.voucherlines  = new PosCollection();
+                this.voucherlines  = this.voucherlines || [];
             }
 
             init_from_JSON(json) {
