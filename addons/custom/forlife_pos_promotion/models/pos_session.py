@@ -12,6 +12,7 @@ class PosSession(models.Model):
         if self.config_id._get_promotion_program_ids():
             result += [
                 'surprising.reward.product.line',
+                'promotion.campaign',
                 'promotion.program',
                 'promotion.combo.line',
                 'promotion.reward.line',
@@ -69,11 +70,23 @@ class PosSession(models.Model):
             }
         }
 
+    def _loader_params_promotion_campaign(self):
+        return {
+            'search_params': {
+                'domain': [('id', 'in', self.config_id._get_promotion_campaign_ids().ids)],
+                'fields': [
+                    'id',
+                    'json_valid_customer_ids'
+                ]
+            }
+        }
+
     def _loader_params_promotion_program(self):
         return {
             'search_params': {
                 'domain': [('id', 'in', self.config_id._get_promotion_program_ids().ids)],
                 'fields': [
+                    'campaign_id',
                     'name',
                     'from_date',
                     'to_date',
@@ -95,7 +108,6 @@ class PosSession(models.Model):
                     'with_code',
                     'discount_based_on',
                     'valid_product_ids',
-                    'valid_customer_ids',
                     'min_quantity',
                     'order_amount_min',
                     'incl_reward_in_order',
@@ -143,6 +155,9 @@ class PosSession(models.Model):
 
     def _get_pos_ui_promotion_program(self, params):
         return self.env['promotion.program'].search_read(**params['search_params'])
+
+    def _get_pos_ui_promotion_campaign(self, params):
+        return self.env['promotion.campaign'].search_read(**params['search_params'])
 
     def _get_pos_ui_promotion_combo_line(self, params):
         return self.env['promotion.combo.line'].search_read(**params['search_params'])

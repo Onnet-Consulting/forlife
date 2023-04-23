@@ -32,6 +32,7 @@
                         <group>
                             <field name="customer_domain" widget="domain"
                                    options="{'model': 'res.partner', 'in_dialog': true}"/>
+<!--                            <field name="json_valid_customer_ids"/>-->
                             <field name="brand_id"/>
                             <field name="store_ids" widget="many2many_tags"/>
                             <field name="company_id" invisible="1"/>

@@ -55,7 +55,8 @@ class PosConfig(models.Model):
         result = []
         for program_id in promotion_programs:
             program = self.env['promotion.program'].sudo().browse(int(program_id))
-            if program.exists() and partner in program.valid_customer_ids:
+            valid_customer_ids = set(program.get_valid_customer_ids())
+            if program.exists() and partner.id in valid_customer_ids:
                 result.append(program_id)
         return result
 

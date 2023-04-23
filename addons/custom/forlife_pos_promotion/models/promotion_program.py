@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import base64
 import itertools
+import json
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -86,7 +88,7 @@ class PromotionProgram(models.Model):
         readonly=True)
 
     customer_domain = fields.Char(related='campaign_id.customer_domain')
-    valid_customer_ids = fields.Many2many(related='campaign_id.valid_customer_ids')
+    json_valid_customer_ids = fields.Binary(related='campaign_id.json_valid_customer_ids')
 
     total_order_count = fields.Integer("Total Order Count", compute="_compute_total_order_count")
     order_ids = fields.Many2many('pos.order', compute="_compute_total_order_count")
@@ -171,7 +173,6 @@ class PromotionProgram(models.Model):
             if program.promotion_type == 'combo' and program.reward_ids and program.reward_type in ['combo_percent_by_qty', 'combo_fixed_price_by_qty']:
                 if len(program.reward_ids) != len(set(program.reward_ids.mapped('quantity_min'))):
                     raise UserError(_('%s: Không được khai báo cùng số lượng trên các chi tiết combo!') % program.name)
-
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -296,6 +297,14 @@ class PromotionProgram(models.Model):
             if bool(self.env['promotion.usage.line'].search([('program_id', '=', program.id)])):
                 raise UserError(_('Can not unlink program which is already used!'))
         return super().unlink()
+
+    def get_valid_customer_ids(self):
+        self.ensure_one()
+        try:
+            result = json.loads(base64.b64decode(self.json_valid_customer_ids).decode('utf-8'))
+            return result
+        except Exception as e:
+            return []
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")

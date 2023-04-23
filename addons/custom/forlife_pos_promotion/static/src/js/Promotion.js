@@ -53,6 +53,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.couponCache = {};
         await super._processData(loadedData);
         this.promotionPrograms = loadedData['promotion.program'] || [];
+        this.promotionCampaigns = loadedData['promotion.campaign'] || [];
         this.surprisingRewardProducts = loadedData['surprising.reward.product.line'] || [];
         this.promotionComboLines = loadedData['promotion.combo.line'] || [];
         this.rewardLines = loadedData['promotion.reward.line'] || [];
@@ -64,6 +65,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this._loadPromotionData();
     }
     _loadPromotionData() {
+        this.promotion_campaign_by_id = {};
         this.promotion_program_by_id = {};
         this.reward_line_by_id = {};
         this.pro_pricelist_item_by_id = {};
@@ -71,6 +73,12 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         for (const line of this.surprisingRewardProducts) {
             line.to_check_product_ids = new Set(line.to_check_product_ids);
         };
+        for (const campaign of this.promotionCampaigns) {
+            let parsed = JSON.parse(atob(campaign.json_valid_customer_ids));
+            campaign.valid_customer_ids = new Set(parsed);
+            this.promotion_campaign_by_id[campaign.id] = campaign;
+        }
+
         for (const program of this.promotionPrograms) {
             if (program.from_date) {
                 program.from_date = new Date(program.from_date);
@@ -78,8 +86,9 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             if (program.to_date) {
                 program.to_date = new Date(program.to_date);
             };
+            program.campaign = this.promotion_campaign_by_id[program.campaign_id[0]];
             program.valid_product_ids = new Set(program.valid_product_ids);
-            program.valid_customer_ids = new Set(program.valid_customer_ids);
+            program.valid_customer_ids = program.campaign.valid_customer_ids;
             program.discount_product_ids = new Set(program.discount_product_ids);
             program.reward_product_ids = new Set(program.reward_product_ids);
 

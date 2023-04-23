@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import base64
 import itertools
+import json
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -23,16 +25,6 @@ class PromotionConfiguration(models.AbstractModel):
     hour_ids = fields.Many2many('hour.data', string='Hours')
 
     customer_domain = fields.Char('Customer Domain', default='[]')
-    valid_customer_ids = fields.Many2many('res.partner', compute='_compute_valid_customer_ids')
-
-    def _get_partners(self):
-        self.ensure_one()
-        domain = safe_eval(self.customer_domain or "[('id', '=', 0)]")
-        return self.env['res.partner'].search(domain)
-
-    def _compute_valid_customer_ids(self):
-        for record in self:
-            record.valid_customer_ids = record._get_partners()
 
     # @api.onchange('from_date', 'to_date')
     def onchange_program_date(self):
@@ -91,6 +83,7 @@ class PromotionCampaign(models.Model):
         'promotion.program', 'campaign_id', context={'active_test': False})
     program_count = fields.Integer(compute='_compute_program_count')
     active_program_count = fields.Integer(compute='_compute_program_count')
+    json_valid_customer_ids = fields.Binary(compute='_compute_valid_customer_ids', store=True)
 
     combo_program_ids = fields.One2many('promotion.program', 'campaign_id', domain=[('promotion_type', '=', 'combo')])
     code_program_ids = fields.One2many('promotion.program', 'campaign_id', domain=[('promotion_type', '=', 'code')])
@@ -117,6 +110,19 @@ class PromotionCampaign(models.Model):
                 raise UserError(_('Combo\'s Formular must be set for the program!'))
             if campaign.from_date > campaign.to_date:
                 raise UserError('Chiến dịch "%s": Ngày bắt đầu phải nhỏ hơn ngày kết thúc!' % self.name or '')
+
+    def _get_partners(self):
+        self.ensure_one()
+        domain = safe_eval(self.customer_domain or "[('id', '=', 0)]")
+        return self.env['res.partner'].search(domain)
+
+    @api.depends('customer_domain')
+    def _compute_valid_customer_ids(self):
+        for record in self:
+            partner_ids = record._get_partners().ids or []
+            partner_ids_json = json.dumps(partner_ids).encode('utf-8')
+            partner_ids_json_encode = base64.b64encode(partner_ids_json)
+            record.json_valid_customer_ids = partner_ids_json_encode
 
     def _compute_programs(self):
         for campaign in self:
