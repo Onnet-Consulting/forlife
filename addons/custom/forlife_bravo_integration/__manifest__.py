@@ -40,7 +40,7 @@
         'wizard/bravo_sync_account_wizard_views.xml',
         'wizard/bravo_sync_tax_wizard_views.xml',
     ],
-    # 'external_dependencies': {
-    #     'python': ['pyodbc'],
-    # },
+    'external_dependencies': {
+        'python': ['pyodbc'],
+    },
 }
