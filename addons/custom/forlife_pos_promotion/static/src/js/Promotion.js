@@ -56,7 +56,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.surprisingRewardProducts = loadedData['surprising.reward.product.line'] || [];
         this.promotionComboLines = loadedData['promotion.combo.line'] || [];
         this.rewardLines = loadedData['promotion.reward.line'] || [];
-        this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
+//        this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
         this.monthData = loadedData['month.data'] || [];
         this.dayofmonthData = loadedData['dayofmonth.data'] || [];
         this.dayofweekData = loadedData['dayofweek.data'] || [];
@@ -83,6 +83,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             program.valid_customer_ids = new Set();
             program.discount_product_ids = new Set(program.discount_product_ids);
             program.reward_product_ids = new Set(program.reward_product_ids);
+
+            this.promotionPricelistItems = JSON.parse(atob(program.json_pricelist_item_ids)) || [];
 
             this.promotion_program_by_id[program.id] = program;
 
@@ -144,11 +146,12 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             item.program = this.promotion_program_by_id[item.program_id];
             item.program.pricelistItems.push(item);
             item.program.productPricelistItems.add(item.product_id);
+            item.display_name = item.display_name;
             let program_clone = {...item.program};
             delete program_clone.id;
             delete program_clone.str_id;
+            delete program_clone.display_name;
             item = Object.assign(item, program_clone);
-            item.display_name = item.display_name + ': ' + ((this.db.product_by_id && this.db.product_by_id[item.product_id]) ? this.db.product_by_id[item.product_id].display_name : "");
         };
     }
 
