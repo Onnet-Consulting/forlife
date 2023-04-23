@@ -80,7 +80,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             };
             let valid_product_ids = JSON.parse(atob(program.json_valid_product_ids));
             program.valid_product_ids = new Set(valid_product_ids);
-            program.valid_customer_ids = new Set(program.valid_customer_ids);
+            program.valid_customer_ids = new Set();
             program.discount_product_ids = new Set(program.discount_product_ids);
             program.reward_product_ids = new Set(program.reward_product_ids);
 
@@ -327,6 +327,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.referred_code_id = json.referred_code_id || null;
         this.surprise_reward_program_id = json.surprise_reward_program_id || null;
         this.surprising_reward_line_id = json.surprising_reward_line_id || null;
+        if (this.partner) {
+            this.set_partner(this.partner);
+        };
         this._resetPromotionPrograms();
         this._resetCartPromotionPrograms();
     }
@@ -339,10 +342,31 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (oldPartner !== this.get_partner()) {
             await this.get_history_program_usages();
             await this.update_surprising_program();
+            await this.load_promotion_valid_new_partner();
             this.activatedInputCodes = [];
             this._updateActivatedPromotionPrograms();
             this._resetPromotionPrograms();
             this._resetCartPromotionPrograms();
+        };
+    }
+
+    async load_promotion_valid_new_partner() {
+        const partner = this.get_partner();
+        let proPrograms = Object.keys(this.pos.promotion_program_by_id);
+        if (partner) {
+            let promotionValidPartners = await this.pos.env.services.rpc({
+                    model: 'pos.config',
+                    method: 'load_promotion_valid_new_partner',
+                    args: [[this.pos.config.id], [partner.id], proPrograms],
+            });
+            if (promotionValidPartners.length > 0) {
+                for (let program_id of promotionValidPartners) {
+                    let validProgram = this.pos.promotionPrograms.find(p => p.id == program_id);
+                    if (validProgram) {
+                        validProgram.valid_customer_ids.add(partner.id);
+                    };
+                };
+            };
         };
     }
 

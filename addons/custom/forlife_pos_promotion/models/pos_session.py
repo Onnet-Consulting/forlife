@@ -95,7 +95,6 @@ class PosSession(models.Model):
                     'with_code',
                     'discount_based_on',
                     'json_valid_product_ids',
-                    'valid_customer_ids',
                     'min_quantity',
                     'order_amount_min',
                     'incl_reward_in_order',
