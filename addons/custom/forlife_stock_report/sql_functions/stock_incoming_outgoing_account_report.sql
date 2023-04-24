@@ -1,5 +1,5 @@
 DROP FUNCTION IF EXISTS stock_incoming_outgoing_report_account;
-CREATE OR REPLACE FUNCTION stock_incoming_outgoing_report_account(_date_from character varying , _date_to character varying, _company_id integer)
+CREATE OR REPLACE FUNCTION stock_incoming_outgoing_report_account(_date_from character varying , _date_to character varying, _company_id integer, _last_date_last_month character varying)
 RETURNS TABLE
         (
             product_id               INTEGER,
@@ -20,24 +20,38 @@ BEGIN
     RETURN Query (
         WITH opening as (
             -- đầu kỳ
-            select aml.product_id,
-                    sum(aml.quantity) as quantity,
-                    sum(aml.debit - aml.credit) as total_value
-            from account_move_line aml
-            left join account_move am on am.id = aml.move_id
-            left join product_product pp on pp.id = aml.product_id
-            where 1=1
-            and am.state = 'posted'
-            and am.date < _date_from::date
-            and am.company_id = _company_id
-            and aml.account_id = (select split_part(value_reference, ',', 2)::integer
-                                from ir_property
-                                where name = 'property_stock_valuation_account_id'
-                                and res_id = 'product.category,' || (select pt.categ_id from product_product pp
-                                                                    join product_template pt on pp.product_tmpl_id = pt.id
-                                                                    where pp.id = aml.product_id)
-                                                                    and company_id = _company_id)
-            group by aml.product_id
+            select dataa.product_id,
+                    sum(dataa.quantity) as quantity,
+                    sum(dataa.total_value) as total_value
+            from (
+                select sqp.product_id,
+                    sqp.closing_quantity as quantity,
+                    sqp.closing_value as total_value
+                from stock_quant_period sqp
+                where sqp.period_end_date = _last_date_last_month::date
+
+                union all
+
+                select aml.product_id,
+                        aml.quantity as quantity,
+                        aml.debit - aml.credit as total_value
+                from account_move_line aml
+                left join account_move am on am.id = aml.move_id
+                left join product_product pp on pp.id = aml.product_id
+                where 1=1
+                and am.state = 'posted'
+                and am.date < _date_from::date
+                and am.date > _last_date_last_month::date
+                and am.company_id = _company_id
+                and aml.account_id = (select split_part(value_reference, ',', 2)::integer
+                                    from ir_property
+                                    where name = 'property_stock_valuation_account_id'
+                                    and res_id = 'product.category,' || (select pt.categ_id from product_product pp
+                                                                        join product_template pt on pp.product_tmpl_id = pt.id
+                                                                        where pp.id = aml.product_id)
+                                                                        and company_id = _company_id)
+            ) dataa
+            group by dataa.product_id
         ),
         incoming as (
             -- nhập trong kỳ
