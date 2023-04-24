@@ -66,14 +66,14 @@ class StockPicking(models.Model):
     location_id = fields.Many2one(
         'stock.location', "Source Location",
         compute="_compute_location_id", store=True, precompute=True, readonly=False,
-        check_company=True,
+        check_company=True, required=False,
         domain=_domain_location_id,
         states={'done': [('readonly', True)]})
 
     location_dest_id = fields.Many2one(
         'stock.location', "Destination Location",
         compute="_compute_location_id", store=True, precompute=True, readonly=False,
-        check_company=True, required=True,
+        check_company=True, required=False,
         domain=_domain_location_dest_id,
         states={'done': [('readonly', True)]})
 
