@@ -78,13 +78,15 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             if (program.to_date) {
                 program.to_date = new Date(program.to_date);
             };
-            let valid_product_ids = JSON.parse(atob(program.json_valid_product_ids));
+            let json_valid_product_ids_str = program.json_valid_product_ids ? program.json_valid_product_ids : "W10=";
+            let valid_product_ids = JSON.parse(atob(json_valid_product_ids_str));
             program.valid_product_ids = new Set(valid_product_ids);
             program.valid_customer_ids = new Set();
             program.discount_product_ids = new Set(program.discount_product_ids);
             program.reward_product_ids = new Set(program.reward_product_ids);
 
-            this.promotionPricelistItems = JSON.parse(atob(program.json_pricelist_item_ids)) || [];
+            let json_pricelist_item_ids_str = program.json_pricelist_item_ids ? program.json_pricelist_item_ids : "W10=";
+            this.promotionPricelistItems = JSON.parse(atob(json_pricelist_item_ids_str)) || [];
 
             this.promotion_program_by_id[program.id] = program;
 
@@ -362,12 +364,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     method: 'load_promotion_valid_new_partner',
                     args: [[this.pos.config.id], [partner.id], proPrograms],
             });
-            if (promotionValidPartners.length > 0) {
-                for (let program_id of promotionValidPartners) {
+            promotionValidPartners = promotionValidPartners || [];
+            for (let program_id of proPrograms){
                     let validProgram = this.pos.promotionPrograms.find(p => p.id == program_id);
+                if (promotionValidPartners.includes(program_id)) {
                     if (validProgram) {
                         validProgram.valid_customer_ids.add(partner.id);
                     };
+                } else {
+                    validProgram.valid_customer_ids.delete(partner.id);
                 };
             };
         };
@@ -494,6 +499,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             p.reward_for_referring = false;
             p.codeObj = null;
         });
+        this.load_promotion_valid_new_partner();
         this._updateActivatedPromotionPrograms();
     }
 
