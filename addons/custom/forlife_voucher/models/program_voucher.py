@@ -47,7 +47,6 @@ class ProgramVoucher(models.Model):
     details = fields.Char('Diễn giải')
 
     def action_view_product_apply(self):
-        print('2')
         ctx = dict(self._context)
         ctx.update({
             'default_program_vocher_id': self.id,
