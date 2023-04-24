@@ -46,6 +46,22 @@ class ProgramVoucher(models.Model):
 
     details = fields.Char('Diễn giải')
 
+    def action_view_product_apply(self):
+        print('2')
+        ctx = dict(self._context)
+        ctx.update({
+            'default_program_vocher_id': self.id,
+        })
+        return {
+            'name': _('Sản phẩm'),
+            'domain': [('program_vocher_id', '=', self.id)],
+            'res_model': 'product.program.import',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': ctx,
+        }
+
     @api.depends('product_ids')
     def compute_product(self):
         for rec in self:
