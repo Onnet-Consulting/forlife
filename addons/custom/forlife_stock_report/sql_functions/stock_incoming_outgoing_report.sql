@@ -1,5 +1,5 @@
 DROP FUNCTION IF EXISTS stock_incoming_outgoing_report;
-CREATE OR REPLACE FUNCTION stock_incoming_outgoing_report(_date_from character varying , _date_to character varying, _company_id integer)
+CREATE OR REPLACE FUNCTION stock_incoming_outgoing_report(_date_from character varying , _date_to character varying, _company_id integer, _last_date_last_month character varying)
 RETURNS TABLE
         (
             product_id               INTEGER,
@@ -20,18 +20,31 @@ BEGIN
     RETURN Query (
         WITH opening as (
             -- đầu kỳ
-            select sm.product_id,
-                    sum(svl.quantity) as quantity,
-                    sum(svl.value) as total_value
-            from stock_valuation_layer svl
-            left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
-            left join product_product pp on pp.id = sm.product_id
-            left join stock_picking_type spt on spt.id = sm.picking_type_id
-            where sm.state = 'done'
-            and sm.date < _date_from::timestamp
-            and sm.company_id = _company_id
-            and spt.code in ('incoming', 'outgoing')
-            group by sm.product_id
+            select dataa.product_id,
+                    sum(dataa.quantity) as quantity,
+                    sum(dataa.total_value) as total_value
+            from (
+                select sqp.product_id,
+                    sqp.closing_quantity as quantity,
+                    sqp.closing_value as total_value
+                from stock_quant_period sqp
+                where sqp.period_end_date = _last_date_last_month::date
+
+                union all
+
+                select sm.product_id,
+                        svl.quantity as quantity,
+                        svl.value as total_value
+                from stock_valuation_layer svl
+                left join stock_move sm on sm.id = svl.stock_move_id and svl.stock_move_id is not null
+                left join product_product pp on pp.id = sm.product_id
+                left join stock_picking_type spt on spt.id = sm.picking_type_id
+                where sm.state = 'done'
+                and sm.date < _date_from::timestamp
+                and sm.company_id = _company_id
+                and spt.code in ('incoming', 'outgoing')
+            ) dataa
+            group by dataa.product_id
         ),
         incoming as (
             -- nhập trong kỳ
