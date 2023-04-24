@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem id="report_menu"
+              name="Report"
+              sequence="1"
+              web_icon="forlife_report,static/description/icon.svg"
+    />
+
+    <menuitem id="available_report_menu"
+              action="available_report_client_action"
+              sequence="1"
+              parent="report_menu"/>
+
+    <menuitem id="report_menu_sale"
+              name="Sales"
+              parent="report_menu"
+              sequence="2"/>
+
+    <menuitem id="report_menu_card_rank"
+              name="Customer Rank Management"
+              parent="report_menu_sale"
+              sequence="7"/>
+
+    <menuitem id="report_menu_stock"
+              name="Stock"
+              parent="report_menu"
+              sequence="3"/>
+</odoo>
