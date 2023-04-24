@@ -42,6 +42,7 @@
         'views/product_product_views.xml',
         'views/stock_warehouse_views.xml',
         'views/account_move_views.xml',
+        'views/res_ward_views.xml',
         'views/menu_item.xml',
     ],
     "post_init_hook": "post_init_hook",

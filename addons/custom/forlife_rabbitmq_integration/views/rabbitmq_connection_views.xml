@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="rabbitmq_connection_view_tree" model="ir.ui.view">
+            <field name="name">rabbitmq_connection_view_tree</field>
+            <field name="model">rabbitmq.connection</field>
+            <field name="arch" type="xml">
+                <tree string="rabbitmq_connection_tree">
+                    <field name="host"/>
+                    <field name="port"/>
+                    <field name="username"/>
+                    <field name="password" password="True"/>
+                    <field name="is_connected"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="rabbitmq_connection_view_form" model="ir.ui.view">
+            <field name="name">rabbitmq_connection_view_form</field>
+            <field name="model">rabbitmq.connection</field>
+            <field name="arch" type="xml">
+                <form string="rabbitmq_connection_form">
+                    <header>
+                        <button string="Test Connection" type="object" name="test_rabbitmq_connection" class="btn-primary"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="host"/>
+                                <field name="port"/>
+                            </group>
+                            <group>
+                                <field name="username"/>
+                                <field name="password" password="True"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="is_connected" widget="boolean_toggle" readonly="1" force_sace="1"/>
+                            <field name="connection_log" readonly="1" force_sace="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="rabbitmq_connection_action" model="ir.actions.act_window">
+            <field name="name">RabbitMQ Connection</field>
+            <field name="res_model">rabbitmq.connection</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

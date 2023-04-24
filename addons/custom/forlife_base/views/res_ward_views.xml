@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="res_ward_view_tree" model="ir.ui.view">
+            <field name="name">res.ward.view.tree</field>
+            <field name="model">res.ward</field>
+            <field name="arch" type="xml">
+                <tree string="Weather Province" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="district_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="res_ward_view_search" model="ir.ui.view">
+            <field name="name">res.ward.view.search</field>
+            <field name="model">res.ward</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="district_id"/>
+                    <separator/>
+                    <filter name="archived" string="Archived" domain="[('active', '=', False)]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="res_ward_action" model="ir.actions.act_window">
+            <field name="name">Ward</field>
+            <field name="res_model">res.ward</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+    </data>
+</odoo>
+
