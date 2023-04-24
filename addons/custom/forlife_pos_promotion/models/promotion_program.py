@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import base64
 import itertools
+import json
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -109,6 +111,8 @@ class PromotionProgram(models.Model):
     valid_product_ids = fields.Many2many(
         'product.product', compute='_compute_valid_product_ids', string='Valid Products')
     product_count = fields.Integer(compute='_compute_valid_product_ids', string='Valid Product Counts')
+    json_valid_product_ids = fields.Binary(
+        compute='_compute_json_valid_product_ids', string='Json Valid Products', store=True)
 
     # Cart
     order_amount_min = fields.Float()
@@ -118,6 +122,8 @@ class PromotionProgram(models.Model):
     pricelist_item_ids = fields.One2many(
         'promotion.pricelist.item', 'program_id', string='Pricelist Item', context={'active_test': False})
     pricelist_item_count = fields.Integer(compute='_compute_pricelist_item_count')
+    json_pricelist_item_ids = fields.Binary(
+        compute='_compute_json_pricelist_item_ids', store=True, string='Json Pricelist Item')
 
     # Rewards
     reward_type = fields.Selection(REWARD_TYPE, string='Reward Type')
@@ -133,7 +139,7 @@ class PromotionProgram(models.Model):
         'product.product', domain="[('product_tmpl_id', '=', voucher_product_id)]", string='Voucher Product Variant')
     voucher_price = fields.Monetary(string='Voucher Price', currency_field='currency_id')
     voucher_apply_product_ids = fields.Many2many(
-        'product.template', related='voucher_program_id.product_apply_ids', string='Applicable Products')
+        'product.product', related='voucher_program_id.product_apply_ids', string='Applicable Products')
     voucher_ids = fields.One2many('voucher.voucher', 'promotion_program_id')
     voucher_count = fields.Integer(compute='_compute_voucher_count')
 
@@ -171,7 +177,6 @@ class PromotionProgram(models.Model):
             if program.promotion_type == 'combo' and program.reward_ids and program.reward_type in ['combo_percent_by_qty', 'combo_fixed_price_by_qty']:
                 if len(program.reward_ids) != len(set(program.reward_ids.mapped('quantity_min'))):
                     raise UserError(_('%s: Không được khai báo cùng số lượng trên các chi tiết combo!') % program.name)
-
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -224,6 +229,13 @@ class PromotionProgram(models.Model):
                 line.valid_product_ids = self.env['product.product']
             line.product_count = len(line.valid_product_ids)
 
+    @api.depends('product_ids', 'product_categ_ids')
+    def _compute_json_valid_product_ids(self):
+        for pro in self:
+            product_ids = pro.valid_product_ids.ids or []
+            product_ids_json_encode = base64.b64encode(json.dumps(product_ids).encode('utf-8'))
+            pro.json_valid_product_ids = product_ids_json_encode
+
     def _compute_total_order_count(self):
         self.total_order_count = 0
         for program in self:
@@ -234,6 +246,18 @@ class PromotionProgram(models.Model):
     def _compute_pricelist_item_count(self):
         for pro in self:
             pro.pricelist_item_count = len(pro.pricelist_item_ids)
+
+    @api.depends('pricelist_item_ids',
+                 'pricelist_item_ids.active',
+                 'pricelist_item_ids.product_id',
+                 'pricelist_item_ids.program_id',
+                 'pricelist_item_ids.fixed_price')
+    def _compute_json_pricelist_item_ids(self):
+        field_keys = ['id', 'program_id', 'product_id', 'display_name', 'active', 'fixed_price']
+        for pro in self:
+            item_ids = pro.pricelist_item_ids.filtered(lambda item: item.active).read()
+            val_list = [{key: value for [key, value] in item.items() if key in field_keys} for item in item_ids] or []
+            pro.json_pricelist_item_ids = base64.b64encode(json.dumps(val_list).encode('utf-8'))
 
     def _compute_qty_per_combo(self):
         for pro in self:
@@ -296,6 +320,12 @@ class PromotionProgram(models.Model):
             if bool(self.env['promotion.usage.line'].search([('program_id', '=', program.id)])):
                 raise UserError(_('Can not unlink program which is already used!'))
         return super().unlink()
+
+    def action_recompute_new_field_binary(self):
+        self.search([])._compute_json_valid_product_ids()
+        self.search([])._compute_json_pricelist_item_ids()
+        self.search([]).combo_line_ids._compute_json_valid_product_ids()
+        return True
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")

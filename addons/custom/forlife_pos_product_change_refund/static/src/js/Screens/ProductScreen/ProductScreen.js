@@ -54,7 +54,7 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
                 });
                 self.showPopup('ErrorPopup', {
                     title: self.env._t('Warning'),
-                    body: self.env._t('Product ' + products.join(', ') + ' has expired. Please click submit to browse to continue the exchange!'),
+                    body: _.str.sprintf(self.env._t('Product %s has expired. Please click submit to browse to continue the exchange!'), products.join(', ')),
                 });
                 return;
             }

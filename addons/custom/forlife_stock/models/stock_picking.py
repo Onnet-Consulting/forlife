@@ -85,17 +85,28 @@ class StockPicking(models.Model):
         states={'draft': [('readonly', False)]})
 
     def _action_done(self):
-        old_date_done = self.date_done
+        old_date_done = {
+            item.id: item.date_done for item in self
+        }
+        # old_date_done = self.date_done
         res = super(StockPicking, self)._action_done()
-        if old_date_done != self.date_done:
-            self.date_done = old_date_done
+        for record in self:
+            if old_date_done.get(record.id) == record.date_done:
+                continue
+            record.date_done = old_date_done.get(record.id)
+        # if old_date_done != self.date_done:
+        #     self.date_done = old_date_done
         return res
 
     def write(self, vals):
         res = super().write(vals)
         if 'date_done' in vals:
-            self.move_ids.write({'date': self.date_done})
-            self.move_line_ids.write({'date': self.date_done})
+            for item in self:
+                item.move_ids.write({'date': item.date_done})
+                item.move_line_ids.write({'date': item.date_done})
+        # if 'date_done' in vals:
+        #     self.move_ids.write({'date': self.date_done})
+        #     self.move_line_ids.write({'date': self.date_done})
         return res
 
     def action_back_to_draft(self):

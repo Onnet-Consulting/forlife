@@ -15,11 +15,10 @@ export class PromotionButton extends PosComponent {
 
     async _applyPromotionProgram(selectedProgramsList) {
         const order = this.env.pos.get_order();
-//        order._resetPromotionPrograms(false);
         let order_lines = order.get_orderlines_to_check();
         let [newLines, remainingOrderLines, combo_count] = order.computeForListOfProgram(order_lines, selectedProgramsList);
-        let [newLinesCode, remainingOrderLinesCode, combo_count_Code] = order.computeForListOfCodeProgram(order_lines, selectedProgramsList, newLines);
-        newLines = newLinesCode;
+//        let [newLinesCode, remainingOrderLinesCode, combo_count_Code] = order.computeForListOfCodeProgram(order_lines, selectedProgramsList, newLines);
+//        newLines = newLinesCode;
 //        remainingOrderLines = remainingOrderLinesCode;
         var removeOrderlines = [];
         order.orderlines.forEach((line, index) => {

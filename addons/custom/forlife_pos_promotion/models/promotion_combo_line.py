@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import base64
+import json
 
 from odoo import _, api, fields, models
 from odoo.models import NewId
@@ -14,6 +16,9 @@ class PromotionComboLine(models.Model):
     product_categ_ids = fields.Many2many('product.category', string='Product Categories')
     quantity = fields.Float()
     valid_product_ids = fields.Many2many('product.product', compute='_compute_valid_product_ids')
+    json_valid_product_ids = fields.Binary(
+        compute='_compute_json_valid_product_ids', string='Json Valid Products', store=True)
+
     product_count = fields.Integer(compute='_compute_valid_product_ids', string='Product Counts')
 
     _sql_constraints = [
@@ -41,6 +46,13 @@ class PromotionComboLine(models.Model):
             else:
                 line.valid_product_ids = self.env['product.product']
             line.product_count = len(line.valid_product_ids)
+
+    @api.depends('product_ids', 'product_categ_ids')
+    def _compute_json_valid_product_ids(self):
+        for line in self:
+            product_ids = line.valid_product_ids.ids or []
+            product_ids_json_encode = base64.b64encode(json.dumps(product_ids).encode('utf-8'))
+            line.json_valid_product_ids = product_ids_json_encode
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")

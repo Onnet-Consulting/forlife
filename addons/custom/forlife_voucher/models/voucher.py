@@ -46,7 +46,7 @@ class Voucher(models.Model):
     phone_number = fields.Char(copy=False, string='Phone')
 
     product_voucher_id = fields.Many2one('product.template', 'Product Voucher', related='program_voucher_id.product_id')
-    product_apply_ids = fields.Many2many('product.template', string='Sản phẩm áp dụng', related='program_voucher_id.product_apply_ids')
+    product_apply_ids = fields.Many2many('product.product', string='Sản phẩm áp dụng', related='program_voucher_id.product_apply_ids')
     derpartment_id = fields.Many2one('hr.department', 'Department Code', related='program_voucher_id.derpartment_id')
     brand_id = fields.Many2one('res.brand', 'Brand', related='program_voucher_id.brand_id')
     store_ids = fields.Many2many('store', string='Cửa hàng áp dụng', related='program_voucher_id.store_ids')
@@ -141,7 +141,8 @@ class Voucher(models.Model):
                             'is_full_price_applies': vourcher.is_full_price_applies,
                             'using_limit': vourcher.program_voucher_id.using_limit,
                             'program_voucher_id': vourcher.program_voucher_id.id,
-                            'product_voucher_name': vourcher.program_voucher_id.name
+                            'product_voucher_name': vourcher.program_voucher_id.name,
+                            'derpartment_name': vourcher.derpartment_id.name
                         }
                     })
                 if not vourcher:
