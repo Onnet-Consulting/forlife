@@ -8,3 +8,4 @@ from . import ir_cron
 from . import pos_store_inherit
 from . import pos_order
 from . import res_partner
+from . import pos_session
