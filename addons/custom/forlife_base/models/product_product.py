@@ -3,6 +3,7 @@
 import datetime
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+from odoo.osv import expression
 
 
 class ProducAttributeValue(models.Model):
