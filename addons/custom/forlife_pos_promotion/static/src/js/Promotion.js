@@ -56,7 +56,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.surprisingRewardProducts = loadedData['surprising.reward.product.line'] || [];
         this.promotionComboLines = loadedData['promotion.combo.line'] || [];
         this.rewardLines = loadedData['promotion.reward.line'] || [];
-        this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
+//        this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
         this.monthData = loadedData['month.data'] || [];
         this.dayofmonthData = loadedData['dayofmonth.data'] || [];
         this.dayofweekData = loadedData['dayofweek.data'] || [];
@@ -78,10 +78,13 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             if (program.to_date) {
                 program.to_date = new Date(program.to_date);
             };
-            program.valid_product_ids = new Set(program.valid_product_ids);
-            program.valid_customer_ids = new Set(program.valid_customer_ids);
+            let valid_product_ids = JSON.parse(atob(program.json_valid_product_ids));
+            program.valid_product_ids = new Set(valid_product_ids);
+            program.valid_customer_ids = new Set();
             program.discount_product_ids = new Set(program.discount_product_ids);
             program.reward_product_ids = new Set(program.reward_product_ids);
+
+            this.promotionPricelistItems = JSON.parse(atob(program.json_pricelist_item_ids)) || [];
 
             this.promotion_program_by_id[program.id] = program;
 
@@ -122,7 +125,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             program.display_name = program.name
         };
         for (const item of this.promotionComboLines) {
-            item.valid_product_ids = new Set(item.valid_product_ids);
+            let cl_valid_product_ids = JSON.parse(atob(item.json_valid_product_ids));
+            item.valid_product_ids = new Set(cl_valid_product_ids);
             item.program_id = item.program_id[0];
             item.program = this.promotion_program_by_id[item.program_id];
             item.program.comboFormula.push(item);
@@ -142,11 +146,12 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             item.program = this.promotion_program_by_id[item.program_id];
             item.program.pricelistItems.push(item);
             item.program.productPricelistItems.add(item.product_id);
+            item.display_name = item.display_name;
             let program_clone = {...item.program};
             delete program_clone.id;
             delete program_clone.str_id;
+            delete program_clone.display_name;
             item = Object.assign(item, program_clone);
-            item.display_name = item.display_name + ': ' + ((this.db.product_by_id && this.db.product_by_id[item.product_id]) ? this.db.product_by_id[item.product_id].display_name : "");
         };
     }
 
@@ -325,6 +330,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.referred_code_id = json.referred_code_id || null;
         this.surprise_reward_program_id = json.surprise_reward_program_id || null;
         this.surprising_reward_line_id = json.surprising_reward_line_id || null;
+        if (this.partner) {
+            this.set_partner(this.partner);
+        };
         this._resetPromotionPrograms();
         this._resetCartPromotionPrograms();
     }
@@ -337,10 +345,31 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (oldPartner !== this.get_partner()) {
             await this.get_history_program_usages();
             await this.update_surprising_program();
+            await this.load_promotion_valid_new_partner();
             this.activatedInputCodes = [];
             this._updateActivatedPromotionPrograms();
             this._resetPromotionPrograms();
             this._resetCartPromotionPrograms();
+        };
+    }
+
+    async load_promotion_valid_new_partner() {
+        const partner = this.get_partner();
+        let proPrograms = Object.keys(this.pos.promotion_program_by_id);
+        if (partner) {
+            let promotionValidPartners = await this.pos.env.services.rpc({
+                    model: 'pos.config',
+                    method: 'load_promotion_valid_new_partner',
+                    args: [[this.pos.config.id], [partner.id], proPrograms],
+            });
+            if (promotionValidPartners.length > 0) {
+                for (let program_id of promotionValidPartners) {
+                    let validProgram = this.pos.promotionPrograms.find(p => p.id == program_id);
+                    if (validProgram) {
+                        validProgram.valid_customer_ids.add(partner.id);
+                    };
+                };
+            };
         };
     }
 
