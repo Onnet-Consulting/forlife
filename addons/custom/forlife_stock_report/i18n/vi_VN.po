@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-20 15:29+0000\n"
-"PO-Revision-Date: 2023-04-20 15:29+0000\n"
+"POT-Creation-Date: 2023-04-21 09:36+0000\n"
+"PO-Revision-Date: 2023-04-21 09:36+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,14 +21,16 @@ msgid "Based on Account"
 msgstr "Dựa vào Bút toán"
 
 #. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__closing_quantity
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__closing_quantity
 msgid "Closing Quantity"
-msgstr "Tồn Cuối kỳ"
+msgstr "Tồn cuối kỳ"
 
 #. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__closing_value
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__closing_value
 msgid "Closing Value"
-msgstr "Giá trị Cuối kỳ"
+msgstr "Giá trị tồn cuối kỳ"
 
 #. module: forlife_stock_report
 #: model_terms:ir.ui.view,arch_db:forlife_stock_report.outgoing_value_diff_report_view_form
@@ -36,21 +38,43 @@ msgid "Create Invoice"
 msgstr "Tạo bút toán"
 
 #. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_incoming_outgoing_report_view_form
+msgid "Create Quant"
+msgstr ""
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__create_uid
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__create_uid
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Tạo bởi"
 
 #. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__create_date
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__create_date
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Tạo vào"
 
 #. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__currency_id
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__currency_id
 msgid "Currency"
 msgstr "Tiền tệ"
+
+#. module: forlife_stock_report
+#. odoo-python
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#, python-format
+msgid "Date from must be the first day of month"
+msgstr ""
+
+#. module: forlife_stock_report
+#. odoo-python
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#, python-format
+msgid "Date to must be the last day of month"
+msgstr ""
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__detail_ids
@@ -65,10 +89,11 @@ msgid "Different Outgoing Value"
 msgstr "Giá trị chênh lệch"
 
 #. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__display_name
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__display_name
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Tên hiển thị"
 
 #. module: forlife_stock_report
 #: model_terms:ir.ui.view,arch_db:forlife_stock_report.outgoing_value_diff_report_view_form
@@ -93,6 +118,7 @@ msgid "Get Report"
 msgstr "Xem báo cáo"
 
 #. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__id
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__id
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__id
 msgid "ID"
@@ -101,26 +127,29 @@ msgstr ""
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__incoming_quantity
 msgid "Incoming Quantity"
-msgstr "SL Nhập kho"
+msgstr "Số lượng Nhập"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__incoming_value
 msgid "Incoming Value"
-msgstr "Giá trị Nhập kho"
+msgstr "Giá trị Nhập"
 
 #. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period____last_update
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report____last_update
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail____last_update
 msgid "Last Modified on"
 msgstr ""
 
 #. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__write_uid
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__write_uid
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__write_date
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__write_date
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__write_date
 msgid "Last Updated on"
@@ -134,22 +163,22 @@ msgstr "Tên"
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__opening_quantity
 msgid "Opening Quantity"
-msgstr "Tồn Đầu kỳ"
+msgstr "Tồn đầu kỳ"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__opening_value
 msgid "Opening Value"
-msgstr "Giá trị Đầu kỳ"
+msgstr "Giá trị tồn đầu kỳ"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__odoo_outgoing_quantity
 msgid "Outgoing Quantity"
-msgstr "SL Xuất kho"
+msgstr "Số lượng Xuất (Odoo)"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__odoo_outgoing_value
 msgid "Outgoing Value"
-msgstr "Giá trị Xuất kho"
+msgstr "Giá trị Xuất (Odoo)"
 
 #. module: forlife_stock_report
 #. odoo-python
@@ -171,24 +200,59 @@ msgid "Outgoing Value Different Report based on Item"
 msgstr "Bảng kê chênh lệch giá trị xuất kho theo Item"
 
 #. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__period_end_date
+msgid "Period End Date"
+msgstr ""
+
+#. module: forlife_stock_report
+#. odoo-python
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#, python-format
+msgid "Period check report must be in 1 month"
+msgstr ""
+
+#. module: forlife_stock_report
+#. odoo-python
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#, python-format
+msgid "Please get report before update quant period"
+msgstr ""
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__price_unit
+msgid "Price Unit"
+msgstr ""
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__product_id
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__product_id
 msgid "Product"
-msgstr "Sản phẩm"
+msgstr "Tên sản phẩm"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__product_code
 msgid "Product Code"
-msgstr "Mã Sản phẩm"
+msgstr "Mã sản phẩm"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__product_code
+msgid "Product code"
+msgstr ""
+
+#. module: forlife_stock_report
+#: model:ir.model,name:forlife_stock_report.model_stock_quant_period
+msgid "Quantity period"
+msgstr ""
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__real_outgoing_price_unit
 msgid "Real Outgoing Price Unit"
-msgstr "Đơn giá xuất"
+msgstr "Đơn giá Xuất"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__real_outgoing_value
 msgid "Real Outgoing Value"
-msgstr "Giá trị xuất"
+msgstr "Giá trị Xuất"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__report_id
@@ -209,12 +273,12 @@ msgstr "Bảng kê Nhập xuất tồn"
 #. module: forlife_stock_report
 #: model:ir.model,name:forlife_stock_report.model_stock_value_report
 msgid "Stock Value Report"
-msgstr ""
+msgstr "Báo cáo Giá trị kho"
 
 #. module: forlife_stock_report
 #: model:ir.model,name:forlife_stock_report.model_stock_value_report_detail
 msgid "Stock Value Report Detail"
-msgstr ""
+msgstr "Chi tiết Báo cáo Giá trị kho"
 
 #. module: forlife_stock_report
 #. odoo-python
