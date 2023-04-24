@@ -78,13 +78,15 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             if (program.to_date) {
                 program.to_date = new Date(program.to_date);
             };
-            let valid_product_ids = JSON.parse(atob(program.json_valid_product_ids));
+            let json_valid_product_ids_str = program.json_valid_product_ids ? program.json_valid_product_ids : "W10=";
+            let valid_product_ids = JSON.parse(atob(json_valid_product_ids_str));
             program.valid_product_ids = new Set(valid_product_ids);
             program.valid_customer_ids = new Set();
             program.discount_product_ids = new Set(program.discount_product_ids);
             program.reward_product_ids = new Set(program.reward_product_ids);
 
-            this.promotionPricelistItems = JSON.parse(atob(program.json_pricelist_item_ids)) || [];
+            let json_pricelist_item_ids_str = program.json_pricelist_item_ids ? program.json_pricelist_item_ids : "W10=";
+            this.promotionPricelistItems = JSON.parse(atob(json_pricelist_item_ids_str)) || [];
 
             this.promotion_program_by_id[program.id] = program;
 
