@@ -222,10 +222,6 @@ msgstr "Số điện thoại"
 msgid "Product Category"
 msgstr "Nhóm sản phẩm"
 
-#. module: forlife_base
-#: model:ir.model.fields,field_description:forlife_base.field_product_product__sku_code
-msgid "SKU Code"
-msgstr "Mã SKU"
 
 #. module: forlife_base
 #: model:ir.actions.act_window,name:forlife_base.res_sale_province_action
