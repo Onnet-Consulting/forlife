@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from ast import literal_eval
 from itertools import groupby
 
 from odoo import models, fields, _
@@ -55,7 +56,7 @@ class PosConfig(models.Model):
         result = []
         for program_id in promotion_programs:
             program = self.env['promotion.program'].sudo().browse(int(program_id))
-            if program.exists() and partner in program.valid_customer_ids:
+            if program.exists() and partner.filtered_domain(literal_eval(program.customer_domain)):
                 result.append(program_id)
         return result
 
