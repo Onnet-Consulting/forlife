@@ -38,7 +38,7 @@ class VNPayController(http.Controller):
             pos_config_id = client_transaction_code.split('_')[0]
             if not client_transaction_code or not pos_config_id.isdigit():
                 return {
-                    'code': '400',
+                    'code': '412',
                     'message': 'invalid transaction code',
                     'traceId': ""
                 }
@@ -49,7 +49,7 @@ class VNPayController(http.Controller):
                 [merchant_method_code, order_code, str(amount), transaction_code, response_code])
             if sha256(hash_string.encode('utf-8')).hexdigest() != data.get('checksum'):
                 return {
-                    "code": "406",
+                    "code": "410",
                     "message": "invalid checksum",
                     'traceId': ""
                 }
@@ -60,7 +60,7 @@ class VNPayController(http.Controller):
         except Exception as e:
             _logger.error(str(e))
             return {
-                'code': '400',
+                'code': '412',
                 'message': 'invalid transaction code',
                 'traceId': ""
             }
