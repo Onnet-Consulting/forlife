@@ -362,12 +362,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     method: 'load_promotion_valid_new_partner',
                     args: [[this.pos.config.id], [partner.id], proPrograms],
             });
-            if (promotionValidPartners.length > 0) {
-                for (let program_id of promotionValidPartners) {
+            promotionValidPartners = promotionValidPartners || [];
+            for (let program_id of proPrograms){
                     let validProgram = this.pos.promotionPrograms.find(p => p.id == program_id);
+                if (promotionValidPartners.includes(program_id)) {
                     if (validProgram) {
                         validProgram.valid_customer_ids.add(partner.id);
                     };
+                } else {
+                    validProgram.valid_customer_ids.delete(partner.id);
                 };
             };
         };
@@ -494,6 +497,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             p.reward_for_referring = false;
             p.codeObj = null;
         });
+        this.load_promotion_valid_new_partner();
         this._updateActivatedPromotionPrograms();
     }
 
