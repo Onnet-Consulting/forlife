@@ -37,8 +37,8 @@
                             <button name="action_view_voucher_relation" type="object" class="oe_stat_button" icon="fa-ticket">
                                 <field name="voucher_count" widget="statinfo" string="Voucher"/>
                             </button>
-                            <button name="action_view_product_apply" string="Sản phẩm áp dụng" type="object" class="oe_stat_button" icon="fa-bars">
-                            </button>
+<!--                            <button name="action_view_product_apply" string="Sản phẩm áp dụng" type="object" class="oe_stat_button" icon="fa-bars">-->
+<!--                            </button>-->
                         </div>
                         <group>
                             <field name="name"/>
