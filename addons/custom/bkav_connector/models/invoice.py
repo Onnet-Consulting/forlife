@@ -405,21 +405,22 @@ class AccountMoveBKAV(models.Model):
 
     def action_post(self):
         res = super().action_post()
-        if self.exists_bkav:
-            try:
-                self.update_invoice_bkav()
-                self.getting_invoice_status()
-            except Exception as ex:
-                _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
-                return False
-        else:
-            if self.is_post_bkav:
+        for rec in self:
+            if rec.exists_bkav:
                 try:
-                    self.create_invoice_bkav()
+                    self.update_invoice_bkav()
                     self.getting_invoice_status()
                 except Exception as ex:
                     _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
                     return False
+            else:
+                if rec.is_post_bkav:
+                    try:
+                        self.create_invoice_bkav()
+                        self.getting_invoice_status()
+                    except Exception as ex:
+                        _logger.info(f'Nhận khách từ lỗi của BKAV {ex}')
+                        return False
         return res
 
     def unlink(self):
