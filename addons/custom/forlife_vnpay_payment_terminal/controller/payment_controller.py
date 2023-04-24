@@ -38,7 +38,7 @@ class VNPayController(http.Controller):
             pos_config_id = client_transaction_code.split('_')[0]
             if not client_transaction_code or not pos_config_id.isdigit():
                 return {
-                    'code': '412',
+                    'code': '411',
                     'message': 'invalid transaction code',
                     'traceId': ""
                 }
@@ -60,7 +60,7 @@ class VNPayController(http.Controller):
         except Exception as e:
             _logger.error(str(e))
             return {
-                'code': '412',
+                'code': '411',
                 'message': 'invalid transaction code',
                 'traceId': ""
             }
