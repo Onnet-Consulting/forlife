@@ -62,6 +62,8 @@ odoo.define('forlife_pos_app_member.CustomProductScreen', function (require) {
             if (!partner) {
                 return this.show_barcode_partner_error(code);
             } else {
+                // add this attribute to indicate this partner from scan barcode action
+                partner.generated_by_scan_barcode = true;
                 if (this.currentOrder.get_partner() !== partner) {
                     this.currentOrder.set_partner(partner);
                     this.currentOrder.updatePricelist(partner);
