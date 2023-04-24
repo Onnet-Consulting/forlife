@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="product_program_import_view_tree">
+            <field name="name">product.program.import.view.tree</field>
+            <field name="model">product.program.import</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="product_id"/>
+                    <field name="barcode"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="product_program_import_view_form">
+            <field name="name">product.program.import.view.tree</field>
+            <field name="model">product.program.import</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="barcode"/>
+                        </group>
+                    </group>
+
+                </sheet>
+                </form>
+
+            </field>
+        </record>
+    </data>
+</odoo>
