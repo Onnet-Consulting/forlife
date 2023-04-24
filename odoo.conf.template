@@ -62,4 +62,4 @@ workers = 18
 ;password=forlife@123
 
 [queue_job]
-channels = root:22, import:20
+channels = root:22, import:20, validate_stock_valuation_2:2
