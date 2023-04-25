@@ -13,8 +13,8 @@ class PosOrder(models.Model):
     approved = fields.Boolean('Approved', default=False, copy=False)
     is_refund_order = fields.Boolean('Is Refund Order', copy=False, default=False)
     is_change_order = fields.Boolean('Is Change Order', copy=False, default=False)
-    refund_point = fields.Integer('Refund Point', compute="_compute_refund_point")
-    pay_point = fields.Integer('Pay Point', compute="_compute_pay_point")
+    refund_point = fields.Integer('Refund Point', compute="_compute_refund_point", store=True)
+    pay_point = fields.Integer('Pay Point', compute="_compute_pay_point", store=True)
     voucher_id = fields.Many2one('voucher.voucher', string='Voucher Exchange', copy=False)
 
     @api.model
@@ -114,7 +114,7 @@ class PosOrder(models.Model):
                 })
         return values
 
-    @api.depends('lines.refunded_orderline_id', 'lines.qty', 'is_refund_order', 'is_change_order')
+    @api.depends('lines.refunded_orderline_id', 'is_refund_order')
     def _compute_refund_point(self):
         for item in self:
             item.refund_point = 0
@@ -127,7 +127,7 @@ class PosOrder(models.Model):
                         total += (discount_line.recipe / line.refunded_orderline_id.qty) * qty_refund
             item.refund_point = total
 
-    @api.depends('lines.refunded_orderline_id', 'lines.qty', 'refunded_order_ids')
+    @api.depends('lines.refunded_orderline_id', 'refunded_order_ids')
     def _compute_pay_point(self):
         for item in self:
             item.pay_point = 0
@@ -144,7 +144,7 @@ class PosOrder(models.Model):
             if store == 'format':
                 history_tmp_points = partner_id.history_points_format_ids
             history_points = history_tmp_points.filtered(lambda x: x.point_order_type == 'reset_order')
-            if history_points and history_points[0].date_order < old_orders[0].date_order:
+            if (history_points and history_points[0].date_order < old_orders[0].date_order) or not history_points:
                 # lấy chương trình tích điểm
                 points_promotion = old_orders.mapped('program_store_point_id')
                 if not points_promotion:
