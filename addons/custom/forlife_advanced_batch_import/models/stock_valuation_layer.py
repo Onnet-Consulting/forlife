@@ -21,7 +21,7 @@ class StockValuationLayer(models.Model):
     def _create_and_post_account_move(self, am_vals):
         if am_vals:
             account_moves = self.env['account.move'].sudo().create(am_vals)
-            account_moves._post()
+            account_moves.with_delay(channel='validate_stock_valuation', priority=1, eta=0)._post()
         for svl in self:
             # Eventually reconcile together the invoice and valuation accounting entries on the stock interim accounts
             if svl.company_id.anglo_saxon_accounting:
