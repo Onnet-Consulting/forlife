@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="stock_quant_period_view_tree" model="ir.ui.view">
+        <field name="name">stock.quant.period.view.tree</field>
+        <field name="model">stock.quant.period</field>
+        <field name="arch" type="xml">
+            <tree string="Inventory Period">
+                <field name="product_code"/>
+                <field name="product_id"/>
+                <field name="closing_quantity"/>
+                <field name="price_unit"/>
+                <field name="closing_value"/>
+                <field name="period_end_date"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>
