@@ -6,3 +6,4 @@ from . import rabbitmq_queue
 from . import res_partner
 from . import partner_card_rank_line
 from . import partner_history_point
+from . import product_product
