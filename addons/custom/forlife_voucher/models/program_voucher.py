@@ -52,20 +52,20 @@ class ProgramVoucher(models.Model):
     #     for rec in self:
     #         rec.product_count_apply = self.env['product.program.import'].search_count([('program_vocher_id', '=', self.id)])
 
-    # def action_view_product_apply(self):
-    #     ctx = dict(self._context)
-    #     ctx.update({
-    #         'default_program_vocher_id': self.id,
-    #     })
-    #     return {
-    #         'name': _('Sản phẩm'),
-    #         'domain': [('program_vocher_id', '=', self.id)],
-    #         'res_model': 'product.program.import',
-    #         'type': 'ir.actions.act_window',
-    #         'view_id': False,
-    #         'view_mode': 'tree,form',
-    #         'context': ctx,
-    #     }
+    def action_view_product_apply(self):
+        ctx = dict(self._context)
+        ctx.update({
+            'default_program_vocher_id': self.id,
+        })
+        return {
+            'name': _('Sản phẩm'),
+            'domain': [('program_vocher_id', '=', self.id)],
+            'res_model': 'product.program.import',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': ctx,
+        }
 
     @api.depends('product_ids')
     def compute_product(self):
