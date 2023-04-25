@@ -12,7 +12,7 @@ class ProductProgramImport(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for idx, line in enumerate(vals_list):
-            if self._context.get('default_program_vocher_id'):
+            if 'default_program_vocher_id' in self._context and self._context.get('default_program_vocher_id'):
                 id_program_vocher = int(self._context.get('default_program_vocher_id'))
             else:
                 id_program_vocher = int(vals_list[idx]['program_vocher_id'])
