@@ -6,7 +6,7 @@ import calendar
 
 from io import BytesIO
 from xlsxwriter.workbook import Workbook
-from datetime import datetime
+from datetime import datetime, timedelta
 from ..tools import convert_to_utc_datetime
 from ..excel_style import get_style
 
@@ -304,10 +304,9 @@ class StockValueReport(models.TransientModel):
                     %s,
                     %s,
                     %s
-            FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s)
+            FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s, %s)
         """, (self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(), datetime.utcnow(),
-              self.env.user.id,
-              self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id))
+              self.env.user.id, self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id, self.env['stock.quant.period'].get_last_date_period(self.date_from)))
 
     def action_export_stock_incoming_outgoing_report(self):
         # define function
@@ -327,10 +326,10 @@ class StockValueReport(models.TransientModel):
                                         report.real_outgoing_value,
                                         report.closing_quantity,
                                         report.closing_value
-                                FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s) as report
+                                FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s, %s) as report
                                 LEFT JOIN product_product pp ON pp.id = report.product_id
                                 LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id""",
-                             (utc_datetime_from, utc_datetime_to, self.env.company.id))
+                             (utc_datetime_from, utc_datetime_to, self.env.company.id, self.env['stock.quant.period'].get_last_date_period(self.date_from)))
             return self._cr.dictfetchall()
 
         def write_header(wssheet):
@@ -658,17 +657,17 @@ class StockValueReport(models.TransientModel):
                             %s,
                             %s,
                             %s
-                    FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s)
+                    FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s, %s)
                 """, (
         str(self.date_to), str(self.date_to), self.env.company.currency_id.id, self.env.user.id, datetime.utcnow(), self.env.user.id,
-        datetime.utcnow(), utc_datetime_from, utc_datetime_to, self.env.company.id))
+        datetime.utcnow(), utc_datetime_from, utc_datetime_to, self.env.company.id, self.env['stock.quant.period'].get_last_date_period(self.date_from)))
 
     def validate_report_create_quant(self):
         # check period check report
         if not (self.date_from.month == self.date_to.month and self.date_from.year == self.date_to.year):
             raise ValidationError(_('Period check report must be in 1 month'))
-        if self.date_from.day != 1:
-            raise ValidationError(_('Date from must be the first day of month'))
+        # if self.date_from.day != 1:
+        #     raise ValidationError(_('Date from must be the first day of month'))
         if self.date_to.day != calendar.monthrange(self.date_to.year, self.date_to.month)[1]:
             raise ValidationError(_('Date to must be the last day of month'))
         if not self.detail_ids:
