@@ -9,6 +9,22 @@
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
+        <record id="sync_customer_card_rank_info_queue" model="rabbitmq.queue">
+            <field name="model_name">partner.card.rank.line</field>
+            <field name="queue_name">sync_customer_info_queue</field>
+            <field name="description">Đồng bộ thông tin khách hàng (hạng thẻ)</field>
+            <field name="target">customer_info</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_customer_score_info_queue" model="rabbitmq.queue">
+            <field name="model_name">partner.history.point</field>
+            <field name="queue_name">sync_customer_info_queue</field>
+            <field name="description">Đồng bộ thông tin khách hàng (điểm)</field>
+            <field name="target">customer_info</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
         <record id="sync_product_info_queue" model="rabbitmq.queue">
             <field name="model_name">product.product</field>
             <field name="queue_name">sync_product_info_queue</field>

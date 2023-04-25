@@ -44,7 +44,7 @@ class ResStateDistrict(models.Model):
     _inherit = "forlife.model.mixin"
     _description = "District"
 
-    country_id = fields.Many2one('res.country.state', string='Country', required=True)
+    state_id = fields.Many2one('res.country.state', string='State', required=True)
 
 
 class StockWarehouse(models.Model):

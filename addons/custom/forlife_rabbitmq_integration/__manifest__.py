@@ -17,6 +17,8 @@
     'depends': [
         'queue_job',
         'forlife_base',
+        'forlife_customer_card_rank',
+        'forlife_pos_point_order',
     ],
     'auto_install': True,
 
