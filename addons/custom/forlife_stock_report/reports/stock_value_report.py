@@ -660,7 +660,7 @@ class StockValueReport(models.TransientModel):
                     FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s, %s)
                 """, (
         str(self.date_to), str(self.date_to), self.env.company.currency_id.id, self.env.user.id, datetime.utcnow(), self.env.user.id,
-        datetime.utcnow(), utc_datetime_from, utc_datetime_to, self.env.company.id, str(self.date_from.replace(day=1).date() - timedelta(days=1))))
+        datetime.utcnow(), utc_datetime_from, utc_datetime_to, self.env.company.id, self.env['stock.quant.period'].get_last_date_period(self.date_from)))
 
     def validate_report_create_quant(self):
         # check period check report
