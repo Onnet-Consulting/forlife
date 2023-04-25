@@ -337,12 +337,15 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 destinationOrder.is_change_product = true;
             }
             destinationOrder.origin_pos_order_id = clickedOrder.backendId;
-            destinationOrder.approved = true;
+
+            const destOrderLines = destinationOrder.orderlines;
+            for (const destOrderLine of destOrderLines) {
+                destOrderLine.set_employee(null);
+            }
 
             if (this.env.pos.get_order().cid !== destinationOrder.cid) {
                 this.env.pos.set_order(destinationOrder);
             }
-
             this._onCloseScreen();
         }
 
