@@ -17,6 +17,8 @@ class PromotionPricelistItem(models.Model):
         domain="[('promotion_type', '=', 'pricelist')]")
     product_id = fields.Many2one('product.product', string='Product', domain="[('available_in_pos', '=', True)]", required=True)
     fixed_price = fields.Float('Fix price')
+    barcode = fields.Char(related='product_id.barcode')
+    qty_available = fields.Float(related='product_id.qty_available')
 
     @api.constrains('program_id', 'program_id')
     def check_unique_product_id(self):
