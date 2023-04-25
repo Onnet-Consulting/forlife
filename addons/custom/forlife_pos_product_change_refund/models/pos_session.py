@@ -14,7 +14,8 @@ class PosSession(models.Model):
 
     def load_pos_data(self):
         loaded_data = super(PosSession, self).load_pos_data()
-        reason_refund_ids = self.env['pos.reason.refund'].search([])
+        reason_refund_ids = self.env['pos.reason.refund'].search(
+            [('brand_id', '=', self.config_id.store_id.brand_id.id)])
         reason = [{
             'id': rr.id,
             'name': rr.name,
