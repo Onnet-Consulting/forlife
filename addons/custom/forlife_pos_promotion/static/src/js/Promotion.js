@@ -56,7 +56,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.surprisingRewardProducts = loadedData['surprising.reward.product.line'] || [];
         this.promotionComboLines = loadedData['promotion.combo.line'] || [];
         this.rewardLines = loadedData['promotion.reward.line'] || [];
-//        this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
+        this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
         this.monthData = loadedData['month.data'] || [];
         this.dayofmonthData = loadedData['dayofmonth.data'] || [];
         this.dayofweekData = loadedData['dayofweek.data'] || [];
@@ -85,8 +85,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             program.discount_product_ids = new Set(program.discount_product_ids);
             program.reward_product_ids = new Set(program.reward_product_ids);
 
-            let json_pricelist_item_ids_str = program.json_pricelist_item_ids ? program.json_pricelist_item_ids : "W10=";
-            this.promotionPricelistItems = JSON.parse(atob(json_pricelist_item_ids_str)) || [];
+//            let json_pricelist_item_ids_str = program.json_pricelist_item_ids ? program.json_pricelist_item_ids : "W10=";
+//            this.promotionPricelistItems = JSON.parse(atob(json_pricelist_item_ids_str)) || [];
 
             this.promotion_program_by_id[program.id] = program;
 
