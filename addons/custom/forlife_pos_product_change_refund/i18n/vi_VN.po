@@ -119,7 +119,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order__brand_id
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_reason_refund__brand_id
 msgid "Brand"
-msgstr ""
+msgstr "Thương hiệu"
 
 #. module: forlife_pos_product_change_refund
 #. odoo-python
