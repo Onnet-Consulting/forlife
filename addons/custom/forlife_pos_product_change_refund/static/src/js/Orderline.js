@@ -54,7 +54,7 @@ odoo.define('forlife_pos_product_change_refund.Orderline', function(require) {
 
 			onchangeValueNew(event) {
 			    var self = this;
-			    self.props.line.set_quantity(parseInt(event.target.value) || 0);
+			    self.props.line.set_quantity(parseInt(event.target.value) || 0, true);
 			}
 
 			async actUpdate(event) {
