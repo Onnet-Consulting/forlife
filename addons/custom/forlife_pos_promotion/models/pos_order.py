@@ -74,7 +74,7 @@ class PosOrder(models.Model):
         for line in order['data']['lines']:
             for usage in line[2]['promotion_usage_ids']:
                 code_id = usage[2]['code_id']
-                if code_id:
+                if code_id and usage[2].get('discount_amount', 0):
                     if code_id in code_vals:
                         code_vals[code_id] += line[2]['qty'] * usage[2]['discount_amount']
                     else:
