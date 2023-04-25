@@ -9,8 +9,8 @@ _logger = logging.getLogger(__name__)
 class Contact(models.Model):
     _inherit = 'res.partner'
 
-    is_purchased_of_forlife = fields.Boolean('Is Purchased Forlife', compute='_comnpute_is_purchased')
-    is_purchased_of_format = fields.Boolean('Is Purchased Format', compute='_comnpute_is_purchased')
+    is_purchased_of_forlife = fields.Boolean('Is Purchased Forlife')
+    is_purchased_of_format = fields.Boolean('Is Purchased Format')
     is_member_app_forlife = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     is_member_app_format = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife', readonly=True)
@@ -23,17 +23,6 @@ class Contact(models.Model):
     point_forlife_reseted = fields.Boolean('Forlife was reseted', default=False)
     point_format_reseted = fields.Boolean('Format was reseted', default=False)
 
-    @api.depends('history_points_format_ids', 'history_points_forlife_ids')
-    def _comnpute_is_purchased(self):
-        for rec in self:
-            if len(rec.history_points_forlife_ids) >= 1:
-                rec.is_purchased_of_forlife = True
-            else:
-                rec.is_purchased_of_forlife = False
-            if len(rec.history_points_format_ids) >= 1:
-                rec.is_purchased_of_format = True
-            else:
-                rec.is_purchased_of_format = False
 
     @api.depends('history_points_format_ids', 'history_points_forlife_ids')
     def compute_point_total(self):
@@ -106,11 +95,12 @@ class Contact(models.Model):
 
         # Reset Forlife point
         reset_forlife_partners = self.search([('reset_day_of_point_forlife', '<=', now), ('point_forlife_reseted', '=', False)])
+        reset_forlife_partners = reset_forlife_partners.filtered(lambda x: x.total_points_available_forlife > 0)
         if reset_forlife_partners:
             # vals = {'point_forlife_reseted': True}
             vals = {}
             # create journal entries
-            if point_promotion_forlife_id:
+            if point_promotion_forlife_id and reset_forlife_partners:
                 move_line_vals = [(0, 0, {
                     'account_id': point_promotion_forlife_id.point_customer_id.property_account_receivable_id.id,
                     'partner_id': point_promotion_forlife_id.point_customer_id.id,
@@ -155,12 +145,13 @@ class Contact(models.Model):
             reset_forlife_partners.write(vals)
 
         # Reset Format point
-        reset_format_partners = self.search([('reset_day_of_point_format', '<=', now), ('point_format_reseted', '=', False)])
+        reset_format_partners = self.search([('reset_day_of_point_format', '<=', now), ('point_format_reseted', '=', False),('total_points_available_format','>',0)])
+        reset_format_partners.filtered(lambda x: x.total_points_available_format > 0)
         if reset_format_partners:
             # vals = {'point_format_reseted': True}
             vals = {}
             # create journal entries
-            if point_promotion_format_id:
+            if point_promotion_format_id and reset_format_partners:
                 move_line_vals = [(0, 0, {
                     'account_id': point_promotion_format_id.point_customer_id.property_account_receivable_id.id,
                     'partner_id': point_promotion_format_id.point_customer_id.id,

@@ -7,41 +7,56 @@
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='partner_ref']" position="attributes">
-					<attribute name="invisible">True</attribute>
+                    <attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//field[@name='purchase_code']" position="replace">
-					<field name="purchase_code" attrs="{'invisible': True}"/>
+                    <field name="purchase_code" attrs="{'invisible': True}"/>
                     <field name="is_purchase_request" attrs="{'invisible': True}"/>
-                    <field name="account_analytic_ids" attrs="{'readonly': [('is_purchase_request', '=', True)]}"  widget="many2many_tags"/>
-                    <field name="production_id" attrs="{'invisible': [('purchase_type', '=', 'asset')]}"/>
-                    <field name="event_id" attrs="{'invisible': [('purchase_type', '!=', 'product')]}"/>
-                    <field name="occasion_code_ids" attrs="{'readonly': [('is_purchase_request', '=', True)]}"  widget="many2many_tags"/>
+                    <field name="account_analytic_ids"
+                           attrs="{'readonly': ['|',('is_purchase_request', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"
+                           widget="many2many_tags"/>
+                    <field name="production_id"
+                           attrs="{'invisible': [('purchase_type', '=', 'asset')], 'readonly': ['|',('is_purchase_request', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+<!--                    <field name="event_id"-->
+<!--                           attrs="{'invisible': [('purchase_type', '!=', 'product')], 'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>-->
+                    <field name="occasion_code_ids"
+                           attrs="{'readonly': ['|',('is_purchase_request', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}"
+                           widget="many2many_tags"/>
+                    <field name="is_check_line_material_line" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='has_contract']" position="attributes">
-					<attribute name="invisible">True</attribute>
+                    <attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//field[@name='has_invoice']" position="attributes">
-					<attribute name="invisible">True</attribute>
+                    <attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//field[@name='picking_type_id']" position="attributes">
-					<attribute name="invisible">True</attribute>
+                    <attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//div[@name='date_planned_div']" position="after">
-                    <field name="receive_date"/>
+                    <field name="source_location_id"
+                           attrs="{'invisible': [('is_inter_company', '=', False)], 'required': [('is_inter_company', '=', True)], 'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"
+                           string="Kho nguồn"/>
+                    <field name="location_id" string="Kho nhận"
+                           attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
+                    <field name="source_document" string="Tài liệu gốc" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="inventory_status"/>
                     <field name="invoice_status"/>
-                    <field name="picking_type_id"/>
-                    <field name="source_document"/>
-                    <field name="has_contract"/>
-                    <field name="has_contract_commerce"/>
-                    <field name="note"/>
+                    <!--                    <field name="picking_type_id"/>-->
+                    <field name="has_contract" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="has_contract_commerce" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="note" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="rejection_reason" attrs="{'invisible': [('custom_state', '!=', 'reject')]}"
+                           string="Lý do từ chối" readonly="1"/>
                 </xpath>
                 <xpath expr="//div[@name='reminder']" position="attributes">
                     <attribute name="invisible">True</attribute>
                 </xpath>
                 <xpath expr="//notebook/page[@name='product_cost']" position="after">
-                    <page string="Nguyên phụ liệu" name="production_order_domain">
-                        <field name="order_line_production_order" widget="one2many" mode="tree" options="{'no_create': True}">
+                    <page string="Nguyên phụ liệu" name="production_order_domain"
+                          attrs="{'invisible': [('is_check_line_material_line', '=', True)]}">
+                        <field name="order_line_production_order" class="width-hh" widget="one2many" mode="tree"
+                               options="{'no_create': True}">
                             <tree editable="bottom" create="0" delete="0" class="hide_add_and_remove">
                                 <control>
                                     <create name="add" string="Add" readonly="1"/>
@@ -52,61 +67,12 @@
                                 <field name="product_uom" readonly="1" force_save="1"/>
                                 <field name="exchange_quantity" readonly="0"/>
                                 <field name="product_qty" readonly="1" force_save="1"/>
-                                <button name="action_npl" string="NPL" type="object" class="btn btn-secondary"/>
+                                <button name="action_npl" string="NPL" type="object" style="text-align: center;"
+                                        class="btn btn-secondary"/>
                             </tree>
                         </field>
                     </page>
                 </xpath>
-<!--                <xpath expr="//notebook[1]" position="after">-->
-<!--                    <notebook colspan="4">-->
-<!--                        <page string="Approval Logs" name="approval_logs">-->
-<!--                            <field name="approval_logs_ids" mode="kanban" context="{'default_res_model': 'purchase.order'}">-->
-<!--                                <kanban>-->
-<!--                                    <field name="request_approved_date"/>-->
-<!--                                    <field name="approval_user_id"/>-->
-<!--                                    <field name="function"/>-->
-<!--                                    <field name="note"/>-->
-<!--                                    <field name="state"/>-->
-<!--                                    <templates>-->
-<!--                                        <t t-name="kanban-box">-->
-<!--                                            <div t-attf-class="oe_kanban_card">-->
-<!--                                                <div class="o_kanban_record_top">-->
-<!--                                                    <div class="o_kanban_record_headings mt4 text-muted">-->
-<!--                                                        <field name="state"/>-->
-<!--                                                    </div>-->
-<!--                                                    <div class="text-muted">-->
-<!--                                                        <field name="request_approved_date"/>-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                                <div>-->
-<!--                                                    <div class="approval_logs_main_text">-->
-<!--                                                        <field name="function"/>-->
-<!--                                                    </div>-->
-<!--                                                    <div class="approval_logs_main_text">-->
-<!--                                                        <field name="approval_user_id"/>-->
-<!--                                                    </div>-->
-<!--                                                    <div class="approval_logs_note">-->
-<!--                                                        <div>Note:</div>-->
-<!--                                                        <field name="note"/>-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </t>-->
-<!--                                    </templates>-->
-<!--                                </kanban>-->
-<!--                                <form>-->
-<!--                                    <sheet>-->
-<!--                                        <group>-->
-<!--                                            <field name="approval_user_id" readonly="1" force_save="1"/>-->
-<!--                                            <field name="request_approved_date" readonly="1" force_save="1"/>-->
-<!--                                            <field name="note"/>-->
-<!--                                        </group>-->
-<!--                                    </sheet>-->
-<!--                                </form>-->
-<!--                            </field>-->
-<!--                        </page>-->
-<!--                    </notebook>-->
-<!--                </xpath>-->
             </field>
         </record>
 
@@ -133,12 +99,15 @@
                                 <field name="purchase_order_line_material_line_ids" mode="tree">
                                     <tree editable="bottom">
                                         <field name="is_from_po" invisible="1"/>
-                                        <field name="product_id" context="{'show_product_code': True}" attrs="{'readonly': [('is_from_po', '=', True)]}"/>
-                                        <field name="name"/>
-                                        <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}"/>
-                                        <field name="product_qty"/>
-                                        <field name="product_plan_qty" attrs="{'readonly': [('is_from_po', '=', True)]}"/>
-                                        <field name="product_remain_qty"/>
+                                        <field name="product_id" context="{'show_product_code': True}"
+                                               attrs="{'readonly': [('is_from_po', '=', True)]}" string="Sản phẩm"/>
+                                        <field name="name" string="Mô tả"/>
+                                        <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}"
+                                               string="Đơn vị"/>
+                                        <field name="product_qty" string="Số lượng"/>
+                                        <field name="product_plan_qty" attrs="{'readonly': [('is_from_po', '=', True)]}"
+                                               string="Số lượng kế hoạch"/>
+                                        <field name="product_remain_qty" string="Số lượng còn lại"/>
                                     </tree>
                                 </field>
                             </page>

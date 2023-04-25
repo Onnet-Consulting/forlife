@@ -54,7 +54,7 @@ odoo.define('forlife_pos_product_change_refund.Orderline', function(require) {
 
 			onchangeValueNew(event) {
 			    var self = this;
-			    self.props.line.set_quantity(parseInt(event.target.value) || 0);
+			    self.props.line.set_quantity(parseInt(event.target.value) || 0, true);
 			}
 
 			async actUpdate(event) {
@@ -68,6 +68,10 @@ odoo.define('forlife_pos_product_change_refund.Orderline', function(require) {
                 if (data_update.status === 'approve') {
                     this.props.line.set_unit_price(data_update.price);
                     this.props.line.beStatus = true;
+                    const order = this.env.pos.get_order();
+                    if (order) {
+                        order.approved = true;
+                    }
                 }
                 else {
                     this.props.line.beStatus = false;
@@ -78,8 +82,7 @@ odoo.define('forlife_pos_product_change_refund.Orderline', function(require) {
                 var obj = {};
                 var line = {};
                 var order = this.env.pos.get_order();
-                obj.pos_order_id = order.backendId;
-                obj.name = order.name;
+                obj.pos_order_id = order.origin_pos_order_id;
                 obj.store = this.env.pos.config.store_id[0];
                 line.product_id = this.props.line.product.id;
                 line.price = this.props.line.price;

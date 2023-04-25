@@ -41,11 +41,18 @@ class MainController(http.Controller):
         order_id = data.get('orderId') if event_type != 'orderDelete' else False
         order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)], limit=1) if event_type != 'orderDelete' else False
         if event_type == 'orderAdd':
-            partner = self.partner_model().sudo().search([('code_current_customers', '=', 'code_current_customers_nhanhvn')], limit=1)
+            name_customer = False
+            partner = self.partner_model().sudo().search(
+                ['|', ('mobile', '=', data['customerMobile']), ('phone', '=', data['customerMobile'])], limit=1)
+            if partner:
+                name_customer = data['customerName']
             if not partner:
                 partner_value = {
-                    'code_current_customers': 'code_current_customers_nhanhvn',
-                    'name': 'Current customers Nhanh.Vn',
+                    'phone': data['customerMobile'],
+                    'mobile': data['customerMobile'],
+                    'name': data['customerName'],
+                    'email': data['customerEmail'],
+                    'contact_address_complete': data['customerAddress'],
                 }
                 partner = self.partner_model().sudo().create(partner_value)
             order_line = []
@@ -77,7 +84,7 @@ class MainController(http.Controller):
                 'source_record': True,
                 'code_coupon': data['couponCode'],
                 'state': status,
-                'name_customer': data['customerName'],
+                'name_customer': name_customer,
                 'order_line': order_line
             }
             self.sale_order_model().sudo().create(value)

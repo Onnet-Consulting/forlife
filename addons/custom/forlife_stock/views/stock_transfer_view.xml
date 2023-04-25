@@ -3,8 +3,9 @@
     <record id="seq_stock_transfer" model="ir.sequence">
         <field name="name">Rec name</field>
         <field name="code">stock.transfer.sequence</field>
-        <field name="prefix">ST</field>
-        <field name="padding">3</field>
+        <field name="prefix">PXB</field>
+        <field name="padding">2</field>
+        <field name="suffix" eval=""/>
     </record>
 
     <record id="stock_transfer_tree" model="ir.ui.view">
@@ -18,6 +19,7 @@
                 <field name="location_id"/>
                 <field name="location_dest_id"/>
                 <field name="is_diff_transfer"/>
+                <field name="type"/>
                 <field name="work_from"/>
                 <field name="work_to"/>
                 <field name="create_date"/>
@@ -56,11 +58,15 @@
                     </h1>
                     <group>
                         <group>
+                            <field name="employee_id" invisible="1"/>
                             <field name="employee_id" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                            <field name="department_id"/>
                             <field name="document_type" invisible="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                             <field name="method_transfer" invisible="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                             <field name="location_id" domain="[('usage', '=', 'internal')]" string="Whs From" required="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                             <field name="location_dest_id" domain="[('usage', '=', 'internal')]" string="Whs To" required="1" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                            <field name="reference_document" attrs="{'invisible':[('reference_document', '=', False)]}" string="Tài liệu gốc"/>
+                            <field name="type" attrs="{'invisible':[('type', '=', False)]}"/>
                         </group>
                         <group>
                             <field name="create_date" options='{"date_format": "dd/MM/yyyy"}' attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
@@ -69,15 +75,15 @@
                             <!-- <field name="production_order_id" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/> -->
                             <field name="work_from" string="LSX From" required="0" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                             <field name="work_to" string="LSX To" required="0" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
-<!--                            <field name="total_package" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>-->
-<!--                            <field name="total_weight" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>-->
+                            <field name="total_package" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                            <field name="total_weight" attrs="{'readonly': [('state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Product">
                             <field name="stock_transfer_line" widget="section_and_note_one2many" mode="tree" context="{'default_stock_request_id': stock_request_id, 'default_work_from': work_from, 'default_work_to': work_to}"
                                    required="1">
-                                <tree editable="bottom" class="width-hh width-first">
+                                <tree editable="bottom" class="width-hh">
                                     <field name="is_from_button" invisible="1"/>
                                     <field name="product_str_id" invisible="1"/>
                                     <field name="product_id"  domain="[('detailed_type', '=', 'product')]" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
@@ -85,7 +91,7 @@
                                     <field name="uom_id" force_save="1" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                                     <field name="qty_out" attrs="{'readonly': [('parent.state', '!=', 'approved')]}"/>
                                     <field name="qty_in" attrs="{'readonly': [('parent.state', '!=', 'out_approve')]}"/>
-                                    <field name="quantity_remaining" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                                    <field name="quantity_remaining" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','draft','done','approved','out_approve','in_approve','cancel','reject'))]}"/>
                                     <field name="work_from" required="0" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                                     <field name="work_to" required="0" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                                     <field name="stock_request_id" attrs="{'readonly': [('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>

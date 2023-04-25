@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+import json
+
 import psycopg2
 import datetime
 import logging
@@ -35,7 +37,7 @@ class SaleOrder(models.Model):
     def start_sync_order_from_nhanh(self):
         _logger.info("----------------Start Sync orders from NhanhVn --------------------")
         # Get datetime today and previous day
-        today = datetime.datetime.today().strftime("%y/%m/%d")
+        today = datetime.datetime.today().strftime("%y-%m-%d")
         previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
         _logger.info(f'Today is: {today}, Previous day is: {previous_day}')
         # Set up API information
@@ -45,15 +47,16 @@ class SaleOrder(models.Model):
                 or 'nhanh_connector.nhanh_access_token' not in nhanh_configs:
             _logger.info(f'Nhanh configuration does not set')
             return False
-        query_params = {
-            'data': "'{" + f'"fromDate":"{previous_day}","toDate":"{today}"' + "}'"
+        data = {
+            "fromDate": previous_day,
+            "toDate": today,
         }
         url = f"{NHANH_BASE_URL}/order/index?version=2.0&appId={constant.get_params(self)['appId']}" \
               f"&businessId={constant.get_params(self)['businessId']}&accessToken={constant.get_params(self)['accessToken']}" \
-              f"&data={query_params['data']}"
+              # f"&data={query_params['data']}"
         # Get all orders from previous day to today from Nhanh.vn
         try:
-            res_server = requests.post(url)
+            res_server = requests.post(url, json= json.dumps(data))
             res = res_server.json()
         except Exception as ex:
             _logger.info(f'Get orders from NhanhVn error {ex}')
@@ -80,12 +83,19 @@ class SaleOrder(models.Model):
             list(nhanh_orders)
             # _logger.info(nhanh_orders)
             for k, v in nhanh_orders.items():
+                name_customer = False
                 # Add customer if not existed
-                partner = partner_model.sudo().search([('code_current_customers', '=', 'code_current_customers_nhanhvn')], limit=1)
+                partner = partner_model.sudo().search(
+                    ['|', ('mobile', '=', v['customerMobile']), ('phone', '=', v['customerMobile'])], limit=1)
+                if partner:
+                    name_customer = v['customerName']
                 if not partner:
                     partner_value = {
-                        'code_current_customers': 'code_current_customers_nhanhvn',
-                        'name': 'Current customers Nhanh.Vn',
+                        'phone': v['customerMobile'],
+                        'mobile': v['customerMobile'],
+                        'name': v['customerName'],
+                        'email': v['customerEmail'],
+                        'contact_address_complete': v['customerAddress'],
                     }
                     partner = partner_model.sudo().create(partner_value)
                 order_line = []
@@ -141,7 +151,7 @@ class SaleOrder(models.Model):
                     'source_record': True,
                     'state': status,
                     'code_coupon': v['couponCode'],
-                    'name_customer': v['customerName'],
+                    'name_customer': name_customer,
                     'note': v['privateDescription'],
                     'order_line': order_line
                 }
@@ -153,7 +163,7 @@ class SaleOrder(models.Model):
         ## Danh sách khách hàng
         _logger.info("----------------Start Sync customer from NhanhVn --------------------")
 
-        today = datetime.datetime.today().strftime("%y/%m/%d")
+        today = datetime.datetime.today().strftime("%Y-%m-%d")
         previous_day = (datetime.datetime.today() - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
         _logger.info(f'Today is: {today}, Previous day is: {previous_day}')
         ## Check tồn tại data url
@@ -162,16 +172,18 @@ class SaleOrder(models.Model):
                 or 'nhanh_connector.nhanh_access_token' not in nhanh_configs:
             _logger.info(f'Nhanh configuration does not set')
             return False
-        query_params = {
-            'data': "'{" + f'"fromDate":"{previous_day}","toDate":"{today}"' + "}'"
+
+        data = {
+            "fromDate": previous_day,
+            "toDate": today,
         }
 
         list_number_phone = list(self.env['res.partner'].search([]).mapped('phone'))
-        url = self.get_link_nhanh('customer', 'search', query_params['data'])
+        url = self.get_link_nhanh('customer', 'search', data)
         if url:
             status_post = 1
             try:
-                res_server = requests.post(url)
+                res_server = requests.post(url, json=json.dumps(data))
                 res = res_server.json()
             except Exception as ex:
                 status_post = 0
@@ -190,12 +202,13 @@ class SaleOrder(models.Model):
                                 'source_record': True,
                                 'name': value_data.get('name'),
                                 'phone': value_data.get('mobile'),
+                                'mobile': value_data.get('mobile'),
                                 'email': value_data.get('email'),
                                 'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get('gender') == '2' else False,
                                 'contact_address_complete': value_data.get('address'),
                                 'street': value_data.get('address'),
                                 'vat': value_data.get('taxCode'),
-                                'date_of_birth': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else False,
+                                'birthday': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else False,
                                 'type_customer': 'retail_customers' if value_data.get(
                                     'type') == 1 else 'wholesalers' if value_data.get(
                                     'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
@@ -322,7 +335,7 @@ class SaleOrder(models.Model):
             return False
         url = f"{constant.base_url()}/{category}/{type_get}?version={constant.get_params(self)['version']}&appId={constant.get_params(self)['appId']}" \
               f"&businessId={constant.get_params(self)['businessId']}&accessToken={constant.get_params(self)['accessToken']}" \
-              f"&data={data}"
+              # f"&data={data}"
         return url
 
     def search_product(self, domain_product):

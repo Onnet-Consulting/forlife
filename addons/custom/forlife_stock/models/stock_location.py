@@ -19,3 +19,9 @@ class Location(models.Model):
                         item.stock_location_type_id.code)
             else:
                 item.code_location = False
+
+    @api.model
+    def default_get(self, default_fields):
+        res = super().default_get(default_fields)
+        res['usage'] = 'inventory'
+        return res

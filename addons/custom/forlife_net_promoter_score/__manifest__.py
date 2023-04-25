@@ -19,7 +19,6 @@
         'point_of_sale',
         'forlife_point_of_sale',
         'forlife_telegram_integration',
-        'queue_job',
         'report_xlsx',
     ],
 
@@ -33,6 +32,5 @@
         'views/forlife_comment_views.xml',
         'views/forlife_app_api_link_views.xml',
         'wizard/net_promoter_score_report_views.xml',
-        'report/net_promoter_score_xlsx_report.xml',
     ]
 }

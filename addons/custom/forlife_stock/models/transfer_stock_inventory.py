@@ -30,6 +30,34 @@ class TransferStockInventory(models.Model):
     reason_reject = fields.Text('Reason Reject')
     reason_cancel = fields.Text('Reason Cancel')
 
+    def action_import_other(self):
+        for item in self:
+            import_other = self.env['stock.picking'].search([('origin', '=', item.code), ('other_import', '=', True)])
+            context = {'create': True, 'delete': True, 'edit': True}
+            return {
+                'name': _('Nhập khác'),
+                'view_mode': 'tree,form',
+                'res_model': 'stock.picking',
+                'type': 'ir.actions.act_window',
+                'target': 'current',
+                'domain': [('id', '=', import_other.ids)],
+                'context': context
+            }
+
+    def action_export_other(self):
+        for item in self:
+            export_other = self.env['stock.picking'].search([('origin', '=', item.code), ('other_export', '=', True)])
+            context = {'create': True, 'delete': True, 'edit': True}
+            return {
+                'name': _('Xuất khác'),
+                'view_mode': 'tree,form',
+                'res_model': 'stock.picking',
+                'type': 'ir.actions.act_window',
+                'target': 'current',
+                'domain': [('id', '=', export_other.ids)],
+                'context': context
+            }
+
     @api.model
     def default_get(self, default_fields):
         res = super().default_get(default_fields)
@@ -73,7 +101,9 @@ class TransferStockInventory(models.Model):
                      'name': line.product_to_id.name, 'price_unit': line.unit_price_to,
                      'location_id': self.env.ref('forlife_stock.enter_inventory_balance').id,
                      'location_dest_id': line.location_id.id,
-                     "quantity_done": line.qty_in})
+                     "quantity_done": line.qty_in, 'work_production': line.mrp_production_to_id.id,
+                     'amount_total': line.total_in
+                     })
                 product_export = (
                     0, 0,
                     {'product_id': line.product_from_id.id, 'product_uom_qty': line.qty_out,
@@ -81,7 +111,8 @@ class TransferStockInventory(models.Model):
                      'price_unit': line.unit_price_from,
                      'location_id': line.location_id.id,
                      'location_dest_id': self.env.ref('forlife_stock.export_inventory_balance').id,
-                     "quantity_done": line.qty_out
+                     "quantity_done": line.qty_out, 'work_production': line.mrp_production_from_id.id,
+                     'amount_total': line.total_out
                      })
                 data_import = {
                     "is_locked": True,
@@ -89,12 +120,12 @@ class TransferStockInventory(models.Model):
                     'transfer_stock_inventory_id': rec.id,
                     'location_id': self.env.ref('forlife_stock.enter_inventory_balance').id,
                     'reason_type_id': self.env.ref('forlife_stock.reason_type_5').id,
-                    'location_dest_id': self.env.ref('forlife_stock.enter_inventory_balance').id,
+                    'location_dest_id': line.location_id.id,
                     'scheduled_date': datetime.now(),
                     'origin': rec.code,
                     'other_import': True,
                     'state': 'assigned',
-                    'picking_type_id': self.env.ref('stock.picking_type_internal').id,
+                    'picking_type_id': self.env.ref('stock.picking_type_in').id,
                     'move_ids_without_package': [product_import]
                 }
                 data_export = {
@@ -108,7 +139,7 @@ class TransferStockInventory(models.Model):
                     'origin': rec.code,
                     'other_export': True,
                     'state': 'assigned',
-                    'picking_type_id': self.env.ref('stock.picking_type_internal').id,
+                    'picking_type_id': self.env.ref('stock.picking_type_out').id,
                     'move_ids_without_package': [product_export]
                 }
                 number_product = self.env['stock.quant'].search(
@@ -166,6 +197,7 @@ class TransferStockInventoryLine(models.Model):
     location_id = fields.Many2one('stock.location', string='Location')
     qty_in = fields.Integer(string="Quantity In")
     unit_price_to = fields.Float(string="Unit Price")
+    cost_price = fields.Float(string="Cost Price")
     total_in = fields.Float(string='Total In', compute='compute_total_in')
     mrp_production_to_id = fields.Many2one('forlife.production', string="MRP production to ")
 

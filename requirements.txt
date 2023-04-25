@@ -3,3 +3,6 @@ phonenumbers
 redis
 boto3
 pandas
+xlrd==1.2.0
+pycryptodome
+pyodbc

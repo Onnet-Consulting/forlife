@@ -12,9 +12,17 @@
         'base',
         'forlife_base',
         'purchase_stock',
+        # 'purchase_request',
+        # 'forlife_invoice',
+        'forlife_pos_app_member',
+        'web_domain_field',
+        'l10n_vn',
+        'sale',
     ],
     "data": [
+        'data/product_category.xml',
         'data/barcode_country_data.xml',
+        # 'data/stock_warehouse_type.xml',
         'security/purchase_security.xml',
         'security/ir.model.access.csv',
         'wizard/reject_purchase_order.xml',
@@ -29,8 +37,6 @@
         # 'wizard/account_payment_register_view.xml',
         'report/purchase_order_templates.xml',
         'views/product_supplierinfo_views.xml',
-        'views/hr_employee_views.xml',
-        'views/forlife_account_move.xml',
     ],
     "assets": {
         "web.assets_backend": [

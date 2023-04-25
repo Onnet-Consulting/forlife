@@ -59,10 +59,27 @@ const PosOrderCardRank = (Order) => class extends Order {
     action_reset_card_rank_program() {
         if (this.card_rank_program) {
             this.card_rank_program = null;
+            this._resetPromotionPrograms();
             for (let line of this.orderlines) {
                 line.action_reset_card_rank();
             }
         }
+    }
+
+    order_can_apply_card_rank() {
+        let res = false;
+        let partner = this.get_partner();
+        if (partner) {
+            let card_rank = partner.card_rank_by_brand[this.pos.pos_branch[0].id];
+            if (card_rank) {
+                let cr_program = this.pos.card_rank_program_by_rank_id[card_rank[0]] || {};
+                let customer_not_apply = cr_program.customer_not_apply || [];
+                if ((customer_not_apply.length === 0) || (cr_program && customer_not_apply.length > 0 && !customer_not_apply.includes(partner.id))) {
+                    res = true;
+                }
+            }
+        }
+        return res;
     }
 
 
@@ -80,9 +97,6 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         if (!this.old_point) {
             this.old_point = null;
         }
-        if (!this.old_promotion_usage_ids) {
-            this.old_promotion_usage_ids = null;
-        }
     }
 
     init_from_JSON(json) {
@@ -90,7 +104,6 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         this.card_rank_discount = json.card_rank_discount || 0;
         this.card_rank_applied = json.card_rank_applied || false;
         this.old_point = json.old_point || null;
-        this.old_promotion_usage_ids = json.old_promotion_usage_ids || [];
     }
 
     export_as_JSON() {
@@ -98,7 +111,6 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         json.card_rank_discount = this.card_rank_discount;
         json.card_rank_applied = this.card_rank_applied;
         json.old_point = this.old_point;
-        json.old_promotion_usage_ids = this.old_promotion_usage_ids;
         return json;
     }
 
@@ -125,8 +137,8 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
             this.card_rank_discount = line_data.card_rank_disc;
             this.card_rank_applied = true;
             this.old_point = this.point;
-            this.old_promotion_usage_ids = this.promotion_usage_ids;
             this.set_point(null);
+            this.reset_unit_price();
             this.promotion_usage_ids = [];
 
         }
@@ -137,7 +149,6 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
             this.card_rank_discount = 0;
             this.card_rank_applied = false;
             this.set_point(this.old_point);
-            this.promotion_usage_ids = this.old_promotion_usage_ids;
         }
     }
 
@@ -147,21 +158,35 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
 
     get_discount_detail(cr_program) {
         let total_discounted = (this.get_total_discounted() || 0) - (this.get_point() || 0);
-        let card_rank_disc = cr_program.on_original_price * (this.get_quantity() * this.get_unit_price()) / 100;
-        let promotion_pricelist = this.pos.promotionPricelistItems.find(p => p.product_id === this.product.id);
-        if (promotion_pricelist && promotion_pricelist.valid_customer_ids.has(this.order.get_partner().id)) {
-            let pricelist_disc = 1 - (promotion_pricelist.fixed_price / this.get_unit_price());
-            for (let line of cr_program.extra_discount) {
-                if (pricelist_disc > line.from && pricelist_disc <= line.to) {
-                    card_rank_disc = card_rank_disc + (line.disc * (this.get_quantity() * this.get_unit_price() - card_rank_disc) / 100);
+        let original_price = this.get_original_price();
+        let card_rank_disc = 0;
+        let check_skip_cr = false;
+        if (this.promotion_usage_ids.length > 0) {
+            for (let promotion of this.promotion_usage_ids) {
+                if (this.pos.promotion_program_by_id[promotion.program_id].skip_card_rank === true) {
+                    check_skip_cr = true;
                     break;
+                }
+            }
+        }
+        if (check_skip_cr === false) {
+            let quantity = this.get_quantity();
+            card_rank_disc = cr_program.on_original_price * (quantity * original_price) / 100;
+            let promotion_pricelist = this.pos.promotionPricelistItems.find(p => p.product_id === this.product.id);
+            if (promotion_pricelist && promotion_pricelist.valid_customer_ids.has(this.order.get_partner().id)) {
+                let pricelist_disc = (1 - (promotion_pricelist.fixed_price / original_price)) * 100;
+                for (let line of cr_program.extra_discount) {
+                    if (pricelist_disc > line.from && pricelist_disc <= line.to) {
+                        card_rank_disc = card_rank_disc + (line.disc * (quantity * original_price - card_rank_disc) / 100);
+                        break;
+                    }
                 }
             }
         }
         return {
             id: this.id,
             product_name: this.product.display_name,
-            price: this.price,
+            price: original_price,
             total_discounted: total_discounted,
             card_rank_disc: card_rank_disc,
             apply_cr_discount: card_rank_disc - total_discounted > 0,

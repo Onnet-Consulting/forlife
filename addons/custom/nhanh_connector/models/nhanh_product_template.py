@@ -13,13 +13,11 @@ class ProductNhanh(models.Model):
     _inherit = 'product.template'
 
     nhanh_id = fields.Integer(string="Id Nhanh.Vn")
-    code_product = fields.Char(string="Code Product")
+    code_product = fields.Char(string="Mã sản phẩm")
     ## Nếu tạo sản phẩm từ Odoo == True else == False
     check_data_odoo = fields.Boolean(string='Check dữ liệu từ odoo or Nhanh', default=True)
     width_product = fields.Float('Width')
     height_product = fields.Float('Height')
-
-
 
     @api.model
     def create(self, vals):
@@ -33,9 +31,10 @@ class ProductNhanh(models.Model):
             if 'nhanh_connector.nhanh_app_id' in nhanh_configs or 'nhanh_connector.nhanh_business_id' in nhanh_configs \
                     or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
                 data = '[{"id": "' + str(res.id) + '","name":"' + str(
-                    res.name) + '","code":"' + str(res.code_product) + '", "barcode": "' + str(
-                    res.barcode if res.barcode else None ) + '", "price": "' + str(int(res.list_price)) + '", "shippingWeight": "' + str(
+                    res.name) + '", "barcode": "' + str(
+                    res.barcode if res.barcode else '') + '", "price": "' + str(int(res.list_price)) + '", "shippingWeight": "' + str(
                     int(res.weight)) + '", "status": "' + 'New' + '"}]'
+
                 try:
                     res_server = self.post_data_nhanh(data)
                     status_nhanh = 1
@@ -63,13 +62,17 @@ class ProductNhanh(models.Model):
             data = '[{"id": "' + str(item.id) + '","idNhanh":"' + str(item.nhanh_id) + '", "price": "' + str(int(
                 item.list_price)) + '", "name": "' + str(item.name) + '", "shippingWeight": "' + str(
                 int(item.weight)) + '", "status": "' + 'Active' + '", "barcode": "' + str(
-                    item.barcode if item.barcode else None) + '"}]'
+                    item.barcode if item.barcode else '') + '"}]'
             self.synchronized_price_nhanh(data)
         return res
 
     def unlink(self):
-        data = '[{"id": "' + str(self.id) + '","idNhanh":"' + str(self.nhanh_id) + '", "status": "' + 'Inactive' + '"}]'
-        self.synchronized_price_nhanh(data)
+        for item in self:
+            data = '[{"id": "' + str(item.id) + '","idNhanh":"' + str(item.nhanh_id) + '", "price": "' + str(int(
+                item.list_price)) + '", "name": "' + str(item.name) + '", "shippingWeight": "' + str(
+                int(item.weight)) + '", "status": "' + 'Inactive' + '", "barcode": "' + str(
+                item.barcode if item.barcode else '') + '"}]'
+            self.synchronized_price_nhanh(data)
         res = super().unlink()
 
         return res
@@ -94,8 +97,13 @@ class ProductNhanh(models.Model):
         return True
 
     def post_data_nhanh(self, data):
-        url = f"{constant.base_url()}/product/add?version={constant.get_params(self)['version']}&appId={constant.get_params(self)['appId']}" \
-              f"&businessId={constant.get_params(self)['businessId']}&accessToken={constant.get_params(self)['accessToken']}" \
-              f"&data={data}"
-        res_server = requests.post(url)
+        url = f"{constant.base_url()}/product/add"
+        payload = {
+            'version': constant.get_params(self)['version'],
+            'appId': constant.get_params(self)['appId'],
+            'businessId': constant.get_params(self)['businessId'],
+            'accessToken': constant.get_params(self)['accessToken'],
+            'data': data
+        }
+        res_server = requests.post(url, data=payload)
         return res_server

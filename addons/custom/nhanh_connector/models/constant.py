@@ -28,14 +28,19 @@ def base_url():
     return 'https://open.nhanh.vn/api'
 
 
-def get_post_status(self, status):
-    nhanh_configs = get_nhanh_configs(self)
-    data = '{"id": "' + str(self.id) + '", "status": "' + status + '"}'
-    url = f"{base_url()}/order/update?version=2.0&appId={nhanh_configs['nhanh_connector.nhanh_app_id']}" \
-          f"&businessId={nhanh_configs['nhanh_connector.nhanh_business_id']}&accessToken={nhanh_configs['nhanh_connector.nhanh_access_token']}" \
-          f"&data={data}"
-    res_server = requests.post(url)
+def get_post_status(self, status, rec):
+    data = '{"orderId": "' + str(rec.nhanh_id) + '", "status": "' + status + '"}'
+    url = f"{base_url()}/order/update"
+    payload = {
+        'version': get_params(self)['version'],
+        'appId': get_params(self)['appId'],
+        'businessId': get_params(self)['businessId'],
+        'accessToken': get_params(self)['accessToken'],
+        'data': data
+    }
+    res_server = requests.post(url, data=payload)
     return res_server
+
 
 def get_nhanh_configs(self):
     '''

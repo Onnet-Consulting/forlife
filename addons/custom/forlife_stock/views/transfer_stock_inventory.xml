@@ -29,24 +29,36 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Send" name="action_wait_confirm"
+                    <button string="Gửi duyệt" name="action_wait_confirm"
                             type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
                     <button string="Approve" name="action_approve"
                             type="object"
                             attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject', 'approved'))]}"
-                            confirm="Do you really want to approve the balance sheet?"/>
+                            confirm="Bạn có thực sự muốn phê duyệt cân đối tồn kho?"/>
                     <button string="Reject" name="%(forlife_stock.transfer_stock_inventory_wizard)d"
                             type="action"
                             attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject', 'approved'))]}"
                             context="{'click_button': 'reject'}"/>
                     <button string="Cancel" name="%(forlife_stock.transfer_stock_inventory_wizard)d"
                             type="action" attrs="{'invisible':[('state', 'in', ('draft', 'cancel', 'reject'))]}"
-                            context="{'click_button': 'cancel'}"/>
-                     <button string="Back to draft" name="action_draft"
+                            context="{'click_button': 'cancel'}" confirm="Bạn có chắc chắn muốn hủy phiếu kiểm kê cân tồn không?"/>
+                     <button string="Trở về nháp" name="action_draft"
                             type="object" attrs="{'invisible':[('state', '!=', 'wait_confirm')]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_import_other" type="object" class="oe_stat_button" icon="fa-truck">
+                            <div class="o_stat_info">
+                                Nhập khác
+                            </div>
+                        </button>
+                        <button name="action_export_other" type="object" class="oe_stat_button" icon="fa-truck">
+                            <div class="o_stat_info">
+                                Xuất khác
+                            </div>
+                        </button>
+                    </div>
                     <h1>
                         <field name="code" required="1" readonly="1"/>
                     </h1>
@@ -56,11 +68,10 @@
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="location_id" string="Location" required="1"
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="note" required="1"
-                                   attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                            <field name="note" required="1"/>
                         </group>
                         <group>
-                            <field name="create_date" readonly="1" string="Create Date"/>
+                            <field name="create_date" string="Create Date"/>
                             <field name="reason_cancel" readonly="1" attrs="{'invisible':[('state', '!=', 'cancel')]}"/>
                             <field name="reason_reject" readonly="1" attrs="{'invisible':[('state', '!=', 'reject')]}"/>
                         </group>
@@ -69,7 +80,7 @@
                         <page string="Product">
                             <field name="transfer_stock_inventory_line_ids" widget="section_and_note_one2many"
                                    mode="tree" context="{'default_location_id': location_id}" required="1"
-                                   attrs="{'readonly': [('state', '!=', 'draft')]}">
+                                   attrs="{'readonly': [('state', '!=', 'draft')]}" class="width-hh">
                                 <tree editable="bottom">
                                     <field name="product_from_id" domain="[('detailed_type', '=', 'product')]"
                                            options="{'no_create': True, 'no_edit': True}" required="1"/>
@@ -84,6 +95,7 @@
                                     <field name="qty_in" required="1" force_save="1"/>
                                     <field name="uom_to_id" readonly="1" required="1"/>
                                     <field name="unit_price_to" required="1"/>
+                                    <field name="cost_price" readonly="1"/>
                                     <field name="total_in"/>
                                     <field name="mrp_production_to_id"/>
                                 </tree>

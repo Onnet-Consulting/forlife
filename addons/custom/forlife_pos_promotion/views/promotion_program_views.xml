@@ -11,6 +11,8 @@
                     <button name="%(promotion_generate_code_action)d" string="Generate Codes"
                             class="btn-primary" type="action"
                             attrs="{'invisible': [('show_gen_code', '=', False)]}"/>
+                    <button name="action_recompute_new_field_binary" string="Debug-Recompute Field Binary"
+                            class="btn-secondary" type="object" groups="base.group_no_one"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -100,11 +102,17 @@
                                 <field name="limit_usage_per_customer" class="oe_inline"/>
                                 <span attrs="{'invisible': [('limit_usage_per_customer', '=', False)]}"> to <field name="max_usage_per_customer" class="oe_inline"/> Combo/SP</span>
                             </span>
+                            <label for="limit_usage_per_program"
+                                   attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
+                            <span attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">
+                                <field name="limit_usage_per_program" class="oe_inline"/>
+                                <span attrs="{'invisible': [('limit_usage_per_program', '=', False)]}"> to <field name="max_usage_per_program" class="oe_inline"/> Combo/SP</span>
+                            </span>
                             <field name="company_id" invisible="1"/>
 
                         </group>
                         <group>
-                            <field name="brand_id" invisible="1"/>
+                            <field name="brand_id" invisible="1" required="0"/>
                             <field name="store_ids" widget="many2many_tags" invisible="1"/>
                             <field name="combo_code" attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
                             <label for="registering_tax"/>
@@ -126,10 +134,12 @@
                                    class="o_loyalty_kanban_inline"/>
                     </group>
                     <group string="Conditions" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
+                        <field name="with_code" attrs="{'invisible': [('promotion_type', 'not in', ('cart', 'code'))]}"/>
                         <field name="order_amount_min" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
                         <field name="incl_reward_in_order" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
                         <field name="product_ids" widget="many2many_tags"
                                attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>
+                        <field name="json_valid_product_ids" invisible="1"/>
 <!--                        <field name="product_categ_ids" widget="many2many_tags"-->
 <!--                              attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>-->
                         <field name="min_quantity" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}"/>

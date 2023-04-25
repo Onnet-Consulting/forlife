@@ -23,7 +23,7 @@ msgstr "Bút toán tích điểm"
 #. module: forlife_pos_point_order
 #: model:ir.model.fields,field_description:forlife_pos_point_order.field_pos_order__allow_compensate_point
 msgid "Allow Compensate Point"
-msgstr ""
+msgstr "Cho phép tích điểm bù"
 
 #. module: forlife_pos_point_order
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_pos_compensate_point_order
@@ -41,7 +41,7 @@ msgstr "Hệ thống chạy tự động"
 #. module: forlife_pos_point_order
 #: model:ir.model.fields.selection,name:forlife_pos_point_order.selection__partner_history_point__point_order_type__back_order
 msgid "Back Order"
-msgstr ""
+msgstr "Đơn trả"
 
 #. module: forlife_pos_point_order
 #: model_terms:ir.ui.view,arch_db:forlife_pos_point_order.view_compensate_point_wizard_form

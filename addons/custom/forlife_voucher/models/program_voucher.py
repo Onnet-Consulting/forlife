@@ -34,7 +34,7 @@ class ProgramVoucher(models.Model):
 
     product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse', domain=[('voucher','=',True)])
 
-    product_apply_ids = fields.Many2many('product.template', string='Sản phẩm áp dụng')
+    product_apply_ids = fields.Many2many('product.product', string='Sản phẩm áp dụng')
 
     product_ids = fields.One2many('product.template', 'program_voucher_id')
 
@@ -42,7 +42,9 @@ class ProgramVoucher(models.Model):
 
     is_full_price_applies = fields.Boolean('Áp dụng nguyên giá')
 
-    using_limit = fields.Integer('Giới hạn sử dụng')
+    using_limit = fields.Integer('Giới hạn sử dụng', default=0)
+
+    details = fields.Char('Diễn giải')
 
     @api.depends('product_ids')
     def compute_product(self):
@@ -87,8 +89,6 @@ class ProgramVoucher(models.Model):
 
     @api.model
     def create(self, vals):
-        if 'program_voucher_line_ids' not in vals or not vals['program_voucher_line_ids']:
-            raise UserError(_('Please set the infomation of Vourcher!'))
         last_record = self.get_last_sequence()
         if last_record:
             #change character of sequence
@@ -119,47 +119,27 @@ class ProgramVoucher(models.Model):
                         for i in range(rec.count):
                             self.env['voucher.voucher'].create({
                                 'program_voucher_id': self.id,
-                                'type':self.type,
-                                'brand_id':self.brand_id.id,
-                                'store_ids': [(6, False, self.store_ids.ids)],
                                 'start_date':self.start_date,
                                 'state':'new',
                                 'partner_id': p.id,
                                 'price': rec.price,
                                 'price_used': 0,
                                 'price_residual': rec.price - 0,
-                                'derpartment_id': self.derpartment_id.id,
                                 'end_date':self.end_date,
-                                'apply_many_times': self.apply_many_times,
-                                'apply_contemp_time':self.apply_contemp_time,
-                                'product_voucher_id': self.product_id.id,
-                                'purpose_id': self.purpose_id.id,
-                                'product_apply_ids': [(6, False, self.product_apply_ids.ids)],
-                                'is_full_price_applies': self.is_full_price_applies,
-                                'using_limit':self.using_limit
                             })
+                    self.program_voucher_line_ids = [(5, self.program_voucher_line_ids.ids)]
                 if not rec.partner_ids:
                     for i in range(rec.count):
                         self.env['voucher.voucher'].create({
                             'program_voucher_id': self.id,
-                            'type': self.type,
-                            'brand_id': self.brand_id.id,
-                            'store_ids': [(6, False, self.store_ids.ids)],
                             'start_date': self.start_date,
                             'state': 'new',
                             'price': rec.price,
                             'price_used': 0,
                             'price_residual': rec.price - 0,
-                            'derpartment_id': self.derpartment_id.id,
                             'end_date': self.end_date,
-                            'apply_many_times': self.apply_many_times,
-                            'apply_contemp_time': self.apply_contemp_time,
-                            'product_voucher_id': self.product_id.id,
-                            'purpose_id':self.purpose_id.id,
-                            'product_apply_ids': [(6, False, self.product_apply_ids.ids)],
-                            'is_full_price_applies': self.is_full_price_applies,
-                            'using_limit':self.using_limit
                         })
+                    self.program_voucher_line_ids = [(5, self.program_voucher_line_ids.ids)]
         else:
             raise UserError(_("Vui lòng thêm dòng thông tin cho vourcher!"))
 

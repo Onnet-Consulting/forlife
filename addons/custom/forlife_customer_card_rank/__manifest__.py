@@ -23,6 +23,7 @@
         'forlife_pos_app_member',
         'forlife_pos_promotion',
         'forlife_pos_point_order',
+        'queue_job',
     ],
 
     'data': [
@@ -36,7 +37,10 @@
         'views/partner_card_rank_views.xml',
         'views/res_partner_views.xml',
         'views/pos_order_views.xml',
+        'views/promotion_program_views.xml',
         'views/menuitem.xml',
+
+        'wizard/import_partner_card_rank_views.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

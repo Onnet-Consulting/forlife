@@ -8,11 +8,15 @@
     "depends": [
         'account',
         'purchase',
-        'base'
+        'base',
+        'forlife_purchase',
+        'forlife_stock',
+        'bkav_connector',
     ],
     "data": [
         'views/invoice_view.xml',
         'views/menus.xml',
+        'security/ir.model.access.csv',
     ],
     "assets": {
         "web.assets_backend": [

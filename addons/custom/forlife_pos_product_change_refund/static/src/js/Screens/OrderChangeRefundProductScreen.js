@@ -115,48 +115,83 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                     this._state.syncedOrders.cache[order.id] = Order.create({}, { pos: this.env.pos, json: order });
                 });
             }
+
             this._state.syncedOrders.totalCount = totalCount;
             this._state.syncedOrders.toShow = ids.map((id) => this._state.syncedOrders.cache[id]);
+            this.env.pos.TICKET_SCREEN_STATE = {
+                syncedOrders: {
+                    currentPage: 1,
+                    cache: {},
+                    toShow: [],
+                    nPerPage: 80,
+                    totalCount: null,
+                },
+                ui: {
+                    selectedSyncedOrderId: null,
+                    searchDetails: this.env.pos.getDefaultSearchDetails(),
+                    filter: null,
+                    // maps the order's backendId to it's selected orderline
+                    selectedOrderlineIds: {},
+                    highlightHeaderNote: false,
+                },
+            };
         }
 
-        _onClickOrder({ detail: clickedOrder }) {
+        async _onClickOrder({ detail: clickedOrder }) {
             var payment_method = [];
             const partner = clickedOrder.get_partner();
             const orderlines = clickedOrder.orderlines;
+            if (orderlines.length <= 0) {
+                return;
+            }
 
+            if (!orderlines.some(detail => detail.quantity_canbe_refund > 0)) {
+                return;
+            }
             for (const orderline of orderlines) {
+                if (orderline.quantity_canbe_refund <= 0) {
+                    continue;
+                }
                 const toRefundDetail = this._getToRefundDetail(orderline);
                 const refundableQty = toRefundDetail.orderline.qty - toRefundDetail.orderline.refundedQty;
                 toRefundDetail.qty = refundableQty;
             }
+            const products = orderlines.map(orderline => {
+                    return orderline.product.display_name;
+                });
 
             const paymentlines = clickedOrder.get_paymentlines();
-            for (const payment_line of paymentlines) {
-                payment_method.push(payment_line.payment_method);
+            if (paymentlines) {
+                for (const payment_line of paymentlines) {
+                    payment_method.push(payment_line.payment_method);
+                }
             }
-            if (payment_method){
+            if (payment_method.length > 0){
                 if (payment_method.some(line => line.is_voucher)) {
+                    const voucherlines = clickedOrder.voucherlines.map(line => {return line.voucher_name;});
+
                     if (orderlines.every(x => x.is_voucher_conditional)) {
-                        const {confirmed} = this.showPopup('ConfirmPopup', {
+                        const {confirmed} = await this.showPopup('ConfirmPopup', {
                             title: this.env._t('Warning'),
-                            body: this.env._t('Order used voucher code in product. Are you sure you want to proceed refund product ?'),
+                            body: _.str.sprintf(this.env._t("Order used voucher code %s in product %s." +
+                             " Are you sure you want to proceed refund product ?"), voucherlines.join(', '), products.join(', ')),
                         });
                         if (confirmed) {
-                            this._onDoRefund(partner);
+                            this._onDoRefund(partner, clickedOrder);
                         }
                     }
                     else{
-                        const {confirmed} = this.showPopup('ConfirmPopup', {
+                        const {confirmed} = await this.showPopup('ConfirmPopup', {
                             title: this.env._t('Warning'),
-                            body: this.env._t('Order used voucher code. Are you sure you want to proceed refund product ?'),
+                            body: _.str.sprintf(this.env._t('Order used voucher code %s. Are you sure you want to proceed refund product ?'), voucherlines.join(', ')),
                         });
                         if (confirmed) {
-                            this._onDoRefund(partner);
+                            this._onDoRefund(partner, clickedOrder);
                         }
                     }
                 }
                 else{
-                    this._onDoRefund(partner);
+                    this._onDoRefund(partner, clickedOrder);
                 }
             }
         }
@@ -255,10 +290,8 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 }
             }
         }
-        async _onDoRefund(partner) {
+        async _onDoRefund(partner, clickedOrder) {
             const order = this.env.pos.get_order();
-            order.is_refund_product = false;
-            order.is_change_product = false;
 
 //            if (this._doesOrderHaveSoleItem(order)) {
 //                if (!this._prepareAutoRefundOnOrder(order)) {
@@ -303,13 +336,16 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             if (this.props.is_change_product) {
                 destinationOrder.is_change_product = true;
             }
-            destinationOrder.origin_pos_order_id = order.backendId;
-            destinationOrder.approved = true;
+            destinationOrder.origin_pos_order_id = clickedOrder.backendId;
+
+            const destOrderLines = destinationOrder.orderlines;
+            for (const destOrderLine of destOrderLines) {
+                destOrderLine.set_employee(null);
+            }
 
             if (this.env.pos.get_order().cid !== destinationOrder.cid) {
                 this.env.pos.set_order(destinationOrder);
             }
-
             this._onCloseScreen();
         }
 
@@ -539,7 +575,12 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
          * @returns {Array} refundableDetails
          */
         _getRefundableDetails(partner) {
-            return Object.values(this.env.pos.toRefundLines)
+            return Object.values(this.env.pos.toRefundLines).filter(
+                ({ qty, orderline, destinationOrderUid }) =>
+                    !this.env.pos.isProductQtyZero(qty) &&
+                    (partner ? orderline.orderPartnerId == partner.id : true) &&
+                    !destinationOrderUid
+            );
         }
         /**
          * Prepares the options to add a refund orderline.

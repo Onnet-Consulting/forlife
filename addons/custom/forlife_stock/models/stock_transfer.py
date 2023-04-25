@@ -18,6 +18,7 @@ class StockTransfer(models.Model):
     work_to = fields.Many2one('forlife.production',string="LSX To")
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
     employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id, required=1)
+    department_id = fields.Many2one('hr.department', string="Phòng ban", related='employee_id.department_id')
     reference_document_id = fields.Many2one('stock.transfer.request', string="Transfer Request")
     production_order_id = fields.Many2one('production.order', string="Production Order")
     create_date = fields.Datetime(string='Create Date', default=lambda self: fields.datetime.now())
@@ -26,6 +27,10 @@ class StockTransfer(models.Model):
         selection=[('same_branch', 'Same Branch'),
                    ('difference_branch', 'Difference Branch'),
                    ('excess_arising_lack_arise', 'Excess Arising/Lack Arise')], default='same_branch', required=1, compute='_compute_document_type')
+    type = fields.Selection([
+        ('excess', 'Điều chuyển phát sinh thừa'),
+        ('lack', 'Điều chuyển phát sinh thiếu'),
+    ], string='Type')
     method_transfer = fields.Selection(
         string="Method",
         selection=[('transfer_between_warehouse', 'Transfer Between Warehouse'),
@@ -41,9 +46,10 @@ class StockTransfer(models.Model):
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel')], default='draft')
     is_diff_transfer = fields.Boolean(string="Diff Transfer", default=False)
-    stock_transfer_line = fields.One2many('stock.transfer.line', 'stock_transfer_id', copy=True)
+    stock_transfer_line = fields.One2many('stock.transfer.line', 'stock_transfer_id', copy=True, string='Line')
     total_package = fields.Float(string='Total Package (Number)')
     total_weight = fields.Float(string='Total Weight (Kg)')
+    reference_document = fields.Char()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
 
     @api.onchange('work_from')
@@ -80,7 +86,7 @@ class StockTransfer(models.Model):
                 'target': 'new',
                 'context': dict(self.env.context, default_stock_transfer_id=self.id),
             }
-        self._action_out_approve()
+        return self._action_out_approve()
 
     def _action_out_approve(self):
         self.ensure_one()
@@ -89,11 +95,28 @@ class StockTransfer(models.Model):
         stock_transfer_line_less = self.stock_transfer_line.filtered(lambda r: r.qty_out < r.qty_plan)
         if stock_transfer_line_less:
             self._out_approve_less_quantity(stock_transfer_line_less)
-        if self.work_from:
-            self.work_from.write({
-                'forlife_bom_ids': [(4, self.id)]
-            })
+        self._update_forlife_production()
         self.write({'state': 'out_approve'})
+        if stock_transfer_line_less:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'type': 'warning',
+                    'message': 'Có phiếu dở dang đã được tạo cần xác nhận!',
+                    'next': {'type': 'ir.actions.act_window_close'},
+                }
+            }
+
+    def _update_forlife_production(self):
+        for line in self.stock_transfer_line:
+            if line.work_from:
+                forlife_production_service_cost = line.work_from.forlife_production_finished_product_ids.filtered(lambda r: r.product_id.id == line.product_id.id)
+                if not forlife_production_service_cost:
+                    continue
+                forlife_production_service_cost.write({
+                    'forlife_production_stock_transfer_line_ids': [(4, line.id)],
+                })
 
     def _validate_product_tolerance(self, type='out'):
         self.ensure_one()
@@ -121,6 +144,7 @@ class StockTransfer(models.Model):
                 'employee_id': self.employee_id.id,
                 'document_type': 'excess_arising_lack_arise',
                 'stock_request_id': self.stock_request_id.id,
+                'type': 'lack',
                 'is_diff_transfer': True,
                 'location_id': self.location_id.id,
                 'location_dest_id': self.location_dest_id.id,
@@ -162,7 +186,7 @@ class StockTransfer(models.Model):
                 'target': 'new',
                 'context': dict(self.env.context, default_stock_transfer_id=self.id),
             }
-        self._action_in_approve()
+        return self._action_in_approve()
 
     def _action_in_approve(self):
         self.ensure_one()
@@ -227,28 +251,32 @@ class StockTransfer(models.Model):
             }))
             if line.qty_in > line.qty_out:
                 diff_transfer_data = [(0, 0, {
+                    'product_str_id': line.product_str_id.id if line.product_str_id.id else False,
                     'product_id': product.id,
                     'uom_id': line.uom_id.id,
                     'qty_plan': abs(line.qty_plan - product_quantity),
                     'qty_in': line.qty_in - line.qty_out,
                     'qty_out': line.qty_in - line.qty_out,
                 })]
-                diff_transfer |= self._create_diff_transfer(diff_transfer_data, state='in_approve')
+                diff_transfer |= self._create_diff_transfer(diff_transfer_data, state='in_approve', type='excess')
                 line.write({
+                    'product_str_id': line.product_str_id.id if line.product_str_id.id else False,
                     'qty_plan': product_quantity,
                     'qty_out': product_quantity,
                     'qty_in': product_quantity,
                 })
             elif line.qty_in < line.qty_out:
                 diff_transfer_data = [(0, 0, {
+                    'product_str_id': line.product_str_id.id if line.product_str_id.id else False,
                     'product_id': product.id,
                     'uom_id': line.uom_id.id,
                     'qty_plan': abs(line.qty_plan - product_quantity),
                     'qty_in': line.qty_out - line.qty_in,
                     'qty_out': line.qty_out - line.qty_in,
                 })]
-                diff_transfer |= self._create_diff_transfer(diff_transfer_data, state='out_approve')
+                diff_transfer |= self._create_diff_transfer(diff_transfer_data, state='out_approve', type='lack')
                 line.write({
+                    'product_str_id': line.product_str_id.id if line.product_str_id.id else False,
                     'qty_plan': product_quantity,
                     'qty_out': product_quantity,
                     'qty_in': product_quantity,
@@ -268,12 +296,14 @@ class StockTransfer(models.Model):
                 }
             }
 
-    def _create_diff_transfer(self, data, state='draft'):
+    def _create_diff_transfer(self, data, state='draft', type=''):
         self.ensure_one()
         return self.env['stock.transfer'].create({
+            'reference_document': self.name,
             'employee_id': self.employee_id.id,
             'document_type': 'excess_arising_lack_arise',
             'stock_request_id': self.stock_request_id.id,
+            'type': type,
             'is_diff_transfer': True,
             'location_id': self.location_id.id,
             'location_dest_id': self.location_dest_id.id,
@@ -317,7 +347,8 @@ class StockTransfer(models.Model):
     @api.model
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'ST'
+            warehouse = self.env['stock.location'].browse(vals.get('location_id')).code
+            vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.sequence') + (warehouse if warehouse else '' + str(datetime.now().year)) or 'PXB'
         return super(StockTransfer, self).create(vals)
 
     def unlink(self):
@@ -333,6 +364,12 @@ class StockTransfer(models.Model):
             else:
                 rec.document_type = 'difference_branch'
 
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Tải xuống mẫu phiếu điều chuyển'),
+            'template': '/forlife_stock/static/src/xlsx/import stock transfer.xlsx?download=true'
+        }]
 
 class StockTransferLine(models.Model):
     _name = 'stock.transfer.line'
@@ -352,6 +389,7 @@ class StockTransferLine(models.Model):
     product_str_id = fields.Many2one('transfer.request.line')
     is_from_button = fields.Boolean(default=False)
     qty_plan_tsq = fields.Integer(default=0, string='Quantity Plan Tsq')
+    is_parent_done = fields.Boolean(compute='compute_is_parent_done', store=True)
 
     @api.onchange('product_id')
     def onchange_product_id(self):
@@ -406,6 +444,11 @@ class StockTransferLine(models.Model):
         if quantity > self.qty_plan * (1 + (tolerance / 100)):
             raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
 
+    @api.depends('stock_transfer_id', 'stock_transfer_id.state')
+    def compute_is_parent_done(self):
+        for item in self:
+            item.is_parent_done = True if item.stock_transfer_id and item.stock_transfer_id.state == 'done' else False
+
 
 class ApprovalLogsStock(models.Model):
     _name = 'approval.logs.stock'
@@ -458,10 +501,9 @@ class ForlifeProductionFinishedProduct(models.Model):
     forlife_production_stock_transfer_line_ids = fields.Many2many('stock.transfer.line')
     remaining_qty = fields.Float(string='Remaining Quantity', compute='_compute_remaining_qty')
 
-    # BA xác nhận sau khi xác nhận xuất hàng không thể hủy quay lại nữa
-    @api.depends('forlife_production_stock_transfer_line_ids')
+    # @api.depends('forlife_production_stock_transfer_line_ids', 'forlife_production_stock_transfer_line_ids.stock_transfer_id.state')
     def _compute_remaining_qty(self):
         for rec in self:
             qty_done = sum([line.qty_out for line in rec.forlife_production_stock_transfer_line_ids.filtered(
-                lambda r: r.state in ('out_approve', 'in_approve', 'done'))])
+                lambda r: r.stock_transfer_id.state in ('out_approve', 'in_approve', 'done'))])
             rec.remaining_qty = rec.stock_qty - qty_done

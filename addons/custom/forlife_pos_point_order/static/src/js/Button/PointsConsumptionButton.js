@@ -143,7 +143,9 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
     ProductScreen.addControlButton({
         component: PointsConsumptionButton,
         condition: function () {
-            return this.env.pos;
+            let order = this.env.pos && this.env.pos.get_order();
+            let partner = order && order.get_partner();
+            return partner && partner.generated_by_scan_barcode;
         },
     })
 

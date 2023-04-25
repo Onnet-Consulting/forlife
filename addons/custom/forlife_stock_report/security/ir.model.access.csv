@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_stock_value_report,forlife_stock_report_stock_value_report,model_stock_value_report,base.group_user,1,1,1,1
+access_stock_value_report_detail,forlife_stock_report_stock_value_report_detail,model_stock_value_report_detail,base.group_user,1,1,1,1
+access_stock_quant_period,forlife_stock_report_stock_quant_period,model_stock_quant_period,base.group_user,1,1,1,1

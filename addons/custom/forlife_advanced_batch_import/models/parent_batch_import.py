@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.addons.base_import.models.base_import import FILE_TYPE_DICT, _logger
 
 from io import BytesIO
 import base64
@@ -13,8 +14,12 @@ class ParentBatchImport(models.Model):
 
     display_name = fields.Char(string="Display Name", compute="compute_display_name")
     res_model = fields.Char(string="Model")
-    attachment_id = fields.Many2one(string="Attachment", comodel_name="ir.attachment")
+    # attachment_id = fields.Many2one(string="Attachment", comodel_name="ir.attachment")
+    # binary file
+    file = fields.Binary('File', help="File to check and/or import", attachment=True)
     file_name = fields.Char('File Name')
+    file_type = fields.Char('File Type')
+
     list_field = fields.Text(string="List Fields")
     columns = fields.Text(string="Columns")
     options = fields.Text(string="Options")
@@ -24,20 +29,46 @@ class ParentBatchImport(models.Model):
     number_of_split_file = fields.Integer(string="Number of split file", compute="_compute_number_of_split_file", store=True)
     with_delay = fields.Integer(string="Delay execute between every batch", default=10)
     child_batch_import_ids = fields.One2many(string="Children  Batch", comodel_name="child.batch.import", inverse_name='parent_batch_import_id')
-    done_batch_count = fields.Integer(string="Done Batch", compute="compute_batch_count")
-    total_batch = fields.Integer(string="Total Batch", compute="compute_batch_count")
-    progress_bar = fields.Integer(string="Progress Bar", compute='compute_batch_count')
+    done_batch_count = fields.Integer(string="Done Batch", compute="compute_batch_count", store=False)
+    total_batch = fields.Integer(string="Total Batch", compute="compute_batch_count", store=False)
+    progress_bar = fields.Float('Progress Done (%)', digits=(16, 2), compute='compute_batch_count', store=False)
+    file_invalid_records = fields.Binary(string="Invalid Records", attachment=True)
+    file_invalid_records_name = fields.Char('Invalid records file')
+    log = fields.Text(string="Log")
 
-    @api.depends('name', 'sequence')
-    def _compute_progress_bar(self):
-        for u in self:
-            if u.name and u.sequence:
-                progress = 100
-            elif u.name:
-                progress = 50
-            else:
-                progress = 0
-            u.progress_bar = progress
+    def merge_file_log_errors(self):
+        import pandas as pd
+        for rec in self:
+            sheet_name = json.loads(rec.options).get('sheet_name') if json.loads(rec.options).get('sheet_name') else "Sheet1"
+            mimetype = rec.file_type
+            (file_extension, handler, req) = FILE_TYPE_DICT.get(mimetype, (None, None, None))
+            if rec.child_batch_import_ids:
+                concat_data_frames = []
+                for batch in rec.child_batch_import_ids:
+                    if batch.file_invalid_records:
+                        if file_extension == 'csv':
+                            concat_data_frames.append(batch.rec_file_csv(batch.file_invalid_records))
+                        else:
+                            concat_data_frames.append(batch.rec_file_exel(batch.file_invalid_records))
+                if len(concat_data_frames) > 0:
+                    merged_df = pd.concat(concat_data_frames, axis=0, ignore_index=True)
+                    encoded_output_data = False
+                    if file_extension == 'csv':
+                        output_data = merged_df.to_csv(index=False)
+                        encoded_output_data = base64.b64encode(output_data.encode('utf-8')).decode('utf-8')
+                    else:
+                        output = BytesIO()
+                        writer = pd.ExcelWriter(output, engine='xlsxwriter')
+                        merged_df.to_excel(writer, sheet_name=sheet_name, index=False)
+                        writer.close()
+                        output.seek(0)
+
+                        chunk_data = output.read()
+                        encoded_output_data = base64.b64encode(chunk_data)
+                    rec.write({
+                        'file_invalid_records_name': f"{rec.file_name.split('.')[0]}_invalid_records.{rec.file_name.split('.')[-1]}",
+                        'file_invalid_records': encoded_output_data
+                    })
 
     @api.depends('child_batch_import_ids', 'child_batch_import_ids.status')
     def compute_batch_count(self):
@@ -58,9 +89,13 @@ class ParentBatchImport(models.Model):
                 'status': 'draft'
             })
 
+    def test_all(self):
+        for rec in self:
+            rec.child_batch_import_ids.make_queue_test_batch(delay_time=rec.with_delay)
+
     def set_all_to_processing(self):
         for rec in self:
-            rec.child_batch_import_ids.filtered(lambda b: b.status not in ['done']).set_to_processing()
+            rec.child_batch_import_ids.filtered(lambda b: b.status not in ['done']).set_to_processing(delay_time=rec.with_delay)
 
     @api.depends('child_batch_import_ids', 'child_batch_import_ids.status')
     def compute_status(self):
@@ -86,15 +121,11 @@ class ParentBatchImport(models.Model):
         if options.get('base_import_id'):
             base_import = self.env['base_import.import'].sudo().search([('id', '=', options.get('base_import_id'))], limit=1)
             if base_import:
-                attachment = self.env['ir.attachment'].create({
-                    'name': base_import.file_name,
-                    'datas': base64.encodebytes(base_import.file),
-                    'type': 'binary'
-                })
                 batch_import = self.env['parent.batch.import'].sudo().create({
                     'res_model': base_import.res_model,
-                    'attachment_id': attachment.id,
+                    'file': base64.b64encode(base_import.file),
                     'file_name': base_import.file_name,
+                    'file_type': base_import.file_type,
                     'list_field': json.dumps(fields),
                     'columns': json.dumps(columns),
                     'options': json.dumps(options),
@@ -112,8 +143,22 @@ class ParentBatchImport(models.Model):
                     self.split_parent_batch_import_csv(batch_import)
                 else:
                     self.split_parent_batch_import_exel(batch_import=batch_import, sheet_name=options.get('sheet_name') if options.get('sheet_name') else "Sheet1")
+                # clean base_import.import to release memory before swap to batch import
+                base_import.unlink()
+
                 return dst_url
         return False
+
+    def split_parent_batch(self):
+        for rec in self:
+            mimetype = rec.file_type
+            (file_extension, handler, req) = FILE_TYPE_DICT.get(mimetype, (None, None, None))
+            try:
+                return getattr(rec, 'split_parent_batch_import_' + ('csv' if file_extension == 'csv' else 'exel'))()
+            except ValueError as e:
+                raise e
+            except Exception:
+                _logger.error("Failed to split file '%s'", self.file_name or '<unknown>')
 
     def split_parent_batch_import_csv(self, batch_import=False):
         import pandas as pd
@@ -122,7 +167,7 @@ class ParentBatchImport(models.Model):
         if not batch_import:
             batch_import = self
         # Giải mã nội dung của attachment
-        decoded_data = base64.b64decode(batch_import.attachment_id.datas)
+        decoded_data = base64.b64decode(batch_import.file)
         # Chuyển decoded_data thành đối tượng StringIO để đọc dữ liệu CSV
         file_data = StringIO(decoded_data.decode('utf-8'))
         # Đọc dữ liệu CSV vào DataFrame
@@ -141,17 +186,12 @@ class ParentBatchImport(models.Model):
             # Chuyển DataFrame thành dạng bytes
             csv_bytes = df_part.to_csv(index=False).encode()
 
-            # Tạo attachment từ dữ liệu bytes
-            attachment_vals = {
-                'name': f"{batch_import.file_name.split('.')[0]}_{i + 1}.{batch_import.file_name.split('.')[-1]}",
-                'datas': base64.b64encode(csv_bytes),
-                'type': 'binary',
-            }
-            att = self.env['ir.attachment'].create(attachment_vals)
             self.env['child.batch.import'].sudo().create({
                 'sequence': i,
+                'file': base64.b64encode(csv_bytes),
+                'file_type': batch_import.file_type,
                 'parent_batch_import_id': batch_import.id,
-                'attachment_id': att.id,
+                # 'attachment_id': att.id,
                 'file_name': f"{batch_import.file_name.split('.')[0]}_{i + 1}.{batch_import.file_name.split('.')[-1]}",
                 'status': 'draft',
                 'skip': 0,
@@ -162,7 +202,7 @@ class ParentBatchImport(models.Model):
         if not batch_import:
             batch_import = self
         # Giải mã nội dung của attachment
-        decoded_data = base64.b64decode(batch_import.attachment_id.datas)
+        decoded_data = base64.b64decode(batch_import.file)
 
         # Đọc dữ liệu của attachment vào DataFrame với Pandas
         df = pd.read_excel(BytesIO(decoded_data))
@@ -184,17 +224,11 @@ class ParentBatchImport(models.Model):
             chunk_data = output.read()
             chunk_data_base64 = base64.b64encode(chunk_data)
 
-            # Tạo attachment từ dữ liệu bytes
-            attachment_vals = {
-                'name': f"{batch_import.file_name.split('.')[0]}_{i + 1}.{batch_import.file_name.split('.')[-1]}",
-                'datas': chunk_data_base64,
-                'type': 'binary',
-            }
-            att = self.env['ir.attachment'].create(attachment_vals)
             self.env['child.batch.import'].sudo().create({
                 'sequence': i,
                 'parent_batch_import_id': batch_import.id,
-                'attachment_id': att.id,
+                'file': chunk_data_base64,
+                'file_type': batch_import.file_type,
                 'file_name': f"{batch_import.file_name.split('.')[0]}_{i + 1}.{batch_import.file_name.split('.')[-1]}",
                 'status': 'draft',
                 'skip': 0,

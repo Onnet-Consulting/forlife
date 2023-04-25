@@ -13,6 +13,7 @@
                     <field name="total_point"/>
                     <field name="program_store_point_id"/>
                     <field name="allow_compensate_point" invisible="1"/>
+                    <field name="is_check_allow_compensate_point"/>
                 </xpath>
                 <xpath expr="//field[@name='lines']//tree//field[@name='full_product_name']" position="after">
                     <field name="point_addition"/>
@@ -27,7 +28,13 @@
                     <button name="%(action_view_pos_compensate_point_order)d"
                             type="action" string="Compensate Point" class="oe_highlight"
                             groups="forlife_promotion.promotion_manager"
-                            attrs="{'invisible': [('allow_compensate_point', '=', False)]}"/>
+                            attrs="{'invisible': ['|',('allow_compensate_point', '=', False),('is_check_allow_compensate_point','=',False)]}"/>
+                </xpath>
+                <xpath expr="//button[@name='refund']" position="after">
+                    <button name="check_pos_order_compensate_point"
+                            type="object" string="Compensate Point" class="oe_highlight"
+                            groups="forlife_promotion.promotion_manager"
+                            attrs="{'invisible': ['|',('allow_compensate_point', '=', False),('is_check_allow_compensate_point','=',True)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='lines']//form//field[@name='notice']" position="after">
                     <field name="discount_details_lines" colspan="3">
@@ -71,5 +78,15 @@
         <!--                </field>-->
         <!--            </field>-->
         <!--        </record>-->
+        <record model="ir.ui.view" id="view_pos_order_tree_extend">
+            <field name="name">view.pos.order.tree.extend</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="allow_compensate_point"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

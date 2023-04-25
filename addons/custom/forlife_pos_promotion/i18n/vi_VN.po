@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-10 03:13+0000\n"
-"PO-Revision-Date: 2023-04-10 03:13+0000\n"
+"POT-Creation-Date: 2023-04-18 02:35+0000\n"
+"PO-Revision-Date: 2023-04-18 02:35+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -25,9 +25,26 @@ msgstr " của CT: "
 #. module: forlife_pos_promotion
 #. odoo-python
 #: code:addons/forlife_pos_promotion/models/promotion_program.py:0
+#: code:addons/forlife_pos_promotion/models/promotion_program.py:0
+#: code:addons/forlife_pos_promotion/models/promotion_program.py:0
+#: code:addons/forlife_pos_promotion/models/promotion_program.py:0
+#, python-format
+msgid " of %s"
+msgstr " của %s"
+
+#. module: forlife_pos_promotion
+#. odoo-python
+#: code:addons/forlife_pos_promotion/models/promotion_program.py:0
 #, python-format
 msgid "%s: Combo Formular is not set!"
 msgstr "%s: Công thức Combo chưa được thiết lập!"
+
+#. module: forlife_pos_promotion
+#. odoo-python
+#: code:addons/forlife_pos_promotion/models/promotion_program.py:0
+#, python-format
+msgid "%s: Không được khai báo cùng số lượng trên các chi tiết combo!"
+msgstr ""
 
 #. module: forlife_pos_promotion
 #. odoo-javascript
@@ -216,8 +233,10 @@ msgstr "Đã lưu trữ"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__limit_usage_per_customer
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__limit_usage_per_order
+#: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__limit_usage_per_program
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__max_usage_per_customer
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__max_usage_per_order
+#: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__max_usage_per_program
 msgid "Based on qty of combo/product"
 msgstr "Dựa trên số lượng sản phẩm hoặc combo"
 
@@ -331,6 +350,11 @@ msgstr "CT Đơn hàng"
 #: code:addons/forlife_pos_promotion/static/src/xml/Popup/ComboDetailsPopup.xml:0
 #, python-format
 msgid "Chi tiết Combo/Sản phẩm được áp dụng"
+msgstr ""
+
+#. module: forlife_pos_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_search
+msgid "Chiến dịch"
 msgstr ""
 
 #. module: forlife_pos_promotion
@@ -874,7 +898,7 @@ msgstr ""
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__limit_usage
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage
-msgid "Limit Usage"
+msgid "Limit Order Usage"
 msgstr "Giới hạn sử dụng"
 
 #. module: forlife_pos_promotion
@@ -893,6 +917,18 @@ msgid "Limit usage per Order"
 msgstr "Giới hạn dùng trên mỗi đơn"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__limit_usage_per_program
+msgid "Limit usage per Program"
+msgstr "Giới hạn sử dụng mỗi CT"
+
+#. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/ProductScreen.js:0
+#, python-format
+msgid "Limited Promotion Validation Error"
+msgstr "Lỗi giới hạn áp dụng CTKM"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__disc_max_amount
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_reward_line__disc_max_amount
 msgid "Max Discount Amount"
@@ -904,8 +940,12 @@ msgid "Max Discount Amount must be positive."
 msgstr "Số tiền giảm tối đa phải là số dương"
 
 #. module: forlife_pos_promotion
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__max_usage
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__max_usage
+msgid "Max Order Number"
+msgstr "Số lần sử dụng tối đa"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__max_usage
 msgid "Max Usage"
 msgstr "Số lần sử dụng tối đa"
 
@@ -915,19 +955,24 @@ msgid "Max Usage must be positive."
 msgstr "Giới hạn sử dụng tối đã phải là số dương"
 
 #. module: forlife_pos_promotion
-#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__max_usage
-msgid "Max usage per Code"
-msgstr "Tối đa lần sử dụng mỗi mã KM"
-
-#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__max_usage_per_customer
-msgid "Max usage per Customer"
-msgstr "Giới hạn dùng trên mỗi khách"
+msgid "Max qty per Customer"
+msgstr "SL tối đa trên mỗi khách"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__max_usage_per_order
-msgid "Max usage per Order"
-msgstr "Giới hạn dùng trên mỗi đơn"
+msgid "Max qty per Order"
+msgstr "SL tối đa trên mỗi đơn"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__max_usage_per_program
+msgid "Max qty per Program"
+msgstr "SL tối đa trên mỗi CT"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__max_usage
+msgid "Max usage per Code"
+msgstr "Tối đa lần sử dụng mỗi mã KM"
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
@@ -1028,6 +1073,13 @@ msgstr "Số đơn đã dùng"
 msgid ""
 "Nếu đơn hàng không chứa sản phẩm dưới đây, hệ thống sẽ tìm CT KM của các sản"
 " phẩm này và tặng mã KM cho Khách hàng"
+msgstr ""
+
+#. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/PartnerListScreen.js:0
+#, python-format
+msgid "Offline"
 msgstr ""
 
 #. module: forlife_pos_promotion
@@ -1650,6 +1702,13 @@ msgid "Tối đa:"
 msgstr ""
 
 #. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/PartnerListScreen.js:0
+#, python-format
+msgid "Unable to save changes."
+msgstr "Không thể lưu thay đổi"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__discount_based_on__unit_price
 msgid "Unit Price"
 msgstr "Nguyên giá"
@@ -1784,6 +1843,15 @@ msgstr "lần"
 #: code:addons/forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml:0
 #, python-format
 msgid "Đã chọn:"
+msgstr ""
+
+#. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/ProductScreen.js:0
+#, python-format
+msgid ""
+"Đã vượt quá giới hạn áp dụng của CTKM: ${invalidProgram[0].display_name}. "
+"${msg}"
 msgstr ""
 
 #. module: forlife_pos_promotion

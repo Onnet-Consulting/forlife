@@ -251,7 +251,7 @@ msgstr "Sản phẩm"
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_production_order__product_id
 msgid "Product"
-msgstr "Số phiếu"
+msgstr "Sản phẩm"
 
 #. module: purchase_request
 #: model:mail.template,name:purchase_request.approve_purchase_email_template
@@ -449,9 +449,14 @@ msgstr "Ngày yêu cầu"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request__date_planned
+msgid "Is Close"
+msgstr "Đã Đóng"
+
+#. module: purchase_request
+#: model:ir.model.fields,field_description:purchase_request.field_purchase_request__date_planned
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__date_planned
 msgid "Expected Arrival"
-msgstr "Hạn xử lý"
+msgstr "Ngày nhận hàng dự kiến"
 
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__account_analytic_id
@@ -461,7 +466,7 @@ msgstr "Trung tâm chi phí"
 #. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_request_line__product_qty
 msgid "Quantity"
-msgstr "Số lượng"
+msgstr "Số lượng quy đổi tồn kho"
 
 #. module: purchase_request
 #: model:ir.model.fields.selection,name:purchase_request.selection__approval_logs__state__confirm
@@ -535,13 +540,6 @@ msgid "Approval Logs"
 msgstr "Nhật ký phê duyệt"
 
 #. module: purchase_request
-#: model:ir.actions.act_window,name:purchase_request.production_order_action
-#: model:ir.model,name:purchase_request.model_production_order
-#: model:ir.ui.menu,name:purchase_request.production_order
-msgid "Attach Ingredients/Product Separation"
-msgstr ""
-
-#. module: purchase_request
 #: model:ir.model.fields,field_description:purchase_request.field_purchase_order__has_contract_commerce
 msgid "Commerce Contract"
 msgstr "Có hóa đơn hay không?"
@@ -552,7 +550,7 @@ msgstr "Có hóa đơn hay không?"
 #: model:ir.model,name:purchase_request.model_production_order
 #: model:ir.ui.menu,name:purchase_request.production_order
 msgid "Attach Ingredients/Product Separation"
-msgstr "Đính kèm/Phân tách sản phẩm"
+msgstr "Đính kèm sản phẩm"
 
 #. module: purchase_request
 #: model:ir.model.fields.selection,name:purchase_request.selection__production_order__type__normal
