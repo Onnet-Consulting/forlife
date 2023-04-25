@@ -157,6 +157,15 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         };
     }
 
+    get_reward_product_ids(program) {
+        var self = this;
+        return [...program.reward_product_ids].reduce((tmp, r) => {
+            let product_id = self.db.get_product_by_id(r);
+            if (product_id) {tmp.push(r);};
+            return tmp;
+        }, []);
+    }
+
     get_program_by_id(str_id) {
         str_id = String(str_id);
         if (str_id.includes('p')) {
