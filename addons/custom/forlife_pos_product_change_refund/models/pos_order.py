@@ -150,17 +150,9 @@ class PosOrder(models.Model):
                 if not points_promotion:
                     return
                 points_promotion = points_promotion[0]
-                # lấy giá trị quy đổi của chương trình dựa trên 1 điểm
-                coefficient = points_promotion.value_conversion / points_promotion.point_addition
-
-                # lấy giá trị quy đổi của chương trình sự kiện
-                point_event_promotion = points_promotion.event_ids.filtered(
-                    lambda x: x.from_date <= old_orders[0].date_order and x.to_date >= old_orders[
-                        0].date_order)
-                coefficient_event = point_event_promotion[0].value_conversion / point_event_promotion[0].point_addition
 
                 lines_detail_event_points = item.lines.filtered(lambda x: x.refunded_orderline_id and (
-                            x.refunded_orderline_id.point_addition > 0 or x.refunded_orderline_id.point_addition_event > 0))
+                        x.refunded_orderline_id.point_addition > 0 or x.refunded_orderline_id.point_addition_event > 0))
                 for line in lines_detail_event_points:
                     if line.qty < 0:
                         # chi tiết đơn hàng gốc
@@ -169,47 +161,40 @@ class PosOrder(models.Model):
                         old_qty = old_ol.qty
                         # sl trả hiện tại
                         current_qty = abs(line.qty)
-                        point_product += ((old_ol.point_addition + old_ol.point_addition_event) * current_qty) / old_qty
+                        point_product += (((old_ol.point_addition + old_ol.point_addition_event) * current_qty) / old_qty) if old_qty else 0
 
+                # lấy các line mà đơn gốc line ko có điểm trên từng column
+                lines_detail_points = item.lines.filtered(lambda x: x.refunded_orderline_id)
                 if lines_detail_event_points:
-                    lines_detail_points = item.lines.filtered(lambda x: x.refunded_orderline_id and (x.id not in lines_detail_event_points.ids))
+                    lines_detail_points = item.lines.filtered(
+                        lambda x: x.refunded_orderline_id and (x.id not in lines_detail_event_points.ids))
+                # lấy giá trị quy đổi của chương trình dựa trên 1 điểm
+                coefficient = points_promotion.value_conversion / points_promotion.point_addition if points_promotion.point_addition else 0
+                if coefficient:
                     total_point_order = 0
                     for line_1 in lines_detail_points:
                         if line_1.qty < 0:
                             # sl trả hiện tại
                             current_qty_1 = abs(line_1.qty)
                             total_point_order += line_1.price_unit * current_qty_1
-                    if coefficient:
-                        point_order += total_point_order // coefficient
+                    point_order += total_point_order // coefficient
 
-                    total_point_event_order = 0
-                    if old_orders[0].point_event_order > 0:
-                        for line_2 in lines_detail_points:
-                            if line_2.qty < 0:
-                                # sl trả hiện tại
-                                current_qty_2 = abs(line_2.qty)
-                                total_point_event_order += line_2.price_unit * current_qty_2
+                # tính point nếu có sự kiện diễn ra
+                total_point_event_order = 0
+                if old_orders[0].point_event_order > 0:
+                    # lấy giá trị quy đổi của chương trình sự kiện
+                    point_event_promotion = points_promotion.event_ids.filtered(
+                        lambda x: x.from_date <= old_orders[0].date_order and x.to_date >= old_orders[0].date_order)
+                    if point_event_promotion:
+                        coefficient_event = point_event_promotion[0].value_conversion / point_event_promotion[
+                            0].point_addition if point_event_promotion[0].point_addition else 0
                         if coefficient_event:
+                            for line_2 in lines_detail_points:
+                                if line_2.qty < 0:
+                                    # sl trả hiện tại
+                                    current_qty_2 = abs(line_2.qty)
+                                    total_point_event_order += line_2.price_unit * current_qty_2
                             point_event_order += total_point_event_order // coefficient_event
-
-
-
-                # for line in item.lines:
-                #     if line.qty < 0:
-                #         if line.refunded_orderline_id:
-                #             # chi tiết đơn hàng gốc
-                #             old_orderline = line.refunded_orderline_id
-                #             # sl gốc
-                #             old_qty = old_orderline.qty
-                #             # sl trả hiện tại
-                #             current_qty = abs(line.qty)
-                #             if old_orderline.point_addition > 0 or old_orderline.point_addition_event > 0:
-                #                 point_product += ((old_orderline.point_addition + old_orderline.point_addition_event) * current_qty) / old_qty
-                #             else:
-                #                 total_point_order += line.price_unit * current_qty
-                #
-                # if coefficient:
-                #     point_order += total_point_order // coefficient
 
             item.pay_point = point_product + point_order + point_event_order
 
@@ -257,4 +242,3 @@ class PosOrder(models.Model):
             'using_limit': program_voucher_id.using_limit
         }
         return vals
-
