@@ -10,7 +10,7 @@ class ProgramVoucher(models.Model):
 
     name = fields.Char('Program Voucher Name', required=True)
 
-    program_voucher_code = fields.Char('Voucher Program Code', store=True, copy=False, readonly=True, default='New')
+    program_voucher_code = fields.Char('Voucher Program Code', store=True, copy=False, readonly=False, default='New')
 
     type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True)
 
@@ -45,6 +45,26 @@ class ProgramVoucher(models.Model):
     using_limit = fields.Integer('Giới hạn sử dụng', default=0)
 
     details = fields.Char('Diễn giải')
+
+    def action_compute_product_apply(self):
+        product_ids = [x.product_id.id for x in self.env['product.program.import'].search([('program_vocher_id','=',self.id)])]
+        self.product_apply_ids = [(4, product_id) for product_id in product_ids]
+        return True
+
+    def action_view_product_apply(self):
+        ctx = dict(self._context)
+        ctx.update({
+            'default_program_vocher_id': self.id,
+        })
+        return {
+            'name': _('Sản phẩm'),
+            'domain': [('program_vocher_id', '=', self.id)],
+            'res_model': 'product.program.import',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': ctx,
+        }
 
     @api.depends('product_ids')
     def compute_product(self):
@@ -89,20 +109,22 @@ class ProgramVoucher(models.Model):
 
     @api.model
     def create(self, vals):
-        last_record = self.get_last_sequence()
-        if last_record:
-            #change character of sequence
-            code = last_record.program_voucher_code
-            if code[1:] == '999':
-                seq = self.env['ir.sequence'].search([('code', '=', 'program.voucher')])
-                vals_seq = {
-                    'prefix': self.change_prefix_sequence(code[0]),
-                    'number_next_actual': 1,
-
-                }
-                seq.write(vals_seq)
-        if vals.get('program_voucher_code', 'New') == 'New':
-            vals['program_voucher_code'] = self.env['ir.sequence'].next_by_code('program.voucher') or 'New'
+        # if 'program_voucher_line_ids' not in vals or not vals['program_voucher_line_ids']:
+        #     raise UserError(_('Please set the infomation of Vourcher!'))
+        # last_record = self.get_last_sequence()
+        # if last_record:
+        #     #change character of sequence
+        #     code = last_record.program_voucher_code
+        #     if code[1:] == '999':
+        #         seq = self.env['ir.sequence'].search([('code', '=', 'program.voucher')])
+        #         vals_seq = {
+        #             'prefix': self.change_prefix_sequence(code[0]),
+        #             'number_next_actual': 1,
+        #
+        #         }
+        #         seq.write(vals_seq)
+        # if vals.get('program_voucher_code', 'New') == 'New':
+        #     vals['program_voucher_code'] = self.env['ir.sequence'].next_by_code('program.voucher') or 'New'
         return super(ProgramVoucher, self).create(vals)
 
     def get_last_sequence(self):
