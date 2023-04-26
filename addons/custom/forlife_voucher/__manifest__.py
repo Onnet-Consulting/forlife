@@ -39,7 +39,8 @@
         'data/ir_cron.xml',
         'views/hr_department.xml',
         'views/pos_order.xml',
-        'views/pos_payment_method.xml'
+        'views/pos_payment_method.xml',
+        'views/product_program_import_view.xml'
     ],
     'assets': {
         'point_of_sale.assets': [
