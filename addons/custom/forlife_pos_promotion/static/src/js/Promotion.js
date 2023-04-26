@@ -208,6 +208,7 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
         const result = super.export_as_JSON(...arguments);
 
         result.original_price = this.get_lst_price();
+        result.is_reward_line = this.is_reward_line;
 
         let promotion_usage_ids = [];
         this.promotion_usage_ids.forEach(_.bind( function(item) {
@@ -236,19 +237,22 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
                     item.discount_based_on,
                 ));
             }
-        }
+        };
+        this.is_reward_line = json.is_reward_line;
         super.init_from_JSON(...arguments);
     }
 
     set_quantity(quantity, keep_price) {
         let result = super.set_quantity(...arguments);
-        this.order._updateActivatedPromotionPrograms();
+//        this.order._updateActivatedPromotionPrograms();
+        let reset = false;
         if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length > 0) {
             this.promotion_usage_ids = [];
             this.reset_unit_price();
             this.order._resetPromotionPrograms(false);
+            reset = true;
         };
-        if (!this.pos.no_reset_program) {
+        if (!this.pos.no_reset_program && !reset) {
             this.order._resetCartPromotionPrograms();
         };
         return result;
@@ -501,7 +505,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             this.orderlines.remove(reward_line);
         })
 //        this.remove_orderline(this._get_reward_lines()); // TODO: Xác định reward line của CTKM nào
-        let orderlines = this.orderlines.filter(line => line._isDiscountedComboProgram())
+        let orderlines = this.orderlines.filter(line => line._isDiscountedComboProgram() || line.promotion_usage_ids)
         orderlines.forEach(line => line.reset_unit_price());
         orderlines.forEach(line => line.promotion_usage_ids = []);
         this.pos.promotionPrograms.forEach(p => {
@@ -674,11 +678,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     // Filter based on promotion_usage_ids
     _filterOrderLinesToCheckComboPro(order_lines) {
-        return order_lines.filter(l => {
+        return order_lines.filter(l=>!l.is_reward_line).filter(l => {
             for (let usage of l.promotion_usage_ids) {
                 let program = this.pos.get_program_by_id(usage.str_id);
                 if (['pricelist', 'combo'].includes(program.promotion_type)) {return false};
-                if (program == 'code' && program.discount_based_on == 'unit_price') {return false};
+                if (program == 'code' && program.discount_based_on == 'unit_price' && usage.disc_amount) {return false};
             };
             return true;
         });
@@ -1080,12 +1084,14 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 };
             }
             else if (program.promotion_type == 'pricelist') {
+                const inOrderProductsList = new Set(this.get_orderlines().filter(l => l.quantity > 0).reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []))
                 for (let priceItem of program.pricelistItems) {
-                    let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
-                    let QtyOfProduct = this._checkQtyOfProductForPricelist(priceItem, to_check_order_lines)[2];
-
-                    if (QtyOfProduct > 0) {
-                        programIsVerified[priceItem.str_id] = QtyOfProduct;
+                    if (inOrderProductsList.has(priceItem.product_id)) {
+                        let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
+                        let QtyOfProduct = this._checkQtyOfProductForPricelist(priceItem, to_check_order_lines)[2];
+                        if (QtyOfProduct > 0) {
+                            programIsVerified[priceItem.str_id] = QtyOfProduct;
+                        };
                     };
                 };
             };
@@ -1335,7 +1341,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 'qty': CodeProgram.reward_quantity
             };
             if (!LineList.promotion_usage_ids) { LineList.promotion_usage_ids = [] }
-            LineList.promotion_usage_ids.push(new PromotionUsageLine(CodeProgram.id, code, null, null, null, null, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on));
+            if (LineList.is_reward_line) {
+                let originalPrice = LineList.product.lst_price ;
+                let discAmountInLine = LineList.product.lst_price
+                let newUsage = new PromotionUsageLine(CodeProgram.id, code, null, originalPrice, 0.0, discAmountInLine, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on)
+                LineList.price = 0.0;
+                LineList.promotion_usage_ids.push(newUsage);
+            } else {
+                LineList.promotion_usage_ids.push(new PromotionUsageLine(CodeProgram.id, code, null, null, null, null, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on));
+            }
         } else if (CodeProgram.reward_type == "code_buy_x_get_cheapest") {
             LineList.reward_products = {
                 'qty': CodeProgram.reward_quantity
@@ -1660,10 +1674,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
                 var remaining_amount = false;
                     if (program.reward_product_id_selected && program.reward_product_id_selected.size && numberOfCombo > 0 && program.reward_type == "code_buy_x_get_y") {
+                        let product = this.pos.db.get_product_by_id([...program.reward_product_id_selected][0]);
                         to_discount_line_vals.push({
-                            product: this.pos.db.get_product_by_id([...program.reward_product_id_selected][0]),
+                            product: product,
                             quantity:  numberOfCombo * program.reward_quantity,
-                            price: 0,
+                            price: product.lst_price,
                             isNew: true,
                             is_reward_line: true
                         })
