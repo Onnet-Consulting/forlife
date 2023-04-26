@@ -1084,8 +1084,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 };
             }
             else if (program.promotion_type == 'pricelist') {
+                const inOrderProductsList = new Set(this.get_orderlines().filter(l => l.quantity > 0).reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []))
                 for (let priceItem of program.pricelistItems) {
-                    if (this.get_orderlines_to_check().filter(line => line.product.id === priceItem.product_id).length > 0) {
+                    if (inOrderProductsList.has(priceItem.product_id)) {
                         let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
                         let QtyOfProduct = this._checkQtyOfProductForPricelist(priceItem, to_check_order_lines)[2];
                         if (QtyOfProduct > 0) {
