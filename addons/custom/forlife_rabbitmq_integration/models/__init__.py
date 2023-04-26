@@ -10,3 +10,7 @@ from . import product_product
 from . import product_category
 from . import product_attribute
 from . import address_info
+from . import promotion_campaign
+from . import promotion_program
+from . import promotion_code
+from . import promotion_pricelist_item
