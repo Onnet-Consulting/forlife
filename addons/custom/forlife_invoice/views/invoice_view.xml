@@ -239,6 +239,11 @@
                                         string="Hủy HĐĐT trên BKAV"
                                         class="oe_highlight"/>
                             </div>
+                            <div style="padding: 40px;" attrs="{'invisible':[('is_check_cancel', '=', True)]}">
+                                <button name="getting_sign_the_bill_hsm" type="object"
+                                        string="Ký HĐĐT trên BKAV"
+                                        class="oe_highlight"/>
+                            </div>
                         </div>
                     </page>
                 </xpath>
