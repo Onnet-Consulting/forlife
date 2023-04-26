@@ -6,7 +6,7 @@
             <field name="name">res.ward.view.tree</field>
             <field name="model">res.ward</field>
             <field name="arch" type="xml">
-                <tree string="Weather Province" editable="top">
+                <tree string="Ward" editable="top">
                     <field name="code"/>
                     <field name="name"/>
                     <field name="district_id"/>
