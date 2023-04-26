@@ -10,7 +10,6 @@
     'data/cron.xml',
     'views/sale_order_view.xml',
     'views/res_partner_customer_view.xml',
-    'views/product_template_view.xml',
     'views/res_config_settings_views.xml'
   ],
   "application":  True,
