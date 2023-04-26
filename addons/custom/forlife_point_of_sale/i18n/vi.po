@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-03 04:08+0000\n"
-"PO-Revision-Date: 2023-04-03 04:08+0000\n"
+"POT-Creation-Date: 2023-04-26 09:50+0000\n"
+"PO-Revision-Date: 2023-04-26 09:50+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -84,6 +84,11 @@ msgstr "Thương hiệu trên Khách hàng là duy nhất !"
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__cashier_ids
 msgid "Cashiers"
 msgstr "Thu ngân"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__closing_time
+msgid "Closing time"
+msgstr "Thời gian đóng cửa"
 
 #. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand__code
@@ -195,6 +200,11 @@ msgid "Opened POS:"
 msgstr "Các POS đang mở"
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__opening_time
+msgid "Opening time"
+msgstr "Thời gian mở cửa"
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__pos_config_ids
 msgid "POS Config"
 msgstr "Danh sách POS"
@@ -215,6 +225,11 @@ msgid "Point of Sale Orders"
 msgstr "Đơn bán lẻ"
 
 #. module: forlife_point_of_sale
+#: model:ir.model,name:forlife_point_of_sale.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Phiên bán hàng"
+
+#. module: forlife_point_of_sale
 #: model:ir.model,name:forlife_point_of_sale.model_ir_cron
 msgid "Scheduled Actions"
 msgstr "Hoạt động định kỳ"
@@ -229,6 +244,11 @@ msgstr "Tìm kiếm"
 #: model:ir.model.fields,help:forlife_point_of_sale.field_store__code
 msgid "Short name used to identify your warehouse"
 msgstr "Mã cửa hàng liên kết từ mã kho"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__start_date
+msgid "Start Date"
+msgstr "Thời gian bắt đầu"
 
 #. module: forlife_point_of_sale
 #: model:ir.actions.act_window,name:forlife_point_of_sale.store_action

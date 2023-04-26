@@ -18,6 +18,9 @@ class Store(models.Model):
     pos_config_ids = fields.One2many('pos.config', 'store_id', string='POS Config', readonly=True)
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method', required=True)
     analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic Account')
+    start_date = fields.Date('Start Date')
+    opening_time = fields.Float('Opening time', default=8.5)
+    closing_time = fields.Float('Closing time', default=22.0)
 
     @api.constrains('warehouse_id')
     def _check_warehouse_id(self):
