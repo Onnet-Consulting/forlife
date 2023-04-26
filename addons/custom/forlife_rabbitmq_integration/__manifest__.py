@@ -19,6 +19,7 @@
         'forlife_base',
         'forlife_customer_card_rank',
         'forlife_pos_point_order',
+        'forlife_point_of_sale',
     ],
     'auto_install': True,
 

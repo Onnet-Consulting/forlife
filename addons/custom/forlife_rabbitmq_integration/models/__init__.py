@@ -7,3 +7,6 @@ from . import res_partner
 from . import partner_card_rank_line
 from . import partner_history_point
 from . import product_product
+from . import product_category
+from . import product_attribute
+from . import address_info

@@ -5,9 +5,10 @@ from odoo import api, fields, models, _
 
 class PartnerCardRankLine(models.Model):
     _name = 'partner.history.point'
-    _inherit = ['partner.history.point', 'sync.info.rabbitmq']
+    _inherit = ['partner.history.point', 'sync.info.rabbitmq.new']
+    _new_action = 'update_customer'
 
-    def action_new_record(self):
+    def get_sync_new_data(self):
         records = self.filtered(lambda f: f.points_used != 0 or f.points_store != 0)
         if not records:
             return True
@@ -27,4 +28,4 @@ class PartnerCardRankLine(models.Model):
                     }
                 }
             })
-        self.push_message_to_rabbitmq(data, 'update_customer')
+        return data

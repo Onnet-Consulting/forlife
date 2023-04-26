@@ -5,9 +5,12 @@ from odoo import api, fields, models, _
 
 class ResPartner(models.Model):
     _name = 'res.partner'
-    _inherit = ['res.partner', 'sync.info.rabbitmq']
+    _inherit = ['res.partner', 'sync.info.rabbitmq.new', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.remove']
+    _new_action = 'new_customer'
+    _update_action = 'update_customer'
+    _remove_action = 'remove_customer'
 
-    def action_new_record(self):
+    def get_sync_new_data(self):
         data = []
         brands = self.env['res.brand'].search_read([], ['id', 'code'])
         tokyolife_id = next((x.get('id') for x in brands if x.get('code') == 'TKL'), False)
@@ -49,13 +52,13 @@ class ResPartner(models.Model):
                     } if format_id and record.card_rank_by_brand and record.card_rank_by_brand.get(str(format_id)) else None
                 }
             })
-        self.push_message_to_rabbitmq(data, 'new_customer')
+        return data
 
     def check_update_info(self, values):
         field_check_update = ['name', 'ref', 'phone', 'email', 'birthday', 'state_id', 'street']
         return [item for item in field_check_update if item in values]
 
-    def action_update_record(self, field_update, values):
+    def get_sync_update_data(self, field_update, values):
         map_key_rabbitmq = {
             'name': 'name',
             'ref': 'code',
@@ -88,8 +91,4 @@ class ResPartner(models.Model):
                 'updated_at': partner.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             })
             data.append(vals)
-        self.push_message_to_rabbitmq(data, 'update_customer')
-
-    def action_delete_record(self, record_ids):
-        data = [{'id': res_id} for res_id in record_ids]
-        self.push_message_to_rabbitmq(data, 'remove_customer')
+        return data

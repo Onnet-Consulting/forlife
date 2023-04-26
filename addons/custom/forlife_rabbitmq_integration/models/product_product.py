@@ -5,9 +5,12 @@ from odoo import api, fields, models, _
 
 class ProductProduct(models.Model):
     _name = 'product.product'
-    _inherit = ['product.product', 'sync.info.rabbitmq']
+    _inherit = ['product.product', 'sync.info.rabbitmq.new', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.remove']
+    _new_action = 'new_product'
+    _update_action = 'update_product'
+    _remove_action = 'remove_product'
 
-    def action_new_record(self):
+    def get_sync_new_data(self):
         data = []
         for product in self:
             vals = {
@@ -38,13 +41,13 @@ class ProductProduct(models.Model):
                 ]
             }
             data.append(vals)
-        self.push_message_to_rabbitmq(data, 'new_product')
+        return data
 
     def check_update_info(self, values):
         field_check_update = ['default_code', 'barcode', 'name', 'uom_id', 'categ_id']
         return [item for item in field_check_update if item in values]
 
-    def action_update_record(self, field_update, values):
+    def get_sync_update_data(self, field_update, values):
         map_key_rabbitmq = {
             'default_code': 'sku',
             'barcode': 'barcode',
@@ -74,8 +77,4 @@ class ProductProduct(models.Model):
                 'updated_at': product.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             })
             data.append(vals)
-        self.push_message_to_rabbitmq(data, 'update_product')
-
-    def action_delete_record(self, record_ids):
-        data = [{'id': res_id} for res_id in record_ids]
-        self.push_message_to_rabbitmq(data, 'remove_product')
+        return data
