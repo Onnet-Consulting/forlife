@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num5_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num5</field>
+        <field name="arch" type="xml">
+            <form string="Report revenue by employee" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="brand_id"/>
+                            <field name="store_id" domain="[('brand_id', '=', brand_id)]"/>
+                            <field name="view_type" widget="radio" options="{'horizontal': True}"/>
+                        </group>
+                        <group>
+                            <field name="from_date" class="oe_inline"/>
+                            <field name="to_date" class="oe_inline"/>
+                            <field name="employee_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num5_window_action" model="ir.actions.act_window">
+        <field name="name">Report revenue by employee</field>
+        <field name="res_model">report.num5</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num5_menu"
+              action="report_num5_window_action"
+              parent="report_menu_sale"
+              sequence="2"/>
+</odoo>

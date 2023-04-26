@@ -131,3 +131,10 @@ class PosOrder(models.Model):
                 'order_pos': line.order_id.id
             }] * int(line.qty - line.x_qty_voucher))
             line.x_qty_voucher = line.qty
+
+    def _export_for_ui(self, order):
+        result = super(PosOrder, self)._export_for_ui(order)
+        result.update({
+            'voucherlines': [voucher for voucher in order.pos_voucher_line_ids.export_for_ui()],
+        })
+        return result

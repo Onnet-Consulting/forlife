@@ -141,7 +141,13 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             var payment_method = [];
             const partner = clickedOrder.get_partner();
             const orderlines = clickedOrder.orderlines;
+            if (orderlines.length <= 0) {
+                return;
+            }
 
+            if (!orderlines.some(detail => detail.quantity_canbe_refund > 0)) {
+                return;
+            }
             for (const orderline of orderlines) {
                 if (orderline.quantity_canbe_refund <= 0) {
                     continue;
@@ -150,17 +156,25 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 const refundableQty = toRefundDetail.orderline.qty - toRefundDetail.orderline.refundedQty;
                 toRefundDetail.qty = refundableQty;
             }
+            const products = orderlines.map(orderline => {
+                    return orderline.product.display_name;
+                });
 
             const paymentlines = clickedOrder.get_paymentlines();
-            for (const payment_line of paymentlines) {
-                payment_method.push(payment_line.payment_method);
+            if (paymentlines) {
+                for (const payment_line of paymentlines) {
+                    payment_method.push(payment_line.payment_method);
+                }
             }
-            if (payment_method){
+            if (payment_method.length > 0){
                 if (payment_method.some(line => line.is_voucher)) {
+                    const voucherlines = clickedOrder.voucherlines.map(line => {return line.voucher_name;});
+
                     if (orderlines.every(x => x.is_voucher_conditional)) {
                         const {confirmed} = await this.showPopup('ConfirmPopup', {
                             title: this.env._t('Warning'),
-                            body: this.env._t('Order used voucher code in product. Are you sure you want to proceed refund product ?'),
+                            body: _.str.sprintf(this.env._t("Order used voucher code %s in product %s." +
+                             " Are you sure you want to proceed refund product ?"), voucherlines.join(', '), products.join(', ')),
                         });
                         if (confirmed) {
                             this._onDoRefund(partner, clickedOrder);
@@ -169,7 +183,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                     else{
                         const {confirmed} = await this.showPopup('ConfirmPopup', {
                             title: this.env._t('Warning'),
-                            body: this.env._t('Order used voucher code. Are you sure you want to proceed refund product ?'),
+                            body: _.str.sprintf(this.env._t('Order used voucher code %s. Are you sure you want to proceed refund product ?'), voucherlines.join(', ')),
                         });
                         if (confirmed) {
                             this._onDoRefund(partner, clickedOrder);
@@ -323,12 +337,15 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 destinationOrder.is_change_product = true;
             }
             destinationOrder.origin_pos_order_id = clickedOrder.backendId;
-            destinationOrder.approved = true;
+
+            const destOrderLines = destinationOrder.orderlines;
+            for (const destOrderLine of destOrderLines) {
+                destOrderLine.set_employee(null);
+            }
 
             if (this.env.pos.get_order().cid !== destinationOrder.cid) {
                 this.env.pos.set_order(destinationOrder);
             }
-
             this._onCloseScreen();
         }
 

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-13 02:09+0000\n"
-"PO-Revision-Date: 2023-04-13 02:09+0000\n"
+"POT-Creation-Date: 2023-04-25 10:46+0000\n"
+"PO-Revision-Date: 2023-04-25 10:46+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -119,7 +119,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order__brand_id
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_reason_refund__brand_id
 msgid "Brand"
-msgstr ""
+msgstr "Thương hiệu"
 
 #. module: forlife_pos_product_change_refund
 #. odoo-python
@@ -128,6 +128,13 @@ msgstr ""
 #, python-format
 msgid "Cancelled"
 msgstr "Đã hủy"
+
+#. module: forlife_pos_product_change_refund
+#. odoo-python
+#: code:addons/forlife_pos_product_change_refund/models/pos_reason_refund.py:0
+#, python-format
+msgid "Cannot delete Reason Refund used in POS Order"
+msgstr "Không thể xóa Lý do đổi trả đã được sử dụng trong Đơn hàng POS"
 
 #. module: forlife_pos_product_change_refund
 #. odoo-javascript
@@ -328,9 +335,19 @@ msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order__is_change_order
+msgid "Is Change Order"
+msgstr "Là đơn đổi hàng"
+
+#. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_handle_change_refund__message_is_follower
 msgid "Is Follower"
 msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order__is_refund_order
+msgid "Is Refund Order"
+msgstr "Là đơn trả hàng"
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_handle_change_refund____last_update
@@ -402,13 +419,18 @@ msgstr ""
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_reason_refund__name
 msgid "Name"
-msgstr ""
+msgstr "Lý do"
 
 #. module: forlife_pos_product_change_refund
 #. odoo-javascript
 #: code:addons/forlife_pos_product_change_refund/static/src/xml/Screens/OrderChangeRefundProductScreen.xml:0
 #, python-format
 msgid "New Order"
+msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_handle_change_refund__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
 msgstr ""
 
 #. module: forlife_pos_product_change_refund
@@ -492,17 +514,22 @@ msgstr ""
 #: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
 #, python-format
 msgid ""
-"Order used voucher code in product. Are you sure you want to proceed refund "
-"product ?"
+"Order used voucher code %s in product %s. Are you sure you want to proceed "
+"refund product ?"
 msgstr ""
+"Đơn hàng đã sử dụng mã voucher %s trên sản phẩm %s. Bạn có muốn tiếp tục "
+"thao tác đổi trả hàng không?"
 
 #. module: forlife_pos_product_change_refund
 #. odoo-javascript
 #: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/OrderChangeRefundProductScreen.js:0
 #, python-format
 msgid ""
-"Order used voucher code. Are you sure you want to proceed refund product ?"
+"Order used voucher code %s. Are you sure you want to proceed refund product "
+"?"
 msgstr ""
+"Đơn hàng đã sử dụng mã voucher %s. Bạn có muốn tiếp tục thao tác đổi trả "
+"hàng không?"
 
 #. module: forlife_pos_product_change_refund
 #. odoo-python
@@ -596,10 +623,10 @@ msgstr "Sản phẩm"
 #: code:addons/forlife_pos_product_change_refund/static/src/js/Screens/ProductScreen/ProductScreen.js:0
 #, python-format
 msgid ""
-"Product  has expired. Please click submit to browse to continue the "
+"Product %s has expired. Please click submit to browse to continue the "
 "exchange!"
 msgstr ""
-"Sản phẩm  đã hết hạn đổi trả. Vui lòng bấm gửi duyệt để tiếp tục thao tác "
+"Sản phẩm %s đã hết hạn đổi trả. Vui lòng bấm gửi duyệt để tiếp tục thao tác "
 "đổi trả hàng."
 
 #. module: forlife_pos_product_change_refund
@@ -643,7 +670,7 @@ msgstr "Giá mua"
 #. module: forlife_pos_product_change_refund
 #: model:mail.template,name:forlife_pos_product_change_refund.email_template_handle_change_refund
 msgid "Purchase: Handle Change Refund"
-msgstr ""
+msgstr "Xử lý đổi trả hàng quá hạn"
 
 #. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order_line__quantity_canbe_refund
@@ -851,15 +878,15 @@ msgid "Update"
 msgstr "Cập nhật"
 
 #. module: forlife_pos_product_change_refund
-#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order__voucher_id
-msgid "Voucher"
-msgstr ""
-
-#. module: forlife_pos_product_change_refund
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_product__is_voucher_auto
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_product_template__is_voucher_auto
 msgid "Voucher Auto"
-msgstr ""
+msgstr "Voucher tự động"
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order__voucher_id
+msgid "Voucher Exchange"
+msgstr "Voucher đổi hàng"
 
 #. module: forlife_pos_product_change_refund
 #. odoo-javascript

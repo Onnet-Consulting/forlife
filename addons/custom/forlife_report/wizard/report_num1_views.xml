@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num1_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num1</field>
+        <field name="arch" type="xml">
+            <form string="Revenue by Product" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="from_date"/>
+                        </group>
+                        <group>
+                            <field name="to_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="all_products"/>
+                            <field name="product_ids"
+                                   attrs="{'invisible': [('all_products', '=', True)], 'required': [('all_products', '=', False)]}"
+                                   widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="all_warehouses"/>
+                            <field name="warehouse_ids"
+                                   attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"
+                                   widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="picking_type"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num1_action" model="ir.actions.act_window">
+        <field name="name">Report revenue by product</field>
+        <field name="res_model">report.num1</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num1_menu"
+              action="report_num1_action"
+              parent="report_menu_sale"
+              sequence="1"/>
+</odoo>

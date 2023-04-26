@@ -4,3 +4,4 @@ access_voucher,access_voucher,forlife_voucher.model_voucher_voucher,base.group_u
 access_program_voucher_line,access_program_voucher_line,forlife_voucher.model_program_voucher_line,base.group_user,1,1,1,1
 access_setup_voucher,access_setup_voucher,forlife_voucher.model_setup_voucher,base.group_user,1,1,1,1
 access_pos_voucher_line,access_pos_voucher_line,forlife_voucher.model_pos_voucher_line,base.group_user,1,1,1,1
+access_product_program_import,access_product_program_import,forlife_voucher.model_product_program_import,base.group_user,1,1,1,1

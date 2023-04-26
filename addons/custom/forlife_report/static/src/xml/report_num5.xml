@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum5Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum5MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum5MainTemplate">
+        <div class="oe_max_height_300">
+            <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="ReportTitle"/>
+                <tbody>
+                    <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                    <t t-set="num" t-value="1"/>
+                    <t t-foreach="widget.data" t-as="line">
+                        <tr class="show-employee-detail" t-att-id="line.employee_id">
+                            <td><t t-esc="num"/></td>
+                            <td><t t-esc="line.employee_code"/></td>
+                            <td><t t-esc="line.employee_name"/></td>
+                            <t t-foreach="widget.column_add" t-as="column">
+                                <td><t t-esc="format_decimal(line[column])"/></td>
+                            </t>
+                            <td><t t-esc="format_decimal(line.total_amount)"/></td>
+                        </tr>
+                        <t t-set="num" t-value="num + 1"/>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+        <br/>
+        <div id="employee-detail">
+        </div>
+        <br/>
+        <div id="order-detail">
+        </div>
+    </t>
+
+    <t t-name="ReportEmployeeDetailTemplate">
+        <button class="oe_tab">Invoice list</button>
+        <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Xuất Excel</button>
+        <div class="oe_max_height_300">
+            <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="DetailReportTitle"/>
+                <tbody>
+                    <t t-set="num" t-value="1"/>
+                    <t t-foreach="data_detail" t-as="line">
+                        <tr class="show-order-detail" t-att-id="line.key_invoice">
+                            <td><t t-esc="num"/></td>
+                            <td><t t-esc="line.date"/></td>
+                            <td><t t-esc="line.pos_reference"/></td>
+                            <td><t t-esc="line.customer_code"/></td>
+                            <td><t t-esc="line.customer_phone"/></td>
+                            <td><t t-esc="line.customer_name"/></td>
+                            <td><t t-esc="line.employee_name"/></td>
+                            <td><t t-esc="format_decimal(line.sl)"/></td>
+                            <td><t t-esc="format_decimal(line.tt, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.gg_bill, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.money_real, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.refund, 0)"/></td>
+                            <td><t t-esc="line.note"/></td>
+                        </tr>
+                        <t t-set="num" t-value="num + 1"/>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+    </t>
+
+    <t t-name="ReportOrderDetailTemplate">
+        <t t-if="titles">
+            <button class="oe_tab">Order detail</button>
+            <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Xuất Excel</button>
+            <div class="oe_max_height_300">
+                <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                    <t t-call="DetailReportTitle"/>
+                    <tbody>
+                        <t t-set="num" t-value="1"/>
+                        <t t-foreach="data_detail" t-as="line">
+                            <tr>
+                                <td><t t-esc="num"/></td>
+                                <td><t t-esc="line.product_code"/></td>
+                                <td><t t-esc="line.product_name"/></td>
+                                <td><t t-esc="line.uom_name"/></td>
+                                <td><t t-esc="format_decimal(line.qty, 0)"/></td>
+                                <td><t t-esc="format_decimal(line.lst_price, 0)"/></td>
+                                <t t-if="line.price_subtotal">
+                                    <td><t t-esc="(line.money_reduced / line.price_subtotal * 100)"/></td>
+                                </t>
+                                <t t-else="">
+                                    <td>0</td>
+                                </t>
+                                <td><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
+                                <td><t t-esc="format_decimal(line.price_subtotal, 0)"/></td>
+                            </tr>
+                            <t t-set="num" t-value="num + 1"/>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </t>
+</template>

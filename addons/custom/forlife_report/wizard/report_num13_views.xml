@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num13_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num13</field>
+        <field name="arch" type="xml">
+            <form string="Report on the status of PO" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="po_number" placeholder="PO001,PO002,..."/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num13_window_action" model="ir.actions.act_window">
+        <field name="name">Report on the status of PO</field>
+        <field name="res_model">report.num13</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num13_menu"
+              action="report_num13_window_action"
+              parent="report_menu_stock"
+              sequence="4"/>
+</odoo>
