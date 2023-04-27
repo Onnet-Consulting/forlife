@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import copy
 
 
 class PromotionPricelistItem(models.Model):
@@ -41,5 +42,5 @@ class PromotionPricelistItem(models.Model):
                 'id': coupon.id,
                 'updated_at': coupon.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             })
-            data.append(vals)
+            data.extend([copy.copy(vals)])
         return data

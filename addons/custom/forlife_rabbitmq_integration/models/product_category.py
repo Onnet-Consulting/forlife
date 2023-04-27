@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import copy
 
 
 class ProductCategory(models.Model):
@@ -48,5 +49,5 @@ class ProductCategory(models.Model):
                 'id': category.id,
                 'updated_at': category.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             })
-            data.append(vals)
+            data.extend([copy.copy(vals)])
         return data

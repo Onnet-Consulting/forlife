@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import copy
 
 
 class Store(models.Model):
@@ -132,5 +133,5 @@ class Store(models.Model):
                         'email': store.warehouse_id.manager_id.work_email or None,
                     } if store.warehouse_id.manager_id else None,
                 })
-            data.append(vals)
+            data.extend([copy.copy(vals)])
         return data

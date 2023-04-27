@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import copy
 
 
 class ProductProduct(models.Model):
@@ -21,6 +22,7 @@ class ProductProduct(models.Model):
                 'barcode': product.barcode or None,
                 'name': product.name or None,
                 'unit': product.uom_id.name or None,
+                'price': product.lst_price or None,
                 'category': {
                     'id': product.categ_id.id,
                     'parent_id': product.categ_id.parent_id.id or None,
@@ -44,14 +46,13 @@ class ProductProduct(models.Model):
         return data
 
     def check_update_info(self, values):
-        field_check_update = ['default_code', 'barcode', 'name', 'uom_id', 'categ_id']
+        field_check_update = ['default_code', 'barcode']
         return [item for item in field_check_update if item in values]
 
     def get_sync_update_data(self, field_update, values):
         map_key_rabbitmq = {
             'default_code': 'sku',
             'barcode': 'barcode',
-            'name': 'name',
         }
         vals = {}
         for odoo_key in field_update:
@@ -59,22 +60,11 @@ class ProductProduct(models.Model):
                 vals.update({
                     map_key_rabbitmq.get(odoo_key): values.get(odoo_key) or None
                 })
-        if 'uom_id' in values:
-            uom = self.env['uom.uom'].search_read([('id', '=', values.get('uom_id'))], ['name'])
-            vals['unit'] = uom[0].get('name') if uom else None
-        if 'categ_id' in values:
-            category = self.env['product.category'].search([('id', '=', values.get('categ_id'))], limit=1)
-            vals['category'] = {
-                'id': category.id,
-                'parent_id': category.parent_id.id or None,
-                'name': category.name,
-                'code': category.category_code,
-            } if category else None
         data = []
         for product in self:
             vals.update({
                 'id': product.id,
                 'updated_at': product.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             })
-            data.append(vals)
+            data.extend([copy.copy(vals)])
         return data

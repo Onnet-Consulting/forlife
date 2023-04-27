@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import copy
 
 
 class ProductAttribute(models.Model):
@@ -60,5 +61,5 @@ class ProductAttribute(models.Model):
                     'id': attr.id,
                     'updated_at': attr.write_date.strftime('%Y-%m-%d %H:%M:%S'),
                 })
-            data.append(vals)
+            data.extend([copy.copy(vals)])
         return data

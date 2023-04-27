@@ -33,6 +33,14 @@
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
+        <record id="sync_product_template_info_queue" model="rabbitmq.queue">
+            <field name="model_name">product.template</field>
+            <field name="queue_name">sync_product_info_queue</field>
+            <field name="description">Đồng bộ thông tin sản phẩm</field>
+            <field name="target">product_info</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
         <record id="sync_store_info_queue" model="rabbitmq.queue">
             <field name="model_name">store</field>
             <field name="queue_name">sync_store_info_queue</field>

@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 import pika
 import json
+import copy
 
 
 class SyncInfoRabbitmqCore(models.AbstractModel):
@@ -137,5 +138,5 @@ class SyncAddressInfoRabbitmq(models.AbstractModel):
                 'id': address.id,
                 'updated_at': address.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             })
-            data.append(vals)
+            data.extend([copy.copy(vals)])
         return data

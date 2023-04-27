@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import copy
 
 
 class ResPartner(models.Model):
@@ -90,5 +91,5 @@ class ResPartner(models.Model):
                 'id': partner.id,
                 'updated_at': partner.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             })
-            data.append(vals)
+            data.extend([copy.copy(vals)])
         return data

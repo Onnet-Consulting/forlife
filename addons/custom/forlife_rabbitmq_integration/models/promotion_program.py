@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+import copy
 
 
 class PromotionProgram(models.Model):
@@ -80,5 +81,5 @@ class PromotionProgram(models.Model):
                 'id': program.id,
                 'updated_at': program.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             })
-            data.append(vals)
+            data.extend([copy.copy(vals)])
         return data
