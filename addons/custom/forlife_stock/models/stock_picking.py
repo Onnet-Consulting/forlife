@@ -216,6 +216,7 @@ class StockMove(models.Model):
     date = fields.Datetime(
         'Date Scheduled', default=fields.Datetime.now, index=True, required=False,
         help="Scheduled date until move is done, then date of actual move processing")
+    product_other_id = fields.Many2one('forlife.other.in.out.request.line')
 
     @api.depends('reason_id')
     def compute_production_order(self):
@@ -231,4 +232,5 @@ class StockMove(models.Model):
                     if r.picking_id.other_import else r.picking_id.location_dest_id.id
                 r.reason_type_id = r.picking_id.reason_type_id.id
                 r.name = r.product_id.name
+                r.amount_total = r.product_id.standard_price if not r.reason_id.is_price_unit else 0
 
