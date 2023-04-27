@@ -9,12 +9,6 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
     _name = 'sync.info.rabbitmq.core'
     _description = 'Sync Info RabbitMQ Core'
 
-    def get_sync_new_data(self):
-        ...
-
-    def get_sync_update_data(self, field_update, values):
-        ...
-
     def get_rabbitmq_queue_by_model_name(self, model_name):
         rabbitmq_queue = self.env['rabbitmq.queue'].search([('model_name', '=', model_name)])
         if not rabbitmq_queue:
@@ -45,6 +39,9 @@ class SyncInfoRabbitmqNew(models.AbstractModel):
     _description = 'Sync Info RabbitMQ New'
     _new_action = 'new'
 
+    def get_sync_new_data(self):
+        ...
+
     def action_new_record(self):
         data = self.get_sync_new_data()
         self.push_message_to_rabbitmq(data, self._new_action)
@@ -62,6 +59,9 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
     _inherit = 'sync.info.rabbitmq.core'
     _description = 'Sync Info RabbitMQ Update'
     _update_action = 'update'
+
+    def get_sync_update_data(self, field_update, values):
+        ...
 
     def action_update_record(self, field_update, values):
         data = self.get_sync_update_data(field_update, values)
