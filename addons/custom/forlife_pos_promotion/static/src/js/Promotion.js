@@ -1355,7 +1355,14 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 'qty': CodeProgram.reward_quantity
             };
             if (!LineList.promotion_usage_ids) { LineList.promotion_usage_ids = [] }
-            LineList.promotion_usage_ids.push(new PromotionUsageLine(CodeProgram.id, code, null, null, null, null, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on));
+            if (LineList.price == 0) {
+                let originalPrice = LineList.product.lst_price ;
+                let discAmountInLine = LineList.product.lst_price
+                let newUsage = new PromotionUsageLine(CodeProgram.id, code, null, originalPrice, 0.0, discAmountInLine, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on)
+                LineList.promotion_usage_ids.push(newUsage);
+            } else {
+                LineList.promotion_usage_ids.push(new PromotionUsageLine(CodeProgram.id, code, null, null, null, null, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on));
+            }
         }
 
         return [[LineList], remaining_amount];

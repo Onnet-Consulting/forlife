@@ -106,6 +106,7 @@ export class PromotionButton extends PosComponent {
         const programsList = potentialPrograms.map((pro) => ({
             id: pro.program.str_id,
             label: pro.program.display_name,
+            program: pro.program,
             isSelected: bestCombine.length > 0 ? bestCombine.includes(pro.program) : false,
             index: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
             forecastedNumber: pro.number,
