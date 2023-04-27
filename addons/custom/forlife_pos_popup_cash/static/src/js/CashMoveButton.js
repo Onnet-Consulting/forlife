@@ -26,8 +26,9 @@ odoo.define('forlife_pos_popup_cash.CashMoveButton2', function (require) {
                     listIdofPosTranfer.push(item.pos_config_id[0])
                 }
             })
-            this.env.pos.pos_customizes = this.env.pos.pos_customizes.filter(item => listIdofPosTranfer.includes(item.id))
-            const { confirmed, payload } = await this.showPopup('CashMovePopup');
+            const { confirmed, payload } = await this.showPopup('CashMovePopup',{
+                old_pos: this.env.pos.pos_customizes,
+            });
             if (!confirmed) return;
             const { type, amount, reason, reference, type_tranfer, shop} = payload;
             const translatedType = TRANSLATED_CASH_MOVE_TYPE[type];
