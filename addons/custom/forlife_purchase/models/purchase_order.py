@@ -734,7 +734,7 @@ class PurchaseOrderLine(models.Model):
 
     product_qty = fields.Float(string='Quantity', digits=(16, 0), required=True,
                                compute='_compute_product_qty', store=True, readonly=False)
-    asset_code = fields.Char(string='Asset code')
+    asset_code = fields.Many2one('assets.assets', string='Asset code')
     asset_name = fields.Char(string='Asset name')
     purchase_quantity = fields.Float('Purchase Quantity', digits='Product Unit of Measure')
     purchase_uom = fields.Many2one('uom.uom', string='Purchase UOM')
@@ -761,6 +761,16 @@ class PurchaseOrderLine(models.Model):
     received = fields.Integer(string='Đã nhận', compute='compute_received')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     description = fields.Char('Mô tả', related='product_id.name')
+
+    @api.constrains('asset_code')
+    def constrains_asset_code(self):
+        for item in self:
+            if item.order_id.purchase_type == 'asset':
+                if item.asset_code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.property_valuation == 'real_time' and item.product_id.categ_id.property_stock_valuation_account_id:
+                    if item.asset_code.asset_account != item.product_id.categ_id.property_stock_valuation_account_id.code:
+                        raise ValidationError('Mã tài sản của bạn khác với mã loại cọc trong tài khoản định giá tồn kho thuộc nhóm sản phẩm')
+                else:
+                    raise ValidationError('Bạn chưa cấu hình nhóm sản phẩm hay tài khoản định giá tồn kho cho sản phẩm %s' % (item.product_id.name))
 
     @api.constrains('taxes_id')
     def constrains_taxes_id(self):
@@ -1133,18 +1143,19 @@ class StockPicking(models.Model):
                                 'debit': value_debit,
                                 'credit': 0,
                             }))
-                master_data_ac = {
-                    'ref': record.name,
-                    'purchase_type': po.purchase_type,
-                    'move_type': 'entry',
-                    'reference': po.name,
-                    'currency_id': po.currency_id.id,
-                    'exchange_rate': po.exchange_rate,
-                    'date': datetime.datetime.now(),
-                    'invoice_payment_term_id': po.payment_term_id.id,
-                    'invoice_date_due': po.date_planned,
-                    'invoice_line_ids': invoice_line,
-                    'restrict_mode_hash_table': False
-                }
-                account = self.env['account.move'].create(master_data_ac).action_post()
+                if po.type_po_cost in ('cost', 'tax'):
+                    master_data_ac = {
+                        'ref': record.name,
+                        'purchase_type': po.purchase_type,
+                        'move_type': 'entry',
+                        'reference': po.name,
+                        'currency_id': po.currency_id.id,
+                        'exchange_rate': po.exchange_rate,
+                        'date': datetime.datetime.now(),
+                        'invoice_payment_term_id': po.payment_term_id.id,
+                        'invoice_date_due': po.date_planned,
+                        'invoice_line_ids': invoice_line,
+                        'restrict_mode_hash_table': False
+                    }
+                    account = self.env['account.move'].create(master_data_ac).action_post()
         return res
