@@ -368,7 +368,7 @@ class StockTransfer(models.Model):
     def get_import_templates(self):
         return [{
             'label': _('Tải xuống mẫu phiếu điều chuyển'),
-            'template': '/forlife_stock/static/src/xlsx/import stock transfer.xlsx?download=true'
+            'template': '/forlife_stock/static/src/xlsx/import_stock_transfer.xlsx?download=true'
         }]
 
 class StockTransferLine(models.Model):
