@@ -244,13 +244,15 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
 
     set_quantity(quantity, keep_price) {
         let result = super.set_quantity(...arguments);
-        this.order._updateActivatedPromotionPrograms();
+//        this.order._updateActivatedPromotionPrograms();
+        let reset = false;
         if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length > 0) {
             this.promotion_usage_ids = [];
             this.reset_unit_price();
             this.order._resetPromotionPrograms(false);
+            reset = true;
         };
-        if (!this.pos.no_reset_program) {
+        if (!this.pos.no_reset_program && !reset) {
             this.order._resetCartPromotionPrograms();
         };
         return result;
@@ -1082,12 +1084,14 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 };
             }
             else if (program.promotion_type == 'pricelist') {
+                const inOrderProductsList = new Set(this.get_orderlines().filter(l => l.quantity > 0).reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []))
                 for (let priceItem of program.pricelistItems) {
-                    let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
-                    let QtyOfProduct = this._checkQtyOfProductForPricelist(priceItem, to_check_order_lines)[2];
-
-                    if (QtyOfProduct > 0) {
-                        programIsVerified[priceItem.str_id] = QtyOfProduct;
+                    if (inOrderProductsList.has(priceItem.product_id)) {
+                        let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
+                        let QtyOfProduct = this._checkQtyOfProductForPricelist(priceItem, to_check_order_lines)[2];
+                        if (QtyOfProduct > 0) {
+                            programIsVerified[priceItem.str_id] = QtyOfProduct;
+                        };
                     };
                 };
             };
