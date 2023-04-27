@@ -8,10 +8,10 @@ class ProductTemplate(models.Model):
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         if 'filter_product_follow_type' in self._context and self._context.get('filter_product_follow_type'):
             if self._context.get('filter_product_follow_type') == 'v':
-                products = self.search([('detailed_type','=','product')])
+                products = self.search([('detailed_type','=','product'),('program_voucher_id','=',False)])
                 args = expression.AND([[('id', 'in', products.ids)], args])
             else:
-                products = self.search([('detailed_type', '=', 'service')])
+                products = self.search([('detailed_type', '=', 'service'),('program_voucher_id','=',False)])
                 args = expression.AND([[('id', 'in', products.ids)], args])
         res = super(ProductTemplate, self)._name_search(name, args, operator, limit, name_get_uid)
         return res
