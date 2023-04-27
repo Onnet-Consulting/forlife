@@ -205,12 +205,12 @@ class StockMove(models.Model):
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
     location_id = fields.Many2one(
         'stock.location', 'Source Location',
-        auto_join=True, index=True, required=False,
+        auto_join=True, index=True, required=False, related='picking_id.location_id',
         check_company=True,
         help="Sets a location if you produce at a fixed location. This can be a partner location if you subcontract the manufacturing operations.")
     location_dest_id = fields.Many2one(
         'stock.location', 'Destination Location',
-        auto_join=True, index=True, required=False,
+        auto_join=True, index=True, required=False, related='picking_id.location_dest_id',
         check_company=True,
         help="Location where the system will stock the finished products.")
     date = fields.Datetime(
