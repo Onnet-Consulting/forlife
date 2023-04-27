@@ -28,3 +28,8 @@ class Store(models.Model):
             store = self.search([('id', '!=', line.id), ('warehouse_id', '=', line.warehouse_id.id)])
             if store:
                 raise ValidationError(_("Warehouse '%s' has been assigned to store '%s'") % (line.warehouse_id.name, ', '.join(store.mapped('name'))))
+
+    def _check_time(self):
+        for line in self:
+            if line.opening_time < 0 or line.opening_time > 24.0 or line.closing_time < 0 or line.closing_time > 24.0:
+                raise ValidationError(_('Opening/closing time should be between 0 and 24'))
