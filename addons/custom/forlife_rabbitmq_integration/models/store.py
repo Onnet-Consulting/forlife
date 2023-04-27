@@ -5,12 +5,12 @@ from odoo import api, fields, models, _
 
 class Store(models.Model):
     _name = 'store'
-    _inherit = ['store', 'sync.info.rabbitmq.new', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.remove']
-    _new_action = 'new_store'
+    _inherit = ['store', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
+    _create_action = 'create_store'
     _update_action = 'update_store'
-    _remove_action = 'remove_store'
+    _delete_action = 'delete_store'
 
-    def get_sync_new_data(self):
+    def get_sync_create_data(self):
         data = []
         for store in self:
             vals = {

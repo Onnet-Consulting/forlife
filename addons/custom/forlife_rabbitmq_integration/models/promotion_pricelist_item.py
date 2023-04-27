@@ -5,12 +5,12 @@ from odoo import api, fields, models, _
 
 class PromotionPricelistItem(models.Model):
     _name = 'promotion.pricelist.item'
-    _inherit = ['promotion.pricelist.item', 'sync.info.rabbitmq.new', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.remove']
-    _new_action = 'new_fixed_pricing'
+    _inherit = ['promotion.pricelist.item', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
+    _create_action = 'create_fixed_pricing'
     _update_action = 'update_fixed_pricing'
-    _remove_action = 'remove_fixed_pricing'
+    _delete_action = 'delete_fixed_pricing'
 
-    def get_sync_new_data(self):
+    def get_sync_create_data(self):
         data = []
         for coupon in self:
             vals = {

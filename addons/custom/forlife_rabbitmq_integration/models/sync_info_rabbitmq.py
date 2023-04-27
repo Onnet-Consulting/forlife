@@ -34,23 +34,23 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
 
 
 class SyncInfoRabbitmqNew(models.AbstractModel):
-    _name = 'sync.info.rabbitmq.new'
+    _name = 'sync.info.rabbitmq.create'
     _inherit = 'sync.info.rabbitmq.core'
     _description = 'Sync Info RabbitMQ New'
-    _new_action = 'new'
+    _create_action = 'create'
 
-    def get_sync_new_data(self):
+    def get_sync_create_data(self):
         ...
 
-    def action_new_record(self):
-        data = self.get_sync_new_data()
-        self.push_message_to_rabbitmq(data, self._new_action)
+    def action_create_record(self):
+        data = self.get_sync_create_data()
+        self.push_message_to_rabbitmq(data, self._create_action)
 
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
         if res:
-            res.sudo().with_delay(description="Create '%s'" % self._name).action_new_record()
+            res.sudo().with_delay(description="Create '%s'" % self._name).action_create_record()
         return res
 
 
@@ -79,14 +79,14 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
 
 
 class SyncInfoRabbitmqRemove(models.AbstractModel):
-    _name = 'sync.info.rabbitmq.remove'
+    _name = 'sync.info.rabbitmq.delete'
     _inherit = 'sync.info.rabbitmq.core'
     _description = 'Sync Info RabbitMQ Remove'
-    _remove_action = 'remove'
+    _delete_action = 'delete'
 
     def action_delete_record(self, record_ids):
         data = [{'id': res_id} for res_id in record_ids]
-        self.push_message_to_rabbitmq(data, self._remove_action)
+        self.push_message_to_rabbitmq(data, self._delete_action)
 
     def unlink(self):
         record_ids = self.ids
@@ -98,12 +98,12 @@ class SyncInfoRabbitmqRemove(models.AbstractModel):
 
 class SyncAddressInfoRabbitmq(models.AbstractModel):
     _name = 'sync.address.info.rabbitmq'
-    _inherit = ['sync.info.rabbitmq.new', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.remove']
+    _inherit = ['sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
     _description = 'Sync Address Info RabbitMQ'
-    _new_action = 'new'
+    _create_action = 'create'
     _update_action = 'update'
 
-    def get_sync_new_data(self):
+    def get_sync_create_data(self):
         data = []
         for address in self:
             vals = {

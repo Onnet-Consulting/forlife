@@ -5,12 +5,12 @@ from odoo import api, fields, models, _
 
 class ResPartner(models.Model):
     _name = 'res.partner'
-    _inherit = ['res.partner', 'sync.info.rabbitmq.new', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.remove']
-    _new_action = 'new_customer'
+    _inherit = ['res.partner', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
+    _create_action = 'create_customer'
     _update_action = 'update_customer'
-    _remove_action = 'remove_customer'
+    _delete_action = 'delete_customer'
 
-    def get_sync_new_data(self):
+    def get_sync_create_data(self):
         data = []
         brands = self.env['res.brand'].search_read([], ['id', 'code'])
         tokyolife_id = next((x.get('id') for x in brands if x.get('code') == 'TKL'), False)

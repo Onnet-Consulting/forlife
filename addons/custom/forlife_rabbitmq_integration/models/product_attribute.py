@@ -5,12 +5,12 @@ from odoo import api, fields, models, _
 
 class ProductAttribute(models.Model):
     _name = 'product.attribute'
-    _inherit = ['product.attribute', 'sync.info.rabbitmq.new', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.remove']
-    _new_action = 'new_attribute'
+    _inherit = ['product.attribute', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
+    _create_action = 'create_attribute'
     _update_action = 'update_attribute'
-    _remove_action = 'remove_attribute'
+    _delete_action = 'delete_attribute'
 
-    def get_sync_new_data(self):
+    def get_sync_create_data(self):
         data = []
         for attr in self:
             vals = {

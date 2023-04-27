@@ -5,12 +5,12 @@ from odoo import api, fields, models, _
 
 class ProductCategory(models.Model):
     _name = 'product.category'
-    _inherit = ['product.category', 'sync.info.rabbitmq.new', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.remove']
-    _new_action = 'new_category'
+    _inherit = ['product.category', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
+    _create_action = 'create_category'
     _update_action = 'update_category'
-    _remove_action = 'remove_category'
+    _delete_action = 'delete_category'
 
-    def get_sync_new_data(self):
+    def get_sync_create_data(self):
         data = []
         for category in self:
             vals = {
