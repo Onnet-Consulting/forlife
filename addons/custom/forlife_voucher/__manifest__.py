@@ -22,7 +22,8 @@
         'sale',
         'analytic',
         'forlife_point_of_sale',
-        'forlife_promotion'
+        'forlife_promotion',
+        'sh_message'
     ],
 
     'data': [
