@@ -145,13 +145,14 @@ odoo.define('forlife_vnpay_payment_terminal.payment', function (require) {
         },
 
         _vnpay_handle_response: function (response) {
+            if (!response) return false;
             let self = this;
             let line = this.pos.get_order().selected_paymentline;
             line.vnpay_received_response = true;
             line.vnpay_sent_payment = true;
             if (response.code !== '200') {
-                let msg = response.message;
-                this._show_error(msg);
+                let msg = response.message || _t('Error');
+                this._show_error(_.str.sprintf(_t('An unexpected error occurred. Message from VNPay: %s'), msg));
                 line.set_payment_status('retry');
             } else {
                 line.set_payment_status('waitingCapture');
@@ -172,8 +173,7 @@ odoo.define('forlife_vnpay_payment_terminal.payment', function (require) {
                 line.vnpay_received_response = false;
                 line.set_payment_status('retry');
             }
-            this._show_error(_.str.sprintf('Could not connect to the Odoo server.\n' +
-                'Please check your internet connection and try again. \n%s'), JSON.stringify(error));
+            this._show_error(_t('Could not connect to the VNPay server.\nPlease check your internet connection and try again.'));
         },
 
         _show_error: function (msg, title) {
