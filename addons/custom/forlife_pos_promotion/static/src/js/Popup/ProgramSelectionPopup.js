@@ -124,12 +124,9 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 }, 0);
                 option.discounted_amount = amount;
             }
-
-            this.state.programs.forEach(p => {
-                if (combo_count.hasOwnProperty(p.id)) {
-                    p.numberCombo = combo_count[p.id];
-                };
-            });
+            for (let [str_id, count] of Object.entries(combo_count)) {
+                this.state.programs.find(op => op.id == str_id).numberCombo = count;
+            }
 
             // Tính tổng số tiền đã giảm trên đơn hàng
             this.state.discount_amount_order = this.state.programs.reduce((acc, p) => acc + p.discounted_amount, 0.0);
@@ -167,7 +164,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 let discountedLinesNoSelect = Object.values(newLinesToApplyNoSelected).reduce((tmp, arr) => {tmp.push(...arr); return tmp;}, []);
                 let noSelectedOption = not_selected_programs.find(op => op.id == notSelectProgram.str_id);
 
-                noSelectedOption.forecastedNumber = combo_count[notSelectProgram.id];
+                noSelectedOption.forecastedNumber = combo_count[notSelectProgram.str_id];
                 noSelectedOption.forecasted_discounted_amount = discountedLinesNoSelect.reduce((tmp, line) => {
                     let per_line = line.promotion_usage_ids.reduce((tmp_line, u) => {
                         if (u.str_id == noSelectedOption.id) {
