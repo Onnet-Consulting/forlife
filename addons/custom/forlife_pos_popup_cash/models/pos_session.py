@@ -20,6 +20,7 @@ class PosSession(models.Model):
         } for r in branchs]
         loaded_data.update({
             'pos.customize': pos,
+            'all.pos': pos,
             'pos.branch': branch
         })
         return loaded_data

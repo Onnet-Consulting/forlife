@@ -73,6 +73,23 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
             };
         }
 
+        onClickButton(type) {
+            super.onClickButton(type)
+            var listIdofPosTranfer = []
+            var data = this.env.pos.pos_customizes
+            if (type === 'in') {
+                this.env.pos.bank_statement.forEach(function(item){
+                    if(!listIdofPosTranfer.includes(item.pos_config_id[0])){
+                        listIdofPosTranfer.push(item.pos_config_id[0])
+                    }
+                })
+                this.env.pos.pos_customizes = this.env.pos.pos_customizes.filter(item => listIdofPosTranfer.includes(item.id))
+            }else{
+                this.env.pos.pos_customizes =  this.env.pos.all_pos
+            }
+
+        }
+
         getPayload() {
             var res = super.getPayload()
             res.reference = this.state.reference,

@@ -9,6 +9,7 @@ odoo.define('forlife_pos_popup_cash.popupcustomize', function (require) {
             await super._processData(...arguments);
             this.bank_statement = loadedData['account.bank.statement.line'];
             this.pos_customizes = loadedData['pos.customize'];
+            this.all_pos = loadedData['all.pos'];
             this.pos_branch = loadedData['pos.branch'];
         }
     }
