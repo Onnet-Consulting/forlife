@@ -236,6 +236,13 @@ msgstr "Thời gian mở cửa"
 #. odoo-python
 #: code:addons/forlife_point_of_sale/models/store.py:0
 #, python-format
+msgid "Opening time must be less than closing time"
+msgstr "Thời gian mở phải nhỏ hơn thời gian đóng"
+
+#. module: forlife_point_of_sale
+#. odoo-python
+#: code:addons/forlife_point_of_sale/models/store.py:0
+#, python-format
 msgid "Opening/closing time should be between 0 and 24"
 msgstr "Thời gian mở/đóng phải nằm trong khoảng từ 0 đến 24"
 
