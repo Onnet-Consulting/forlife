@@ -9,12 +9,12 @@ class RabbitmqQueue(models.Model):
     _rec_name = 'queue_name'
     _order = 'queue_name'
 
-    model_name = fields.Char('Model Name', required=True)
+    queue_key = fields.Char('Queue Key', required=True)
     queue_name = fields.Char('Queue Name', required=True)
     description = fields.Char('Description', required=True)
     target = fields.Char('Target', required=True)
     rabbitmq_connection_id = fields.Many2one('rabbitmq.connection', 'Rabbitmq connection', required=True, domain="[('is_connected', '=', True)]")
 
     _sql_constraints = [
-        ('model_name_uniq', 'unique (model_name)', 'Model Name already exists!'),
+        ('queue_key_uniq', 'unique (queue_key)', 'Queue Key already exists!'),
     ]

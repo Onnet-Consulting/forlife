@@ -10,14 +10,14 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
     _name = 'sync.info.rabbitmq.core'
     _description = 'Sync Info RabbitMQ Core'
 
-    def get_rabbitmq_queue_by_model_name(self, model_name):
-        rabbitmq_queue = self.env['rabbitmq.queue'].search([('model_name', '=', model_name)])
+    def get_rabbitmq_queue_by_queue_key(self, queue_key):
+        rabbitmq_queue = self.env['rabbitmq.queue'].search([('queue_key', '=', queue_key)])
         if not rabbitmq_queue:
-            raise ValueError(_("RabbitQM queue by model name '%s' not found !") % model_name)
+            raise ValueError(_("RabbitQM queue by key '%s' not found !") % queue_key)
         return rabbitmq_queue[0]
 
-    def push_message_to_rabbitmq(self, data, action):
-        rabbitmq_queue = self.get_rabbitmq_queue_by_model_name(self._name)
+    def push_message_to_rabbitmq(self, data, action, queue_key):
+        rabbitmq_queue = self.get_rabbitmq_queue_by_queue_key(queue_key)
         rabbitmq_connection = rabbitmq_queue.rabbitmq_connection_id
         credentials = pika.PlainCredentials(username=rabbitmq_connection.username, password=rabbitmq_connection.password)
         parameter = pika.ConnectionParameters(host=rabbitmq_connection.host, port=rabbitmq_connection.port, credentials=credentials)
@@ -45,7 +45,7 @@ class SyncInfoRabbitmqNew(models.AbstractModel):
 
     def action_create_record(self):
         data = self.get_sync_create_data()
-        self.push_message_to_rabbitmq(data, self._create_action)
+        self.push_message_to_rabbitmq(data, self._create_action, self._name)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -66,7 +66,7 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
 
     def action_update_record(self, field_update, values):
         data = self.get_sync_update_data(field_update, values)
-        self.push_message_to_rabbitmq(data, self._update_action)
+        self.push_message_to_rabbitmq(data, self._update_action, self._name)
 
     def check_update_info(self, values):
         ...
@@ -87,7 +87,7 @@ class SyncInfoRabbitmqRemove(models.AbstractModel):
 
     def action_delete_record(self, record_ids):
         data = [{'id': res_id} for res_id in record_ids]
-        self.push_message_to_rabbitmq(data, self._delete_action)
+        self.push_message_to_rabbitmq(data, self._delete_action, self._name)
 
     def unlink(self):
         record_ids = self.ids

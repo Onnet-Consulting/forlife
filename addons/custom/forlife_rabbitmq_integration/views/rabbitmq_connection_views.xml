@@ -36,8 +36,8 @@
                             </group>
                         </group>
                         <group>
-                            <field name="is_connected" widget="boolean_toggle" readonly="1" force_sace="1"/>
-                            <field name="connection_log" readonly="1" force_sace="1"/>
+                            <field name="is_connected" widget="boolean_toggle" readonly="1" force_save="1"/>
+                            <field name="connection_log" readonly="1" force_save="1"/>
                         </group>
                     </sheet>
                 </form>

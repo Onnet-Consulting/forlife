@@ -17,7 +17,7 @@ class RabbitmqConnection(models.Model):
     connection_log = fields.Text("Connection log")
 
     _sql_constraints = [
-        ('unique_rabbitmq_host_info', 'UNIQUE(host, port, username)', 'The rabbitmq host info must be unique !')
+        ('unique_rabbitmq_host_info', 'UNIQUE(host, port, username)', 'The rabbitmq host info already exist !')
     ]
 
     def name_get(self):
@@ -42,3 +42,8 @@ class RabbitmqConnection(models.Model):
                 'connection_log': str(exc) or str(exc.args),
                 'is_connected': False,
             })
+
+    @api.onchange('host', 'port', 'username', 'password')
+    def onchange_connection_info(self):
+        self.is_connected = False
+        self.connection_log = False

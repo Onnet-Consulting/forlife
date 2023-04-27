@@ -7,7 +7,7 @@
             <field name="model">rabbitmq.queue</field>
             <field name="arch" type="xml">
                 <tree string="rabbitmq_queue_tree">
-                    <field name="model_name"/>
+                    <field name="queue_key"/>
                     <field name="queue_name"/>
                     <field name="description"/>
                     <field name="target"/>
@@ -23,7 +23,7 @@
                 <form string="rabbitmq_queue_form">
                     <sheet>
                         <group>
-                            <field name="model_name"/>
+                            <field name="queue_key"/>
                             <field name="queue_name"/>
                             <field name="description"/>
                             <field name="target"/>

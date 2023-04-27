@@ -30,7 +30,7 @@ class ProductAttribute(models.Model):
         return data
 
     def check_update_info(self, values):
-        field_check_update = ['code', 'name', 'value_ids']
+        field_check_update = ['attrs_code', 'name', 'value_ids']
         return [item for item in field_check_update if item in values]
 
     def get_sync_update_data(self, field_update, values):
