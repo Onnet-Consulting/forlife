@@ -10,6 +10,15 @@
                     Confirm
                 </div>
             </t>
+
+            <t t-if="line.payment_status == 'sent_failed'">
+                <div class="electronic_status">
+                    Send payment request failed
+                </div>
+                <div class="button retry-failed-payment highlight" title="Done manually" t-on-click="() => this.trigger('send-payment-request', line)">
+                    Retry
+                </div>
+            </t>
         </xpath>
     </t>
 </templates>
