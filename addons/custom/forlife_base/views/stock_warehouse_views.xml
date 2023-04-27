@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <field name="code" position="after">
                     <field name="district_id"/>
-					<field name="ward_id"/>
+					<field name="ward_id" domain="[('district_id', '=', district_id)]"/>
                     <field name="name_internal"/>
                     <field name="short_name_internal"/>
                 </field>
