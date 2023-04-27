@@ -62,6 +62,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.dayofweekData = loadedData['dayofweek.data'] || [];
         this.hourData = loadedData['hour.data'] || [];
         this._loadPromotionData();
+//        this.promotionPricelistItems = [];
+        this.loadPromotionPriceListItemBackground();
     }
     _loadPromotionData() {
         this.promotion_program_by_id = {};
@@ -139,7 +141,29 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             reward.program = this.promotion_program_by_id[reward.program_id];
             reward.program.rewards.push(reward);
         };
-        for (let item of this.promotionPricelistItems) {
+
+    }
+
+    async loadPromotionPriceListItemBackground() {
+        let page = 0;
+        let promotionItems = [];
+        do {
+            promotionItems = await this.env.services.rpc({
+                model: 'pos.session',
+                method: 'get_pos_ui_promotion_price_list_item_by_params',
+                args: [odoo.pos_session_id, {
+                    offset: page * 10000,
+                    limit: 10000,
+                }],
+            }, { shadow: true });
+
+            this._loadPromotionPriceListItem(promotionItems);
+            page += 1;
+        } while(promotionItems.length == 10000);
+    }
+
+    _loadPromotionPriceListItem(promotionItems) {
+        for (let item of promotionItems) {
             let str_id = `${item.program_id[0]}p${item.id}`;
             this.pro_pricelist_item_by_id[str_id] = item;
             item.product_id = item.product_id[0];
@@ -155,6 +179,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             delete program_clone.display_name;
             item = Object.assign(item, program_clone);
         };
+        this.promotionPricelistItems.concat(promotionItems)
     }
 
     get_program_by_id(str_id) {
