@@ -14,7 +14,7 @@ class Voucher(models.Model):
 
     _description = 'Voucher'
 
-    name = fields.Char('Code', compute='_compute_name', store=True)
+    name = fields.Char('Code', compute='_compute_name', store=True, readonly=False)
     program_voucher_id = fields.Many2one('program.voucher', 'Program name')
     purpose_id = fields.Many2one('setup.voucher', 'Purpose', related='program_voucher_id.purpose_id')
     currency_id = fields.Many2one('res.currency', compute='_compute_currency_field')  # related currency of program voucher

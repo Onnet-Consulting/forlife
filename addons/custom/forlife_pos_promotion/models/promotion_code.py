@@ -74,7 +74,7 @@ class PromotionCode(models.Model):
     @api.depends('amount', 'consumed_amount')
     def _compute_remaining_amount(self):
         for code in self:
-            code.remaining_amount = code.amount - code.consumed_amount
+            code.remaining_amount = max(0.0, code.amount - code.consumed_amount)
 
     def action_open_promotion_codes(self):
         self.ensure_one()

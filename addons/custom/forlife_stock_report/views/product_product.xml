@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="product_product_form_view_inherit" model="ir.ui.view">
+        <field name="name">product.product.form.view.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="stock.product_form_view_procurement_button"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//button[@name='action_open_quants']" position="after">
+                <button class="oe_stat_button" name="action_open_quant_period" icon="fa-cubes" type="object">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Quantity Period</span>
+                    </div>
+                </button>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

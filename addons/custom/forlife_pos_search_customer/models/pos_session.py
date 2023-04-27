@@ -11,7 +11,7 @@ class PosSession(models.Model):
         search_params = self._loader_params_res_partner()
         domain = expression.AND([search_params['search_params']['domain'], params['domain']])
         search_params['search_params']['domain'] = domain
-        return self.env['res.partner'].search_read(**search_params['search_params'])
+        return self.env['res.partner'].search_read(**search_params['search_params'], limit=80)
 
     def _load_model(self, model):
         if model == 'res.partner':

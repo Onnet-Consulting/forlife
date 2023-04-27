@@ -21,7 +21,7 @@
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="source_record" invisible="1"/>
-                <field name="name_customer" attrs="{'invisible': [('source_record', '=', False)]}"/>
+                <field name="name_customer" attrs="{'invisible': [('name_customer', '=', False)]}"/>
             </xpath>
         </field>
     </record>
