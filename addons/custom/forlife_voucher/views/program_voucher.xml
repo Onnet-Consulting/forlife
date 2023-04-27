@@ -30,6 +30,8 @@
                     <header>
                         <button name="create_voucher" string="Create Voucher" class="oe_highlight"
                                 type="object"/>
+                        <button name="action_compute_product_apply" string="Sync Products Apply"
+                                type="object"/>
 
                     </header>
                     <sheet>
