@@ -76,7 +76,7 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
         onClickButton(type) {
             super.onClickButton(type)
             var listIdofPosTranfer = []
-            var data = this.env.pos.pos_customizes
+            var data = JSON.parse(JSON.stringify(this.env.pos.pos_customizes))
             if (type === 'in') {
                 this.env.pos.bank_statement.forEach(function(item){
                     if(!listIdofPosTranfer.includes(item.pos_config_id[0])){
@@ -85,7 +85,7 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
                 })
                 this.env.pos.pos_customizes = this.env.pos.pos_customizes.filter(item => listIdofPosTranfer.includes(item.id))
             }else{
-                this.env.pos.pos_customizes =  this.env.pos.all_pos
+                this.env.pos.pos_customizes =  data
             }
 
         }
