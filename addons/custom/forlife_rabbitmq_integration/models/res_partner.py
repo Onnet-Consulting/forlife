@@ -12,11 +12,14 @@ class ResPartner(models.Model):
     _delete_action = 'delete_customer'
 
     def get_sync_create_data(self):
+        records = self.filtered(lambda p: p.ref and p.ref[0] == 'C')
+        if not records:
+            return False
         data = []
         brands = self.env['res.brand'].search_read([], ['id', 'code'])
         tokyolife_id = next((x.get('id') for x in brands if x.get('code') == 'TKL'), False)
         format_id = next((x.get('id') for x in brands if x.get('code') == 'FMT'), False)
-        for record in self:
+        for record in records:
             data.append({
                 'id': record.id,
                 'created_at': record.create_date.strftime('%Y-%m-%d %H:%M:%S'),
@@ -56,13 +59,15 @@ class ResPartner(models.Model):
         return data
 
     def check_update_info(self, values):
-        field_check_update = ['name', 'ref', 'phone', 'email', 'birthday', 'state_id', 'street']
+        records = self.filtered(lambda p: p.ref and p.ref[0] == 'C')
+        if not records:
+            return False
+        field_check_update = ['name', 'phone', 'email', 'birthday', 'state_id', 'street']
         return [item for item in field_check_update if item in values]
 
     def get_sync_update_data(self, field_update, values):
         map_key_rabbitmq = {
             'name': 'name',
-            'ref': 'code',
             'phone': 'phone_number',
             'email': 'email',
             'birthday': 'birthday'
@@ -86,7 +91,8 @@ class ResPartner(models.Model):
             address.update({'address': values.get('street') or None})
             vals['address'] = address
         data = []
-        for partner in self:
+        records = self.filtered(lambda p: p.ref and p.ref[0] == 'C')
+        for partner in records:
             vals.update({
                 'id': partner.id,
                 'updated_at': partner.write_date.strftime('%Y-%m-%d %H:%M:%S'),

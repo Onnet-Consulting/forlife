@@ -45,7 +45,8 @@ class SyncInfoRabbitmqNew(models.AbstractModel):
 
     def action_create_record(self):
         data = self.get_sync_create_data()
-        self.push_message_to_rabbitmq(data, self._create_action, self._name)
+        if data:
+            self.push_message_to_rabbitmq(data, self._create_action, self._name)
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -66,7 +67,8 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
 
     def action_update_record(self, field_update, values):
         data = self.get_sync_update_data(field_update, values)
-        self.push_message_to_rabbitmq(data, self._update_action, self._name)
+        if data:
+            self.push_message_to_rabbitmq(data, self._update_action, self._name)
 
     def check_update_info(self, values):
         ...
@@ -87,7 +89,8 @@ class SyncInfoRabbitmqRemove(models.AbstractModel):
 
     def action_delete_record(self, record_ids):
         data = [{'id': res_id} for res_id in record_ids]
-        self.push_message_to_rabbitmq(data, self._delete_action, self._name)
+        if data:
+            self.push_message_to_rabbitmq(data, self._delete_action, self._name)
 
     def unlink(self):
         record_ids = self.ids
