@@ -474,7 +474,6 @@ msgid "Program of events"
 msgstr "Chương trình sự kiện"
 
 #. module: forlife_purchase
-#: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__custom_state__confirm
 #: model:ir.model.fields.selection,name:forlife_purchase.selection__forlife_production__state__confirm
 msgid "Confirm"
 msgstr "Xác nhận"
@@ -1132,3 +1131,8 @@ msgstr "Tổng chi phí thông quan"
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__forlife_production_name
 msgid "Forlife Production Name"
 msgstr "Tên lệnh sản xuất"
+
+#. module: forlife_purchase
+#: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__custom_state__confirm
+msgid "Confirm"
+msgstr "Chờ duyệt"
