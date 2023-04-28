@@ -69,7 +69,7 @@ with product_cate_info as -- lấy ID của Thương hiệu, nhóm hàng, dòng 
     from product_product pp 
         left join product_template pt on pt.id = pp.product_tmpl_id
         join product_category xxx on xxx.id = pt.categ_id
-        join product_category texture on texture.id = xxx.id
+        join product_category texture on texture.id = xxx.parent_id
         join product_category product_line on product_line.id = texture.parent_id
         join product_category product_group on product_group.id = product_line.parent_id
         join product_category brand on brand.id = product_group.parent_id
