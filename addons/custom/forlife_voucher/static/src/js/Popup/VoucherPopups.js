@@ -238,14 +238,15 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                     arr.push(item.value)
                 }
             })
-             var obj_count_program = arr.reduce((acc, item) => {
-                  const key = item.program_voucher_id
-                  if (!acc.hasOwnProperty(key)) {
-                    acc[key] = 0
-                  }
-                  acc[key] += 1
-                  return acc
-                }, {})
+            var obj_count_program = arr.reduce((acc, item) => {
+              const key = item.program_voucher_id
+              if (!acc.hasOwnProperty(key)) {
+                acc[key] = 0
+              }
+              acc[key] += 1
+              return acc
+            },
+            {})
 
 //            validate error expect
             var priority = []
