@@ -20,6 +20,7 @@
         'forlife_customer_card_rank',
         'forlife_pos_point_order',
         'forlife_point_of_sale',
+        'forlife_pos_app_member',
     ],
     'auto_install': True,
 

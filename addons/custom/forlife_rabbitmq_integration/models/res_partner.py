@@ -12,7 +12,7 @@ class ResPartner(models.Model):
     _delete_action = 'delete_customer'
 
     def get_sync_create_data(self):
-        records = self.filtered(lambda p: p.ref and p.ref[0] == 'C')
+        records = self.filtered(lambda p: p.group_id == self.env.ref('forlife_pos_app_member.partner_group_c'))
         if not records:
             return False
         data = []
@@ -59,7 +59,7 @@ class ResPartner(models.Model):
         return data
 
     def check_update_info(self, values):
-        records = self.filtered(lambda p: p.ref and p.ref[0] == 'C')
+        records = self.filtered(lambda p: p.group_id == self.env.ref('forlife_pos_app_member.partner_group_c'))
         if not records:
             return False
         field_check_update = ['name', 'phone', 'email', 'birthday', 'state_id', 'street']
@@ -91,7 +91,7 @@ class ResPartner(models.Model):
             address.update({'address': values.get('street') or None})
             vals['address'] = address
         data = []
-        records = self.filtered(lambda p: p.ref and p.ref[0] == 'C')
+        records = self.filtered(lambda p: p.group_id == self.env.ref('forlife_pos_app_member.partner_group_c'))
         for partner in records:
             vals.update({
                 'id': partner.id,
