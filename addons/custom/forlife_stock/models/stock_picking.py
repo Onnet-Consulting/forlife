@@ -104,9 +104,6 @@ class StockPicking(models.Model):
             for item in self:
                 item.move_ids.write({'date': item.date_done})
                 item.move_line_ids.write({'date': item.date_done})
-        # if 'date_done' in vals:
-        #     self.move_ids.write({'date': self.date_done})
-        #     self.move_line_ids.write({'date': self.date_done})
         return res
 
     def action_back_to_draft(self):

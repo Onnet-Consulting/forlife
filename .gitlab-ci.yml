@@ -5,6 +5,7 @@ stages:
   - alpha
   - beta
   - production
+  - alpha-performance
 
 default:
   before_script:
@@ -50,3 +51,16 @@ build-production:
   tags:
     - build-production
   when: manual
+
+build-alpha-performance:
+  stage: alpha-performance
+  only:
+    refs:
+      - alpha-performance
+  script:
+    - docker image prune -f
+    - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
+    - docker-compose -f docker-compose-gitlab-ci.yml up -d
+    - docker-compose restart
+  tags:
+    - build-alpha-performance

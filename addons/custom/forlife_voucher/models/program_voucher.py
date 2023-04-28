@@ -50,7 +50,7 @@ class ProgramVoucher(models.Model):
         view = self.env.ref('sh_message.sh_message_wizard')
         view_id = view and view.id or False
         context = dict(self._context or {})
-        context['message'] = 'Created successfully'
+        context['message'] = 'Đồng bộ thành công!'
         return {
             'name': 'Success',
             'type': 'ir.actions.act_window',
