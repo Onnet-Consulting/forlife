@@ -88,5 +88,15 @@
                 </xpath>
             </field>
         </record>
+        <record model="ir.ui.view" id="view_pos_order_filter_extend">
+            <field name="name">view.pos.order.filter.extend</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_order_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search//filter[@name='posted']" position="after">
+                    <filter string="Allow Compensate Point" name="allow_compensate_point" domain="[('allow_compensate_point', '=', True)]"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>
