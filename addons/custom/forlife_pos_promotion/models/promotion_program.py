@@ -122,8 +122,6 @@ class PromotionProgram(models.Model):
     pricelist_item_ids = fields.One2many(
         'promotion.pricelist.item', 'program_id', string='Pricelist Item', context={'active_test': False})
     pricelist_item_count = fields.Integer(compute='_compute_pricelist_item_count')
-    json_pricelist_item_ids = fields.Binary(
-        compute='_compute_json_pricelist_item_ids', store=True, string='Json Pricelist Item')
 
     # Rewards
     reward_type = fields.Selection(REWARD_TYPE, string='Reward Type')
@@ -247,18 +245,6 @@ class PromotionProgram(models.Model):
         for pro in self:
             pro.pricelist_item_count = len(pro.pricelist_item_ids)
 
-    @api.depends('pricelist_item_ids',
-                 'pricelist_item_ids.active',
-                 'pricelist_item_ids.product_id',
-                 'pricelist_item_ids.program_id',
-                 'pricelist_item_ids.fixed_price')
-    def _compute_json_pricelist_item_ids(self):
-        field_keys = ['id', 'program_id', 'product_id', 'display_name', 'active', 'fixed_price']
-        for pro in self:
-            item_ids = pro.pricelist_item_ids.filtered(lambda item: item.active).read()
-            val_list = [{key: value for [key, value] in item.items() if key in field_keys} for item in item_ids] or []
-            pro.json_pricelist_item_ids = base64.b64encode(json.dumps(val_list).encode('utf-8'))
-
     def _compute_qty_per_combo(self):
         for pro in self:
             pro.qty_per_combo = sum(pro.combo_line_ids.mapped('quantity')) or 0.0
@@ -323,7 +309,6 @@ class PromotionProgram(models.Model):
 
     def action_recompute_new_field_binary(self):
         self.search([])._compute_json_valid_product_ids()
-        self.search([])._compute_json_pricelist_item_ids()
         self.search([]).combo_line_ids._compute_json_valid_product_ids()
         return True
 
