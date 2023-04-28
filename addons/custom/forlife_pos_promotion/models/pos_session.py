@@ -15,7 +15,7 @@ class PosSession(models.Model):
                 'promotion.program',
                 'promotion.combo.line',
                 'promotion.reward.line',
-                'promotion.pricelist.item',
+                # 'promotion.pricelist.item',
                 'month.data',
                 'dayofmonth.data',
                 'dayofweek.data',
@@ -34,6 +34,17 @@ class PosSession(models.Model):
 
     def _get_pos_ui_promotion_pricelist_item(self, params):
         return self.env['promotion.pricelist.item'].search_read(**params['search_params'])
+
+    def get_pos_ui_promotion_price_list_item_by_params(self, custom_search_params):
+        """
+        :param custom_search_params: a dictionary containing params of a search_read()
+        """
+        params = self._loader_params_promotion_pricelist_item()
+        # custom_search_params will take priority
+        params['search_params'] = {**params['search_params'], **custom_search_params}
+        promotion = self.env['promotion.pricelist.item'].with_context(active_test=False).search_read(**params['search_params'])
+
+        return promotion
 
     def _loader_params_month_data(self):
         return {
