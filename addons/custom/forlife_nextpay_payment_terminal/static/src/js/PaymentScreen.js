@@ -57,7 +57,8 @@ odoo.define('forlife_nextpay_payment_terminal.PaymentScreen', function (require)
                 NumberBuffer.capture();
                 await super._sendPaymentRequest(...arguments);
                 if (line.payment_method.use_payment_terminal === 'nextpay') {
-                    line.set_payment_status('waitingCapture');
+                    let temp_payment_status = line.temp_payment_status || 'retry';
+                    line.set_payment_status(temp_payment_status);
                 }
             }
 

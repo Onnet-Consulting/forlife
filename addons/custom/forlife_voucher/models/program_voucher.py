@@ -110,6 +110,8 @@ class ProgramVoucher(models.Model):
     def onchange_type_program_voucher(self):
         if self.type == 'v':
             self.apply_many_times = False
+        if self.type:
+            self.product_id = False
 
     @api.depends('voucher_ids')
     def _compute_count_voucher(self):

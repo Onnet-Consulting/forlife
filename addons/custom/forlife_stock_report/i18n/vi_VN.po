@@ -6,14 +6,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-21 09:36+0000\n"
-"PO-Revision-Date: 2023-04-21 09:36+0000\n"
+"POT-Creation-Date: 2023-04-24 09:18+0000\n"
+"PO-Revision-Date: 2023-04-24 09:18+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.product_product_form_view_inherit
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.product_template_form_view_inherit
+msgid "<span class=\"o_stat_text\">Quantity Period</span>"
+msgstr "<span class=\"o_stat_text\">Tồn kho theo kỳ</span>"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__based_on_account
@@ -61,13 +67,6 @@ msgstr "Tạo vào"
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__currency_id
 msgid "Currency"
 msgstr "Tiền tệ"
-
-#. module: forlife_stock_report
-#. odoo-python
-#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
-#, python-format
-msgid "Date from must be the first day of month"
-msgstr ""
 
 #. module: forlife_stock_report
 #. odoo-python
@@ -133,6 +132,14 @@ msgstr "Số lượng Nhập"
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__incoming_value
 msgid "Incoming Value"
 msgstr "Giá trị Nhập"
+
+#. module: forlife_stock_report
+#. odoo-python
+#: code:addons/forlife_stock_report/models/product_product.py:0
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_quant_period_view_tree
+#, python-format
+msgid "Inventory Period"
+msgstr "Tồn kho theo kỳ"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period____last_update
@@ -221,13 +228,14 @@ msgstr ""
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__price_unit
 msgid "Price Unit"
-msgstr ""
+msgstr "Đơn giá"
 
 #. module: forlife_stock_report
+#: model:ir.model,name:forlife_stock_report.model_product_template
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__product_id
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__product_id
 msgid "Product"
-msgstr "Tên sản phẩm"
+msgstr "Sản phẩm"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__product_code
@@ -235,14 +243,19 @@ msgid "Product Code"
 msgstr "Mã sản phẩm"
 
 #. module: forlife_stock_report
+#: model:ir.model,name:forlife_stock_report.model_product_product
+msgid "Product Variant"
+msgstr "Biến thể sản phẩm"
+
+#. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__product_code
 msgid "Product code"
-msgstr ""
+msgstr "Mã sản phẩm"
 
 #. module: forlife_stock_report
 #: model:ir.model,name:forlife_stock_report.model_stock_quant_period
 msgid "Quantity period"
-msgstr ""
+msgstr "Tồn theo kỳ"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__real_outgoing_price_unit
