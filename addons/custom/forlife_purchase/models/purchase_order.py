@@ -13,6 +13,8 @@ from lxml import etree
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+
+
     READONLY_STATES = {
         'purchase': [('readonly', True)],
         'done': [('readonly', True)],
@@ -34,7 +36,7 @@ class PurchaseOrder(models.Model):
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Contract?')
     has_invoice = fields.Boolean(string='Finance Bill?')
-    exchange_rate = fields.Float(string='Exchange Rate', default=1)
+    exchange_rate = fields.Float(string='Exchange Rate',  digits=(12, 8))
 
     # apply_manual_currency_exchange = fields.Boolean(string='Apply Manual Exchange', compute='_compute_active_manual_currency_rate')
     manual_currency_exchange_rate = fields.Float('Rate', digits=(12, 6))
@@ -96,6 +98,22 @@ class PurchaseOrder(models.Model):
                          help="Reference of the document that generated this purchase order "
                               "request (e.g. a sales order)", compute='compute_origin')
     type_po_cost = fields.Selection([('tax', 'Tax'), ('cost', 'Cost')])
+
+
+
+    @api.constrains('currency_id')
+    def constrains_currency_id(self):
+        for item in self:
+            if not item.currency_id:
+                raise ValidationError('Trường tiền tệ không tồn tại')
+
+    @api.onchange('currency_id')
+    def onchange_exchange_rate(self):
+        if self.currency_id:
+            if self.type_po_cost != 'cost':
+                self.exchange_rate = self.currency_id.rate
+            else:
+                self.exchange_rate = 1
 
     @api.depends('cost_line', 'cost_line.expensive_total')
     def compute_cost_total(self):
@@ -248,12 +266,7 @@ class PurchaseOrder(models.Model):
         if self.trade_discount:
             if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
                 self.total_trade_discount = self.tax_totals.get('amount_total') / self.trade_discount
-            else:
-                raise ValidationError('B must be non-zero.')
-            self.trade_discount = self.trade_discount
-            self.total_trade_discount = self.total_trade_discount
-        else:
-            self.total_trade_discount = False
+
 
     @api.depends('is_inter_company')
     def compute_partner_domain(self):
@@ -301,7 +314,7 @@ class PurchaseOrder(models.Model):
                         'receipt_reminder_email': record.receipt_reminder_email,
                         'reminder_date_before_receipt': record.reminder_date_before_receipt,
                         'dest_address_id': record.dest_address_id.id, 'purchase_order_id': record.id,
-                        'name': record.name
+                        'name': record.name,
                         }
                 order_line = []
                 uom = self.env.ref('uom.product_uom_unit').id
@@ -374,7 +387,7 @@ class PurchaseOrder(models.Model):
                      'product_uom_qty': item.get('product_quantity'), 'price_unit': item.get('price_unit'),
                      'product_uom': item.get('product_uom'),
                      'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
-                     'discount': item.get('discount')}))
+                     'discount': item.get('discount_percent')}))
 
             master_so = {
                 'origin': data.get('name'),
@@ -390,7 +403,7 @@ class PurchaseOrder(models.Model):
             st_picking_out = data_so.action_confirm()
             data_stp_out = self.env['stock.picking'].search([('origin', '=', data_so.name)], limit=1)
             for spl, pol, sol in zip(data_stp_out.move_ids_without_package, order_line, data_so.order_line):
-                spl.write({'quantity_done': pol.get('product_quantity')})
+                spl.write({'quantity_done': pol.get('product_quantity'), })
                 sol.write({'qty_delivered': spl.quantity_done})
             for item in data_so.picking_ids:
                 item.write({
@@ -405,11 +418,12 @@ class PurchaseOrder(models.Model):
             }).forlife_create_invoices()
             invoice_customer = invoice_ncc.copy()
             invoice_ncc.write({
+                'purchase_type': data.get('purchase_type'),
                 'move_type': 'out_invoice',
                 'reference': data_so.name,
                 'is_from_ncc': True
             })
-
+            ## Vào sổ hóa đơn bán hàng
             invoice_ncc.action_post()
             invoice_customer.write({
                 'invoice_date': datetime.datetime.now(),
@@ -418,6 +432,7 @@ class PurchaseOrder(models.Model):
                 'partner_id': data.get('partner_id'),
                 'is_from_ncc': False
             })
+            ##Vào sổ hóa đơn mua hàng
             invoice_customer.action_post()
             ## Tạo mới phiếu nhập hàng và xác nhận phiếu xuất
             data_stp_out.with_context({'skip_immediate': True}).button_validate()
@@ -815,9 +830,9 @@ class PurchaseOrderLine(models.Model):
             else:
                 item.billed = False
 
-    @api.onchange('vendor_price', 'exchange_quantity', 'product_id')
-    def onchange_unit_price(self):
-        self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity > 0 else False
+    # @api.onchange('vendor_price', 'exchange_quantity', 'product_id', 'purchase_quantity')
+    # def onchange_unit_price(self):
+    #     self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity > 0 else False
 
     @api.onchange('product_id', 'supplier_id', 'is_passersby',)
     def onchange_vendor_price(self):
@@ -831,26 +846,37 @@ class PurchaseOrderLine(models.Model):
             if not self.is_passersby:
                 if self.product_id and self.supplier_id:
                     data = self.env['product.supplierinfo'].search([('partner_id', '=', self.supplier_id.id), (
-                        'product_tmpl_id', '=', self.product_id.product_tmpl_id.id)])
+                        'product_tmpl_id', '=', self.product_id.product_tmpl_id.id)], limit=1)
                     if data:
-                        self.vendor_price = data.price
+                        if self.create_date.date() < data.date_start or self.create_date.date() > data.date_end:
+                            raise ValidationError('Ngày xác nhận sản phẩm nằm trong bảng giá nhà cung cấp không nằm trong thời gian tạo phiếu mua hàng')
+                        else:
+                            self.vendor_price = data.price
+                            self.price_unit = data.price
+                            # if self.purchase_quantity == data.min_qty:
+                            #     self.price_unit = data.price
+                            # elif self.purchase_quantity < data.min_qty:
+                            #     self.price_unit = data.price
+                            # elif self.purchase_quantity > data.min_qty:
+                            #     print(111111)
 
     @api.onchange('free_good')
     def onchange_vendor_prices(self):
         if self.free_good:
             self.vendor_price = False
 
-    @api.onchange('product_id', 'order_id')
+    @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
+                  'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
     def onchange_receive_date(self):
         if self.order_id:
             self.receive_date = self.order_id.receive_date
             self.location_id = self.order_id.location_id
             self.production_id = self.order_id.production_id
             if self.order_id.account_analytic_ids:
-                self.account_analytic_id = self.order_id.account_analytic_ids[-1]
+                self.account_analytic_id = self.order_id.account_analytic_ids[-1].id.origin
             self.event_id = self.order_id.event_id
             if self.order_id.occasion_code_ids:
-                self.occasion_code_id = self.order_id.occasion_code_ids[-1]
+                self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
 
     # discount
 
