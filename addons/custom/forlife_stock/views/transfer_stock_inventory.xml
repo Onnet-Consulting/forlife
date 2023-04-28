@@ -68,7 +68,7 @@
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="location_id" string="Location" required="1"
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="note" required="1"/>
+                            <field name="note"/>
                         </group>
                         <group>
                             <field name="create_date" string="Create Date"/>
