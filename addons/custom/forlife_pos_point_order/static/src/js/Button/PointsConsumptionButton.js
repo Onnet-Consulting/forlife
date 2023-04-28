@@ -85,10 +85,17 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
             for (let i=0; i< order_lines.length;i++){
                     product_valid_apply_all.push(order_lines[i])
             };
+            var old_data_props = []
+            if(!this.env.pos.selectedOrder.old_data){
+                old_data_props = false;
+            }else{
+                old_data_props = this.env.pos.selectedOrder.old_data
+            }
 
             const {confirmed, payload: data} = await this.showPopup('PointsConsumptionPopup', {
                 startingValue: this.order_lines,
                 product_valid_apply_all: product_valid_apply_all,
+                old_data_props: old_data_props,
                 product_valid: product_valid,
                 points_of_customer: points_of_customer,
                 order: this.env.pos.get_order(),
@@ -100,6 +107,11 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                 cancelTitle: this.env._t('Hủy bỏ'),
             });
             if (confirmed){
+                var old_data = []
+                $('.o_input').each(function( index ) {
+                    old_data.push({val:$(this).val(), idx:index})
+                });
+                this.env.pos.selectedOrder.old_data = old_data
                 var tempResult = {}
                 for(let { id, point } of data){
                         tempResult[id] = {
