@@ -35,6 +35,7 @@ class ParentBatchImport(models.Model):
     file_invalid_records = fields.Binary(string="Invalid Records", attachment=True)
     file_invalid_records_name = fields.Char('Invalid records file')
     log = fields.Text(string="Log")
+    context = fields.Text(string="Context")
 
     def merge_file_log_errors(self):
         import pandas as pd
@@ -129,6 +130,7 @@ class ParentBatchImport(models.Model):
                     'list_field': json.dumps(fields),
                     'columns': json.dumps(columns),
                     'options': json.dumps(options),
+                    'context': json.dumps(self.env.context),
                     'limit': options.get('limit'),
                     'dryrun': dryrun,
                     'status': 'draft',
