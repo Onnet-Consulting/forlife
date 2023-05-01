@@ -109,6 +109,16 @@ class ResPartner(models.Model):
             app_retail_type_id = False
         return app_retail_type_id
 
+    @api.model
+    def create_from_ui(self, partner):
+        partner_id = super(ResPartner, self).create_from_ui(partner)
+        partner_current = self.browse(partner_id)
+        if 'job_ids' in partner:
+            list_job_ids = partner['job_ids'][0]
+            # list_job_ids = [eval(i) for i in list_job_ids[0]]
+            partner_current.job_ids = [(6, 0, list_job_ids)]
+        return partner_id
+
     @api.model_create_multi
     def create(self, vals_list):
         env_context = self.env.context

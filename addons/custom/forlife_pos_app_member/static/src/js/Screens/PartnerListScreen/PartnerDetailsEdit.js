@@ -10,10 +10,20 @@ odoo.define('forlife_pos_app_member.CustomPartnerDetailsEdit', function (require
             super.setup();
             this.changes['group_id'] = this.env.pos.default_partner_group.id;
             this.changes['retail_type_ids'] = [[4, this.env.pos.default_partner_retail_type_id]];
+            this.changes['job_ids'] = this.env.pos.list_job_ids;
         }
 
         saveChanges() {
             super.saveChanges();
+        }
+
+        captureChangeJob(event) {
+            var self = this
+            this.env.pos.list_job_ids = []
+            $('#job').each(function( index ) {
+                self.env.pos.list_job_ids.push(parseInt($(this).val()))
+            });
+            this.changes['job_ids'] = this.env.pos.list_job_ids;
         }
 
     }
