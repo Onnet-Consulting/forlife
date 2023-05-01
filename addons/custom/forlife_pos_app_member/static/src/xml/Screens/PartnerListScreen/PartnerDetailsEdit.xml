@@ -31,8 +31,13 @@
             </div>
             <div class="partner-detail">
                 <span class="label">Jobs</span>
-                <t t-set="jobs" t-value="props.partner.job_ids"/>
-                <select id="job" multiple="multiple" name="job_ids" t-on-change="captureChangeJob">
+                <t t-if="props.partner.job_ids">
+                    <t t-set="jobs" t-value="props.partner.job_ids"/>
+                </t>
+                <t t-else="">
+                    <t t-set="jobs" t-value="[]"/>
+                </t>
+                <select style="margin-bottom: -64px" id="job" multiple="multiple" name="job_ids">
                     <t t-foreach="env.pos.jobs" t-as="job" t-key="job.id">
                         <option t-att-selected="jobs.includes(job.id)" t-att-value="job.id">
                             <t t-esc="job.name" />

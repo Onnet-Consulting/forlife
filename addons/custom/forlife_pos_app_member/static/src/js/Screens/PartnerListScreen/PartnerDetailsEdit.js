@@ -14,16 +14,13 @@ odoo.define('forlife_pos_app_member.CustomPartnerDetailsEdit', function (require
         }
 
         saveChanges() {
-            super.saveChanges();
-        }
-
-        captureChangeJob(event) {
             var self = this
             this.env.pos.list_job_ids = []
             $('#job').each(function( index ) {
-                self.env.pos.list_job_ids.push(parseInt($(this).val()))
+                self.env.pos.list_job_ids.push($(this).val())
             });
             this.changes['job_ids'] = this.env.pos.list_job_ids;
+            super.saveChanges();
         }
 
     }

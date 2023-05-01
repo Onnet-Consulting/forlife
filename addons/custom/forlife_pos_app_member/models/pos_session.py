@@ -33,5 +33,5 @@ class PosSession(models.Model):
         domain = res['search_params']['domain']
         domain = expression.AND([domain, [('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_c').id)]])
         res['search_params']['domain'] = domain
-        res['search_params']['fields'].extend(['birthday', 'gender','job_ids'])
+        res['search_params']['fields'].extend(['birthday', 'gender', 'job_ids'])
         return res
