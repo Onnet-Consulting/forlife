@@ -40,7 +40,7 @@ class PosSession(models.Model):
         statement_lines_pos = self.env.cr.fetchall()
         return {'search_params': {
             'domain': [('id', 'in', statement_lines_pos)],
-            'fields': ['name', 'move_id', 'amount', 'pos_config_id']}
+            'fields': ['name', 'move_id', 'amount', 'pos_config_id', 'to_store_tranfer']}
         }
 
     def _get_pos_ui_account_bank_statement_line(self, params):

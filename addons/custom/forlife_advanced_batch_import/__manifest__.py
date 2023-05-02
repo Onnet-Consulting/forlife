@@ -19,7 +19,11 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
+<<<<<<< HEAD
     'depends': ['base', 'queue_job', 'base_import', 'stock_account'],
+=======
+    'depends': ['base', 'queue_job', 'base_import', 'product'],
+>>>>>>> alpha
 
     # always loaded
     'data': [

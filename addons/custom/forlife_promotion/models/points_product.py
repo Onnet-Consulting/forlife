@@ -18,30 +18,30 @@ class PointsProduct(models.Model):
     state = fields.Selection([('new', _('New')), ('effective', _('Effective'))], string='State', default='new')
     product_existed = fields.Text(string='Product Existed', compute='compute_product_existed')
     state_related = fields.Selection('State Related', related='points_promotion_id.state', store=True)
-    product_count = fields.Integer('Count product', compute='_compute_product_count')
+    # product_count = fields.Integer('Count product', compute='_compute_product_count')
     _sql_constraints = [
         ('data_uniq', 'unique (points_promotion_id, point_addition, from_date, to_date)', 'The combination of Point Addition, From Date and To Date must be unique !'),
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
 
-    def _compute_product_count(self):
-        for rec in self:
-            rec.product_count = self.env['point.product.model.import'].search_count([('points_product_id', '=', self.id)])
-
-    def action_view_product_point(self):
-        ctx = dict(self._context)
-        ctx.update({
-            'default_points_product_id': self.id,
-        })
-        return {
-            'name': _('Sản phẩm'),
-            'domain': [('points_product_id', '=', self.id)],
-            'res_model': 'point.product.model.import',
-            'type': 'ir.actions.act_window',
-            'view_id': False,
-            'view_mode': 'tree,form',
-            'context': ctx,
-        }
+    # def _compute_product_count(self):
+    #     for rec in self:
+    #         rec.product_count = self.env['point.product.model.import'].search_count([('points_product_id', '=', self.id)])
+    #
+    # def action_view_product_point(self):
+    #     ctx = dict(self._context)
+    #     ctx.update({
+    #         'default_points_product_id': self.id,
+    #     })
+    #     return {
+    #         'name': _('Sản phẩm'),
+    #         'domain': [('points_product_id', '=', self.id)],
+    #         'res_model': 'point.product.model.import',
+    #         'type': 'ir.actions.act_window',
+    #         'view_id': False,
+    #         'view_mode': 'tree,form',
+    #         'context': ctx,
+    #     }
     def _compute_name(self):
         for line in self:
             line.name = _('%s products') % len(line.product_ids)

@@ -12,10 +12,10 @@ export class EnterCodeButton extends PosComponent {
     }
 
     async onClick() {
-        let { confirmed, payload: code } = await this.showPopup('TextInputPopup', {
+        let { confirmed, payload: code } = await this.showPopup('CodeInputPopup', {
             title: this.env._t('Enter Code'),
             startingValue: '',
-            placeholder: this.env._t('Ex: FORMAT-001'),
+            placeholder: this.env._t('Ex: 42-FORMAT-001'),
         });
         if (confirmed) {
             code = code.trim();
