@@ -179,7 +179,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             delete program_clone.display_name;
             item = Object.assign(item, program_clone);
         };
-        this.promotionPricelistItems.concat(promotionItems)
+        this.promotionPricelistItems = this.promotionPricelistItems.concat(promotionItems)
     }
 
     get_reward_product_ids(program) {
