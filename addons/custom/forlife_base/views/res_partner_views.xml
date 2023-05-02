@@ -2,8 +2,7 @@
 <odoo>
 
     <!-- Supplier Group -->
-
-    <record id="view_partner_form_forlife_inherit" model="ir.ui.view">
+     <record id="view_partner_form_forlife_inherit" model="ir.ui.view">
         <field name="name">res.partner.form.forlife.inherit</field>
         <field name="model">res.partner</field>
         <field name="priority">50</field>
