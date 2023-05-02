@@ -10,8 +10,7 @@ odoo.define('forlife_payment_terminal_base.PaymentScreen', function (require) {
             setup() {
                 super.setup();
                 useListener('set-done-manually', this.setDonePaymentLineManually);
-                this.env.services.bus_service.addEventListener(
-                    "notification",
+this.env.services.bus_service.addEventListener(
                     this._on_notification.bind(this)
                 );
             }
