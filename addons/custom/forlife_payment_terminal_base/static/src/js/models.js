@@ -6,7 +6,8 @@ odoo.define('forlife_payment_terminal_base.models', function (require) {
         constructor(obj, options) {
             super(obj, options);
             this.unique_id = this.unique_id || `${this.pos.config.id}_${this.order.uid}_${(+new Date()).toString()}`;
-            this.transaction_timeout = 60000; // milliseconds = 1'
+            this.transaction_timeout = 60000; // milliseconds = 1';
+            this.temp_payment_status = false; // store temporary state of payment line after send request to payment terminal
         }
 
         init_from_JSON(json) {
@@ -21,6 +22,7 @@ odoo.define('forlife_payment_terminal_base.models', function (require) {
                 transaction_timeout: this.transaction_timeout,
             });
         }
+
     }
 
     Registries.Model.extend(Payment, PaymentTerminalBase);
