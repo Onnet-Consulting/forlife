@@ -841,6 +841,19 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
         }
 
+        var map_to_discount_line_vals = {};
+
+        for (const to_discount_line_val of to_discount_line_vals) {
+            var key = to_discount_line_val.product.id + '-' + to_discount_line_val.promotion_usage_ids.reduce((p, {str_id}) => p + '-' + str_id, '');
+            if (map_to_discount_line_vals[key]) {
+                map_to_discount_line_vals[key].quantity += to_discount_line_val.quantity;
+            } else {
+                map_to_discount_line_vals[key] = to_discount_line_val;
+            }
+        }
+
+        to_discount_line_vals = Object.values(map_to_discount_line_vals);
+
         var total_price = to_discount_line_vals.reduce((p, {price, quantity}) => p + price*quantity, 0)
         for (const discount_line_val of to_discount_line_vals) {
             discount_line_val.total_price = total_price;
