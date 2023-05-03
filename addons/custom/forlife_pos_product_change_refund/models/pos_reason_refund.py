@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class POSReasonRefund(models.Model):
@@ -9,3 +10,10 @@ class POSReasonRefund(models.Model):
 
     name = fields.Char('Name', required=True)
     brand_id = fields.Many2one('res.brand', 'Brand', required=True)
+
+    def unlink(self):
+        exist_order_line_ids = self.env['pos.order.line'].sudo().search_count([('reason_refund_id', 'in', self.ids)])
+        if not exist_order_line_ids:
+            return super(POSReasonRefund, self).unlink()
+        raise ValidationError(_('Cannot delete Reason Refund used in POS Order'))
+

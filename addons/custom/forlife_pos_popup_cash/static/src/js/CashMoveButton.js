@@ -18,8 +18,17 @@ odoo.define('forlife_pos_popup_cash.CashMoveButton2', function (require) {
                 method: 'load_new_bank_statements',
                 args: [[odoo.pos_session_id]],
             });
-            this.env.pos.bank_statement = new_bank_statements
-            const { confirmed, payload } = await this.showPopup('CashMovePopup');
+            var self = this;
+            this.env.pos.bank_statement = new_bank_statements.filter(item => item.to_store_tranfer[0] === this.env.pos.config.id)
+            var listIdofPosTranfer = []
+            this.env.pos.bank_statement.forEach(function(item){
+                if(!listIdofPosTranfer.includes(item.pos_config_id[0])){
+                    listIdofPosTranfer.push(item.pos_config_id[0])
+                }
+            })
+            const { confirmed, payload } = await this.showPopup('CashMovePopup',{
+                old_pos: this.env.pos.pos_customizes,
+            });
             if (!confirmed) return;
             const { type, amount, reason, reference, type_tranfer, shop} = payload;
             const translatedType = TRANSLATED_CASH_MOVE_TYPE[type];

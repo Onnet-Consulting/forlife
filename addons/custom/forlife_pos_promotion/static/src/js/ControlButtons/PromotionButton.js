@@ -30,7 +30,7 @@ export class PromotionButton extends PosComponent {
         });
 
         order.orderlines = order.orderlines.filter(line => line.quantity > 0)
-
+        this.env.pos.no_reset_program = true;
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);
@@ -38,6 +38,7 @@ export class PromotionButton extends PosComponent {
                 order.orderlines.add(order._createLineFromVals(options));
             }
         }
+        this.env.pos.no_reset_program = false;
         // Kiểm tra phần thưởng cho chương trình giới thiệu KH mới
         for (let program of selectedProgramsList) {
             if (program.reward_for_referring) {
@@ -94,8 +95,14 @@ export class PromotionButton extends PosComponent {
         // Reset Cart Program first
         order._resetCartPromotionPrograms();
         const potentialPrograms = order.getPotentialProgramsToSelect();
-        let bestCombine = order.computeBestCombineOfProgram() || [];
-        bestCombine = bestCombine.map(p => this.env.pos.get_program_by_id(p))
+        let programsList = potentialPrograms.map(el => el.program);
+        let bestCombine;
+        if (programsList.every(p => p.promotion_type == 'pricelist')) {
+            bestCombine = programsList;
+        } else {
+            bestCombine = order.computeBestCombineOfProgram() || [];
+            bestCombine = bestCombine.map(p => this.env.pos.get_program_by_id(p));
+        }
         if (potentialPrograms.size === 0) {
             await this.showPopup('ErrorPopup', {
                 title: this.env._t('No program available.'),
@@ -103,9 +110,10 @@ export class PromotionButton extends PosComponent {
             });
             return false;
         };
-        const programsList = potentialPrograms.map((pro) => ({
+        const optionProgramsList = potentialPrograms.map((pro) => ({
             id: pro.program.str_id,
             label: pro.program.display_name,
+            program: pro.program,
             isSelected: bestCombine.length > 0 ? bestCombine.includes(pro.program) : false,
             index: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
             forecastedNumber: pro.number,
@@ -120,7 +128,7 @@ export class PromotionButton extends PosComponent {
 
         const { confirmed, payload } = await this.showPopup('ProgramSelectionPopup', {
             title: this.env._t('Please select some program'),
-            programs: programsList,
+            programs: optionProgramsList,
             discount_total: 0,
         });
         if (confirmed) {

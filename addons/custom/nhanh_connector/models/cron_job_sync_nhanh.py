@@ -83,12 +83,19 @@ class SaleOrder(models.Model):
             list(nhanh_orders)
             # _logger.info(nhanh_orders)
             for k, v in nhanh_orders.items():
+                name_customer = False
                 # Add customer if not existed
-                partner = partner_model.sudo().search([('code_current_customers', '=', 'code_current_customers_nhanhvn')], limit=1)
+                partner = partner_model.sudo().search(
+                    ['|', ('mobile', '=', v['customerMobile']), ('phone', '=', v['customerMobile'])], limit=1)
+                if partner:
+                    name_customer = v['customerName']
                 if not partner:
                     partner_value = {
-                        'code_current_customers': 'code_current_customers_nhanhvn',
-                        'name': 'Current customers Nhanh.Vn',
+                        'phone': v['customerMobile'],
+                        'mobile': v['customerMobile'],
+                        'name': v['customerName'],
+                        'email': v['customerEmail'],
+                        'contact_address_complete': v['customerAddress'],
                     }
                     partner = partner_model.sudo().create(partner_value)
                 order_line = []
@@ -144,7 +151,7 @@ class SaleOrder(models.Model):
                     'source_record': True,
                     'state': status,
                     'code_coupon': v['couponCode'],
-                    'name_customer': v['customerName'],
+                    'name_customer': name_customer,
                     'note': v['privateDescription'],
                     'order_line': order_line
                 }
@@ -195,12 +202,13 @@ class SaleOrder(models.Model):
                                 'source_record': True,
                                 'name': value_data.get('name'),
                                 'phone': value_data.get('mobile'),
+                                'mobile': value_data.get('mobile'),
                                 'email': value_data.get('email'),
                                 'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get('gender') == '2' else False,
                                 'contact_address_complete': value_data.get('address'),
                                 'street': value_data.get('address'),
                                 'vat': value_data.get('taxCode'),
-                                'date_of_birth': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else False,
+                                'birthday': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else False,
                                 'type_customer': 'retail_customers' if value_data.get(
                                     'type') == 1 else 'wholesalers' if value_data.get(
                                     'type') == 2 else 'agents' if value_data.get('type') == 2 else False,

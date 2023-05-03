@@ -37,7 +37,7 @@ class PosOrder(models.Model):
     @api.depends('program_store_point_id', 'total_point')
     def _allow_compensate_point(self):
         for order in self:
-            order.allow_compensate_point = not bool(order.program_store_point_id and order.total_point > 0)
+            order.allow_compensate_point = not bool(order.program_store_point_id and order.total_point >= 0)
 
     @api.model
     def _process_order(self, order, draft, existing_order):
@@ -89,6 +89,10 @@ class PosOrder(models.Model):
     @api.depends('partner_id','config_id.store_id.brand_id')
     def _compute_check_pos_order_compensate_point(self):
         for pos_order in self:
+            program = self.get_program_promotion({
+                'date_order': datetime.strftime(pos_order.date_order, DEFAULT_SERVER_DATETIME_FORMAT),
+                'session_id': pos_order.session_id.id
+            })
             brand_pos_id = pos_order.config_id.store_id.brand_id.id
             if not pos_order.partner_id:
                 pos_order.is_check_allow_compensate_point = False
@@ -99,11 +103,17 @@ class PosOrder(models.Model):
                 pos_order.is_check_allow_compensate_point = False
             elif not pos_order.allow_compensate_point:
                 pos_order.is_check_allow_compensate_point = False
+            elif not program and not pos_order.program_store_point_id:
+                pos_order.is_check_allow_compensate_point = False
             else:
                 pos_order.is_check_allow_compensate_point = True
 
     def check_pos_order_compensate_point(self):
         for pos_order in self:
+            program = self.get_program_promotion({
+                'date_order': datetime.strftime(pos_order.date_order, DEFAULT_SERVER_DATETIME_FORMAT),
+                'session_id': pos_order.session_id.id
+            })
             brand_pos_id = pos_order.config_id.store_id.brand_id.id
             if not pos_order.partner_id:
                 raise UserError(_('Đơn hàng này chưa chọn khách hàng !'))
@@ -114,6 +124,8 @@ class PosOrder(models.Model):
                 raise UserError(_('Khách hàng này chưa cài app!'))
             elif not pos_order.allow_compensate_point:
                 raise UserError(_(f"Đơn hàng này đã được tích điểm"))
+            elif not program and not pos_order.program_store_point_id:
+                raise UserError(_('Đơn hàng không có chương trình tích điểm nào phù hợp!'))
 
     def check_pos_order_compensate_point_from_list(self):
         list_partner_empty = []
@@ -122,6 +134,10 @@ class PosOrder(models.Model):
         list_order_has_point = []
         list_order_no_program_points_order = []
         for pos_order in self:
+            program = self.get_program_promotion({
+                'date_order': datetime.strftime(pos_order.date_order, DEFAULT_SERVER_DATETIME_FORMAT),
+                'session_id': pos_order.session_id.id
+            })
             brand_pos_id = pos_order.config_id.store_id.brand_id.id
             if not pos_order.partner_id:
                 list_partner_empty.append(pos_order.name)
@@ -135,7 +151,7 @@ class PosOrder(models.Model):
             elif not pos_order.allow_compensate_point:
                 list_order_has_point.append(pos_order.name)
                 # raise UserError(_(f"Đơn hàng này đã được tích điểm"))
-            elif not pos_order.program_store_point_id or pos_order.program_store_point_id.state == 'in_progress':
+            elif not program and not pos_order.program_store_point_id:
                 list_order_no_program_points_order.append(pos_order.name)
         if list_partner_empty:
             raise UserError(_('Đơn hàng {} chưa chọn khách hàng !'.format(', '.join(list_order_has_point))))

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
 
 from odoo import api, fields, models, _
 
@@ -19,3 +20,7 @@ class StockQuantPeriod(models.Model):
         for item in self:
             item.product_code = item.product_id.default_code or item.product_id.product_tmpl_id.default_code
 
+    def get_last_date_period(self, max_date):
+        last_record = self.env['stock.quant.period'].sudo().search([('period_end_date', '<=', max_date)],
+                                                                   order='period_end_date desc', limit=1)
+        return str(last_record.period_end_date) if last_record else str(max_date.replace(day=1) - timedelta(days=1))

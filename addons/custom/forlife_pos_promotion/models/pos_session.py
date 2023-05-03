@@ -28,7 +28,7 @@ class PosSession(models.Model):
         return {
             'search_params': {
                 'domain': ['&', ('program_id', 'in', self.config_id._get_promotion_program_ids().ids), '|', ('product_id.id', 'in', product_id ), ('product_id.detailed_type', '=', 'service')],
-                'fields': ['program_id', 'product_id', 'fixed_price']
+                'fields': ['id', 'program_id', 'product_id', 'display_name', 'fixed_price']
             }
         }
 
@@ -121,7 +121,6 @@ class PosSession(models.Model):
                     'min_quantity',
                     'order_amount_min',
                     'incl_reward_in_order',
-                    # 'json_pricelist_item_ids',
                     'reward_type',
                     'voucher_program_id',
                     'voucher_product_variant_id',

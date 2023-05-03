@@ -46,6 +46,43 @@ class ProgramVoucher(models.Model):
 
     details = fields.Char('Diễn giải')
 
+    def popup_message_show(self):
+        view = self.env.ref('sh_message.sh_message_wizard')
+        view_id = view and view.id or False
+        context = dict(self._context or {})
+        context['message'] = 'Đồng bộ thành công!'
+        return {
+            'name': 'Success',
+            'type': 'ir.actions.act_window',
+            'view_type':'form',
+            'view_mode':'form',
+            'res_model': 'sh.message.wizard',
+            'views': [(view.id, 'form')],
+            'view_id':view.id,
+            'target':'new',
+            'context': context
+        }
+
+    def action_compute_product_apply(self):
+        product_ids = [x.product_id.id for x in self.env['product.program.import'].search([('program_vocher_id','=',self.id)])]
+        self.product_apply_ids = [(4, product_id) for product_id in product_ids]
+        return self.popup_message_show()
+
+    def action_view_product_apply(self):
+        ctx = dict(self._context)
+        ctx.update({
+            'default_program_vocher_id': self.id,
+        })
+        return {
+            'name': _('Sản phẩm'),
+            'domain': [('program_vocher_id', '=', self.id)],
+            'res_model': 'product.program.import',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': ctx,
+        }
+
     @api.depends('product_ids')
     def compute_product(self):
         for rec in self:
@@ -73,6 +110,8 @@ class ProgramVoucher(models.Model):
     def onchange_type_program_voucher(self):
         if self.type == 'v':
             self.apply_many_times = False
+        if self.type:
+            self.product_id = False
 
     @api.depends('voucher_ids')
     def _compute_count_voucher(self):
