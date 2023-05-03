@@ -6,3 +6,4 @@ from . import models
 from . import base_import
 from . import product_attribute
 from . import stock_valuation_layer
+from . import account_move
