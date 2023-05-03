@@ -89,7 +89,7 @@ class PosConfig(models.Model):
         if (code_id.expiration_date and code_id.expiration_date < check_date) or \
                 (code_id.program_id.to_date and code_id.program_id.to_date < check_date) or \
                 (code_id.limit_usage and code_id.use_count >= code_id.max_usage) or \
-                code_id.remaining_amount <= 0.0:
+                (code_id.program_id.reward_type == 'code_amount' and code_id.remaining_amount <= 0.0):
             return {
                 'successful': False,
                 'payload': {
