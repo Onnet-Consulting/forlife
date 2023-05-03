@@ -93,7 +93,9 @@ export class PromotionButton extends PosComponent {
         console.log('onClick', this.env.pos)
         const order = this.env.pos.get_order();
         // Reset Cart Program first
-        order._resetCartPromotionPrograms();
+        if (order._isAppliedCartPromotion()) {
+            order._resetCartPromotionPrograms();
+        };
         const potentialPrograms = order.getPotentialProgramsToSelect();
         let programsList = potentialPrograms.map(el => el.program);
         let bestCombine;
