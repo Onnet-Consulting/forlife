@@ -10,6 +10,7 @@ odoo.define('forlife_pos_app_member.models', function (require) {
             await super._processData(...arguments);
             this.default_partner_group = loadedData['default_partner_group'];
             this.default_partner_retail_type_id = loadedData['default_partner_retail_type_id'];
+            this.jobs = loadedData['jobs'];
         }
     }
     Registries.Model.extend(PosGlobalState, PosCustomPosGlobalState);

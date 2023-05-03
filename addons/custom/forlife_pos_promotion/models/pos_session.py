@@ -110,7 +110,6 @@ class PosSession(models.Model):
                     'min_quantity',
                     'order_amount_min',
                     'incl_reward_in_order',
-                    # 'json_pricelist_item_ids',
                     'reward_type',
                     'voucher_program_id',
                     'voucher_product_variant_id',

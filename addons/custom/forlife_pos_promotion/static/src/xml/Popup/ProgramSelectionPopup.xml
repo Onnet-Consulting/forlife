@@ -30,7 +30,7 @@
                             <p t-if="program.reward_type == 'code_buy_x_get_y'" >
                                 <label>Chọn sản phẩm tặng kèm:</label>
                                 <select t-att-id="'reward_product_selected_'+program.id" style="margin-left: 2em;width: 70%;cursor: pointer;background-color: transparent;padding: 0.5em;color: #666666;font-size: 18px;margin-bottom: 0.5em;">
-                                    <option t-foreach="[...program.reward_product_ids]" t-as="product_id" t-key="product_id" t-att-value="product_id">
+                                    <option t-foreach="this.get_valid_reward_code_promotion(program.program)" t-as="product_id" t-key="product_id" t-att-value="product_id">
                                         <t t-set="product" t-value="this.env.pos.db.get_product_by_id(product_id)"/>
                                         <t t-out="product.display_name"/>
                                     </option>
