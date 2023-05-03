@@ -1097,13 +1097,18 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 };
             }
             else if (program.promotion_type == 'pricelist') {
-                const inOrderProductsList = new Set(this.get_orderlines().filter(l => l.quantity > 0).reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []))
-                for (let priceItem of program.pricelistItems) {
-                    if (inOrderProductsList.has(priceItem.product_id)) {
-                        let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
-                        let QtyOfProduct = this._checkQtyOfProductForPricelist(priceItem, to_check_order_lines)[2];
-                        if (QtyOfProduct > 0) {
-                            programIsVerified[priceItem.str_id] = QtyOfProduct;
+                const inOrderProductsList = new Set(this.get_orderlines()
+                            .filter(l => l.quantity > 0)
+                            .filter(l => !l.promotion_usage_ids || l.promotion_usage_ids.length == 0 ? true : false)
+                            .reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []));
+                if (inOrderProductsList.size) {
+                    for (let priceItem of program.pricelistItems) {
+                        if (inOrderProductsList.has(priceItem.product_id)) {
+                            let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
+                            let QtyOfProduct = this._checkQtyOfProductForPricelist(priceItem, to_check_order_lines)[2];
+                            if (QtyOfProduct > 0) {
+                                programIsVerified[priceItem.str_id] = QtyOfProduct;
+                            };
                         };
                     };
                 };
