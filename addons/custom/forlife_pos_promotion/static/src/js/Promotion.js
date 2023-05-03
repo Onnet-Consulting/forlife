@@ -1267,8 +1267,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     _computeNewPriceForComboProgram(disc_total, base_total, prePrice, quantity) {
         let subTotalLine = prePrice * quantity;
         let discAmountInLine = base_total > 0.0 ? subTotalLine / base_total * disc_total : 0.0;
-        let discAmount = round_decimals( discAmountInLine / quantity, this.pos.currency.decimal_places);
-        let newPrice = round_decimals( (subTotalLine - discAmountInLine) / quantity, this.pos.currency.decimal_places);
+        let discAmount = round_decimals( discAmountInLine / quantity, this.pos.currency.decimal_places + 2);
+        let newPrice = round_decimals( (subTotalLine - discAmountInLine) / quantity, this.pos.currency.decimal_places + 2);
         return [newPrice, discAmount]
     }
 
