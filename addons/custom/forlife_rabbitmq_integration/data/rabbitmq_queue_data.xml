@@ -57,13 +57,13 @@
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
-        <!--<record id="sync_product_inventory_queue" model="rabbitmq.queue">
-            <field name="queue_key">xxx</field>
+        <record id="sync_product_inventory_queue" model="rabbitmq.queue">
+            <field name="queue_key">stock.quant</field>
             <field name="queue_name">sync_product_inventory_queue</field>
             <field name="description">Đồng bộ thông tin tồn kho</field>
-            <field name="target">sync_customer_info_queue</field>
+            <field name="target">product_inventory</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
-        </record>-->
+        </record>
 
         <record id="sync_campaign_queue" model="rabbitmq.queue">
             <field name="queue_key">promotion.campaign</field>

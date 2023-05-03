@@ -17,3 +17,4 @@ from . import promotion_code
 from . import promotion_pricelist_item
 from . import store
 from . import stock_warehouse
+from . import stock_quant

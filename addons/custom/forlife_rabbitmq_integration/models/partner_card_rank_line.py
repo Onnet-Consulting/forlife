@@ -11,7 +11,7 @@ class PartnerCardRankLine(models.Model):
     def get_sync_create_data(self):
         records = self.filtered(lambda f: f.old_card_rank_id != f.new_card_rank_id)
         if not records:
-            return True
+            return False
         data = []
         for r in records:
             data.append({

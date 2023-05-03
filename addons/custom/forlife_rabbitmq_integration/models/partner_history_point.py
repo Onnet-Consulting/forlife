@@ -11,7 +11,7 @@ class PartnerCardRankLine(models.Model):
     def get_sync_create_data(self):
         records = self.filtered(lambda f: f.points_used != 0 or f.points_store != 0)
         if not records:
-            return True
+            return False
         data = []
         brand = {
             'format': 'FMT',
