@@ -252,9 +252,10 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             this.order._resetPromotionPrograms(false);
             reset = true;
         };
-        if (!this.pos.no_reset_program && !reset) {
+        if (!this.pos.no_reset_program && !reset && this.order._isAppliedCartPromotion()) {
             this.order._resetCartPromotionPrograms();
         };
+//        this.order._updateActivatedPromotionPrograms();
         return result;
     }
 
@@ -457,8 +458,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     add_product(product, options) {
         super.add_product(...arguments);
-        this._updateActivatedPromotionPrograms();
-
+//        this._updateActivatedPromotionPrograms();
+//
     }
 
     set_orderline_options(line, options) {
@@ -522,6 +523,18 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             return orderLines.filter((line) => line.is_reward_line && line.is_cart_discounted);
         }
         return orderLines;
+    }
+
+    _isAppliedCartPromotion() {
+        for (let line of this.get_orderlines()) {
+            if (line.promotion_usage_ids.some(usage => this.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')) {
+                return true;
+            };
+            if (this.reward_voucher_program_id || this.cart_promotion_program_id) {
+                return true;
+            };
+        };
+        return false;
     }
 
     _resetCartPromotionPrograms() {
