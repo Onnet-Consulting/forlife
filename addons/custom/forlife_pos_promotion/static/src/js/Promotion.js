@@ -737,7 +737,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             check_q = to_check_order_lines.reduce(funct_check_q, 0);
         }
         if (codeProgram.reward_type == "code_amount" && ((codeProgram.discount_apply_on == "order" && check_q >= valid_product_ids.size) || !valid_product_ids.size)) {
-            for (const ol of to_check_order_lines) {
+            for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id))) {
                 to_discount_line_vals.push({
                     product: ol.product,
                     quantity:  ol.quantity,
@@ -821,6 +821,39 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
             count += oddComboNumber;
         }
+
+        if (codeProgram.reward_type == "code_percent" && codeProgram.discount_apply_on == "order" && count > 0) {
+            for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id))) {
+                to_discount_line_vals.push({
+                    product: ol.product,
+                    quantity:  ol.quantity,
+                    price: ol.price,
+                    isNew: true,
+                    promotion_usage_ids: [...ol.promotion_usage_ids]
+                });
+                ol.quantity = ol.quantity - quantity_combo * min_quantity;
+                ol.quantityStr = field_utils.format.float(ol.quantity, {digits: [69, decimals]});
+                if (ol.key_program && to_apply_lines[ol.key_program]) {
+                    for (let new_line of to_apply_lines[ol.key_program].filter((l)=>l.product.id === ol.product.id)) {
+                        new_line.quantity = ol.quantity;
+                    }
+                }
+            }
+        }
+
+        var map_to_discount_line_vals = {};
+
+        for (const to_discount_line_val of to_discount_line_vals) {
+            var key = to_discount_line_val.product.id + '-' + to_discount_line_val.promotion_usage_ids.reduce((p, {str_id}) => p + '-' + str_id, '');
+            if (map_to_discount_line_vals[key]) {
+                map_to_discount_line_vals[key].quantity += to_discount_line_val.quantity;
+            } else {
+                map_to_discount_line_vals[key] = to_discount_line_val;
+            }
+        }
+
+        to_discount_line_vals = Object.values(map_to_discount_line_vals);
+
         var total_price = to_discount_line_vals.reduce((p, {price, quantity}) => p + price*quantity, 0)
         for (const discount_line_val of to_discount_line_vals) {
             discount_line_val.total_price = total_price;
