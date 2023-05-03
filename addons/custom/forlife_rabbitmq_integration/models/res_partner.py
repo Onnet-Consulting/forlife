@@ -11,15 +11,15 @@ class ResPartner(models.Model):
     _update_action = 'update_customer'
     _delete_action = 'delete_customer'
 
+    def check_create_info(self, res):
+        return res.filtered(lambda p: p.group_id == self.env.ref('forlife_pos_app_member.partner_group_c'))
+
     def get_sync_create_data(self):
-        records = self.filtered(lambda p: p.group_id == self.env.ref('forlife_pos_app_member.partner_group_c'))
-        if not records:
-            return False
         data = []
         brands = self.env['res.brand'].search_read([], ['id', 'code'])
         tokyolife_id = next((x.get('id') for x in brands if x.get('code') == 'TKL'), False)
         format_id = next((x.get('id') for x in brands if x.get('code') == 'FMT'), False)
-        for record in records:
+        for record in self:
             data.append({
                 'id': record.id,
                 'created_at': record.create_date.strftime('%Y-%m-%d %H:%M:%S'),

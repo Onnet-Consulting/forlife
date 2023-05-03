@@ -8,16 +8,16 @@ class PartnerCardRankLine(models.Model):
     _inherit = ['partner.history.point', 'sync.info.rabbitmq.create']
     _create_action = 'update_customer'
 
+    def check_create_info(self, res):
+        return res.filtered(lambda f: f.points_used != 0 or f.points_store != 0)
+
     def get_sync_create_data(self):
-        records = self.filtered(lambda f: f.points_used != 0 or f.points_store != 0)
-        if not records:
-            return False
         data = []
         brand = {
             'format': 'FMT',
             'forlife': 'TKL',
         }
-        for r in records:
+        for r in self:
             history_points = r.partner_id.history_points_format_ids if r.store == 'format' else r.partner_id.history_points_forlife_ids
             data.append({
                 'id': r.partner_id.id,

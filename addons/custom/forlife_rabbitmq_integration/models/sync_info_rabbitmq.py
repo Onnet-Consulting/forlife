@@ -48,11 +48,15 @@ class SyncInfoRabbitmqNew(models.AbstractModel):
         if data:
             self.push_message_to_rabbitmq(data, self._create_action, self._name)
 
+    def check_create_info(self, res):
+        return res
+
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        if res:
-            res.sudo().with_delay(description="Create '%s'" % self._name).action_create_record()
+        record = self.check_create_info(res)
+        if record:
+            record.sudo().with_delay(description="Create '%s'" % self._name).action_create_record()
         return res
 
 

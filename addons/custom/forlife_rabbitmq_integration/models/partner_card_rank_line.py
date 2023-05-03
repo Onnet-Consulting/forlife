@@ -8,12 +8,12 @@ class PartnerCardRankLine(models.Model):
     _inherit = ['partner.card.rank.line', 'sync.info.rabbitmq.create']
     _create_action = 'update_customer'
 
+    def check_create_info(self, res):
+        return res.filtered(lambda f: f.old_card_rank_id != f.new_card_rank_id)
+
     def get_sync_create_data(self):
-        records = self.filtered(lambda f: f.old_card_rank_id != f.new_card_rank_id)
-        if not records:
-            return False
         data = []
-        for r in records:
+        for r in self:
             data.append({
                 'id': r.partner_card_rank_id.customer_id.id,
                 'rank': {
