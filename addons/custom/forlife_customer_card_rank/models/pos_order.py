@@ -19,58 +19,43 @@ class PosOrder(models.Model):
         return res
 
     def update_partner_card_rank(self):
-        member_cards = self.env['member.card'].get_member_card_by_date(self.date_order, self.config_id.store_id.brand_id.id)
-        if not member_cards:
-            return False
-        is_rank = False
         partner_card_rank = self.partner_id.card_rank_ids.filtered(lambda f: f.brand_id == self.config_id.store_id.brand_id)
         if partner_card_rank:
-            new_rank = partner_card_rank.card_rank_id
-            for program in member_cards:
-                if self.partner_id.group_id.id == program.customer_group_id.id and \
-                        (self.partner_id.retail_type_ids and any(retail_type in program.partner_retail_ids for retail_type in self.partner_id.retail_type_ids)):
-                    is_rank = True
-                    value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
-                    total_value_to_up = value_to_upper_order + sum(partner_card_rank.line_ids.filtered(lambda f: f.order_date >= (self.date_order - timedelta(days=program.time_set_rank))).mapped('value_to_upper'))
-                    if new_rank.priority >= program.card_rank_id.priority:
-                        self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id, total_value_to_up, program.id)
-                        self.save_order_to_program(program)
-                        break
-                    else:
-                        if total_value_to_up >= program.min_turnover:
-                            self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id, total_value_to_up, program.id)
-                            self.save_order_to_program(program)
-                            break
+            self.validate_order_for_card_rank(partner_card_rank)
         else:
-            for program in member_cards:
-                if self.partner_id.group_id.id == program.customer_group_id.id and \
-                        (self.partner_id.retail_type_ids and any(retail_type in program.partner_retail_ids for retail_type in self.partner_id.retail_type_ids)):
-                    is_rank = True
-                    value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
-                    if value_to_upper_order >= program.min_turnover:
-                        self.create_partner_card_rank(value_to_upper_order, program.id, program.card_rank_id.id)
+            partner_card_rank = self.create_partner_card_rank()
+            self.validate_order_for_card_rank(partner_card_rank)
+
+    def create_partner_card_rank(self):
+        res = self.env['partner.card.rank'].sudo().create({
+            'customer_id': self.partner_id.id,
+            'brand_id': self.config_id.store_id.brand_id.id,
+        })
+        return res
+
+    def validate_order_for_card_rank(self, partner_card_rank):
+        member_cards = self.env['member.card'].get_member_card_by_date(self.date_order, partner_card_rank.brand_id.id)
+        if not member_cards:
+            return False
+        new_rank = partner_card_rank.card_rank_id
+        is_rank = False
+        for program in member_cards:
+            if partner_card_rank.customer_id.group_id.id == program.customer_group_id.id and \
+                    (self.partner_id.retail_type_ids and any(retail_type in program.partner_retail_ids for retail_type in self.partner_id.retail_type_ids)):
+                is_rank = True
+                value_to_upper_order = sum([payment_method.amount for payment_method in self.payment_ids if payment_method.payment_method_id.id in program.payment_method_ids.ids])
+                total_value_to_up = value_to_upper_order + sum(partner_card_rank.line_ids.filtered(lambda f: f.order_date >= (self.date_order - timedelta(days=program.time_set_rank))).mapped('value_to_upper'))
+                if new_rank.priority >= program.card_rank_id.priority:
+                    self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, new_rank.id, total_value_to_up, program.id)
+                    self.save_order_to_program(program)
+                    break
+                else:
+                    if total_value_to_up >= program.min_turnover:
+                        self.create_partner_card_rank_detail(partner_card_rank.id, value_to_upper_order, new_rank.id, program.card_rank_id.id, total_value_to_up, program.id)
                         self.save_order_to_program(program)
                         break
         if is_rank:
             self.sudo().write({'is_rank': True})
-
-    def create_partner_card_rank(self, value_to_upper_order, program_id, rank_id):
-        res = self.env['partner.card.rank'].sudo().create({
-            'customer_id': self.partner_id.id,
-            'brand_id': self.config_id.store_id.brand_id.id,
-            'line_ids': [(0, 0, {
-                'order_id': self.id,
-                'order_date': self.date_order,
-                'real_date': self.create_date,
-                'value_orders': self.amount_total,
-                'value_to_upper': value_to_upper_order,
-                'old_card_rank_id': rank_id,
-                'new_card_rank_id': rank_id,
-                'value_up_rank': 0,
-                'program_cr_id': program_id,
-            })]
-        })
-        return res
 
     def create_partner_card_rank_detail(self, partner_card_rank_id, value_to_upper, old_rank_id, new_rank_id, total_value_to_up, program_id):
         self.env['partner.card.rank.line'].sudo().create({
