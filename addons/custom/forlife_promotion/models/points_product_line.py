@@ -17,27 +17,49 @@ class PointsProductLine(models.Model):
     state = fields.Selection([('new', _('New')), ('effective', _('Effective'))], string='State', default='new')
     product_existed = fields.Text(string='Product Existed', compute='compute_product_existed')
     state_related = fields.Selection('State Related', related='event_id.state', store=True)
-    # product_count = fields.Integer('Count product', compute='_compute_product_count')
+    product_count = fields.Integer('Count product', compute='_compute_product_count')
+
+    def popup_message_show(self):
+        view = self.env.ref('sh_message.sh_message_wizard')
+        view_id = view and view.id or False
+        context = dict(self._context or {})
+        context['message'] = 'Created successfully'
+        return {
+            'name': 'Success',
+            'type': 'ir.actions.act_window',
+            'view_type':'form',
+            'view_mode':'form',
+            'res_model': 'sh.message.wizard',
+            'views': [(view.id, 'form')],
+            'view_id':view.id,
+            'target':'new',
+            'context': context
+        }
+
+    def action_compute_product_apply(self):
+        product_ids = [x.product_id.id for x in self.env['point.product.line.model.import'].search([('points_product_line_id','=',self.id)])]
+        self.product_ids = [(4, product_id) for product_id in product_ids]
+        return self.popup_message_show()
 
 
-    # def _compute_product_count(self):
-    #     for rec in self:
-    #         rec.product_count = self.env['point.product.line.model.import'].search_count([('points_product_line_id', '=', self.id)])
-    #
-    # def action_view_product_line_point(self):
-    #     ctx = dict(self._context)
-    #     ctx.update({
-    #         'default_points_product_line_id': self.id,
-    #     })
-    #     return {
-    #         'name': _('Sản phẩm'),
-    #         'domain': [('points_product_line_id', '=', self.id)],
-    #         'res_model': 'point.product.line.model.import',
-    #         'type': 'ir.actions.act_window',
-    #         'view_id': False,
-    #         'view_mode': 'tree,form',
-    #         'context': ctx,
-    #     }
+    def _compute_product_count(self):
+        for rec in self:
+            rec.product_count = self.env['point.product.line.model.import'].search_count([('points_product_line_id', '=', self.id)])
+
+    def action_view_product_line_point(self):
+        ctx = dict(self._context)
+        ctx.update({
+            'default_points_product_line_id': self.id,
+        })
+        return {
+            'name': _('Sản phẩm'),
+            'domain': [('points_product_line_id', '=', self.id)],
+            'res_model': 'point.product.line.model.import',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': ctx,
+        }
 
     def _compute_name(self):
         for line in self:
