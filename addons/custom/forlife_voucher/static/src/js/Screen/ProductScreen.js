@@ -8,6 +8,7 @@ export const PosVoucherProductScreen = (ProductScreen) =>
     class extends ProductScreen {
         async _onClickPay() {
             this.env.pos.selectedOrder.data_voucher = false;
+            this.env.pos.selectedOrder.remove_all_paymentlines();
             return super._onClickPay(...arguments);
         }
     };
