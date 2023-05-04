@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:spce="preserve">
+
+    <t t-name="ProductItem" t-inherit="point_of_sale.ProductItem" owl="1">
+        <xpath expr="//div[hasclass('product-img')]" position="replace">
+            <t/>
+        </xpath>
+    </t>
+<t t-name="OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[@class='pos-receipt']" position="after">
+            <img class="pos-receipt-logo" src="/forlife_pos_print_receipt/static/src/img/logo-format.png" height="25"/>
+        </xpath>
+        <xpath expr="//div[@class='pos-receipt']" position="attributes">
+			<!-- Hide old template -->
+            <attribute name="class">oe_hidden</attribute>
+		</xpath>
+    </t>
+</templates>
