@@ -40,7 +40,7 @@
                 <div id="checkboxes" style="display: flex;flex-wrap: wrap;justify-content: space-between;margin-left: 77px;margin-top: -50px;width: 383px;">
                         <t t-foreach="env.pos.jobs" t-as="job" t-key="job.id">
                             <label style="flex: 0 0 calc(100% / 3 - 5px);padding:0">
-                            <input class="o_input_job" t-att-value="job.id" t-att-checked="jobs.includes(job.id)" style="width:20px;" type="checkbox" /><span><t t-esc="job.name"></t></span></label>
+                            <input class="o_input_job" t-att-value="job.id" t-att-checked="'checked' ? jobs.includes(job.id) : ''" style="width:20px;" type="checkbox" /><span><t t-esc="job.name"></t></span></label>
                         </t>
                 </div>
 

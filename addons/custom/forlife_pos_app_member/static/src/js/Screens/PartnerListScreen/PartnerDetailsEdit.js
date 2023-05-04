@@ -18,11 +18,12 @@ odoo.define('forlife_pos_app_member.CustomPartnerDetailsEdit', function (require
             this.env.pos.list_job_ids = []
             $('.o_input_job').each(function( index ) {
                 if($(this).is(":checked")){
-                    self.env.pos.list_job_ids.push($(this).val())
+                    console.log($(this).val())
+                    self.env.pos.list_job_ids.push(parseInt($(this).val()))
                 }
             });
             this.changes['job_ids'] = this.env.pos.list_job_ids;
-            super.saveChanges();
+            return super.saveChanges();
         }
     }
 
