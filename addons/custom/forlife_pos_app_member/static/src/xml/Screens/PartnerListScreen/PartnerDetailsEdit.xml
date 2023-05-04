@@ -29,6 +29,25 @@
                         </option>
                 </select>
             </div>
+            <div class="partner-detail">
+                <span class="label">Jobs</span>
+                <t t-if="props.partner.job_ids">
+                    <t t-set="jobs" t-value="props.partner.job_ids"/>
+                </t>
+                <t t-else="">
+                    <t t-set="jobs" t-value="[]"/>
+                </t>
+                <select style="margin-bottom: -64px" id="job" multiple="multiple" name="job_ids">
+                    <t t-foreach="env.pos.jobs" t-as="job" t-key="job.id">
+                        <option t-att-selected="jobs.includes(job.id)" t-att-value="job.id">
+                            <t t-esc="job.name" />
+                        </option>
+                    </t>
+                </select>
+<!--                <input type="text" class="form-control js_select2" placeholder="Tags" value="Tags"-->
+<!--                       />-->
+
+            </div>
         </xpath>
         <xpath expr="//input[@name='barcode']" position="attributes">
             <attribute name="readonly">readonly</attribute>
