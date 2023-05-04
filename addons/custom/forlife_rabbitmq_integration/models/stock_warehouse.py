@@ -12,8 +12,7 @@ class StockWarehouse(models.Model):
     _delete_action = 'delete'
 
     def domain_record_sync_info(self):
-        wh_type = [wht['id'] for wht in self.env['stock.warehouse.type'].search_read([('code', 'in', ('3', '4', '5'))], ['id'])]
-        return self.filtered(lambda f: f.whs_type.id in wh_type)
+        return self.filtered(lambda f: f.whs_type.code in ('3', '4', '5'))
 
     def get_sync_create_data(self):
         data = []
@@ -65,7 +64,7 @@ class StockWarehouse(models.Model):
         return data
 
     def check_update_info(self, values):
-        if self.domain_record_sync_info():
+        if not self.domain_record_sync_info():
             return False
         field_check_update = [
             'name', 'short_name_internal', 'code', 'status_ids', 'whs_type', 'whs_longitude', 'whs_latitude',
