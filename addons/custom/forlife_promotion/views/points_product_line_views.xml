@@ -26,14 +26,15 @@
                 <form string="points_product_line_form">
                     <header>
                         <button name="btn_effective" string="Active" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('state_related', '=', 'finish')]}" type="object" groups="forlife_promotion.promotion_manager"/>
+                        <button name="action_compute_product_apply" string="Đồng bộ sản phẩm" class="oe_highlight" type="object" groups="forlife_promotion.promotion_manager"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-<!--                        <div class="oe_button_box" name="button_box">-->
-<!--                            <button name="action_view_product_line_point" type="object" class="oe_stat_button" icon="fa-list">-->
-<!--                                <field name="product_count" widget="statinfo" string="Sản phẩm"/>-->
-<!--                            </button>-->
-<!--                        </div>-->
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_product_line_point" type="object" class="oe_stat_button" icon="fa-list">
+                                <field name="product_count" widget="statinfo" string="Sản phẩm"/>
+                            </button>
+                        </div>
                         <group>
                             <field name="point_addition"/>
                         </group>
