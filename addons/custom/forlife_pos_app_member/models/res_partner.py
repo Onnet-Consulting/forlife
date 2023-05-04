@@ -109,19 +109,6 @@ class ResPartner(models.Model):
             app_retail_type_id = False
         return app_retail_type_id
 
-    @api.model
-    def create_from_ui(self, partner):
-        if 'job_ids' in partner:
-            if len(partner['job_ids'][0]) > 0:
-                list_job_ids = partner['job_ids'][0]
-                list_job_ids = [eval(i) for i in list_job_ids]
-                partner_id = super(ResPartner, self).create_from_ui(partner)
-                partner_current = self.browse(partner_id)
-                partner_current.job_ids = [(6, 0, list_job_ids)]
-                return partner_id
-            else:
-                partner['job_ids'] = False
-        return super(ResPartner, self).create_from_ui(partner)
 
     @api.model_create_multi
     def create(self, vals_list):

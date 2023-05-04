@@ -37,18 +37,13 @@
                     <t t-else="">
                         <t t-set="jobs" t-value="[]"/>
                     </t>
-                    <span class="selectBox" style="position: relative;" t-on-click="showCheckboxes">
-                  <select style="font-weight: bold;width:110px">
-                    <option>Chọn ...</option>
-                  </select>
-                  <span class="overSelect" style="position: absolute;left: 0;right: 0;top: 0;bottom: 0;"></span>
-                </span>
-                <span id="checkboxes" style="display: none;border: 1px #dadada solid;width:108px;margin-left: 83px;">
-                    <t t-foreach="jobs" t-as="job">
-                        <label style="display: block;width:100px;">
-                        <input t-att-value="job.id" style="width:20px;" type="checkbox" /><span><t t-esc="job.name"></t></span></label>
-                    </t>
-                </span>
+                <div id="checkboxes" style="display: block;width:338px;margin-left: 83px;margin-top: -45px">
+                        <t t-foreach="env.pos.jobs" t-as="job" t-key="job.id">
+                            <label style="display: block;width:100px; height:0px">
+                            <input class="o_input_job" t-att-value="job.id" t-att-checked="jobs.includes(job.id)" style="width:20px;" type="checkbox" /><span><t t-esc="job.name"></t></span></label>
+                        </t>
+
+                </div>
 
 <!--                <input type="text" class="form-control js_select2" placeholder="Tags" value="Tags"-->
 <!--                       />-->
