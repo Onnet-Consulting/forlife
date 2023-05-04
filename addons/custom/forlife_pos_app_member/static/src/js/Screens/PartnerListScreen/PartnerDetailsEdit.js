@@ -24,20 +24,6 @@ odoo.define('forlife_pos_app_member.CustomPartnerDetailsEdit', function (require
             this.changes['job_ids'] = this.env.pos.list_job_ids;
             super.saveChanges();
         }
-        showCheckboxes() {
-              if(!this.env.pos.hasOwnProperty('expanded')){
-                  this.env.pos.expanded = false
-              }
-              var checkboxes = $('#checkboxes');
-              if (!this.env.pos.expanded) {
-                checkboxes.css('display','block')
-                this.env.pos.expanded = true;
-              } else {
-//                checkboxes.style.display = "none";
-                checkboxes.css('display','none')
-                this.env.pos.expanded = false;
-              }
-        }
     }
 
     Registries.Component.extend(PartnerDetailsEdit, CustomPartnerDetailsEdit);
