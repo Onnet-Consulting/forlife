@@ -737,7 +737,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             check_q = to_check_order_lines.reduce(funct_check_q, 0);
         }
         if (codeProgram.reward_type == "code_amount" && ((codeProgram.discount_apply_on == "order" && check_q >= valid_product_ids.size) || !valid_product_ids.size)) {
-            for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id))) {
+            for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id) || !valid_product_ids.size)) {
                 to_discount_line_vals.push({
                     product: ol.product,
                     quantity:  ol.quantity,
