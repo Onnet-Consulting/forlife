@@ -15,4 +15,10 @@
             <attribute name="class">oe_hidden</attribute>
 		</xpath>
     </t>
+
+    <t t-name="FormatOrderReceipt" owl="1">
+        <div class="pos-receipt">
+            <img class="pos-receipt-logo" src="/forlife_pos_print_receipt/static/src/img/logo-format.png" height="25"/>
+        </div>
+    </t>
 </templates>
