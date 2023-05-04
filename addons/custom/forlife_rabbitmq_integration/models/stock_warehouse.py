@@ -6,26 +6,79 @@ import copy
 
 class StockWarehouse(models.Model):
     _name = 'stock.warehouse'
-    _inherit = ['stock.warehouse', 'sync.info.rabbitmq.update']
-    _update_action = 'update_store'
+    _inherit = ['stock.warehouse', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
+    _create_action = 'create'
+    _update_action = 'update'
+    _delete_action = 'delete'
+
+    def domain_record_sync_info(self):
+        wh_type = [wht['id'] for wht in self.env['stock.warehouse.type'].search_read([('code', 'in', ('3', '4', '5'))], ['id'])]
+        return self.filtered(lambda f: f.whs_type.id in wh_type)
+
+    def get_sync_create_data(self):
+        data = []
+        for wh in self:
+            vals = {
+                'id': wh.id,
+                'created_at': wh.create_date.strftime('%Y-%m-%d %H:%M:%S'),
+                'updated_at': wh.write_date.strftime('%Y-%m-%d %H:%M:%S'),
+                'name': wh.name or None,
+                'name_with_index': wh.short_name_internal or None,
+                'code': wh.code or None,
+                'status': wh.status_ids.name or None,
+                'type': wh.whs_type.code,
+                'location': {
+                    'longitude': wh.whs_longitude,
+                    'latitude': wh.whs_latitude,
+                },
+                'region': {
+                    'id': wh.sale_province_id.id,
+                    'name': wh.sale_province_id.name
+                } if wh.sale_province_id else None,
+                'city': {
+                    'id': wh.state_id.id,
+                    'name': wh.state_id.name
+                } if wh.state_id else None,
+                'district': {
+                    'id': wh.district_id.id,
+                    'name': wh.district_id.name
+                } if wh.district_id else None,
+                'ward': {
+                    'id': wh.ward_id.id,
+                    'name': wh.ward_id.name
+                } if wh.ward_id else None,
+                'address': wh.street or None,
+                'phone_number': wh.phone or None,
+                'manager': {
+                    'id': wh.manager_id.id,
+                    'name': wh.manager_id.name or None,
+                    'phone_number': wh.manager_id.mobile_phone or None,
+                    'email': wh.manager_id.work_email or None,
+                } if wh.manager_id else None,
+                'storages': [{
+                    'location_id': location.id,
+                    'location_code': location.code,
+                    'location_name': location.name,
+                } for location in wh.view_location_id.child_internal_location_ids],
+            }
+            data.append(vals)
+        return data
 
     def check_update_info(self, values):
-        if self.env['store'].search_count([('warehouse_id', 'in', self.ids)]) == 0:
+        if self.domain_record_sync_info():
             return False
         field_check_update = [
-            'short_name_internal', 'code', 'status_ids', 'whs_longitude', 'whs_latitude', 'phone',
-            'sale_province_id', 'state_id', 'district_id', 'ward_id', 'street', 'manager_id'
+            'name', 'short_name_internal', 'code', 'status_ids', 'whs_type', 'whs_longitude', 'whs_latitude',
+            'phone', 'sale_province_id', 'state_id', 'district_id', 'ward_id', 'street', 'manager_id'
         ]
         return [item for item in field_check_update if item in values]
 
     def get_sync_update_data(self, field_update, values):
-        store = self.env['store'].search_read([('warehouse_id', 'in', self.ids)], ['id', 'warehouse_id'])
-        store_by_wh_id = {}
-        for s in store:
-            store_by_wh_id.update({
-                s['warehouse_id'][0]: s['id']
-            })
+        whs = self.domain_record_sync_info()
+        if not whs:
+            return False
         map_key_rabbitmq = {
+            'name': 'name',
             'short_name_internal': 'name_with_index',
             'street': 'address',
             'phone': 'phone_number',
@@ -37,15 +90,18 @@ class StockWarehouse(models.Model):
                     map_key_rabbitmq.get(odoo_key): values.get(odoo_key) or None
                 })
         data = []
-        whs = self.filtered(lambda w: w.id in list(store_by_wh_id.keys()))
         for wh in whs:
             vals.update({
-                'id': store_by_wh_id.get(wh.id),
+                'id': wh.id,
                 'updated_at': wh.write_date.strftime('%Y-%m-%d %H:%M:%S'),
             })
             if 'code' in values:
                 vals.update({
                     'code': wh.code or None
+                })
+            if 'whs_type' in values:
+                vals.update({
+                    'type': wh.whs_type.code if wh.whs_type else None
                 })
             if 'status_ids' in values:
                 vals.update({

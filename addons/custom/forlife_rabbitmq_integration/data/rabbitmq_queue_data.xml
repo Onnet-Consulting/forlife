@@ -57,6 +57,14 @@
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
+        <record id="sync_location_info_queue" model="rabbitmq.queue">
+            <field name="queue_key">stock.location</field>
+            <field name="queue_name">sync_store_info_queue</field>
+            <field name="description">Đồng bộ thông tin cửa hàng</field>
+            <field name="target">store_info</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
         <record id="sync_product_inventory_queue" model="rabbitmq.queue">
             <field name="queue_key">stock.quant</field>
             <field name="queue_name">sync_product_inventory_queue</field>

@@ -7,7 +7,7 @@ import copy
 class ProductTemplate(models.Model):
     _name = 'product.template'
     _inherit = ['product.template', 'sync.info.rabbitmq.update']
-    _update_action = 'update_product'
+    _update_action = 'update'
 
     def check_update_info(self, values):
         if not self.mapped('product_variant_ids'):

@@ -7,9 +7,9 @@ import copy
 class PromotionProgram(models.Model):
     _name = 'promotion.program'
     _inherit = ['promotion.program', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
-    _create_action = 'create_program'
-    _update_action = 'update_program'
-    _delete_action = 'delete_program'
+    _create_action = 'create'
+    _update_action = 'update'
+    _delete_action = 'delete'
 
     def get_sync_create_data(self):
         data = []

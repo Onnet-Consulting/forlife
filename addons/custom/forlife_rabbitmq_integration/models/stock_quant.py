@@ -10,9 +10,9 @@ class StockQuant(models.Model):
     _create_action = 'update'
     _update_action = 'update'
 
-    def check_create_info(self, res):
-        stores = self.env['store'].search([('warehouse_id', 'in', res.mapped('warehouse_id').ids)])
-        return res.filtered(lambda f: f.location_id.warehouse_id.id in stores.mapped('warehouse_id').ids)
+    def domain_record_sync_info(self):
+        stores = self.env['store'].search([('warehouse_id', 'in', self.mapped('warehouse_id').ids)])
+        return self.filtered(lambda f: f.location_id.warehouse_id.id in stores.mapped('warehouse_id').ids)
 
     def get_sync_create_data(self):
         stores = self.env['store'].search([('warehouse_id', 'in', self.mapped('warehouse_id').ids)])
@@ -38,12 +38,12 @@ class StockQuant(models.Model):
         return data
 
     def check_update_info(self, values):
-        check_sqt_in_store = self.check_create_info(self)
+        check_sqt_in_store = self.domain_record_sync_info()
         field_check_update = ['quantity', 'reserved_quantity']
         return [item for item in field_check_update if item in values] if check_sqt_in_store else False
 
     def get_sync_update_data(self, field_update, values):
-        res = self.check_create_info(self)
+        res = self.domain_record_sync_info()
         stores = self.env['store'].search([('warehouse_id', 'in', self.mapped('warehouse_id').ids)])
         data = []
         for sqt in res:

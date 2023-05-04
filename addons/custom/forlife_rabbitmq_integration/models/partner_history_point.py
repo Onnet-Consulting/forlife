@@ -6,10 +6,10 @@ from odoo import api, fields, models, _
 class PartnerCardRankLine(models.Model):
     _name = 'partner.history.point'
     _inherit = ['partner.history.point', 'sync.info.rabbitmq.create']
-    _create_action = 'update_customer'
+    _create_action = 'update'
 
-    def check_create_info(self, res):
-        return res.filtered(lambda f: f.points_used != 0 or f.points_store != 0)
+    def domain_record_sync_info(self):
+        return self.filtered(lambda f: f.points_used != 0 or f.points_store != 0)
 
     def get_sync_create_data(self):
         data = []

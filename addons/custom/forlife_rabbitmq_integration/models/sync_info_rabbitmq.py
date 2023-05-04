@@ -10,6 +10,9 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
     _name = 'sync.info.rabbitmq.core'
     _description = 'Sync Info RabbitMQ Core'
 
+    def domain_record_sync_info(self):
+        return self
+
     def get_rabbitmq_queue_by_queue_key(self, queue_key):
         rabbitmq_queue = self.env['rabbitmq.queue'].search([('queue_key', '=', queue_key)])
         if not rabbitmq_queue:
@@ -34,10 +37,10 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
         connection.close()
 
 
-class SyncInfoRabbitmqNew(models.AbstractModel):
+class SyncInfoRabbitmqCreate(models.AbstractModel):
     _name = 'sync.info.rabbitmq.create'
     _inherit = 'sync.info.rabbitmq.core'
-    _description = 'Sync Info RabbitMQ New'
+    _description = 'Sync Info RabbitMQ Create'
     _create_action = 'create'
 
     def get_sync_create_data(self):
@@ -48,13 +51,10 @@ class SyncInfoRabbitmqNew(models.AbstractModel):
         if data:
             self.push_message_to_rabbitmq(data, self._create_action, self._name)
 
-    def check_create_info(self, res):
-        return res
-
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        record = self.check_create_info(res)
+        record = res.domain_record_sync_info()
         if record:
             record.sudo().with_delay(description="Create '%s'" % self._name).action_create_record()
         return res
@@ -85,10 +85,10 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
         return res
 
 
-class SyncInfoRabbitmqRemove(models.AbstractModel):
+class SyncInfoRabbitmqDelete(models.AbstractModel):
     _name = 'sync.info.rabbitmq.delete'
     _inherit = 'sync.info.rabbitmq.core'
-    _description = 'Sync Info RabbitMQ Remove'
+    _description = 'Sync Info RabbitMQ Delete'
     _delete_action = 'delete'
 
     def action_delete_record(self, record_ids):
@@ -97,7 +97,7 @@ class SyncInfoRabbitmqRemove(models.AbstractModel):
             self.push_message_to_rabbitmq(data, self._delete_action, self._name)
 
     def unlink(self):
-        record_ids = self.ids
+        record_ids = self.domain_record_sync_info().ids
         res = super().unlink()
         if record_ids:
             self.sudo().with_delay(description="Delete '%s'" % self._name).action_delete_record(record_ids)

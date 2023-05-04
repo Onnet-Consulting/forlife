@@ -7,9 +7,9 @@ import copy
 class ProductCategory(models.Model):
     _name = 'product.category'
     _inherit = ['product.category', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
-    _create_action = 'create_category'
-    _update_action = 'update_category'
-    _delete_action = 'delete_category'
+    _create_action = 'create'
+    _update_action = 'update'
+    _delete_action = 'delete'
 
     def get_sync_create_data(self):
         data = []

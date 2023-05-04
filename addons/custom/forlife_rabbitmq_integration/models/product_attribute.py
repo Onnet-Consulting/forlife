@@ -7,9 +7,9 @@ import copy
 class ProductAttribute(models.Model):
     _name = 'product.attribute'
     _inherit = ['product.attribute', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
-    _create_action = 'create_attribute'
-    _update_action = 'update_attribute'
-    _delete_action = 'delete_attribute'
+    _create_action = 'create'
+    _update_action = 'update'
+    _delete_action = 'delete'
 
     def get_sync_create_data(self):
         data = []

@@ -7,12 +7,12 @@ import copy
 class ResPartner(models.Model):
     _name = 'res.partner'
     _inherit = ['res.partner', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
-    _create_action = 'create_customer'
-    _update_action = 'update_customer'
-    _delete_action = 'delete_customer'
+    _create_action = 'create'
+    _update_action = 'update'
+    _delete_action = 'delete'
 
-    def check_create_info(self, res):
-        return res.filtered(lambda p: p.group_id == self.env.ref('forlife_pos_app_member.partner_group_c'))
+    def domain_record_sync_info(self):
+        return self.filtered(lambda p: p.group_id == self.env.ref('forlife_pos_app_member.partner_group_c'))
 
     def get_sync_create_data(self):
         data = []
@@ -59,13 +59,16 @@ class ResPartner(models.Model):
         return data
 
     def check_update_info(self, values):
-        records = self.filtered(lambda p: p.group_id == self.env.ref('forlife_pos_app_member.partner_group_c'))
+        records = self.domain_record_sync_info()
         if not records:
             return False
         field_check_update = ['name', 'phone', 'email', 'birthday', 'state_id', 'street']
         return [item for item in field_check_update if item in values]
 
     def get_sync_update_data(self, field_update, values):
+        records = self.domain_record_sync_info()
+        if not records:
+            return False
         map_key_rabbitmq = {
             'name': 'name',
             'phone': 'phone_number',
@@ -91,7 +94,6 @@ class ResPartner(models.Model):
             address.update({'address': values.get('street') or None})
             vals['address'] = address
         data = []
-        records = self.filtered(lambda p: p.group_id == self.env.ref('forlife_pos_app_member.partner_group_c'))
         for partner in records:
             vals.update({
                 'id': partner.id,

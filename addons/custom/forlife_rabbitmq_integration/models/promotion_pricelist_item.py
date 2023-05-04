@@ -7,9 +7,9 @@ import copy
 class PromotionPricelistItem(models.Model):
     _name = 'promotion.pricelist.item'
     _inherit = ['promotion.pricelist.item', 'sync.info.rabbitmq.create', 'sync.info.rabbitmq.update', 'sync.info.rabbitmq.delete']
-    _create_action = 'create_fixed_pricing'
-    _update_action = 'update_fixed_pricing'
-    _delete_action = 'delete_fixed_pricing'
+    _create_action = 'create'
+    _update_action = 'update'
+    _delete_action = 'delete'
 
     def get_sync_create_data(self):
         data = []
