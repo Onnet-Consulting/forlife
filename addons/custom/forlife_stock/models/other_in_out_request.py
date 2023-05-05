@@ -6,7 +6,7 @@ class ForlifeOtherInOutRequest(models.Model):
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'Forlife Other In Out Request'
 
-    name = fields.code = fields.Char(string="Reference", default="New")
+    name = fields.code = fields.Char(string="Mã phiếu", default="New")
     employee_id = fields.Many2one('hr.employee', string="Nhân viên", default=lambda self: self.env.user.employee_id.id)
     department_id = fields.Many2one('hr.department', string="Phòng ban", related='employee_id.department_id')
     company_id = fields.Many2one('res.partner', string="Công ty")
