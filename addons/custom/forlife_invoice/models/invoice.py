@@ -29,8 +29,8 @@ class AccountMove(models.Model):
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id', required=1)
     purchase_type = fields.Selection([
         ('product', 'Goods'),
-        ('service', 'Service'),
         ('asset', 'Asset'),
+        ('service', 'Service'),
     ], string='PO Type', default='product', required=1)
     number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
