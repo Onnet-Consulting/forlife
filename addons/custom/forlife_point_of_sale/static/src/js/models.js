@@ -8,7 +8,7 @@ odoo.define('forlife_point_of_sale.models', function (require) {
     const CustomPosGlobalState = (PosGlobalState) => class extends PosGlobalState {
         async _processData(loadedData) {
             await super._processData(...arguments);
-            this.pos_brand_id = loadedData['pos_brand_id'];
+            this.pos_brand_info = loadedData['pos_brand_info'];
         }
     }
     Registries.Model.extend(PosGlobalState, CustomPosGlobalState);
