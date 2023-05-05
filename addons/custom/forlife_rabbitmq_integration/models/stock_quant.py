@@ -54,4 +54,9 @@ class StockQuant(models.Model):
                 'product_id': sqt.product_id.id,
             }
             data.extend([copy.copy(vals)])
+        if data:
+            data = {
+                'updated_at': fields.Datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'store_data': data,
+            }
         return data
