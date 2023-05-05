@@ -3,12 +3,14 @@
 
     <t t-name="OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
         <xpath expr="//div[@class='pos-receipt']" position="after">
-            <t t-if="env.pos.pos_brand_info.code == 'FMT'">
-                <t t-call="FormatOrderReceipt"/>
-            </t>
-            <t t-if="env.pos.pos_brand_info.code == 'TKL'">
-                <t t-call="TokyoLifeOrderReceipt"/>
-            </t>
+            <div class="pos-receipt">
+                <t t-if="env.pos.pos_brand_info.code == 'FMT'">
+                    <t t-call="FormatOrderReceipt"/>
+                </t>
+                <t t-if="env.pos.pos_brand_info.code == 'TKL'">
+                    <t t-call="TokyoLifeOrderReceipt"/>
+                </t>
+            </div>
         </xpath>
         <xpath expr="//div[@class='pos-receipt']" position="attributes">
             <!-- Hide old template -->
@@ -20,21 +22,27 @@
         <img class="pos-receipt-logo"
              src="/forlife_pos_print_receipt/static/src/img/logo-format.png" height="25"/>
         <div>
-            <div>
-                <t t-esc="receipt.name"/> <t t-esc="receipt.date.localestring1"/>
+            <div class="order-header">
+                <strong>
+                    <t t-esc="receipt.name"/>
+                </strong>
+                <t t-esc="receipt.date.localestring1"/>
             </div>
         </div>
-        <div>
+        <div class="customer-cashier-detail">
             <t t-if="receipt.cashier">
-                <div>Nhân viên:
+                <div>
+                    <span>Nhân viên: </span>
                     <t t-esc="receipt.cashier"/>
                 </div>
             </t>
             <t t-if="receipt.partner">
-                <div>Khách hàng:
+                <div>
+                    <span>Khách hàng: </span>
                     <t t-esc="receipt.partner.name"/>
                 </div>
-                <div>Điện thoại:
+                <div>
+                    <span>Điện thoại: </span>
                     <t t-esc="receipt.partner.phone || ''"/>
                 </div>
                 <div>Ghi chú:</div>
@@ -46,6 +54,7 @@
 
     <t t-name="FormatOrderLinesReceipt" owl="1">
         <div class="orderlines">
+            <hr class="separate-line"/>
             <table class="lines-detail">
                 <tbody>
                     <tr>
@@ -55,6 +64,11 @@
                         <th class="num_4 number">GG</th>
                         <th class="num_5 number">Tổng tiền</th>
                     </tr>
+                </tbody>
+            </table>
+            <hr class="separate-line"/>
+            <table class="lines-detail">
+                <tbody>
                     <t t-foreach='receipt.orderlines' t-as='line' t-key="line.id">
                         <tr>
                             <td colspan="5">
@@ -62,17 +76,19 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="text">
+                            <td class="num_1 text">
                                 <t t-esc="line.product_default_code || ''"/>
                             </td>
-                            <td class="number">
+                            <td class="num_2 number">
                                 <t t-esc="line.quantity"/>
                             </td>
-                            <td class="number">
+                            <td class="num_3 number">
                                 <t t-esc="env.pos.format_currency_no_symbol(line.price)"/>
                             </td>
-                            <td class="number">0</td>
-                            <td class="number">
+                            <td class="num_4 number">
+                                0
+                            </td>
+                            <td class="num_5 number">
                                 <t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/>
                             </td>
                         </tr>
@@ -83,6 +99,8 @@
     </t>
 
     <t t-name="FormatOrderPaymentLinesReceipt" owl="1">
+        <hr class="separate-line"/>
+
         <div class="payment_lines">
             <table class="payment-detail">
                 <tbody>
@@ -98,6 +116,13 @@
                             <t t-esc="env.pos.format_currency(receipt.total_discount)"/>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+
+            <hr class="separate-line"/>
+
+            <table class="payment-detail">
+                <tbody>
                     <tr class="order-customer-paid">
                         <td>Tổng tiền thanh toán</td>
                         <td class="line value">

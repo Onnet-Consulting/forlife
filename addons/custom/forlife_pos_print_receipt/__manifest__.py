@@ -25,6 +25,7 @@
         'point_of_sale.assets': [
             'forlife_pos_print_receipt/static/src/js/**/*.js',
             'forlife_pos_print_receipt/static/src/xml/**/*.xml',
+            'forlife_pos_print_receipt/static/src/css/**/*.css',
         ],
     }
 }
