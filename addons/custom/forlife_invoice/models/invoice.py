@@ -43,7 +43,7 @@ class AccountMove(models.Model):
     total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại', compute='_compute_total_trade_discount_and_trade_discount', store=1)
 
     ## field domain cho 2 field đơn mua hàng và phiếu nhập kho
-    receiving_warehouse_id = fields.Many2many('stock.picking', string='Receiving Warehouse', compute='', store=1, readonly=0)
+    receiving_warehouse_id = fields.Many2many('stock.picking', string='Receiving Warehouse')
     purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order')
     partner_domain = fields.Char(compute='_compute_partner_domain')
 
