@@ -694,8 +694,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return order_lines.filter(l=>!l.is_reward_line).filter(l => {
             for (let usage of l.promotion_usage_ids) {
                 let program = this.pos.get_program_by_id(usage.str_id);
-                if (['pricelist', 'combo'].includes(program.promotion_type)) {return false};
-                if (program == 'code' && program.discount_based_on == 'unit_price' && usage.disc_amount) {return false};
+                if (['pricelist', 'combo', 'code'].includes(program.promotion_type)) {return false};
+//                if (program.promotion_type == 'code' && program.discount_based_on == 'unit_price' && usage.disc_amount) {return false};
             };
             return true;
         });
