@@ -14,7 +14,7 @@
     'category': 'Point of Sales',
     'version': '16.0.1.0.0',
 
-    'depends': ['point_of_sale'],
+    'depends': ['forlife_point_of_sale'],
     'auto_install': True,
 
     'data': [

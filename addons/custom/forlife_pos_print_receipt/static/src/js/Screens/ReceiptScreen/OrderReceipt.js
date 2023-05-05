@@ -9,7 +9,9 @@ odoo.define('forlife_pos_print_receipt.OrderReceipt', function(require) {
         setup() {
             // FIXME:  set template respectively base on this.env.pos brand here
             // this.template = ...
+            let y = 2;
             super.setup();
+            let x = 1;
         }
     }
 
