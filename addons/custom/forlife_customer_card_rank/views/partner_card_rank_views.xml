@@ -82,6 +82,7 @@
                     <field name="value_to_upper"/>
                     <field name="old_card_rank_id"/>
                     <field name="new_card_rank_id"/>
+                    <field name="status"/>
                 </tree>
             </field>
         </record>
