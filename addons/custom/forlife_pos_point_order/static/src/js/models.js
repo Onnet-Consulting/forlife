@@ -11,6 +11,14 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 super(...arguments);
             }
 
+            set_quantity(quantity, keep_price){
+                this.order.old_data = false
+                for (let i = 0; i < this.order.orderlines.length; i++) {
+                     this.order.orderlines[i].point = false
+                }
+                return super.set_quantity(quantity, keep_price)
+            }
+
             init_from_JSON(json) {
                 super.init_from_JSON(...arguments);
                 this.point = json.point;
@@ -119,6 +127,13 @@ odoo.define('forlife_pos_point_order.models', function (require) {
             set_partner(partner) {
                 super.set_partner(partner);
                 this.allow_for_point = Boolean(partner && partner.generated_by_scan_barcode);
+            }
+            add_product(product, options){
+                this.old_data = false;
+                for (let i = 0; i < this.orderlines.length; i++) {
+                     this.orderlines[i].point = false
+                }
+                return super.add_product(product,options)
             }
 
         }

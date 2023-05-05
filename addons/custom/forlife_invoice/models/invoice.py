@@ -4,15 +4,6 @@ from odoo.exceptions import ValidationError
 import re
 import json
 
-def check_email(val):
-    if val:
-        match = re.match('^[_a-zA-Z0-9-]+(\.[_a-zA-Z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', val)
-        if match == None:
-            return False
-        else:
-            return True
-    return False
-
 def check_length_255(val):
     if val:
         length = len(val)
@@ -37,6 +28,12 @@ class AccountMove(models.Model):
     exchange_rate = fields.Float(string="Exchange Rate", default=1)
     accounting_date = fields.Datetime(string='Accounting Date')
     payment_status = fields.Char(string='Payment status')
+    is_check_cost_view = fields.Boolean(default=False, string='Hóa đơn chi phí')
+
+
+    transportation_total = fields.Float(string='Tổng chi phí vận chuyển')
+    loading_total = fields.Float(string='Tổng chi phí bốc dỡ')
+    custom_total = fields.Float(string='Tổng chi phí thông quan')
 
     # purchase_order_id = fields.Many2one('purchase.order', string="Auto-Complete")
     vendor_back_ids = fields.One2many('vendor.back', 'vendor_back_id', string='Vendor Back', compute='_compute_is_check_vendor_page', readonly=False)
@@ -49,20 +46,27 @@ class AccountMove(models.Model):
     receiving_warehouse_id = fields.Many2many('stock.picking', string='Receiving Warehouse')
     purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order')
     partner_domain = fields.Char(compute='_compute_partner_domain')
-    # stock_pinking_domain_by_purchase_order_product_id = fields.Char(compute='_compute_stock_pinking_domain_by_purchase_order_product_id')
 
     ## field chi phí và thuế nhập khẩu
     exchange_rate_line = fields.One2many('invoice.exchange.rate', 'invoice_rate_id',
                                          string='Invoice Exchange Rate',
-                                         compute='_compute_record_for_exchange_rate_line_and_cost_line',
                                          store=1)
     cost_line = fields.One2many('invoice.cost.line', 'invoice_cost_id',
                                 string='Invoice Cost Line',
-                                compute='_compute_record_for_exchange_rate_line_and_cost_line',
                                 store=1)
-    ##tab e-invoice-bkav
-    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice', compute='_compute_e_invoice_ids_exists_bkav')
 
+    # Field check k cho tạo addline khi hóa đơn đã có PO
+    is_check = fields.Boolean(default=False)
+
+    # Field check page ncc vãng lại
+    is_check_vendor_page = fields.Boolean(default=False, compute='_compute_is_check_vendor_page')
+
+    ##domain product_cost:
+    product_product_mm = fields.Many2many('product.product', store=1)
+
+    ##tab e-invoice-bkav
+    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
+                                    compute='_compute_e_invoice_ids_exists_bkav')
     @api.depends('exists_bkav')
     def _compute_e_invoice_ids_exists_bkav(self):
         for rec in self:
@@ -76,10 +80,6 @@ class AccountMove(models.Model):
                 })
             rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
 
-    transportation_total = fields.Float(string='Tổng chi phí vận chuyển')
-    loading_total = fields.Float(string='Tổng chi phí bốc dỡ')
-    custom_total = fields.Float(string='Tổng chi phí thông quan')
-
     @api.depends('partner_id')
     def _compute_partner_domain(self):
         self = self.sudo()
@@ -91,6 +91,56 @@ class AccountMove(models.Model):
     @api.onchange('partner_id')
     def onchange_partner_domain(self):
         self.purchase_order_product_id = [(5, 0)]
+        self.invoice_line_ids = [(5, 0)]
+
+    @api.onchange('is_check_cost_view', 'purchase_order_product_id')
+    def onchange_view_product_cost_and_receiving_warehouse_id(self):
+        self.invoice_line_ids = [(5, 0)]
+        invoice_cost = self.env['product.product'].search([('is_check_cost', '=', True)])
+        invoice_cost_2 = self.env['product.product'].search([])
+        id_account_move = self.env['account.move'].search([], order='id desc', limit=1).id
+        for rec in self:
+            receiving_warehouse = []
+            if rec.purchase_order_product_id:
+                for po in rec.purchase_order_product_id:
+                    print(po,4893284023849032)
+                    print(rec.purchase_order_product_id,97589078659075690)
+                    last_id = rec.purchase_order_product_id[-1].id
+                    receiving_warehouse_id = self.env['stock.picking'].search(
+                        [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id)])
+                    receiving_warehouse.append(receiving_warehouse_id.id)
+                    rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
+                    if rec.partner_id.id == rec.purchase_order_product_id.partner_id.id:
+                        for cost in rec.purchase_order_product_id.cost_line:
+                            if cost.ids:
+                                move_cost_line = self.env['account.move.line'].search(
+                                    [('product_id', '=', cost.product_id.id),
+                                     ('description', '=', cost.name),
+                                     ('move_id', '=', id_account_move),
+                                     ('cost_type', '=', cost.product_id.is_check_cost),
+                                     ('cost_line_id', '=', cost.id)])
+                                if not move_cost_line:
+                                    move_cost_line.create({
+                                        'product_id': cost.product_id.id,
+                                        'description': cost.name,
+                                        'price_subtotal': cost.expensive_total,
+                                        'move_id': id_account_move,
+                                        'company_id': rec.journal_id.company_id or rec.company_id or self.env.company,
+                                        'cost_type': cost.product_id.is_check_cost,
+                                        'cost_line_id': cost.id,
+                                        'po_id': last_id,
+                                    })
+                                else:
+                                    pass
+                        account_line = self.env['account.move.line'].search(
+                            [('cost_type', '=', True), ('po_id', '=', po.id)]).ids
+                        if rec.is_check_cost_view:
+                            rec.invoice_line_ids = [(6, 0, account_line)]
+                            rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                        else:
+                            rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+            else:
+                rec.receiving_warehouse_id = False
 
     @api.onchange('invoice_line_ids')
     def onchange_partner_domain(self):
@@ -108,14 +158,6 @@ class AccountMove(models.Model):
                 'name': line.description,
                 'invoice_cost_id': self.id
             })
-
-
-    # Field check k cho tạo addline khi hóa đơn đã có PO
-    is_check = fields.Boolean(default=False)
-
-    # Field check page ncc vãng lại
-    is_check_vendor_page = fields.Boolean(default=False, compute='_compute_is_check_vendor_page')
-
 
     @api.depends('partner_id.is_passersby', 'partner_id')
     def _compute_is_check_vendor_page(self):
@@ -136,8 +178,6 @@ class AccountMove(models.Model):
             if not rec.partner_id.is_passersby:
                 rec.is_check_vendor_page = False
 
-
-
     @api.onchange('purchase_order_id')
     def _onchange_purchase_order_id(self):
         if self.purchase_order_id:
@@ -153,7 +193,7 @@ class AccountMove(models.Model):
             'invoice_line_ids': [(6, 0, order_invoice_line_ids)]
         })
 
-    @api.constrains('exchange_rate', 'trade_discount', 'number_bills')
+    @api.constrains('exchange_rate', 'trade_discount', 'number_bills','invoice_line_ids')
     def constrains_exchange_rare(self):
         for item in self:
             if item.exchange_rate < 0:
@@ -161,12 +201,14 @@ class AccountMove(models.Model):
             if item.trade_discount < 0:
                 raise ValidationError('Chiết khấu thương mại không được âm!')
             if item.number_bills:
-                if not check_email(item.number_bills):
+                if not item.number_bills:
                     raise ValidationError(_("Số hóa đơn không hợp lệ!!"))
-                elif not check_length_255(item.email):
+                elif not check_length_255(item.number_bills):
                     raise ValidationError(_('Số hóa đơn không được dài hơn 255 ký tự!!'))
                 else:
                     return False
+
+    is_check_total_and_trade_discount = fields.Boolean('', compute='_compute_total_trade_discount_and_trade_discount' ,store=1)
 
     @api.depends('trade_discount', 'total_trade_discount')
     def _compute_total_trade_discount_and_trade_discount(self):
@@ -176,13 +218,23 @@ class AccountMove(models.Model):
                 item.total_trade_discount = item.tax_totals.get('amount_total') * (item.trade_discount / 100)
                 if item.total_trade_discount:
                     item.trade_discount = False
-                if not item.total_trade_discount:
-                    item.trade_discount = (item.total_trade_discount / item.tax_totals.get(
-                        'amount_total')) * 100
+                    item.is_check_total_and_trade_discount = True
+                else:
+                    if item.trade_discount:
+                        item.trade_discount = (item.total_trade_discount / item.tax_totals.get(
+                            'amount_total')) * 100
+                        item.is_check_total_and_trade_discount = False
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
+    move_id = fields.Many2one('account.move', string='Journal Entry',
+                              index=True, required=False, readonly=True, auto_join=True, ondelete="cascade",
+                              check_company=True,
+                              help="The move of this entry line.")
+    cost_line_id = fields.Integer()
+    cost_type = fields.Boolean('')
+    po_id = fields.Char()
     type = fields.Selection(related="product_id.detailed_type")
     work_order = fields.Many2one('forlife.production', string='Work Order')
     current_user = fields.Many2one('res.users', default=lambda self: self.env.user, string='Account', required=1)
@@ -206,11 +258,6 @@ class AccountMoveLine(models.Model):
     taxes_id = fields.Many2one('account.tax',
                                string='Thuế %',
                                domain=[('active', '=', True)])
-    # price_subtotal = fields.Monetary(string='Subtotal',
-    #                                  store=True,
-    #                                  readonly=True,
-    #                                  currency_field='currency_id',
-    #                                  compute='_compute_price_subtotal')
     price_unit = fields.Float(string='Unit Price',
                               digits='Product Price',
                               compute='_compute_price_unit',
@@ -242,7 +289,6 @@ class AccountMoveLine(models.Model):
     company_id = fields.Many2one('res.company', 'Company', required=True, default=lambda self: self.env.company)
     invoice_reference = fields.Char(string='Invoice Reference')
     invoice_description = fields.Char(string="Invoice Description")
-
 
     #field check exchange_quantity khi ncc vãng lại:
     is_check_exchange_quantity = fields.Boolean(default=False)
@@ -290,12 +336,6 @@ class AccountMoveLine(models.Model):
             else:
                 rec.quantity = rec.quantity_purchased
 
-    # @api.depends('price_unit', 'discount_invoice', 'exchange_quantity')
-    # def _compute_price_subtotal(self):
-    #     for rec in self:
-    #         if rec.price_unit and rec.discount_invoice:
-    #             rec.price_subtotal = (rec.price_unit * rec.exchange_quantity) - rec.discount_invoice
-
     @api.depends('taxes_id.amount', 'price_subtotal')
     def _compute_tax_amount(self):
         for rec in self:
@@ -320,10 +360,11 @@ class AccountMoveLine(models.Model):
             tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
             totals = list(tax_results['totals'].values())[0]
             amount_untaxed = totals['amount_untaxed']
+            amount_price_subtotal = (line.price_unit * line.exchange_quantity) - line.discount_invoice
             amount_tax = totals['amount_tax']
 
             line.update({
-                'price_subtotal': amount_untaxed,
+                'price_subtotal': amount_price_subtotal,
                 'price_tax': amount_tax,
                 'price_total': amount_untaxed + amount_tax,
             })
@@ -346,10 +387,19 @@ class AccountMoveLine(models.Model):
     def constrains_discount_discount_invoice(self):
         for rec in self:
             if rec.discount < 0:
-                raise ValidationError(_("Không được nhập số âm 0"))
+                raise ValidationError(_("Không được nhập số âm !!"))
             if rec.discount_invoice < 0:
                 raise ValidationError(_("Không được nhập số âm hoặc số thập phân"))
 
+    @api.constrains('quantity_purchased', 'exchange_quantity', 'quantity')
+    def constrains_discount_discount_invoice(self):
+        for rec in self:
+            if rec.quantity < 0:
+                raise ValidationError(_("Không được nhập số âm !!"))
+            if rec.exchange_quantity < 0:
+                raise ValidationError(_("Không được nhập số âm !!"))
+            if rec.quantity_purchased < 0:
+                raise ValidationError(_("Không được nhập số âm !!"))
 
 class RespartnerVendor(models.Model):
     _name = "vendor.back"
@@ -466,6 +516,4 @@ class eInvoice(models.Model):
     number_e_invoice = fields.Char('Số HĐĐT')
     date_start_e_invoice = fields.Char('Ngày phát hành HĐĐT')
     state_e_invoice = fields.Char('Trạng thái HĐĐT', related='e_invoice_id.invoice_state_e')
-
-
 

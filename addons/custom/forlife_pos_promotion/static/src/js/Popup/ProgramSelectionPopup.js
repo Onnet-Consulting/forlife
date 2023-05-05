@@ -38,10 +38,18 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 
         // Set Combo Details
         setComboDetails(newLinesToApply) {
-            Object.entries(newLinesToApply).forEach(
-            ([k, v]) => {
-            this.combo_details[k] = v;
-            });
+            let result = {};
+            for (let line of Object.values(newLinesToApply).flat(2).filter(l => l.quantity)) {
+                for (let usage of line.promotion_usage_ids) {
+                    let pro_str_id = usage.str_id;
+                    if (result.hasOwnProperty(usage.str_id)) {
+                        result[usage.str_id].push([line.quantity, usage, line.product.id]);
+                    } else {
+                        result[usage.str_id] = [[line.quantity, usage, line.product.id]];
+                    };
+                };
+            };
+            Object.assign(this.combo_details, result);
         }
 
         async view_combo_details(program_id) {
@@ -53,19 +61,16 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             };
             let program = this.env.pos.get_program_by_id(program_id);
             let qty_per_combo = program.comboFormula.reduce((total, line) => total + line.quantity, 0);
-            let qty_of_combo = this.combo_details[program_id].reduce((total, line) => total + line.quantity, 0);
+            let qty_of_combo = this.combo_details[program_id].reduce((total, line) => total + line[0], 0);
             let details = [];
             this.combo_details[program_id].forEach((line) => {
-                let usage = line.promotion_usage_ids.find(l => l.str_id == program_id)
-                if (usage && line.quantity > 0) {
-                    details.push({
-                        product: this.env.pos.db.get_product_by_id(line.product.id),
-                        quantity: line.quantity,
-                        pre_price: usage.original_price,
-                        new_price: usage.new_price,
-                        discount_amount: usage.discount_amount
-                    });
-                };
+                details.push({
+                    product: this.env.pos.db.get_product_by_id(line[2]),
+                    quantity: line[0],
+                    pre_price: line[1].original_price,
+                    new_price: line[1].new_price,
+                    discount_amount: line[1].discount_amount
+                });
             });
             try {
                 await this.showPopup('ComboDetailsPopup', {
