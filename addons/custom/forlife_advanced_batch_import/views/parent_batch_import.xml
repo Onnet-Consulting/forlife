@@ -23,6 +23,7 @@
                             <field name="list_field"/>
                             <field name="columns"/>
                             <field name="options"/>
+                            <field name="context"/>
                             <field name="dryrun"/>
                             <field name="limit"/>
                             <field name="with_delay"/>

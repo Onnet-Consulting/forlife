@@ -206,7 +206,7 @@ order by product_name
     def get_data(self):
         self.ensure_one()
         values = dict(super().get_data())
-        product_ids = (self.env['product.product'].search([]).ids or [-1]) if self.all_products else self.product_ids.ids
+        product_ids = (self.env['product.product'].search([('type', '=', 'product')]).ids or [-1]) if self.all_products else self.product_ids.ids
         warehouse_ids = (self.env['stock.warehouse'].search([]).ids or [-1]) if self.all_warehouses else self.warehouse_ids.ids
         query = self._get_query(product_ids, warehouse_ids)
         self._cr.execute(query)

@@ -47,8 +47,7 @@ ProductScreen.addControlButton({
     position: ['after', 'RefundButton'],
     condition: function () {
         let order = this.env.pos && this.env.pos.get_order();
-        let partner = order && order.get_partner();
-        return order.orderlines.length > 0 && !order.card_rank_program && order.order_can_apply_card_rank() && partner && partner.generated_by_scan_barcode;
+        return order.orderlines.length > 0 && !order.card_rank_program && order.order_can_apply_card_rank();
     }
 });
 

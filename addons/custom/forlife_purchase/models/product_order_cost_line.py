@@ -9,4 +9,9 @@ class PurchaseOrderCostLine(models.Model):
     name = fields.Char(string='Mô tả', related='product_id.name')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order')
     expensive_total = fields.Float(string='Tổng tiền')
+    dollars_money = fields.Float(string='Tiền USD')
+
+    @api.onchange('purchase_order_id', 'purchase_order_id.exchange_rate', 'dollars_money')
+    def onchange_expensive_total(self):
+        self.expensive_total = self.dollars_money * self.purchase_order_id.exchange_rate
 
