@@ -26,6 +26,7 @@
             'forlife_pos_print_receipt/static/src/js/**/*.js',
             'forlife_pos_print_receipt/static/src/xml/**/*.xml',
             'forlife_pos_print_receipt/static/src/css/**/*.css',
+            'forlife_pos_print_receipt/static/src/scss/**/*.scss',
         ],
     }
 }
