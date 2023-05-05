@@ -124,7 +124,7 @@ class AccountMoveBKAV(models.Model):
     _inherit = 'account.move'
 
     exists_bkav = fields.Boolean(default=False, copy=False)
-    is_post_bkav = fields.Boolean(default=False, string="Post BKAV?", copy=False)
+    is_post_bkav = fields.Boolean(default=False, string="Có tạo hóa đơn BKAV ngay?", copy=False)
     company_type = fields.Selection(related="partner_id.company_type")
     sequence = fields.Integer(string='Sequence',
                               default=lambda self: self.env['ir.sequence'].next_by_code('account.move.sequence'))

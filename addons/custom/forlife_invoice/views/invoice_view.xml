@@ -51,51 +51,52 @@
                 <xpath expr="//field[@name='date']" position="attributes">
                     <attribute name="required">0</attribute>
                 </xpath>
-<!--                <xpath expr="//field[@name='company_type']" position="attributes">-->
-<!--                    <attribute name="invisible">1</attribute>-->
-<!--                </xpath>-->
-<!--                <xpath expr="//label[@for='company_type']" position="attributes">-->
-<!--                    <attribute name="invisible">1</attribute>-->
-<!--                </xpath>-->
                 <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="domain">[('active', '=', True)]</attribute>
                     <attribute name="required">1</attribute>
                 </xpath>
+<!--                <xpath expr="//field[@name='invoice_line_ids']//tree//field[@name='product_id']" position="after">-->
+<!--                    <attribute name="domain">product_domain</attribute>-->
+<!--                </xpath>-->
                 <xpath expr="//field[@name='tax_totals']" position="after">
-                    <field name="trade_discount"/>
-                    <field name="total_trade_discount"/>
+                    <field name="trade_discount" attrs="{'readonly': [('is_check_total_and_trade_discount', '=', True)]}"/>
+                    <field name="total_trade_discount" attrs="{'readonly': [('is_check_total_and_trade_discount', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="purchase_type"/>
+                    <field name="purchase_type" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="tax_totals" invisible="1"/>
-                    <field name="number_bills"/>
-                    <field name="invoice_description"/>
-                    <field name="reference"/>
-                    <field name="currency_id"/>
-                    <field name="exchange_rate"/>
+                    <field name="number_bills" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="invoice_description" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="reference" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="currency_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="exchange_rate" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="is_check_cost_view" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="product_product_mm" invisible="1"/>
+<!--                    <field name="invoice_line_cost_ids" invisible="1"/>-->
                 </xpath>
                 <xpath expr="//field[@name='payment_reference']" position="before">
-                    <field name="payment_term_invoice" string="Chính sách thanh toán"/>
-                    <field name="invoice_date_due" string="Hạn xử lý"/>
+                    <field name="payment_term_invoice" string="Chính sách thanh toán" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="invoice_date_due" string="Hạn xử lý" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                 </xpath>
                 <xpath expr="//div[@name='journal_div']" position="after">
                     <field name="partner_domain" invisible="1"/>
 <!--                    <field name="stock_pinking_domain_by_purchase_order_product_id" invisible="1"/>-->
-                    <field name="journal_id"/>
-                    <field name="purchase_order_product_id" domain="partner_domain" widget="many2many_tags" options="{'no_open': False}" force_save="1"/>
-                    <field name="receiving_warehouse_id" domain="[('state', '=', 'done')]"  widget="many2many_tags" options="{'no_open': False}" force_save="1"/>
+                    <field name="journal_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="purchase_order_product_id" domain="partner_domain" widget="many2many_tags" options="{'no_open': False}" force_save="1" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="receiving_warehouse_id" domain="[('state', '=', 'done')]"  widget="many2many_tags" options="{'no_open': False}" force_save="1" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                 </xpath>
                 <xpath expr="//notebook/page[@name='invoice_tab']" position="after">
                     <field name="is_check" invisible="1"/>
                     <field name="invoice_line_ids" widget="section_and_note_one2many"
-                           attrs="{'readonly': [('is_check', '=', True)]}">
+                           attrs="{'readonly': [('is_check', '=', True)]}"
+                           context="{'default_company_id': company_id}">
                         <tree editable="bottom" class="width-hh">
                             <field name="vendor_sup_invoice" invisible="1"/>
                             <field name="is_check_exchange_quantity" invisible="1"/>
                             <field name="is_check_is_passersby" invisible="1"/>
-                            <field name="product_id"
+                            <field name="product_id" string="Sản Phẩm"
                                    context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
-                                   domain="[('detailed_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                                   domain="[('detailed_type', '=', parent.purchase_type),('id', 'in', parent.product_product_mm), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
                             <field name="description" related="product_id.name" string="Mô tả"/>
                             <field name="request_code"/>
                             <field name="type"/>
@@ -120,7 +121,7 @@
                             <field name="warehouse"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="discount_invoice" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                            <field name="discount" widget="percentage" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                            <field name="discount" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="taxes_id" optional="show"/>
                             <field name="tax_amount"/>
                             <field name="price_subtotal"/>
