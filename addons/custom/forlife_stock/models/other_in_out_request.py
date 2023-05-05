@@ -6,7 +6,7 @@ class ForlifeOtherInOutRequest(models.Model):
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'Forlife Other In Out Request'
 
-    name = fields.code = fields.Char(string="Mã phiếu", default="New")
+    name = fields.code = fields.Char(string="Mã phiếu", default="New", copy=False)
     employee_id = fields.Many2one('hr.employee', string="Nhân viên", default=lambda self: self.env.user.employee_id.id)
     department_id = fields.Many2one('hr.department', string="Phòng ban", related='employee_id.department_id')
     company_id = fields.Many2one('res.partner', string="Công ty")
@@ -24,7 +24,7 @@ class ForlifeOtherInOutRequest(models.Model):
                                ('cancel', 'Hủy'),
                                ('reject', 'Từ chối')], default='draft', copy=False)
     other_in_out_request_line_ids = fields.One2many('forlife.other.in.out.request.line', 'other_in_out_request_id', string='Stock Picking', copy=True)
-    count_other_import_export = fields.Integer(compute="compute_count_other_import_export")
+    count_other_import_export = fields.Integer(compute="compute_count_other_import_export", copy=False)
     other_import_export_ids = fields.One2many('stock.picking', 'other_import_export_request_id',
                                               string="Other Import/Export")
 
