@@ -15,7 +15,7 @@ class ReportNum2(models.TransientModel):
     all_warehouses = fields.Boolean(string='All warehouses', default=False)
     product_ids = fields.Many2many('product.product', string='Products', domain=[('type', '=', 'product')])
     warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
-    product_brand_id = fields.Many2one('product.category', string='Brand', domain="[('parent_id', '=', False)]")
+    product_brand_id = fields.Many2one('product.category', string='Brand', domain="[('parent_id', '=', False), ('category_type_id', '!=', False)]")
     product_group_ids = fields.Many2many('product.category', 'num2_product_group_rel', 'num2_id', 'product_group_id', string='Product Group')
     product_line_ids = fields.Many2many('product.category', 'num2_product_line_rel', 'num2_id', 'product_line_id', string='Product Line')
     product_texture_ids = fields.Many2many('product.category', 'num2_product_texture_rel', 'num2_id', 'product_texture_id', string='Product Texture')
@@ -66,7 +66,8 @@ with product_cate_info as -- lấy ID của Thương hiệu, nhóm hàng, dòng 
         brand.id 		 as brand_id
     from product_product pp 
     left join product_template pt on pt.id = pp.product_tmpl_id
-    join product_category texture on texture.id = pt.categ_id
+    join product_category xxx on xxx.id = pt.categ_id
+    join product_category texture on texture.id = xxx.parent_id
     join product_category product_line on product_line.id = texture.parent_id
     join product_category product_group on product_group.id = product_line.parent_id
     join product_category brand on brand.id = product_group.parent_id
@@ -116,7 +117,7 @@ from stock_product stp
     def get_data(self):
         self.ensure_one()
         values = dict(super().get_data())
-        product_ids = (self.env['product.product'].search([]).ids or [-1]) if self.all_products else self.product_ids.ids
+        product_ids = (self.env['product.product'].search([('type', '=', 'product')]).ids or [-1]) if self.all_products else self.product_ids.ids
         warehouse_ids = self.env['stock.warehouse'].search([]) if self.all_warehouses else self.warehouse_ids
         query = self._get_query(product_ids, warehouse_ids)
         params = self._get_query_params(product_ids, warehouse_ids)

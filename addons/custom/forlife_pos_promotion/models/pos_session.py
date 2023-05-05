@@ -32,8 +32,18 @@ class PosSession(models.Model):
             }
         }
 
+    # def _get_pos_ui_promotion_pricelist_item(self, params):
+    #     return self.env['promotion.pricelist.item'].search_read(**params['search_params'])
+
     def _get_pos_ui_promotion_pricelist_item(self, params):
-        return self.env['promotion.pricelist.item'].search_read(**params['search_params'])
+        product_set = set()
+        pricelist_items = self.env['promotion.pricelist.item'].browse()
+        result = self.env['promotion.pricelist.item'].search(params['search_params']['domain']).sorted(key='fixed_price', reverse=False)
+        for item in result:
+            if item.product_id.id not in product_set and item.product_id.lst_price > item.fixed_price:
+                pricelist_items |= item
+                product_set.add(item.product_id.id)
+        return pricelist_items.read(self._loader_params_promotion_pricelist_item()['search_params']['fields'])
 
     def _loader_params_month_data(self):
         return {
@@ -110,7 +120,6 @@ class PosSession(models.Model):
                     'min_quantity',
                     'order_amount_min',
                     'incl_reward_in_order',
-                    # 'json_pricelist_item_ids',
                     'reward_type',
                     'voucher_program_id',
                     'voucher_product_variant_id',
