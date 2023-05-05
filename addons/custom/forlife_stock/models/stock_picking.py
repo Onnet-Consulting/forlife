@@ -228,8 +228,16 @@ class StockMove(models.Model):
     @api.depends('product_uom_qty', 'picking_id.state')
     def compute_previous_qty(self):
         for rec in self:
-            if rec.picking_id.state not in ('assigned', 'done'):
-                rec.previous_qty = rec.product_uom_qty
+            if rec.picking_id.backorder_id:
+                back_order = self.env['stock.picking'].search([('id', '=',  rec.picking_id.backorder_id.id)])
+                if back_order:
+                    for r in back_order.move_ids_without_package:
+                        if r.product_id == rec.product_id and r.amount_total == rec.amount_total:
+                            rec.previous_qty = r.previous_qty
+            else:
+                if rec.picking_id.state not in ('assigned', 'done'):
+                    rec.previous_qty = rec.product_uom_qty
+
 
     @api.onchange('product_id')
     def _onchange_product_id(self):

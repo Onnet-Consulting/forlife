@@ -11,23 +11,33 @@ const PosOrderCardRank = (Order) => class extends Order {
         super(...arguments);
         if (!this.card_rank_program) {
             this.card_rank_program = null;
+            this.order_status_format = this.order_status_format || false;
+            this.order_status_tokyolife = this.order_status_tokyolife || false;
         }
     }
 
     init_from_JSON(json) {
         super.init_from_JSON(...arguments);
         this.card_rank_program = json.card_rank_program || null;
+        this.order_status_format = json.order_status_format || false;
+        this.order_status_tokyolife = json.order_status_tokyolife || false;
     }
 
     export_as_JSON() {
         const json = super.export_as_JSON(...arguments);
         json.card_rank_program = this.card_rank_program;
+        json.order_status_format = this.order_status_format;
+        json.order_status_tokyolife = this.order_status_tokyolife;
         return json;
     }
 
     set_partner(partner) {
         const oldPartner = this.get_partner();
         super.set_partner(partner);
+        if (partner) {
+            this.order_status_format = partner.card_rank_status_format;
+            this.order_status_tokyolife = partner.card_rank_status_tokyolife;
+        }
         let newPartner = this.get_partner();
         if (oldPartner !== newPartner && this.card_rank_program) {
             this.action_reset_card_rank_program();
