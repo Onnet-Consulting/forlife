@@ -1,9 +1,9 @@
 .pos .pos-receipt-container > div {
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .pos-receipt .pos-receipt-logo {
-    height: 27px;
+    height: 25px;
 }
 
 .pos-receipt .order-header {
@@ -14,9 +14,6 @@
     white-space: pre-wrap;
 }
 
-.pos-receipt .customer-cashier-detail {
-    font-size: 12px;
-}
 
 .pos-receipt .customer-cashier-detail div {
     margin: 3px auto
@@ -33,10 +30,10 @@
     height: 1px;
 }
 
+/*Order lines*/
 .pos-receipt .orderlines .lines-detail {
     width: 100%;
     table-layout: auto;
-    font-size: 11px;
     border-collapse: separate;
     border-spacing: 0 7px;
 }
@@ -55,7 +52,7 @@
 }
 
 .pos-receipt .orderlines .lines-detail .num_1 {
-    width: 23%;
+    width: 35%;
 }
 
 .pos-receipt .orderlines .lines-detail .num_2 {
@@ -63,13 +60,39 @@
 }
 
 .pos-receipt .orderlines .lines-detail .num_3 {
-    width: 25%;
+    width: 20%;
 }
 
 .pos-receipt .orderlines .lines-detail .num_4 {
-    width: 16%;
+    width: 13%;
 }
 
 .pos-receipt .orderlines .lines-detail .num_5 {
+    width: 25%;
+}
+
+/*payment lines*/
+.pos-receipt .payment_lines .payment-detail {
+    width: 100%;
+}
+.pos-receipt .payment_lines .payment-detail .col1 {
+    width: 23%;
+}
+.pos-receipt .payment_lines .payment-detail .col2 {
+    width: 8%;
+}
+.pos-receipt .payment_lines .payment-detail .col3 {
+    width: 25%;
+}
+.pos-receipt .payment_lines .payment-detail .col4 {
+    width: 16%;
+}
+.pos-receipt .payment_lines .payment-detail .col5 {
     width: 28%;
+}
+.pos-receipt .payment_lines .payment-detail .text {
+    text-align: left;
+}
+.pos-receipt .payment_lines .payment-detail .number {
+    text-align: right;
 }

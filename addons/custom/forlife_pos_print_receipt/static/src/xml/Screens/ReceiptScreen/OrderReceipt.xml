@@ -26,7 +26,7 @@
                 <strong>
                     <t t-esc="receipt.name"/>
                 </strong>
-                <t t-esc="receipt.date.localestring1"/>
+                <span> </span><t t-esc="receipt.date.localestring1"/>
             </div>
         </div>
         <div class="customer-cashier-detail">
@@ -45,7 +45,7 @@
                     <span>Điện thoại: </span>
                     <t t-esc="receipt.partner.phone || ''"/>
                 </div>
-                <div>Ghi chú:</div>
+                <div>Ghi chú: </div>
             </t>
         </div>
         <t t-call="FormatOrderLinesReceipt"/>
@@ -104,16 +104,26 @@
         <div class="payment_lines">
             <table class="payment-detail">
                 <tbody>
-                    <tr class="order-total-x">
-                        <td class="title">Tổng cộng:</td>
-                        <td class="value">
-                            <t t-esc="env.pos.format_currency(receipt.total_rounded)"/>
+                    <tr>
+                        <td class="col1"></td>
+                        <td class="col2"></td>
+                        <td class="col3"></td>
+                        <td class="col4"></td>
+                        <td class="col5"></td>
+                    </tr>
+                    <tr>
+                        <td class="col1 text">Tổng cộng:</td>
+                        <td class="col2 number">
+                            <t t-esc="receipt.total_line_qty"/>
+                        </td>
+                        <td class="number" colspan="3">
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_rounded)"/>
                         </td>
                     </tr>
                     <tr class="order-total">
-                        <td class="title">Chiết khấu</td>
-                        <td class="value">
-                            <t t-esc="env.pos.format_currency(receipt.total_discount)"/>
+                        <td class="text">Chiết khấu</td>
+                        <td class="number">
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_discount)"/>
                         </td>
                     </tr>
                 </tbody>
