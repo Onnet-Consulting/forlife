@@ -235,3 +235,27 @@ class ForlifeBOMIngredients(models.Model):
         for item in self:
             if item.total < 0:
                 raise ValidationError("Total must be greater than 0!")
+
+    @api.constrains('conversion_coefficient')
+    def constrains_conversion_coefficient(self):
+        for item in self:
+            if item.conversion_coefficient < 0:
+                raise ValidationError("Conversion coefficient must be greater than 0!")
+
+    @api.constrains('rated_level')
+    def constrains_rated_level(self):
+        for item in self:
+            if item.rated_level < 0:
+                raise ValidationError("Rated level must be greater than 0!")
+
+    @api.constrains('loss')
+    def constrains_loss(self):
+        for item in self:
+            if item.loss < 0:
+                raise ValidationError("Loss must be greater than 0!")
+
+    @api.constrains('total')
+    def constrains_total(self):
+        for item in self:
+            if item.total < 0:
+                raise ValidationError("Total must be greater than 0!")
