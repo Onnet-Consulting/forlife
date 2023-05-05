@@ -8,7 +8,7 @@ class PosSession(models.Model):
 
     def _loader_params_res_partner(self):
         res = super(PosSession, self)._loader_params_res_partner()
-        res['search_params']['fields'] += ['card_rank_by_brand']
+        res['search_params']['fields'] += ['card_rank_by_brand', 'card_rank_status_format', 'card_rank_status_tokyolife']
         return res
 
     def _pos_data_process(self, loaded_data):
