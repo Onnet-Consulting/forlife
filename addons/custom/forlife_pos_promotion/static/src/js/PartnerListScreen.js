@@ -7,12 +7,12 @@ odoo.define('forlife_pos_promotion.PosPromotionPartnerListScreen', function (req
     const framework = require('web.framework');
     PartnerListScreen.prototype.saveChanges = async function(event) {
         try {
-            framework.blockUI();
             let partnerId = await this.rpc({
                 model: 'res.partner',
                 method: 'create_from_ui',
                 args: [event.detail.processedChanges],
             });
+            framework.blockUI();
             await this.env.pos.load_new_partners();
             this.state.selectedPartner = this.env.pos.db.get_partner_by_id(partnerId);
             let proPrograms = Object.keys(this.env.pos.promotion_program_by_id);
