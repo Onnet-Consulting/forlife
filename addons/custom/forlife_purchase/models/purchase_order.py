@@ -514,8 +514,6 @@ class PurchaseOrder(models.Model):
                 'name': line.name,
                 'usd_amount': line.price_subtotal,
                 'purchase_order_id': self.id,
-                'qty_product': line.product_qty
-
             })
 
     @api.onchange('purchase_type')
@@ -1092,13 +1090,14 @@ class StockPicking(models.Model):
                                                    limit=1)
             if po:
                 invoice_line = []
+                invoice_line_cost_in_tax = []
                 if po.type_po_cost == 'tax':
-                    for r, stock in po.exchange_rate_line, record.move_line_nosuggest_ids:
+                    for r, stock in zip(po.exchange_rate_line, record.move_ids_without_package):
                         if r.product_id.categ_id and r.product_id.categ_id.property_stock_valuation_account_id:
                             account_1561 = r.product_id.categ_id.property_stock_valuation_account_id.id
                         else:
                             raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
-                        if r.qty_product or stock.quantity_done <= 0:
+                        if r.qty_product <= 0 or stock.quantity_done <= 0:
                             raise ValidationError('Số lượng sản phẩm nhập hay số lương hoàn thành phải lớn hơn 0')
                         credit_333 = stock.quantity_done / r.qty_product * r.tax_amount
                         credit_332 = stock.quantity_done / r.qty_product * r.special_consumption_tax_amount
@@ -1127,6 +1126,70 @@ class StockPicking(models.Model):
                              })
                         lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
                         invoice_line.extend(lines)
+                    if po.cost_line:
+                        data_line = po.order_line.mapped('price_total')
+                        data_in_line = po.order_line
+                        data_sum = sum(data_line)
+                        if data_sum <= 0:
+                            raise ValidationError('Tổng tiền của sản phẩm là 0')
+                        vals = {}
+                        for item, total, range_product in zip(data_in_line, data_line, range(1, len(data_in_line) + 1)):
+                            if item.product_id.categ_id and item.product_id.categ_id.property_stock_valuation_account_id:
+                                account_1561 = item.product_id.categ_id.property_stock_valuation_account_id.id
+                            else:
+                                raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
+                            for rec in po.cost_line:
+
+                                if rec.product_id.categ_id and rec.product_id.categ_id.property_stock_valuation_account_id:
+                                    account_acc = rec.product_id.categ_id.property_stock_account_input_categ_id.id
+                                else:
+                                    raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
+                                key_acc = str(account_acc) + "_" + rec.name
+                                if not vals.get(key_acc):
+                                    vals.update({
+                                        key_acc: {'account_id': account_acc,
+                                                  'name': rec.name,
+                                                  'debit': 0,
+                                                  'credit': total / data_sum * rec.expensive_total,
+                                                  },
+                                    })
+                                    for pro, len_pro in zip(data_in_line, range(1, len(data_in_line) + 1)):
+                                        vals.update({
+                                            "1561" + "from" + str(len_pro) + str(pro.product_id) + key_acc: {
+                                                'account_id': account_1561, 'name': "Auto",
+                                                'debit': 0,
+                                                'credit': 0,
+                                            }
+                                        })
+                                    vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
+                                        'account_id': account_1561, 'name': item.name,
+                                        'debit': total / data_sum * rec.expensive_total,
+                                        'credit': 0,
+                                    })
+                                else:
+                                    vals[key_acc]["credit"] = vals[key_acc]["credit"] + (
+                                                total / data_sum * rec.expensive_total)
+                                    vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
+                                        'account_id': account_1561, 'name': item.name,
+                                        'debit': total / data_sum * rec.expensive_total,
+                                        'credit': 0,
+                                    })
+                        for line in vals:
+                            invoice_line_cost_in_tax.append((0, 0, vals.get(line)))
+                        master_data_ac_cost = {
+                            'ref': record.name,
+                            'purchase_type': po.purchase_type,
+                            'move_type': 'entry',
+                            'reference': po.name,
+                            'currency_id': po.currency_id.id,
+                            'exchange_rate': po.exchange_rate,
+                            'date': datetime.datetime.now(),
+                            'invoice_payment_term_id': po.payment_term_id.id,
+                            'invoice_date_due': po.date_planned,
+                            'invoice_line_ids': invoice_line_cost_in_tax,
+                            'restrict_mode_hash_table': False
+                        }
+                        acc_move = self.env['account.move'].create(master_data_ac_cost).action_post()
                 elif po.type_po_cost == 'cost':
                     data_line = po.order_line.mapped('price_total')
                     data_in_line = po.order_line
@@ -1146,7 +1209,7 @@ class StockPicking(models.Model):
                             else:
                                 raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
                             key_acc = str(account_acc) + "_" + rec.name
-                            if not key_acc:
+                            if not vals.get(key_acc):
                                 vals.update({
                                     key_acc: {'account_id': account_acc,
                                               'name': rec.name,
@@ -1154,22 +1217,22 @@ class StockPicking(models.Model):
                                               'credit': total / data_sum * rec.expensive_total,
                                               },
                                 })
-                                for len_pro in range(1, len(data_in_line) + 1):
+                                for pro, len_pro in zip(data_in_line, range(1, len(data_in_line) + 1)):
                                     vals.update({
-                                        "1561" + "from" + str(len_pro): {
+                                        "1561" + "from" + str(len_pro) + str(pro.product_id) + key_acc: {
                                             'account_id': account_1561, 'name': "Auto",
                                             'debit': 0,
                                             'credit': 0,
                                         }
                                     })
-                                vals["1561" + "from" + str(range_product)].update({
+                                vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
                                     'account_id': account_1561, 'name': item.name,
                                     'debit': total / data_sum * rec.expensive_total,
                                     'credit': 0,
                                 })
                             else:
                                 vals[key_acc]["credit"] = vals[key_acc]["credit"] + (total / data_sum * rec.expensive_total)
-                                vals["1561" + "from" + str(range_product)].update({
+                                vals["1561" + "from" + str(range_product)+ str(item.product_id) + key_acc].update({
                                     'account_id': account_1561, 'name': item.name,
                                     'debit': total / data_sum * rec.expensive_total,
                                     'credit': 0,
