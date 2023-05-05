@@ -166,7 +166,7 @@
             <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
-            <field name="domain">[('other_export', '=', True)]</field>
+            <field name="domain">[('other_export', '=', True), ('picking_type_id', '=', 2)]</field>
             <field name="context" eval="{'default_other_export': True, 'default_picking_type_id': ref('stock.picking_type_out')}"/>
         </record>
 
@@ -177,7 +177,7 @@
             <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
-            <field name="domain">[('other_import', '=', True)]</field>
+            <field name="domain">[('other_import', '=', True), ('picking_type_id', '=', 1)]</field>
             <field name="context" eval="{'default_other_import': True, 'default_picking_type_id': ref('stock.picking_type_in')}"/>
         </record>
 
