@@ -1124,6 +1124,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
             else if (program.promotion_type == 'code') {
                 var to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
+                // todo: check if suitable order_line exist before check number of product
                 let NumberOfCombo = this._checkNumberOfCode(program, to_check_order_lines, [] , 0)[2];
                 if (NumberOfCombo >= 1) {
                     programIsVerified[program.id] = NumberOfCombo;
@@ -1160,7 +1161,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         else if (program.reward_type == 'cart_discount_percent') {
             for (let line of to_discount_lines) {
                 let originalPrice = line.price;
-                let discAmount = line.price * program.disc_percent/100;
+                let discAmount = round_decimals(line.price * program.disc_percent/100, this.pos.currency.decimal_places);
                 let newPrice = originalPrice - discAmount;
                 line.price = newPrice;
                 line.promotion_usage_ids.push(new PromotionUsageLine(
@@ -1292,7 +1293,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     get_diff_amount_new_line(CodeProgram, LineList, disc_total_amount, discAmountInLine, originalPrice) {
         let diff_amount_new_line;
         diff_amount_new_line = {...LineList};
-        diff_amount_new_line.promotion_usage_ids = LineList.promotion_usage_ids.map(obj => ({...obj}));
+        diff_amount_new_line.promotion_usage_ids = LineList.promotion_usage_ids.map(obj => ({...obj})) || [];
         diff_amount_new_line.quantity = 1;
         LineList.quantity -= 1;
 
@@ -1450,6 +1451,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let code = null;
         let activatedCodeObj = this.activatedInputCodes.find(c => c.program_id === program.id)
         if (activatedCodeObj) {code = activatedCodeObj.id};
+        let diff_amount_new_line;
 
         comboLineList.forEach(line => {
             line['promotion_usage_ids'] = line['promotion_usage_ids'] == undefined ? [] : line['promotion_usage_ids'];
@@ -1475,24 +1477,17 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 for (let comboLine of comboLineList) {
                     let originalPrice = comboLine.price;
                     if (comboLineList.indexOf(comboLine) == comboLineList.length-1) {
-                        let discounted = comboLineList.reduce((tmp_line, line) => {
-                            let tmp_pro = line.promotion_usage_ids.reduce((tmp, usage) => {
-                                if (usage.str_id == program.str_id) {
-                                    tmp += usage.discount_amount * line.quantity
-                                };
-                                return tmp;
-                            }, 0);
-                            tmp_line += tmp_pro;
-                            return tmp_line;
-                        }, 0);
-                        let remaining_amount = program.disc_amount - discounted;
-                        let newPrice = originalPrice - remaining_amount / comboLine.quantity
-                        let discAmount = remaining_amount / comboLine.quantity
+                        let discounted = getDiscountedAmountAPart();
+                        let remaining_amount = disc_total_amount - discounted;
+                        let newPrice = round_decimals(originalPrice - remaining_amount / comboLine.quantity, this.pos.currency.decimal_places);
+                        let discAmount = originalPrice - newPrice;
                         comboLine.price = newPrice;
                         comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                        if (discAmount * comboLine.quantity + discounted != disc_total_amount) {
+                            diff_amount_new_line = this.get_diff_amount_new_line(program, comboLine, remaining_amount, discAmount, originalPrice);
+                        };
                     }
                     else {
-                        let originalPrice = comboLine.price;
                         let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
                         comboLine.price = newPrice;
                         comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
@@ -1515,13 +1510,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     if (comboLineList.indexOf(comboLine) == comboLineList.length-1) {
                         let discounted = getDiscountedAmountAPart();
                         let remaining_amount = disc_total_amount - discounted;
-                        let newPrice = originalPrice - remaining_amount / comboLine.quantity
-                        let discAmount = remaining_amount / comboLine.quantity
+                        let newPrice = round_decimals(originalPrice - remaining_amount / comboLine.quantity, this.pos.currency.decimal_places);
+                        let discAmount = originalPrice - newPrice;
                         comboLine.price = newPrice;
                         comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                        if (discAmount * comboLine.quantity + discounted != disc_total_amount) {
+                            diff_amount_new_line = this.get_diff_amount_new_line(program, comboLine, remaining_amount, discAmount, originalPrice);
+                        };
                     }
                     else {
-                        let originalPrice = comboLine.price;
                         let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
                         comboLine.price = newPrice;
                         comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
@@ -1542,13 +1539,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     if (comboLineList.indexOf(comboLine) == comboLineList.length-1) {
                         let discounted = getDiscountedAmountAPart();
                         let remaining_amount = disc_total_amount - discounted;
-                        let newPrice = originalPrice - remaining_amount / comboLine.quantity
-                        let discAmount = remaining_amount / comboLine.quantity
+                        let newPrice = round_decimals(originalPrice - remaining_amount / comboLine.quantity, this.pos.currency.decimal_places);
+                        let discAmount = originalPrice - newPrice;
                         comboLine.price = newPrice;
                         comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                        if (discAmount * comboLine.quantity + discounted != disc_total_amount) {
+                            diff_amount_new_line = this.get_diff_amount_new_line(program, comboLine, remaining_amount, discAmount, originalPrice);
+                        };
                     }
                     else {
-                        let originalPrice = comboLine.price;
                         let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
                         comboLine.price = newPrice;
                         comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
@@ -1582,13 +1581,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     if (comboLineList.indexOf(comboLine) == comboLineList.length-1) {
                         let discounted = getDiscountedAmountAPart();
                         let remaining_amount = disc_total_amount - discounted;
-                        let newPrice = originalPrice - remaining_amount / comboLine.quantity
-                        let discAmount = remaining_amount / comboLine.quantity
+                        let newPrice = round_decimals(originalPrice - remaining_amount / comboLine.quantity, this.pos.currency.decimal_places);
+                        let discAmount = originalPrice - newPrice;
                         comboLine.price = newPrice;
                         comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                        if (discAmount * comboLine.quantity + discounted != disc_total_amount) {
+                            diff_amount_new_line = this.get_diff_amount_new_line(program, comboLine, remaining_amount, discAmount, originalPrice);
+                        };
                     }
                     else {
-                        let originalPrice = comboLine.price;
                         let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
                         comboLine.price = newPrice;
                         comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
@@ -1613,10 +1614,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     if (comboLineList.indexOf(comboLine) == comboLineList.length-1) {
                         let discounted = getDiscountedAmountAPart();
                         let remaining_amount = disc_total_amount - discounted;
-                        let newPrice = originalPrice - remaining_amount / comboLine.quantity
-                        let discAmount = remaining_amount / comboLine.quantity
+                        let newPrice = round_decimals(originalPrice - remaining_amount / comboLine.quantity, this.pos.currency.decimal_places);
+                        let discAmount = originalPrice - newPrice;
                         comboLine.price = newPrice;
                         comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                        if (discAmount * comboLine.quantity + discounted != disc_total_amount) {
+                            diff_amount_new_line = this.get_diff_amount_new_line(program, comboLine, remaining_amount, discAmount, originalPrice);
+                        };
                     }
                     else {
                         let originalPrice = comboLine.price;
@@ -1628,6 +1632,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             } else {
                 Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
             };
+        }
+        if (diff_amount_new_line) {
+            comboLineList.push(diff_amount_new_line);
         }
         return comboLineList;
     }
