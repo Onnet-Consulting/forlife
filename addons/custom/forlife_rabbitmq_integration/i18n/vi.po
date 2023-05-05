@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-27 08:54+0000\n"
-"PO-Revision-Date: 2023-04-27 08:54+0000\n"
+"POT-Creation-Date: 2023-05-05 04:34+0000\n"
+"PO-Revision-Date: 2023-05-05 04:34+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -75,6 +75,11 @@ msgid "ID"
 msgstr ""
 
 #. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_stock_location
+msgid "Inventory Locations"
+msgstr "Địa điểm Kiểm kê"
+
+#. module: forlife_rabbitmq_integration
 #: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__is_connected
 msgid "Is Connected"
 msgstr "Đã kết nối"
@@ -106,6 +111,11 @@ msgstr "Chi tiết hạng thẻ"
 #: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__password
 msgid "Password"
 msgstr "Mật khẩu"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "Đơn bán lẻ"
 
 #. module: forlife_rabbitmq_integration
 #: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__port
@@ -151,6 +161,11 @@ msgstr "chi tiết bảng giá KM"
 #: model:ir.model,name:forlife_rabbitmq_integration.model_promotion_program
 msgid "Promotion Program"
 msgstr "Chương trình Khuyến mãi"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_stock_quant
+msgid "Quants"
+msgstr "Số lượng"
 
 #. module: forlife_rabbitmq_integration
 #: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__queue_key
@@ -207,6 +222,11 @@ msgid "Rabbitmq connection"
 msgstr "Kết nối RabbitMQ"
 
 #. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_sale_order
+msgid "Sales Order"
+msgstr "Đơn bán hàng"
+
+#. module: forlife_rabbitmq_integration
 #: model:ir.model,name:forlife_rabbitmq_integration.model_store
 msgid "Store"
 msgstr "Cửa hàng"
@@ -230,12 +250,12 @@ msgstr ""
 
 #. module: forlife_rabbitmq_integration
 #: model:ir.model,name:forlife_rabbitmq_integration.model_sync_info_rabbitmq_create
-msgid "Sync Info RabbitMQ New"
+msgid "Sync Info RabbitMQ Create"
 msgstr ""
 
 #. module: forlife_rabbitmq_integration
 #: model:ir.model,name:forlife_rabbitmq_integration.model_sync_info_rabbitmq_delete
-msgid "Sync Info RabbitMQ Remove"
+msgid "Sync Info RabbitMQ Delete"
 msgstr ""
 
 #. module: forlife_rabbitmq_integration
