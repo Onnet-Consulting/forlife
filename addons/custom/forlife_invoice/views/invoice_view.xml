@@ -59,6 +59,7 @@
 <!--                    <attribute name="domain">product_domain</attribute>-->
 <!--                </xpath>-->
                 <xpath expr="//field[@name='tax_totals']" position="after">
+                    <field name="is_check_total_and_trade_discount" invisible="1"/>
                     <field name="trade_discount" attrs="{'readonly': [('is_check_total_and_trade_discount', '=', True)]}"/>
                     <field name="total_trade_discount" attrs="{'readonly': [('is_check_total_and_trade_discount', '=', False)]}"/>
                 </xpath>

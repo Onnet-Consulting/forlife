@@ -141,6 +141,7 @@ class AccountMoveBKAV(models.Model):
     data_compare_status = fields.Selection([('1', 'Mới tạo'),
                                             ('2', 'Đã phát hành'),
                                             ('3', 'Đã hủy'),
+                                            ('4', 'Đã xóa'),
                                             ('5', 'Chờ thay thế'),
                                             ('6', 'Thay thế'),
                                             ('7', 'Chờ điều chỉnh'),
@@ -153,18 +154,6 @@ class AccountMoveBKAV(models.Model):
                                             ('14', 'Chờ điều chỉnh chiết khấu'),
                                             ('15', 'Điều chỉnh chiết khấu')])
 
-    # cmd_type = fields.Char('', compute='_compute_fix_cmd_type')
-    #
-    # @api.depends('state')
-    # def _compute_fix_cmd_type(self):
-    #     for rec in self:
-    #         ###100 là mới tạo:
-    #         if rec.state == 'draft':
-    #             rec.cmd_type = 100
-    #         ###112 là vào sổ chờ kí:
-    #         if rec.state == 'posted':
-    #             rec.cmd_type = 112
-
     def create_invoice_bkav(self):
         _logger.info("----------------Start Sync orders from BKAV-INVOICE-E --------------------")
         data = {
@@ -172,7 +161,7 @@ class AccountMoveBKAV(models.Model):
             "CommandObject": [
                 {
                     "Invoice": {
-                        "InvoiceTypeID": 2,
+                        "InvoiceTypeID": 10,
                         "InvoiceDate": self.invoice_date.isoformat() if self.invoice_date else '',
                         "BuyerName": self.partner_id.name if self.partner_id.name else '',
                         "BuyerTaxCode": self.partner_id.vat if self.partner_id.vat else '',
@@ -248,7 +237,7 @@ class AccountMoveBKAV(models.Model):
             "CommandObject": [
                 {
                     "Invoice": {
-                        "InvoiceTypeID": 2,
+                        "InvoiceTypeID": 10,
                         "InvoiceDate": self.invoice_date.isoformat() if self.invoice_date else '',
                         "BuyerName": self.partner_id.name if self.partner_id.name else '',
                         "BuyerTaxCode": self.partner_id.vat if self.partner_id.vat else '',
