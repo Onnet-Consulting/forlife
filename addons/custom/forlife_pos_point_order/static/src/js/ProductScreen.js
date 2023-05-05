@@ -51,6 +51,7 @@ odoo.define('forlife_pos_point_order.ProductScreen', function (require) {
             }
             if (confirmed) {
                 this.currentOrder.set_partner(newPartner);
+                this.currentOrder.old_data = false;
                 this.currentOrder.updatePricelist(newPartner);
                 this.reassign_point()
             }

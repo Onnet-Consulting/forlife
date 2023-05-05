@@ -24,5 +24,21 @@
             </field>
         </record>
 
+        <record id="res_partner_points_coefficient" model="ir.ui.view">
+            <field name="name">res.partner.forlife.inherit.coefficient</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="forlife_pos_point_order.res_partner_forlife_inherit"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='history_points_forlife_ids']//tree//field[@name='date_order']" position="after">
+                    <field name="points_coefficient"/>
+                </xpath>
+                <xpath expr="//field[@name='history_points_format_ids']//tree//field[@name='date_order']" position="after">
+                    <field name="points_coefficient"/>
+                </xpath>
+
+            </field>
+        </record>
+
     </data>
 </odoo>
