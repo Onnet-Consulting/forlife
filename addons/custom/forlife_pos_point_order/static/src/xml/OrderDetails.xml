@@ -30,7 +30,7 @@
                             </th>
                         </tr>
                         <tr style="border: 1px solid black; text-align:left">
-                            <th style="border: 1px solid black;width:25%">Đổi</th>
+                            <th style="border: 1px solid black;width:25%">Tiêu điểm</th>
                             <th>
                                 <t t-if="env.pos.selectedOrder.total_order_line_point_used">
                                     <t t-esc="env.pos.selectedOrder.total_order_line_point_used"/>

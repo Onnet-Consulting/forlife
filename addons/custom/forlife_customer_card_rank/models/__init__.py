@@ -3,6 +3,7 @@
 from . import card_rank
 from . import member_card
 from . import partner_card_rank
+from . import partner_history_point
 from . import res_partner
 from . import pos_order
 from . import pos_session
