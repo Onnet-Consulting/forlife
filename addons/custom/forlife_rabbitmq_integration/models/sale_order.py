@@ -58,7 +58,7 @@ class SaleOrder(models.Model):
                     'phone_number': order.partner_id.phone,
                     'name': order.partner_id.name,
                 } if order.partner_id else None,
-                'payment_method': None,
+                'payment_method': ['cod'],
                 'order_date': order.date_order.strftime('%Y-%m-%d %H:%M:%S'),
                 'coupons': None,
             })
@@ -80,7 +80,7 @@ class SaleOrder(models.Model):
             if 'order_date' in field_update:
                 vals.update({'order_date': order.date_order.strftime('%Y-%m-%d %H:%M:%S')})
             if 'state' in field_update:
-                vals.update({'internal_note': self.env['ir.model.fields'].search([('model_id', '=', self.env['ir.model'].search(
+                vals.update({'status': self.env['ir.model.fields'].search([('model_id', '=', self.env['ir.model'].search(
                     [('model', '=', self._name)]).id), ('name', '=', 'state')]).selection_ids.filtered(lambda x: x.value == order.state).name})
             if 'order_line' in field_update:
                 vals.update({
