@@ -10,6 +10,7 @@ class Location(models.Model):
     type_other = fields.Selection([('incoming', 'Nhập khác'), ('outcoming', 'Xuất khác')], string='Loại khác', required=True)
     valuation_out_account = fields.Many2one("account.account", string="Tài khoản định giá tồn kho (xuất hàng)")
     valuation_in_account = fields.Many2one("account.account", string="Tài khoản định giá tồn kho (nhập hàng)")
+    id_deposit = fields.Boolean(string='Kho hàng ký gửi?', default=False)
     reason_type_id = fields.Many2one('forlife.reason.type')
     # work_order = fields.Many2one('forlife.production', string='Work Order')
     valuation_in_account_id = fields.Many2one(
