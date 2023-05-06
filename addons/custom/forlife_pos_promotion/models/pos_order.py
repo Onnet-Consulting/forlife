@@ -8,6 +8,7 @@ class PosOrder(models.Model):
 
     cart_promotion_program_id = fields.Many2one('promotion.program', 'Applied Cart Promotion', readonly=True)
     reward_voucher_id = fields.Many2one('voucher.voucher', 'Reward Voucher', readonly=True)
+    ref_reward_code_ids = fields.One2many('promotion.code', 'original_order_id', readonly=True)
 
     @api.model
     def _process_order(self, order, draft, existing_order):
@@ -44,7 +45,7 @@ class PosOrder(models.Model):
 
             gen_code_wizard = self.env['promotion.generate.code'].create({
                 'program_id': reward_program.id,
-                'max_usage': 1
+                'max_usage': reward_program.max_usage
             })
             code_create_vals = [gen_code_wizard._get_coupon_values(customer, force_partner=True)
                                 for customer in [referring_partner_id, partner]]

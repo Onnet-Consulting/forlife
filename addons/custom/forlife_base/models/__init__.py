@@ -19,3 +19,4 @@ from . import res_headbank
 from . import account_analytic_account
 from . import product_config
 from . import base_import
+from . import res_ward
