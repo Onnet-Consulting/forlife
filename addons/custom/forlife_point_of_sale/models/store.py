@@ -18,6 +18,9 @@ class Store(models.Model):
     pos_config_ids = fields.One2many('pos.config', 'store_id', string='POS Config', readonly=True)
     payment_method_ids = fields.Many2many('pos.payment.method', string='POS Payment Method', required=True)
     analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic Account')
+    start_date = fields.Date('Start Date')
+    opening_time = fields.Float('Opening time', default=8.5)
+    closing_time = fields.Float('Closing time', default=22.0)
 
     @api.constrains('warehouse_id')
     def _check_warehouse_id(self):
@@ -25,3 +28,11 @@ class Store(models.Model):
             store = self.search([('id', '!=', line.id), ('warehouse_id', '=', line.warehouse_id.id)])
             if store:
                 raise ValidationError(_("Warehouse '%s' has been assigned to store '%s'") % (line.warehouse_id.name, ', '.join(store.mapped('name'))))
+
+    @api.constrains('opening_time', 'closing_time')
+    def _check_time(self):
+        for line in self:
+            if line.opening_time < 0 or line.opening_time > 24.0 or line.closing_time < 0 or line.closing_time > 24.0:
+                raise ValidationError(_('Opening/closing time should be between 0 and 24'))
+            if line.opening_time >= line.closing_time:
+                raise ValidationError(_('Opening time must be less than closing time'))

@@ -166,6 +166,14 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         }, []);
     }
 
+    get_valid_reward_code_promotion(program) {
+        let available_products = this.get_reward_product_ids(program);
+        let valid_products_in_order = this.env.pos.get_order().get_orderlines().filter(line => program.valid_product_ids.has(line.product.id)).map(l => l.product);
+        let ref_product = valid_products_in_order.sort((a,b) => b.lst_price - a.lst_price).at(0);
+        let valid_rewards = available_products.filter(p => this.env.pos.db.get_product_by_id(p).lst_price < ref_product.lst_price);
+        return valid_rewards
+    }
+
     get_program_by_id(str_id) {
         str_id = String(str_id);
         if (str_id.includes('p')) {
@@ -1128,6 +1136,14 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let NumberOfCombo = this._checkNumberOfCode(program, to_check_order_lines, [] , 0)[2];
                 if (NumberOfCombo >= 1) {
                     programIsVerified[program.id] = NumberOfCombo;
+                    if (program.reward_type == 'code_buy_x_get_y' && !program.reward_product_id_selected) {
+                        let reward_products = this.pos.get_valid_reward_code_promotion(program)
+                                                        .map(product_id => this.pos.db.get_product_by_id(product_id))
+                                                        .sort((a,b) => b.lst_price - a.lst_price);
+                        if (reward_products.length > 0) {
+                            program.reward_product_id_selected = reward_products.at(0).id;
+                        };
+                    };
                 };
             }
             else if (program.promotion_type == 'pricelist') {
@@ -1764,16 +1780,18 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 combo_count[program.id] = numberOfCombo;
 
                 var remaining_amount = false;
-                    if (program.reward_product_id_selected && program.reward_product_id_selected.size && numberOfCombo > 0 && program.reward_type == "code_buy_x_get_y") {
-                        let product = this.pos.db.get_product_by_id([...program.reward_product_id_selected][0]);
+                if (program.reward_product_id_selected && numberOfCombo > 0 && program.reward_type == "code_buy_x_get_y") {
+                    let product = this.pos.db.get_product_by_id(program.reward_product_id_selected);
+                    if (product) {
                         to_discount_line_vals.push({
                             product: product,
                             quantity:  numberOfCombo * program.reward_quantity,
                             price: product.lst_price,
                             isNew: true,
                             is_reward_line: true
-                        })
-                    }
+                        });
+                    };
+                };
                     if (numberOfCombo > 0 && program.reward_type == "code_buy_x_get_cheapest") {
                         var numberOfReward = numberOfCombo * program.reward_quantity
                         let new_to_discount_line_val;
@@ -1822,6 +1840,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         };
 
         if (this.activatedInputCodes.find((c) => c.code === code)) {
+            // todo: to remove _updateActivated...
+            await this._updateActivatedPromotionPrograms();
             return _t('That coupon code has already been scanned and activated.');
         };
 
