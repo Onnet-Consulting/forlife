@@ -45,7 +45,6 @@ class PurchaseOrder(models.Model):
     # prod_filter = fields.Boolean(string='Filter Products by Supplier', compute='_compute_')
     # total_discount = fields.Monetary(string='Total Discount', store=True, readonly=True,
     #                                  compute='_amount_all', tracking=True)
-
     custom_state = fields.Selection(
         default='draft',
         string="Status",
@@ -829,9 +828,9 @@ class PurchaseOrderLine(models.Model):
             else:
                 item.billed = False
 
-    # @api.onchange('vendor_price', 'exchange_quantity', 'product_id', 'purchase_quantity')
-    # def onchange_unit_price(self):
-    #     self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity > 0 else False
+    @api.onchange('vendor_price', 'exchange_quantity', 'product_id', 'purchase_quantity')
+    def onchange_unit_price(self):
+        self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity > 0 else False
 
     @api.onchange('product_id', 'supplier_id', 'is_passersby', )
     def onchange_vendor_price(self):
@@ -842,7 +841,6 @@ class PurchaseOrderLine(models.Model):
                 if data:
                     self.exchange_quantity = data.amount_conversion
                     self.vendor_price = data.price
-                    self.price_unit = data.price
 
     @api.onchange('free_good')
     def onchange_vendor_prices(self):

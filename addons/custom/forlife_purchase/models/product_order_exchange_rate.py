@@ -23,7 +23,7 @@ class PurchaseOrderExchangeRate(models.Model):
     # total_vnd_amount = fields.Float(string='Total VND Amount', compute='compute_vnd_amount')
     total_tax_amount = fields.Float(string='Total Tax Amount', compute='compute_tax_amount', store=1)
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order')
-    qty_product = fields.Float()
+    qty_product = fields.Float(copy=True)
 
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
     def constrains_per(self):
