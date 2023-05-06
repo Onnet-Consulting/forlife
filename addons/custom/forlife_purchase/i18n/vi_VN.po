@@ -1092,6 +1092,9 @@ msgstr "% Thuế GTGT"
 msgid "VAT"
 msgstr "Thuế GTGT"
 
+
+
+
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:purchase.field_purchase_order__date_order
 msgid "Order Deadline"
@@ -1136,3 +1139,5 @@ msgstr "Tên lệnh sản xuất"
 #: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__custom_state__confirm
 msgid "Confirm"
 msgstr "Chờ duyệt"
+
+
