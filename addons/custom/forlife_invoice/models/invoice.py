@@ -438,7 +438,7 @@ class InvoiceExchangeRate(models.Model):
     vat_tax_amount = fields.Float(string='Thuế GTGT', compute='_compute_vat_tax_amount', store=1)
 
     # total_vnd_amount = fields.Float(string='Total VND Amount', compute='compute_vnd_amount')
-    total_tax_amount = fields.Float(string='Total Tax Amount', compute='compute_tax_amount', store=1)
+    total_tax_amount = fields.Float(string='Tổng tiền thuế', compute='compute_tax_amount', store=1)
     invoice_rate_id = fields.Many2one('account.move', string='Invoice Exchange Rate')
 
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
