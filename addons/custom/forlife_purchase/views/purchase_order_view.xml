@@ -91,6 +91,7 @@
                                 <field name="name" readonly="1"/>
                                 <field name="usd_amount" readonly="1" invisible="1"/>
                                 <field name="vnd_amount" readonly="1"/>
+                                <field name="qty_product" readonly="1" string="Số lượng đặt mua"/>
                                 <field name="import_tax"/>
                                 <field name="tax_amount" readonly="1"/>
                                 <field name="special_consumption_tax"/>
@@ -168,7 +169,7 @@
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                      <field name="currency_id" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}"/>
+                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
@@ -234,7 +235,7 @@
                         <field name="purchase_uom"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="exchange_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_passersby', '=', False)]}"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_passersby', '=', False)]}" force_save="1"/>
                         <field name="product_qty" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
                         <field name="vendor_price"

@@ -34,7 +34,7 @@ class PurchaseOrder(models.Model):
     purchase_code = fields.Char(string='Internal order number')
     has_contract = fields.Boolean(string='Contract?')
     has_invoice = fields.Boolean(string='Finance Bill?')
-    exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8))
+    exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8), default=1)
 
     # apply_manual_currency_exchange = fields.Boolean(string='Apply Manual Exchange', compute='_compute_active_manual_currency_rate')
     manual_currency_exchange_rate = fields.Float('Rate', digits=(12, 6))
@@ -513,6 +513,7 @@ class PurchaseOrder(models.Model):
                 'name': line.name,
                 'usd_amount': line.price_subtotal,
                 'purchase_order_id': self.id,
+                'qty_product': line.purchase_quantity
             })
 
     @api.onchange('purchase_type')
@@ -770,7 +771,6 @@ class PurchaseOrderLine(models.Model):
     received = fields.Integer(string='Đã nhận', compute='compute_received')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     description = fields.Char('Mô tả', related='product_id.name')
-    qty_product = fields.Float()
 
     @api.constrains('asset_code')
     def constrains_asset_code(self):
@@ -1090,166 +1090,121 @@ class StockPicking(models.Model):
                 invoice_line = []
                 invoice_line_cost_in_tax = []
                 if po.type_po_cost == 'tax':
-                    for r, stock in zip(po.exchange_rate_line, record.move_ids_without_package):
-                        if r.product_id.categ_id and r.product_id.categ_id.property_stock_valuation_account_id:
-                            account_1561 = r.product_id.categ_id.property_stock_valuation_account_id.id
-                        else:
-                            raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
-                        if r.qty_product <= 0 or stock.quantity_done <= 0:
-                            raise ValidationError('Số lượng sản phẩm nhập hay số lương hoàn thành phải lớn hơn 0')
-                        credit_333 = stock.quantity_done / r.qty_product * r.tax_amount
-                        credit_332 = stock.quantity_done / r.qty_product * r.special_consumption_tax_amount
-                        invoice_line_1561 = (
-                            0, 0,
-                            {
-                                'account_id': account_1561, 'name': r.name,
-                                'debit': credit_333 + credit_332,
-                                'credit': 0,
-                            })
-                        invoice_line_3333 = (
-                            0, 0,
-                            {'account_id': self.env.ref(
-                                'forlife_purchase.product_import_tax').categ_id.property_stock_account_input_categ_id.id,
-                             'name': r.name,
-                             'debit': 0,
-                             'credit': credit_333,
-                             })
-                        invoice_line_3332 = (
-                            0, 0,
-                            {'account_id': self.env.ref(
-                                'forlife_purchase.product_excise_tax').categ_id.property_stock_account_input_categ_id.id,
-                             'name': r.name,
-                             'debit': 0,
-                             'credit': credit_332,
-                             })
-                        lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
-                        invoice_line.extend(lines)
+                    invoice_line = self.create_invoice_po_tax(po, record)
                     if po.cost_line:
-                        data_line = po.order_line.mapped('price_total')
-                        data_in_line = po.order_line
-                        data_sum = sum(data_line)
-                        if data_sum <= 0:
-                            raise ValidationError('Tổng tiền của sản phẩm là 0')
-                        vals = {}
-                        for item, total, range_product in zip(data_in_line, data_line, range(1, len(data_in_line) + 1)):
-                            if item.product_id.categ_id and item.product_id.categ_id.property_stock_valuation_account_id:
-                                account_1561 = item.product_id.categ_id.property_stock_valuation_account_id.id
-                            else:
-                                raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
-                            for rec in po.cost_line:
-
-                                if rec.product_id.categ_id and rec.product_id.categ_id.property_stock_valuation_account_id:
-                                    account_acc = rec.product_id.categ_id.property_stock_account_input_categ_id.id
-                                else:
-                                    raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
-                                key_acc = str(account_acc) + "_" + rec.name
-                                if not vals.get(key_acc):
-                                    vals.update({
-                                        key_acc: {'account_id': account_acc,
-                                                  'name': rec.name,
-                                                  'debit': 0,
-                                                  'credit': total / data_sum * rec.expensive_total,
-                                                  },
-                                    })
-                                    for pro, len_pro in zip(data_in_line, range(1, len(data_in_line) + 1)):
-                                        vals.update({
-                                            "1561" + "from" + str(len_pro) + str(pro.product_id) + key_acc: {
-                                                'account_id': account_1561, 'name': "Auto",
-                                                'debit': 0,
-                                                'credit': 0,
-                                            }
-                                        })
-                                    vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
-                                        'account_id': account_1561, 'name': item.name,
-                                        'debit': total / data_sum * rec.expensive_total,
-                                        'credit': 0,
-                                    })
-                                else:
-                                    vals[key_acc]["credit"] = vals[key_acc]["credit"] + (
-                                                total / data_sum * rec.expensive_total)
-                                    vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
-                                        'account_id': account_1561, 'name': item.name,
-                                        'debit': total / data_sum * rec.expensive_total,
-                                        'credit': 0,
-                                    })
-                        for line in vals:
-                            invoice_line_cost_in_tax.append((0, 0, vals.get(line)))
-                        master_data_ac_cost = {
-                            'ref': record.name,
-                            'purchase_type': po.purchase_type,
-                            'move_type': 'entry',
-                            'reference': po.name,
-                            'currency_id': po.currency_id.id,
-                            'exchange_rate': po.exchange_rate,
-                            'date': datetime.datetime.now(),
-                            'invoice_payment_term_id': po.payment_term_id.id,
-                            'invoice_date_due': po.date_planned,
-                            'invoice_line_ids': invoice_line_cost_in_tax,
-                            'restrict_mode_hash_table': False
-                        }
-                        acc_move = self.env['account.move'].create(master_data_ac_cost).action_post()
+                        invoice_line_cost_in_tax = self.create_invoice_po_cost(po)
+                        account_cost_in_tax = self.create_account_move(po, invoice_line_cost_in_tax, record)
                 elif po.type_po_cost == 'cost':
-                    data_line = po.order_line.mapped('price_total')
-                    data_in_line = po.order_line
-                    data_sum = sum(data_line)
-                    if data_sum <= 0:
-                        raise ValidationError('Tổng tiền của sản phẩm là 0')
-                    vals = {}
-                    for item, total, range_product in zip(data_in_line, data_line, range(1, len(data_in_line) + 1)):
-                        if item.product_id.categ_id and item.product_id.categ_id.property_stock_valuation_account_id:
-                            account_1561 = item.product_id.categ_id.property_stock_valuation_account_id.id
-                        else:
-                            raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
-                        for rec in po.cost_line:
-
-                            if rec.product_id.categ_id and rec.product_id.categ_id.property_stock_valuation_account_id:
-                                account_acc = rec.product_id.categ_id.property_stock_account_input_categ_id.id
-                            else:
-                                raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
-                            key_acc = str(account_acc) + "_" + rec.name
-                            if not vals.get(key_acc):
-                                vals.update({
-                                    key_acc: {'account_id': account_acc,
-                                              'name': rec.name,
-                                              'debit': 0,
-                                              'credit': total / data_sum * rec.expensive_total,
-                                              },
-                                })
-                                for pro, len_pro in zip(data_in_line, range(1, len(data_in_line) + 1)):
-                                    vals.update({
-                                        "1561" + "from" + str(len_pro) + str(pro.product_id) + key_acc: {
-                                            'account_id': account_1561, 'name': "Auto",
-                                            'debit': 0,
-                                            'credit': 0,
-                                        }
-                                    })
-                                vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
-                                    'account_id': account_1561, 'name': item.name,
-                                    'debit': total / data_sum * rec.expensive_total,
-                                    'credit': 0,
-                                })
-                            else:
-                                vals[key_acc]["credit"] = vals[key_acc]["credit"] + (total / data_sum * rec.expensive_total)
-                                vals["1561" + "from" + str(range_product)+ str(item.product_id) + key_acc].update({
-                                    'account_id': account_1561, 'name': item.name,
-                                    'debit': total / data_sum * rec.expensive_total,
-                                    'credit': 0,
-                                })
-                    for line in vals:
-                        invoice_line.append((0, 0, vals.get(line)))
+                    invoice_line = self.create_invoice_po_cost(po)
                 if po.type_po_cost in ('cost', 'tax'):
-                    master_data_ac = {
-                        'ref': record.name,
-                        'purchase_type': po.purchase_type,
-                        'move_type': 'entry',
-                        'reference': po.name,
-                        'currency_id': po.currency_id.id,
-                        'exchange_rate': po.exchange_rate,
-                        'date': datetime.datetime.now(),
-                        'invoice_payment_term_id': po.payment_term_id.id,
-                        'invoice_date_due': po.date_planned,
-                        'invoice_line_ids': invoice_line,
-                        'restrict_mode_hash_table': False
-                    }
-                    account = self.env['account.move'].create(master_data_ac).action_post()
+                    account = self.create_account_move(po, invoice_line, record)
+                
         return res
+
+    def create_account_move(self, po, line, record):
+        master_data_ac = {
+            'ref': record.name,
+            'purchase_type': po.purchase_type,
+            'move_type': 'entry',
+            'reference': po.name,
+            'currency_id': po.currency_id.id,
+            'exchange_rate': po.exchange_rate,
+            'date': datetime.datetime.now(),
+            'invoice_payment_term_id': po.payment_term_id.id,
+            'invoice_date_due': po.date_planned,
+            'invoice_line_ids': line,
+            'restrict_mode_hash_table': False
+        }
+        account = self.env['account.move'].create(master_data_ac).action_post()
+        return record
+
+    def create_invoice_po_cost(self, po):
+        data_line = po.order_line.mapped('price_total')
+        data_in_line = po.order_line
+        data_sum = sum(data_line)
+        invoice_line_cost_in_tax = []
+        if data_sum <= 0:
+            raise ValidationError('Tổng tiền của sản phẩm là 0')
+        vals = {}
+        for item, total, range_product in zip(data_in_line, data_line, range(1, len(data_in_line) + 1)):
+            if item.product_id.categ_id and item.product_id.categ_id.property_stock_valuation_account_id:
+                account_1561 = item.product_id.categ_id.property_stock_valuation_account_id.id
+            else:
+                raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
+            for rec in po.cost_line:
+
+                if rec.product_id.categ_id and rec.product_id.categ_id.property_stock_valuation_account_id:
+                    account_acc = rec.product_id.categ_id.property_stock_account_input_categ_id.id
+                else:
+                    raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
+                key_acc = str(account_acc) + "_" + rec.name
+                if not vals.get(key_acc):
+                    vals.update({
+                        key_acc: {'account_id': account_acc,
+                                  'name': rec.name,
+                                  'debit': 0,
+                                  'credit': total / data_sum * rec.expensive_total,
+                                  },
+                    })
+                    for pro, len_pro in zip(data_in_line, range(1, len(data_in_line) + 1)):
+                        vals.update({
+                            "1561" + "from" + str(len_pro) + str(pro.product_id) + key_acc: {
+                                'account_id': account_1561, 'name': "Auto",
+                                'debit': 0,
+                                'credit': 0,
+                            }
+                        })
+                    vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
+                        'account_id': account_1561, 'name': item.name,
+                        'debit': total / data_sum * rec.expensive_total,
+                        'credit': 0,
+                    })
+                else:
+                    vals[key_acc]["credit"] = vals[key_acc]["credit"] + (
+                            total / data_sum * rec.expensive_total)
+                    vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
+                        'account_id': account_1561, 'name': item.name,
+                        'debit': total / data_sum * rec.expensive_total,
+                        'credit': 0,
+                    })
+        for line in vals:
+            invoice_line_cost_in_tax.append((0, 0, vals.get(line)))
+        return invoice_line_cost_in_tax
+
+    def create_invoice_po_tax(self, po, record):
+        invoice_line = []
+        for r, stock in zip(po.exchange_rate_line, record.move_ids_without_package):
+            if r.product_id.categ_id and r.product_id.categ_id.property_stock_valuation_account_id:
+                account_1561 = r.product_id.categ_id.property_stock_valuation_account_id.id
+            else:
+                raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
+            if r.qty_product <= 0 or stock.quantity_done <= 0:
+                raise ValidationError('Số lượng sản phẩm nhập hay số lương hoàn thành phải lớn hơn 0')
+            credit_333 = stock.quantity_done / r.qty_product * r.tax_amount
+            credit_332 = stock.quantity_done / r.qty_product * r.special_consumption_tax_amount
+            invoice_line_1561 = (
+                0, 0,
+                {
+                    'account_id': account_1561, 'name': r.name,
+                    'debit': credit_333 + credit_332,
+                    'credit': 0,
+                })
+            invoice_line_3333 = (
+                0, 0,
+                {'account_id': self.env.ref(
+                    'forlife_purchase.product_import_tax').categ_id.property_stock_account_input_categ_id.id,
+                 'name': r.name,
+                 'debit': 0,
+                 'credit': credit_333,
+                 })
+            invoice_line_3332 = (
+                0, 0,
+                {'account_id': self.env.ref(
+                    'forlife_purchase.product_excise_tax').categ_id.property_stock_account_input_categ_id.id,
+                 'name': r.name,
+                 'debit': 0,
+                 'credit': credit_332,
+                 })
+            lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
+            invoice_line.extend(lines)
+        return invoice_line
