@@ -23,6 +23,7 @@ class PurchaseOrder(models.Model):
         ('product', 'Goods'),
         ('service', 'Service'),
         ('asset', 'Asset'),
+        ('asset', 'Asset'),
     ], string='Purchase Type', required=True, default='product')
     inventory_status = fields.Selection([
         ('not_received', 'Not Received'),
