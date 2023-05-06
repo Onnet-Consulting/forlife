@@ -135,6 +135,15 @@ class StockPicking(models.Model):
         return True
 
     @api.model
+    def create(self, vals):
+        line = super(StockPicking, self).create(vals)
+        if self.env.context.get('default_other_import') or self.env.context.get('default_other_export'):
+            for rec in line.move_ids_without_package:
+                rec.location_id = vals['location_id']
+                rec.location_dest_id = vals['location_dest_id']
+        return line
+
+    @api.model
     def get_import_templates(self):
         if self.env.context.get('default_other_import'):
             return [{
@@ -205,12 +214,12 @@ class StockMove(models.Model):
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
     location_id = fields.Many2one(
         'stock.location', 'Source Location',
-        auto_join=True, index=True, required=False, related='picking_id.location_id',
+        auto_join=True, index=True, required=False,
         check_company=True,
         help="Sets a location if you produce at a fixed location. This can be a partner location if you subcontract the manufacturing operations.")
     location_dest_id = fields.Many2one(
         'stock.location', 'Destination Location',
-        auto_join=True, index=True, required=False, related='picking_id.location_dest_id',
+        auto_join=True, index=True, required=False,
         check_company=True,
         help="Location where the system will stock the finished products.")
     date = fields.Datetime(
@@ -233,11 +242,10 @@ class StockMove(models.Model):
                 if back_order:
                     for r in back_order.move_ids_without_package:
                         if r.product_id == rec.product_id and r.amount_total == rec.amount_total:
-                            rec.previous_qty = r.previous_qty
+                            rec.previous_qty = r.previous_qty if r.previous_qty != 0 else rec.product_uom_qty
             else:
                 if rec.picking_id.state not in ('assigned', 'done'):
                     rec.previous_qty = rec.product_uom_qty
-
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
