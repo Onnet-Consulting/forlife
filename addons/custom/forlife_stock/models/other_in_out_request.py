@@ -46,8 +46,7 @@ class ForlifeOtherInOutRequest(models.Model):
         for record in self:
             value = {}
             for item in record.other_in_out_request_line_ids:
-                key = str(item.reason_from_id.id) + '_and_' + str(item.reason_to_id.id)
-                # key = str(record.id)
+                key = str(item.reason_to_id.id) + '_and_' + str(item.whs_to_id.id) if record.type_other == 'other_import' else (str(item.whs_from_id.id) + '_and_' + str(item.reason_from_id.id))
                 data_other_line = (
                     0, 0, {'product_id': item.product_id.id,
                            'product_uom_qty': item.quantity,
@@ -86,7 +85,7 @@ class ForlifeOtherInOutRequest(models.Model):
             for item in value:
                 data_other_import_export = self.env['stock.picking'].create(value.get(item))
             record.write({'status': 'approved'})
-            context = {'other_import_export_request_id': self.id, 'create': True, 'delete': True, 'edit': True}
+            context = {'other_import_export_request_id': self.id, 'create': False, 'delete': True, 'edit': True}
             return {
                 'name': _('List Other Import/Export'),
                 'view_mode': 'tree,form',
