@@ -148,22 +148,29 @@ class PosOrder(models.Model):
         return action
 
     @api.model
-    def check_stock_quant_inventory(self, picking_type_id,order_lines):
-        StockQuant = self.env['stock.quant'].sudo()
-        Product = self.env['product.product'].sudo()
-        stock_picking_type = self.env['stock.picking.type'].sudo().search([('id','=',int(picking_type_id))])
-        stock_location = stock_picking_type.default_location_src_id
+    def check_stock_quant_inventory(self, picking_type_id, order_lines):
+        querry = """SELECT stock_warehouse.name as warehouse_name, 
+            lc.name as location_name, lc.warehouse_id as warehouse_id,
+            lc.id as location_id FROM stock_location lc 
+            INNER JOIN stock_warehouse ON lc.warehouse_id = stock_warehouse.id
+            WHERE lc.id = (
+                SELECT default_location_src_id FROM stock_picking_type where id = {}
+            )""".format(int(picking_type_id))
+        self._cr.execute(querry)
+        result = self._cr.dictfetchone()
         product_not_availabel = []
         for rec in order_lines[0]:
-            product = Product.search([('id','=', rec['product_id']), ('detailed_type','=','product')])
-            if product:
-                lot_id = self.env['stock.lot'].sudo().search([('name', '=', rec['seri'])])
-                quant = StockQuant.search([('product_id','=',product.id), ('location_id','=', stock_location.id),('lot_id','=',lot_id.id)])
-                if not quant:
+            product = self.env['product.product'].sudo().search([('id', '=', rec['product_id'])])
+            if product.detailed_type == 'product':
+                sql = f"SELECT quantity, reserved_quantity  FROM stock_quant WHERE product_id = {rec['product_id']} and location_id = {result['location_id']} and" \
+                      f" lot_id = (SELECT id FROM stock_lot WHERE name = '{rec['seri']}')"
+                self._cr.execute(sql)
+                data = self._cr.dictfetchone()
+                if not data:
                     product_not_availabel.append(product.with_context(lang=self.env.user.lang).name)
-                if quant and rec['count'] > quant.available_quantity:
-                    product_not_availabel.append(quant.product_id.with_context(lang=self.env.user.lang).name)
+                if data and rec['count'] > (data['quantity'] - data['reserved_quantity']):
+                    product_not_availabel.append(product.with_context(lang=self.env.user.lang).name)
         if len(product_not_availabel) > 0:
-            message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {stock_location.name} kho {stock_location.warehouse_id.name}"
+            message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {result['location_name']} kho {result['warehouse_name']}"
             return message
         return False
