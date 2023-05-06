@@ -104,9 +104,8 @@
                                         <field name="name" string="Mô tả"/>
                                         <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}"
                                                string="Đơn vị"/>
-                                        <field name="product_qty" string="Số lượng"/>
-                                        <field name="product_plan_qty" attrs="{'readonly': [('is_from_po', '=', True)]}"
-                                               string="Số lượng kế hoạch"/>
+                                        <field name="product_qty" string="Định lượng"/>
+                                        <field name="product_plan_qty" string="Số lượng kế hoạch"/>
                                         <field name="product_remain_qty" string="Số lượng còn lại"/>
                                     </tree>
                                 </field>
