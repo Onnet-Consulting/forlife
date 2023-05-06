@@ -148,29 +148,38 @@ class PosOrder(models.Model):
         return action
 
     @api.model
-    def check_stock_quant_inventory(self, picking_type_id, order_lines):
-        querry = """SELECT stock_warehouse.name as warehouse_name, 
-            lc.name as location_name, lc.warehouse_id as warehouse_id,
-            lc.id as location_id FROM stock_location lc 
-            INNER JOIN stock_warehouse ON lc.warehouse_id = stock_warehouse.id
-            WHERE lc.id = (
-                SELECT default_location_src_id FROM stock_picking_type where id = {}
-            )""".format(int(picking_type_id))
-        self._cr.execute(querry)
-        result = self._cr.dictfetchone()
+    def check_stock_quant_inventory(self, session_id, order_lines):
+        session = self.env['pos.session'].browse(session_id)
+        stock_location = session.config_id.picking_type_id.default_location_src_id
         product_not_availabel = []
+        product_ids = []
+        seri_list = []
         for rec in order_lines[0]:
-            product = self.env['product.product'].sudo().search([('id', '=', rec['product_id'])])
-            if product.detailed_type == 'product':
-                sql = f"SELECT quantity, reserved_quantity  FROM stock_quant WHERE product_id = {rec['product_id']} and location_id = {result['location_id']} and" \
-                      f" lot_id = (SELECT id FROM stock_lot WHERE name = '{rec['seri']}')"
-                self._cr.execute(sql)
-                data = self._cr.dictfetchone()
-                if not data:
-                    product_not_availabel.append(product.with_context(lang=self.env.user.lang).name)
-                if data and rec['count'] > (data['quantity'] - data['reserved_quantity']):
-                    product_not_availabel.append(product.with_context(lang=self.env.user.lang).name)
+            product_ids.append(rec['product_id'])
+            if rec['seri'] is False:
+                rec['seri'] = ''
+            seri_list.append(rec['seri'])
+        operator_product_id = '=' if len(product_ids) == 1 else 'in'
+        operator_seri_list = '=' if len(seri_list) == 1 else 'in'
+        product_ids = tuple(product_ids) if len(product_ids) > 1 else product_ids[0]
+        seri_list = tuple(seri_list) if len(seri_list) > 1 else f"'{seri_list[0]}'"
+        sql = f"SELECT pt.detailed_type as detailed_type, pp.id as product_id, stq.id as quant_id, " \
+              f"stq.quantity, stq.reserved_quantity FROM stock_quant stq " \
+              f"JOIN product_product pp ON stq.product_id = pp.id " \
+              f"JOIN product_template pt ON pp.product_tmpl_id = pt.id " \
+              f"WHERE product_id {operator_product_id} {product_ids} and location_id = {stock_location.id} and" \
+              f" lot_id in (SELECT id FROM stock_lot WHERE name {operator_seri_list} {seri_list}) and detailed_type = " \
+              f"'product'"
+        self._cr.execute(sql)
+        data = self._cr.dictfetchall()
+        for rec in order_lines[0]:
+            for r in data:
+                if r['product_id'] == rec['product_id'] and (r['quantity'] - r['reserved_quantity']) < rec['count']:
+                    product_not_availabel.append(rec['product_name'])
+                if r['product_id'] != rec['product_id']:
+                    product_not_availabel.append(rec['product_name'])
         if len(product_not_availabel) > 0:
-            message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {result['location_name']} kho {result['warehouse_name']}"
+            message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {stock_location.name} kho {stock_location.warehouse_id.name}"
             return message
         return False
+
