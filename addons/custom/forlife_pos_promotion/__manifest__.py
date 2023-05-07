@@ -37,7 +37,7 @@
             'forlife_pos_promotion/static/src/js/Popup/SurpriseRewardPopup.js',
             'forlife_pos_promotion/static/src/js/db.js',
             'forlife_pos_promotion/static/src/js/models.js',
-
+            'forlife_pos_promotion/static/src/js/Popup/CodeInputPopup.js',
             'forlife_pos_promotion/static/src/xml/ControlButtons/PromotionButton.xml',
             'forlife_pos_promotion/static/src/xml/ControlButtons/EnterCodeButton.xml',
             'forlife_pos_promotion/static/src/xml/Popup/ProgramSelectionPopup.xml',
@@ -50,6 +50,7 @@
             'forlife_pos_promotion/static/src/xml/Popup/CartPromotionPopup.xml',
             'forlife_pos_promotion/static/src/xml/Popup/RewardSelectionCartPromotionPopup.xml',
             'forlife_pos_promotion/static/src/xml/Popup/SurpriseRewardPopup.xml',
+            'forlife_pos_promotion/static/src/xml/Popup/CodeInputPopup.xml',
 
             'forlife_pos_promotion/static/src/css/detail-product-popup.css',
             'forlife_pos_promotion/static/src/css/program-selection-popup.css',

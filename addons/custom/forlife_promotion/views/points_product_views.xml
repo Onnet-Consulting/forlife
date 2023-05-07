@@ -28,6 +28,7 @@
                 <form string="points_product_form">
                     <header>
                         <button name="btn_effective" string="Active" class="oe_highlight" attrs="{'invisible': ['|', ('state', '!=', 'new'), ('state_related', '=', 'finish')]}" type="object" groups="forlife_promotion.promotion_manager"/>
+                        <button name="action_compute_product_apply" string="Đồng bộ sản phẩm" class="oe_highlight" type="object" groups="forlife_promotion.promotion_manager"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>

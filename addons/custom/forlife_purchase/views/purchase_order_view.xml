@@ -91,6 +91,7 @@
                                 <field name="name" readonly="1"/>
                                 <field name="usd_amount" readonly="1" invisible="1"/>
                                 <field name="vnd_amount" readonly="1"/>
+                                <field name="qty_product" readonly="1" string="Số lượng đặt mua"/>
                                 <field name="import_tax"/>
                                 <field name="tax_amount" readonly="1"/>
                                 <field name="special_consumption_tax"/>
@@ -102,12 +103,13 @@
                             </tree>
                         </field>
                     </page>
-                    <page string="Product Cost" name="product_cost" attrs="{'invisible': [('type_po_cost', '!=', 'cost')]}">
+                    <page string="Product Cost" name="product_cost" attrs="{'invisible': [('is_inter_company', '=', True)]}">
                         <field name="is_inter_company" invisible="1"/>
                         <field name="cost_line" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}">
                             <tree editable="bottom" class="width-hh">
                                 <field name="product_id"/>
                                 <field name="name" readonly="1" string='Mô tả'/>
+                                <field name="dollars_money"/>
                                 <field name="expensive_total"/>
                             </tree>
                         </field>
@@ -167,7 +169,7 @@
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                      <field name="currency_id" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                    <field name="exchange_rate" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
@@ -233,7 +235,7 @@
                         <field name="purchase_uom"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="exchange_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_passersby', '=', False)]}"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_passersby', '=', False)]}" force_save="1"/>
                         <field name="product_qty" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
                         <field name="vendor_price"
@@ -248,8 +250,10 @@
                         <field name="taxes_id" widget="many2many_tags"
                                domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id), ('country_id', '=', parent.tax_country_id)]"
                                context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}"
-                               options="{'no_create': True}" string="Thuế(%)"/>
-                        <field name="price_tax" string="Thuế"/>
+                               options="{'no_create': True}" string="Thuế(%)"
+                               attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')]}"
+                        />
+                        <field name="price_tax" string="Thuế" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')]}"/>
                         <field name="price_subtotal" widget="monetary"/>
                         <field name="discount_percent"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('readonly_discount_percent', '=', True)]}"

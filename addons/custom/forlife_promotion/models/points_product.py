@@ -24,6 +24,28 @@ class PointsProduct(models.Model):
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
 
+    def popup_message_show(self):
+        view = self.env.ref('sh_message.sh_message_wizard')
+        view_id = view and view.id or False
+        context = dict(self._context or {})
+        context['message'] = 'Created successfully'
+        return {
+            'name': 'Success',
+            'type': 'ir.actions.act_window',
+            'view_type':'form',
+            'view_mode':'form',
+            'res_model': 'sh.message.wizard',
+            'views': [(view.id, 'form')],
+            'view_id':view.id,
+            'target':'new',
+            'context': context
+        }
+
+    def action_compute_product_apply(self):
+        product_ids = [x.product_id.id for x in self.env['point.product.model.import'].search([('points_product_id','=',self.id)])]
+        self.product_ids = [(4, product_id) for product_id in product_ids]
+        return self.popup_message_show()
+
     def _compute_product_count(self):
         for rec in self:
             rec.product_count = self.env['point.product.model.import'].search_count([('points_product_id', '=', self.id)])

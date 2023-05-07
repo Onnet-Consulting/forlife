@@ -45,6 +45,7 @@ class ProgramVoucher(models.Model):
     using_limit = fields.Integer('Giới hạn sử dụng', default=0)
 
     details = fields.Char('Diễn giải')
+    product_apply_count = fields.Integer()
 
     def popup_message_show(self):
         view = self.env.ref('sh_message.sh_message_wizard')
@@ -64,8 +65,10 @@ class ProgramVoucher(models.Model):
         }
 
     def action_compute_product_apply(self):
-        product_ids = [x.product_id.id for x in self.env['product.program.import'].search([('program_vocher_id','=',self.id)])]
+        products_aply_import = self.env['product.program.import'].search([('program_vocher_id','=',self.id)])
+        product_ids = [x.product_id.id for x in products_aply_import]
         self.product_apply_ids = [(4, product_id) for product_id in product_ids]
+        self.product_apply_count = len(products_aply_import)
         return self.popup_message_show()
 
     def action_view_product_apply(self):
@@ -110,6 +113,8 @@ class ProgramVoucher(models.Model):
     def onchange_type_program_voucher(self):
         if self.type == 'v':
             self.apply_many_times = False
+        if self.type:
+            self.product_id = False
 
     @api.depends('voucher_ids')
     def _compute_count_voucher(self):

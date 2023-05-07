@@ -12,19 +12,12 @@ class PointProductLineModelImport(models.Model):
     event_id = fields.Many2one('event', related='points_product_line_id.event_id')
 
     _sql_constraints = [
-        ('unique_product_id', 'UNIQUE(product_id, points_product_id)', 'Product must be unique!')
+        ('unique_product_id', 'UNIQUE(product_id, points_product_line_id)', 'Product must be unique!')
     ]
 
     def name_get(self):
         return [(rec.id, '%s' % rec.product_id.name) for rec in self]
 
-    @api.model_create_multi
-    def create(self, vals_list):
-        for idx, line in enumerate(vals_list):
-            if ('active_model' in self._context and self._context.get('active_model')) and ('active_id' in self._context and self._context.get('active_id')):
-                points_product_line = self.env[self._context.get('active_model')].sudo().search([('id','=',int(self._context.get('active_id')))])
-                points_product_line.product_ids = [(4, int(vals_list[idx]['product_id']))]
-        return super(PointProductLineModelImport, self).create(vals_list)
 
     def unlink(self):
         for rec in self:

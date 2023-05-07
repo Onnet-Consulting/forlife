@@ -32,14 +32,15 @@
             </field>
         </record>
         <record id="view_product_program_import_search" model="ir.ui.view">
-        <field name="name">pos.order.search.view</field>
-        <field name="model">product.program.import</field>
-        <field name="arch" type="xml">
-            <search string="Product">
-                <field name="product_id"/>
-                <field name="barcode"/>
-            </search>
-        </field>
-    </record>
+            <field name="name">pos.order.search.view</field>
+            <field name="model">product.program.import</field>
+            <field name="arch" type="xml">
+                <search string="Product">
+                    <field name="product_id"/>
+                    <field name="barcode"/>
+                </search>
+            </field>
+        </record>
+
     </data>
 </odoo>

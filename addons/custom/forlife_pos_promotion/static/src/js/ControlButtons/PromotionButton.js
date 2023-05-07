@@ -93,7 +93,9 @@ export class PromotionButton extends PosComponent {
         console.log('onClick', this.env.pos)
         const order = this.env.pos.get_order();
         // Reset Cart Program first
-        order._resetCartPromotionPrograms();
+        if (order._isAppliedCartPromotion()) {
+            order._resetCartPromotionPrograms();
+        };
         const potentialPrograms = order.getPotentialProgramsToSelect();
         let programsList = potentialPrograms.map(el => el.program);
         let bestCombine;
@@ -113,6 +115,7 @@ export class PromotionButton extends PosComponent {
         const optionProgramsList = potentialPrograms.map((pro) => ({
             id: pro.program.str_id,
             label: pro.program.display_name,
+            program: pro.program,
             isSelected: bestCombine.length > 0 ? bestCombine.includes(pro.program) : false,
             index: bestCombine.length > 0 ? bestCombine.indexOf(pro.program) + 1 : -1,
             forecastedNumber: pro.number,

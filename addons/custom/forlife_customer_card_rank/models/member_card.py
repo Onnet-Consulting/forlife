@@ -47,6 +47,7 @@ class MemberCard(models.Model):
     value_account_id = fields.Many2one('account.account', string='Value Account', tracking=True)
     value_remind = fields.Float('Value Remind', tracking=True, digits=(16, 0))
     customer_not_apply = fields.Binary(string='Customer not apply', compute='_compute_customer', store=True)
+    point_coefficient_first_order = fields.Integer('Point Coefficient First Order')
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),

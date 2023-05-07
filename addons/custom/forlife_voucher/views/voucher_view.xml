@@ -55,7 +55,6 @@
                             <field name="brand_id" required="1" readonly="True"/>
                             <field name="store_ids" widget="many2many_tags" domain="[('brand_id','=', brand_id)]" readonly="True"/>
                             <field name="using_limit"/>
-                            <field name="product_apply_ids" widget="many2many_tags" readonly="True"/>
                             <field name="product_voucher_id" readonly="True"/>
                             <field name="status_latest"/>
                         </group>

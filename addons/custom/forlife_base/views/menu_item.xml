@@ -44,6 +44,9 @@
                     id="res_state_district_menu" action="res_state_district_action" 
                     parent="menu_master_data_config" sequence="11"/>
                 <menuitem
+                    id="res_ward_menu" action="res_ward_action"
+                    parent="menu_master_data_config" sequence="11"/>
+                <menuitem
                     id="res_state_asset_location_menu" action="res_asset_location_action"
                     parent="menu_master_data_config" sequence="13"/>
                 <menuitem
@@ -55,6 +58,9 @@
                 <menuitem
                     id="res_assets_assets_menu" action="res_assets_assets_action"
                     parent="menu_master_data_config" sequence="12"/>
+                                <menuitem
+                    id="res_warehouse_group_menu" action="res_warehouse_group_action"
+                    parent="menu_master_data_config" sequence="17"/>
 
                 <menuitem id="menu_action_res_partner_master_bank_form"
                     action="action_res_partner_master_bank_form"
