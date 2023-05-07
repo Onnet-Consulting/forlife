@@ -67,6 +67,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.promotion_program_by_id = {};
         this.reward_line_by_id = {};
         this.pro_pricelist_item_by_id = {};
+        this.pricelistProApplicableProducts = new Set(); // todo: use to estimate performance
         var self = this;
         for (const line of this.surprisingRewardProducts) {
             line.to_check_product_ids = new Set(line.to_check_product_ids);
@@ -142,6 +143,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         for (let item of this.promotionPricelistItems) {
             let str_id = `${item.program_id[0]}p${item.id}`;
             this.pro_pricelist_item_by_id[str_id] = item;
+            self.pricelistProApplicableProducts.add(item.product_id[0]); // todo: bổ sung thêm nếu sử dụng cơ chế load CT làm giá trong background
             item.product_id = item.product_id[0];
             item.str_id = str_id;
             item.program_id = item.program_id[0];
@@ -263,7 +265,9 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
         if (!this.pos.no_reset_program && !reset && this.order._isAppliedCartPromotion()) {
             this.order._resetCartPromotionPrograms();
         };
-//        this.order._updateActivatedPromotionPrograms();
+        if (!this.pos.no_reset_program) {
+            this.order._updateActivatedPromotionPrograms();
+        }
         return result;
     }
 
@@ -1122,13 +1126,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         for (const program of comboProgramToCheck) {
             if (program.promotion_type == 'combo') {
                 let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
-                let NumberOfCombo = this._checkNumberOfCombo(program, to_check_order_lines, [] , 0)[2];
-                if (['combo_percent_by_qty', 'combo_fixed_price_by_qty'].includes(program.reward_type) && !(NumberOfCombo >= program.qty_min_required)) {
-                    continue;
+                if (this._filterOrderLinesToCheckComboPro(to_check_order_lines).length > 0) {
+                    let NumberOfCombo = this._checkNumberOfCombo(program, to_check_order_lines, [] , 0)[2];
+                    if (['combo_percent_by_qty', 'combo_fixed_price_by_qty'].includes(program.reward_type) && !(NumberOfCombo >= program.qty_min_required)) {
+                        continue;
+                    };
+                    if (NumberOfCombo >= 1) {
+                        programIsVerified[program.str_id] = NumberOfCombo;
+                    };
                 };
-                if (NumberOfCombo >= 1) {
-                    programIsVerified[program.str_id] = NumberOfCombo;
-                };
+
             }
             else if (program.promotion_type == 'code') {
                 var to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
