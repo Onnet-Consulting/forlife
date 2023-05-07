@@ -58,6 +58,9 @@
                 <menuitem
                     id="res_assets_assets_menu" action="res_assets_assets_action"
                     parent="menu_master_data_config" sequence="12"/>
+                                <menuitem
+                    id="res_warehouse_group_menu" action="res_warehouse_group_action"
+                    parent="menu_master_data_config" sequence="17"/>
 
                 <menuitem id="menu_action_res_partner_master_bank_form"
                     action="action_res_partner_master_bank_form"
