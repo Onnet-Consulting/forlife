@@ -15,6 +15,7 @@ class ProductionOrder(models.Model):
         ('normal', 'Attach Ingredients'),
         ('phantom', 'Product Separation')], 'BoM Type', default='normal', required=True)
     product_id = fields.Many2one('product.product', 'Product', required=True)
+    production_uom = fields.Many2one('uom.uom', string='Đơn vị', related='product_id.uom_id')
     order_line_ids = fields.One2many('production.order.line', 'order_id', 'Production Order Lines')
     product_qty = fields.Float('Quantity', default=1.0, digits='Unit of Measure', required=True)
     domain_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')

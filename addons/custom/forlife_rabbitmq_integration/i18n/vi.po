@@ -1,0 +1,314 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_rabbitmq_integration
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-05 04:34+0000\n"
+"PO-Revision-Date: 2023-05-05 04:34+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__connection_log
+msgid "Connection log"
+msgstr "Kết nối"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_res_partner
+msgid "Contact"
+msgstr "Danh bạ"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_res_country_state
+msgid "Country state"
+msgstr "Tỉnh/TP/Bang"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__create_uid
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__create_uid
+msgid "Created by"
+msgstr "Được tạo bởi"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__create_date
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__create_date
+msgid "Created on"
+msgstr "Được tạo vào"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__description
+msgid "Description"
+msgstr "Mô tả"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__display_name
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_res_state_district
+msgid "District"
+msgstr "Quận/huyện"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_partner_history_point
+msgid "History of Customer purchase POS"
+msgstr "Điểm khách hàng"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__host
+msgid "Host"
+msgstr "Máy chủ"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__id
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__id
+msgid "ID"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_stock_location
+msgid "Inventory Locations"
+msgstr "Địa điểm Kiểm kê"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__is_connected
+msgid "Is Connected"
+msgstr "Đã kết nối"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection____last_update
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__write_uid
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__write_date
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_partner_card_rank_line
+msgid "Partner Card Rank Line"
+msgstr "Chi tiết hạng thẻ"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__password
+msgid "Password"
+msgstr "Mật khẩu"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_pos_order
+msgid "Point of Sale Orders"
+msgstr "Đơn bán lẻ"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__port
+msgid "Port"
+msgstr "Cổng"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_product_template
+msgid "Product"
+msgstr "Sản phẩm"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_product_attribute
+msgid "Product Attribute"
+msgstr "Thuộc tính sản phẩm"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_product_category
+msgid "Product Category"
+msgstr "Danh mục sản phẩm"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_product_product
+msgid "Product Variant"
+msgstr "Biến thể sản phẩm"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_promotion_campaign
+msgid "Promotion Campaign"
+msgstr "Chiến dịch khuyến mãi"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_promotion_code
+msgid "Promotion Code"
+msgstr "Mã KM"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_promotion_pricelist_item
+msgid "Promotion Pricelist Item"
+msgstr "chi tiết bảng giá KM"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_promotion_program
+msgid "Promotion Program"
+msgstr "Chương trình Khuyến mãi"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_stock_quant
+msgid "Quants"
+msgstr "Số lượng"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__queue_key
+msgid "Queue Key"
+msgstr "Khóa hàng đợi"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.constraint,message:forlife_rabbitmq_integration.constraint_rabbitmq_queue_queue_key_uniq
+msgid "Queue Key already exists!"
+msgstr "Khóa đã tồn tại"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__queue_name
+msgid "Queue Name"
+msgstr "Tên hàng đợi"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.actions.act_window,name:forlife_rabbitmq_integration.rabbitmq_connection_action
+#: model:ir.ui.menu,name:forlife_rabbitmq_integration.rabbitmq_connection_menu
+msgid "RabbitMQ Connection"
+msgstr "Kết nối RabbitMQ"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.ui.menu,name:forlife_rabbitmq_integration.rabbitmq_config_menu
+msgid "RabbitMQ Integration"
+msgstr "Tích hợp RabbitMQ"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.actions.act_window,name:forlife_rabbitmq_integration.rabbitmq_queue_action
+#: model:ir.ui.menu,name:forlife_rabbitmq_integration.rabbitmq_queue_menu
+msgid "RabbitMQ Queue"
+msgstr "Hàng đợi RabbitMQ"
+
+#. module: forlife_rabbitmq_integration
+#. odoo-python
+#: code:addons/forlife_rabbitmq_integration/models/sync_info_rabbitmq.py:0
+#, python-format
+msgid "RabbitQM queue by key '%s' not found !"
+msgstr "Không tìm thấy hàng đợi RabbitMQ với khóa là '%s'"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_rabbitmq_connection
+msgid "Rabbitmq Connection"
+msgstr "Kết nối RabbitMQ"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_rabbitmq_queue
+msgid "Rabbitmq Queue"
+msgstr "Hàng đợi RabbitMQ"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__rabbitmq_connection_id
+msgid "Rabbitmq connection"
+msgstr "Kết nối RabbitMQ"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_sale_order
+msgid "Sales Order"
+msgstr "Đơn bán hàng"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_store
+msgid "Store"
+msgstr "Cửa hàng"
+
+#. module: forlife_rabbitmq_integration
+#. odoo-python
+#: code:addons/forlife_rabbitmq_integration/models/rabbitmq_connection.py:0
+#, python-format
+msgid "Succeeded"
+msgstr "Thành công"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_sync_address_info_rabbitmq
+msgid "Sync Address Info RabbitMQ"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_sync_info_rabbitmq_core
+msgid "Sync Info RabbitMQ Core"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_sync_info_rabbitmq_create
+msgid "Sync Info RabbitMQ Create"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_sync_info_rabbitmq_delete
+msgid "Sync Info RabbitMQ Delete"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_sync_info_rabbitmq_update
+msgid "Sync Info RabbitMQ Update"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_queue__target
+msgid "Target"
+msgstr "Mục tiêu"
+
+#. module: forlife_rabbitmq_integration
+#: model_terms:ir.ui.view,arch_db:forlife_rabbitmq_integration.rabbitmq_connection_view_form
+msgid "Test Connection"
+msgstr "Kết nối thử"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.constraint,message:forlife_rabbitmq_integration.constraint_rabbitmq_connection_unique_rabbitmq_host_info
+msgid "The rabbitmq host info already exist !"
+msgstr "Thông tin kết nối máy chủ Rabbitmq đã tồn tại !"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model.fields,field_description:forlife_rabbitmq_integration.field_rabbitmq_connection__username
+msgid "Username"
+msgstr "Tên đăng nhập"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_res_ward
+msgid "Ward"
+msgstr "Phường/xã"
+
+#. module: forlife_rabbitmq_integration
+#: model:ir.model,name:forlife_rabbitmq_integration.model_stock_warehouse
+msgid "Warehouse"
+msgstr "Kho"
+
+#. module: forlife_rabbitmq_integration
+#: model_terms:ir.ui.view,arch_db:forlife_rabbitmq_integration.rabbitmq_connection_view_form
+msgid "rabbitmq_connection_form"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model_terms:ir.ui.view,arch_db:forlife_rabbitmq_integration.rabbitmq_connection_view_tree
+msgid "rabbitmq_connection_tree"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model_terms:ir.ui.view,arch_db:forlife_rabbitmq_integration.rabbitmq_queue_view_form
+msgid "rabbitmq_queue_form"
+msgstr ""
+
+#. module: forlife_rabbitmq_integration
+#: model_terms:ir.ui.view,arch_db:forlife_rabbitmq_integration.rabbitmq_queue_view_tree
+msgid "rabbitmq_queue_tree"
+msgstr ""
