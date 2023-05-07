@@ -13,7 +13,7 @@ odoo.define('forlife_pos_promotion.PosPromotionPartnerListScreen', function (req
                 args: [event.detail.processedChanges],
             });
             framework.blockUI();
-            await this.env.pos.load_new_partners();
+            await this.env.pos.load_new_partners_customize(partnerId);
             this.state.selectedPartner = this.env.pos.db.get_partner_by_id(partnerId);
             let proPrograms = Object.keys(this.env.pos.promotion_program_by_id);
             let promotionValidPartners = await this.rpc({
