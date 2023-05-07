@@ -26,7 +26,17 @@ class AccountMove(models.Model):
     number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string="Exchange Rate", default=1)
-    accounting_date = fields.Datetime(string='Accounting Date')
+    accounting_date = fields.Datetime(string='Accounting Date', required = True)
+
+    date = fields.Date(
+        string='Ngày kế toán',
+        index=True,
+        compute='_compute_date', store=True, required=True, readonly=False, precompute=True,
+        states={'posted': [('readonly', True)], 'cancel': [('readonly', True)]},
+        copy=False,
+        tracking=True,
+    )
+
     payment_status = fields.Char(string='Payment status')
     is_check_cost_view = fields.Boolean(default=False, string='Hóa đơn chi phí')
 
@@ -225,6 +235,8 @@ class AccountMove(models.Model):
                             'amount_total')) * 100
                         item.is_check_total_and_trade_discount = False
 
+
+
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
@@ -239,7 +251,7 @@ class AccountMoveLine(models.Model):
     work_order = fields.Many2one('forlife.production', string='Work Order')
     current_user = fields.Many2one('res.users', default=lambda self: self.env.user, string='Account', required=1)
     uom_id = fields.Many2one('uom.uom', string='Uom')
-    warehouse = fields.Many2one('stock.location', string='Whs')
+    warehouse = fields.Many2one('stock.location', string='Kho nhận', required = True)
     discount = fields.Float(string='Discount (%)',
                             digits='Discount',
                             default=0.0,
