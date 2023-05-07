@@ -1101,35 +1101,8 @@ class StockPicking(models.Model):
                     account = self.create_account_move(po, invoice_line, record)
                 ##Tạo nhập khác xuất khác khi nhập kho
                 if po.order_line_production_order:
-                    list_line_xk = []
-                    for item in po.order_line_production_order:
-                        material = self.env['purchase.order.line.material.line'].search(
-                            [('purchase_order_line_id', '=', item.id)])
-                        for material_line in material:
-                            list_line_xk.append((0, 0, {
-                                'product_id': material_line.product_id.id,
-                                'product_uom': material_line.uom.id,
-                                'price_unit': material_line.price_unit,
-                                'location_id': record.location_dest_id.id,
-                                'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
-                                'product_uom_qty': material_line.product_plan_qty,
-                                'quantity_done': material_line.product_plan_qty,
-                                'amount_total': material_line.price_unit * material_line.product_plan_qty
-                            }))
-                    master_xk = {
-                        "is_locked": True,
-                        "immediate_transfer": False,
-                        'location_id': record.location_dest_id.id,
-                        'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
-                        'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
-                        'scheduled_date': datetime.datetime.now(),
-                        'origin': "Nguyên phụ liệu " + po.name,
-                        'other_export': True,
-                        'state': 'assigned',
-                        'picking_type_id': self.env.ref('stock.picking_type_out').id,
-                        'move_ids_without_package': list_line_xk
-                    }
-                    result = self.env['stock.picking'].with_context({'skip_immediate': True}).create(master_xk).button_validate()
+                    npl = self.create_invoice_npl(po, record)
+                     
         return res
 
     def create_account_move(self, po, line, record):
@@ -1149,6 +1122,7 @@ class StockPicking(models.Model):
         account = self.env['account.move'].create(master_data_ac).action_post()
         return record
 
+    # Xử lý bút toán po nội bộ
     def create_invoice_po_cost(self, po):
         data_line = po.order_line.mapped('price_total')
         data_in_line = po.order_line
@@ -1202,6 +1176,7 @@ class StockPicking(models.Model):
             invoice_line_cost_in_tax.append((0, 0, vals.get(line)))
         return invoice_line_cost_in_tax
 
+    # Xử lý bút toán po nhập khẩu
     def create_invoice_po_tax(self, po, record):
         invoice_line = []
         for r, stock in zip(po.exchange_rate_line, record.move_ids_without_package):
@@ -1239,3 +1214,71 @@ class StockPicking(models.Model):
             lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
             invoice_line.extend(lines)
         return invoice_line
+
+    #Xử lý bút toán po nguyên phụ liệu
+    def create_invoice_npl(self, po, record):
+        list_line_xk = []
+        invoice_line_npls = []
+        for item in po.order_line_production_order:
+            material = self.env['purchase.order.line.material.line'].search(
+                [('purchase_order_line_id', '=', item.id)])
+            if not material:
+                raise ValidationError('Bạn chưa cấu hình nguyên phụ liệu trong đơn mua hàng')
+            for material_line in material:
+                number_product = self.env['stock.quant'].search(
+                    [('location_id', '=', record.location_dest_id.id),
+                     ('product_id', '=', material_line.product_id.id)])
+                if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                    raise ValidationError('Số lượng sản phẩm trong kho không đủ')
+                if material_line.product_id.categ_id and material_line.product_id.categ_id.property_stock_valuation_account_id:
+                    account_1561 = material_line.product_id.categ_id.property_stock_valuation_account_id.id
+                else:
+                    raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
+                if not self.env.ref('forlife_stock.export_production_order').valuation_out_account_id:
+                    raise ValidationError('Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
+                list_line_xk.append((0, 0, {
+                    'product_id': material_line.product_id.id,
+                    'product_uom': material_line.uom.id,
+                    'price_unit': material_line.price_unit,
+                    'location_id': record.location_dest_id.id,
+                    'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
+                    'product_uom_qty': material_line.product_plan_qty,
+                    'quantity_done': material_line.product_plan_qty,
+                    'amount_total': material_line.price_unit * material_line.product_plan_qty,
+                    'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
+                    'reason_id': self.env.ref('forlife_stock.export_production_order').id,
+                }))
+                # Tạo bút toán cho nguyên phụ liệu
+                credit_npl = (0, 0, {
+                    'account_id': self.env.ref(
+                        'forlife_stock.export_production_order').valuation_out_account_id.id,
+                    'name': material_line.product_id.name,
+                    'debit': 0,
+                    'credit': material_line.price_unit * material_line.product_plan_qty,
+                })
+                debit_npl = (0, 0, {
+                    'account_id': account_1561, 'name': material_line.product_id.name,
+                    'debit': material_line.price_unit * material_line.product_plan_qty,
+                    'credit': 0,
+                })
+                invoice_line_npl = [credit_npl, debit_npl]
+                invoice_line_npls.extend(invoice_line_npl)
+                # end
+        account_nl = self.create_account_move(po, invoice_line_npls, record)
+
+        master_xk = {
+            "is_locked": True,
+            "immediate_transfer": False,
+            'location_id': record.location_dest_id.id,
+            'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
+            'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
+            'scheduled_date': datetime.datetime.now(),
+            'origin': "Nguyên phụ liệu " + po.name,
+            'other_export': True,
+            'state': 'assigned',
+            'picking_type_id': self.env.ref('stock.picking_type_out').id,
+            'move_ids_without_package': list_line_xk
+        }
+        result = self.env['stock.picking'].with_context({'skip_immediate': True}).create(master_xk).button_validate()
+        return True
+
