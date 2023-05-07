@@ -20,8 +20,8 @@ class AccountMove(models.Model):
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id', required=1)
     purchase_type = fields.Selection([
         ('product', 'Goods'),
-        ('service', 'Service'),
         ('asset', 'Asset'),
+        ('service', 'Service'),
     ], string='PO Type', default='product', required=1)
     number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
@@ -236,10 +236,6 @@ class AccountMove(models.Model):
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
-    def write(self, vals):
-        res = super().write(vals)
-        return res
-
     move_id = fields.Many2one('account.move', string='Journal Entry',
                               index=True, required=False, readonly=True, auto_join=True, ondelete="cascade",
                               check_company=True,
@@ -450,7 +446,7 @@ class InvoiceExchangeRate(models.Model):
     vat_tax_amount = fields.Float(string='Thuế GTGT', compute='_compute_vat_tax_amount', store=1)
 
     # total_vnd_amount = fields.Float(string='Total VND Amount', compute='compute_vnd_amount')
-    total_tax_amount = fields.Float(string='Total Tax Amount', compute='compute_tax_amount', store=1)
+    total_tax_amount = fields.Float(string='Tổng tiền thuế', compute='compute_tax_amount', store=1)
     invoice_rate_id = fields.Many2one('account.move', string='Invoice Exchange Rate')
 
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')

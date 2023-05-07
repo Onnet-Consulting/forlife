@@ -32,6 +32,9 @@ access_res_weather_province_system,res_weather_province system,model_res_weather
 access_res_state_district_user,res_state_district user,model_res_state_district,base.group_user,1,0,0,0
 access_res_state_district_system,res_state_district system,model_res_state_district,base.group_system,1,1,1,1
 
+access_res_ward_user,res_ward user,model_res_ward,base.group_user,1,0,0,0
+access_res_ward_system,res_ward system,model_res_ward,base.group_system,1,1,1,1
+
 access_product_category_sequece_level_user,product_category_sequece_level user,model_product_category_sequece_level,base.group_user,1,0,0,0
 access_product_category_sequece_level_system,product_category_sequece_level system,model_product_category_sequece_level,base.group_system,1,1,1,1
 
@@ -52,3 +55,6 @@ access_res_headbank_group_system,res_headbank system,model_res_headbank,base.gro
 
 access_bank_level_group_user,bank_level user,model_bank_level,base.group_user,1,0,0,0
 access_bank_level_group_system,bank_level system,model_bank_level,base.group_system,1,1,1,1
+
+access_warehouse_group,warehouse_group user,model_warehouse_group,base.group_user,1,0,0,0
+access_warehouse_group,warehouse_group system,model_warehouse_group,base.group_system,1,1,1,1
