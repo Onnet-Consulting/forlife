@@ -514,7 +514,7 @@ class PurchaseOrder(models.Model):
                 'name': line.name,
                 'usd_amount': line.price_subtotal,
                 'purchase_order_id': self.id,
-                'qty_product': line.purchase_quantity
+                'qty_product': line.product_qty
             })
 
     @api.onchange('purchase_type')
@@ -1099,7 +1099,37 @@ class StockPicking(models.Model):
                     invoice_line = self.create_invoice_po_cost(po)
                 if po.type_po_cost in ('cost', 'tax'):
                     account = self.create_account_move(po, invoice_line, record)
-                
+                ##Tạo nhập khác xuất khác khi nhập kho
+                if po.order_line_production_order:
+                    list_line_xk = []
+                    for item in po.order_line_production_order:
+                        material = self.env['purchase.order.line.material.line'].search(
+                            [('purchase_order_line_id', '=', item.id)])
+                        for material_line in material:
+                            list_line_xk.append((0, 0, {
+                                'product_id': material_line.product_id.id,
+                                'product_uom': material_line.uom.id,
+                                'price_unit': material_line.price_unit,
+                                'location_id': record.location_dest_id.id,
+                                'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
+                                'product_uom_qty': material_line.product_plan_qty,
+                                'quantity_done': material_line.product_plan_qty,
+                                'amount_total': material_line.price_unit * material_line.product_plan_qty
+                            }))
+                    master_xk = {
+                        "is_locked": True,
+                        "immediate_transfer": False,
+                        'location_id': record.location_dest_id.id,
+                        'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
+                        'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
+                        'scheduled_date': datetime.datetime.now(),
+                        'origin': "Nguyên phụ liệu " + po.name,
+                        'other_export': True,
+                        'state': 'assigned',
+                        'picking_type_id': self.env.ref('stock.picking_type_out').id,
+                        'move_ids_without_package': list_line_xk
+                    }
+                    result = self.env['stock.picking'].with_context({'skip_immediate': True}).create(master_xk).button_validate()
         return res
 
     def create_account_move(self, po, line, record):
