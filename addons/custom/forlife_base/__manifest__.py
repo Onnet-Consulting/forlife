@@ -34,6 +34,7 @@
         'views/res_bank_view.xml',
         'views/account_analytic_account.xml',
         'views/product_template_views.xml',
+        'views/warehouse_group_views.xml',
 
         'views/hr_department_views.xml',
         'views/res_company_views.xml',
