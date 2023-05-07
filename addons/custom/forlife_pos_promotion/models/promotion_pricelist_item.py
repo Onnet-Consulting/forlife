@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import itertools
 
-from odoo import models, fields, api, _
+from odoo import models, fields, api, _, tools
 from odoo.exceptions import UserError
 from odoo.models import NewId
 from odoo.osv import expression
+from odoo.tools import float_repr
 
 
 class PromotionPricelistItem(models.Model):
@@ -32,6 +33,7 @@ class PromotionPricelistItem(models.Model):
         for line in self:
             name = line.program_id.name + ': ' + \
                    (line.product_id.barcode and '[' + line.product_id.barcode + ']' + ' ' or '') + \
-                   line.product_id.name
+                   line.product_id.name + ': ' +\
+                   tools.format_amount(self.env, line.fixed_price, line.program_id.currency_id)
             res += [(line.id, name)]
         return res

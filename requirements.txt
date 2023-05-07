@@ -7,3 +7,4 @@ xlrd==1.2.0
 openpyxl
 pycryptodome
 pyodbc
+pika

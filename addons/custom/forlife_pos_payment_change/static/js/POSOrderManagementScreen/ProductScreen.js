@@ -25,18 +25,19 @@ odoo.define('forlife_pos_payment_change.ProductScreen', function (require) {
             }
 
         async _onClickPay() {
-            var picking_type_id = this.env.pos.picking_type.id;
             var order_lines = [];
             this.env.pos.selectedOrder.orderlines.forEach(function(item){
                 if(item.pack_lot_lines){
                     order_lines.push({
                         product_id: item.product.id,
+                        product_name:item.product.display_name,
                         quantity: item.quantity,
                         seri:$.trim(item.pack_lot_lines[0].lot_name)
                     })
                 }else{
                     order_lines.push({
                         product_id: item.product.id,
+                        product_name:item.product.display_name,
                         quantity: item.quantity,
                         seri:false
                     })
@@ -51,7 +52,8 @@ odoo.define('forlife_pos_payment_change.ProductScreen', function (require) {
                 var data = await rpc.query({
                     model: 'pos.order',
                     method: 'check_stock_quant_inventory',
-                    args: [picking_type_id, [data_rpc]],
+                    args: [[odoo.pos_session_id], [data_rpc]],
+                    context: this.env.session.user_context,
                 });
                 if(data){
                     this.showPopup('ErrorPopup', {

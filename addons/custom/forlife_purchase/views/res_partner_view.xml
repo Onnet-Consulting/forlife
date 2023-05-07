@@ -15,7 +15,7 @@
                 </xpath>
 				<field name="vat" position="after">
 					<field name="supplier_group"/>
-					<field name="product_category_id"/>
+<!--					<field name="product_category_id"/>-->
 				</field>
             </field>
         </record>

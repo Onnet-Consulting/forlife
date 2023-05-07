@@ -132,6 +132,15 @@ class StockPicking(models.Model):
         return True
 
     @api.model
+    def create(self, vals):
+        line = super(StockPicking, self).create(vals)
+        if self.env.context.get('default_other_import') or self.env.context.get('default_other_export'):
+            for rec in line.move_ids_without_package:
+                rec.location_id = vals['location_id']
+                rec.location_dest_id = vals['location_dest_id']
+        return line
+
+    @api.model
     def get_import_templates(self):
         if self.env.context.get('default_other_import'):
             return [{
@@ -202,23 +211,38 @@ class StockMove(models.Model):
     is_amount_total = fields.Boolean(default=False, compute='compute_production_order')
     location_id = fields.Many2one(
         'stock.location', 'Source Location',
-        auto_join=True, index=True, required=False, related='picking_id.location_id',
+        auto_join=True, index=True, required=False,
         check_company=True,
         help="Sets a location if you produce at a fixed location. This can be a partner location if you subcontract the manufacturing operations.")
     location_dest_id = fields.Many2one(
         'stock.location', 'Destination Location',
-        auto_join=True, index=True, required=False, related='picking_id.location_dest_id',
+        auto_join=True, index=True, required=False,
         check_company=True,
         help="Location where the system will stock the finished products.")
     date = fields.Datetime(
         'Date Scheduled', default=fields.Datetime.now, index=True, required=False,
         help="Scheduled date until move is done, then date of actual move processing")
+    product_other_id = fields.Many2one('forlife.other.in.out.request.line')
+    previous_qty = fields.Float(compute='compute_previous_qty', store=1)
 
     @api.depends('reason_id')
     def compute_production_order(self):
         for rec in self:
             rec.is_production_order = rec.reason_id.is_work_order
             rec.is_amount_total = rec.reason_id.is_price_unit
+
+    @api.depends('product_uom_qty', 'picking_id.state')
+    def compute_previous_qty(self):
+        for rec in self:
+            if rec.picking_id.backorder_id:
+                back_order = self.env['stock.picking'].search([('id', '=',  rec.picking_id.backorder_id.id)])
+                if back_order:
+                    for r in back_order.move_ids_without_package:
+                        if r.product_id == rec.product_id and r.amount_total == rec.amount_total:
+                            rec.previous_qty = r.previous_qty if r.previous_qty != 0 else rec.product_uom_qty
+            else:
+                if rec.picking_id.state not in ('assigned', 'done'):
+                    rec.previous_qty = rec.product_uom_qty
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
@@ -228,4 +252,5 @@ class StockMove(models.Model):
                     if r.picking_id.other_import else r.picking_id.location_dest_id.id
                 r.reason_type_id = r.picking_id.reason_type_id.id
                 r.name = r.product_id.name
+                r.amount_total = r.product_id.standard_price if not r.reason_id.is_price_unit else 0
 

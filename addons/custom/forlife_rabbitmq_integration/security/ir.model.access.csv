@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_rabbitmq_connection,rabbitmq.connection,model_rabbitmq_connection,base.group_user,1,1,1,1
+access_rabbitmq_queue,rabbitmq.queue,model_rabbitmq_queue,base.group_user,1,1,1,1

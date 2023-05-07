@@ -16,46 +16,36 @@
                                 <th style="border:1px solid black;text-align: center;">Giá</th>
                                 <th style="border:1px solid black;text-align: center;">Điểm sử dụng</th>
                             </tr>
-                            <t t-foreach="props.product_valid_apply_all" t-as="line" t-key="line.id">
-                                <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
-                                    <tr style="width:100%; border:1px solid black;">
-                                        <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
-                                        <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
-                                        <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
-                                        <td style="border:1px solid black;width:85px;">
-                                            <t t-if="line_last and num_last">
-                                                <t t-if="line.point">
-                                                   <input style="width: 100%;text-align: center;"
-                                                          t-att-data-value_id="line.get_taxed_lst_unit_price()"
-                                                          t-att-value="Math.floor((-(line.point)/1000)/(line.quantity)) +(-(line.point)/1000)%(line.quantity)"
-                                                          t-att-id="line.id"
-                                                          type="text" class="o_input"/>
-                                                </t>
-                                                <t t-else="">
-                                                    <input style="width: 100%;text-align: center;"
-                                                           t-att-data-value_id="line.get_taxed_lst_unit_price()"
-                                                           t-att-id="line.id"
-                                                           type="text" class="o_input"/>
-                                                </t>
-                                            </t>
-                                            <t t-else="">
-                                                <t t-if="line.point">
-                                                   <input style="width: 100%;text-align: center;"
-                                                          t-att-data-value_id="line.get_taxed_lst_unit_price()"
-                                                          t-att-value="Math.floor((-(line.point)/1000)/(line.quantity))" t-att-id="line.id"
-                                                          type="text" class="o_input"/>
-                                                </t>
-                                                <t t-else="">
-                                                    <input style="width: 100%;text-align: center;"
-                                                           t-att-data-value_id="line.get_taxed_lst_unit_price()"
-                                                           t-att-id="line.id"
-                                                           type="text" class="o_input"/>
-                                                </t>
-                                            </t>
-                                        </td>
-                                    </tr>
+                            <t t-if="props.old_data_props == false">
+                                <t t-foreach="props.product_valid_apply_all" t-as="line" t-key="line.id">
+                                    <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
+                                        <tr style="width:100%; border:1px solid black;">
+                                            <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
+                                            <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
+                                            <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
+                                            <td style="border:1px solid black;width:85px;">
+                                                        <input style="width: 100%;text-align: center;"
+                                                               t-att-data-value_id="line.get_taxed_lst_unit_price()"
+                                                               t-att-id="line.id"
+                                                               type="text" class="o_input"/>
+                                            </td>
+                                        </tr>
+                                    </t>
                                 </t>
-
+                            </t>
+                            <t t-else="">
+                                <t t-foreach="props.old_data_props" t-as="num" t-key="num.idx">
+                                        <tr style="width:100%; border:1px solid black;">
+                                            <td style="border:1px solid black;"><t t-esc="num.display_name"/></td>
+                                            <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(num.unit_price)"/></td>
+                                            <td style="border:1px solid black;width:85px;">
+                                                        <input style="width: 100%;text-align: center;"
+                                                               t-att-id="num.id"
+                                                               t-att-value="num.point ? num.point : ''"
+                                                               type="text" class="o_input"/>
+                                            </td>
+                                        </tr>
+                                 </t>
                             </t>
                         </table>
                         <span style="color:red;" t-if="state.error_popup_flag" class="error-message">
@@ -82,28 +72,35 @@
                                 <th style="border:1px solid black;text-align: center;">Giá</th>
                                 <th style="border:1px solid black;text-align: center;">Điểm sử dụng</th>
                             </tr>
-                            <t t-foreach="props.product_valid" t-as="line" t-key="line.id">
-                                <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
-                                    <tr style="width:100%; border:1px solid black;">
-                                        <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
-                                        <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
-                                        <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
-                                        <td style="border:1px solid black;width:85px;">
-                                            <t t-if="line_last and num_last">
-                                                <input style="width: 100%;text-align: center;"
-                                                       t-att-value="Math.floor((-(line.point)/1000)/(line.quantity))+(-(line.point)/1000)%(line.quantity)"
-                                                       t-att-data-value_id="line.get_taxed_lst_unit_price()"
-                                                       t-att-id="line.id" type="text" class="o_input"/>
-                                            </t>
-                                            <t t-else="">
-                                                <input style="width: 100%;text-align: center;"
-                                                       t-att-value="Math.floor((-(line.point)/1000)/(line.quantity))"
-                                                       t-att-data-value_id="line.get_taxed_lst_unit_price()"
-                                                       t-att-id="line.id" type="text" class="o_input"/>
-                                            </t>
-                                        </td>
-                                    </tr>
+                            <t t-if="props.old_data_props == false">
+                                <t t-foreach="props.product_valid" t-as="line" t-key="line.id">
+                                    <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
+                                        <tr style="width:100%; border:1px solid black;">
+                                            <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
+                                            <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
+                                            <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
+                                            <td style="border:1px solid black;width:85px;">
+                                                    <input style="width: 100%;text-align: center;"
+                                                           t-att-data-value_id="line.get_taxed_lst_unit_price()"
+                                                           t-att-id="line.id" type="text" class="o_input"/>
+                                            </td>
+                                        </tr>
+                                    </t>
                                 </t>
+                            </t>
+                            <t t-else="">
+                                <t t-foreach="props.old_data_props" t-as="num" t-key="num.idx">
+                                        <tr style="width:100%; border:1px solid black;">
+                                            <td style="border:1px solid black;"><t t-esc="num.display_name"/></td>
+                                            <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(num.unit_price)"/></td>
+                                            <td style="border:1px solid black;width:85px;">
+                                                        <input style="width: 100%;text-align: center;"
+                                                               t-att-id="num.id"
+                                                               t-att-value="num.point ? num.point : ''"
+                                                               type="text" class="o_input"/>
+                                            </td>
+                                        </tr>
+                                 </t>
                             </t>
                         </table>
                         <span style="color:red;" t-if="state.error_popup_flag" class="error-message">

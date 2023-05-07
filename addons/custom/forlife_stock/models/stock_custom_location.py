@@ -10,6 +10,7 @@ class Location(models.Model):
     type_other = fields.Selection([('incoming', 'Nhập khác'), ('outcoming', 'Xuất khác')], string='Loại khác', required=True)
     valuation_out_account = fields.Many2one("account.account", string="Tài khoản định giá tồn kho (xuất hàng)")
     valuation_in_account = fields.Many2one("account.account", string="Tài khoản định giá tồn kho (nhập hàng)")
+    id_deposit = fields.Boolean(string='Kho hàng ký gửi?', default=False)
     reason_type_id = fields.Many2one('forlife.reason.type')
     # work_order = fields.Many2one('forlife.production', string='Work Order')
     valuation_in_account_id = fields.Many2one(
@@ -77,7 +78,7 @@ class StockMove(models.Model):
             credit_account_id = self.picking_id.location_id.valuation_out_account_id.id
             debit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
             debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
-                if not self.picking_id.location_id.is_price_unit else self.amount_total
+                if not self.picking_id.location_id.is_price_unit else (self.amount_total/self.previous_qty) * self.quantity_done
                 # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
         res = [(0, 0, line_vals) for line_vals in self._generate_valuation_lines_data(valuation_partner_id, qty, debit_value, credit_value,
                                                                                       debit_account_id, credit_account_id, svl_id, description).values()]
@@ -96,7 +97,7 @@ class StockMove(models.Model):
             if move.product_id.cost_method != 'standard':
                 unit_cost = abs(move._get_price_unit())  # May be negative (i.e. decrease an out move).
             if move.picking_id.other_import and move.picking_id.location_id.is_price_unit:
-                unit_cost = move.amount_total
+                unit_cost = move.amount_total/move.previous_qty
             svl_vals = move.product_id._prepare_in_svl_vals(forced_quantity or valued_quantity, unit_cost)
             svl_vals.update(move._prepare_common_svl_vals())
             if forced_quantity:
