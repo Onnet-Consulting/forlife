@@ -424,9 +424,10 @@ class PurchaseOrder(models.Model):
                 'invoice_date': datetime.datetime.now(),
                 'move_type': 'in_invoice',
                 'reference': data.get('name'),
-                'partner_id': data.get('partner_id'),
                 'is_from_ncc': False
             })
+            sql = f"""update account_move set partner_id = {data.get('partner_id')} where id = {invoice_customer.id}"""
+            self._cr.execute(sql)
             ##Vào sổ hóa đơn mua hàng
             invoice_customer.action_post()
             ## Tạo mới phiếu nhập hàng và xác nhận phiếu xuất
