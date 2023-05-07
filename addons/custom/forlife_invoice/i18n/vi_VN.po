@@ -40,7 +40,7 @@ msgstr "Ngày kế toán"
 #. module: forlife_invoice
 #: model:ir.model.fields.selection,name:forlife_invoice.selection__account_move__purchase_type__asset
 msgid "Asset"
-msgstr "TSCĐ    "
+msgstr "TSCĐ"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_bank_statement_line__purchase_order_id

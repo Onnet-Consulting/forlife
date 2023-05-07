@@ -26,6 +26,12 @@ class ProductionOrder(models.Model):
                     [('product_id', '=', rec.product_id.id), ('id', '!=', rec.id)]) > 1:
                 raise ValidationError(_('Sản phẩm %s đã được khai báo nguyên phụ liệu/phân tách sản phẩm, bạn cần kiểm tra lại!') % rec.product_id.name)
 
+    @api.constrains('product_qty')
+    def constrain_product_qty(self):
+        for rec in self:
+            if rec.product_qty <= 0:
+                raise ValidationError(_('Số lượng phải lớn hơn 0!!'))
+
     @api.model
     def get_import_templates(self):
         return [{
@@ -47,6 +53,12 @@ class ProductionOrder(models.Model):
     def data_search(self, domain):
         return self.env['product.product'].search(domain)
 
+    @api.constrains('order_line_ids')
+    def check_validate(self):
+        for rec in self:
+            if not rec.order_line_ids.product_id.name:
+                raise ValidationError("Thêm sản phẩm không được để trống")
+
 
 class ProductionOrderLine(models.Model):
     _name = 'production.order.line'
@@ -64,7 +76,7 @@ class ProductionOrderLine(models.Model):
     def constrains_product_qty(self):
         for rec in self:
             if rec.product_qty <= 0:
-                raise ValidationError(_('quantity cannot be zero or negative !!'))
+                raise ValidationError(_('Số lượng sản phẩm phải lớn hơn 0'))
 
     @api.depends('product_id')
     def compute_price(self):
