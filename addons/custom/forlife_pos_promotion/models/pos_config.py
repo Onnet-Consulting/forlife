@@ -52,11 +52,15 @@ class PosConfig(models.Model):
         return result
 
     def load_promotion_valid_new_partner(self, partner_id, promotion_programs):
+        if not (isinstance(promotion_programs, list) and all([el.isdigit() for el in promotion_programs])):
+            return []
         partner = self.env['res.partner'].sudo().browse(partner_id)
         result = []
+        self.env.cr.execute("SELECT id,customer_domain FROM promotion_program WHERE id IN {}".format(tuple(promotion_programs)))
+        existed = self.env.cr.dictfetchall()
+        existed_customer_domain = {str(p['id']): p['customer_domain'] for p in existed}
         for program_id in promotion_programs:
-            program = self.env['promotion.program'].sudo().browse(int(program_id))
-            if program.exists() and partner.filtered_domain(literal_eval(program.customer_domain)):
+            if program_id in existed_customer_domain.keys() and partner.filtered_domain(literal_eval(existed_customer_domain[program_id])):
                 result.append(program_id)
         return result
 
