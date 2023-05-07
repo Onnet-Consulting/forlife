@@ -59,7 +59,6 @@ class PosConfig(models.Model):
         result = []
         self.env.cr.execute("SELECT id,customer_domain FROM promotion_program WHERE id IN {}".format(tuple(promotion_programs)))
         existed = self.env.cr.dictfetchall()
-        print(existed)
         existed_customer_domain = {str(p['id']): p['customer_domain'] for p in existed}
         for program_id in promotion_programs:
             if program_id in existed_customer_domain.keys() and partner.filtered_domain(literal_eval(existed_customer_domain[program_id])):
