@@ -391,24 +391,6 @@ class AccountMoveLine(models.Model):
             price_subtotal=self.price_subtotal,
         )
 
-    @api.constrains('discount', 'discount_invoice')
-    def constrains_discount_discount_invoice(self):
-        for rec in self:
-            if rec.discount < 0:
-                raise ValidationError(_("Không được nhập số âm !!"))
-            if rec.discount_invoice < 0:
-                raise ValidationError(_("Không được nhập số âm hoặc số thập phân"))
-
-    @api.constrains('quantity_purchased', 'exchange_quantity', 'quantity')
-    def constrains_discount_discount_invoice(self):
-        for rec in self:
-            if rec.quantity < 0:
-                raise ValidationError(_("Không được nhập số âm !!"))
-            if rec.exchange_quantity < 0:
-                raise ValidationError(_("Không được nhập số âm !!"))
-            if rec.quantity_purchased < 0:
-                raise ValidationError(_("Không được nhập số âm !!"))
-
 class RespartnerVendor(models.Model):
     _name = "vendor.back"
 
