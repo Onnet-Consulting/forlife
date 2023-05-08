@@ -28,7 +28,7 @@
                                 </t>
                                 <td class="product_name"><t t-esc="line.product_name"/></td>
                                 <td class="price"><t t-esc="env.pos.format_currency(line.price)"/></td>
-                                <td class="price"><t t-esc="env.pos.format_currency(-line.total_discounted)"/></td>
+                                <td class="price"><t t-esc="env.pos.format_currency(-line.total_discounted - line.extra_card_rank_disc)"/></td>
                                 <td class="price"><t t-esc="env.pos.format_currency(-line.card_rank_disc)"/></td>
                             </tr>
                         </t>
