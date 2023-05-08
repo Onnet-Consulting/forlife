@@ -361,8 +361,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (this.partner) {
             this.set_partner(this.partner);
         };
-        this._resetPromotionPrograms();
-        this._resetCartPromotionPrograms();
     }
     /**
      * @override
@@ -373,12 +371,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (oldPartner !== this.get_partner()) {
             await this.get_history_program_usages();
             await this.update_surprising_program();
-            await this.load_promotion_valid_new_partner();
-            this.activatedInputCodes = [];
-            this._updateActivatedPromotionPrograms();
-            this._resetPromotionPrograms();
-            this._resetCartPromotionPrograms();
         };
+        await this.load_promotion_valid_new_partner();
+        this.activatedInputCodes = [];
+        this._resetPromotionPrograms();
+        this._resetCartPromotionPrograms();
     }
 
     async load_promotion_valid_new_partner() {
@@ -525,7 +522,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             p.reward_for_referring = false;
             p.codeObj = null;
         });
-        this.load_promotion_valid_new_partner();
         this._updateActivatedPromotionPrograms();
     }
 
