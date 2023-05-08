@@ -703,7 +703,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     // Filter based on promotion_usage_ids
     _filterOrderLinesToCheckComboPro(order_lines) {
-        return order_lines.filter(l=>!l.is_reward_line).filter(l => {
+        return order_lines.filter(l=>!l.is_reward_line && l.quantity > 0).filter(l => {
             for (let usage of l.promotion_usage_ids) {
                 let program = this.pos.get_program_by_id(usage.str_id);
                 if (['pricelist', 'combo', 'code'].includes(program.promotion_type)) {return false};
@@ -715,11 +715,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     _filterOrderLinesToCheckCodePro(pro, order_lines) {
         if (pro.promotion_type == 'code' && pro.discount_based_on == 'unit_price') {
-            return order_lines.filter(function(l) {
+            return order_lines.filter(line => line.quantity > 0).filter(function(l) {
                 return !(l.promotion_usage_ids && l.promotion_usage_ids.length) ? true : false;
             });
         } else if (pro.promotion_type == 'code' && pro.discount_based_on == 'discounted_price') {
-            return order_lines.filter(function(l) {
+            return order_lines.filter(line => line.quantity > 0).filter(function(l) {
                 if (l.promotion_usage_ids && l.promotion_usage_ids.length) {
                     if (l.price == 0 || l.is_reward_line) {return false}
                     if (l.promotion_usage_ids.some(p => p.str_id == pro.str_id)) {return false}
