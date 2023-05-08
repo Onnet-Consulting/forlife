@@ -9,7 +9,7 @@
     </t>
 
     <t t-name="ContinuousHyphen" owl="1">
-        <span class="continuous-hyphen">--------------------</span>
+        <div class="continuous-hyphen">--------------------</div>
     </t>
 
     <t t-name="SeparateLine" owl="1">

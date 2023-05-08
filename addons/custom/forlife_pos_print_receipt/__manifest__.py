@@ -20,6 +20,7 @@
     'auto_install': True,
 
     'data': [
+        'views/res_brand_views.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

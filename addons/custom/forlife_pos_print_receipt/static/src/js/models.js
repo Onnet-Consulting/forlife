@@ -2,6 +2,9 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
     let {Order, Orderline} = require('point_of_sale.models');
     let core = require('web.core');
     const Registries = require('point_of_sale.Registries');
+    const { markup} = require("@odoo/owl");
+
+
 
     const ReceiptOrder = (Order) => class ReceiptOrder extends Order {
         export_for_printing() {
@@ -9,6 +12,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             let total_qty = _.reduce(_.map(json.orderlines, line => line.quantity), (a, b) => a + b, 0);
             json.date.localestring1 = json.date.localestring.replace(/\d{4}/, ('' + json.date.year).substring(2)).replace(/:\d{2}$/, '');
             json.total_line_qty = total_qty;
+            json.footer = markup(this.pos.pos_brand_info.pos_receipt_footer);
             return json;
         }
     }
