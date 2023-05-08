@@ -75,24 +75,45 @@
 .pos-receipt .payment_lines .payment-detail {
     width: 100%;
 }
+
 .pos-receipt .payment_lines .payment-detail .col1 {
-    width: 23%;
+    width: 35%;
 }
+
 .pos-receipt .payment_lines .payment-detail .col2 {
     width: 8%;
 }
+
 .pos-receipt .payment_lines .payment-detail .col3 {
+    width: 20%;
+}
+
+.pos-receipt .payment_lines .payment-detail .col4 {
+    width: 13%;
+}
+
+.pos-receipt .payment_lines .payment-detail .col5 {
     width: 25%;
 }
-.pos-receipt .payment_lines .payment-detail .col4 {
-    width: 16%;
+
+.pos-receipt .payment_lines .payment-detail .number {
+    text-align: right;
 }
-.pos-receipt .payment_lines .payment-detail .col5 {
-    width: 28%;
+
+.pos-receipt .payment_lines .payment-total {
+    width: 100%;
 }
-.pos-receipt .payment_lines .payment-detail .text {
+
+.pos-receipt .payment_lines .payment-total .col1 {
+    width: 25%;
+}
+
+.pos-receipt .payment_lines .payment-total .col2 {
+    width: 45%;
     text-align: left;
 }
-.pos-receipt .payment_lines .payment-detail .number {
+
+.pos-receipt .payment_lines .payment-total .col3 {
+    width: 30%;
     text-align: right;
 }
