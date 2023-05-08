@@ -381,7 +381,8 @@ class PurchaseOrder(models.Model):
                      'name': item.get('name'),
                      'product_uom_qty': item.get('product_quantity'), 'price_unit': item.get('price_unit'),
                      'product_uom': item.get('product_uom'),
-                     'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
+                     'customer_lead': 0, 'sequence': 10, 'is_downpayment': False, 'is_expense': True,
+                     'qty_delivered_method': 'analytic',
                      'discount': item.get('discount_percent')}))
 
             master_so = {
@@ -400,6 +401,8 @@ class PurchaseOrder(models.Model):
             for spl, pol, sol in zip(data_stp_out.move_ids_without_package, order_line, data_so.order_line):
                 spl.write({'quantity_done': pol.get('product_quantity'), })
                 sol.write({'qty_delivered': spl.quantity_done})
+                sql = f"""update sale_order_line set qty_delivered = {spl.quantity_done} where id = {sol.id}"""
+                self._cr.execute(sql)
             for item in data_so.picking_ids:
                 item.write({
                     'location_id': data.get('source_location_id'),
@@ -559,6 +562,8 @@ class PurchaseOrder(models.Model):
                 pending_section = None
                 # Invoice values.
                 invoice_vals = order._prepare_invoice()
+                invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.datetime.now(),
+                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id})
                 # Invoice line values (keep only necessary sections).
                 for line in order.order_line:
                     data_line = {'sequence': sequence, 'price_subtotal': line.price_subtotal,
@@ -674,7 +679,8 @@ class PurchaseOrder(models.Model):
                 sequence += 1
                 key = order.purchase_type
                 invoice_vals = order._prepare_invoice()
-                invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.datetime.now()})
+                invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.datetime.now(),
+                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id})
                 order = order.with_company(order.company_id)
                 line_vals = line._prepare_account_move_line()
                 line_vals.update(data_line)
@@ -876,7 +882,7 @@ class PurchaseOrderLine(models.Model):
     def _onchange_discount_percent(self):
         if not self.readonly_discount_percent:
             if self.discount_percent:
-                self.discount = self.discount_percent * self.price_unit * 0.01
+                self.discount = self.discount_percent * self.price_unit * self.product_qty
                 self.readonly_discount = True
             else:
                 self.readonly_discount = False
@@ -1094,16 +1100,15 @@ class StockPicking(models.Model):
                 if po.type_po_cost == 'tax':
                     invoice_line = self.create_invoice_po_tax(po, record)
                     if po.cost_line:
-                        invoice_line_cost_in_tax = self.create_invoice_po_cost(po)
+                        invoice_line_cost_in_tax = self.create_invoice_po_cost(po, record)
                         account_cost_in_tax = self.create_account_move(po, invoice_line_cost_in_tax, record)
                 elif po.type_po_cost == 'cost':
-                    invoice_line = self.create_invoice_po_cost(po)
+                    invoice_line = self.create_invoice_po_cost(po, record)
                 if po.type_po_cost in ('cost', 'tax'):
                     account = self.create_account_move(po, invoice_line, record)
                 ##Tạo nhập khác xuất khác khi nhập kho
                 if po.order_line_production_order:
                     npl = self.create_invoice_npl(po, record)
-                     
         return res
 
     def create_account_move(self, po, line, record):
@@ -1121,10 +1126,10 @@ class StockPicking(models.Model):
             'restrict_mode_hash_table': False
         }
         account = self.env['account.move'].create(master_data_ac).action_post()
-        return record
+        return True
 
     # Xử lý bút toán po nội bộ
-    def create_invoice_po_cost(self, po):
+    def create_invoice_po_cost(self, po, record):
         data_line = po.order_line.mapped('price_total')
         data_in_line = po.order_line
         data_sum = sum(data_line)
@@ -1216,7 +1221,7 @@ class StockPicking(models.Model):
             invoice_line.extend(lines)
         return invoice_line
 
-    #Xử lý bút toán po nguyên phụ liệu
+    # Xử lý bút toán po nguyên phụ liệu
     def create_invoice_npl(self, po, record):
         list_line_xk = []
         invoice_line_npls = []
@@ -1225,16 +1230,16 @@ class StockPicking(models.Model):
                 [('purchase_order_line_id', '=', item.id)])
             if not material:
                 raise ValidationError('Bạn chưa cấu hình nguyên phụ liệu trong đơn mua hàng')
+            if item.product_id.categ_id and item.product_id.categ_id.property_stock_valuation_account_id:
+                account_1561 = item.product_id.categ_id.property_stock_valuation_account_id.id
+            else:
+                raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
             for material_line in material:
                 number_product = self.env['stock.quant'].search(
                     [('location_id', '=', record.location_dest_id.id),
                      ('product_id', '=', material_line.product_id.id)])
-                if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                    raise ValidationError('Số lượng sản phẩm trong kho không đủ')
-                if material_line.product_id.categ_id and material_line.product_id.categ_id.property_stock_valuation_account_id:
-                    account_1561 = material_line.product_id.categ_id.property_stock_valuation_account_id.id
-                else:
-                    raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
+                # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                #     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
                 if not self.env.ref('forlife_stock.export_production_order').valuation_out_account_id:
                     raise ValidationError('Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
                 list_line_xk.append((0, 0, {
@@ -1257,16 +1262,19 @@ class StockPicking(models.Model):
                     'debit': 0,
                     'credit': material_line.price_unit * material_line.product_plan_qty,
                 })
-                debit_npl = (0, 0, {
-                    'account_id': account_1561, 'name': material_line.product_id.name,
-                    'debit': material_line.price_unit * material_line.product_plan_qty,
-                    'credit': 0,
-                })
-                invoice_line_npl = [credit_npl, debit_npl]
-                invoice_line_npls.extend(invoice_line_npl)
+                invoice_line_npls.append(credit_npl)
                 # end
+            debit_npl = (0, 0, {
+                'account_id': account_1561, 'name': item.product_id.name,
+                'debit': sum(material.mapped('price_unit')) * sum(material.mapped('product_plan_qty')),
+                'credit': 0,
+            })
+            invoice_line_npls.append(debit_npl)
         account_nl = self.create_account_move(po, invoice_line_npls, record)
+        master_xk = self.create_xk_picking(po, record, list_line_xk)
+        return master_xk
 
+    def create_xk_picking(self, po, record, list_line_xk):
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
@@ -1274,12 +1282,11 @@ class StockPicking(models.Model):
             'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
             'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
             'scheduled_date': datetime.datetime.now(),
-            'origin': "Nguyên phụ liệu " + po.name,
+            'origin': po.name,
             'other_export': True,
             'state': 'assigned',
             'picking_type_id': self.env.ref('stock.picking_type_out').id,
             'move_ids_without_package': list_line_xk
         }
         result = self.env['stock.picking'].with_context({'skip_immediate': True}).create(master_xk).button_validate()
-        return True
-
+        return result
