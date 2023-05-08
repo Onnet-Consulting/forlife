@@ -32,7 +32,12 @@
             <field name="type_other">outcoming</field>
             <field name="reason_type_id" ref="forlife_stock.reason_type_4"/>
         </record>
-
+        <record id="export_production_order" model="stock.location">
+            <field name="name">Xuất nguyên phụ liệu</field>
+            <field name="code">1381000005</field>
+            <field name="type_other">outcoming</field>
+            <field name="reason_type_id" ref="forlife_stock.reason_type_6"/>
+        </record>
         <!-- create xml ids for demo data that are widely used in tests or in other codes, for more convenience -->
         <function model="ir.model.data" name="_update_xmlids">
             <value model="base" eval="[{
