@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:spce="preserve">
+
+    <t t-name="OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[@class='pos-receipt']" position="after">
+            <t t-if="env.pos.pos_brand_info.code == 'FMT'">
+                <div class="pos-receipt">
+                    <t t-call="FormatOrderReceipt"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="FormatOrderReceipt" owl="1">
+        <img class="pos-receipt-logo"
+             src="/forlife_pos_print_receipt/static/src/img/logo-format.png" height="25"/>
+        <div>
+            <div class="order-header">
+                <strong>
+                    <t t-esc="receipt.name"/>
+                </strong>
+                <span> </span>
+                <t t-esc="receipt.date.localestring1"/>
+            </div>
+        </div>
+        <div class="customer-cashier-detail">
+            <t t-if="receipt.cashier">
+                <div>
+                    <span>Nhân viên: </span>
+                    <t t-esc="receipt.cashier"/>
+                </div>
+            </t>
+            <t t-if="receipt.partner">
+                <div>
+                    <span>Khách hàng: </span>
+                    <t t-esc="receipt.partner.name"/>
+                </div>
+                <div>
+                    <span>Điện thoại: </span>
+                    <t t-esc="receipt.partner.phone || ''"/>
+                </div>
+                <div>Ghi chú:</div>
+            </t>
+        </div>
+        <t t-call="FormatOrderLinesReceipt"/>
+        <t t-call="FormatOrderPaymentLinesReceipt"/>
+        <t t-call="FormatOrderFooterReceipt"/>
+    </t>
+
+    <t t-name="FormatOrderLinesReceipt" owl="1">
+        <div class="orderlines">
+            <t t-call="SeparateLine"/>
+            <table class="lines-detail">
+                <tbody>
+                    <tr>
+                        <th class="num_1 text">Tên hàng</th>
+                        <th class="num_2 number">SL</th>
+                        <th class="num_3 number">ĐG</th>
+                        <th class="num_4 number">GG</th>
+                        <th class="num_5 number">Tổng tiền</th>
+                    </tr>
+                </tbody>
+            </table>
+            <t t-call="SeparateLine"/>
+            <table class="lines-detail">
+                <tbody>
+                    <t t-foreach='receipt.orderlines' t-as='line' t-key="line.id">
+                        <tr>
+                            <td colspan="5">
+                                <t t-esc="line.product_name_wrapped[0]"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="num_1 text">
+                                <t t-esc="line.product_default_code || ''"/>
+                            </td>
+                            <td class="num_2 number">
+                                <t t-esc="line.quantity"/>
+                            </td>
+                            <td class="num_3 number">
+                                <t t-esc="env.pos.format_currency_no_symbol(line.price)"/>
+                            </td>
+                            <td class="num_4 number">
+                                0
+                            </td>
+                            <td class="num_5 number">
+                                <t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+    </t>
+
+    <t t-name="FormatOrderPaymentLinesReceipt" owl="1">
+        <t t-call="SeparateLine"/>
+
+        <div class="payment_lines">
+            <table class="payment-detail">
+                <tbody>
+                    <tr>
+                        <td class="col1"/>
+                        <td class="col2"/>
+                        <td class="col3"/>
+                        <td class="col4"/>
+                        <td class="col5"/>
+                    </tr>
+                    <tr>
+                        <td class="col1 text">Tổng cộng:</td>
+                        <td class="col2 number">
+                            <t t-esc="receipt.total_line_qty"/>
+                        </td>
+                        <td class="number" colspan="3">
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_rounded)"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="payment-total">
+                <tbody>
+                    <tr>
+                        <td class="col1"/>
+                        <td class="col2">Chiết khấu:</td>
+                        <td class="col3">
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_discount)"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <t t-call="SeparateLine"/>
+
+            <table class="payment-total">
+                <tbody>
+                    <tr>
+                        <td class="col1"/>
+                        <td class="col2">Tổng tiền thanh toán:</td>
+                        <td class="col3">
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_paid || 0)"/>
+                        </td>
+                    </tr>
+                    <t t-foreach='receipt.paymentlines' t-as='line' t-key="line_index">
+                        <tr>
+                            <td class="col1"/>
+                            <td class="col2">
+                                <t t-esc="line.name"/>:
+                            </td>
+                            <td class="col3">
+                                <t t-esc="env.pos.format_currency_no_symbol(line.amount)"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+
+            <t t-call="SeparateLine"/>
+        </div>
+    </t>
+
+    <t t-name="FormatOrderFooterReceipt" owl="1">
+        <div class="policy text-center">
+            <div>Quý khách vui lòng giữ hóa đơn để đổi sản phẩm trong
+                <br/>
+                vòng 15 ngày với sản phẩm nguyên giá và 7 ngày
+                <br/>
+                với sản phẩm trong CTKM.
+            </div>
+        </div>
+        <t t-call="ContinuousHyphen"/>
+        <div class="policy text-left">
+            <div>Mọi phản hồi về sản phẩm, chính sách và thái độ phục vụ
+                <br/>
+                tại FORMAT, Quý khách vui lòng liên hệ trực tiếp đến số
+                <br/>
+                Hotline 0934506066 hoặc email cskh@format.vn
+                <br/>
+                Facebook.com/thoitrangformat
+            </div>
+        </div>
+        <div class="policy text-left">
+            <div>FORMAT áp dụng 2 hình thức thanh toán khi mua hàng
+                <br/>
+                online
+                <br/>
+                1. Thanh toán qua hình thức quét QR.
+                <br/>
+                2. Thanh toán COD. (Quý khách nhận hàng thanh toán
+                <br/>
+                tiền cho đơn vị vận chuyển)
+            </div>
+        </div>
+        <t t-call="ContinuousHyphen"/>
+        <div class="policy text-center">
+            <div>FORMAT BIẾT ƠN QUÝ KHÁCH VÌ ĐÃ TRAO
+                <br/>
+                CƠ HỘI PHỤC VỤ!
+            </div>
+        </div>
+    </t>
+
+</templates>
