@@ -20,6 +20,7 @@
     'auto_install': True,
 
     'data': [
+        'data/brand_data.xml',
         'views/res_brand_views.xml',
     ],
     'assets': {
