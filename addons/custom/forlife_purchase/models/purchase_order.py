@@ -563,7 +563,7 @@ class PurchaseOrder(models.Model):
                 # Invoice values.
                 invoice_vals = order._prepare_invoice()
                 invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.datetime.now(),
-                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id})
+                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
                 # Invoice line values (keep only necessary sections).
                 for line in order.order_line:
                     data_line = {'sequence': sequence, 'price_subtotal': line.price_subtotal,
@@ -1080,17 +1080,14 @@ class AccountMove(models.Model):
     is_from_ncc = fields.Boolean('From Ncc')
     reference = fields.Char
 
-    @api.model
-    def create(self, vals):
-        res = super().create(vals)
-        return res
-
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     def button_validate(self):
         res = super().button_validate()
+        if self._context.get('endloop'):
+            return True
         for record in self:
             po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],
                                                    limit=1)
@@ -1125,7 +1122,9 @@ class StockPicking(models.Model):
             'invoice_line_ids': line,
             'restrict_mode_hash_table': False
         }
-        account = self.env['account.move'].create(master_data_ac).action_post()
+        account_obj = self.env['account.move']
+        account = account_obj.create(master_data_ac)
+        account.action_post()
         return True
 
     # Xử lý bút toán po nội bộ
@@ -1288,5 +1287,5 @@ class StockPicking(models.Model):
             'picking_type_id': self.env.ref('stock.picking_type_out').id,
             'move_ids_without_package': list_line_xk
         }
-        result = self.env['stock.picking'].with_context({'skip_immediate': True}).create(master_xk).button_validate()
+        result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(master_xk).button_validate()
         return result
