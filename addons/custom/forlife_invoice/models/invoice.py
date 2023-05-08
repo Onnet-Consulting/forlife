@@ -93,54 +93,62 @@ class AccountMove(models.Model):
         self.purchase_order_product_id = [(5, 0)]
         self.invoice_line_ids = [(5, 0)]
 
-    @api.onchange('is_check_cost_view', 'purchase_order_product_id')
+    @api.onchange('is_check_cost_view', 'purchase_order_product_id', 'partner_id')
     def onchange_view_product_cost_and_receiving_warehouse_id(self):
         self.invoice_line_ids = [(5, 0)]
-        invoice_cost = self.env['product.product'].search([('is_check_cost', '=', True)])
+        invoice_cost = self.env['product.product'].search([('detailed_type', '=', 'service')])
         invoice_cost_2 = self.env['product.product'].search([])
         id_account_move = self.env['account.move'].search([], order='id desc', limit=1).id
         for rec in self:
-            receiving_warehouse = []
-            if rec.purchase_order_product_id:
-                for po in rec.purchase_order_product_id:
-                    print(po,4893284023849032)
-                    print(rec.purchase_order_product_id,97589078659075690)
-                    last_id = rec.purchase_order_product_id[-1].id
-                    receiving_warehouse_id = self.env['stock.picking'].search(
-                        [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id)])
-                    receiving_warehouse.append(receiving_warehouse_id.id)
+            if rec.partner_id:
+                rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+                receiving_warehouse = []
+                if rec.purchase_order_product_id:
+                    for po in rec.purchase_order_product_id:
+                        last_id = str(rec.purchase_order_product_id[-1].id).split("_")[1]
+                        receiving_warehouse_id = self.env['stock.picking'].search(
+                            [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id)])
+                        receiving_warehouse.append(receiving_warehouse_id.id)
                     rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
-                    if rec.partner_id.id == rec.purchase_order_product_id.partner_id.id:
-                        for cost in rec.purchase_order_product_id.cost_line:
-                            if cost.ids:
-                                move_cost_line = self.env['account.move.line'].search(
-                                    [('product_id', '=', cost.product_id.id),
-                                     ('description', '=', cost.name),
-                                     ('move_id', '=', id_account_move),
-                                     ('cost_type', '=', cost.product_id.is_check_cost),
-                                     ('cost_line_id', '=', cost.id)])
-                                if not move_cost_line:
-                                    move_cost_line.create({
-                                        'product_id': cost.product_id.id,
-                                        'description': cost.name,
-                                        'price_subtotal': cost.expensive_total,
-                                        'move_id': id_account_move,
-                                        'company_id': rec.journal_id.company_id or rec.company_id or self.env.company,
-                                        'cost_type': cost.product_id.is_check_cost,
-                                        'cost_line_id': cost.id,
-                                        'po_id': last_id,
-                                    })
-                                else:
-                                    pass
-                        account_line = self.env['account.move.line'].search(
-                            [('cost_type', '=', True), ('po_id', '=', po.id)]).ids
-                        if rec.is_check_cost_view:
-                            rec.invoice_line_ids = [(6, 0, account_line)]
-                            rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                    for cost in rec.purchase_order_product_id.cost_line:
+                        last_cost_id = str(cost[-1].id).split("_")[1]
+                        move_cost_line = self.env['account.move.line'].search(
+                            [('product_id', '=', cost.product_id.id),
+                             ('description', '=', cost.name),
+                             ('move_id', '=', id_account_move),
+                             ('cost_type', '=', cost.product_id.detailed_type),
+                             ('cost_line_id', '=', last_cost_id),
+                             ])
+                        if not move_cost_line:
+                            move_cost_line.create({
+                                'product_id': cost.product_id.id,
+                                'description': cost.name,
+                                'price_unit': cost.expensive_total,
+                                'move_id': id_account_move,
+                                'company_id': rec.journal_id.company_id or rec.company_id or self.env.company,
+                                'cost_type': cost.product_id.detailed_type,
+                                'cost_line_id': last_cost_id,
+                                'po_id': last_id,
+                                'account_id': cost.product_id.property_account_expense_id.id,
+                            })
                         else:
-                            rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
-            else:
-                rec.receiving_warehouse_id = False
+                            pass
+                    account_line = self.env['account.move.line'].search([('cost_type', '=', 'service'), ('po_id', 'in', rec.purchase_order_product_id.ids)])
+                    if rec.is_check_cost_view:
+                        rec.purchase_type = 'service'
+                        rec.invoice_line_ids = [(6, 0, account_line.ids)]
+                        rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                    else:
+                        rec.purchase_type = 'product'
+                        rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+                else:
+                    rec.receiving_warehouse_id = False
+                    if rec.is_check_cost_view:
+                        rec.purchase_type = 'service'
+                        rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                    else:
+                        rec.purchase_type = 'product'
+                        rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
 
     @api.onchange('invoice_line_ids')
     def onchange_partner_domain(self):
@@ -232,8 +240,8 @@ class AccountMoveLine(models.Model):
                               index=True, required=False, readonly=True, auto_join=True, ondelete="cascade",
                               check_company=True,
                               help="The move of this entry line.")
-    cost_line_id = fields.Integer()
-    cost_type = fields.Boolean('')
+    cost_line_id = fields.Char()
+    cost_type = fields.Char('')
     po_id = fields.Char()
     type = fields.Selection(related="product_id.detailed_type")
     work_order = fields.Many2one('forlife.production', string='Work Order')
@@ -382,24 +390,6 @@ class AccountMoveLine(models.Model):
             discount=self.discount,
             price_subtotal=self.price_subtotal,
         )
-
-    @api.constrains('discount', 'discount_invoice')
-    def constrains_discount_discount_invoice(self):
-        for rec in self:
-            if rec.discount < 0:
-                raise ValidationError(_("Không được nhập số âm !!"))
-            if rec.discount_invoice < 0:
-                raise ValidationError(_("Không được nhập số âm hoặc số thập phân"))
-
-    @api.constrains('quantity_purchased', 'exchange_quantity', 'quantity')
-    def constrains_discount_discount_invoice(self):
-        for rec in self:
-            if rec.quantity < 0:
-                raise ValidationError(_("Không được nhập số âm !!"))
-            if rec.exchange_quantity < 0:
-                raise ValidationError(_("Không được nhập số âm !!"))
-            if rec.quantity_purchased < 0:
-                raise ValidationError(_("Không được nhập số âm !!"))
 
 class RespartnerVendor(models.Model):
     _name = "vendor.back"

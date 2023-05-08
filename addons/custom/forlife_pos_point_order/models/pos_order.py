@@ -203,8 +203,6 @@ class PosOrder(models.Model):
 
     @api.depends('program_store_point_id')
     def _compute_point_order(self):
-        brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
-        brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
         valid_money_payment_method = 0  # X
         valid_money_product = 0  # Y
         for rec in self:
@@ -228,15 +226,7 @@ class PosOrder(models.Model):
                     money_value = 0
                 # is_purchased_of_format, is_purchased_of_forlife = rec.partner_id._check_is_purchased()
                 branch_id = rec.program_store_point_id.brand_id.id
-                if rec.partner_id.is_purchased_of_forlife and branch_id == brand_tokyolife:
-                    rec.point_order = int(
-                        money_value / rec.program_store_point_id.value_conversion) * rec.program_store_point_id.point_addition if rec.program_store_point_id.value_conversion > 0 else 0  # a
-                elif rec.partner_id.is_purchased_of_format and branch_id == brand_format:
-                    rec.point_order = int(
-                        money_value / rec.program_store_point_id.value_conversion) * rec.program_store_point_id.point_addition if rec.program_store_point_id.value_conversion > 0 else 0  # a
-                else:
-                    rec.point_order = int(
-                        money_value / rec.program_store_point_id.value_conversion) * rec.program_store_point_id.point_addition * rec.program_store_point_id.first_order if rec.program_store_point_id.value_conversion > 0 else 0  # a
+                rec.point_order = rec.get_point_order(money_value, branch_id)
                 event_valid = self.get_event_match(pos_order=rec)
                 if event_valid:
                     domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
@@ -247,6 +237,19 @@ class PosOrder(models.Model):
                         rec.point_event_order = 0
                 else:
                     rec.point_event_order = 0
+
+    # Tách hàm này để cộng thêm điểm tích lũy theo hạng thẻ khách hàng
+    def get_point_order(self, money_value, brand_id):
+        if self.program_store_point_id.value_conversion <= 0:
+            return 0
+        brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
+        brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
+        if self.partner_id.is_purchased_of_forlife and brand_id == brand_tokyolife:
+            return int(money_value / self.program_store_point_id.value_conversion) * self.program_store_point_id.point_addition
+        elif self.partner_id.is_purchased_of_format and brand_id == brand_format:
+            return int(money_value / self.program_store_point_id.value_conversion) * self.program_store_point_id.point_addition
+        else:
+            return int(money_value / self.program_store_point_id.value_conversion) * self.program_store_point_id.point_addition * self.program_store_point_id.first_order
 
     def get_event_match(self, pos_order):
         point_events = pos_order.program_store_point_id.event_ids.filtered(lambda x: x.from_date <= pos_order.date_order <= x.to_date and x.state == 'effective' and (
