@@ -26,25 +26,24 @@
                 <strong>
                     <t t-esc="receipt.name"/>
                 </strong>
-                <span></span>
+                <span> </span>
                 <t t-esc="receipt.date.localestring1"/>
             </div>
         </div>
-        <!--        FIXME:add space for all titles-->
         <div class="customer-cashier-detail">
             <t t-if="receipt.cashier">
                 <div>
-                    <span>Nhân viên:</span>
+                    <span>Nhân viên: </span>
                     <t t-esc="receipt.cashier"/>
                 </div>
             </t>
             <t t-if="receipt.partner">
                 <div>
-                    <span>Khách hàng:</span>
+                    <span>Khách hàng: </span>
                     <t t-esc="receipt.partner.name"/>
                 </div>
                 <div>
-                    <span>Điện thoại:</span>
+                    <span>Điện thoại: </span>
                     <t t-esc="receipt.partner.phone || ''"/>
                 </div>
                 <div>Ghi chú:</div>
