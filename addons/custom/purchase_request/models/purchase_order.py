@@ -105,6 +105,7 @@ class PurchaseOrderLine(models.Model):
                     'product_qty': product_plan_qty,
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
+                    'price_unit': production_line.price,
                     'is_from_po': True,
                 }))
             self.write({
@@ -137,6 +138,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
     product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
     product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
+    price_unit = fields.Float()
 
     @api.constrains('product_qty', 'product_plan_qty')
     def _constraint_product_qty(self):
