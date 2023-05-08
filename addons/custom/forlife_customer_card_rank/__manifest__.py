@@ -38,6 +38,8 @@
         'views/res_partner_views.xml',
         'views/pos_order_views.xml',
         'views/promotion_program_views.xml',
+        'views/accumulate_by_rank_views.xml',
+        'views/points_promotion_views.xml',
         'views/menuitem.xml',
 
         'wizard/import_partner_card_rank_views.xml',
