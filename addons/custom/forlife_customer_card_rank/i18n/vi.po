@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-15 03:54+0000\n"
-"PO-Revision-Date: 2023-04-15 03:54+0000\n"
+"POT-Creation-Date: 2023-05-08 06:25+0000\n"
+"PO-Revision-Date: 2023-05-08 06:25+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -21,9 +21,24 @@ msgid "Accounting Info"
 msgstr "Thông tin hạch toán"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_points_promotion__accumulate_by_rank_ids
+msgid "Accumulate"
+msgstr "Tích lũy"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_accumulate_by_rank
+msgid "Accumulate by rank"
+msgstr "Tích lũy theo hạng"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__accumulated_sales
 msgid "Accumulated Sales"
 msgstr "Doanh số xét hạng hiện tại"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__accumulative_rate
+msgid "Accumulative rate"
+msgstr "Tỉ lệ tích lũy (%)"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__message_needaction
@@ -34,6 +49,7 @@ msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__active
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_points_promotion__card_rank_active
 msgid "Active"
 msgstr "Hoạt động"
 
@@ -149,12 +165,18 @@ msgstr "Thẻ"
 #. module: forlife_customer_card_rank
 #: model:ir.actions.act_window,name:forlife_customer_card_rank.card_rank_action
 #: model:ir.model,name:forlife_customer_card_rank.model_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__card_rank_id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_ids
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_ids
 #: model:ir.ui.menu,name:forlife_customer_card_rank.card_rank_menu
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_filter
 msgid "Card Rank"
 msgstr "Hạng thẻ"
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.points_promotion_view_form_inherit
+msgid "Card Rank Accumulate"
+msgstr "Tích lũy hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order_line__card_rank_applied
@@ -188,6 +210,16 @@ msgid "Card Rank Format"
 msgstr "Hạng thẻ Format"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_points_promotion__card_rank_point_addition
+msgid "Card Rank Point Addition"
+msgstr "Điểm cộng"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.constraint,message:forlife_customer_card_rank.constraint_points_promotion_check_card_rank_point_addition
+msgid "Card Rank Point Addition must be greater than 0"
+msgstr "Điểm cộng theo hạng thẻ phải lớn hơn 0"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order__card_rank_program_id
 msgid "Card Rank Program"
 msgstr "Chương trình hạng thẻ"
@@ -207,11 +239,33 @@ msgid "Card Rank Program warning"
 msgstr "Cảnh báo chương trình hạng thẻ"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_status_format
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_status_format
+msgid "Card Rank Status Format"
+msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_status_tokyolife
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_status_tokyolife
+msgid "Card Rank Status Tokyolife"
+msgstr ""
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_partner__card_rank_tokyolife
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_res_users__card_rank_tokyolife
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.res_partner_view_form_inherit
 msgid "Card Rank TokyoLife"
 msgstr "Hạng thẻ TokyoLife"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_points_promotion__card_rank_value_convert
+msgid "Card Rank Value Convert"
+msgstr "Giá trị quy đổi"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.constraint,message:forlife_customer_card_rank.constraint_points_promotion_check_card_rank_value_convert
+msgid "Card Rank Value Convert must be greater than 0"
+msgstr "Giá trị quy đổi theo hạng thẻ phải lớn hơn 0"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
@@ -228,6 +282,11 @@ msgid "Card rank"
 msgstr "Hạng thẻ"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.constraint,message:forlife_customer_card_rank.constraint_accumulate_by_rank_card_rank_uniq
+msgid "Card rank must be unique !"
+msgstr "Hạng thẻ phải là duy nhất !"
+
+#. module: forlife_customer_card_rank
 #. odoo-javascript
 #: code:addons/forlife_customer_card_rank/static/src/js/ProductScreen/ControlButtons/CardButton.js:0
 #, python-format
@@ -235,11 +294,17 @@ msgid "Card rank program '%s' not found."
 msgstr "Không tìm thấy chương trình hạng thẻ '%s'"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields.selection,name:forlife_customer_card_rank.selection__partner_history_point__point_order_type__coefficient
+msgid "Coefficient"
+msgstr "Hệ số"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_res_partner
 msgid "Contact"
 msgstr "Danh bạ"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__create_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__create_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__create_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__create_uid
@@ -249,6 +314,7 @@ msgid "Created by"
 msgstr "Được tạo bởi"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__create_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__create_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__create_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__create_date
@@ -313,6 +379,7 @@ msgid "Discounted from"
 msgstr "Đã giảm giá từ"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__display_name
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__display_name
@@ -369,6 +436,12 @@ msgid "Has Message"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_partner_history_point
+msgid "History of Customer purchase POS"
+msgstr "Điểm khách hàng"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__id
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__id
@@ -454,6 +527,7 @@ msgid "Journal"
 msgstr "Sổ nhật ký"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank____last_update
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card____last_update
@@ -468,6 +542,7 @@ msgid "Last Order Date"
 msgstr "Ngày mua gần nhất"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__write_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__write_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__write_uid
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__write_uid
@@ -477,6 +552,7 @@ msgid "Last Updated by"
 msgstr ""
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__write_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_card_rank__write_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_import_partner_card_rank__write_date
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__write_date
@@ -585,6 +661,16 @@ msgid "Order Rank"
 msgstr "ĐH xét hạng"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order__order_status_format
+msgid "Order Status Format"
+msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order__order_status_tokyolife
+msgid "Order Status Tokyolife"
+msgstr ""
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__order_ids
 msgid "Orders"
 msgstr "Đơn hàng"
@@ -637,6 +723,17 @@ msgid "Please upload file template before click Import button !"
 msgstr "Vui lòng tải lên file dữ liệu trước khi nhấn nút Nhập !"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order__plus_point_coefficient
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_pos_order_line__plus_point_coefficient
+msgid "Plus Point Coefficient"
+msgstr "Điểm cộng hệ số"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__point_coefficient_first_order
+msgid "Point Coefficient First Order"
+msgstr "Điểm hệ số đơn đầu tiên"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_pos_order_line
 msgid "Point of Sale Order Lines"
 msgstr "Chi tiết đơn hàng bán lẻ"
@@ -650,6 +747,17 @@ msgstr "Đơn bán lẻ"
 #: model:ir.model,name:forlife_customer_card_rank.model_pos_session
 msgid "Point of Sale Session"
 msgstr "Phiên bán hàng"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_history_point__points_coefficient
+msgid "Points Coefficient"
+msgstr "Điểm hệ số"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model,name:forlife_customer_card_rank.model_points_promotion
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__points_promotion_id
+msgid "Points Promotion"
+msgstr "Chương trình tích điểm"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__order_id
@@ -754,9 +862,20 @@ msgid "Search"
 msgstr "Tìm kiếm"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__sequence
+msgid "Sequence"
+msgstr "Thứ tự"
+
+#. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_promotion_program__skip_card_rank
 msgid "Skip card rank"
 msgstr "Không tính hạng thẻ"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank__status
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_card_rank_line__status
+msgid "Status"
+msgstr "Trạng thái"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__from_date
@@ -804,6 +923,11 @@ msgstr "Doanh số của hạng '%s' phải lớn hơn doanh số của hạng '
 #, python-format
 msgid "Turnover of '%s' rank must be less than Turnover of '%s' rank '%s'"
 msgstr "Doanh số của hạng '%s' phải nhỏ hơn doanh số của hạng '%s' là '%s'"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_partner_history_point__point_order_type
+msgid "Type"
+msgstr "Loại"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
@@ -886,6 +1010,16 @@ msgstr "Bạn không thể xóa chương trình hạng thẻ đã phát sinh đ�
 #, python-format
 msgid "You cannot delete a card rank that has already been used !"
 msgstr "Bạn không thể xóa hạng thẻ đã được sử dụng !"
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.accumulate_by_rank_view_form
+msgid "accumulate_by_rank_form"
+msgstr ""
+
+#. module: forlife_customer_card_rank
+#: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.accumulate_by_rank_view_tree
+msgid "accumulate_by_rank_tree"
+msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.card_rank_view_form
