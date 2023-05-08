@@ -18,7 +18,7 @@ class ResPartnerGroup(models.Model):
     sequence_id = fields.Many2one('ir.sequence', string='Sequence')
 
     _sql_constraints = [
-        ('unique_code', 'unique(code)', 'Group code already exists!')
+        ('unique_code_partner_type', 'unique(code, partner_type)', 'Group code already exists!')
     ]
 
     @api.model_create_multi
