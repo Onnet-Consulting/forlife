@@ -1,5 +1,5 @@
 .pos .pos-receipt-container > div {
-    font-size: 11px;
+    font-size: 11px !important;
 }
 
 .pos-receipt .pos-receipt-logo {
@@ -116,4 +116,10 @@
 .pos-receipt .payment_lines .payment-total .col3 {
     width: 30%;
     text-align: right;
+}
+
+/*Footer*/
+.pos-receipt .policy {
+    text-align: center;
+    margin-top: 5px;
 }
