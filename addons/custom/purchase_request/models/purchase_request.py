@@ -143,10 +143,11 @@ class PurchaseRequest(models.Model):
             for line in purchase_request_lines:
                 if line.purchase_quantity == line.order_quantity:
                     continue
-                if rec.date_planned > line.date_planned:
-                    date_planned_po = rec.date_planned
-                else:
-                    date_planned_po = line.date_planned
+                if rec.date_planned and line.date_planned:
+                    if rec.date_planned > line.date_planned:
+                        date_planned_po = rec.date_planned
+                    else:
+                        date_planned_po = line.date_planned
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
