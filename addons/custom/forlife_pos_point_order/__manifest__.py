@@ -20,6 +20,7 @@
         'forlife_point_of_sale',
         'forlife_pos_app_member',
         'forlife_promotion',
+        'forlife_pos_layout',
         'base'
     ],
 
@@ -48,7 +49,8 @@
             'forlife_pos_point_order/static/src/js/Popup/PointsConsumptionPopup.js',
             'forlife_pos_point_order/static/src/js/OrderDetails/OrderLinesDetails.js',
             'forlife_pos_point_order/static/src/js/models.js',
-            'forlife_pos_point_order/static/src/js/ProductScreen.js'
+            'forlife_pos_point_order/static/src/js/ProductScreen.js',
+            'forlife_pos_point_order/static/src/js/CustomOrderline.js',
         ]
     },
     'installable': True,
