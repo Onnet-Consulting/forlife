@@ -19,6 +19,23 @@ class PosOrder(models.Model):
                 program = self.env['promotion.program'].browse(usage[2].get('program_id'))
                 if program.registering_tax and program.tax_from_date <= date_order <= program.tax_to_date:
                     usage[2]['registering_tax'] = True
+
+        # Kiểm tra và ghi nhận số tiền được khuyến mãi vào bảng "pos.order.line.discount.details"
+        for line in order['data']['lines']:
+            discounted_amount = 0.0
+            lst_price = line[2]['price_unit']
+            for usage in line[2]['promotion_usage_ids']:
+                discount_per_unit = usage[2].get('discount_amount', 0)
+                if discount_per_unit > 0:
+                    discounted_amount += discount_per_unit*line[2]['qty']
+                    lst_price = usage[2]['original_price'] > lst_price and usage[2]['original_price'] or lst_price
+            if discounted_amount > 0:
+                line[2]['discount_details_lines'] = [(0, 0, {
+                    'type': 'ctkm',
+                    'listed_price': lst_price,
+                    'discounted_amount': discounted_amount
+                })]
+
         order_id = super(PosOrder, self)._process_order(order, draft, existing_order)
         # Gắn Khách hàng vào code đã sử dụng
         code_ids = []

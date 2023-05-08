@@ -20,6 +20,7 @@ export class PromotionButton extends PosComponent {
 //        let [newLinesCode, remainingOrderLinesCode, combo_count_Code] = order.computeForListOfCodeProgram(order_lines, selectedProgramsList, newLines);
 //        newLines = newLinesCode;
 //        remainingOrderLines = remainingOrderLinesCode;
+        this.env.pos.no_reset_program = true;
         var removeOrderlines = [];
         order.orderlines.forEach((line, index) => {
             let qty = line.get_quantity();
@@ -30,7 +31,6 @@ export class PromotionButton extends PosComponent {
         });
 
         order.orderlines = order.orderlines.filter(line => line.quantity > 0)
-        this.env.pos.no_reset_program = true;
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);
@@ -46,6 +46,7 @@ export class PromotionButton extends PosComponent {
                 order.referred_code_id = program.codeObj;
             }
         }
+        order._updateActivatedPromotionPrograms();
 //        for (let newLine of newLines) {
 //            if (newLine.hasOwnProperty('reward_products')) {
 //                if (newLine.reward_products.reward_product_ids) {

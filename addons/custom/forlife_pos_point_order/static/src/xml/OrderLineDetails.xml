@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates id="template" xml:space="preserve">
-    <t t-name="forlife_pos_point_order.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension" owl="1">
-        <xpath expr="//span[hasclass('price')]" position="inside">
-                <li class="info orderline-point">
-                    <t t-if="props.line.point">
-                        <i class="fa fa-ticket" role="img" aria-label="Point" title="Point"/>
-                        <span><t t-esc="env.pos.format_currency(props.line.point)"/> </span>
-                    </t>
-                </li>
+    <t t-name="forlife_pos_point_order.CustomOrderline" t-inherit="forlife_pos_layout.CustomOrderline" t-inherit-mode="extension" owl="1">
+        <xpath expr="//li[hasclass('price')]" position="after">
+                <t t-if="props.line.point">
+                    <li class="info orderline-point" style="width: 65%;">
+                        <em>Giảm giá theo tiêu điểm</em>
+                    </li>
+                    <li class="info orderline-point" style="width: 35%;">
+                            <i class="fa fa-ticket" role="img" aria-label="Point" title="Point"/>
+                        <span><em><t t-esc="env.pos.format_currency(props.line.point)"/></em> </span>
+                    </li>
+                </t>
         </xpath>
     </t>
 </templates>

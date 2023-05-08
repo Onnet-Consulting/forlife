@@ -87,7 +87,7 @@ class PromotionProgram(models.Model):
         related='campaign_id.pos_config_ids', string="Point of Sales", help="Restrict publishing to those shops.",
         readonly=True)
 
-    customer_domain = fields.Char(related='campaign_id.customer_domain')
+    customer_domain = fields.Char(related='campaign_id.customer_domain', store=True)
     valid_customer_ids = fields.Many2many(related='campaign_id.valid_customer_ids')
 
     total_order_count = fields.Integer("Total Order Count", compute="_compute_total_order_count")

@@ -16,6 +16,7 @@
     'depends': [
         'contacts',
         'forlife_point_of_sale',
+        'forlife_pos_layout',
         'pos_hr',
     ],
 
