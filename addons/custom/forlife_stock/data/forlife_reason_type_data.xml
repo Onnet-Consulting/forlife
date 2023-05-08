@@ -24,5 +24,9 @@
             <field name="code">05</field>
             <field name="name">Nhập cân đối tồn kho</field>
         </record>
+        <record id="reason_type_6" model="forlife.reason.type">
+            <field name="code">06</field>
+            <field name="name">Xuất nguyên phụ liệu</field>
+        </record>
     </data>
 </odoo>

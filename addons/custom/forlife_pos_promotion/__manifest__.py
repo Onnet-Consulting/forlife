@@ -19,7 +19,8 @@
         'point_of_sale',
         'forlife_point_of_sale',
         'forlife_promotion',
-        'forlife_voucher'
+        'forlife_voucher',
+        'forlife_pos_point_order'
     ],
     'assets': {
         'point_of_sale.assets': [
