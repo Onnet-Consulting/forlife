@@ -1,5 +1,5 @@
 .pos .pos-receipt-container > div {
-    font-size: 11px !important;
+    font-size: 10px !important;
 }
 
 .pos-receipt .pos-receipt-logo {
@@ -28,6 +28,16 @@
 .pos-receipt hr.separate-line {
     background-color: black;
     height: 1px;
+}
+
+.pos-receipt .text-center {
+    text-align: center;
+}
+.pos-receipt .text-left {
+    text-align: left;
+}
+.pos-receipt .text-right {
+    text-align: right;
 }
 
 /*Order lines*/
@@ -120,6 +130,13 @@
 
 /*Footer*/
 .pos-receipt .policy {
+    margin-top: 5px;
+    line-height: 1.3;
+    word-spacing: 1.8px;
+}
+
+.pos-receipt .continuous-hyphen {
     text-align: center;
     margin-top: 5px;
+    display: block;
 }
