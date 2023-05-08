@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates id="template" xml:spce="preserve">
 
-    <t t-name="OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
-        <xpath expr="//div[@class='pos-receipt']" position="after">
+    <t t-name="OrderReceipt_Format" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('pos-receipt')]" position="after">
             <t t-if="env.pos.pos_brand_info.code == 'FMT'">
                 <div class="pos-receipt">
                     <t t-call="FormatOrderReceipt"/>

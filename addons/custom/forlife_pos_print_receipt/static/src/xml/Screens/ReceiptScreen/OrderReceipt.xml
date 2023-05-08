@@ -4,7 +4,7 @@
     <t t-name="OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
         <xpath expr="//div[@class='pos-receipt']" position="attributes">
             <!-- Hide old template -->
-            <attribute name="class">oe_hidden</attribute>
+            <attribute name="class" add="oe_hidden" separator=" "/>
         </xpath>
     </t>
 

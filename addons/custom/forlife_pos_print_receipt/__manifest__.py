@@ -24,7 +24,9 @@
     'assets': {
         'point_of_sale.assets': [
             'forlife_pos_print_receipt/static/src/js/**/*.js',
-            'forlife_pos_print_receipt/static/src/xml/**/*.xml',
+            'forlife_pos_print_receipt/static/src/xml/Screens/ReceiptScreen/OrderReceipt.xml',
+            'forlife_pos_print_receipt/static/src/xml/Screens/ReceiptScreen/FormatOrderReceipt.xml',
+            'forlife_pos_print_receipt/static/src/xml/Screens/ReceiptScreen/TokyoLifeOrderReceipt.xml',
             'forlife_pos_print_receipt/static/src/css/**/*.css',
             'forlife_pos_print_receipt/static/src/scss/**/*.scss',
         ],
