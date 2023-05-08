@@ -97,7 +97,7 @@ class StockMove(models.Model):
             if move.product_id.cost_method != 'standard':
                 unit_cost = abs(move._get_price_unit())  # May be negative (i.e. decrease an out move).
             if move.picking_id.other_import and move.picking_id.location_id.is_price_unit:
-                unit_cost = move.amount_total/move.previous_qty
+                unit_cost = move.amount_total/move.previous_qty if move.previous_qty != 0 else 0
             svl_vals = move.product_id._prepare_in_svl_vals(forced_quantity or valued_quantity, unit_cost)
             svl_vals.update(move._prepare_common_svl_vals())
             if forced_quantity:
