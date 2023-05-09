@@ -15,6 +15,7 @@
     ],
     "data": [
         'views/invoice_view.xml',
+        'views/product_product_invoice.xml',
         'views/menus.xml',
         'security/ir.model.access.csv',
     ],

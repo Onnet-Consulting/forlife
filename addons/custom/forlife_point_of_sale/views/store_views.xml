@@ -35,6 +35,9 @@
                                 <field name="brand_id" options="{'no_create': True}"/>
                                 <field name="contact_id" options="{'no_create': True}"/>
                                 <field name="analytic_account_id" required="1"/>
+                                <field name="start_date"/>
+                                <field name="opening_time" widget="float_time"/>
+                                <field name="closing_time" widget="float_time"/>
                             </group>
                             <group>
                                 <field name="cashier_ids" widget="many2many_tags" options="{'no_create': True}"/>

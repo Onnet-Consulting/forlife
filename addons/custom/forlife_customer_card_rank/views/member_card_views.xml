@@ -100,6 +100,12 @@
                                 extra discount (%)
                                 <field name="value3" class="oe_inline"/>
                             </div>
+                            <group>
+                                <group>
+                                    <field name="point_coefficient_first_order"/>
+                                </group>
+                                <group></group>
+                            </group>
                             <group string="Accounting Info">
                                 <field name="journal_id" attrs="{'required': ['|', '|', '|', ('original_price', '!=', 0), ('value1', '!=', 0), ('value2', '!=', 0), ('value3', '!=', 0)]}"/>
                                 <field name="discount_account_id" attrs="{'required': ['|', '|', '|', ('original_price', '!=', 0), ('value1', '!=', 0), ('value2', '!=', 0), ('value3', '!=', 0)]}"/>

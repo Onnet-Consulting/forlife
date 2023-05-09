@@ -68,7 +68,7 @@
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="location_id" string="Location" required="1"
                                    attrs="{'readonly': [('state', '!=', 'draft')]}"/>
-                            <field name="note" required="1"/>
+                            <field name="note"/>
                         </group>
                         <group>
                             <field name="create_date" string="Create Date"/>
@@ -95,7 +95,6 @@
                                     <field name="qty_in" required="1" force_save="1"/>
                                     <field name="uom_to_id" readonly="1" required="1"/>
                                     <field name="unit_price_to" required="1"/>
-                                    <field name="cost_price" readonly="1"/>
                                     <field name="total_in"/>
                                     <field name="mrp_production_to_id"/>
                                 </tree>

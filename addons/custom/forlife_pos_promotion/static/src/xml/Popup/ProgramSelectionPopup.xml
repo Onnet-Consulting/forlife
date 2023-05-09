@@ -26,11 +26,21 @@
                                         <span style="padding-right: 20px; font-weight: 700" t-esc="program.index"/>
                                     </div>
                                 </t>
+                                <t t-if="program.codeObj">
+                                    <div style="display: inline-block" class="badge rounded-pill text-bg-info">
+                                        <span style="padding-right: 20px; font-weight: 700" t-esc="program.codeObj.code"/>
+                                    </div>
+                                </t>
                             </label>
                             <p t-if="program.reward_type == 'code_buy_x_get_y'" >
                                 <label>Chọn sản phẩm tặng kèm:</label>
-                                <select t-att-id="'reward_product_selected_'+program.id" style="margin-left: 2em;width: 70%;cursor: pointer;background-color: transparent;padding: 0.5em;color: #666666;font-size: 18px;margin-bottom: 0.5em;">
-                                    <option t-foreach="this.get_valid_reward_code_promotion(program.program)" t-as="product_id" t-key="product_id" t-att-value="product_id">
+                                <select t-att-id="'reward_product_selected_'+program.id"
+                                        t-on-click="(ev) => this.selectRewardProduct(ev.target.value, program.id)"
+                                        style="margin-left: 2em;width: 70%;cursor: pointer;background-color: transparent;padding: 0.5em;color: #666666;font-size: 18px;margin-bottom: 0.5em;">
+                                    <option t-att-value="0">--Chọn sản phẩm--</option>
+                                    <option t-foreach="this.env.pos.get_valid_reward_code_promotion(program.program)"
+                                            t-as="product_id" t-key="product_id" t-att-value="product_id"
+                                            t-att-selected="program.program.reward_product_id_selected == product_id and 'selected' or ''">
                                         <t t-set="product" t-value="this.env.pos.db.get_product_by_id(product_id)"/>
                                         <t t-out="product.display_name"/>
                                     </option>

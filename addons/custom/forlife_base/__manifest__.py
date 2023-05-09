@@ -34,6 +34,7 @@
         'views/res_bank_view.xml',
         'views/account_analytic_account.xml',
         'views/product_template_views.xml',
+        'views/warehouse_group_views.xml',
 
         'views/hr_department_views.xml',
         'views/res_company_views.xml',
@@ -42,6 +43,7 @@
         'views/product_product_views.xml',
         'views/stock_warehouse_views.xml',
         'views/account_move_views.xml',
+        'views/res_ward_views.xml',
         'views/menu_item.xml',
     ],
     "post_init_hook": "post_init_hook",

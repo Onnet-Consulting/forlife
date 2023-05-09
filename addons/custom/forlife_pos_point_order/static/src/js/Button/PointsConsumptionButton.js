@@ -107,11 +107,18 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                 cancelTitle: this.env._t('Hủy bỏ'),
             });
             if (confirmed){
-                var old_data = []
-                $('.o_input').each(function( index ) {
-                    old_data.push({val:$(this).val(), idx:index})
-                });
-                this.env.pos.selectedOrder.old_data = old_data
+                var old_data = data;
+                let order_lines = this.order_lines;
+                for(let i = 0; i< old_data.length; i++){
+                     for(let j = 0; j< order_lines.length; j++){
+                         if(old_data[i].id == order_lines[j].id){
+                            old_data[i]['display_name'] = order_lines[j].product.display_name
+                            old_data[i]['unit_price'] = order_lines[j].get_taxed_lst_unit_price()
+                            old_data[i]['idx'] = i
+                         }
+                     }
+                }
+                this.env.pos.selectedOrder.old_data = old_data;
                 var tempResult = {}
                 for(let { id, point } of data){
                         tempResult[id] = {
@@ -121,7 +128,6 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                     }
                 }
                 let result = Object.values(tempResult)
-                let order_lines = this.order_lines;
                 if (result.length < order_lines.length){
                     for(let i = 0; i< order_lines.length; i++){
                         for(let j = 0; j< result.length; j++){

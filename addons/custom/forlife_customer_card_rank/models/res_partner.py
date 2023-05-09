@@ -13,6 +13,8 @@ class ResPartner(models.Model):
     card_rank_format = fields.Html('Card Rank Format', compute='_compute_card_rank')
     card_rank_tokyolife = fields.Html('Card Rank TokyoLife', compute='_compute_card_rank')
     card_rank_by_brand = fields.Json('Card Rank By Brand', compute='_compute_card_rank')
+    card_rank_status_format = fields.Boolean('Card Rank Status Format', compute='_compute_card_rank')
+    card_rank_status_tokyolife = fields.Boolean('Card Rank Status Tokyolife', compute='_compute_card_rank')
 
     def _compute_card_rank(self):
         for line in self:
@@ -20,6 +22,10 @@ class ResPartner(models.Model):
             line.card_rank_format = data.get(f'{self.env.ref("forlife_point_of_sale.brand_format").code}-{str(line.id)}', no_data)
             line.card_rank_tokyolife = data.get(f'{self.env.ref("forlife_point_of_sale.brand_tokyolife").code}-{str(line.id)}', no_data)
             line.card_rank_by_brand = {r.brand_id.id: [r.card_rank_id.id, r.card_rank_id.name] for r in line.card_rank_ids}
+            card_rank_format = line.card_rank_ids.filtered(lambda x: x.brand_id == self.env.ref("forlife_point_of_sale.brand_format"))
+            card_rank_tokyolife = line.card_rank_ids.filtered(lambda x: x.brand_id == self.env.ref("forlife_point_of_sale.brand_tokyolife"))
+            line.card_rank_status_format = True if (card_rank_format and any(x.status for x in card_rank_format)) else False
+            line.card_rank_status_tokyolife = True if (card_rank_tokyolife and any(x.status for x in card_rank_tokyolife)) else False
 
     def btn_change_card_rank(self):
         partner_card_rank = self.validate_brand_info()

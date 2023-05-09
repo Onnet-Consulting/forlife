@@ -7,8 +7,11 @@
             <field name="inherit_id" ref="stock.view_warehouse"/>
             <field name="arch" type="xml">
                 <field name="code" position="after">
+                    <field name="district_id"/>
+					<field name="ward_id" domain="[('district_id', '=', district_id)]"/>
                     <field name="name_internal"/>
                     <field name="short_name_internal"/>
+                    <field name="warehouse_gr_id"/>
                 </field>
                 <xpath expr="//sheet/group[1]/group[2]/field[@name='company_id']" position="before">
                     <field name="warehouse_code_internal"/>
@@ -228,6 +231,7 @@
                 <tree string="Weather Province" editable="top">
                     <field name="code"/>
                     <field name="name"/>
+                    <field name="state_id"/>
                 </tree>
             </field>
         </record>
