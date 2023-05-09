@@ -266,10 +266,11 @@ class PurchaseOrder(models.Model):
     @api.depends('is_inter_company')
     def compute_partner_domain(self):
         for item in self:
-            data_search = self.env['res.partner'].search(
-                [('is_inter_company_purchase', '=', True if item.is_inter_company else False),
-                 ('company_id', '=', False)])
-            item.partner_domain = json.dumps([('id', 'in', data_search.ids)])
+            # data_search = self.env['res.partner'].search(
+            #     [('is_inter_company_purchase', '=', True if item.is_inter_company else False),
+            #      ('company_id', '=', False)])
+            # item.partner_domain = json.dumps([('id', 'in', data_search.ids)])
+            item.partner_domain = ''
 
     def action_confirm(self):
         for record in self:
@@ -1078,7 +1079,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     is_from_ncc = fields.Boolean('From Ncc')
-    reference = fields.Char
+    reference = fields.Char(string='Tài liệu')
 
 
 class StockPicking(models.Model):
