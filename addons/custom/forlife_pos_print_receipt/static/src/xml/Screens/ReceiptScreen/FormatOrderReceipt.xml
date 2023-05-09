@@ -12,7 +12,7 @@
     </t>
 
     <t t-name="FormatOrderReceipt" owl="1">
-        <img class="pos-receipt-logo"
+        <img class="pos-receipt-logo format"
              src="/forlife_pos_print_receipt/static/src/img/logo-format.png" height="25"/>
         <div>
             <div class="order-header">
@@ -160,7 +160,7 @@
     </t>
 
     <t t-name="FormatOrderFooterReceipt" owl="1">
-        <div>
+        <div class="receipt-footer">
             <div t-out="receipt.footer"/>
         </div>
     </t>

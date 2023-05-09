@@ -1,6 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="forlife_point_of_sale.brand_tokyolife" model="res.brand">
+            <field name="pos_receipt_footer" type="html">
+                <div class="policy text-center text-bold">
+                    CHÍNH SÁCH ĐỔI MỚI - BẢO HÀNH
+                </div>
+                <div class="text-left">
+                    <span class="text-bold">- Sản phẩm:</span>
+                    trang phục, giầy, dép, túi, ví, balo được đổi mới trong 7 ngày (đặc biệt: trang phục SUNTOP đổi mới
+                    trong 14 ngày).
+                </div>
+                <div class="text-left">
+                    <span class="text-bold">- Điều kiện đổi mới:</span>sản phẩm còn nguyên tem, mác; không có vết bẩn,
+                    lỗi và chưa qua sử dụng, giặt là.
+                </div>
+                <div class="text-left">
+                    <span class="text-bold">- Các sản phẩm khác:</span>đổi mới và bảo hành theo chính sách tại:
+                    facebook.com/CSKHTokyoLife
+                </div>
+
+                <hr class="separate-line"/>
+
+                <div class="policy text-center text-bold">
+                    SẢN PHẨM BÁN CHẠY NHẤT!
+                </div>
+                <div class="text-left">
+                    * Áo POLO TOKYO Thế hệ mới - Mát hơn, bền hơn, thoải mái hơn chỉ từ 249K
+                </div>
+                <div class="text-left">
+                    * GIÀY THỂ THAO Siêu nhẹ - Êm chân chỉ từ 590K
+                </div>
+
+                <hr class="separate-line"/>
+
+                <div class="policy text-center text-bold">
+                    SẢN PHẨM NHẤT ĐỊNH PHẢI THỬ!
+                </div>
+                <div class="text-left">
+                    * ÁO CHỐNG NẮNG SUNTOP - Ngăn tới hơn 98% tia UV chỉ từ 450K
+                </div>
+                <div class="text-left">
+                    * BA LÔ thông minh chống trộm, chống gù, chống nước chỉ từ 190K
+                </div>
+
+                <hr class="separate-line"/>
+
+                <div class="policy text-center">
+                    ƯỚC MONG ĐƯỢC PHỤ VỤ QUÝ KHÁCH
+                </div>
+                <div class="text-center">
+                    TRONG NHỮNG LẦN TIẾP SAU!
+                </div>
+                <div class="text-center">
+                    Hóa đơn có giá trị xuất hóa đơn GTGT trong ngày
+                </div>
+
+                <div class="continuous-hyphen">-------------------------</div>
+            </field>
+        </record>
 
         <record id="forlife_point_of_sale.brand_format" model="res.brand">
             <field name="pos_receipt_footer" type="html">

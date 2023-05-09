@@ -2,8 +2,13 @@
     font-size: 10px !important;
 }
 
-.pos-receipt .pos-receipt-logo {
+.pos-receipt .pos-receipt-logo.format{
     height: 25px;
+}
+
+.pos-receipt .pos-receipt-logo.tokyolife {
+    width: 70%;
+    height: 30px;
 }
 
 .pos-receipt .order-header {
@@ -33,11 +38,21 @@
 .pos-receipt .text-center {
     text-align: center;
 }
+
 .pos-receipt .text-left {
     text-align: left;
 }
+
 .pos-receipt .text-right {
     text-align: right;
+}
+
+.pos-receipt .text-bold {
+    font-weight: bold;
+}
+
+.pos-receipt .text-italic {
+    font-style: italic;
 }
 
 /*Order lines*/
@@ -139,4 +154,8 @@
     text-align: center;
     margin-top: 5px;
     display: block;
+}
+
+.pos-receipt .receipt-footer {
+    line-height: 1.3;
 }
