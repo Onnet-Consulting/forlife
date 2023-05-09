@@ -1294,8 +1294,8 @@ class StockPicking(models.Model):
                 number_product = self.env['stock.quant'].search(
                     [('location_id', '=', record.location_dest_id.id),
                      ('product_id', '=', material_line.product_id.id)])
-                # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                #     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
+                if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                    raise ValidationError('Số lượng sản phẩm trong kho không đủ')
                 if not self.env.ref('forlife_stock.export_production_order').valuation_out_account_id:
                     raise ValidationError('Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
                 list_line_xk.append((0, 0, {
