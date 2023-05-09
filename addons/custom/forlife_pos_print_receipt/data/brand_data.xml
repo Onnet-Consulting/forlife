@@ -2,6 +2,7 @@
 <odoo>
     <data>
         <record id="forlife_point_of_sale.brand_tokyolife" model="res.brand">
+            <field name="mobile_app_url">https://tokyolife.vn/mobile/detect.html?inv=</field>
             <field name="pos_receipt_footer" type="html">
                 <div class="policy text-center text-bold">
                     CHÍNH SÁCH ĐỔI MỚI - BẢO HÀNH
@@ -80,8 +81,7 @@
                 </div>
                 <div class="continuous-hyphen">--------------------</div>
                 <div class="policy text-center">
-                    <div>FORMAT BIẾT ƠN QUÝ KHÁCH VÌ ĐÃ TRAO</div>
-                    <div>CƠ HỘI PHỤC VỤ!</div>
+                    FORMAT BIẾT ƠN QUÝ KHÁCH VÌ ĐÃ TRAO CƠ HỘI PHỤC VỤ!
                 </div>
             </field>
         </record>

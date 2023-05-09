@@ -142,15 +142,9 @@
                             <t t-esc="env.pos.format_currency_no_symbol(receipt.total_rounded)"/>
                         </td>
                     </tr>
-                </tbody>
-            </table>
-
-            <table class="payment-total">
-                <tbody>
                     <tr>
-                        <td class="col1"/>
-                        <td class="col2">Chiết khấu:</td>
-                        <td class="col3">
+                        <td class="col1">Chiết khấu:</td>
+                        <td colspan="4" class="text-right">
                             <t t-esc="env.pos.format_currency_no_symbol(receipt.total_discount)"/>
                         </td>
                     </tr>
@@ -159,22 +153,25 @@
 
             <t t-call="SeparateLine"/>
 
-            <table class="payment-total">
+            <table class="payment-detail">
                 <tbody>
                     <tr>
-                        <td class="col1"/>
-                        <td class="col2">Tổng tiền thanh toán:</td>
-                        <td class="col3">
+                        <td colspan="2">Tổng tiền thanh toán:</td>
+                        <td colspan="3" class="text-right">
                             <t t-esc="env.pos.format_currency_no_symbol(receipt.total_paid || 0)"/>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+
+            <table class="payment-line-detail">
+                <tbody>
                     <t t-foreach='receipt.paymentlines' t-as='line' t-key="line_index">
                         <tr>
-                            <td class="col1"/>
-                            <td class="col2">
+                            <td>
                                 <t t-esc="line.name"/>:
                             </td>
-                            <td class="col3">
+                            <td class="text-right">
                                 <t t-esc="env.pos.format_currency_no_symbol(line.amount)"/>
                             </td>
                         </tr>

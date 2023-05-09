@@ -16,7 +16,7 @@
 
     'depends': [
         'web_map',
-        'forlife_pos_app_member',
+        'forlife_point_of_sale',
     ],
     'auto_install': True,
 

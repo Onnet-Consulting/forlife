@@ -152,14 +152,9 @@
                             <t t-esc="env.pos.format_currency_no_symbol(receipt.total_rounded)"/>
                         </td>
                     </tr>
-                </tbody>
-            </table>
-
-            <table class="payment-detail">
-                <tbody>
                     <tr>
-                        <td colspan="3" class="text-left">Chiết khấu:</td>
-                        <td colspan="2" class="text-right">
+                        <td class="col1">Chiết khấu:</td>
+                        <td colspan="4" class="text-right">
                             <t t-esc="env.pos.format_currency_no_symbol(receipt.total_discount)"/>
                         </td>
                     </tr>
@@ -171,17 +166,22 @@
             <table class="payment-detail">
                 <tbody>
                     <tr>
-                        <td colspan="3" class="text-left">Tổng tiền thanh toán:</td>
-                        <td colspan="2" class="text-right">
+                        <td colspan="2">Tổng tiền thanh toán:</td>
+                        <td colspan="3" class="text-right">
                             <t t-esc="env.pos.format_currency_no_symbol(receipt.total_paid || 0)"/>
                         </td>
                     </tr>
+                </tbody>
+            </table>
+
+            <table class="payment-line-detail">
+                <tbody>
                     <t t-foreach='receipt.paymentlines' t-as='line' t-key="line_index">
                         <tr>
-                            <td colspan="3" class="text-left">
+                            <td>
                                 <t t-esc="line.name"/>:
                             </td>
-                            <td colspan="2" class="text-right">
+                            <td class="text-right">
                                 <t t-esc="env.pos.format_currency_no_symbol(line.amount)"/>
                             </td>
                         </tr>
