@@ -1076,7 +1076,6 @@ class PurchaseOrderLine(models.Model):
             self.product_qty = 1.0
         # re-write thông tin purchase_uom,product_uom
         self.product_uom = self.product_id.uom_id
-        self.purchase_uom = self.product_id.uom_id
 
     @api.constrains('exchange_quantity', 'purchase_quantity')
     def _constrains_exchange_quantity_and_purchase_quantity(self):
@@ -1296,7 +1295,7 @@ class StockPicking(models.Model):
                      ('product_id', '=', material_line.product_id.id)])
                 if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
                     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
-                if not self.env.ref('forlife_stock.export_production_order').valuation_out_account_id:
+                if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
                     raise ValidationError('Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
                 list_line_xk.append((0, 0, {
                     'product_id': material_line.product_id.id,
@@ -1314,7 +1313,7 @@ class StockPicking(models.Model):
                 credit = material_line.price_unit * material_line.product_plan_qty
                 credit_npl = (0, 0, {
                     'account_id': self.env.ref(
-                        'forlife_stock.export_production_order').valuation_out_account_id.id,
+                        'forlife_stock.export_production_order').valuation_in_account_id.id,
                     'name': material_line.product_id.name,
                     'debit': 0,
                     'credit': credit,
