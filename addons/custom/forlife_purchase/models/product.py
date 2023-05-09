@@ -8,6 +8,18 @@ class ProductTemplate(models.Model):
 
     detailed_type = fields.Selection(selection_add=[('asset', 'Asset')], ondelete={'asset': 'set default'})
     type = fields.Selection(selection_add=[('asset', 'Asset')])
+
+    product_type = fields.Selection(
+        selection=[
+            ('product', 'Sản phẩm lưu kho'),
+            ('service', 'Dịch vụ'),
+            ('asset', 'Tài sản'),
+        ],
+        string='Loại hàng mua',
+        required=True,
+        copy=False,
+        default='product',
+    )
     barcode_country = fields.Many2one('forlife.barcode', string="Origin")
     barcode = fields.Char(
         'Barcode', copy=False, index='btree_not_null',
