@@ -16,30 +16,26 @@
              src="/forlife_pos_print_receipt/static/src/img/logo-format.png" height="25"/>
         <div>
             <div class="order-header">
-                <strong>
-                    <t t-esc="receipt.name"/>
-                </strong>
-                <span></span>
-                <t t-esc="receipt.date.localestring1"/>
+                <strong><t t-esc="receipt.name"/></strong> <t t-esc="receipt.date.localestring1"/>
             </div>
         </div>
         <div class="customer-cashier-detail">
             <t t-if="receipt.cashier">
                 <div>
-                    <span>Nhân viên:</span>
+                    <span>Nhân viên: </span>
                     <t t-esc="receipt.cashier"/>
                 </div>
             </t>
             <t t-if="receipt.partner">
                 <div>
-                    <span>Khách hàng:</span>
+                    <span>Khách hàng: </span>
                     <t t-esc="receipt.partner.name"/>
                 </div>
                 <div>
-                    <span>Điện thoại:</span>
+                    <span>Điện thoại: </span>
                     <t t-esc="receipt.partner.phone || ''"/>
                 </div>
-                <div>Ghi chú:</div>
+                <div>Ghi chú: </div>
             </t>
         </div>
         <t t-call="FormatOrderLinesReceipt"/>

@@ -14,22 +14,13 @@
     <t t-name="TokyoLifeOrderReceipt" owl="1">
         <img class="pos-receipt-logo tokyolife"
              src="/forlife_pos_print_receipt/static/src/img/logo-tokyolife.png" height="25"/>
-        <div>
-            <div class="order-header">
-                <strong>
-                    <t t-esc="receipt.name"/>
-                </strong>
-                <span></span>
-                <t t-esc="receipt.date.localestring1"/>
-            </div>
-        </div>
         <div class="customer-cashier-detail">
             <div>
-                <span>Ngày giờ:</span>
+                <span>Ngày giờ:   </span>
                 <t t-esc="receipt.date.localestring1"/>
             </div>
             <div>
-                <span>Số hóa đơn:</span>
+                <span>Số hóa đơn: </span>
                 <t t-esc="receipt.name"/>
             </div>
             <t t-if="receipt.partner">
