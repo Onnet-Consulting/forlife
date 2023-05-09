@@ -61,7 +61,7 @@ class PurchaseOrder(models.Model):
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
     location_id = fields.Many2one('stock.location', string="Kho nhận", check_company=True)
     is_inter_company = fields.Boolean(default=False)
-    partner_domain = fields.Char(compute='compute_partner_domain')
+    partner_domain = fields.Char()
     partner_id = fields.Many2one('res.partner', string='Vendor', required=True, states=READONLY_STATES,
                                  change_default=True, tracking=True, domain=False,
                                  help="You can find a vendor by its Name, TIN, Email or Internal Reference.")
@@ -268,15 +268,6 @@ class PurchaseOrder(models.Model):
         if self.trade_discount:
             if self.tax_totals.get('amount_total') and self.tax_totals.get('amount_total') != 0:
                 self.total_trade_discount = self.tax_totals.get('amount_total') / self.trade_discount
-
-    @api.depends('is_inter_company')
-    def compute_partner_domain(self):
-        for item in self:
-            is_inter_company = True if item.is_inter_company else False
-            data_search = self.env['res.partner'].search(
-                [('is_inter_company_purchase', '=', is_inter_company),
-                 ('company_id', '=', False)], order='id desc')
-            item.partner_domain = json.dumps([('id', 'in', data_search.ids)])
 
     def action_confirm(self):
         for record in self:
@@ -491,7 +482,7 @@ class PurchaseOrder(models.Model):
         if self.env.context.get('default_is_inter_company'):
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/TemplatePO.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_liencongty.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'cost':
