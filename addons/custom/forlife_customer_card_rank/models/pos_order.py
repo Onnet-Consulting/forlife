@@ -238,7 +238,7 @@ class PosOrderLine(models.Model):
                     (0, 0, {
                         'type': 'card',
                         'listed_price': line['price_unit'],
-                        'recipe': - line['card_rank_discount'],
+                        'recipe': line['card_rank_discount'],
                     })
                 ]
         return super(PosOrderLine, self).create(vals_list)

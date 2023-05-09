@@ -95,6 +95,8 @@
                            options="{'no_open': False}"
                            force_save="1"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
+                     <field name="x_asset_fin"  widget="radio"/>
+                     <field name="x_root"  widget="radio"/>
                 </xpath>
                 <xpath expr="//notebook/page[@name='invoice_tab']" position="after">
                     <field name="is_check" invisible="1"/>

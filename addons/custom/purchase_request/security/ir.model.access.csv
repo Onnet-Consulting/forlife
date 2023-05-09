@@ -9,6 +9,7 @@ access_purchase_request,purchase_request,model_purchase_request,purchase_request
 access_production_order,production_order,model_production_order,base.group_user,1,1,1,1
 access_production_order_line,production_order_line,model_production_order_line,base.group_user,1,1,1,1
 access_cancel_purchase_request,cancel_purchase_request,model_cancel_purchase_request,,1,1,1,1
+access_select_type_po,select_type_po,model_select_type_po,,1,1,1,1
 
 
 access_purchase_material,purchase_material,model_purchase_material,forlife_purchase.user_purchase_order_group,1,1,1,1

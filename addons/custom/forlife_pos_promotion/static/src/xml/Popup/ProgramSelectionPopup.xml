@@ -26,6 +26,11 @@
                                         <span style="padding-right: 20px; font-weight: 700" t-esc="program.index"/>
                                     </div>
                                 </t>
+                                <t t-if="program.codeObj">
+                                    <div style="display: inline-block" class="badge rounded-pill text-bg-info">
+                                        <span style="padding-right: 20px; font-weight: 700" t-esc="program.codeObj.code"/>
+                                    </div>
+                                </t>
                             </label>
                             <p t-if="program.reward_type == 'code_buy_x_get_y'" >
                                 <label>Chọn sản phẩm tặng kèm:</label>
