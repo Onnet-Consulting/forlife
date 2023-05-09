@@ -54,17 +54,17 @@ class StockPicking(models.Model):
     @api.model
     def default_get(self, fields):
         res = super(StockPicking, self).default_get(fields)
-        company_id = self.env.user.company_ids
+        company_id = self.env.context.get('allowed_company_ids')
         if self.env.context.get('default_other_import'):
             picking_type_id = self.env['stock.picking.type'].search([
                 ('code', '=', 'incoming'),
-                ('warehouse_id.company_id', 'in', company_id.ids)], limit=1)
+                ('warehouse_id.company_id', 'in', company_id)], limit=1)
             if picking_type_id:
                 res.update({'picking_type_id': picking_type_id.id})
         if self.env.context.get('default_other_export'):
             picking_type_id = self.env['stock.picking.type'].search([
                 ('code', '=', 'outgoing'),
-                ('warehouse_id.company_id', 'in', company_id.ids)], limit=1)
+                ('warehouse_id.company_id', 'in', company_id)], limit=1)
             if picking_type_id:
                 res.update({'picking_type_id': picking_type_id.id})
         return res
