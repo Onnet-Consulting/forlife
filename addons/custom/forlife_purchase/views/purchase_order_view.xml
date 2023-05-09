@@ -67,7 +67,7 @@
                         <button name="action_create_invoice" string="Create Invoice"
                                 class="btn btn-primary ms-md-2" type="object"
                                 attrs="{'invisible':['|',('is_inter_company', '=', True),'&amp;',('is_done_picking', '=', False),'|',('purchase_type', '=', 'product'),('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>
-                        <button string="Submit" name="action_confirm"
+                        <button string="Gửi duyệt" name="action_confirm"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>
                         <button string="Approved" name="action_approved"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'confirm')]}"/>
