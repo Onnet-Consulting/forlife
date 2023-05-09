@@ -75,6 +75,12 @@
 .pos-receipt .store-address {
     margin: 7px 0;
 }
+
+.pos-receipt .mobile-app-qr {
+    margin-bottom: 5px;
+    font-size: 9px !important;
+}
+
 /*Order lines*/
 .pos-receipt .orderlines .lines-detail {
     width: 100%;

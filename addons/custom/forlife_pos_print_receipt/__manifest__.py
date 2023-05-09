@@ -15,8 +15,8 @@
     'version': '16.0.1.0.0',
 
     'depends': [
-        'forlife_point_of_sale',
         'web_map',
+        'forlife_pos_app_member',
     ],
     'auto_install': True,
 

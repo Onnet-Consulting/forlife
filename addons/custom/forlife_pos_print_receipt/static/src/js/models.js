@@ -30,6 +30,18 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             this.note = note;
         }
 
+        get_install_app_barcode_data() {
+            // if customer doesn't have barcode yet -> they have not install mobile app
+            const mobile_app_url = this.pos.pos_brand_info.mobile_app_url;
+            if (this.get_partner() && ! this.get_partner().barcode && mobile_app_url) {
+                const codeWriter = new window.ZXing.BrowserQRCodeSvgWriter();
+                let qr_code_svg = new XMLSerializer().serializeToString(codeWriter.write(mobile_app_url, 150, 150));
+                return "data:image/svg+xml;base64," + window.btoa(qr_code_svg);
+            } else {
+                return false;
+            }
+        }
+
         export_for_printing() {
             let json = super.export_for_printing(...arguments);
             let total_qty = _.reduce(_.map(json.orderlines, line => line.quantity), (a, b) => a + b, 0);
@@ -37,6 +49,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             json.total_line_qty = total_qty;
             json.footer = markup(this.pos.pos_brand_info.pos_receipt_footer);
             json.note = this.get_note();
+            json.mobile_app_url_qr_code = this.get_install_app_barcode_data();
             return json;
         }
     }

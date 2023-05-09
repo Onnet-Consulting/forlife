@@ -17,6 +17,7 @@ class PosSession(models.Model):
         # get receipt footer from res.brand field config
         loaded_data['pos_brand_info'].update({
             "pos_receipt_footer": pos_brand.pos_receipt_footer,
+            "mobile_app_url": pos_brand.mobile_app_url
         })
         loaded_data.update({
             "pos_store_info": pos_store_info

@@ -34,6 +34,16 @@
             </t>
         </div>
 
+        <t t-if="receipt.mobile_app_url_qr_code">
+            <div class="mobile-app-qr">
+                <div class="text-center text-bold">Kính mời Quý khách quét mã QR, cài App tich lũy 1% giá trị hóa đơn
+                    sau 24h và nhận thông tin các ưu đãi mới nhất, lớn nhất
+                </div>
+                <img id="posqrcode" t-att-src="receipt.mobile_app_url_qr_code" class="pos-receipt-logo"/>
+                <div class="text-center">Mã QR chỉ có giá trị trong vòng 03 ngày kể từ ngày mua hàng</div>
+            </div>
+        </t>
+
         <table class="receipt-header">
             <tbody>
                 <tr>
