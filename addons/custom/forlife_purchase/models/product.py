@@ -2,12 +2,17 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 import datetime
 
-
+list = [
+        ('product', 'Sản phẩm lưu kho'),
+        ('service', 'Dịch vụ'),
+        ('asset', 'Tài sản'),
+        ('event', 'Vé sự kiện')
+        ]
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    detailed_type = fields.Selection(selection_add=[('asset', 'Tài sản')], ondelete={'asset': 'set default'})
-    type = fields.Selection(selection_add=[('asset', 'Tài sản')])
+    detailed_type = fields.Selection(selection=list, string='Loại sản phẩm', default='product')
+    type = fields.Selection(selection_add=[('asset', 'Asset')])
 
     product_type = fields.Selection(
         selection=[
