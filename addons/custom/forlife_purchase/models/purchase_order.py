@@ -312,6 +312,7 @@ class PurchaseOrder(models.Model):
                         'name': record.name,
                         }
                 order_line = []
+                invoice_line_ids = []
                 uom = self.env.ref('uom.product_uom_unit').id
                 for line in record.order_line:
                     product_ncc = self.env['stock.quant'].search(
@@ -340,14 +341,35 @@ class PurchaseOrder(models.Model):
                         'price_subtotal': line.price_subtotal
                     }
                     order_line.append(data_product)
-                supplier_sales_order = self.supplier_sales_order(data, order_line)
-                record.write({'custom_state': 'approved', 'inventory_status': 'done', 'invoice_status': 'invoiced'})
+                    invoice_line = {
+                        'product_id': line.product_id.id,
+                        'name': line.product_id.name,
+                        'description': line.product_id.default_code,
+                        'request_code': line.request_purchases,
+                        'type': line.product_type,
+                        'discount': line.discount_percent,
+                        'discount_invoice': line.discount,
+                        'quantity_purchased': line.purchase_quantity,
+                        'uom_id': line.product_id.uom_id.id if line.product_id.uom_id else uom,
+                        'exchange_quantity': line.exchange_quantity,
+                        'quantity': line.product_qty,
+                        'vendor_price': line.vendor_price,
+                        'price_unit': line.price_unit,
+                        'warehouse': line.location_id.id,
+                        'taxes_id': line.taxes_id.id,
+                        'tax_amount': line.price_tax,
+                        'price_subtotal': line.price_subtotal,
+                        'account_analytic_id': line.account_analytic_id.id,
+                        'work_order': line.production_id.id
+                    }
+                    invoice_line_ids.append((0, 0, invoice_line))
+            self.supplier_sales_order(data, order_line, invoice_line_ids)
+            record.write({'custom_state': 'approved', 'inventory_status': 'done', 'invoice_status': 'invoiced'})
 
-    def supplier_sales_order(self, data, order_line):
+    def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
         if company_partner:
             data_all_picking = {}
-            account_move_line = []
             order_line_so = []
             for item in order_line:
                 key_location = data.get('location_id')
@@ -414,6 +436,8 @@ class PurchaseOrder(models.Model):
                 'advance_payment_method': 'delivered',
                 'deduct_down_payments': True,
             }).forlife_create_invoices()
+            invoice_ncc.invoice_line_ids = None
+            invoice_ncc.invoice_line_ids = invoice_line_ids
             invoice_customer = invoice_ncc.copy()
             invoice_ncc.write({
                 'purchase_type': data.get('purchase_type'),
