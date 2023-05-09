@@ -318,8 +318,7 @@ class AccountMoveLine(models.Model):
             ex_sup_invoice_promo = self.env['res.partner'].search(
                 [('name', '=', rec.vendor_sup_invoice.name)], limit=1)
             price_sup_qty_min = self.env['product.supplierinfo'].search(
-                [('partner_id', '=', rec.vendor_sup_invoice.id), ('product_id', '=', rec.product_id.id),
-                 ('product_tmpl_id', '=', rec.product_id.name)],
+                [('partner_id', '=', rec.vendor_sup_invoice.id), ('product_id', '=', rec.product_id.id)],
                 limit=1)
             if ex_sup_invoice_promo and ex_sup_invoice_promo.is_passersby:
                 rec.is_check_exchange_quantity = True
