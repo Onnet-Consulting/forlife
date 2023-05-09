@@ -52,7 +52,8 @@ class PosConfig(models.Model):
         return result
 
     def load_promotion_valid_new_partner(self, partner_id, promotion_programs):
-        promotion_programs.append('0')
+        if len(promotion_programs) == 0:
+            return []
         if not (isinstance(promotion_programs, list) and all([el.isdigit() for el in promotion_programs])):
             return []
         partner = self.env['res.partner'].sudo().browse(partner_id)
