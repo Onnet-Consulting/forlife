@@ -168,7 +168,7 @@
             (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
             <field name="domain">[('other_export', '=', True)]</field>
-            <field name="context" eval="{'default_other_export': True, 'default_picking_type_id': ref('stock.picking_type_out')}"/>
+            <field name="context" eval="{'default_other_export': True}"/>
         </record>
 
         <record id="inherit_stock_picking_for_other_import_form_view_action" model="ir.actions.act_window">
@@ -179,7 +179,7 @@
             (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
             <field name="domain">[('other_import', '=', True)]</field>
-            <field name="context" eval="{'default_other_import': True, 'default_picking_type_id': ref('stock.picking_type_in')}"/>
+            <field name="context" eval="{'default_other_import': True)}"/>
         </record>
 
         <record id="forlife_reason_type_tree_view" model="ir.ui.view">
