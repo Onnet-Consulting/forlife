@@ -67,6 +67,14 @@ class AccountMove(models.Model):
     ##tab e-invoice-bkav
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
                                     compute='_compute_e_invoice_ids_exists_bkav')
+    x_asset_fin = fields.Selection([
+        ('TC', 'TC'),
+        ('QC', 'QC'),
+    ], string='Phân loại tài chính')
+    x_root = fields.Selection([
+        ('Intel ', 'Intel '),
+        ('Winning', 'Winning'),
+    ], string='Phân loại nguồn')
     @api.depends('exists_bkav')
     def _compute_e_invoice_ids_exists_bkav(self):
         for rec in self:

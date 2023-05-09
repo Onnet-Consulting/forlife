@@ -86,7 +86,7 @@
                                 <tree editable="bottom" class="width-hh">
                                     <field name="is_from_button" invisible="1"/>
                                     <field name="product_str_id" invisible="1"/>
-                                    <field name="product_id"  domain="[('detailed_type', '=', 'product')]" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
+                                    <field name="product_id"  domain="[('product_type', '=', 'product')]" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                                     <field name="qty_plan" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve'))]}"/>
                                     <field name="uom_id" force_save="1" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve','approved','out_approve','in_approve','cancel','reject'))]}"/>
                                     <field name="qty_out" attrs="{'readonly': [('parent.state', '!=', 'approved')]}"/>
