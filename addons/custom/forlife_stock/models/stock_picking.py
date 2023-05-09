@@ -260,7 +260,7 @@ class StockMove(models.Model):
                 if back_order:
                     for r in back_order.move_ids_without_package:
                         if r.product_id == rec.product_id and r.amount_total == rec.amount_total:
-                            rec.previous_qty = r.previous_qty if r.previous_qty != 0 else rec.product_uom_qty
+                            rec.write({'previous_qty': r.previous_qty})
             else:
                 if rec.picking_id.state not in ('assigned', 'done'):
                     rec.previous_qty = rec.product_uom_qty
