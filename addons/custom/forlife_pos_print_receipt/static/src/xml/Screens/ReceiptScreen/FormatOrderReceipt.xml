@@ -12,35 +12,51 @@
     </t>
 
     <t t-name="FormatOrderReceipt" owl="1">
-        <img class="pos-receipt-logo format"
-             src="/forlife_pos_print_receipt/static/src/img/logo-format.png" height="25"/>
-        <div>
-            <div class="order-header">
-                <strong><t t-esc="receipt.name"/></strong> <t t-esc="receipt.date.localestring1"/>
-            </div>
-        </div>
-        <div class="customer-cashier-detail">
-            <t t-if="receipt.cashier">
-                <div>
-                    <span>Nhân viên: </span>
-                    <t t-esc="receipt.cashier"/>
-                </div>
-            </t>
-            <t t-if="receipt.partner">
-                <div>
-                    <span>Khách hàng: </span>
-                    <t t-esc="receipt.partner.name"/>
-                </div>
-                <div>
-                    <span>Điện thoại: </span>
-                    <t t-esc="receipt.partner.phone || ''"/>
-                </div>
-                <div>Ghi chú: </div>
-            </t>
-        </div>
+        <t t-call="FormatOrderHeaderReceipt"/>
         <t t-call="FormatOrderLinesReceipt"/>
         <t t-call="FormatOrderPaymentLinesReceipt"/>
         <t t-call="FormatOrderFooterReceipt"/>
+    </t>
+
+    <t t-name="FormatOrderHeaderReceipt" owl="1">
+        <img class="pos-receipt-logo format"
+             src="/forlife_pos_print_receipt/static/src/img/logo-format.png" height="25"/>
+        <table class="receipt-header">
+            <tbody>
+                <tr>
+                    <td>Ngày giờ:</td>
+                    <td>
+                        <t t-esc="receipt.date.localestring1"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Số hóa đơn:</td>
+                    <td>
+                        <t t-esc="receipt.name"/>
+                    </td>
+                </tr>
+                <t t-if="receipt.partner">
+                    <tr>
+                        <td>Khách hàng:</td>
+                        <td>
+                            <t t-esc="receipt.partner.name"/>
+                            -
+                            <t t-esc="receipt.partner.phone || ''"/>
+                        </td>
+                    </tr>
+                </t>
+                <tr>
+                    <td>Nhân viên:</td>
+                    <td>
+                        <t t-esc="receipt.cashier"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ghi chú:</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
     </t>
 
     <t t-name="FormatOrderLinesReceipt" owl="1">

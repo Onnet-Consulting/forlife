@@ -2,7 +2,7 @@
     font-size: 10px !important;
 }
 
-.pos-receipt .pos-receipt-logo.format{
+.pos-receipt .pos-receipt-logo.format {
     height: 25px;
 }
 
@@ -53,6 +53,15 @@
 
 .pos-receipt .text-italic {
     font-style: italic;
+}
+
+/* Header */
+.pos-receipt .receipt-header {
+    width: 100%;
+}
+
+.pos-receipt .receipt-header td:nth-child(1) {
+    width: 25%;
 }
 
 /*Order lines*/
