@@ -6,12 +6,12 @@ import datetime
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    detailed_type = fields.Selection(selection_add=[('asset', 'Asset')], ondelete={'asset': 'set default'})
-    type = fields.Selection(selection_add=[('asset', 'Asset')])
+    detailed_type = fields.Selection(selection_add=[('asset', 'Tài sản')], ondelete={'asset': 'set default'})
+    type = fields.Selection(selection_add=[('asset', 'Tài sản')])
 
     product_type = fields.Selection(
         selection=[
-            ('product', 'Sản phẩm lưu kho'),
+            ('product', 'Hàng hóa'),
             ('service', 'Dịch vụ'),
             ('asset', 'Tài sản'),
         ],
