@@ -33,7 +33,7 @@ class PurchaseOrder(models.Model):
     # purchase_description = fields.Char(string='Purchase Description')
     # request_date = fields.Date(string='Request date')
     purchase_code = fields.Char(string='Internal order number')
-    has_contract = fields.Boolean(string='Contract?')
+    has_contract = fields.Boolean(string='Hợp đồng khung?')
     has_invoice = fields.Boolean(string='Finance Bill?')
     exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8), default=1)
 
@@ -96,7 +96,12 @@ class PurchaseOrder(models.Model):
                          help="Reference of the document that generated this purchase order "
                               "request (e.g. a sales order)", compute='compute_origin')
     type_po_cost = fields.Selection([('tax', 'Tax'), ('cost', 'Cost')])
-    order_line = fields.One2many('purchase.order.line', 'order_id', string='Chi tiết', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True)
+
+    # Lấy của base về phục vụ import
+    order_line = fields.One2many('purchase.order.line', 'order_id', string='Chi tiết',
+                                 states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True)
+    payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
+                                      domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
     @api.constrains('currency_id')
     def constrains_currency_id(self):
@@ -267,9 +272,10 @@ class PurchaseOrder(models.Model):
     @api.depends('is_inter_company')
     def compute_partner_domain(self):
         for item in self:
+            is_inter_company = True if item.is_inter_company else False
             data_search = self.env['res.partner'].search(
-                [('is_inter_company_purchase', '=', True if item.is_inter_company else False),
-                 ('company_id', '=', False)])
+                [('is_inter_company_purchase', '=', is_inter_company),
+                 ('company_id', '=', False)], order='id desc')
             item.partner_domain = json.dumps([('id', 'in', data_search.ids)])
 
     def action_confirm(self):
@@ -499,6 +505,8 @@ class PurchaseOrder(models.Model):
                 'label': _('Tải xuống mẫu đơn mua hàng'),
                 'template': '/forlife_purchase/static/src/xlsx/TemplatePO.xlsx?download=true'
             }]
+        else:
+            return True
 
     @api.depends('company_id', 'currency_id')
     def _compute_active_manual_currency_rate(self):
@@ -817,6 +825,9 @@ class PurchaseOrderLine(models.Model):
     received = fields.Integer(string='Đã nhận', compute='compute_received')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     description = fields.Char('Mô tả', related='product_id.name')
+    #Phục vụ import
+    taxes_id = fields.Many2many('account.tax', string='Thuế(%)',
+                                domain=['|', ('active', '=', False), ('active', '=', True)])
 
     @api.constrains('product_qty', 'price_subtotal')
     def constrains_product_qty(self):
@@ -1124,7 +1135,7 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     is_from_ncc = fields.Boolean('From Ncc')
-    reference = fields.Char
+    reference = fields.Char(string='Tài liệu')
 
 
 class StockPicking(models.Model):
