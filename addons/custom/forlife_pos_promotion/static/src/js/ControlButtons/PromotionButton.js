@@ -41,9 +41,10 @@ export class PromotionButton extends PosComponent {
         this.env.pos.no_reset_program = false;
         // Kiểm tra phần thưởng cho chương trình giới thiệu KH mới
         for (let program of selectedProgramsList) {
-            if (program.reward_for_referring) {
-                order.reward_for_referring = true;
-                order.referred_code_id = program.codeObj;
+            let codeObj = this.env.pos.getPromotionCode(program);
+            if (codeObj && codeObj.reward_for_referring) {
+                order.reward_for_referring = codeObj.reward_for_referring;
+                order.referred_code_id = codeObj;
             }
         }
         order._updateActivatedPromotionPrograms();
@@ -126,7 +127,7 @@ export class PromotionButton extends PosComponent {
             reward_type: pro.program.reward_type,
             reward_product_ids: pro.program.reward_product_ids,
             reward_for_referring: pro.program.reward_for_referring,
-            codeObj: pro.program.codeObj
+            codeObj: pro.program.codes[order.access_token]
         }));
 
         const { confirmed, payload } = await this.showPopup('ProgramSelectionPopup', {
