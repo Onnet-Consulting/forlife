@@ -51,6 +51,24 @@ class StockPicking(models.Model):
         if self.env.context.get('default_other_export'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
+    @api.model
+    def default_get(self, fields):
+        res = super(StockPicking, self).default_get(fields)
+        company_id = self.env.user.company_ids
+        if self.env.context.get('default_other_import'):
+            picking_type_id = self.env['stock.picking.type'].search([
+                ('code', '=', 'incoming'),
+                ('warehouse_id.company_id', 'in', company_id.ids)], limit=1)
+            if picking_type_id:
+                res.update({'picking_type_id': picking_type_id.id})
+        if self.env.context.get('default_other_export'):
+            picking_type_id = self.env['stock.picking.type'].search([
+                ('code', '=', 'outgoing'),
+                ('warehouse_id.company_id', 'in', company_id.ids)], limit=1)
+            if picking_type_id:
+                res.update({'picking_type_id': picking_type_id.id})
+        return res
+
     transfer_id = fields.Many2one('stock.transfer')
     reason_type_id = fields.Many2one('forlife.reason.type')
     other_export = fields.Boolean(default=False)
