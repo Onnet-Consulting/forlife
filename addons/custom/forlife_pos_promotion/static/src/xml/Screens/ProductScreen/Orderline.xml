@@ -31,6 +31,9 @@
                     <t t-foreach="props.line.get_applied_promotion_str()" t-as="promotion" t-key="promotion.id">
                         <li style="font-weight: italic !important; list-style-type: square !important;">
                             <t t-esc="promotion.str"/>
+                            <t t-if="promotion.code">
+                                <strong t-esc="promotion.code"/>
+                            </t>
                         </li>
                     </t>
                 </ul>

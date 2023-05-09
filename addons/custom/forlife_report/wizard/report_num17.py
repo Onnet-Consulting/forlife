@@ -73,7 +73,7 @@ select
     (select coalesce(sum(qty * price_unit), 0)
      from pos_order_line where order_id = po.id)                                as cong,
     (select coalesce(sum(money_reduced), 0) from (
-        select case when type = 'card' then - recipe
+        select case when type = 'card' then recipe
                     when type = 'point' then recipe * 1000
                     else 0 end as money_reduced
         from pos_order_line_discount_details
