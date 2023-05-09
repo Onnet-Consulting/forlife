@@ -1,6 +1,6 @@
-//
-//@media print {
-//    .pos .pos-receipt {
-//        font-size: 3px !important;
-//    }
-//}
+
+@media print {
+    .pos .pos-receipt {
+        margin-left: 0 !important;
+    }
+}

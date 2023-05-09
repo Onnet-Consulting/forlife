@@ -1,5 +1,6 @@
 .pos .pos-receipt-container > div {
     font-size: 10px !important;
+    padding: 0 12px 10px 10px;
 }
 
 .pos-receipt .pos-receipt-logo.format {
@@ -7,8 +8,8 @@
 }
 
 .pos-receipt .pos-receipt-logo.tokyolife {
-    width: 70%;
-    height: 30px;
+    width: 95%;
+    height: 40px;
 }
 
 .pos-receipt .order-header {
@@ -25,15 +26,9 @@
 }
 
 .pos-receipt hr.separate-line {
-    background-color: black;
+    border-top: 1px solid black;
     height: 1px;
-    margin: 0;
-    margin-top: 5px;
-}
-
-.pos-receipt hr.separate-line {
-    background-color: black;
-    height: 1px;
+    margin: 5px 0 0;
 }
 
 .pos-receipt .text-center {
@@ -79,6 +74,7 @@
 .pos-receipt .mobile-app-qr {
     margin-bottom: 5px;
     font-size: 9px !important;
+    border-style: solid;
 }
 
 /*Order lines*/
