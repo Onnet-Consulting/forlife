@@ -15,6 +15,9 @@
                         <label for="pos_ok"/>
                     </span>
                 </xpath>
+                <xpath expr="//field[@name='detailed_type']" position="after">
+                    <field name="product_type"/>
+                </xpath>
                 <xpath expr="//field[@name='barcode']" position="after">
 <!--                    <field name="product_company_id"/>-->
                     <field name="expiration_date"/>
