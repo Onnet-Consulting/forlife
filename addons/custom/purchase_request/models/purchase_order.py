@@ -12,7 +12,7 @@ class PurchaseOrder(models.Model):
     partner_id = fields.Many2one('res.partner', required=False)
     production_id = fields.Many2one('forlife.production', string='Production Order')
     event_id = fields.Many2one('forlife.event', string='Event Program')
-    has_contract_commerce = fields.Boolean(string='Commerce Contract')
+    has_contract_commerce = fields.Boolean(string='Có hóa đơn hay không?')
     rejection_reason = fields.Text()
     is_check_line_material_line = fields.Boolean(compute='_compute_order_line_production_order')
     # approval_logs_ids = fields.One2many('approval.logs', 'purchase_order_id')
@@ -105,6 +105,7 @@ class PurchaseOrderLine(models.Model):
                     'product_qty': product_plan_qty,
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
+                    'price_unit': production_line.price,
                     'is_from_po': True,
                 }))
             self.write({
@@ -137,6 +138,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
     product_plan_qty = fields.Float('Plan Quantity', digits='Product Unit of Measure', compute='_compute_product_plan_qty', inverse='_inverse_product_plan_qty', store=1)
     product_remain_qty = fields.Float('Remain Quantity', digits='Product Unit of Measure', compute='_compute_product_remain_qty', store=1)
     is_from_po = fields.Boolean(default=False)
+    price_unit = fields.Float()
 
     @api.constrains('product_qty', 'product_plan_qty')
     def _constraint_product_qty(self):

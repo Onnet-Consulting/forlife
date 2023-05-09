@@ -7,9 +7,9 @@
             <field name="arch" type="xml">
                 <tree string="Nhóm kho">
                     <field name="name" required="1"/>
-                    <field name="parent_warehouse_group_id" required="1"/>
+                    <field name="id" invisible="1"/>
+                    <field name="parent_warehouse_group_id" required="1" domain="[('id','!=',id)]"/>
                     <field name="code_level_1"/>
-                    <field name="code_level_2"/>
                 </tree>
             </field>
         </record>
@@ -22,9 +22,9 @@
                     <sheet>
                         <group>
                             <field name="name" required="1"/>
-                            <field name="parent_warehouse_group_id"/>
+                            <field name="id" invisible="1"/>
+                            <field name="parent_warehouse_group_id" required="1" domain="[('id','!=',id)]"/>
                             <field name="code_level_1"/>
-                            <field name="code_level_2"/>
                         </group>
                     </sheet>
                 </form>

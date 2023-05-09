@@ -11,6 +11,7 @@
 					<field name="ward_id" domain="[('district_id', '=', district_id)]"/>
                     <field name="name_internal"/>
                     <field name="short_name_internal"/>
+                    <field name="warehouse_gr_id"/>
                 </field>
                 <xpath expr="//sheet/group[1]/group[2]/field[@name='company_id']" position="before">
                     <field name="warehouse_code_internal"/>

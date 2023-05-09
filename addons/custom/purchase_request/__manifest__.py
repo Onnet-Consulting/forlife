@@ -16,6 +16,7 @@
         'security/purchase_security.xml',
         'wizards/reject_purchase_request.xml',
         'wizards/cancel_purchase_request.xml',
+        'wizards/select_type_po.xml',
         'data/mail_template.xml',
         'data/base_automation.xml',
         'report/purchase_request_report_template.xml',

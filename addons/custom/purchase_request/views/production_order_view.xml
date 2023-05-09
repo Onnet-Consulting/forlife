@@ -23,7 +23,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="product_id" domain="[('detailed_type', '=', 'product'), ('active', '=', True)]"/>
+                            <field name="product_id" domain="[('product_type', '=', 'product'), ('active', '=', True)]"/>
                             <field name="production_uom"/>
                             <field name="product_qty"/>
                             <field name="domain_product_ids" invisible="1"/>

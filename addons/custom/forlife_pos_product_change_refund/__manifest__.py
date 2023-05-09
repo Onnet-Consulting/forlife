@@ -21,7 +21,8 @@
         'forlife_point_of_sale',
         'forlife_pos_point_order',
         'forlife_voucher',
-        'forlife_pos_assign_employee'
+        'forlife_pos_assign_employee',
+        'forlife_pos_layout',
     ],
     'assets': {
         'point_of_sale.assets': [

@@ -71,8 +71,9 @@
                 </xpath>
                 <xpath expr="//field[@name='location_id'][2]" position="after">
                     <field name="location_id" string="Lý do nhập khác" attrs="{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)]}"
-                           context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}"/>
-                    <field name="location_id" string="Địa điểm nguồn" attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}"/>
+                            context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}"/>
+                    <field name="location_id" string="Địa điểm nguồn" attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}"
+                            context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}"/>
                 </xpath>
                 <xpath expr="//field[@name='location_dest_id'][2]" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', True)]}</attribute>
@@ -166,8 +167,8 @@
             <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
-            <field name="domain">[('other_export', '=', True), ('picking_type_id', '=', 2)]</field>
-            <field name="context" eval="{'default_other_export': True, 'default_picking_type_id': ref('stock.picking_type_out')}"/>
+            <field name="domain">[('other_export', '=', True)]</field>
+            <field name="context" eval="{'default_other_export': True}"/>
         </record>
 
         <record id="inherit_stock_picking_for_other_import_form_view_action" model="ir.actions.act_window">
@@ -177,8 +178,8 @@
             <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
-            <field name="domain">[('other_import', '=', True), ('picking_type_id', '=', 1)]</field>
-            <field name="context" eval="{'default_other_import': True, 'default_picking_type_id': ref('stock.picking_type_in')}"/>
+            <field name="domain">[('other_import', '=', True)]</field>
+            <field name="context" eval="{'default_other_import': True}"/>
         </record>
 
         <record id="forlife_reason_type_tree_view" model="ir.ui.view">
