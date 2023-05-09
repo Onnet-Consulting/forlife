@@ -1,5 +1,5 @@
 odoo.define('forlife_pos_print_receipt.models', function (require) {
-    let {Order, Orderline} = require('point_of_sale.models');
+    let {Order, Orderline, PosGlobalState} = require('point_of_sale.models');
     let core = require('web.core');
     const Registries = require('point_of_sale.Registries');
     const {markup} = require("@odoo/owl");
@@ -50,6 +50,16 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             });
         }
     }
+
+    const CustomPosGlobalState = PosGlobalState => class extends PosGlobalState {
+        async _processData(loadedData) {
+            await super._processData(...arguments);
+            this.pos_store_info = loadedData['pos_store_info'];
+        }
+    }
+
     Registries.Model.extend(Orderline, ReceiptOrderLine);
     Registries.Model.extend(Order, ReceiptOrder);
+    Registries.Model.extend(PosGlobalState, CustomPosGlobalState);
+
 });

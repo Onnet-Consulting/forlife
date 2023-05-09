@@ -9,15 +9,16 @@ class PosSession(models.Model):
     def load_pos_data(self):
         loaded_data = super(PosSession, self).load_pos_data()
         pos_brand = self.config_id.store_id.brand_id
+        pos_store_contact = self.config_id.store_id.contact_id
+        pos_store_info = {
+            "address": pos_store_contact.contact_address_complete,
+            "phone": pos_store_contact.phone
+        }
+        # get receipt footer from res.brand field config
         loaded_data['pos_brand_info'].update({
-            "pos_receipt_footer": pos_brand.pos_receipt_footer
+            "pos_receipt_footer": pos_brand.pos_receipt_footer,
+        })
+        loaded_data.update({
+            "pos_store_info": pos_store_info
         })
         return loaded_data
-        # pos_brand_info = {
-        #     "code": pos_brand.code,
-        #     "id": pos_brand.id,
-        #     "pos_receipt_footer": pos_brand.pos_receipt_footer}
-        # loaded_data.update({
-        #     'pos_brand_info': pos_brand_info
-        # })
-        # return loaded_data

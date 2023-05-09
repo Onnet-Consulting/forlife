@@ -21,6 +21,19 @@
     <t t-name="TokyoLifeOrderHeaderReceipt" owl="1">
         <img class="pos-receipt-logo tokyolife"
              src="/forlife_pos_print_receipt/static/src/img/logo-tokyolife.png" height="25"/>
+        <div class="store-address">
+            <t t-if="env.pos.pos_store_info.address">
+                <div class="text-center">
+                    <t t-esc="env.pos.pos_store_info.address"/>
+                </div>
+            </t>
+            <t t-if="env.pos.pos_store_info.phone">
+                <div class="text-center">
+                    <t t-esc="env.pos.pos_store_info.phone"/>
+                </div>
+            </t>
+        </div>
+
         <table class="receipt-header">
             <tbody>
                 <tr>

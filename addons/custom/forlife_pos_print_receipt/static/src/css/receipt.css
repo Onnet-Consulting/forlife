@@ -28,6 +28,7 @@
     background-color: black;
     height: 1px;
     margin: 0;
+    margin-top: 5px;
 }
 
 .pos-receipt hr.separate-line {
@@ -71,6 +72,9 @@
     word-wrap: break-word;
 }
 
+.pos-receipt .store-address {
+    margin: 7px 0;
+}
 /*Order lines*/
 .pos-receipt .orderlines .lines-detail {
     width: 100%;
