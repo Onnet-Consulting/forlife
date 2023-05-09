@@ -56,8 +56,8 @@ class PurchaseOrder(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
-    exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id', copy=True)
-    cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True)
+    exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id', copy=True, string="Thuế nhập khẩu")
+    cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True, string="Chi phí")
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
     location_id = fields.Many2one('stock.location', string="Kho nhận", check_company=True)
     is_inter_company = fields.Boolean(default=False)
@@ -488,13 +488,13 @@ class PurchaseOrder(models.Model):
                 'default_type_po_cost') == 'cost':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/TemplatePO.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/templatepo_noidia.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'tax':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/TemplatePO.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/templatepo_thuenhapkhau.xlsx?download=true'
             }]
         else:
             return True
@@ -557,6 +557,18 @@ class PurchaseOrder(models.Model):
                 'purchase_order_id': self.id,
                 'qty_product': line.product_qty
             })
+
+    def action_update_import(self):
+        for item in self:
+            item.exchange_rate_line = [(5, 0)]
+            for line in item.order_line:
+                self.env['purchase.order.exchange.rate'].create({
+                    'product_id': line.product_id.id,
+                    'name': line.name,
+                    'usd_amount': line.price_subtotal,
+                    'purchase_order_id': item.id,
+                    'qty_product': line.product_qty
+                })
 
     @api.onchange('purchase_type')
     def onchange_purchase_type(self):
@@ -819,14 +831,6 @@ class PurchaseOrderLine(models.Model):
     #Phục vụ import
     taxes_id = fields.Many2many('account.tax', string='Thuế(%)',
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
-
-    @api.constrains('product_qty', 'price_subtotal')
-    def constrains_product_qty(self):
-        for item in self:
-            if item.product_qty == 0:
-                raise ValidationError('Số lượng không được bằng 0')
-            if item.price_subtotal == 0:
-                raise ValidationError('Thành tiền không được bằng 0')
 
     @api.constrains('asset_code')
     def constrains_asset_code(self):
