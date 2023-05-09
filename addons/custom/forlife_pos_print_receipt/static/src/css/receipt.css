@@ -58,10 +58,17 @@
 /* Header */
 .pos-receipt .receipt-header {
     width: 100%;
+    table-layout: fixed;
 }
 
 .pos-receipt .receipt-header td:nth-child(1) {
     width: 25%;
+    vertical-align: top;
+
+}
+
+.pos-receipt .receipt-header td:nth-child(2) {
+    word-wrap: break-word;
 }
 
 /*Order lines*/

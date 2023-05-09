@@ -53,7 +53,9 @@
                 </tr>
                 <tr>
                     <td>Ghi chú:</td>
-                    <td></td>
+                    <td>
+                        <t t-esc="receipt.note"/>
+                    </td>
                 </tr>
             </tbody>
         </table>
