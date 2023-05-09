@@ -190,9 +190,13 @@ class PosOrder(models.Model):
                     member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.old_card_rank_id)
                     if member_card_id:
                         point_coefficient_first_order = member_card_id.point_coefficient_first_order
+                        point_plus_first_order = member_card_id.point_plus_first_order
                         if item.program_store_point_id:
-                            total += ((point_coefficient_first_order - 1) * item.point_order + (
-                                    point_coefficient_first_order - 1) * item.point_event_order) if point_coefficient_first_order > 0 else 0
+                            if point_coefficient_first_order > 0:
+                                total += ((point_coefficient_first_order - 1) * item.point_order + (
+                                        point_coefficient_first_order - 1) * item.point_event_order)
+                            if point_plus_first_order > 0:
+                                total += point_plus_first_order
             item.plus_point_coefficient = total
 
     @api.depends('plus_point_coefficient')

@@ -97,3 +97,16 @@ class PartnerCardRankLine(models.Model):
         self.new_card_rank_id = self.program_cr_id.card_rank_id
         self.status = True
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        self._update_card_rank_line(res)
+        return res
+
+    def _update_card_rank_line(self, res):
+        line_ids = self.sudo().search([('id', '!=', res.id), ('status', '=', True)])
+        if line_ids:
+            line_ids.write({
+                'status': False
+            })
+

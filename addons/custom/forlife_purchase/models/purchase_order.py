@@ -366,6 +366,7 @@ class PurchaseOrder(models.Model):
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
+        so_company = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
         if company_partner:
             data_all_picking = {}
             order_line_so = []
@@ -407,7 +408,7 @@ class PurchaseOrder(models.Model):
 
             master_so = {
                 'origin': data.get('name'),
-                'partner_id': company_partner.id,
+                'partner_id': so_company.id,
                 'payment_term_id': data.get('payment_term_id'),
                 'state': 'sent',
                 'date_order': data.get('date_order'),
