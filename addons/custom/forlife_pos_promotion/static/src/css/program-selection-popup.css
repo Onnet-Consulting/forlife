@@ -29,6 +29,11 @@ div .text-bg-success {
     color: #FFF !important;
     background-color: RGBA(40, 167, 69, var(--bg-opacity, 1)) !important;
 }
+div .text-bg-info {
+    text-align: center;
+    color: #FFF !important;
+    background-color: RGBA(13, 120, 240, var(--bg-opacity, 1)) !important;
+}
 div .number-combo {
     display: inline-block;
     margin-right: 10px;
