@@ -219,7 +219,7 @@
                         <field name="sequence" widget="handle"/>
                         <field name="product_id"
                                context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
-                               domain="[('detailed_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                               domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
                         <field name="name" invisible="1"/>
                         <field name="description"/>
                         <field name="product_type" string="Type"/>
