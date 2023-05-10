@@ -488,19 +488,19 @@ class PurchaseOrder(models.Model):
         if self.env.context.get('default_is_inter_company'):
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_liencongty.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_liencongtys.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'cost':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/templatepo_noidia.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/templatepo_noidias.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'tax':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/templatepo_thuenhapkhau.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/templatepo_thuenhapkhaus.xlsx?download=true'
             }]
         else:
             return True
@@ -820,7 +820,7 @@ class PurchaseOrderLine(models.Model):
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
     production_id = fields.Many2one('forlife.production', string='Production Order Code')
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
-    request_line_id = fields.Many2one('purchase.request', string='Purchase Request')
+    request_line_id = fields.Many2one('purchase.request', string='Phiếu yêu cầu')
     event_id = fields.Many2one('forlife.event', string='Program of events')
     vendor_price = fields.Float(string='Vendor Price')
     readonly_discount = fields.Boolean(default=False)
