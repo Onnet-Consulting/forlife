@@ -545,9 +545,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.pos.promotionPrograms.forEach(p => {
             p.reward_for_referring = false;
         });
-        this.pos.promotionPrograms.forEach(p => {
-            p.codes[this.access_token] = null;
-        });
         this._updateActivatedPromotionPrograms();
     }
 
