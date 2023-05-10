@@ -3,10 +3,14 @@
 import ProductScreen from 'point_of_sale.ProductScreen';
 import Registries from 'point_of_sale.Registries';
 import { useBarcodeReader } from 'point_of_sale.custom_hooks';
+import { Gui } from 'point_of_sale.Gui';
+import core from 'web.core';
+const _t = core._t;
 
 export const PosPromotionProductScreen = (ProductScreen) =>
     class extends ProductScreen {
         async _onClickPay() {
+            // Kiểm tra và áp dụng CT Quà tặng bất ngờ
             const order = this.env.pos.get_order();
             order.surprise_reward_program_id = null;
             order.surprising_reward_line_id = null;
@@ -35,6 +39,12 @@ export const PosPromotionProductScreen = (ProductScreen) =>
                 }
 
             };
+            // Kiểm tra còn CTKM chưa được áp dụng hết trên đơn
+            let applicablePrograms = this.env.pos.get_order().getPotentialProgramsToSelect();
+            if (applicablePrograms.length > 0) {
+                Gui.showNotification(_.str.sprintf(`Còn chương trình khuyến mãi có thể áp dụng trên đơn hàng này!`), 5000);
+            };
+            // Kiểm tra đơn hàng sử dụng CTKM bị giới hạn
             await order.get_history_program_usages()
             let invalidProgram = order._validateLimitUsagePromotion();
             if (invalidProgram) {
