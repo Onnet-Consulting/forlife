@@ -1,5 +1,5 @@
 {
-    'name': 'Forlife Custom',
+    'name': 'Forlife Permission Management',
     'version': '1.0',
     'description': '',
     'summary': '',
