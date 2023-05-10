@@ -103,6 +103,12 @@ class PurchaseOrder(models.Model):
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
+    @api.constrains('cost_line')
+    def constrains_product_line(self):
+        for rec in self:
+            if not rec.cost_line.product_id:
+                raise ValidationError('Cần điền đầy đủ phần chi phí')
+
     @api.constrains('currency_id')
     def constrains_currency_id(self):
         for item in self:
