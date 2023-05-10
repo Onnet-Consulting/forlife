@@ -26,7 +26,7 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
         parameter = pika.ConnectionParameters(host=rabbitmq_connection.host, port=rabbitmq_connection.port, credentials=credentials)
         connection = pika.BlockingConnection(parameter)
         channel = connection.channel()
-        channel.queue_declare(queue=rabbitmq_queue.queue_name)
+        channel.queue_declare(queue=rabbitmq_queue.queue_name, durable=True)
         message = {
             'action': action,
             'target': rabbitmq_queue.target,
