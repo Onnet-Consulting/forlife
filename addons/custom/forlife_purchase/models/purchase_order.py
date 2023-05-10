@@ -56,8 +56,8 @@ class PurchaseOrder(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
-    exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id', copy=True)
-    cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True)
+    exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id', copy=True, string="Thuế nhập khẩu")
+    cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True, string="Chi phí")
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
     location_id = fields.Many2one('stock.location', string="Kho nhận", check_company=True)
     is_inter_company = fields.Boolean(default=False)
@@ -366,6 +366,7 @@ class PurchaseOrder(models.Model):
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
+        so_company = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
         if company_partner:
             data_all_picking = {}
             order_line_so = []
@@ -407,7 +408,7 @@ class PurchaseOrder(models.Model):
 
             master_so = {
                 'origin': data.get('name'),
-                'partner_id': company_partner.id,
+                'partner_id': so_company.id,
                 'payment_term_id': data.get('payment_term_id'),
                 'state': 'sent',
                 'date_order': data.get('date_order'),
@@ -488,13 +489,13 @@ class PurchaseOrder(models.Model):
                 'default_type_po_cost') == 'cost':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/TemplatePO.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/templatepo_noidia.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'tax':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/TemplatePO.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/templatepo_thuenhapkhau.xlsx?download=true'
             }]
         else:
             return True
@@ -557,6 +558,18 @@ class PurchaseOrder(models.Model):
                 'purchase_order_id': self.id,
                 'qty_product': line.product_qty
             })
+
+    def action_update_import(self):
+        for item in self:
+            item.exchange_rate_line = [(5, 0)]
+            for line in item.order_line:
+                self.env['purchase.order.exchange.rate'].create({
+                    'product_id': line.product_id.id,
+                    'name': line.name,
+                    'usd_amount': line.price_subtotal,
+                    'purchase_order_id': item.id,
+                    'qty_product': line.product_qty
+                })
 
     @api.onchange('purchase_type')
     def onchange_purchase_type(self):
@@ -820,20 +833,12 @@ class PurchaseOrderLine(models.Model):
     taxes_id = fields.Many2many('account.tax', string='Thuế(%)',
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
 
-    @api.constrains('product_qty', 'price_subtotal')
-    def constrains_product_qty(self):
-        for item in self:
-            if item.product_qty == 0:
-                raise ValidationError('Số lượng không được bằng 0')
-            if item.price_subtotal == 0:
-                raise ValidationError('Thành tiền không được bằng 0')
-
     @api.constrains('asset_code')
     def constrains_asset_code(self):
         for item in self:
             if item.order_id.purchase_type == 'asset':
-                if item.asset_code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.property_valuation == 'real_time' and item.product_id.categ_id.property_stock_valuation_account_id:
-                    if item.asset_code.asset_account != item.product_id.categ_id.property_stock_valuation_account_id.code:
+                if item.asset_code and item.asset_code.asset_account.code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.property_valuation == 'real_time' and item.product_id.categ_id.property_stock_valuation_account_id:
+                    if item.asset_code.asset_account.code != item.product_id.categ_id.property_stock_valuation_account_id.code:
                         raise ValidationError(
                             'Mã tài sản của bạn khác với mã loại cọc trong tài khoản định giá tồn kho thuộc nhóm sản phẩm')
                 else:
@@ -1072,7 +1077,6 @@ class PurchaseOrderLine(models.Model):
             self.product_qty = 1.0
         # re-write thông tin purchase_uom,product_uom
         self.product_uom = self.product_id.uom_id
-        self.purchase_uom = self.product_id.uom_id
 
     @api.constrains('exchange_quantity', 'purchase_quantity')
     def _constrains_exchange_quantity_and_purchase_quantity(self):
@@ -1290,8 +1294,8 @@ class StockPicking(models.Model):
                 number_product = self.env['stock.quant'].search(
                     [('location_id', '=', record.location_dest_id.id),
                      ('product_id', '=', material_line.product_id.id)])
-                # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                #     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
+                if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                    raise ValidationError('Số lượng sản phẩm trong kho không đủ')
                 if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
                     raise ValidationError('Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
                 list_line_xk.append((0, 0, {
@@ -1310,7 +1314,7 @@ class StockPicking(models.Model):
                 credit = material_line.price_unit * material_line.product_plan_qty
                 credit_npl = (0, 0, {
                     'account_id': self.env.ref(
-                        'forlife_stock.export_production_order').valuation_out_account_id.id,
+                        'forlife_stock.export_production_order').valuation_in_account_id.id,
                     'name': material_line.product_id.name,
                     'debit': 0,
                     'credit': credit,
