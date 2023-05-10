@@ -67,6 +67,14 @@ class AccountMove(models.Model):
     ##tab e-invoice-bkav
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
                                     compute='_compute_e_invoice_ids_exists_bkav')
+    x_asset_fin = fields.Selection([
+        ('TC', 'TC'),
+        ('QC', 'QC'),
+    ], string='Phân loại tài chính')
+    x_root = fields.Selection([
+        ('Intel ', 'Intel '),
+        ('Winning', 'Winning'),
+    ], string='Phân loại nguồn')
     @api.depends('exists_bkav')
     def _compute_e_invoice_ids_exists_bkav(self):
         for rec in self:
@@ -310,8 +318,7 @@ class AccountMoveLine(models.Model):
             ex_sup_invoice_promo = self.env['res.partner'].search(
                 [('name', '=', rec.vendor_sup_invoice.name)], limit=1)
             price_sup_qty_min = self.env['product.supplierinfo'].search(
-                [('partner_id', '=', rec.vendor_sup_invoice.id), ('product_id', '=', rec.product_id.id),
-                 ('product_tmpl_id', '=', rec.product_id.name)],
+                [('partner_id', '=', rec.vendor_sup_invoice.id), ('product_id', '=', rec.product_id.id)],
                 limit=1)
             if ex_sup_invoice_promo and ex_sup_invoice_promo.is_passersby:
                 rec.is_check_exchange_quantity = True

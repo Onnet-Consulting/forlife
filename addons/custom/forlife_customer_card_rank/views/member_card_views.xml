@@ -103,6 +103,7 @@
                             <group>
                                 <group>
                                     <field name="point_coefficient_first_order"/>
+                                    <field name="point_plus_first_order"/>
                                 </group>
                                 <group></group>
                             </group>
