@@ -837,8 +837,8 @@ class PurchaseOrderLine(models.Model):
     def constrains_asset_code(self):
         for item in self:
             if item.order_id.purchase_type == 'asset':
-                if item.asset_code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.property_valuation == 'real_time' and item.product_id.categ_id.property_stock_valuation_account_id:
-                    if item.asset_code.asset_account != item.product_id.categ_id.property_stock_valuation_account_id.code:
+                if item.asset_code and item.asset_code.asset_account.code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.property_valuation == 'real_time' and item.product_id.categ_id.property_stock_valuation_account_id:
+                    if item.asset_code.asset_account.code != item.product_id.categ_id.property_stock_valuation_account_id.code:
                         raise ValidationError(
                             'Mã tài sản của bạn khác với mã loại cọc trong tài khoản định giá tồn kho thuộc nhóm sản phẩm')
                 else:
