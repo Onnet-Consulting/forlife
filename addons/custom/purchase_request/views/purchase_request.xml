@@ -53,7 +53,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Submit" name="submit_action"
+                    <button string="Gửi duyệt" name="submit_action"
                             type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
                     <button string="Approve" name="approve_action" type="object"
                             attrs="{'invisible':[ ('state', '!=', 'confirm')]}"
