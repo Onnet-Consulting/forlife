@@ -13,6 +13,8 @@ class PosOrderLine(models.Model):
     quantity_canbe_refund = fields.Integer('Quantity can be refund', compute='_compute_quantity_canbe_refund')
     reason_refund_id = fields.Many2one('pos.reason.refund', 'Reason Refund')
     money_point_is_reduced = fields.Monetary('Money Point is reduced', compute='_compute_money_point_is_reduced_line')
+    price_unit_refund = fields.Float(string='Unit Price Refund', digits=0)
+    price_subtotal_incl_refund = fields.Float(string='Subtotal Refund', digits=0)
 
     @api.depends('discount_details_lines.money_reduced')
     def _compute_money_point_is_reduced_line(self):

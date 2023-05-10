@@ -48,10 +48,18 @@ class MemberCard(models.Model):
     value_remind = fields.Float('Value Remind', tracking=True, digits=(16, 0))
     customer_not_apply = fields.Binary(string='Customer not apply', compute='_compute_customer', store=True)
     point_coefficient_first_order = fields.Integer('Point Coefficient First Order')
+    point_plus_first_order = fields.Integer('Point Plus First Order')
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
+
+    @api.constrains('point_coefficient_first_order', 'point_plus_first_order')
+    def _check_point_first_order(self):
+        for item in self:
+            if item.point_coefficient_first_order > 0 and item.point_plus_first_order > 0:
+                raise ValidationError(
+                    _("Please enter a value greater than 0 in either field 'Point Coefficient First Order' or 'Point Plus First Order'."))
 
     def _compute_qty_order(self):
         for line in self:
