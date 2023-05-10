@@ -8,4 +8,3 @@ class SupplierGroup(models.Model):
 
     code = fields.Char(string="Code")
     name = fields.Char(string="Name")
-

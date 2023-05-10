@@ -67,7 +67,7 @@
                         <button name="action_create_invoice" string="Create Invoice"
                                 class="btn btn-primary ms-md-2" type="object"
                                 attrs="{'invisible':['|',('is_inter_company', '=', True),'&amp;',('is_done_picking', '=', False),'|',('purchase_type', '=', 'product'),('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>
-                        <button string="Submit" name="action_confirm"
+                        <button string="Gửi duyệt" name="action_confirm"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>
                         <button string="Approved" name="action_approved"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'confirm')]}"/>
@@ -102,8 +102,10 @@
                                 <field name="total_tax_amount" readonly="1"/>
                             </tree>
                         </field>
+                        <button string="Câp nhật thuế nhập  khẩu" name="action_update_import"
+                                type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>
                     </page>
-                    <page string="Product Cost" name="product_cost" attrs="{'invisible': [('is_inter_company', '=', True)]}">
+                    <page string="Product Cost" name="product_cost" attrs="{'invisible': [('exchange_rate_line', '=', True)]}">
                         <field name="is_inter_company" invisible="1"/>
                         <field name="cost_line" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}">
                             <tree editable="bottom" class="width-hh">
