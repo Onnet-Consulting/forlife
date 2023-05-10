@@ -1,6 +1,12 @@
 .pos .pos-receipt-container > div {
-    font-size: 10px !important;
-    padding: 0 12px 10px 10px;
+    font-size: 11px !important;
+    font-family: Arial, serif !important;
+    padding: 0;
+}
+
+.pos .pos-receipt-container > div > div {
+    margin-right: 10px;
+    margin-left: 5px;
 }
 
 .pos-receipt .pos-receipt-logo.format {
@@ -9,7 +15,7 @@
 
 .pos-receipt .pos-receipt-logo.tokyolife {
     width: 95%;
-    height: 40px;
+    height: 30px;
 }
 
 .pos-receipt .order-header {
@@ -43,6 +49,10 @@
     text-align: right;
 }
 
+.pos-receipt .text-justify {
+    text-align: justify;
+}
+
 .pos-receipt .text-bold {
     font-weight: bold;
 }
@@ -53,17 +63,20 @@
 
 /* Header */
 .pos-receipt .receipt-header {
+    line-height: 1.5 !important;
+}
+.pos-receipt .receipt-header table {
     width: 100%;
     table-layout: fixed;
 }
 
-.pos-receipt .receipt-header td:nth-child(1) {
+.pos-receipt .receipt-header table td:nth-child(1) {
     width: 25%;
     vertical-align: top;
 
 }
 
-.pos-receipt .receipt-header td:nth-child(2) {
+.pos-receipt .receipt-header table td:nth-child(2) {
     word-wrap: break-word;
 }
 
@@ -74,15 +87,22 @@
 .pos-receipt .mobile-app-qr {
     margin-bottom: 5px;
     font-size: 9px !important;
-    border-style: solid;
+    border: 2px solid black;
 }
 
 /*Order lines*/
+.pos-receipt .orderlines{
+    line-height: 1.3 !important;
+}
 .pos-receipt .orderlines .lines-detail {
     width: 100%;
     table-layout: auto;
     border-collapse: separate;
     border-spacing: 0 7px;
+    line-height: 1 !important;
+}
+.pos-receipt .orderlines .lines-detail .product-price-qty-detail{
+    font-size: 9px !important;
 }
 
 .pos-receipt .orderlines .lines-detail tbody th {
@@ -119,6 +139,10 @@
 }
 
 /*payment lines*/
+.pos-receipt .payment_lines{
+line-height: 1.3 !important;
+
+}
 .pos-receipt .payment_lines .payment-detail {
     width: 100%;
 }
@@ -158,6 +182,10 @@
 
 
 /*Footer*/
+.pos-receipt .receipt-footer {
+    line-height: 1.5 !important;
+    justify-content: space-between;
+}
 .pos-receipt .policy {
     margin-top: 5px;
     line-height: 1.3;

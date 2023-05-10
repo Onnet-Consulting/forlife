@@ -19,69 +19,72 @@
     </t>
 
     <t t-name="TokyoLifeOrderHeaderReceipt" owl="1">
-        <img class="pos-receipt-logo tokyolife"
-             src="/forlife_pos_print_receipt/static/src/img/logo-tokyolife.png" height="25"/>
-        <div class="store-address">
-            <t t-if="env.pos.pos_store_info.address">
-                <div class="text-center">
-                    <t t-esc="env.pos.pos_store_info.address"/>
-                </div>
-            </t>
-            <t t-if="env.pos.pos_store_info.phone">
-                <div class="text-center">
-                    <t t-esc="env.pos.pos_store_info.phone"/>
-                </div>
-            </t>
-        </div>
-
-        <t t-if="receipt.mobile_app_url_qr_code">
-            <div class="mobile-app-qr">
-                <div class="text-center text-bold">Kính mời Quý khách quét mã QR, cài App tich lũy 1% giá trị hóa đơn
-                    sau 24h và nhận thông tin các ưu đãi mới nhất, lớn nhất
-                </div>
-                <img id="posqrcode" t-att-src="receipt.mobile_app_url_qr_code" class="pos-receipt-logo"/>
-                <div class="text-center">Mã QR chỉ có giá trị trong vòng 03 ngày kể từ ngày mua hàng</div>
+        <div class="receipt-header">
+            <img class="pos-receipt-logo tokyolife"
+                 src="/forlife_pos_print_receipt/static/src/img/logo-tokyolife.png" height="25"/>
+            <div class="store-address">
+                <t t-if="env.pos.pos_store_info.address">
+                    <div class="text-center">
+                        <t t-esc="env.pos.pos_store_info.address"/>
+                    </div>
+                </t>
+                <t t-if="env.pos.pos_store_info.phone">
+                    <div class="text-center">
+                        <t t-esc="env.pos.pos_store_info.phone"/>
+                    </div>
+                </t>
             </div>
-        </t>
 
-        <table class="receipt-header">
-            <tbody>
-                <tr>
-                    <td>Ngày giờ:</td>
-                    <td>
-                        <t t-esc="receipt.date.localestring1"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Số hóa đơn:</td>
-                    <td>
-                        <t t-esc="receipt.name"/>
-                    </td>
-                </tr>
-                <t t-if="receipt.partner">
+            <t t-if="receipt.mobile_app_url_qr_code">
+                <div class="mobile-app-qr">
+                    <div class="text-center text-bold">Kính mời Quý khách quét mã QR, cài App tich lũy 1% giá trị hóa
+                        đơn
+                        sau 24h và nhận thông tin các ưu đãi mới nhất, lớn nhất
+                    </div>
+                    <img id="posqrcode" t-att-src="receipt.mobile_app_url_qr_code" class="pos-receipt-logo"/>
+                    <div class="text-center">Mã QR chỉ có giá trị trong vòng 03 ngày kể từ ngày mua hàng</div>
+                </div>
+            </t>
+
+            <table>
+                <tbody>
                     <tr>
-                        <td>Khách hàng:</td>
+                        <td>Ngày giờ:</td>
                         <td>
-                            <t t-esc="receipt.partner.name"/>
-                            -
-                            <t t-esc="receipt.partner.phone || ''"/>
+                            <t t-esc="receipt.date.localestring1"/>
                         </td>
                     </tr>
-                </t>
-                <tr>
-                    <td>Nhân viên:</td>
-                    <td>
-                        <t t-esc="receipt.cashier"/>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Ghi chú:</td>
-                    <td>
-                        <t t-esc="receipt.note"/>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                    <tr>
+                        <td>Số hóa đơn:</td>
+                        <td>
+                            <t t-esc="receipt.name"/>
+                        </td>
+                    </tr>
+                    <t t-if="receipt.partner">
+                        <tr>
+                            <td>Khách hàng:</td>
+                            <td>
+                                <t t-esc="receipt.partner.name"/>
+                                -
+                                <t t-esc="receipt.partner.phone || ''"/>
+                            </td>
+                        </tr>
+                    </t>
+                    <tr>
+                        <td>Nhân viên:</td>
+                        <td>
+                            <t t-esc="receipt.cashier"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Ghi chú:</td>
+                        <td>
+                            <t t-esc="receipt.note"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </t>
 
     <t t-name="TokyoLifeOrderLinesReceipt" owl="1">
@@ -107,7 +110,7 @@
                                 <t t-esc="line.product_name_wrapped[0]"/>
                             </td>
                         </tr>
-                        <tr>
+                        <tr class="product-price-qty-detail">
                             <td class="num_1 text">
                                 <t t-esc="line.product_default_code || ''"/>
                             </td>
