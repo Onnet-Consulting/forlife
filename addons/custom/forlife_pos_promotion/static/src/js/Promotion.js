@@ -507,9 +507,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     async _initializePromotionPrograms(v) {
-        this.copy_order = this;
-        this.copy_order_lines = this;
-
         if (!this.activatedCodePrograms) {
             this.activatedCodePrograms = new Set();
         };
@@ -518,6 +515,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         };
         if (!this.activatedPricelistItem) {
             this.activatedPricelistItem = new Set();
+        };
+        if (!this.validOnOrderPricelistItem) {
+            this.validOnOrderPricelistItem = [];
         };
         if (!this.activatedInputCodes) {
             this.activatedInputCodes = [];
@@ -622,8 +622,14 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         result.push(...Array.from(this.activatedCodePrograms).map(proID => this.pos.promotion_program_by_id[proID]));
 //        result.push(...Array.from(this.activatedPricelistItem).map(proID => this.pos.pro_pricelist_item_by_id[proID]));
         if (this.validOnOrderPricelistItem) {
-            result.push(...this.validOnOrderPricelistItem.map(proID => this.pos.pro_pricelist_item_by_id[proID]).filter(pl => pl));
-        }
+            let products = new Set(this.get_orderlines().filter(l=>l.quantity > 0).map(l => l.product.id));
+            let validPricelistItems = this.validOnOrderPricelistItem.filter(str_id => {
+                    let pro = this.pos.pro_pricelist_item_by_id[str_id];
+                    return pro && products.has(pro.product_id)
+                }
+            );
+            result.push(...validPricelistItems.map(proID => this.pos.pro_pricelist_item_by_id[proID]).filter(pl => pl));
+        };
         return result;
     }
 
