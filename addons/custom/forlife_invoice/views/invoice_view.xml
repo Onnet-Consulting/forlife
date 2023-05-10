@@ -72,6 +72,7 @@
                     <field name="currency_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="exchange_rate" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="is_check_cost_view" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="invoice_vendor_bill_id" string="Auto-Complete" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="product_product_mm" invisible="1"/>
 <!--                    <field name="invoice_line_cost_ids" invisible="1"/>-->
                 </xpath>

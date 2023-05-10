@@ -61,20 +61,26 @@ class AccountMove(models.Model):
     # Field check page ncc vãng lại
     is_check_vendor_page = fields.Boolean(default=False, compute='_compute_is_check_vendor_page')
 
+    # Field check add a line khi có PO:
+    is_check_add_line_by_po = fields.Boolean('')
+
     ##domain product_cost:
     product_product_mm = fields.Many2many('product.product', store=1)
 
     ##tab e-invoice-bkav
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
                                     compute='_compute_e_invoice_ids_exists_bkav')
+
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),
         ('QC', 'QC'),
     ], string='Phân loại tài chính')
+
     x_root = fields.Selection([
         ('Intel ', 'Intel '),
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
+
     @api.depends('exists_bkav')
     def _compute_e_invoice_ids_exists_bkav(self):
         for rec in self:
@@ -115,9 +121,12 @@ class AccountMove(models.Model):
                     for po in rec.purchase_order_product_id:
                         last_id = str(rec.purchase_order_product_id[-1].id).split("_")[1]
                         receiving_warehouse_id = self.env['stock.picking'].search(
-                            [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id)])
-                        receiving_warehouse.append(receiving_warehouse_id.id)
-                    rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
+                            [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id), ('state', '=', 'done')])
+                        if receiving_warehouse_id:
+                            receiving_warehouse.append(receiving_warehouse_id.id)
+                            rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
+                        else:
+                            rec.receiving_warehouse_id = False
                     for cost in rec.purchase_order_product_id.cost_line:
                         last_cost_id = str(cost[-1].id).split("_")[1]
                         move_cost_line = self.env['account.move.line'].search(
