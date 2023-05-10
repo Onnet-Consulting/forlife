@@ -55,6 +55,16 @@ class StockPicking(models.Model):
     def default_get(self, fields):
         res = super(StockPicking, self).default_get(fields)
         company_id = self.env.context.get('allowed_company_ids')
+        if self.env.context.get('from_inter_company'):
+            company = self.env.context.get('company_po')
+            pk_type = self.env['stock.picking.type'].sudo().search(
+                [('company_id', '=', company), ('code', '=', 'outgoing')], limit=1)
+            if not pk_type:
+                pk_type = self.env['stock.picking.type'].sudo().create(
+                    {'name': 'Giao hàng', 'code': 'outgoing', 'company_id': company,
+                     'sequence_code': 'sequence_code1'})
+            ## Tạo mới phiếu nhập hàng và xác nhận phiếu xuất
+            res.update({'picking_type_id': pk_type})
         if self.env.context.get('default_other_import'):
             picking_type_id = self.env['stock.picking.type'].search([
                 ('code', '=', 'incoming'),
@@ -67,6 +77,7 @@ class StockPicking(models.Model):
                 ('warehouse_id.company_id', 'in', company_id)], limit=1)
             if picking_type_id:
                 res.update({'picking_type_id': picking_type_id.id})
+
         return res
 
     transfer_id = fields.Many2one('stock.transfer')

@@ -105,7 +105,7 @@
                         <button string="Câp nhật thuế nhập  khẩu" name="action_update_import"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>
                     </page>
-                    <page string="Product Cost" name="product_cost" attrs="{'invisible': [('exchange_rate_line', '=', True)]}">
+                    <page string="Product Cost" name="product_cost" attrs="{'invisible': ['|', ('exchange_rate_line', '=', True), ('is_inter_company', '=', True)]}">
                         <field name="is_inter_company" invisible="1"/>
                         <field name="cost_line" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}">
                             <tree editable="bottom" class="width-hh">
@@ -211,6 +211,7 @@
                             <create name="add_note_control" string="Add a note"
                                     context="{'default_display_type': 'line_note'}"/>
                         </control>
+                        <field name="is_red_color" invisible="1"/>
                         <field name="is_passersby" invisible="1"/>
                         <field name="display_type" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
@@ -234,10 +235,11 @@
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="purchase_quantity"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                        <field name="purchase_uom"
+                        <field name="domain_uom" invisible="1"/>
+                        <field name="purchase_uom" domain="domain_uom"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="exchange_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_passersby', '=', False)]}" force_save="1"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}" decoration-danger="is_red_color == True" force_save="1"/>
                         <field name="product_qty" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
                         <field name="vendor_price"
