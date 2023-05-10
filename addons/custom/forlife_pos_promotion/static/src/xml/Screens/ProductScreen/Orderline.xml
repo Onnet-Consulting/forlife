@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <templates id="template" xml:space="preserve">
     <t t-name="forlife_pos_promotion.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension" owl="1">
+        <xpath expr="//span[hasclass('price')]//t" position="replace">
+                        <t t-if="props.line.order.is_refund_product">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price_with_reduce() * props.line.quantity)" />
+                        </t>
+                        <t t-else="">
+                            <t t-esc="env.pos.format_currency(props.line.get_display_price())"/>
+                        </t>
+        </xpath>
         <xpath expr="//ul[hasclass('info-list')]//li[hasclass('info')][1]" position="replace">
                 <li class="info">
                     <em>
@@ -13,10 +21,20 @@
                         <s>
                             <t t-esc="env.pos.format_currency(props.line.get_taxed_lst_unit_price(),'Product Price')" />
                         </s>
-                        <t t-esc="env.pos.format_currency(props.line.get_unit_display_price(),'Product Price')" />
+                        <t t-if="props.line.order.is_refund_product">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price_with_reduce(),'Product Price')" />
+                        </t>
+                        <t t-else="">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price(),'Product Price')" />
+                        </t>
                     </t>
                     <t t-else="">
-                        <t t-esc="env.pos.format_currency(props.line.get_unit_display_price(),'Product Price')" />
+                        <t t-if="props.line.order.is_refund_product">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price_with_reduce(),'Product Price')" />
+                        </t>
+                        <t t-else="">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price(),'Product Price')" />
+                        </t>
                     </t>
                     <t t-if="props.line.get_total_discounted()">
                         <span style="text-decoration: line-through;" t-esc="env.pos.format_currency(props.line.get_original_price(), 'Product Price')" />
