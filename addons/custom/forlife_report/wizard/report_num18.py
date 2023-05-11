@@ -46,15 +46,15 @@ class ReportNum18(models.TransientModel):
         sql = f"""
 with prepare_data_tb as (
     select 
-        '{{"consu":"Tiêu dùng","product":"Sản phẩm lưu kho","service":"Dịch vụ","asset":"Tài sản","event":"Vé sự kiện"}}'::json as product_type,
+        '{{"product":"Hàng hóa","service":"Dịch vụ","asset":"Tài sản"}}'::json as product_type,
         '{{"true":"Đóng","false":"Mở"}}'::json as state
 )
 select 
     rp.name                                                                                 as nha_cung_cap,
     ''                                                                                      as ghi_chu,
     pp.barcode                                                                              as san_pham,
-    coalesce(prl.description::json -> '{user_lang_code}', prl.description::json -> 'en_US') as mo_ta,
-    (select product_type::json -> prl.product_type from prepare_data_tb)                    as loai_hh,
+    coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as mo_ta,
+    (select product_type::json -> pt.product_type from prepare_data_tb)                    as loai_hh,
     pr.name                                                                                 as so_phieu_yc,
     row_number() over (PARTITION BY pr.id ORDER BY pr.id, prl.id)                           as so_dong_tren_phieu_yc,
     prl.asset_description                                                                   as mo_ta_ts,
