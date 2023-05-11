@@ -110,7 +110,7 @@
                             <field name="is_check_is_passersby" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
                                    context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
-                                   domain="[('detailed_type', '=', parent.purchase_type),('id', 'in', parent.product_product_mm), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                                   domain="[('product_type', '=', parent.purchase_type),('id', 'in', parent.product_product_mm), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
                             <field name="description" related="product_id.name" string="Mô tả"/>
                             <field name="request_code"/>
                             <field name="type"/>
@@ -131,7 +131,7 @@
                             <field name="vendor_price"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_check_is_passersby', '=', False)]}"
                                    force_save="1"/>
-                            <field name="price_unit" required="1"/>
+                            <field name="price_unit" force_save="1" required="1"/>
                             <field name="warehouse"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="discount_invoice" attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')]}"/>
@@ -144,13 +144,13 @@
                             <field name="event_id"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="account_analytic_id"/>
-                            <field name="code_tax" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'service')]}"/>
-                            <field name="company_id"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'service')]}"/>
-                            <field name="invoice_reference"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'service')]}"/>
-                            <field name="invoice_description"
-                                   attrs="{'column_invisible': [('parent.purchase_type', '!=', 'service')]}"/>
+                            <field name="cost_type" force_save="1" invisible="1"/>
+                            <field name="cost_line_id" force_save="1" invisible="1"/>
+<!--                            <field name="po_id" force_save="1" invisible="1"/>-->
+<!--                            <field name="code_tax"/>-->
+<!--                            <field name="company_id"/>-->
+<!--                            <field name="invoice_reference"/>-->
+<!--                            <field name="invoice_description"/>-->
                         </tree>
                     </field>
                 </xpath>
@@ -174,6 +174,7 @@
                                 <field name="name" readonly="1"/>
                                 <field name="usd_amount" readonly="1" invisible="1"/>
                                 <field name="vnd_amount" readonly="1"/>
+                                <field name="qty_product" readonly="1" string="Số lượng đặt mua"/>
                                 <field name="import_tax"/>
                                 <field name="tax_amount" readonly="1"/>
                                 <field name="special_consumption_tax"/>
@@ -221,6 +222,9 @@
                                 <field name="vendor"/>
                                 <field name="code_tax"/>
                                 <field name="street_ven"/>
+                                <field name="company_id"/>
+                                <field name="invoice_reference"/>
+                                <field name="invoice_description"/>
                             </tree>
                         </field>
                     </page>
