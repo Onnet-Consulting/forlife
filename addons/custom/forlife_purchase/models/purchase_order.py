@@ -839,8 +839,13 @@ class PurchaseOrderLine(models.Model):
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
     domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
     is_red_color = fields.Boolean(compute='compute_is_red_color')
-    product_uom = fields.Many2one('uom.uom', string='Unit of Measure',
-                                  domain="[('category_id', '=', product_uom_category_id)]", related='product_id.uom_id')
+
+    @api.model
+    def create(self, vals):
+        line = super(PurchaseOrderLine, self).create(vals)
+        if not line.product_uom:
+            line.product_uom = line.product_id.uom_id.id
+        return line
 
     @api.depends('exchange_quantity')
     def compute_is_red_color(self):
