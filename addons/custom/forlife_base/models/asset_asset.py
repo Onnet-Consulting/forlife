@@ -42,5 +42,5 @@ class AssetsAssets(models.Model):
         return super(AssetsAssets, self).create(vals)
 
     def check_type(self,vals):
-        if 'type' in vals and vals['type'] == "CCDC" or vals['type'] == "TSCD":
+        if 'type' in vals and (vals['type'] == "CCDC" or vals['type'] == "TSCD"):
             raise ValidationError('Không được phép tạo tài sản từ odoo')
