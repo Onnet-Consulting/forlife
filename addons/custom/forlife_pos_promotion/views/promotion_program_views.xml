@@ -109,7 +109,7 @@
                                 <span attrs="{'invisible': [('limit_usage_per_program', '=', False)]}"> to <field name="max_usage_per_program" class="oe_inline"/> Combo/SP</span>
                             </span>
                             <field name="company_id" invisible="1"/>
-
+                            <field name="apply_online"/>
                         </group>
                         <group>
                             <field name="brand_id" invisible="1" required="0"/>
@@ -292,6 +292,8 @@
                 <filter string="Brand" name="brand" domain="[]" context="{'group_by':'brand_id'}"/>
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Apply Online" name="apply_online" domain="[('apply_online', '=', True), ('active', 'in', (True, False))]"/>
                 <separator/>
                 <group expand="0" string="Group By">
                     <filter string="Chiến dịch" name="campaign_id" domain="[]" context="{'group_by':'campaign_id'}"/>

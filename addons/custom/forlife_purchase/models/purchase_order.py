@@ -56,7 +56,8 @@ class PurchaseOrder(models.Model):
                    ('cancel', 'Cancel'),
                    ('close', 'Close'),
                    ])
-    exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id', copy=True, string="Thuế nhập khẩu")
+    exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id', copy=True,
+                                         string="Thuế nhập khẩu")
     cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True, string="Chi phí")
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
     location_id = fields.Many2one('stock.location', string="Kho nhận", check_company=True)
@@ -366,7 +367,7 @@ class PurchaseOrder(models.Model):
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
-        so_company = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
+        partner_so = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
         if company_partner:
             data_all_picking = {}
             order_line_so = []
@@ -375,7 +376,8 @@ class PurchaseOrder(models.Model):
                 picking_line = (
                     0, 0,
                     {'product_id': item.get('product_id'), 'name': item.get('name'),
-                     'location_dest_id': item.get('location_id'), 'location_id': data.get('source_location_id'),
+                     'location_dest_id': item.get('location_id'),
+                     'location_id': self.env.ref('forlife_stock.export_production_order').id,
                      'product_uom_qty': item.get('product_quantity'), 'price_unit': item.get('price_unit'),
                      'product_uom': item.get('product_uom'), 'reason_id': data.get('location_id'),
                      'quantity_done': item.get('product_quantity')})
@@ -383,7 +385,7 @@ class PurchaseOrder(models.Model):
                     'state': 'done',
                     'picking_type_id': self.env.ref('stock.picking_type_in').id,
                     'partner_id': company_partner.id,
-                    'location_id': data.get('source_location_id'),
+                    'location_id': self.env.ref('forlife_stock.export_production_order').id,
                     'location_dest_id': data.get('location_id'),
                     'scheduled_date': datetime.datetime.now(),
                     'date_done': data.get('deceive_date'),
@@ -407,23 +409,27 @@ class PurchaseOrder(models.Model):
                      'discount': item.get('discount_percent')}))
 
             master_so = {
+                'company_id': self.source_location_id[0].company_id.id,
                 'origin': data.get('name'),
-                'partner_id': so_company.id,
+                'partner_id': company_partner.id,
                 'payment_term_id': data.get('payment_term_id'),
                 'state': 'sent',
                 'date_order': data.get('date_order'),
+                'warehouse_id': self.source_location_id[0].warehouse_id.id,
                 'order_line': order_line_so
             }
-            data_so = self.env['sale.order'].create(master_so)
+            data_so = self.env['sale.order'].sudo().create(master_so)
 
-            ##Sử lý phiếu xuất hàng
-            st_picking_out = data_so.action_confirm()
+            # Sử lý phiếu xuất hàng
+            st_picking_out = data_so.with_context(
+                {'from_inter_company': True, 'company_po': self.source_location_id[0].company_id.id}).action_confirm()
             data_stp_out = self.env['stock.picking'].search([('origin', '=', data_so.name)], limit=1)
+            data_stp_out.write({
+                'company_id': self.source_location_id[0].company_id.id
+            })
             for spl, pol, sol in zip(data_stp_out.move_ids_without_package, order_line, data_so.order_line):
                 spl.write({'quantity_done': pol.get('product_quantity'), })
                 sol.write({'qty_delivered': spl.quantity_done})
-                sql = f"""update sale_order_line set qty_delivered = {spl.quantity_done} where id = {sol.id}"""
-                self._cr.execute(sql)
             for item in data_so.picking_ids:
                 item.write({
                     'location_id': data.get('source_location_id'),
@@ -456,7 +462,6 @@ class PurchaseOrder(models.Model):
             self._cr.execute(sql)
             ##Vào sổ hóa đơn mua hàng
             invoice_customer.action_post()
-            ## Tạo mới phiếu nhập hàng và xác nhận phiếu xuất
             data_stp_out.with_context({'skip_immediate': True}).button_validate()
             for st in data_all_picking:
                 st_picking_in = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
@@ -483,19 +488,19 @@ class PurchaseOrder(models.Model):
         if self.env.context.get('default_is_inter_company'):
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/template_liencongty.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/template_liencongtys.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'cost':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/templatepo_noidia.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/templatepo_noidias.xlsx?download=true'
             }]
         elif not self.env.context.get('default_is_inter_company') and self.env.context.get(
                 'default_type_po_cost') == 'tax':
             return [{
                 'label': _('Tải xuống mẫu đơn mua hàng'),
-                'template': '/forlife_purchase/static/src/xlsx/templatepo_thuenhapkhau.xlsx?download=true'
+                'template': '/forlife_purchase/static/src/xlsx/templatepo_thuenhapkhaus.xlsx?download=true'
             }]
         else:
             return True
@@ -815,7 +820,7 @@ class PurchaseOrderLine(models.Model):
     location_id = fields.Many2one('stock.location', string="Địa điểm kho", check_company=True)
     production_id = fields.Many2one('forlife.production', string='Production Order Code')
     account_analytic_id = fields.Many2one('account.analytic.account', string='Account Analytic Account')
-    request_line_id = fields.Many2one('purchase.request', string='Purchase Request')
+    request_line_id = fields.Many2one('purchase.request', string='Phiếu yêu cầu')
     event_id = fields.Many2one('forlife.event', string='Program of events')
     vendor_price = fields.Float(string='Vendor Price')
     readonly_discount = fields.Boolean(default=False)
@@ -829,9 +834,61 @@ class PurchaseOrderLine(models.Model):
     received = fields.Integer(string='Đã nhận', compute='compute_received')
     occasion_code_id = fields.Many2one('occasion.code', string="Mã vụ việc")
     description = fields.Char('Mô tả', related='product_id.name')
-    #Phục vụ import
+    # Phục vụ import
     taxes_id = fields.Many2many('account.tax', string='Thuế(%)',
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
+    domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
+    is_red_color = fields.Boolean(compute='compute_is_red_color')
+
+    @api.model
+    def create(self, vals):
+        line = super(PurchaseOrderLine, self).create(vals)
+        if not line.product_uom:
+            line.product_uom = line.product_id.uom_id.id
+        return line
+
+    @api.depends('exchange_quantity')
+    def compute_is_red_color(self):
+        date_item = datetime.datetime.now().date()
+        for item in self:
+            if not (item.product_id and item.supplier_id and item.purchase_uom):
+                item.is_red_color = False
+                continue
+            supplier_info = self.search_product_sup(
+                [('product_uom', '=', item.purchase_uom.id),
+                 ('product_id', '=', item.product_id.id),
+                 ('partner_id', '=', item.supplier_id.id),
+                 ('date_start', '<', date_item),
+                 ('date_end', '>', date_item)])
+            item.is_red_color = True if item.exchange_quantity not in supplier_info.mapped(
+                'amount_conversion') else False
+
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        if self.product_id:
+            self.product_uom = self.product_id.uom_id.id
+            date_item = datetime.datetime.now().date()
+            supplier_info = self.search_product_sup(
+                [('product_id', '=', self.product_id.id), ('partner_id', '=', self.supplier_id.id),
+                 ('date_start', '<', date_item),
+                 ('date_end', '>', date_item)])
+            if supplier_info:
+                self.purchase_uom = supplier_info[-1].product_uom
+
+    @api.depends('supplier_id', 'product_id', )
+    def compute_domain_uom(self):
+        for item in self:
+            date_item = datetime.datetime.now().date()
+            supplier_info = self.search_product_sup(
+                [('product_id', '=', item.product_id.id), ('partner_id', '=', item.supplier_id.id),
+                 ('date_start', '<', date_item),
+                 ('date_end', '>', date_item)]) if item.supplier_id and item.product_id else None
+            item.domain_uom = json.dumps(
+                [('id', 'in', supplier_info.mapped('product_uom').ids)]) if supplier_info else json.dumps([])
+
+    def search_product_sup(self, domain):
+        supplier_info = self.env['product.supplierinfo'].search(domain)
+        return supplier_info
 
     @api.constrains('asset_code')
     def constrains_asset_code(self):
@@ -889,19 +946,28 @@ class PurchaseOrderLine(models.Model):
             else:
                 item.billed = False
 
-    @api.onchange('vendor_price', 'exchange_quantity', 'product_id', 'purchase_quantity')
+    @api.onchange('exchange_quantity', 'product_id', 'supplier_id', 'purchase_uom')
     def onchange_unit_price(self):
-        self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity > 0 else False
+        if all((self.product_id, self.supplier_id, self.purchase_uom, not self.is_red_color)):
+            data = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', self.product_id.product_tmpl_id.id),
+                ('partner_id', '=', self.supplier_id.id),
+                ('product_uom', '=', self.purchase_uom.id),
+                ('amount_conversion', '=', self.exchange_quantity)
+            ], limit=1)
+            self.price_unit = self.vendor_price = data.price if data else False
+        else:
+            self.price_unit = self.vendor_price = False
 
     @api.onchange('product_id', 'supplier_id', 'is_passersby', )
     def onchange_vendor_price(self):
         if not self.is_passersby:
-            if self.product_id and self.supplier_id:
-                data = self.env['product.supplierinfo'].search([('partner_id', '=', self.supplier_id.id), (
-                    'product_tmpl_id', '=', self.product_id.product_tmpl_id.id)], limit=1)
+            if self.product_id and self.supplier_id and self.purchase_uom:
+                data = self.env['product.supplierinfo'].search(
+                    [('product_uom', '=', self.purchase_uom.id), ('partner_id', '=', self.supplier_id.id), (
+                        'product_tmpl_id', '=', self.product_id.product_tmpl_id.id)], limit=1)
                 if data:
                     self.exchange_quantity = data.amount_conversion
-                    self.vendor_price = data.price
 
     @api.onchange('free_good')
     def onchange_vendor_prices(self):
@@ -1037,11 +1103,11 @@ class PurchaseOrderLine(models.Model):
                                                                                  line.company_id) if seller else 0.0
             price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id, line.date_order)
 
-            if line.product_id.detailed_type == 'product':
-                line.vendor_price = seller.product_uom._compute_price(price_unit, line.product_uom)
-                line.price_unit = line.vendor_price / line.exchange_quantity if line.exchange_quantity else 0.0
-            else:
-                line.price_unit = seller.product_uom._compute_price(price_unit, line.product_uom)
+            # if line.product_id.detailed_type == 'product':
+            #     line.vendor_price = seller.product_uom._compute_price(price_unit, line.product_uom)
+            #     line.price_unit = line.vendor_price / line.exchange_quantity if line.exchange_quantity else 0.0
+            # else:
+            #     line.price_unit = seller.product_uom._compute_0price(price_unit, line.product_uom)
 
             # record product names to avoid resetting custom descriptions
             default_names = []
@@ -1076,7 +1142,7 @@ class PurchaseOrderLine(models.Model):
         else:
             self.product_qty = 1.0
         # re-write thông tin purchase_uom,product_uom
-        self.product_uom = self.product_id.uom_id
+        self.product_uom = self.product_id.uom_id.id
 
     @api.constrains('exchange_quantity', 'purchase_quantity')
     def _constrains_exchange_quantity_and_purchase_quantity(self):
@@ -1158,7 +1224,7 @@ class StockPicking(models.Model):
                     if invoice_line:
                         account = self.create_account_move(po, invoice_line, record)
                 ##Tạo nhập khác xuất khác khi nhập kho
-                if po.order_line_production_order:
+                if po.order_line_production_order and not po.is_inter_company:
                     npl = self.create_invoice_npl(po, record)
         return res
 
@@ -1346,6 +1412,6 @@ class StockPicking(models.Model):
             'picking_type_id': self.env.ref('stock.picking_type_out').id,
             'move_ids_without_package': list_line_xk
         }
-        result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(master_xk).button_validate()
+        result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(
+            master_xk).button_validate()
         return result
-

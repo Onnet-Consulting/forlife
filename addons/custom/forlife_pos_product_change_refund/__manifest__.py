@@ -43,6 +43,7 @@
         'views/pos_order_views.xml',
         'views/product_template_views.xml',
         'views/pos_reason_refund.xml',
+        'views/product_category_view.xml'
         # Menu
     ]
 }
