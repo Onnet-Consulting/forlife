@@ -967,9 +967,9 @@ class PurchaseOrderLine(models.Model):
                 ('product_uom', '=', self.purchase_uom.id),
                 ('amount_conversion', '=', self.exchange_quantity)
             ], limit=1)
-            self.price_unit = self.vendor_price = data.price if data else False
+            self.vendor_price = data.price if data else False
         else:
-            self.price_unit = self.vendor_price = False
+            self.vendor_price = False
 
     @api.onchange('product_id', 'supplier_id', 'is_passersby', )
     def onchange_vendor_price(self):
@@ -985,6 +985,10 @@ class PurchaseOrderLine(models.Model):
     def onchange_vendor_prices(self):
         if self.free_good:
             self.vendor_price = False
+
+    @api.onchange('vendor_price', 'exchange_quantity')
+    def onchange_price_unit(self):
+            self.price_unit = self.vendor_price / self.exchange_quantity
 
     @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
                   'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')

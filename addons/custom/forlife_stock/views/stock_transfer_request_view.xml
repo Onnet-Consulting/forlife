@@ -39,7 +39,7 @@
                             type="action" attrs="{'invisible':[('state', 'in', ('draft', 'approved', 'done', 'cancel', 'reject'))]}"/>
                     <button string="Cancel" name="action_cancel"
                             type="object" attrs="{'invisible':[('state', 'in', ('draft','done','cancel'))]}" confirm="Bạn có thực sự muốn hủy bỏ?"/>
-                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'wait_confirm','reject','cancel','done'))]}"/>
+                    <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'wait_confirm','reject','cancel','done'))]}" confirm="Bạn có thực sự muốn hoàn thành phiếu không?"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
