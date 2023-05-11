@@ -109,7 +109,7 @@
                                 <span attrs="{'invisible': [('limit_usage_per_program', '=', False)]}"> to <field name="max_usage_per_program" class="oe_inline"/> Combo/SP</span>
                             </span>
                             <field name="company_id" invisible="1"/>
-
+                            <field name="apply_online"/>
                         </group>
                         <group>
                             <field name="brand_id" invisible="1" required="0"/>
