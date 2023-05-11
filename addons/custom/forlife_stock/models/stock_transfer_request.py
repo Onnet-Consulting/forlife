@@ -25,9 +25,9 @@ class StockTransferRequest(models.Model):
                    ('approved', 'Approved'),
                    ('reject', 'Reject'),
                    ('cancel', 'Cancel'),
-                   ('done', 'Done')], default='draft', copy=True)
-    request_lines = fields.One2many('transfer.request.line', 'request_id', string='Request Line')
-    stock_transfer_ids = fields.One2many('stock.transfer', 'stock_request_id', string="Stock Transfer", copy=True)
+                   ('done', 'Done')], default='draft', copy=False)
+    request_lines = fields.One2many('transfer.request.line', 'request_id', string='Request Line', copy=True)
+    stock_transfer_ids = fields.One2many('stock.transfer', 'stock_request_id', string="Stock Transfer", copy=False)
     rejection_reason = fields.Text()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_request_id')
     created_stock_transfer = fields.Boolean(default=False)
@@ -41,6 +41,12 @@ class StockTransferRequest(models.Model):
         res['department_id'] = self.env.user.department_id.id if self.env.user.department_id else False
         res['request_date'] = datetime.now()
         return res
+
+    @api.constrains('request_date', 'date_planned')
+    def constrains_request_planed_dated(self):
+        for item in self:
+            if item.request_date > item.date_planned:
+                raise ValidationError('Hạn xử lý phải lớn hơn ngày tạo')
 
     @api.model
     def get_import_templates(self):
@@ -226,7 +232,7 @@ class TransferRequestLine(models.Model):
     _name = 'transfer.request.line'
     _description = 'Transfer Request Line'
 
-    product_id = fields.Many2one('product.product', string="Product", required=True)
+    product_id = fields.Many2one('product.product', string="Product", required=True, copy=True)
     uom_id = fields.Many2one('uom.uom', string='Đơn vị', required=True, related='product_id.uom_id')
     location_id = fields.Many2one('stock.location', string="Whs From", required=True)
     location_dest_id = fields.Many2one('stock.location', string="Whs To", required=True)
