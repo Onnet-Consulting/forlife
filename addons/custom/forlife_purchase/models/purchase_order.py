@@ -840,6 +840,13 @@ class PurchaseOrderLine(models.Model):
     domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
     is_red_color = fields.Boolean(compute='compute_is_red_color')
 
+    @api.model
+    def create(self, vals):
+        line = super(PurchaseOrderLine, self).create(vals)
+        if not line.product_uom:
+            line.product_uom = line.product_id.uom_id.id
+        return line
+
     @api.depends('exchange_quantity')
     def compute_is_red_color(self):
         date_item = datetime.datetime.now().date()
@@ -859,6 +866,7 @@ class PurchaseOrderLine(models.Model):
     @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:
+            self.product_uom = self.product_id.uom_id.id
             date_item = datetime.datetime.now().date()
             supplier_info = self.search_product_sup(
                 [('product_id', '=', self.product_id.id), ('partner_id', '=', self.supplier_id.id),
@@ -1134,7 +1142,7 @@ class PurchaseOrderLine(models.Model):
         else:
             self.product_qty = 1.0
         # re-write thông tin purchase_uom,product_uom
-        self.product_uom = self.product_id.uom_id
+        self.product_uom = self.product_id.uom_id.id
 
     @api.constrains('exchange_quantity', 'purchase_quantity')
     def _constrains_exchange_quantity_and_purchase_quantity(self):

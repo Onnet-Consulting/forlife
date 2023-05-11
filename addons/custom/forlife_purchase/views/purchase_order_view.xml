@@ -222,7 +222,7 @@
                         <field name="sequence" widget="handle"/>
                         <field name="product_id"
                                context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
-                               domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                               domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" force_save="1"/>
                         <field name="name" invisible="1"/>
                         <field name="description"/>
                         <field name="product_type" string="Type"/>
@@ -248,7 +248,7 @@
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
-                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}" force_save="1"/>
                         <field name="location_id"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="taxes_id" widget="many2many_tags"
@@ -278,8 +278,7 @@
                         <field name="billed" attrs="{'invisible': [('billed', '=', False)]}"/>
                         <field name="readonly_discount" invisible="1"/>
                         <field name="readonly_discount_percent" invisible="1"/>
-                        <field name="date_planned" invisible="1" attrs="{'required': [('display_type', '=', False)]}"
-                               force_save="1"/>
+                        <field name="date_planned" invisible="1" attrs="{'required': [('display_type', '=', False)]}"/>
                         <field name="analytic_distribution" widget="analytic_distribution"
                                invisible="1"
                                groups="analytic.group_analytic_accounting"
