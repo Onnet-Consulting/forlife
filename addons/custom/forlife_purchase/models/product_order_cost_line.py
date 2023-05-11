@@ -11,7 +11,8 @@ class PurchaseOrderCostLine(models.Model):
     expensive_total = fields.Float(string='Tổng tiền',)
     dollars_money = fields.Float(string='Tiền USD')
 
-    @api.onchange('purchase_order_id', 'purchase_order_id.exchange_rate', 'dollars_money')
-    def onchange_expensive_total(self):
-        self.expensive_total = self.dollars_money * self.purchase_order_id.exchange_rate
+    @api.depends('purchase_order_id', 'purchase_order_id.exchange_rate', 'dollars_money')
+    def compute_expensive_total(self):
+        for item in self:
+            item.expensive_total = item.dollars_money * item.purchase_order_id.exchange_rate
 
