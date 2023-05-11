@@ -16,6 +16,7 @@
                                    t-att-checked="'checked' ? option.isSelected : ''"
                                    t-att-value="option.program_id"
                                    t-on-click="() => this.selectItem(option)"
+                                   t-att-disabled="'selectable'"
                             />
                             <label t-att-for="option.program_id">
                                 [<t t-esc="option.program_id"/>]

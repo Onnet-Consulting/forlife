@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<odoo>
+    <data>
+        <menuitem
+            id="menu_forlife_stock_exchange"
+            parent="stock.menu_stock_warehouse_mgmt"
+            action="forlife_stock_exchange.action_forlife_stock_exchange"
+            name="Forlife Stock Exchange"
+            sequence="4"
+        />
+    </data>
+</odoo>

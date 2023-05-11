@@ -14,4 +14,4 @@ class SupplierInfo(models.Model):
     @api.onchange('product_tmpl_id')
     def onchange_product_uom(self):
         if self.product_tmpl_id:
-            self.product_uom = self.product_tmpl_id.uom_po_id
+            self.product_uom = self.product_tmpl_id.uom_po_id.id
