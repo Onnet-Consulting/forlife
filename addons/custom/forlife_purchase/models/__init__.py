@@ -11,3 +11,4 @@ from . import forlife_bom
 from . import stock_warehouse
 from . import product_supplierinfo
 from . import hr_employee
+from . import stock_move
