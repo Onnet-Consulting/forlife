@@ -213,7 +213,7 @@
                         </div>
                     </page>
                     <field name="is_check_vendor_page" invisible="1"/>
-                    <page string="NCC vãng lại" name="supplier_info" attrs="{'invisible':[('is_check_vendor_page', '=', False)]}">
+                    <page string="NCC vãng lai" name="supplier_info" attrs="{'invisible':[('is_check_vendor_page', '=', False)]}">
                         <field name="vendor_back_ids" class="width-hh" widget="one2many" mode="tree">
                             <tree editable="bottom">
                                 <control>
