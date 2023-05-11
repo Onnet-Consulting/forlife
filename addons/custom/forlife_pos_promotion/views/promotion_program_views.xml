@@ -293,6 +293,8 @@
                 <separator/>
                 <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
                 <separator/>
+                <filter string="Apply Online" name="apply_online" domain="[('apply_online', '=', True), ('active', 'in', (True, False))]"/>
+                <separator/>
                 <group expand="0" string="Group By">
                     <filter string="Chiến dịch" name="campaign_id" domain="[]" context="{'group_by':'campaign_id'}"/>
                     <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>

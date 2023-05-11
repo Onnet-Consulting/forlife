@@ -224,6 +224,11 @@ msgid "Apply Discount"
 msgstr "Áp dụng KM"
 
 #. module: forlife_pos_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_search
+msgid "Apply Online"
+msgstr "Áp dụng Online"
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__apply_online
 msgid "Apply online"
 msgstr "Áp dụng Online"
