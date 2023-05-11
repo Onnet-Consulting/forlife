@@ -159,20 +159,21 @@ class AccountMove(models.Model):
 
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
-        if self.is_check_cost_view:
-            for line in self.line_ids:
-                duplicate = self.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
-                if not duplicate:
-                    continue
-                line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
-                            })
-                for dup in duplicate:
-                    dup.write({'product_id': False,
-                               'display_type': 'product'
-                               })
-            for item in self.invoice_line_ids:
-                if not item.product_id.id and item.display_type == 'product':
-                    item.unlink()
+        for r in self:
+            if r.is_check_cost_view:
+                for line in r.line_ids:
+                    duplicate = r.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
+                    if not duplicate:
+                        continue
+                    line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
+                                })
+                    for dup in duplicate:
+                        dup.write({'product_id': False,
+                                   'display_type': 'product'
+                                   })
+                for item in r.invoice_line_ids:
+                    if not item.product_id.id and item.display_type == 'product':
+                        item.unlink()
         return res
 
     # @api.onchange('purchase_type')
@@ -192,21 +193,21 @@ class AccountMove(models.Model):
 
     @api.depends('invoice_line_ids')
     def _compute_exchange_rate_line_and_cost_line(self):
-        self.exchange_rate_line = [(5, 0)]
-        self.cost_line = [(5, 0)]
-        for line in self.invoice_line_ids:
-            self.env['invoice.exchange.rate'].create({
-                'product_id': line.product_id.id,
-                'name': line.description,
-                'usd_amount': line.price_subtotal,
-                'invoice_rate_id': self.id
-            })
-            self.env['invoice.cost.line'].create({
-                'product_id': line.product_id.id,
-                'name': line.description,
-                'invoice_cost_id': self.id
-            })
-
+        for r in self:
+            r.exchange_rate_line = [(5, 0)]
+            r.cost_line = [(5, 0)]
+            for line in r.invoice_line_ids:
+                self.env['invoice.exchange.rate'].create({
+                    'product_id': line.product_id.id,
+                    'name': line.description,
+                    'usd_amount': line.price_subtotal,
+                    'invoice_rate_id': r.id
+                })
+                self.env['invoice.cost.line'].create({
+                    'product_id': line.product_id.id,
+                    'name': line.description,
+                    'invoice_cost_id': r.id
+                })
 
     @api.depends('partner_id.is_passersby', 'partner_id')
     def _compute_is_check_vendor_page(self):
