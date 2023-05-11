@@ -8,6 +8,7 @@ class SelectTypePo(models.TransientModel):
         copy=False,
         default='cost',
         string="Loại đơn hàng",
+        required=True,
         selection=[('tax', 'Đơn mua hàng nhập khẩu'),
                    ('cost', 'Đơn mua hàng nội địa'),
                    ])
