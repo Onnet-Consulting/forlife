@@ -6,13 +6,14 @@
     'description': """
     """,
     'author': "ForLife",
-    'version': '0.1',
+    'version': '1.0',
 
     'category': 'SALE ORDER',
 
     'depends': [
         'base',
-        'sale'
+        'sale',
+        'forlife_base'
     ],
     'installable': True,
     'application': True,
