@@ -91,7 +91,7 @@ class PosOrderLine(models.Model):
                     #####
                     if product_ids_valid_event:
                         for key, val in product_ids_valid_event.items():
-                            if rec.product_id in key:
+                            if rec.product_id in key and rec.price_subtotal_incl > 0 and rec.is_product_auto is False:
                                 rec.point_addition_event = int(product_ids_valid_event[key]) * rec.qty
                                 break
                             else:
