@@ -855,8 +855,9 @@ class PurchaseOrderLine(models.Model):
     @api.model
     def create(self, vals):
         line = super(PurchaseOrderLine, self).create(vals)
-        if not line.product_uom:
+        if not line.product_uom or not line.name:
             line.product_uom = line.product_id.uom_id.id
+            line.name = line.product_id.name
         return line
 
     @api.depends('exchange_quantity')
