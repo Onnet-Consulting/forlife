@@ -5,7 +5,7 @@ odoo.define('forlife_pos_promotion.SurpriseRewardPopup', function (require) {
     const Registries = require('point_of_sale.Registries');
     const { _lt } = require('@web/core/l10n/translation');
 
-    const { useState } = owl;
+    const { useState, onMounted } = owl;
 
     class SurpriseRewardPopup extends AbstractAwaitablePopup {
 
@@ -14,9 +14,12 @@ odoo.define('forlife_pos_promotion.SurpriseRewardPopup', function (require) {
             this.state = useState({
                 programRewards: this.props.programRewards
             });
+            onMounted(this.selectItem);
         }
 
-        selectItem(option) {
+        selectItem() {
+            const random_index = Math.floor(Math.random() * this.state.programRewards.length)
+            let option = this.state.programRewards[random_index];
             option.isSelected = !option.isSelected;
             if (option.isSelected) {
                 let others = this.state.programRewards.filter(p => p.program_id != option.program_id);
