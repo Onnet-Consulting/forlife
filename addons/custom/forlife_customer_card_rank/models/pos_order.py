@@ -203,7 +203,7 @@ class PosOrder(models.Model):
     def _compute_total_point(self):
         super()._compute_total_point()
         for order in self:
-            order.total_point |= order.plus_point_coefficient
+            order.total_point += order.plus_point_coefficient
 
     def _prepare_history_point_coefficient_value(self, store, points_coefficient, point_type='coefficient', reason=''):
         return {

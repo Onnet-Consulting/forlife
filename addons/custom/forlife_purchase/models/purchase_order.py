@@ -1103,11 +1103,11 @@ class PurchaseOrderLine(models.Model):
                                                                                  line.company_id) if seller else 0.0
             price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id, line.date_order)
 
-            if line.product_id.detailed_type == 'product':
-                line.vendor_price = seller.product_uom._compute_price(price_unit, line.product_uom)
-                line.price_unit = line.vendor_price / line.exchange_quantity if line.exchange_quantity else 0.0
-            else:
-                line.price_unit = seller.product_uom._compute_price(price_unit, line.product_uom)
+            # if line.product_id.detailed_type == 'product':
+            #     line.vendor_price = seller.product_uom._compute_price(price_unit, line.product_uom)
+            #     line.price_unit = line.vendor_price / line.exchange_quantity if line.exchange_quantity else 0.0
+            # else:
+            #     line.price_unit = seller.product_uom._compute_0price(price_unit, line.product_uom)
 
             # record product names to avoid resetting custom descriptions
             default_names = []

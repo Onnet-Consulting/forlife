@@ -10,9 +10,9 @@ import { Gui } from 'point_of_sale.Gui';
 import { round_decimals,round_precision } from 'web.utils';
 import core from 'web.core';
 import field_utils from 'web.field_utils';
-
+import utils from 'web.utils';
 const _t = core._t;
-
+var round_di = utils.round_decimals;
 
 export class PromotionUsageLine {
     /**
@@ -216,13 +216,14 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
         this.promotion_usage_ids = this.promotion_usage_ids || [];
         this.is_reward_line = options.is_reward_line || false;
         this.key_program = options.key_program || false;
+        this._set_original_price(this.product.get_price(this.order.pricelist, this.get_quantity()));
     }
 
     export_as_JSON() {
 
         const result = super.export_as_JSON(...arguments);
 
-        result.original_price = this.get_lst_price();
+        result.original_price = this.original_price;
         result.is_reward_line = this.is_reward_line;
 
         let promotion_usage_ids = [];
@@ -286,6 +287,14 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
         return this.product.get_display_price(this.order.pricelist, 1)
     }
 
+    _set_original_price(price){
+        this.order.assert_editable();
+        var parsed_price = !isNaN(price) ?
+            price :
+            isNaN(parseFloat(price)) ? 0 : field_utils.parse.float('' + price);
+        this.original_price = round_di(parsed_price || 0, this.pos.dp['Product Price']);
+    }
+
     get_total_discounted() {
         if (!this.promotion_usage_ids) {
             return 0.0
@@ -316,14 +325,16 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
     get_applied_promotion_str() {
         let result = [];
         if (!this.promotion_usage_ids) {
-            return []
+            return [];
         };
         for (const usage of this.promotion_usage_ids) {
             let pro = this.pos.get_program_by_id(usage.str_id);
             result.push({
                 id: usage.program_id,
                 str: pro.display_name,
-                code: this.pos.getPromotionCode(pro)});
+                code: this.pos.getPromotionCode(pro),
+                discount_amount: this.quantity * usage.discount_amount
+            });
         };
         return result;
     }
