@@ -203,7 +203,7 @@ class PosOrder(models.Model):
     def _compute_total_point(self):
         super()._compute_total_point()
         for order in self:
-            order.total_point |= order.plus_point_coefficient
+            order.total_point += order.plus_point_coefficient
 
     def _prepare_history_point_coefficient_value(self, store, points_coefficient, point_type='coefficient', reason=''):
         return {
@@ -221,8 +221,9 @@ class PosOrder(models.Model):
         result = super().get_point_order(money_value, brand_id)
         current_rank_of_customer = (self.partner_id.card_rank_by_brand or {}).get(str(brand_id))
         if self.allow_for_point and (self.config_id.store_id.id in self.program_store_point_id.store_ids.ids or not self.program_store_point_id.store_ids) and current_rank_of_customer and self.program_store_point_id.card_rank_active:
-            accumulative_rate = self.program_store_point_id.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0]).accumulative_rate or 0
-            result += (money_value * accumulative_rate / 100) * (self.program_store_point_id.card_rank_point_addition / self.program_store_point_id.card_rank_value_convert)
+            accumulate_by_rank = self.program_store_point_id.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0])
+            if accumulate_by_rank:
+                return int((money_value * accumulate_by_rank.accumulative_rate / 100) * (self.program_store_point_id.card_rank_point_addition / self.program_store_point_id.card_rank_value_convert))
         return result
 
 
