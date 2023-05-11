@@ -839,6 +839,8 @@ class PurchaseOrderLine(models.Model):
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
     domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
     is_red_color = fields.Boolean(compute='compute_is_red_color')
+    product_uom = fields.Many2one('uom.uom', string='Unit of Measure',
+                                  domain="[('category_id', '=', product_uom_category_id)]", related='product_id.uom_id')
 
     @api.depends('exchange_quantity')
     def compute_is_red_color(self):
@@ -859,6 +861,7 @@ class PurchaseOrderLine(models.Model):
     @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:
+            self.product_uom = self.product_id.uom_id.id
             date_item = datetime.datetime.now().date()
             supplier_info = self.search_product_sup(
                 [('product_id', '=', self.product_id.id), ('partner_id', '=', self.supplier_id.id),
@@ -1095,11 +1098,11 @@ class PurchaseOrderLine(models.Model):
                                                                                  line.company_id) if seller else 0.0
             price_unit = seller.currency_id._convert(price_unit, line.currency_id, line.company_id, line.date_order)
 
-            if line.product_id.detailed_type == 'product':
-                line.vendor_price = seller.product_uom._compute_price(price_unit, line.product_uom)
-                line.price_unit = line.vendor_price / line.exchange_quantity if line.exchange_quantity else 0.0
-            else:
-                line.price_unit = seller.product_uom._compute_price(price_unit, line.product_uom)
+            # if line.product_id.detailed_type == 'product':
+            #     line.vendor_price = seller.product_uom._compute_price(price_unit, line.product_uom)
+            #     line.price_unit = line.vendor_price / line.exchange_quantity if line.exchange_quantity else 0.0
+            # else:
+            #     line.price_unit = seller.product_uom._compute_0price(price_unit, line.product_uom)
 
             # record product names to avoid resetting custom descriptions
             default_names = []
@@ -1134,7 +1137,7 @@ class PurchaseOrderLine(models.Model):
         else:
             self.product_qty = 1.0
         # re-write thông tin purchase_uom,product_uom
-        self.product_uom = self.product_id.uom_id
+        self.product_uom = self.product_id.uom_id.id
 
     @api.constrains('exchange_quantity', 'purchase_quantity')
     def _constrains_exchange_quantity_and_purchase_quantity(self):
