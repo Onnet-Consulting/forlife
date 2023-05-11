@@ -12,6 +12,7 @@ class AccumulateByRank(models.Model):
     points_promotion_id = fields.Many2one('points.promotion', 'Points Promotion', required=True)
     card_rank_id = fields.Many2one('card.rank', 'Card Rank', required=True)
     accumulative_rate = fields.Float('Accumulative rate')
+    coefficient = fields.Float('Coefficient', default=1)
     sequence = fields.Integer('Sequence')
 
     _sql_constraints = [
