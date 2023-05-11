@@ -210,34 +210,49 @@ class PosOrder(models.Model):
                 rec.point_order = 0
                 rec.point_event_order = 0
             else:
+                branch_id = rec.program_store_point_id.brand_id.id
                 valid_method_ids = rec.program_store_point_id.payment_method_ids.ids
                 valid_product_ids = rec.program_store_point_id.points_product_ids.filtered(
                     lambda x: x.state == 'effective' and x.from_date < rec.date_order < x.to_date).product_ids.ids
                 for pay in rec.payment_ids:
                     if pay.payment_method_id.id in valid_method_ids:
                         valid_money_payment_method += pay.amount
-
-                for pro in rec.lines:
-                    if pro.product_id.id in valid_product_ids:
-                        valid_money_product += pro.price_subtotal_incl
-
-                money_value = valid_money_payment_method - valid_money_product  # Z
-                if money_value < 0:
-                    money_value = 0
-                # is_purchased_of_format, is_purchased_of_forlife = rec.partner_id._check_is_purchased()
-                branch_id = rec.program_store_point_id.brand_id.id
-                rec.point_order = rec.get_point_order(money_value, branch_id)
                 event_valid = self.get_event_match(pos_order=rec)
-                if event_valid:
-                    domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
-                    partner_condition = self.env['res.partner'].search(domain)
-                    if rec.partner_id.id in partner_condition.ids:
-                        rec.point_event_order = int(money_value / event_valid.value_conversion) * event_valid.point_addition  # b
+                if not rec.is_refund_order and not rec.is_change_order:
+                    for pro in rec.lines:
+                        if pro.product_id.id in valid_product_ids:
+                            valid_money_product += pro.price_subtotal_incl
+
+                    money_value = valid_money_payment_method - valid_money_product  # Z
+                    if money_value < 0:
+                        money_value = 0
+                    # is_purchased_of_format, is_purchased_of_forlife = rec.partner_id._check_is_purchased()
+                    rec.point_order = rec.get_point_order(money_value, branch_id)
+                    if event_valid:
+                        domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
+                        partner_condition = self.env['res.partner'].search(domain)
+                        if rec.partner_id.id in partner_condition.ids:
+                            rec.point_event_order = int(money_value / event_valid.value_conversion) * event_valid.point_addition  # b
+                        else:
+                            rec.point_event_order = 0
                     else:
                         rec.point_event_order = 0
                 else:
-                    rec.point_event_order = 0
-
+                    # rec.point_order = 999
+                    total_price_refund_product = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl < 0).mapped('price_subtotal_incl'))  # X1
+                    total_price_product_auto = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is True).mapped('price_subtotal_incl'))  # X2
+                    total_product_change = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl > 0).mapped('price_subtotal_incl'))  # Y
+                    money_value = valid_money_payment_method - total_price_refund_product - total_price_product_auto - total_product_change
+                    rec.point_order = rec.get_point_order(money_value, branch_id)
+                    if event_valid:
+                        domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
+                        partner_condition = self.env['res.partner'].search(domain)
+                        if rec.partner_id.id in partner_condition.ids:
+                            rec.point_event_order = int(money_value / event_valid.value_conversion) * event_valid.point_addition  # b
+                        else:
+                            rec.point_event_order = 0
+                    else:
+                        rec.point_event_order = 0
     # Tách hàm này để cộng thêm điểm tích lũy theo hạng thẻ khách hàng
     def get_point_order(self, money_value, brand_id):
         if self.program_store_point_id.value_conversion <= 0:

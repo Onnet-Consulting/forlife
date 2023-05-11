@@ -48,31 +48,56 @@ class PosOrderLine(models.Model):
                 product_ids_valid_event = rec._prepare_dict_point_product_event()
                 # compute c
                 # is_purchased_of_format, is_purchased_of_forlife = rec.order_id.partner_id._check_is_purchased()
-
-                if dict_products_points:
-                    for key, val in dict_products_points.items():
-                        if rec.product_id in key:
-                            if rec.order_id.partner_id.is_purchased_of_forlife and branch_id == brand_tokyolife:
-                                rec.point_addition = int(dict_products_points[key]) * rec.qty
-                            elif rec.order_id.partner_id.is_purchased_of_format and branch_id == brand_format:
-                                rec.point_addition = int(dict_products_points[key]) * rec.qty
+                if not rec.order_id.is_refund_order and not rec.order_id.is_change_order:
+                    if dict_products_points:
+                        for key, val in dict_products_points.items():
+                            if rec.product_id in key:
+                                if rec.order_id.partner_id.is_purchased_of_forlife and branch_id == brand_tokyolife:
+                                    rec.point_addition = int(dict_products_points[key]) * rec.qty
+                                elif rec.order_id.partner_id.is_purchased_of_format and branch_id == brand_format:
+                                    rec.point_addition = int(dict_products_points[key]) * rec.qty
+                                else:
+                                    rec.point_addition = int(dict_products_points[key]) * rec.order_id.program_store_point_id.first_order * rec.qty
+                                break
                             else:
-                                rec.point_addition = int(dict_products_points[key]) * rec.order_id.program_store_point_id.first_order * rec.qty
-                            break
-                        else:
-                            rec.point_addition = 0
+                                rec.point_addition = 0
+                    else:
+                        rec.point_addition = 0
+                    # compute d
+                    if product_ids_valid_event:
+                        for key, val in product_ids_valid_event.items():
+                            if rec.product_id in key:
+                                rec.point_addition_event = int(product_ids_valid_event[key]) * rec.qty
+                                break
+                            else:
+                                rec.point_addition_event = 0
+                    else:
+                        rec.point_addition_event = 0
                 else:
-                    rec.point_addition = 0
-                # compute d
-                if product_ids_valid_event:
-                    for key, val in product_ids_valid_event.items():
-                        if rec.product_id in key:
-                            rec.point_addition_event = int(product_ids_valid_event[key]) * rec.qty
-                            break
-                        else:
-                            rec.point_addition_event = 0
-                else:
-                    rec.point_addition_event = 0
+                    if dict_products_points:
+                        for key, val in dict_products_points.items():
+                            if rec.product_id in key and rec.price_subtotal_incl > 0 and rec.is_product_auto is False:
+                                if rec.order_id.partner_id.is_purchased_of_forlife and branch_id == brand_tokyolife:
+                                    rec.point_addition = int(dict_products_points[key]) * rec.qty
+                                elif rec.order_id.partner_id.is_purchased_of_format and branch_id == brand_format:
+                                    rec.point_addition = int(dict_products_points[key]) * rec.qty
+                                else:
+                                    rec.point_addition = int(dict_products_points[key]) * rec.order_id.program_store_point_id.first_order * rec.qty
+                                break
+                            else:
+                                rec.point_addition = 0
+                    else:
+                        rec.point_addition = 0
+                    #####
+                    if product_ids_valid_event:
+                        for key, val in product_ids_valid_event.items():
+                            if rec.product_id in key:
+                                rec.point_addition_event = int(product_ids_valid_event[key]) * rec.qty
+                                break
+                            else:
+                                rec.point_addition_event = 0
+                    else:
+                        rec.point_addition_event = 0
 
     def _prepare_dict_point_product_program(self):
         if self.order_id.program_store_point_id:
