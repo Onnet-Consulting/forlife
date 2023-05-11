@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<odoo>
+    <record id="stock_exchange_form" model="ir.ui.view">
+        <field name="name">stock.exchange.form</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="forlife_stock.inherit_stock_picking_for_other_export_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <field name="exchange_code" invisible="1"/>
+                <field name="picking_outgoing_id" invisible="1"/>
+                <button name="view_outgoing_picking" type="object" class="oe_stat_button" attrs="{'invisible':[('picking_outgoing_id', '=', False)]}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_text">Outgoing</span>
+                    </div>
+                </button>
+            </xpath>
+
+<!--            <xpath expr="//field[@name='reason_type_id']" position="attributes">-->
+<!--                <attribute name="attrs">{'invisible': [('exchange_code', '=', False), ('other_export', '=', False), ('other_import', '=', False)]}</attribute>-->
+<!--            </xpath>-->
+
+<!--            <xpath expr="//field[@name='reason_type_id']" position="attributes">-->
+<!--                <attribute name="attrs">{'invisible': [('exchange_code', '=', False), ('other_export', '=', False), ('other_import', '=', False)]}</attribute>-->
+<!--            </xpath>-->
+
+            <xpath expr="//field[@name='amount_total']" position="before">
+                <field name="price_unit" attrs="{'column_invisible': [('parent.exchange_code', '=', False)], 'readonly': [('parent.exchange_code', '=', False)]}"/>
+<!--                <attribute name="attrs">{'column_invisible': [('parent.exchange_code', '!=', False))], 'readonly': [('is_amount_total', '!=', True)]}</attribute>-->
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_forlife_stock_exchange" model="ir.actions.act_window">
+        <field name="name">Forlife Stock Exchange</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('stock.vpicktree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock.inherit_stock_picking_for_other_export_form_view')})]"/>
+        <field name="domain">[('picking_type_id.exchange_code', '=', 'incoming')]</field>
+        <field name="context" eval="{'default_picking_type_id': ref('forlife_stock_exchange.forlife_picking_type_incoming_exchange'), 'default_reason_type_id': ref('forlife_stock_exchange.forlife_reason_type_incoming_exchange'), 'default_other_import': True}"/>
+    </record>
+
+    <record id="forlife_stock.inherit_stock_picking_for_other_export_form_view_action" model="ir.actions.act_window">
+        <field name="domain">[('other_export', '=', True), ('exchange_code', '=', False)]</field>
+    </record>
+
+    <record id="forlife_stock.inherit_stock_picking_for_other_import_form_view_action" model="ir.actions.act_window">
+        <field name="domain">[('other_import', '=', True), ('exchange_code', '=', False)]</field>
+    </record>
+</odoo>
