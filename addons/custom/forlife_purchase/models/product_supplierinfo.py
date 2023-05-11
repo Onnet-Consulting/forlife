@@ -9,7 +9,7 @@ class SupplierInfo(models.Model):
     vendor_code = fields.Char(related='partner_id.code')
     uom_product_tmpl = fields.Many2one(related="product_tmpl_id.uom_id")
     uom_product = fields.Many2one(related="product_id.uom_id")
-    amount_conversion = fields.Float('Số lượng quy đổi')
+    amount_conversion = fields.Float('Số lượng quy đổi', default=1)
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):

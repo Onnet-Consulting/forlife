@@ -10,6 +10,8 @@
                 <field name="department_id"/>
                 <field name="note"/>
                 <field name="create_date"/>
+                <field name="validate_day"/>
+                <field name="cancel_day"/>
                 <field name="state" widget="badge"/>
             </tree>
         </field>

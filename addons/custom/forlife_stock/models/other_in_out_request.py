@@ -1,5 +1,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+from datetime import datetime
+
 
 class ForlifeOtherInOutRequest(models.Model):
     _name = 'forlife.other.in.out.request'
@@ -27,6 +29,8 @@ class ForlifeOtherInOutRequest(models.Model):
     count_other_import_export = fields.Integer(compute="compute_count_other_import_export", copy=False)
     other_import_export_ids = fields.One2many('stock.picking', 'other_import_export_request_id',
                                               string="Other Import/Export")
+
+    date_create = fields.Date('Ngày tạo', default=datetime.today(), copy=False, tracking=True)
 
     @api.model
     def create(self, vals):

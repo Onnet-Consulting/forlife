@@ -12,6 +12,8 @@ class HrAssetTransfer(models.Model):
     department_id = fields.Many2one('hr.department', string="Department", related='employee_id.department_id')
     note = fields.Text()
     asset_date = fields.Date(string="Create Date", default=fields.Date.context_today)
+    validate_day = fields.Date(string = "Ngày xác nhận")
+    cancel_day = fields.Date(string="Ngày hủy phiếu")
     state = fields.Selection(
         tracking=True,
         string="Status",
@@ -80,6 +82,10 @@ class HrAssetTransferLine(models.Model):
     asset_location_from_id = fields.Many2one('asset.location', string="Asset Location From")
     asset_location_to_id = fields.Many2one('asset.location', string="Asset Location To")
     hr_asset_transfer_id = fields.Many2one('hr.asset.transfer', ondelete='cascade', required=True)
+    date_create = fields.Date(string='Ngày tạo',index = True, compute='_compute_date')
+
+
+
 
     @api.onchange('asset_code')
     def onchange_asset_code(self):

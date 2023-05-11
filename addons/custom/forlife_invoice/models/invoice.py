@@ -2,6 +2,7 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 import re
+from datetime import datetime, timedelta
 import json
 
 def check_length_255(val):
@@ -53,7 +54,7 @@ class AccountMove(models.Model):
     total_trade_discount = fields.Float(string='Tổng chiết khấu thương mại', compute='_compute_total_trade_discount_and_trade_discount', store=1)
 
     ## field domain cho 2 field đơn mua hàng và phiếu nhập kho
-    receiving_warehouse_id = fields.Many2many('stock.picking', string='Receiving Warehouse')
+    receiving_warehouse_id = fields.Many2many('stock.picking', string='Receiving Warehouse',domain=[('state','=','done')])
     purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order')
     partner_domain = fields.Char(compute='_compute_partner_domain')
 
@@ -85,6 +86,15 @@ class AccountMove(models.Model):
         ('Intel ', 'Intel '),
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
+
+
+    @api.onchange('payment_term_invoice','date')
+    def _onchange_payment_term_invoice(self):
+        for rec in self.payment_term_invoice.line_ids:
+            self.invoice_date_due = timedelta(days=rec.days) + self.date
+            
+            
+
     @api.depends('exists_bkav')
     def _compute_e_invoice_ids_exists_bkav(self):
         for rec in self:

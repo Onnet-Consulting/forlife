@@ -667,7 +667,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_stock.stock_transfer_request_from_view
 #: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_from_view
 msgid "Product"
-msgstr "Sản phẩm"
+msgstr "Tài sản"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_transfer_line__product_str_id
@@ -1219,6 +1219,11 @@ msgstr "Lý do hủy"
 #: model:ir.model.fields,field_description:forlife_stock.field_transfer_stock_inventory__reason_reject
 msgid "Reason Reject"
 msgstr "Lý do từ chối"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__asset_code
+msgid "Asset code"
+msgstr "Mã tài sản"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer_line__employee_from_id

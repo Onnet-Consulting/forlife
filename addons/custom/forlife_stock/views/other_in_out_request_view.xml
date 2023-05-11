@@ -11,7 +11,7 @@
                 <field name="type_other_id"/>
                 <field name="location_id"/>
                 <field name="location_dest_id"/>
-                <field name="create_date"/>
+                <field name="date_create"/>
                 <field name="date_planned"/>
             </tree>
         </field>
@@ -68,12 +68,12 @@
                             <field name="location_dest_id"/>
                         </group>
                         <group>
-                            <field name="create_date"/>
+                            <field name="date_create"/>
                             <field name="date_planned"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Product" name="product">
+                        <page string="Sản phẩm" name="product">
                             <field name="other_in_out_request_line_ids" widget="section_and_note_one2many" mode="tree" context="{'default_whs_from_id': location_id, 'default_reason_to_id': location_id, 'default_whs_to_id': location_dest_id, 'default_reason_from_id': location_dest_id}">
                                 <tree editable="bottom">
                                     <field name="product_id"/>
