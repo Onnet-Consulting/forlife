@@ -855,8 +855,9 @@ class PurchaseOrderLine(models.Model):
     @api.model
     def create(self, vals):
         line = super(PurchaseOrderLine, self).create(vals)
-        if not line.product_uom:
+        if not line.product_uom or not line.name:
             line.product_uom = line.product_id.uom_id.id
+            line.name = line.product_id.name
         return line
 
     @api.depends('exchange_quantity')
@@ -988,7 +989,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('vendor_price', 'exchange_quantity')
     def onchange_price_unit(self):
-            self.price_unit = self.vendor_price / self.exchange_quantity
+            self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity else False
 
     @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
                   'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
