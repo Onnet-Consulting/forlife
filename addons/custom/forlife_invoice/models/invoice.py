@@ -112,7 +112,6 @@ class AccountMove(models.Model):
         invoice_cost = self.env['product.product'].search([('detailed_type', '=', 'service')])
         invoice_cost_2 = self.env['product.product'].search([])
         for rec in self:
-            invoice_rate_id = self.env['invoice.exchange.rate'].search([('invoice_rate_id', '=', rec.id)])
             if rec.partner_id:
                 if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_2').id: ##check hóa đơn type nội địa
                     rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
@@ -265,15 +264,6 @@ class AccountMove(models.Model):
                                                 'account_id': account_1562,
                                                 'name': name_account_1562,
                                             })
-                                            # account_1333 = (0, 0, {
-                                            #     'sequence': 10000,
-                                            #     'display_type': 'tax',
-                                            #     'account_id': account_3333,
-                                            #     'name': name_account_3333,
-                                            #     'debit': sum(invoice_rate_id.mapped('vat_tax_amount')),
-                                            #     'credit': 0,
-                                            # })
-                                            # lines = [product_lime] + [account_1333]
                                             lines = [product_lime]
                                             line_tnk.extend(lines)
                                     rec.invoice_line_ids = line_tnk
@@ -315,6 +305,26 @@ class AccountMove(models.Model):
             for item in self.invoice_line_ids:
                 if not item.product_id.id and item.display_type == 'product':
                     item.unlink()
+        return res
+
+    def create_invoice_tnk_and_tttdb(self):
+        for rec in self:
+            invoices = self.search([('id', '=', rec.id)],limit=1)
+            if len(invoices):
+                inv_bkav = self.create({
+                    'partner_id': self.env.ref('base.partner_admin').id,
+                    'invoice_date': rec.invoice_date,
+                    'invoice_description': f"Hóa đơn bán lẻ cuối ngày {today.strftime('%Y/%m/%d')}",
+                    'invoice_line_ids': [(0, 0, line.copy_data()[0]) for line in invoices.mapped('invoice_line_ids')]
+                })
+
+    def action_post(self):
+        res = super(AccountMove, self).action_post()
+        for rec in self:
+            if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
+                self.create_invoice_tnk_and_tttdb()
+            else:
+                pass
         return res
 
     # @api.onchange('purchase_type')
