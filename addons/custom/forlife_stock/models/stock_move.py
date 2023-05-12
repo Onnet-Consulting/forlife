@@ -23,8 +23,3 @@ class StockMove(models.Model):
                         'date': fields.Datetime.context_timestamp(self, item.picking_id.date_done).date()
                     })
         return super().write(vals)
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        res = super().create(vals_list)
-        return res
