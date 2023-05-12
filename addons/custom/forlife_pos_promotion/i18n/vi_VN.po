@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-11 02:43+0000\n"
-"PO-Revision-Date: 2023-05-11 02:43+0000\n"
+"POT-Creation-Date: 2023-05-12 02:20+0000\n"
+"PO-Revision-Date: 2023-05-12 02:20+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -729,6 +729,11 @@ msgstr "Giá cố định"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__mode
 msgid "For"
 msgstr "Áp dụng"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__for_new_customer
+msgid "For new customer"
+msgstr "SD cho KH mới"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__from_date

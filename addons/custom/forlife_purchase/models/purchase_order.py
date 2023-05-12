@@ -288,7 +288,7 @@ class PurchaseOrder(models.Model):
                 if picking_in:
                     for orl in record.order_line:
                         for pkl in picking_in.move_ids_without_package:
-                            if orl.product_id == pkl.product_id and orl.location_id.id == pkl.location_dest_id.id:
+                            if orl.product_id == pkl.product_id:
                                 pkl.write({
                                     'quantity_done': orl.product_qty,
                                     'occasion_code_id': orl.occasion_code_id.id,
@@ -296,10 +296,11 @@ class PurchaseOrder(models.Model):
                                 })
 
                         for pk in picking_in.move_line_ids_without_package:
-                            if orl.product_id == pk.product_id and orl.location_id.id == pk.location_dest_id.id:
+                            if orl.product_id == pk.product_id:
                                 pk.write({
                                     'purchase_uom': orl.purchase_uom,
                                     'quantity_change': orl.exchange_quantity,
+                                    'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
                                 })
                 record.write({'custom_state': 'approved'})
             else:
@@ -851,7 +852,8 @@ class PurchaseOrderLine(models.Model):
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
     domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
     is_red_color = fields.Boolean(compute='compute_is_red_color')
-    name = fields.Char(default="Tên sản phẩm", required=True)
+    name = fields.Char(default="Tên sản phẩm", required=False)
+    product_uom = fields.Many2one('uom.uom', related='product_id.uom_id', store=True, required=False)
 
     @api.model
     def create(self, vals):
@@ -859,6 +861,18 @@ class PurchaseOrderLine(models.Model):
         if not line.product_uom or not line.name:
             line.product_uom = line.product_id.uom_id.id
             line.name = line.product_id.name
+        if not line.vendor_price and all((line.product_id, line.supplier_id, line.purchase_uom, not line.is_red_color)):
+            data = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
+                ('partner_id', '=', line.supplier_id.id),
+                ('product_uom', '=', line.purchase_uom.id),
+                ('amount_conversion', '=', line.exchange_quantity)
+            ], limit=1)
+            if data:
+                line.update({
+                    'vendor_price': data.price,
+                    'price_unit': data.price / line.exchange_quantity if line.exchange_quantity else False
+                })
         return line
 
     @api.depends('exchange_quantity')
@@ -990,7 +1004,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('vendor_price', 'exchange_quantity')
     def onchange_price_unit(self):
-            self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity else False
+        self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity else False
 
     @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
                   'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
@@ -1005,8 +1019,12 @@ class PurchaseOrderLine(models.Model):
             if self.order_id.occasion_code_ids:
                 self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
 
-    # discount
+    @api.onchange('product_id', 'order_id', 'order_id.location_id')
+    def onchange_location_id(self):
+        if self.order_id and self.order_id.location_id:
+            self.location_id = self.order_id.location_id
 
+    # discount
     @api.onchange("free_good")
     def _onchange_free_good(self):
         if self.free_good:
@@ -1294,6 +1312,7 @@ class StockPicking(models.Model):
                                   'name': rec.name,
                                   'debit': 0,
                                   'credit': total / total_money * rec.expensive_total,
+                                  'is_uncheck': True,
                                   },
                     })
                     for pro, len_pro in zip(data_in_line, range(1, len(data_in_line) + 1)):
@@ -1302,12 +1321,15 @@ class StockPicking(models.Model):
                                 'account_id': account_1561, 'name': "Auto",
                                 'debit': 0,
                                 'credit': 0,
+                                'is_uncheck': True,
                             }
                         })
                     vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
                         'account_id': account_1561, 'name': item.name,
                         'debit': total / total_money * rec.expensive_total,
                         'credit': 0,
+                        'is_uncheck': True,
+
                     })
                 else:
                     vals[key_acc]["credit"] = vals[key_acc]["credit"] + (
@@ -1316,6 +1338,8 @@ class StockPicking(models.Model):
                         'account_id': account_1561, 'name': item.name,
                         'debit': total / total_money * rec.expensive_total,
                         'credit': 0,
+                        'is_uncheck': True,
+
                     })
         for line in vals:
             invoice_line_cost_in_tax.append((0, 0, vals.get(line)))
@@ -1339,6 +1363,8 @@ class StockPicking(models.Model):
                     'account_id': account_1561, 'name': r.name,
                     'debit': credit_333 + credit_332,
                     'credit': 0,
+                    'is_uncheck': True,
+
                 })
             invoice_line_3333 = (
                 0, 0,
@@ -1347,6 +1373,8 @@ class StockPicking(models.Model):
                  'name': r.name,
                  'debit': 0,
                  'credit': credit_333,
+                 'is_uncheck': True,
+
                  })
             invoice_line_3332 = (
                 0, 0,
@@ -1355,6 +1383,8 @@ class StockPicking(models.Model):
                  'name': r.name,
                  'debit': 0,
                  'credit': credit_332,
+                 'is_uncheck': True,
+
                  })
             lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
             invoice_line.extend(lines)
@@ -1402,6 +1432,8 @@ class StockPicking(models.Model):
                     'name': material_line.product_id.name,
                     'debit': 0,
                     'credit': credit,
+                    'is_uncheck': True,
+
                 })
                 invoice_line_npls.append(credit_npl)
                 debit += credit
@@ -1410,6 +1442,8 @@ class StockPicking(models.Model):
                 'account_id': account_1561, 'name': item.product_id.name,
                 'debit': debit,
                 'credit': 0,
+                'is_uncheck': True,
+
             })
             invoice_line_npls.append(debit_npl)
         account_nl = self.create_account_move(po, invoice_line_npls, record)
