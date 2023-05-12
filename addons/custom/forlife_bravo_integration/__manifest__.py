@@ -23,6 +23,7 @@
         'currency_rate_live',
         'queue_job',
         'queue_job_cron',
+        'web_map',
         'forlife_base',
         'forlife_pos_app_member',
         'forlife_purchase',

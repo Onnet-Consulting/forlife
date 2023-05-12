@@ -7,7 +7,7 @@ class SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     vendor_code = fields.Char(related='partner_id.code')
-    uom_product_tmpl = fields.Many2one(related="product_tmpl_id.uom_id")
+    uom_product_tmpl = fields.Many2one(related="product_tmpl_id.uom_id", string="Đơn vị tính")
     uom_product = fields.Many2one(related="product_id.uom_id")
     amount_conversion = fields.Float('Số lượng quy đổi')
 
