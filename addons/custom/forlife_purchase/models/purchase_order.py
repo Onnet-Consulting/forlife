@@ -288,7 +288,7 @@ class PurchaseOrder(models.Model):
                 if picking_in:
                     for orl in record.order_line:
                         for pkl in picking_in.move_ids_without_package:
-                            if orl.product_id == pkl.product_id and orl.location_id.id == pkl.location_dest_id.id:
+                            if orl.product_id == pkl.product_id:
                                 pkl.write({
                                     'quantity_done': orl.product_qty,
                                     'occasion_code_id': orl.occasion_code_id.id,
@@ -296,10 +296,11 @@ class PurchaseOrder(models.Model):
                                 })
 
                         for pk in picking_in.move_line_ids_without_package:
-                            if orl.product_id == pk.product_id and orl.location_id.id == pk.location_dest_id.id:
+                            if orl.product_id == pk.product_id:
                                 pk.write({
                                     'purchase_uom': orl.purchase_uom,
                                     'quantity_change': orl.exchange_quantity,
+                                    'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
                                 })
                 record.write({'custom_state': 'approved'})
             else:
@@ -860,6 +861,18 @@ class PurchaseOrderLine(models.Model):
         if not line.product_uom or not line.name:
             line.product_uom = line.product_id.uom_id.id
             line.name = line.product_id.name
+        if not line.vendor_price and all((line.product_id, line.supplier_id, line.purchase_uom, not line.is_red_color)):
+            data = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
+                ('partner_id', '=', line.supplier_id.id),
+                ('product_uom', '=', line.purchase_uom.id),
+                ('amount_conversion', '=', line.exchange_quantity)
+            ], limit=1)
+            if data:
+                line.update({
+                    'vendor_price': data.price,
+                    'price_unit': data.price / line.exchange_quantity if line.exchange_quantity else False
+                })
         return line
 
     @api.depends('exchange_quantity')
@@ -991,7 +1004,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('vendor_price', 'exchange_quantity')
     def onchange_price_unit(self):
-            self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity else False
+        self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity else False
 
     @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
                   'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
@@ -1006,8 +1019,12 @@ class PurchaseOrderLine(models.Model):
             if self.order_id.occasion_code_ids:
                 self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
 
-    # discount
+    @api.onchange('product_id', 'order_id', 'order_id.location_id')
+    def onchange_location_id(self):
+        if self.order_id and self.order_id.location_id:
+            self.location_id = self.order_id.location_id
 
+    # discount
     @api.onchange("free_good")
     def _onchange_free_good(self):
         if self.free_good:
