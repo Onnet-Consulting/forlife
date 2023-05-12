@@ -295,27 +295,27 @@ class AccountMove(models.Model):
                             rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
 
 
-    def write(self, vals):
-        res = super(AccountMove, self).write(vals)
-        if self.is_check_cost_view:
-            for line in self.line_ids:
-                duplicate = self.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
-                if not duplicate:
-                    continue
-                line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
-                            })
-                for dup in duplicate:
-                    dup.write({'product_id': False,
-                               'display_type': 'product'
-                               })
-            for item in self.invoice_line_ids:
-                if not item.product_id.id and item.display_type == 'product':
-                    item.unlink()
-        else:
-            for item in self.invoice_line_ids:
-                if not item.product_id.id and item.display_type == 'product':
-                    item.unlink()
-        return res
+    # def write(self, vals):
+    #     res = super(AccountMove, self).write(vals)
+    #     if self.is_check_cost_view:
+    #         for line in self.line_ids:
+    #             duplicate = self.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
+    #             if not duplicate:
+    #                 continue
+    #             line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
+    #                         })
+    #             for dup in duplicate:
+    #                 dup.write({'product_id': False,
+    #                            'display_type': 'product'
+    #                            })
+    #         for item in self.invoice_line_ids:
+    #             if not item.product_id.id and item.display_type == 'product':
+    #                 item.unlink()
+    #     else:
+    #         for item in self.invoice_line_ids:
+    #             if not item.product_id.id and item.display_type == 'product':
+    #                 item.unlink()
+    #     return res
 
     # @api.onchange('purchase_type')
     # def onchange_purchase_type(self):
