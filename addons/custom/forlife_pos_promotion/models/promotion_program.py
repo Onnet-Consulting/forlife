@@ -162,6 +162,7 @@ class PromotionProgram(models.Model):
     tax_to_date = fields.Date('Registered Tax To')
 
     apply_online = fields.Boolean(string='Apply online', default=False)
+    for_new_customer = fields.Boolean(string='For new customer', default=False)
 
     @api.constrains('promotion_type', 'combo_line_ids', 'reward_ids', 'reward_type')
     def _check_duplicate_product_in_combo(self):
