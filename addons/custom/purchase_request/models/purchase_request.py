@@ -161,6 +161,7 @@ class PurchaseRequest(models.Model):
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
+                    'name': line.product_id.name,
                     'purchase_quantity': line.purchase_quantity - line.order_quantity,
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
@@ -243,7 +244,7 @@ class PurchaseRequestLine(models.Model):
 
     is_close = fields.Boolean(string='Is Close', default=False)
     product_id = fields.Many2one('product.product', string="Product", required=True)
-    product_type = fields.Selection(related='product_id.product_type', string='Loại mua hàng')
+    product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
     asset_description = fields.Char(string="Asset description")
     description = fields.Char(string="Description", related='product_id.name')
     vendor_code = fields.Many2one('res.partner', string="Vendor")
