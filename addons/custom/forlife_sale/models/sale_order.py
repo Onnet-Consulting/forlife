@@ -22,3 +22,12 @@ class SaleOrder(models.Model):
     x_occasion_code_ids = fields.Many2many('occasion.code', string='Mã vụ việc')
 
 
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
+
+    @api.onchange('product_id')
+    def _onchange_product_get_domain(self):
+        if self.order_id.x_sale_type and self.order_id.x_sale_type in ('product', 'service'):
+            domain = [('product_type', '=', self.order_id.x_sale_type)]
+            return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
+                                              ('company_id', '=', self.order_id.company_id)] + domain}}

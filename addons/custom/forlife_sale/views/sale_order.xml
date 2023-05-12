@@ -12,10 +12,6 @@
                     <field name="x_account_analytic_ids" widget="many2many_tags"/>
                     <field name="x_occasion_code_ids" widget="many2many_tags"/>
                 </xpath>
-<!--                <xpath expr="//notebook/page/field[@name='order_line']/form/group/group/field[@name='product_id']" position="attributes">-->
-<!--                    <attribute name="domain">[('product_type','=',parent.x_sale_type),('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]</attribute>-->
-<!--                    <attribute name="context">{'purchase_type': parent.x_sale_type, 'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}</attribute>-->
-<!--                </xpath>-->
             </field>
         </record>
     </data>
