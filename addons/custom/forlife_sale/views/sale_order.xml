@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sale_order_form_inherit" model="ir.ui.view">
+            <field name="name">Sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                    <field name="x_sale_type"/>
+                    <field name="x_sale_chanel"/>
+                    <field name="x_account_analytic_ids" widget="many2many_tags"/>
+                    <field name="x_occasion_code_ids" widget="many2many_tags"/>
+                </xpath>
+<!--                <xpath expr="//notebook/page/field[@name='order_line']/form/group/group/field[@name='product_id']" position="attributes">-->
+<!--                    <attribute name="domain">[('product_type','=',parent.x_sale_type),('sale_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]</attribute>-->
+<!--                    <attribute name="context">{'purchase_type': parent.x_sale_type, 'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}</attribute>-->
+<!--                </xpath>-->
+            </field>
+        </record>
+    </data>
+</odoo>
