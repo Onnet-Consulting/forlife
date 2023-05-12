@@ -70,10 +70,8 @@
                     <attribute name="attrs">{'invisible': ['|', '|',('other_export', '=', True), ('other_import', '=', True),'&amp;',('other_export', '=', False), ('other_import', '=', False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='location_id'][2]" position="after">
-                    <field name="location_id" string="Lý do nhập khác" attrs="{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)]}"
-                            context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}"/>
-                    <field name="location_id" string="Địa điểm nguồn" attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}"
-                            context="{'form_view_ref': 'forlife_stock.other_reasons_for_import_and_export_form_view_id'}"/>
+                    <field name="location_id" string="Lý do nhập khác" attrs="{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', False)]}"/>
+                    <field name="location_id" string="Địa điểm nguồn" attrs="{'invisible': ['|', ('other_import', '=', True), ('other_export', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='location_dest_id'][2]" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('other_export', '=', True), ('other_import', '=', True)]}</attribute>

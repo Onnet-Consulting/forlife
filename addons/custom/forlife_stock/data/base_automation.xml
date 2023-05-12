@@ -13,5 +13,16 @@
             <field name="filter_pre_domain">[('is_no_more_quantity', '=', False)]</field>
             <field name="filter_domain">[('is_no_more_quantity', '=', True)]</field>
         </record>
+        <record id="other_request_rule_on_write" model="base.automation">
+            <field name="name">Base Automation: other request rule on write</field>
+            <field name="model_id" ref="forlife_stock.model_forlife_other_in_out_request"/>
+            <field name="state">code</field>
+            <field name="code" eval="'records.write({\'status\': \'done\'})'"/>
+            <field name="trigger">on_write</field>
+            <field name="trigger_field_ids" eval="[(6, 0, [ref('forlife_stock.field_forlife_other_in_out_request__quantity_match')])]"/>
+            <field name="active" eval="True"/>
+            <field name="filter_pre_domain">[('quantity_match', '=', False)]</field>
+            <field name="filter_domain">[('quantity_match', '=', True)]</field>
+        </record>
     </data>
 </odoo>
