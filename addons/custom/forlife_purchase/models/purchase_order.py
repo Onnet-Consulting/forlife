@@ -851,6 +851,7 @@ class PurchaseOrderLine(models.Model):
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
     domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
     is_red_color = fields.Boolean(compute='compute_is_red_color')
+    name = fields.Char(default="Tên sản phẩm", required=True)
 
     @api.model
     def create(self, vals):
