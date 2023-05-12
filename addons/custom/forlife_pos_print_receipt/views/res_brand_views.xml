@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_brand_form_inherit" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">res.brand</field>
+        <field name="inherit_id" ref="forlife_point_of_sale.brand_view_form"/>
+        <field name="arch" type="xml">
+            <field name="code" position="after">
+                <field name="mobile_app_url"/>
+                <field name="pos_receipt_footer" widget="html" options="{'style-inline': true, 'codeview': true, 'dynamic_placeholder': true}"/>
+            </field>
+        </field>
+    </record>
+</odoo>
