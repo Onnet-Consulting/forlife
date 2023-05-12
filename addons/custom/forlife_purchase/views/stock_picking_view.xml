@@ -11,6 +11,7 @@
 				</xpath>
                 <xpath expr="//page[@name='detailed_operations']//field[@name='move_line_ids_without_package']"
                        position="replace">
+                    <field name="move_line_nosuggest_ids" invisible="1"/>
                     <field name="move_line_ids_without_package">
                         <tree editable="bottom" class="width-hh">
                             <field name="product_id"/>

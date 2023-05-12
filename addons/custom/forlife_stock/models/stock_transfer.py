@@ -516,5 +516,6 @@ class ForlifeProductionFinishedProduct(models.Model):
     def _compute_remaining_qty(self):
         for rec in self:
             qty_done = sum([line.qty_out for line in rec.forlife_production_stock_transfer_line_ids.filtered(
-                lambda r: r.stock_transfer_id.state in ('out_approve', 'in_approve', 'done'))])
-            rec.remaining_qty = rec.stock_qty - qty_done
+                lambda r: r.stock_transfer_id.state in 'done')])
+            rec.stock_qty = qty_done
+            rec.remaining_qty = rec.produce_qty - qty_done
