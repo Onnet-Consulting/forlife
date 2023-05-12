@@ -29,6 +29,7 @@ class TransferStockInventory(models.Model):
                    ('cancel', 'Cancel')], default='draft', copy=False)
     reason_reject = fields.Text('Reason Reject')
     reason_cancel = fields.Text('Reason Cancel')
+    is_nk_xk = fields.Boolean(default=False, copy=False)
 
     def action_import_other(self):
         for item in self:
@@ -158,7 +159,7 @@ class TransferStockInventory(models.Model):
             for item in data_ex_other:
                 result = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
                     data_ex_other.get(item)).button_validate()
-            rec.write({'state': 'approved'})
+            rec.write({'state': 'approved', 'is_nk_xk': True})
 
     def action_cancel(self):
         for rec in self:

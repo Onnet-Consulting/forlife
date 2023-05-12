@@ -53,7 +53,7 @@
                                 Nhập khác
                             </div>
                         </button>
-                        <button name="action_export_other" type="object" class="oe_stat_button" icon="fa-truck">
+                        <button name="action_export_other" type="object" class="oe_stat_button" icon="fa-truck" >
                             <div class="o_stat_info">
                                 Xuất khác
                             </div>
@@ -127,7 +127,7 @@
         </field>
     </record>
     <record id="transfer_stock_inventory_action" model="ir.actions.act_window">
-        <field name="name">Transfer Stock Inventory</field>
+        <field name="name">Nhập xuất tách mã-kiểm kê cân tồn</field>
         <field name="res_model">transfer.stock.inventory</field>
         <field name="view_mode">tree,form</field>
     </record>

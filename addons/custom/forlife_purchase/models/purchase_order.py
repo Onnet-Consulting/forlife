@@ -278,16 +278,28 @@ class PurchaseOrder(models.Model):
         for record in self:
             if not record.is_inter_company:
                 super(PurchaseOrder, self).button_confirm()
-                picking_in = self.env['stock.picking'].search([('origin', '=', record.name)])
+                picking_in = self.env['stock.picking'].search([('origin', '=', record.name)], limit=1)
+                picking_in.write({
+                    'is_pk_purchase': True
+                })
+                picking_in.picking_type_id.write({
+                    'show_operations': True
+                })
                 if picking_in:
                     for orl in record.order_line:
                         for pkl in picking_in.move_ids_without_package:
-                            if orl.product_id == pkl.product_id:
+                            if orl.product_id == pkl.product_id and orl.location_id.id == pkl.location_dest_id.id:
                                 pkl.write({
                                     'quantity_done': orl.product_qty,
                                     'occasion_code_id': orl.occasion_code_id.id,
                                     'work_production': orl.production_id.id,
-                                    'account_analytic_id': orl.account_analytic_id.id
+                                })
+
+                        for pk in picking_in.move_line_ids_without_package:
+                            if orl.product_id == pk.product_id and orl.location_id.id == pk.location_dest_id.id:
+                                pk.write({
+                                    'purchase_uom': orl.purchase_uom,
+                                    'quantity_change': orl.exchange_quantity,
                                 })
                 record.write({'custom_state': 'approved'})
             else:
@@ -843,8 +855,9 @@ class PurchaseOrderLine(models.Model):
     @api.model
     def create(self, vals):
         line = super(PurchaseOrderLine, self).create(vals)
-        if not line.product_uom:
+        if not line.product_uom or not line.name:
             line.product_uom = line.product_id.uom_id.id
+            line.name = line.product_id.name
         return line
 
     @api.depends('exchange_quantity')
@@ -955,9 +968,9 @@ class PurchaseOrderLine(models.Model):
                 ('product_uom', '=', self.purchase_uom.id),
                 ('amount_conversion', '=', self.exchange_quantity)
             ], limit=1)
-            self.price_unit = self.vendor_price = data.price if data else False
+            self.vendor_price = data.price if data else False
         else:
-            self.price_unit = self.vendor_price = False
+            self.vendor_price = False
 
     @api.onchange('product_id', 'supplier_id', 'is_passersby', )
     def onchange_vendor_price(self):
@@ -973,6 +986,10 @@ class PurchaseOrderLine(models.Model):
     def onchange_vendor_prices(self):
         if self.free_good:
             self.vendor_price = False
+
+    @api.onchange('vendor_price', 'exchange_quantity')
+    def onchange_price_unit(self):
+            self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity else False
 
     @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
                   'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
@@ -1360,8 +1377,8 @@ class StockPicking(models.Model):
                 number_product = self.env['stock.quant'].search(
                     [('location_id', '=', record.location_dest_id.id),
                      ('product_id', '=', material_line.product_id.id)])
-                if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                    raise ValidationError('Số lượng sản phẩm trong kho không đủ')
+                # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                #     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
                 if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
                     raise ValidationError('Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
                 list_line_xk.append((0, 0, {
