@@ -72,6 +72,7 @@
                     <field name="currency_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="exchange_rate" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="is_check_cost_view" attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                    <field name="is_check_invoice_tnk" invisible="1" force_save="1"/>
                     <field name="invoice_vendor_bill_id" string="Auto-Complete" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="product_product_mm" invisible="1"/>
 <!--                    <field name="invoice_line_cost_ids" invisible="1"/>-->
@@ -82,6 +83,7 @@
                 </xpath>
                 <xpath expr="//div[@name='journal_div']" position="after">
                     <field name="partner_domain" invisible="1"/>
+<!--                    <field name="partner_domain_2" invisible="1"/>-->
 <!--                    <field name="stock_pinking_domain_by_purchase_order_product_id" invisible="1"/>-->
                     <field name="journal_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="purchase_order_product_id"
@@ -91,7 +93,7 @@
                            force_save="1"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
                     <field name="receiving_warehouse_id"
-                           domain="[('state', '=', 'done')]"
+                           domain=""
                            widget="many2many_tags"
                            options="{'no_open': False}"
                            force_save="1"
@@ -146,6 +148,7 @@
                             <field name="account_analytic_id"/>
                             <field name="cost_type" force_save="1" invisible="1"/>
                             <field name="cost_line_id" force_save="1" invisible="1"/>
+                            <field name="is_uncheck" force_save="1" invisible="1"/>
 <!--                            <field name="po_id" force_save="1" invisible="1"/>-->
 <!--                            <field name="code_tax"/>-->
 <!--                            <field name="company_id"/>-->
