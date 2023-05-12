@@ -295,47 +295,47 @@ class AccountMove(models.Model):
                             rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
 
 
-    def write(self, vals):
-        res = super(AccountMove, self).write(vals)
-        if self.is_check_cost_view:
-            for line in self.line_ids:
-                duplicate = self.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
-                if not duplicate:
-                    continue
-                line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
-                            })
-                for dup in duplicate:
-                    dup.write({'product_id': False,
-                               'display_type': 'product'
-                               })
-            for item in self.invoice_line_ids:
-                if not item.product_id.id and item.display_type == 'product':
-                    item.unlink()
-        else:
-            for item in self.invoice_line_ids:
-                if not item.product_id.id and item.display_type == 'product':
-                    item.unlink()
-        return res
+    # def write(self, vals):
+    #     res = super(AccountMove, self).write(vals)
+    #     if self.is_check_cost_view:
+    #         for line in self.line_ids:
+    #             duplicate = self.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
+    #             if not duplicate:
+    #                 continue
+    #             line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
+    #                         })
+    #             for dup in duplicate:
+    #                 dup.write({'product_id': False,
+    #                            'display_type': 'product'
+    #                            })
+    #         for item in self.invoice_line_ids:
+    #             if not item.product_id.id and item.display_type == 'product' and not item.cost_type:
+    #                 item.unlink()
+    #     else:
+    #         for item in self.invoice_line_ids:
+    #             if not item.product_id.id and item.display_type == 'product' and not item.cost_type:
+    #                 item.unlink()
+    #     return res
 
-    def create_invoice_tnk_and_tttdb(self):
-        for rec in self:
-            invoices = self.search([('id', '=', rec.id)],limit=1)
-            if len(invoices):
-                inv_bkav = self.create({
-                    'partner_id': self.env.ref('base.partner_admin').id,
-                    'invoice_date': rec.invoice_date,
-                    'invoice_description': f"Hóa đơn bán lẻ cuối ngày {today.strftime('%Y/%m/%d')}",
-                    'invoice_line_ids': [(0, 0, line.copy_data()[0]) for line in invoices.mapped('invoice_line_ids')]
-                })
+    # def create_invoice_tnk_and_tttdb(self):
+    #     for rec in self:
+    #         invoices = self.search([('id', '=', rec.id)],limit=1)
+    #         if len(invoices):
+    #             inv_bkav = self.create({
+    #                 'partner_id': self.env.ref('base.partner_admin').id,
+    #                 'invoice_date': rec.invoice_date,
+    #                 'invoice_description': f"Hóa đơn bán lẻ cuối ngày {today.strftime('%Y/%m/%d')}",
+    #                 'invoice_line_ids': [(0, 0, line.copy_data()[0]) for line in invoices.mapped('invoice_line_ids')]
+    #             })
 
-    def action_post(self):
-        res = super(AccountMove, self).action_post()
-        for rec in self:
-            if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
-                self.create_invoice_tnk_and_tttdb()
-            else:
-                pass
-        return res
+    # def action_post(self):
+    #     res = super(AccountMove, self).action_post()
+    #     for rec in self:
+    #         if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
+    #             self.create_invoice_tnk_and_tttdb()
+    #         else:
+    #             pass
+    #     return res
 
     # @api.onchange('purchase_type')
     # def onchange_purchase_type(self):
@@ -354,13 +354,13 @@ class AccountMove(models.Model):
 
     @api.depends('purchase_order_product_id', 'purchase_order_product_id.exchange_rate_line')
     def _compute_exchange_rate_line_and_cost_line(self):
-        self.exchange_rate_line = [(5, 0)]
-        self.cost_line = [(5, 0)]
         for rec in self:
+            rec.exchange_rate_line = [(5, 0)]
+            rec.cost_line = [(5, 0)]
             if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
                 for exchange in rec.purchase_order_product_id.exchange_rate_line:
                     self.env['invoice.exchange.rate'].create({
-                        'invoice_rate_id': self.id,
+                        'invoice_rate_id': rec.id,
                         'product_id': exchange.product_id.id,
                         'name': exchange.name,
                         'vnd_amount': exchange.vnd_amount,
@@ -380,7 +380,7 @@ class AccountMove(models.Model):
                         'name': line.description,
                         'usd_amount': line.price_subtotal,
                         'qty_product': line.quantity,
-                        'invoice_rate_id': self.id
+                        'invoice_rate_id': rec.id
                     })
 
     @api.depends('partner_id.is_passersby', 'partner_id')
