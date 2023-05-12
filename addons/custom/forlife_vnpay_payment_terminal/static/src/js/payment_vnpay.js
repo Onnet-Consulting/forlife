@@ -162,7 +162,7 @@ odoo.define('forlife_vnpay_payment_terminal.payment', function (require) {
                 clearTimeout(this.vnpay_waiting_transaction_response_timeout);
                 this.vnpay_waiting_transaction_response_timeout = setTimeout(function () {
                     let line = self.pos.get_order().selected_paymentline;
-                    if (line && line.vnpay_sent_payment) {
+                    if (line && line.vnpay_sent_payment && line.get_payment_status() !== 'done') {
                         line.set_payment_status('timeout');
                     }
                 }, line.transaction_timeout)

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-08 06:25+0000\n"
-"PO-Revision-Date: 2023-05-08 06:25+0000\n"
+"POT-Creation-Date: 2023-05-11 08:31+0000\n"
+"PO-Revision-Date: 2023-05-11 08:31+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -294,6 +294,7 @@ msgid "Card rank program '%s' not found."
 msgstr "Không tìm thấy chương trình hạng thẻ '%s'"
 
 #. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_accumulate_by_rank__coefficient
 #: model:ir.model.fields.selection,name:forlife_customer_card_rank.selection__partner_history_point__point_order_type__coefficient
 msgid "Coefficient"
 msgstr "Hệ số"
@@ -422,6 +423,13 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.member_card_view_tree
 msgid "From Date"
 msgstr "Từ ngày"
+
+#. module: forlife_customer_card_rank
+#. odoo-javascript
+#: code:addons/forlife_customer_card_rank/static/src/xml/ProductScreen/OrderLineDetails.xml:0
+#, python-format
+msgid "Giảm giá theo hạng thẻ"
+msgstr ""
 
 #. module: forlife_customer_card_rank
 #: model_terms:ir.ui.view,arch_db:forlife_customer_card_rank.partner_card_rank_view_filter
@@ -717,6 +725,17 @@ msgstr "Chi tiết hạng thẻ"
 
 #. module: forlife_customer_card_rank
 #. odoo-python
+#: code:addons/forlife_customer_card_rank/models/member_card.py:0
+#, python-format
+msgid ""
+"Please enter a value greater than 0 in either field 'Point Coefficient First"
+" Order' or 'Point Plus First Order'."
+msgstr ""
+"Vui lòng nhập giá trị lớn hơn 0 vào mộ trong hai trường 'Điểm hệ số đơn đầu "
+"tiên' hoặc 'Điểm cộng đơn đầu tiên'."
+
+#. module: forlife_customer_card_rank
+#. odoo-python
 #: code:addons/forlife_customer_card_rank/wizard/import_partner_card_rank.py:0
 #, python-format
 msgid "Please upload file template before click Import button !"
@@ -732,6 +751,11 @@ msgstr "Điểm cộng hệ số"
 #: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__point_coefficient_first_order
 msgid "Point Coefficient First Order"
 msgstr "Điểm hệ số đơn đầu tiên"
+
+#. module: forlife_customer_card_rank
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__point_plus_first_order
+msgid "Point Plus First Order"
+msgstr "Điểm cộng đơn đầu tiên"
 
 #. module: forlife_customer_card_rank
 #: model:ir.model,name:forlife_customer_card_rank.model_pos_order_line
