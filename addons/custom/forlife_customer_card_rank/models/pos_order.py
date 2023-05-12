@@ -113,7 +113,7 @@ class PosOrder(models.Model):
     def _order_fields(self, ui_order):
         res = super()._order_fields(ui_order)
         if 'card_rank_program_id' not in res and ui_order.get('card_rank_program'):
-            res.update({'card_rank_program_id': ui_order.get('card_rank_program')})
+            res.update({'card_rank_program_id': ui_order.get('card_rank_program', {}).get('id')})
         if ui_order.get('order_status_format'):
             res.update({
                 'order_status_format': ui_order.get('order_status_format') or False,
