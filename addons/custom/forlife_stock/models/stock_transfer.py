@@ -158,6 +158,8 @@ class StockTransfer(models.Model):
                     'qty_out': line.qty_plan - line.qty_out,
                     'work_from': line.work_from.id,
                     'work_to': line.work_to.id,
+                    'check_id': line.id,
+                    'qty_start': line.qty_plan
                 })]
             })
             line.write({
@@ -380,6 +382,7 @@ class StockTransferLine(models.Model):
     qty_plan = fields.Integer(string='Quantity Plan')
     qty_out = fields.Integer(string='Quantity Out')
     qty_in = fields.Integer(string='Quantity In')
+    qty_start = fields.Integer(string='')
     quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
 
@@ -390,6 +393,7 @@ class StockTransferLine(models.Model):
     is_from_button = fields.Boolean(default=False)
     qty_plan_tsq = fields.Integer(default=0, string='Quantity Plan Tsq')
     is_parent_done = fields.Boolean(compute='compute_is_parent_done', store=True)
+    check_id = fields.Integer(string="")
 
     @api.onchange('product_id')
     def onchange_product_id(self):
@@ -405,7 +409,7 @@ class StockTransferLine(models.Model):
             #     raise ValidationError(_('The number of inputs is greater than or equal to the number of adjustments !!'))
             # if rec.qty_out > rec.qty_plan:
             #     raise ValidationError(_('Output quantity is greater than or equal to the number of adjustments !!'))
-                
+
     @api.depends('qty_plan', 'qty_in')
     def compute_quantity_remaining(self):
         for item in self:
@@ -440,9 +444,16 @@ class StockTransferLine(models.Model):
         self.ensure_one()
         product = self.product_id
         tolerance = product.tolerance
-        quantity = self.qty_out if type == 'out' else self.qty_in
-        if quantity > self.qty_plan * (1 + (tolerance / 100)):
-            raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
+        if not self.stock_transfer_id.is_diff_transfer:
+            quantity = self.qty_out if type == 'out' else self.qty_in
+            if quantity > self.qty_plan * (1 + (tolerance / 100)):
+                raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
+        else:
+            quantity_old = self.env['stock.transfer.line'].search([('id', '=', self.check_id)])
+            quantity_out_old = quantity_old.qty_out
+            quantity = self.qty_out + quantity_out_old if type == 'out' else self.qty_in
+            if quantity > self.qty_start * (1 + (tolerance / 100)):
+                raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
 
     @api.depends('stock_transfer_id', 'stock_transfer_id.state')
     def compute_is_parent_done(self):
