@@ -146,7 +146,6 @@
                             <field name="account_analytic_id"/>
                             <field name="cost_type" force_save="1" invisible="1"/>
                             <field name="cost_line_id" force_save="1" invisible="1"/>
-                            <field name="check_unlink" force_save="1" invisible="1"/>
 <!--                            <field name="po_id" force_save="1" invisible="1"/>-->
 <!--                            <field name="code_tax"/>-->
 <!--                            <field name="company_id"/>-->
