@@ -1,7 +1,7 @@
 odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require) {
     "use strict";
 
-
+    const {PosGlobalState, Orderline, Order} = require('point_of_sale.models');
     const PosComponent = require('point_of_sale.PosComponent');
     const ProductScreen = require('point_of_sale.ProductScreen');
     const Registries = require('point_of_sale.Registries');
@@ -113,7 +113,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                      for(let j = 0; j< order_lines.length; j++){
                          if(old_data[i].id == order_lines[j].id){
                             old_data[i]['display_name'] = order_lines[j].product.display_name
-                            old_data[i]['unit_price'] = order_lines[j].get_taxed_lst_unit_price()
+                            old_data[i]['unit_price'] = order_lines[j].price
                             old_data[i]['idx'] = i
                          }
                      }
@@ -124,23 +124,45 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                         tempResult[id] = {
                         id,
                         point: tempResult[id] ? point + (tempResult[id].point) : point,
-                        // count: tempResult[id] ? tempResult[id].count + 1 : 1
                     }
                 }
                 let result = Object.values(tempResult)
-                if (result.length < order_lines.length){
-                    for(let i = 0; i< order_lines.length; i++){
-                        for(let j = 0; j< result.length; j++){
-                            if (order_lines[i].id == result[j].id){
-                                order_lines[i].set_point(-result[j].point * 1000)
-                            }
+                var OrderCurrent = this.env.pos.get_order()
+                var filteredDataItems = data.filter(item => item.point !== 0)
+                for(let i = 0; i< filteredDataItems.length; i ++){
+                    for(let j = 0; j< order_lines.length; j++){
+                        if(filteredDataItems[i].id == order_lines[j].id){
+                            let line = Orderline.create({}, {pos: this.env.pos, order: this.env.pos.get_order(), product: order_lines[j].product});
+                            OrderCurrent.fix_tax_included_price(line);
+                            OrderCurrent.set_orderline_options(line, {point:2});
+                            OrderCurrent.add_orderline(line);
                         }
                     }
-                }else{
-                    for(let i = 0; i< result.length; i++){
-                        order_lines[i].set_point(- result[i].point * 1000)
-                    }
-                };
+                }
+//                data.forEach(function(item){
+//                    if(item.point == 0){
+//                        removeElement(data, item)
+//                    }
+//                })
+//                if (result.length < order_lines.length){
+//                    for(let i = 0; i< order_lines.length; i++){
+//                        for(let j = 0; j< result.length; j++){
+//                            if (order_lines[i].id == result[j].id){
+//                                order_lines[i].set_point(-result[j].point * 1000)
+//                            }
+//                        }
+//                    }
+//                }else{
+//                    for(let i = 0; i< result.length; i++){
+//                        order_lines[i].set_point(- result[i].point * 1000)
+//                    }
+//                };
+                // create new line when set point
+//                for(let i =0; i< data.length; i++){
+//
+//                }
+
+                //--------/
                 var total_point_used = 0;
                 order_lines.forEach(function(item){
                     if(!item.point){
@@ -153,6 +175,105 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                 this.env.pos.selectedOrder.total_order_line_redisual = points_of_customer - this.env.pos.selectedOrder.total_order_line_point_used
             }
         }
+        async _getAddProductOptions(product, base_code) {
+            let price_extra = 0.0;
+            let draftPackLotLines, weight, description, packLotLinesToEdit;
+
+            if (_.some(product.attribute_line_ids, (id) => id in this.env.pos.attributes_by_ptal_id)) {
+                let attributes = _.map(product.attribute_line_ids, (id) => this.env.pos.attributes_by_ptal_id[id])
+                                  .filter((attr) => attr !== undefined);
+                let { confirmed, payload } = await this.showPopup('ProductConfiguratorPopup', {
+                    product: product,
+                    attributes: attributes,
+                });
+
+                if (confirmed) {
+                    description = payload.selected_attributes.join(', ');
+                    price_extra += payload.price_extra;
+                } else {
+                    return;
+                }
+            }
+
+            // Gather lot information if required.
+            if (['serial', 'lot'].includes(product.tracking) && (this.env.pos.picking_type.use_create_lots || this.env.pos.picking_type.use_existing_lots)) {
+                const isAllowOnlyOneLot = product.isAllowOnlyOneLot();
+                if (isAllowOnlyOneLot) {
+                    packLotLinesToEdit = [];
+                } else {
+                    const orderline = this.currentOrder
+                        .get_orderlines()
+                        .filter(line => !line.get_discount())
+                        .find(line => line.product.id === product.id);
+                    if (orderline) {
+                        packLotLinesToEdit = orderline.getPackLotLinesToEdit();
+                    } else {
+                        packLotLinesToEdit = [];
+                    }
+                }
+                const { confirmed, payload } = await this.showPopup('EditListPopup', {
+                    title: this.env._t('Lot/Serial Number(s) Required'),
+                    isSingleItem: isAllowOnlyOneLot,
+                    array: packLotLinesToEdit,
+                });
+                if (confirmed) {
+                    // Segregate the old and new packlot lines
+                    const modifiedPackLotLines = Object.fromEntries(
+                        payload.newArray.filter(item => item.id).map(item => [item.id, item.text])
+                    );
+                    const newPackLotLines = payload.newArray
+                        .filter(item => !item.id)
+                        .map(item => ({ lot_name: item.text }));
+
+                    draftPackLotLines = { modifiedPackLotLines, newPackLotLines };
+                } else {
+                    // We don't proceed on adding product.
+                    return;
+                }
+            }
+
+            // Take the weight if necessary.
+            if (product.to_weight && this.env.pos.config.iface_electronic_scale) {
+                // Show the ScaleScreen to weigh the product.
+                if (this.isScaleAvailable) {
+                    const { confirmed, payload } = await this.showTempScreen('ScaleScreen', {
+                        product,
+                    });
+                    if (confirmed) {
+                        weight = payload.weight;
+                    } else {
+                        // do not add the product;
+                        return;
+                    }
+                } else {
+                    await this._onScaleNotAvailable();
+                }
+            }
+
+            if (base_code && this.env.pos.db.product_packaging_by_barcode[base_code.code]) {
+                weight = this.env.pos.db.product_packaging_by_barcode[base_code.code].qty;
+            }
+
+            return { draftPackLotLines, quantity: weight, description, price_extra };
+       }
+//        combinedItems = (order_lines = []) => {
+//           const res = order_lines.reduce((acc, obj) => {
+//              let found = false;
+//              for (let i = 0; i < acc.length; i++) {
+//                 if (acc[i].id === obj.id && acc[i].point == obj.point && acc[i].point !=0) {
+//                    found = true;
+//                    acc[i].total_point=acc[i].total_point+obj.point;
+//                    acc[i].count = acc[i].count+obj.count;;
+//                 };
+//              }
+//              if (!found) {
+//                 obj.total_point = obj.point;
+//                 acc.push(obj);
+//              }
+//              return acc;
+//           }, []);
+//           return res;
+//        }
 
     }
 
