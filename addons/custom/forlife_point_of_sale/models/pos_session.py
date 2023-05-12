@@ -13,7 +13,7 @@ class PosSession(models.Model):
                     JOIN product_product pp ON pp.id = sq.product_id 
                     JOIN product_template pt ON pt.id = pp.product_tmpl_id
                     JOIN sl ON sl.id = sq.location_id
-                    GROUP BY ppid;
+                    GROUP BY ppid HAVING SUM(sq.quantity) > 0;
                 '''
         self.env.cr.execute(query, {'warehouse_id': warehouse_id})
         data = self.env.cr.fetchall()

@@ -2,12 +2,29 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 import datetime
 
-
+list = [
+        ('product', 'Sản phẩm lưu kho'),
+        ('service', 'Dịch vụ'),
+        ('asset', 'Tài sản'),
+        ('event', 'Vé sự kiện')
+        ]
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    detailed_type = fields.Selection(selection_add=[('asset', 'Asset')], ondelete={'asset': 'set default'})
+    detailed_type = fields.Selection(selection=list, string='Loại sản phẩm', default='product')
     type = fields.Selection(selection_add=[('asset', 'Asset')])
+
+    product_type = fields.Selection(
+        selection=[
+            ('product', 'Hàng hóa'),
+            ('service', 'Dịch vụ'),
+            ('asset', 'Tài sản'),
+        ],
+        string='Loại hàng mua',
+        required=True,
+        copy=False,
+        default='product',
+    )
     barcode_country = fields.Many2one('forlife.barcode', string="Origin")
     barcode = fields.Char(
         'Barcode', copy=False, index='btree_not_null',

@@ -51,6 +51,35 @@ class StockPicking(models.Model):
         if self.env.context.get('default_other_export'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
+    @api.model
+    def default_get(self, fields):
+        res = super(StockPicking, self).default_get(fields)
+        company_id = self.env.context.get('allowed_company_ids')
+        if self.env.context.get('from_inter_company'):
+            company = self.env.context.get('company_po')
+            pk_type = self.env['stock.picking.type'].sudo().search(
+                [('company_id', '=', company), ('code', '=', 'outgoing')], limit=1)
+            if not pk_type:
+                pk_type = self.env['stock.picking.type'].sudo().create(
+                    {'name': 'Giao hàng', 'code': 'outgoing', 'company_id': company,
+                     'sequence_code': 'sequence_code1'})
+            ## Tạo mới phiếu nhập hàng và xác nhận phiếu xuất
+            res.update({'picking_type_id': pk_type})
+        if self.env.context.get('default_other_import'):
+            picking_type_id = self.env['stock.picking.type'].search([
+                ('code', '=', 'incoming'),
+                ('warehouse_id.company_id', 'in', company_id)], limit=1)
+            if picking_type_id:
+                res.update({'picking_type_id': picking_type_id.id})
+        if self.env.context.get('default_other_export'):
+            picking_type_id = self.env['stock.picking.type'].search([
+                ('code', '=', 'outgoing'),
+                ('warehouse_id.company_id', 'in', company_id)], limit=1)
+            if picking_type_id:
+                res.update({'picking_type_id': picking_type_id.id})
+
+        return res
+
     transfer_id = fields.Many2one('stock.transfer')
     reason_type_id = fields.Many2one('forlife.reason.type')
     other_export = fields.Boolean(default=False)
@@ -242,7 +271,7 @@ class StockMove(models.Model):
                 if back_order:
                     for r in back_order.move_ids_without_package:
                         if r.product_id == rec.product_id and r.amount_total == rec.amount_total:
-                            rec.previous_qty = r.previous_qty if r.previous_qty != 0 else rec.product_uom_qty
+                            rec.write({'previous_qty': r.previous_qty})
             else:
                 if rec.picking_id.state not in ('assigned', 'done'):
                     rec.previous_qty = rec.product_uom_qty

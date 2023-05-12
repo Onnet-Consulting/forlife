@@ -24,6 +24,13 @@ class PurchaseRequest(models.Model):
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
     occasion_code_id = fields.Many2one('occasion.code', string="Occasion code")
     production_id = fields.Many2one('forlife.production', string="Manufacturing Order")
+    type_po = fields.Selection(
+        copy=False,
+        string="Loại đơn hàng",
+        default='',
+        selection=[('tax', 'Đơn mua hàng nhập khẩu'),
+                   ('cost', 'Đơn mua hàng nội địa'),
+                   ])
 
     state = fields.Selection(
         copy=False,
@@ -63,6 +70,9 @@ class PurchaseRequest(models.Model):
     def action_cancel(self):
         for record in self:
             record.write({'state': 'cancel'})
+
+    def cancel(self):
+        pass
 
     def approve_action(self):
         self.write({'state': 'approved'})
@@ -143,11 +153,11 @@ class PurchaseRequest(models.Model):
             for line in purchase_request_lines:
                 if line.purchase_quantity == line.order_quantity:
                     continue
-                if rec.date_planned and line.date_planned:
-                    if rec.date_planned > line.date_planned:
-                        date_planned_po = rec.date_planned
-                    else:
-                        date_planned_po = line.date_planned
+                # if rec.date_planned and line.date_planned:
+                #     if rec.date_planned > line.date_planned:
+                #         date_planned_po = rec.date_planned
+                #     else:
+                #         date_planned_po = line.date_planned
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
@@ -172,6 +182,8 @@ class PurchaseRequest(models.Model):
             if po_line_data:
                 source_document = ', '.join(self.mapped('name'))
                 po_data = {
+                    'is_inter_company': False,
+                    'type_po_cost': rec.type_po,
                     'is_check_readonly_partner_id': True if vendor_id else False,
                     'is_check_readonly_purchase_type': True if product_type else False,
                     'is_purchase_request': True,
@@ -185,11 +197,11 @@ class PurchaseRequest(models.Model):
                     'account_analytic_ids': [(6, 0, self.mapped('account_analytic_id').ids)],
                     'source_document': source_document,
                     'production_id': self.production_id.id,
-                    'date_planned': date_planned_po,
+                    'date_planned': rec.date_planned,
                 }
                 purchase_order |= purchase_order.create(po_data)
-        if not purchase_order:
-            raise ValidationError('Sản phẩm đã được lấy hết hoặc đã đóng!')
+        # if not purchase_order:
+        #     raise ValidationError('Sản phẩm đã được lấy hết hoặc đã đóng!')
         return {
             'name': 'Purchase Orders',
             'type': 'ir.actions.act_window',
@@ -217,15 +229,23 @@ class PurchaseRequest(models.Model):
             if rec.close_request:
                 rec.state = 'close'
 
+    @api.returns('self', lambda value: value.id)
+    def copy(self, default=None):
+        self.ensure_one()
+        default = dict(default or {})
+        default['state'] = 'draft'
+        default['close_request'] = False
+        return super().copy(default)
+
 class PurchaseRequestLine(models.Model):
     _name = "purchase.request.line"
     _description = "Purchase Request Line"
 
     is_close = fields.Boolean(string='Is Close', default=False)
     product_id = fields.Many2one('product.product', string="Product", required=True)
-    product_type = fields.Selection(related='product_id.detailed_type', string='Type', store=1)
+    product_type = fields.Selection(related='product_id.product_type', string='Loại mua hàng')
     asset_description = fields.Char(string="Asset description")
-    description = fields.Char(string="Description", store=1, related='product_id.name')
+    description = fields.Char(string="Description", related='product_id.name')
     vendor_code = fields.Many2one('res.partner', string="Vendor")
     production_id = fields.Many2one('forlife.production', string='Production Order Code')
     request_id = fields.Many2one('purchase.request')

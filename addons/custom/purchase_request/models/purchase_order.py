@@ -12,7 +12,7 @@ class PurchaseOrder(models.Model):
     partner_id = fields.Many2one('res.partner', required=False)
     production_id = fields.Many2one('forlife.production', string='Production Order')
     event_id = fields.Many2one('forlife.event', string='Event Program')
-    has_contract_commerce = fields.Boolean(string='Commerce Contract')
+    has_contract_commerce = fields.Boolean(string='Có hóa đơn hay không?')
     rejection_reason = fields.Text()
     is_check_line_material_line = fields.Boolean(compute='_compute_order_line_production_order')
     # approval_logs_ids = fields.One2many('approval.logs', 'purchase_order_id')
@@ -80,7 +80,10 @@ class PurchaseOrderLine(models.Model):
 
     state = fields.Selection(related='order_id.state', store=1)
     purchase_request_line_id = fields.Many2one('purchase.request.line', ondelete='cascade')
-    purchase_order_line_material_line_ids = fields.One2many('purchase.order.line.material.line', 'purchase_order_line_id')
+    purchase_order_line_material_line_ids = fields.One2many('purchase.order.line.material.line',
+                                                            'purchase_order_line_id')
+    product_type = fields.Selection(related='product_id.product_type', readonly=True)
+    product_id = fields.Many2one('product.product', string='Product', change_default=True, index='btree_not_null')
 
     @api.constrains('taxes_id')
     def _check_taxes_id(self):

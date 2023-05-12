@@ -53,7 +53,7 @@
                                 Nhập khác
                             </div>
                         </button>
-                        <button name="action_export_other" type="object" class="oe_stat_button" icon="fa-truck">
+                        <button name="action_export_other" type="object" class="oe_stat_button" icon="fa-truck" >
                             <div class="o_stat_info">
                                 Xuất khác
                             </div>
@@ -82,7 +82,7 @@
                                    mode="tree" context="{'default_location_id': location_id}" required="1"
                                    attrs="{'readonly': [('state', '!=', 'draft')]}" class="width-hh">
                                 <tree editable="bottom">
-                                    <field name="product_from_id" domain="[('detailed_type', '=', 'product')]"
+                                    <field name="product_from_id" domain="[('product_type', '=', 'product')]"
                                            options="{'no_create': True, 'no_edit': True}" required="1"/>
                                     <field name="qty_out" required="1"/>
                                     <field name="uom_from_id" readonly="1" required="1"/>
@@ -90,7 +90,7 @@
                                     <field name="total_out"/>
                                     <field name="location_id" required="1"/>
                                     <field name="mrp_production_from_id"/>
-                                    <field name="product_to_id" domain="[('detailed_type', '=', 'product')]"
+                                    <field name="product_to_id" domain="[('product_type', '=', 'product')]"
                                            options="{'no_create': True, 'no_edit': True}" required="1"/>
                                     <field name="qty_in" required="1" force_save="1"/>
                                     <field name="uom_to_id" readonly="1" required="1"/>
@@ -127,7 +127,7 @@
         </field>
     </record>
     <record id="transfer_stock_inventory_action" model="ir.actions.act_window">
-        <field name="name">Transfer Stock Inventory</field>
+        <field name="name">Nhập xuất tách mã-kiểm kê cân tồn</field>
         <field name="res_model">transfer.stock.inventory</field>
         <field name="view_mode">tree,form</field>
     </record>
