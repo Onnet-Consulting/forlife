@@ -161,6 +161,7 @@ class PurchaseRequest(models.Model):
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
+                    'name': line.product_id.name,
                     'purchase_quantity': line.purchase_quantity - line.order_quantity,
                     'exchange_quantity': line.exchange_quantity,
                     'product_qty': (line.purchase_quantity - line.order_quantity) * line.exchange_quantity,
