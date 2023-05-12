@@ -827,6 +827,7 @@ msgstr "Đang chạy"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__incl_reward_in_order
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__incl_reward_in_order_type
 msgid "Include Reward in Order"
 msgstr "Gồm giá trị sản phẩm KM"
 
