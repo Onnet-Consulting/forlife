@@ -264,6 +264,7 @@ class AccountMove(models.Model):
                                                 'cost_line_id': last_product_id,
                                                 'account_id': account_1562,
                                                 'name': name_account_1562,
+                                                'check_unlink': True,
                                             })
                                             # account_1333 = (0, 0, {
                                             #     'sequence': 10000,
