@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:spce="preserve">
+
+    <t t-name="OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[@class='pos-receipt']" position="attributes">
+            <!-- Hide old template -->
+            <attribute name="class" add="oe_hidden" separator=" "/>
+        </xpath>
+    </t>
+
+    <t t-name="ContinuousHyphen" owl="1">
+        <div class="continuous-hyphen">--------------------</div>
+    </t>
+
+    <t t-name="SeparateLine" owl="1">
+        <hr class="separate-line"/>
+    </t>
+</templates>
