@@ -127,6 +127,7 @@ export class PromotionButton extends PosComponent {
             reward_type: pro.program.reward_type,
             reward_product_ids: pro.program.reward_product_ids,
             reward_for_referring: pro.program.reward_for_referring,
+            need_of_reward_selection: false,
             codeObj: pro.program.codes[order.access_token]
         }));
 
