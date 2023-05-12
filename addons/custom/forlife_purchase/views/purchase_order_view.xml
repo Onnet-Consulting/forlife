@@ -258,7 +258,7 @@
                                attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')]}"
                         />
                         <field name="price_tax" string="Thuế" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')]}"/>
-                        <field name="price_subtotal" widget="monetary"/>
+                        <field name="price_subtotal" widget="monetary" sum="discounted subtotal" force_save="1"/>
                         <field name="discount_percent"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('readonly_discount_percent', '=', True)]}"
                                force_save="1"/>
