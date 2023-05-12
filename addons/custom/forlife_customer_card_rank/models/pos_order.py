@@ -157,21 +157,28 @@ class PosOrder(models.Model):
             }),
         ]
 
-    @api.model
-    def _process_order(self, order, draft, existing_order):
-        pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
-        HistoryPoint = self.env['partner.history.point']
-        if not existing_order:
-            pos = self.env['pos.order'].browse(pos_id)
-            store = pos._get_store_brand_from_program()
-            if store is not None:
-                history_values = pos._prepare_history_point_coefficient_value(store, pos.plus_point_coefficient + sum(
-                                                                                 [x.plus_point_coefficient for x in
-                                                                                  pos.lines]))
-                HistoryPoint.sudo().create(history_values)
-                pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
-                                                  store)
-        return pos_id
+    # @api.model
+    # def _process_order(self, order, draft, existing_order):
+    #     pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
+    #     HistoryPoint = self.env['partner.history.point']
+    #     if not existing_order:
+    #         pos = self.env['pos.order'].browse(pos_id)
+    #         store = pos._get_store_brand_from_program()
+    #         if store is not None:
+    #             history_values = pos._prepare_history_point_coefficient_value(store, pos.plus_point_coefficient + sum(
+    #                                                                              [x.plus_point_coefficient for x in
+    #                                                                               pos.lines]))
+    #             HistoryPoint.sudo().create(history_values)
+    #             pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
+    #                                               store)
+    #     return pos_id
+    
+    def _prepare_history_point_value(self, store: str, point_type='new', reason='', points_used=0, points_back=0):
+        vals = super()._prepare_history_point_value(store, point_type='new', reason='', points_used=0, points_back=0)
+        pos = self
+        vals['points_coefficient'] = (pos.plus_point_coefficient + sum([x.plus_point_coefficient for x in pos.lines]))
+        vals['points_store'] += (pos.plus_point_coefficient + sum([x.plus_point_coefficient for x in pos.lines]))
+        return vals
 
     @api.depends('program_store_point_id')
     def _compute_plus_point(self):
