@@ -1295,6 +1295,7 @@ class StockPicking(models.Model):
                                   'name': rec.name,
                                   'debit': 0,
                                   'credit': total / total_money * rec.expensive_total,
+                                  'is_uncheck': True,
                                   },
                     })
                     for pro, len_pro in zip(data_in_line, range(1, len(data_in_line) + 1)):
@@ -1303,12 +1304,15 @@ class StockPicking(models.Model):
                                 'account_id': account_1561, 'name': "Auto",
                                 'debit': 0,
                                 'credit': 0,
+                                'is_uncheck': True,
                             }
                         })
                     vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
                         'account_id': account_1561, 'name': item.name,
                         'debit': total / total_money * rec.expensive_total,
                         'credit': 0,
+                        'is_uncheck': True,
+
                     })
                 else:
                     vals[key_acc]["credit"] = vals[key_acc]["credit"] + (
@@ -1317,6 +1321,8 @@ class StockPicking(models.Model):
                         'account_id': account_1561, 'name': item.name,
                         'debit': total / total_money * rec.expensive_total,
                         'credit': 0,
+                        'is_uncheck': True,
+
                     })
         for line in vals:
             invoice_line_cost_in_tax.append((0, 0, vals.get(line)))
@@ -1340,6 +1346,8 @@ class StockPicking(models.Model):
                     'account_id': account_1561, 'name': r.name,
                     'debit': credit_333 + credit_332,
                     'credit': 0,
+                    'is_uncheck': True,
+
                 })
             invoice_line_3333 = (
                 0, 0,
@@ -1348,6 +1356,8 @@ class StockPicking(models.Model):
                  'name': r.name,
                  'debit': 0,
                  'credit': credit_333,
+                 'is_uncheck': True,
+
                  })
             invoice_line_3332 = (
                 0, 0,
@@ -1356,6 +1366,8 @@ class StockPicking(models.Model):
                  'name': r.name,
                  'debit': 0,
                  'credit': credit_332,
+                 'is_uncheck': True,
+
                  })
             lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
             invoice_line.extend(lines)
@@ -1403,6 +1415,8 @@ class StockPicking(models.Model):
                     'name': material_line.product_id.name,
                     'debit': 0,
                     'credit': credit,
+                    'is_uncheck': True,
+
                 })
                 invoice_line_npls.append(credit_npl)
                 debit += credit
@@ -1411,6 +1425,8 @@ class StockPicking(models.Model):
                 'account_id': account_1561, 'name': item.product_id.name,
                 'debit': debit,
                 'credit': 0,
+                'is_uncheck': True,
+
             })
             invoice_line_npls.append(debit_npl)
         account_nl = self.create_account_move(po, invoice_line_npls, record)
