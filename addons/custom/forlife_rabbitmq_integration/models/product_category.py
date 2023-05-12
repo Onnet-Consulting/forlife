@@ -22,12 +22,13 @@ class ProductCategory(models.Model):
                 'name': category.name or None,
                 'complete_name': category.complete_name or None,
                 'parent_id': category.parent_id.id or None,
+                'level': category.level or None,
             }
             data.append(vals)
         return data
 
     def check_update_info(self, values):
-        field_check_update = ['category_code', 'complete_name', 'name', 'parent_id']
+        field_check_update = ['category_code', 'complete_name', 'name', 'parent_id', 'level']
         return [item for item in field_check_update if item in values]
 
     def get_sync_update_data(self, field_update, values):
@@ -36,6 +37,7 @@ class ProductCategory(models.Model):
             'complete_name': 'complete_name',
             'name': 'name',
             'parent_id': 'parent_id',
+            'level': 'level',
         }
         vals = {}
         for odoo_key in field_update:
