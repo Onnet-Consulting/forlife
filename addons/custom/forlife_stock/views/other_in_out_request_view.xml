@@ -66,6 +66,7 @@
                             <field name="type_other_id"/>
                             <field name="location_id"/>
                             <field name="location_dest_id"/>
+                            <field name="quantity_match" invisible="1"/>
                         </group>
                         <group>
                             <field name="create_date"/>
