@@ -112,80 +112,188 @@ class AccountMove(models.Model):
         invoice_cost = self.env['product.product'].search([('detailed_type', '=', 'service')])
         invoice_cost_2 = self.env['product.product'].search([])
         for rec in self:
+            invoice_rate_id = self.env['invoice.exchange.rate'].search([('invoice_rate_id', '=', rec.id)])
             if rec.partner_id:
-                rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
-                receiving_warehouse = []
-                cost_lime = []
-                product_lime = []
-                if rec.purchase_order_product_id:
-                    for po in rec.purchase_order_product_id:
-                        # last_id = str(po[-1].id).split("_")[1]
-                        receiving_warehouse_id = self.env['stock.picking'].search(
-                            [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
-                             ('state', '=', 'done')])
-                        if receiving_warehouse_id:
-                            receiving_warehouse.append(receiving_warehouse_id.id)
+                if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_2').id: ##check hóa đơn type nội địa
+                    rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+                    receiving_warehouse = []
+                    cost_lime = []
+                    product_lime = []
+                    if rec.purchase_order_product_id:
+                        for po in rec.purchase_order_product_id:
+                            if po.inventory_status == 'done':
+                                # last_id = str(po[-1].id).split("_")[1]
+                                receiving_warehouse_id = self.env['stock.picking'].search(
+                                    [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
+                                     ('state', '=', 'done')])
+                                if receiving_warehouse_id:
+                                    receiving_warehouse.append(receiving_warehouse_id.id)
+                                    rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
+                                if rec.is_check_cost_view:
+                                    rec.purchase_type = 'service'
+                                    for cost in po.cost_line:
+                                        last_cost_id = str(cost[-1].id).split("_")[1]
+                                        if not rec.invoice_line_ids:
+                                            cost_lime.append((0, 0, {
+                                                'product_id': cost.product_id.id,
+                                                'description': cost.name,
+                                                'price_unit': cost.expensive_total,
+                                                'company_id': rec.journal_id.company_id or rec.company_id or self.env.company,
+                                                'cost_type': cost.product_id.detailed_type,
+                                                'cost_line_id': last_cost_id,
+                                                # 'po_id': last_id,
+                                                'account_id': cost.product_id.property_account_expense_id.id,
+                                            }))
+                                    rec.invoice_line_ids = cost_lime
+                                    rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                                else:
+                                    rec.purchase_type = 'product'
+                                    for product in po.order_line:
+                                        last_product_id = str(product[-1].id).split("_")[1]
+                                        if not rec.invoice_line_ids:
+                                            product_lime.append((0, 0, {
+                                                'product_id': product.product_id.id,
+                                                'description': product.name,
+                                                'request_code': product.request_purchases,
+                                                'promotions': product.free_good,
+                                                'quantity_purchased': product.purchase_quantity,
+                                                'uom_id': product.purchase_uom.id,
+                                                'exchange_quantity': product.exchange_quantity,
+                                                'quantity': product.product_qty,
+                                                'vendor_price': product.vendor_price,
+                                                'price_unit': product.price_unit,
+                                                'warehouse': product.location_id.id,
+                                                'taxes_id': product.taxes_id.id,
+                                                'tax_amount': product.price_tax,
+                                                'price_subtotal': product.price_subtotal,
+                                                'discount_invoice': product.discount_percent,
+                                                'discount': product.discount,
+                                                # 'occasion_code_id': product.free_good,
+                                                'event_id': product.free_good,
+                                                'work_order': product.production_id.id,
+                                                'account_analytic_id': product.account_analytic_id.id,
+                                                'company_id': rec.journal_id.company_id or rec.company_id or self.env.company,
+                                                'cost_type': product.product_id.detailed_type,
+                                                'cost_line_id': last_product_id,
+                                                # 'account_id': product.product_id.property_account_expense_id.id,
+                                            }))
+                                    rec.invoice_line_ids = product_lime
+                                    rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+                            else:
+                                if rec.is_check_cost_view:
+                                    rec.purchase_type = 'service'
+                                    rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                                else:
+                                    rec.purchase_type = 'product'
+                                    rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+                    else:
+                        rec.receiving_warehouse_id = False
+                        if rec.is_check_cost_view:
+                            rec.purchase_type = 'service'
+                            rec.product_product_mm = [(6, 0, invoice_cost.ids)]
                         else:
-                            pass
-                        rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
-                    if rec.is_check_cost_view:
-                        rec.purchase_type = 'service'
-                        for cost in rec.purchase_order_product_id.cost_line:
-                            last_cost_id = str(cost[-1].id).split("_")[1]
-                            if not rec.invoice_line_ids:
-                                cost_lime.append((0, 0, {
-                                    'product_id': cost.product_id.id,
-                                    'description': cost.name,
-                                    'price_unit': cost.expensive_total,
-                                    'company_id': rec.journal_id.company_id or rec.company_id or self.env.company,
-                                    'cost_type': cost.product_id.detailed_type,
-                                    'cost_line_id': last_cost_id,
-                                    # 'po_id': last_id,
-                                    'account_id': cost.product_id.property_account_expense_id.id,
-                                }))
-                        rec.invoice_line_ids = cost_lime
-                        rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                            rec.purchase_type = 'product'
+                            rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+                if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id: ##check hóa đơn type nhập khẩu
+                    rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+                    receiving_warehouse = []
+                    cost_lime = []
+                    line_tnk = []
+                    if rec.purchase_order_product_id:
+                        for po in rec.purchase_order_product_id:
+                            if po.inventory_status == 'done':
+                                receiving_warehouse_id = self.env['stock.picking'].search(
+                                    [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
+                                     ('state', '=', 'done')])
+                                if receiving_warehouse_id:
+                                    receiving_warehouse.append(receiving_warehouse_id.id)
+                                    rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
+                                if rec.is_check_cost_view:
+                                    rec.purchase_type = 'service'
+                                    for cost in po.cost_line:
+                                        last_cost_id = str(cost[-1].id).split("_")[1]
+                                        if not rec.invoice_line_ids:
+                                            cost_lime.append((0, 0, {
+                                                'product_id': cost.product_id.id,
+                                                'description': cost.name,
+                                                'price_unit': cost.expensive_total,
+                                                'company_id': rec.journal_id.company_id or rec.company_id or self.env.company,
+                                                'cost_type': cost.product_id.detailed_type,
+                                                'cost_line_id': last_cost_id,
+                                                'account_id': cost.product_id.property_account_expense_id.id,
+                                            }))
+                                    rec.invoice_line_ids = cost_lime
+                                    rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                                else:
+                                    rec.purchase_type = 'product'
+                                    for product in po.order_line:
+                                        last_product_id = str(product[-1].id).split("_")[1]
+                                        if product.product_id and product.product_id.property_account_expense_id:
+                                            account_3333 = product.product_id.property_account_expense_id.id
+                                            name_account_3333 = product.product_id.property_account_expense_id.name
+                                        else:
+                                            raise ValidationError("Chưa cấu hình tài khoản chi phí cho sản phẩm!!")
+                                        if product.product_id.categ_id and product.product_id.categ_id.property_stock_account_input_categ_id:
+                                            account_1562 = product.product_id.categ_id.property_stock_account_input_categ_id.id
+                                            name_account_1562 = product.product_id.categ_id.property_stock_account_input_categ_id.name
+                                        else:
+                                            raise ValidationError("Chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm!!")
+                                        if not rec.invoice_line_ids:
+                                            product_lime = (0, 0, {
+                                                'product_id': product.product_id.id,
+                                                'description': product.name,
+                                                'request_code': product.request_purchases,
+                                                'promotions': product.free_good,
+                                                'quantity_purchased': product.purchase_quantity,
+                                                'uom_id': product.purchase_uom.id,
+                                                'exchange_quantity': product.exchange_quantity,
+                                                'quantity': product.product_qty,
+                                                'vendor_price': product.vendor_price,
+                                                'price_unit': product.price_unit,
+                                                'warehouse': product.location_id.id,
+                                                'taxes_id': product.taxes_id.id,
+                                                'tax_amount': product.price_tax,
+                                                'price_subtotal': product.price_subtotal,
+                                                'discount_invoice': product.discount_percent,
+                                                'discount': product.discount,
+                                                'event_id': product.free_good,
+                                                'work_order': product.production_id.id,
+                                                'account_analytic_id': product.account_analytic_id.id,
+                                                'company_id': rec.journal_id.company_id or rec.company_id or self.env.company,
+                                                'cost_type': product.product_id.detailed_type,
+                                                'cost_line_id': last_product_id,
+                                                'account_id': account_1562,
+                                                'name': name_account_1562,
+                                            })
+                                            # account_1333 = (0, 0, {
+                                            #     'sequence': 10000,
+                                            #     'display_type': 'tax',
+                                            #     'account_id': account_3333,
+                                            #     'name': name_account_3333,
+                                            #     'debit': sum(invoice_rate_id.mapped('vat_tax_amount')),
+                                            #     'credit': 0,
+                                            # })
+                                            # lines = [product_lime] + [account_1333]
+                                            lines = [product_lime]
+                                            line_tnk.extend(lines)
+                                    rec.invoice_line_ids = line_tnk
+                                    rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+                            else:
+                                if rec.is_check_cost_view:
+                                    rec.purchase_type = 'service'
+                                    rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                                else:
+                                    rec.purchase_type = 'product'
+                                    rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
                     else:
-                        rec.purchase_type = 'product'
-                        for product in rec.purchase_order_product_id.order_line:
-                            last_product_id = str(product[-1].id).split("_")[1]
-                            if not rec.invoice_line_ids:
-                                product_lime.append((0, 0, {
-                                    'product_id': product.product_id.id,
-                                    'description': product.name,
-                                    'request_code': product.request_purchases,
-                                    'promotions': product.free_good,
-                                    'quantity_purchased': product.purchase_quantity,
-                                    'uom_id': product.purchase_uom.id,
-                                    'exchange_quantity': product.exchange_quantity,
-                                    'quantity': product.product_qty,
-                                    'vendor_price': product.vendor_price,
-                                    'price_unit': product.price_unit,
-                                    'warehouse': product.location_id.id,
-                                    'taxes_id': product.taxes_id.id,
-                                    'tax_amount': product.price_tax,
-                                    'price_subtotal': product.price_subtotal,
-                                    'discount_invoice': product.discount_percent,
-                                    'discount': product.discount,
-                                    # 'occasion_code_id': product.free_good,
-                                    'event_id': product.free_good,
-                                    'work_order': product.production_id.id,
-                                    'account_analytic_id': product.account_analytic_id.id,
-                                    'company_id': rec.journal_id.company_id or rec.company_id or self.env.company,
-                                    'cost_type': product.product_id.detailed_type,
-                                    'cost_line_id': last_product_id,
-                                    # 'account_id': product.product_id.property_account_expense_id.id,
-                                }))
-                        rec.invoice_line_ids = product_lime
-                        rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
-                else:
-                    rec.receiving_warehouse_id = False
-                    if rec.is_check_cost_view:
-                        rec.purchase_type = 'service'
-                        rec.product_product_mm = [(6, 0, invoice_cost.ids)]
-                    else:
-                        rec.purchase_type = 'product'
-                        rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+                        rec.receiving_warehouse_id = False
+                        if rec.is_check_cost_view:
+                            rec.purchase_type = 'service'
+                            rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                        else:
+                            rec.purchase_type = 'product'
+                            rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+
 
     def write(self, vals):
         res = super(AccountMove, self).write(vals)
@@ -224,23 +332,36 @@ class AccountMove(models.Model):
         self.purchase_order_product_id = [(5, 0)]
         self.invoice_line_ids = [(5, 0)]
 
-    @api.depends('invoice_line_ids')
+    @api.depends('purchase_order_product_id', 'purchase_order_product_id.exchange_rate_line')
     def _compute_exchange_rate_line_and_cost_line(self):
         self.exchange_rate_line = [(5, 0)]
         self.cost_line = [(5, 0)]
-        for line in self.invoice_line_ids:
-            self.env['invoice.exchange.rate'].create({
-                'product_id': line.product_id.id,
-                'name': line.description,
-                'usd_amount': line.price_subtotal,
-                'invoice_rate_id': self.id
-            })
-            self.env['invoice.cost.line'].create({
-                'product_id': line.product_id.id,
-                'name': line.description,
-                'invoice_cost_id': self.id
-            })
-
+        for rec in self:
+            if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
+                for exchange in rec.purchase_order_product_id.exchange_rate_line:
+                    self.env['invoice.exchange.rate'].create({
+                        'invoice_rate_id': self.id,
+                        'product_id': exchange.product_id.id,
+                        'name': exchange.name,
+                        'vnd_amount': exchange.vnd_amount,
+                        'qty_product': exchange.qty_product,
+                        'import_tax': exchange.import_tax,
+                        'tax_amount': exchange.tax_amount,
+                        'special_consumption_tax': exchange.special_consumption_tax,
+                        'special_consumption_tax_amount': exchange.special_consumption_tax_amount,
+                        'vat_tax': exchange.vat_tax,
+                        'vat_tax_amount': exchange.vat_tax_amount,
+                        'total_tax_amount': exchange.total_tax_amount
+                    })
+            else:
+                for line in rec.invoice_line_ids:
+                    self.env['invoice.exchange.rate'].create({
+                        'product_id': line.product_id.id,
+                        'name': line.description,
+                        'usd_amount': line.price_subtotal,
+                        'qty_product': line.quantity,
+                        'invoice_rate_id': self.id
+                    })
 
     @api.depends('partner_id.is_passersby', 'partner_id')
     def _compute_is_check_vendor_page(self):
@@ -381,6 +502,17 @@ class AccountMoveLine(models.Model):
                 list_vals.remove(line)
         res = super().create(list_vals)
         return res
+
+    # @api.model_create_multi
+    # def create(self, list_vals):
+    #     new_list_vals = []
+    #     for line in list_vals:
+    #         if isinstance(line, dict):
+    #             is_check_cost_view = self.env['account.move'].browse(line.get('move_id')).is_check_cost_view
+    #             if line.get('account_id') != self.env.ref('l10n_vn.1_chart1331').id or not is_check_cost_view:
+    #                 new_list_vals.append(line)
+    #     res = super().create(new_list_vals)
+    #     return res
 
     @api.depends('vendor_price', 'exchange_quantity',
                  'move_id', 'move_id.is_check_cost_view',
@@ -532,7 +664,10 @@ class InvoiceExchangeRate(models.Model):
     @api.depends('usd_amount', 'invoice_rate_id.exchange_rate')
     def compute_vnd_amount(self):
         for rec in self:
-            rec.vnd_amount = rec.usd_amount * rec.invoice_rate_id.exchange_rate
+            if not rec.invoice_rate_id.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
+                rec.vnd_amount = rec.usd_amount * rec.invoice_rate_id.exchange_rate
+            else:
+                pass
 
     @api.depends('vnd_amount', 'import_tax')
     def _compute_tax_amount(self):
@@ -552,7 +687,7 @@ class InvoiceExchangeRate(models.Model):
     @api.depends('vat_tax_amount')
     def compute_tax_amount(self):
         for rec in self:
-            rec.total_tax_amount = rec.vnd_amount + rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
+            rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
 
 
 class InvoiceCostLine(models.Model):
