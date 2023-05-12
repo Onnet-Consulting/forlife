@@ -105,7 +105,7 @@
                            attrs="{'readonly': [('is_check', '=', True)]}"
                            context="{'default_company_id': company_id}">
                         <tree editable="bottom" class="width-hh">
-                            <field name="vendor_sup_invoice" invisible="1"/>
+<!--                            <field name="vendor_sup_invoice" invisible="1"/>-->
                             <field name="is_check_exchange_quantity" invisible="1"/>
                             <field name="is_check_is_passersby" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
