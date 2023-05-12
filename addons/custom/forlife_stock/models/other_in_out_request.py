@@ -29,6 +29,7 @@ class ForlifeOtherInOutRequest(models.Model):
     count_other_import_export = fields.Integer(compute="compute_count_other_import_export", copy=False)
     other_import_export_ids = fields.One2many('stock.picking', 'other_import_export_request_id',
                                               string="Other Import/Export")
+    reject_reason = fields.Text()
 
     date_create = fields.Date('Ngày tạo', default=datetime.today(), copy=False, tracking=True)
 

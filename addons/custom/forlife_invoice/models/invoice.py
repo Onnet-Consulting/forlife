@@ -128,6 +128,7 @@ class AccountMove(models.Model):
         invoice_cost_2 = self.env['product.product'].search([])
         id_account_move = self.env['account.move'].search([], order='id desc', limit=1).id
         for rec in self:
+            invoice_rate_id = self.env['invoice.exchange.rate'].search([('invoice_rate_id', '=', rec.id)])
             if rec.partner_id:
                 rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
                 receiving_warehouse = []
@@ -167,16 +168,13 @@ class AccountMove(models.Model):
                         rec.invoice_line_ids = [(6, 0, account_line.ids)]
                         rec.product_product_mm = [(6, 0, invoice_cost.ids)]
                     else:
-                        rec.purchase_type = 'product'
-                        rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
-                else:
-                    rec.receiving_warehouse_id = False
-                    if rec.is_check_cost_view:
-                        rec.purchase_type = 'service'
-                        rec.product_product_mm = [(6, 0, invoice_cost.ids)]
-                    else:
-                        rec.purchase_type = 'product'
-                        rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
+                        rec.receiving_warehouse_id = False
+                        if rec.is_check_cost_view:
+                            rec.purchase_type = 'service'
+                            rec.product_product_mm = [(6, 0, invoice_cost.ids)]
+                        else:
+                            rec.purchase_type = 'product'
+                            rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
 
     @api.onchange('invoice_line_ids')
     def onchange_partner_domain(self):
@@ -473,7 +471,10 @@ class InvoiceExchangeRate(models.Model):
     @api.depends('usd_amount', 'invoice_rate_id.exchange_rate')
     def compute_vnd_amount(self):
         for rec in self:
-            rec.vnd_amount = rec.usd_amount * rec.invoice_rate_id.exchange_rate
+            if not rec.invoice_rate_id.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
+                rec.vnd_amount = rec.usd_amount * rec.invoice_rate_id.exchange_rate
+            else:
+                pass
 
     @api.depends('vnd_amount', 'import_tax')
     def _compute_tax_amount(self):
@@ -493,7 +494,7 @@ class InvoiceExchangeRate(models.Model):
     @api.depends('vat_tax_amount')
     def compute_tax_amount(self):
         for rec in self:
-            rec.total_tax_amount = rec.vnd_amount + rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
+            rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
 
 class InvoiceCostLine(models.Model):
     _name = "invoice.cost.line"

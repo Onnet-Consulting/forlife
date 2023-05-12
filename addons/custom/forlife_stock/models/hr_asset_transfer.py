@@ -21,7 +21,7 @@ class HrAssetTransfer(models.Model):
                    ('wait_approve', 'Wait Approve'),
                    ('approved', 'Approved'),
                    ('reject', 'Reject'),
-                   ('cancel', 'Cancel')], default='draft', copy=True)
+                   ('cancel', 'Cancel')], default='draft', copy=False)
     hr_asset_transfer_line_ids = fields.One2many('hr.asset.transfer.line', 'hr_asset_transfer_id', string="Hr Asset Transfer", copy=True)
     reject_reason = fields.Text()
     validate_date = fields.Datetime(string='Validate Date')
