@@ -1,5 +1,5 @@
 DROP FUNCTION IF EXISTS stock_incoming_outgoing_report_account;
-CREATE OR REPLACE FUNCTION stock_incoming_outgoing_report_account(_date_from character varying , _date_to character varying, _company_id integer, _last_date_last_month character varying)
+CREATE OR REPLACE FUNCTION stock_incoming_outgoing_report_account(_date_from character varying , _date_to character varying, _company_id integer)
 RETURNS TABLE
         (
             product_id               INTEGER,
@@ -18,17 +18,21 @@ $BODY$
 
 BEGIN
     RETURN Query (
-        WITH opening as (
+        WITH end_date as (
+            select sqp.product_id, max(sqp.period_end_date) max_period_end_date
+            from stock_quant_period sqp
+            group by sqp.product_id
+        ), opening as (
             -- đầu kỳ
-            select dataa.product_id,
+            SELECT dataa.product_id,
                     sum(dataa.quantity) as quantity,
                     sum(dataa.total_value) as total_value
-            from (
-                select sqp.product_id,
+            FROM (
+                SELECT sqp.product_id,
                     sqp.closing_quantity as quantity,
                     sqp.closing_value as total_value
                 from stock_quant_period sqp
-                where sqp.period_end_date = _last_date_last_month::date
+                where sqp.period_end_date = (select ed.max_period_end_date from end_date ed where ed.product_id = sqp.product_id order by ed.max_period_end_date desc limit 1)
 
                 union all
 
@@ -41,7 +45,7 @@ BEGIN
                 where 1=1
                 and am.state = 'posted'
                 and am.date < _date_from::date
-                and am.date > _last_date_last_month::date
+                and am.date > (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id order by ed.max_period_end_date desc limit 1)
                 and am.company_id = _company_id
                 and aml.account_id = (select split_part(value_reference, ',', 2)::integer
                                     from ir_property

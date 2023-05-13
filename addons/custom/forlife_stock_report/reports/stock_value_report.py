@@ -304,9 +304,11 @@ class StockValueReport(models.TransientModel):
                     %s,
                     %s,
                     %s
-            FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s, %s)
+            FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s)
         """, (self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(), datetime.utcnow(),
-              self.env.user.id, self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id, self.env['stock.quant.period'].get_last_date_period(self.date_from)))
+              self.env.user.id, self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id
+              #, self.env['stock.quant.period'].get_last_date_period(self.date_from)
+              ))
 
     def action_export_stock_incoming_outgoing_report(self):
         # define function
@@ -326,10 +328,12 @@ class StockValueReport(models.TransientModel):
                                         report.real_outgoing_value,
                                         report.closing_quantity,
                                         report.closing_value
-                                FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s, %s) as report
+                                FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s) as report
                                 LEFT JOIN product_product pp ON pp.id = report.product_id
                                 LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id""",
-                             (utc_datetime_from, utc_datetime_to, self.env.company.id, self.env['stock.quant.period'].get_last_date_period(self.date_from)))
+                             (utc_datetime_from, utc_datetime_to, self.env.company.id
+                              # , self.env['stock.quant.period'].get_last_date_period(self.date_from)
+                              ))
             return self._cr.dictfetchall()
 
         def write_header(wssheet):
@@ -657,10 +661,12 @@ class StockValueReport(models.TransientModel):
                             %s,
                             %s,
                             %s
-                    FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s, %s)
+                    FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s)
                 """, (
         str(self.date_to), str(self.date_to), self.env.company.currency_id.id, self.env.user.id, datetime.utcnow(), self.env.user.id,
-        datetime.utcnow(), utc_datetime_from, utc_datetime_to, self.env.company.id, self.env['stock.quant.period'].get_last_date_period(self.date_from)))
+        datetime.utcnow(), utc_datetime_from, utc_datetime_to, self.env.company.id
+        # , self.env['stock.quant.period'].get_last_date_period(self.date_from)
+        ))
 
     def validate_report_create_quant(self):
         # check period check report
