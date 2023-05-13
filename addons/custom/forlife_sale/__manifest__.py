@@ -13,12 +13,15 @@
     'depends': [
         'base',
         'sale',
+        'stock',
         'forlife_base'
     ],
     'installable': True,
     'application': True,
     'data': [
         'views/sale_order.xml',
+        'views/product_template.xml',
+        'views/stock_picking.xml',
         'security/ir.model.access.csv',
 
     ]
