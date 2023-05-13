@@ -1,9 +1,12 @@
-odoo.define('forlife_pos_layout.OrderSummary', function(require) {
+odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
     'use strict';
+
     const OrderSummary = require('point_of_sale.OrderSummary');
     const Registries = require('point_of_sale.Registries');
 
-    const OrderSummaryCustom = OrderSummary => class extends OrderSummary {
+    var utils = require('web.utils');
+
+    class CustomOrderSummary extends OrderSummary {
         getTotalQuantity() {
             var total = 0;
             const orderlines = this.props.order.orderlines;
@@ -24,9 +27,10 @@ odoo.define('forlife_pos_layout.OrderSummary', function(require) {
         getTotalNotFormat() {
             return this.props.order.get_total_with_tax();
         }
-
     }
-    Registries.Component.extend(OrderSummary, OrderSummaryCustom);
+    CustomOrderSummary.template = 'CustomOrderSummary';
 
-    return OrderSummary;
+    Registries.Component.add(CustomOrderSummary);
+
+    return CustomOrderSummary;
 });
