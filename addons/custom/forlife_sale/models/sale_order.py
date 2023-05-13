@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-from odoo import api, fields,models
+from odoo import api, fields,models,_
 from odoo.osv import expression
 from datetime import date, datetime
+from odoo.exceptions import UserError
 
 
 class SaleOrder(models.Model):
@@ -58,7 +59,10 @@ class SaleOrder(models.Model):
         list_location = []
         stock_move_ids = {}
         stock_move_ids['Null'] = []
+        line_x_scheduled_date = []
         for line in self.order_line:
+            date = datetime.combine(line.x_scheduled_date,
+                                    datetime.min.time()) if line.x_scheduled_date else datetime.now()
             group_id = line._get_procurement_group()
             if not group_id:
                 group_id = self.env['procurement.group'].create(line._prepare_procurement_group_vals())
@@ -76,13 +80,12 @@ class SaleOrder(models.Model):
                 'procure_method': 'make_to_stock',
                 'origin': line.order_id.name,
                 'picking_type_id': rule.picking_type_id.id,
-                'date': datetime.now(),
                 'date_deadline': datetime.now(),
                 'description_picking': line.name,
                 'sale_line_id': line.id,
-                'x_scheduled_date': line.x_scheduled_date,
                 'group_id': group_id.id
             }
+            line_x_scheduled_date.append((line.id, str(date)))
             if line.x_location_id:
                 if line.x_location_id.id not in list_location:
                     stock_move_ids[line.x_location_id.id] = [(0, 0, detail_data)]
@@ -97,7 +100,26 @@ class SaleOrder(models.Model):
             picking_id = self.env['stock.picking'].create(master_data)
             picking_id.move_ids_without_package = stock_move_ids[move]
             picking_id.action_confirm()
+            sql = f""" 
+                with A as (
+                    SELECT *
+                    FROM ( VALUES {str(line_x_scheduled_date).replace('[', '').replace(']', '')})as A(sale_line_id,date)
+                    )
+                update stock_move
+                    set date = A.date::timestamp
+                from A
+                where stock_move.sale_line_id = A.sale_line_id
+                """
+            self._cr.execute(sql)
         self.state = 'sale'
+
+    def action_cancel(self):
+        for line in self.order_line:
+            if line.qty_delivered > 0:
+                raise UserError(_('Đơn hàng đã được giao'))
+        res = super(SaleOrder, self).action_cancel()
+        return res
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
