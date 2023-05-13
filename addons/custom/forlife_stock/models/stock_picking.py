@@ -142,25 +142,26 @@ class StockPicking(models.Model):
         self.state = 'draft'
 
     def action_cancel(self):
-        if self.other_import or self.other_export:
-            self.state = 'cancel'
-            for line in self.move_line_ids_without_package:
-                line.qty_done = 0
-                line.reserved_uom_qty = 0
-                line.qty_done = 0
-            for line in self.move_ids_without_package:
-                line.forecast_availability = 0
-                line.quantity_done = 0
-            layers = self.env['stock.valuation.layer'].search([('stock_move_id.picking_id', '=', self.id)])
-            for layer in layers:
-                layer.quantity = 0
-                layer.unit_cost = 0
-                layer.value = 0
-                layer.account_move_id.button_draft()
-                layer.account_move_id.button_cancel()
-        else:
-            self.move_ids._action_cancel()
-            self.write({'is_locked': True})
+        for rec in self:
+            if rec.other_import or rec.other_export:
+                rec.state = 'cancel'
+                for line in rec.move_line_ids_without_package:
+                    line.qty_done = 0
+                    line.reserved_uom_qty = 0
+                    line.qty_done = 0
+                for line in rec.move_ids_without_package:
+                    line.forecast_availability = 0
+                    line.quantity_done = 0
+                layers = rec.env['stock.valuation.layer'].search([('stock_move_id.picking_id', '=', rec.id)])
+                for layer in layers:
+                    layer.quantity = 0
+                    layer.unit_cost = 0
+                    layer.value = 0
+                    layer.account_move_id.button_draft()
+                    layer.account_move_id.button_cancel()
+            else:
+                rec.move_ids._action_cancel()
+                rec.write({'is_locked': True})
         return True
 
     @api.model
