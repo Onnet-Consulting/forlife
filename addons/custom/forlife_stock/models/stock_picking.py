@@ -159,9 +159,9 @@ class StockPicking(models.Model):
                     layer.value = 0
                     layer.account_move_id.button_draft()
                     layer.account_move_id.button_cancel()
-        else:
-            self.move_ids._action_cancel()
-            self.write({'is_locked': True})
+            else:
+                rec.move_ids._action_cancel()
+                rec.write({'is_locked': True})
         return True
 
     @api.model
