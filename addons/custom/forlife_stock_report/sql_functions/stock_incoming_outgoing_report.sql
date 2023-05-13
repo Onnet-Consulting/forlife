@@ -45,7 +45,8 @@ BEGIN
                 left join stock_picking_type spt on spt.id = sm.picking_type_id
                 where sm.state = 'done'
                 and sm.date < _date_from::timestamp
-                and am.date > (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id order by ed.max_period_end_date desc limit 1)::timestamp
+                and (case when exists (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id order by ed.max_period_end_date desc limit 1) then am.date > (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id order by ed.max_period_end_date desc limit 1)::timestamp
+                    else 1 = 1 end)
                 and sm.company_id = _company_id
                 and spt.code in ('incoming', 'outgoing')
             ) dataa
