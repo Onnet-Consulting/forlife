@@ -15,6 +15,8 @@ class StockQuantPeriod(models.Model):
     closing_quantity = fields.Integer('Closing Quantity')
     price_unit = fields.Monetary('Price Unit')
     closing_value = fields.Monetary('Closing Value')
+    company_id = fields.Many2one('Company')
+    account_id = fields.Many2one('account.account', 'Account')
 
     def _compute_product_code(self):
         for item in self:
