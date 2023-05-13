@@ -9,6 +9,7 @@ class StockValueReportDetail(models.TransientModel):
 
     report_id = fields.Many2one('stock.value.report', 'Report')
     currency_id = fields.Many2one('res.currency')
+    account_id = fields.Many2one('account.account', 'Account')
     product_id = fields.Many2one('product.product', 'Product')
     product_code = fields.Char('Product Code', compute="_compute_product_code")
     opening_quantity = fields.Integer('Opening Quantity')

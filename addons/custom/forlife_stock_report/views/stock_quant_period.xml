@@ -8,6 +8,7 @@
             <tree string="Inventory Period">
                 <field name="product_code"/>
                 <field name="product_id"/>
+                <field name="account_id"/>
                 <field name="closing_quantity"/>
                 <field name="price_unit"/>
                 <field name="closing_value"/>
