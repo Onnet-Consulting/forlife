@@ -21,7 +21,6 @@
     'data': [
         'views/sale_order.xml',
         'views/product_template.xml',
-        'views/stock_picking.xml',
         'security/ir.model.access.csv',
 
     ]
