@@ -269,117 +269,76 @@ class StockValueReport(models.TransientModel):
         # current_tz = pytz.timezone(self.env.context.get('tz'))
         utc_datetime_from = str(self.date_from)
         utc_datetime_to = str(self.date_to)
+        sql = f"""
+                DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
+                INSERT INTO stock_value_report_detail (
+                                            report_id,
+                                            currency_id,
+                                            product_id,
+                                            account_id,
+                                            opening_quantity,
+                                            opening_value,
+                                            incoming_quantity,
+                                            incoming_value,
+                                            odoo_outgoing_quantity,
+                                            real_outgoing_value,
+                                            closing_quantity,
+                                            closing_value,
+                                            create_date,
+                                            write_date,
+                                            create_uid,
+                                            write_uid)
+                SELECT %s,
+                        %s,
+                        product_id,
+                        account_id,
+                        opening_quantity,
+                        opening_value,
+                        incoming_quantity,
+                        incoming_value,
+                        odoo_outgoing_quantity,
+                        real_outgoing_value,
+                        closing_quantity,
+                        closing_value,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                FROM stock_incoming_outgoing_report_account(%s, %s, %s)
+                """
+        params = (self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(),
+                  datetime.utcnow(), self.env.user.id, self.env.user.id, utc_datetime_from, utc_datetime_to,
+                  self.env.company.id)
         if self.account_id:
-            self._cr.execute(f"""
-                DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
-                INSERT INTO stock_value_report_detail (
-                                            report_id,
-                                            currency_id,
-                                            product_id,
-                                            account_id,
-                                            opening_quantity,
-                                            opening_value,
-                                            incoming_quantity,
-                                            incoming_value,
-                                            odoo_outgoing_quantity,
-                                            real_outgoing_value,
-                                            closing_quantity,
-                                            closing_value,
-                                            create_date,
-                                            write_date,
-                                            create_uid,
-                                            write_uid)
-                SELECT %s,
-                        %s,
-                        product_id,
-                        account_id,
-                        opening_quantity,
-                        opening_value,
-                        incoming_quantity,
-                        incoming_value,
-                        odoo_outgoing_quantity,
-                        real_outgoing_value,
-                        closing_quantity,
-                        closing_value,
-                        %s,
-                        %s,
-                        %s,
-                        %s
-                FROM stock_incoming_outgoing_report_account(%s, %s, %s)
-                WHERE account_id = %s
-            """, (self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(), datetime.utcnow(),
-                  self.env.user.id, self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id, self.account_id.id
-                  #, self.env['stock.quant.period'].get_last_date_period(self.date_from)
-                  ))
-        else:
-            self._cr.execute(f"""
-                DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
-                INSERT INTO stock_value_report_detail (
-                                            report_id,
-                                            currency_id,
-                                            product_id,
-                                            account_id,
-                                            opening_quantity,
-                                            opening_value,
-                                            incoming_quantity,
-                                            incoming_value,
-                                            odoo_outgoing_quantity,
-                                            real_outgoing_value,
-                                            closing_quantity,
-                                            closing_value,
-                                            create_date,
-                                            write_date,
-                                            create_uid,
-                                            write_uid)
-                SELECT %s,
-                        %s,
-                        product_id,
-                        account_id,
-                        opening_quantity,
-                        opening_value,
-                        incoming_quantity,
-                        incoming_value,
-                        odoo_outgoing_quantity,
-                        real_outgoing_value,
-                        closing_quantity,
-                        closing_value,
-                        %s,
-                        %s,
-                        %s,
-                        %s
-                FROM stock_incoming_outgoing_report_account(%s, %s, %s)
-                        """, (
-            self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(), datetime.utcnow(),
-            self.env.user.id, self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id
-            # , self.env['stock.quant.period'].get_last_date_period(self.date_from)
-            ))
+            sql += f""" WHERE account_id = {self.account_id.id}"""
+        self._cr.execute(sql, params)
 
     def action_export_stock_incoming_outgoing_report(self):
         # define function
         def get_data():
             # must be utc time
-            # current_tz = pytz.timezone(self.env.context.get('tz'))
             utc_datetime_from = str(self.date_from)
             utc_datetime_to = str(self.date_to)
-            self._cr.execute(f"""
-                                SELECT pp.default_code,
-                                        pt.name,
-                                        aa.code account_code,
-                                        report.opening_quantity,
-                                        report.opening_value,
-                                        report.incoming_quantity,
-                                        report.incoming_value,
-                                        report.odoo_outgoing_quantity,
-                                        report.real_outgoing_value,
-                                        report.closing_quantity,
-                                        report.closing_value
-                                FROM stock_incoming_outgoing_report_account(%s, %s, %s) as report
-                                LEFT JOIN product_product pp ON pp.id = report.product_id
-                                LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
-                                LEFT JOIN account_account aa ON aa.id = report.account_id""",
-                             (utc_datetime_from, utc_datetime_to, self.env.company.id
-                              # , self.env['stock.quant.period'].get_last_date_period(self.date_from)
-                              ))
+            sql = f"""
+                    SELECT pp.default_code,
+                            pt.name,
+                            aa.code account_code,
+                            report.opening_quantity,
+                            report.opening_value,
+                            report.incoming_quantity,
+                            report.incoming_value,
+                            report.odoo_outgoing_quantity,
+                            report.real_outgoing_value,
+                            report.closing_quantity,
+                            report.closing_value
+                    FROM stock_incoming_outgoing_report_account(%s, %s, %s) as report
+                    LEFT JOIN product_product pp ON pp.id = report.product_id
+                    LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                    LEFT JOIN account_account aa ON aa.id = report.account_id"""
+            params = (utc_datetime_from, utc_datetime_to, self.env.company.id)
+            if self.account_id:
+                sql += f""" WHERE report.account_id = {self.account_id.id}"""
+            self._cr.execute(sql, params)
             return self._cr.dictfetchall()
 
         def write_header(wssheet):
@@ -681,84 +640,50 @@ class StockValueReport(models.TransientModel):
         # validate report
         self.validate_report_create_quant()
         # must be utc time
-        # current_tz = pytz.timezone(self.env.context.get('tz'))
         utc_datetime_from = str(self.date_from)
         utc_datetime_to = str(self.date_to)
+        # unlink stock_quant_period
+        sql = """DELETE FROM stock_quant_period WHERE period_end_date = %s"""
+        params = (str(self.date_to), )
         if self.account_id:
-            self._cr.execute(f"""
-                        DELETE FROM stock_quant_period WHERE period_end_date = %s;
-                        INSERT INTO stock_quant_period (
-                                                    period_end_date,
-                                                    product_id,
-                                                    account_id,
-                                                    currency_id,
-                                                    closing_quantity,
-                                                    price_unit,
-                                                    closing_value,
-                                                    create_uid,
-                                                    create_date,
-                                                    write_uid,
-                                                    write_date,
-                                                    company_id)
-                        SELECT %s,
-                                product_id,
-                                account_id,
-                                %s,
-                                closing_quantity,
-                                closing_value,
-                                (case when closing_quantity = 0 then 0
-                                        else closing_value / closing_quantity
-                                end) price_unit,
-                                %s,
-                                %s,
-                                %s,
-                                %s,
-                                %s
-                        FROM stock_incoming_outgoing_report_account(%s, %s, %s)
-                        WHERE account_id = %s
-                    """, (
-            str(self.date_to), str(self.date_to), self.env.company.currency_id.id, self.env.user.id, datetime.utcnow(),
-            self.env.user.id, datetime.utcnow(), self.env.company.id, utc_datetime_from, utc_datetime_to,
-            self.env.company.id, self.account_id.id
-            # , self.env['stock.quant.period'].get_last_date_period(self.date_from)
-            ))
-        else:
-            self._cr.execute(f"""
-                    DELETE FROM stock_quant_period WHERE period_end_date = %s;
-                    INSERT INTO stock_quant_period (
-                                                period_end_date,
-                                                product_id,
-                                                account_id,
-                                                currency_id,
-                                                closing_quantity,
-                                                price_unit,
-                                                closing_value,
-                                                create_uid,
-                                                create_date,
-                                                write_uid,
-                                                write_date,
-                                                company_id)
-                    SELECT %s,
-                            product_id,
-                            account_id,
-                            %s,
-                            closing_quantity,
-                            closing_value,
-                            (case when closing_quantity = 0 then 0
-                                    else closing_value / closing_quantity
-                            end) price_unit,
-                            %s,
-                            %s,
-                            %s,
-                            %s,
-                            %s
-                    FROM stock_incoming_outgoing_report_account(%s, %s, %s)
-                """, (
-                str(self.date_to), str(self.date_to), self.env.company.currency_id.id, self.env.user.id,
-                datetime.utcnow(), self.env.user.id, datetime.utcnow(), self.env.company.id, utc_datetime_from,
-                utc_datetime_to, self.env.company.id
-                # , self.env['stock.quant.period'].get_last_date_period(self.date_from)
-            ))
+            sql += f""" AND account_id = {self.account_id.id}"""
+        self._cr.execute(sql, params)
+        sql = f"""
+            INSERT INTO stock_quant_period (
+                                        period_end_date,
+                                        product_id,
+                                        account_id,
+                                        currency_id,
+                                        closing_quantity,
+                                        price_unit,
+                                        closing_value,
+                                        create_uid,
+                                        create_date,
+                                        write_uid,
+                                        write_date,
+                                        company_id)
+            SELECT %s,
+                    product_id,
+                    account_id,
+                    %s,
+                    closing_quantity,
+                    closing_value,
+                    (case when closing_quantity = 0 then 0
+                            else closing_value / closing_quantity
+                    end) price_unit,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s
+            FROM stock_incoming_outgoing_report_account(%s, %s, %s)
+            """
+        params = (str(self.date_to), self.env.company.currency_id.id, self.env.user.id,
+                  datetime.utcnow(), self.env.user.id, datetime.utcnow(), self.env.company.id, utc_datetime_from,
+                  utc_datetime_to, self.env.company.id)
+        if self.account_id:
+            sql += f""" WHERE account_id = {self.account_id.id}"""
+        self._cr.execute(sql, params)
 
     def validate_report_create_quant(self):
         # check period check report
