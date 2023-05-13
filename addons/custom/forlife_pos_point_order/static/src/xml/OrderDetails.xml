@@ -58,7 +58,7 @@
                             <th style="border: 1px solid black;width:25%">Tổng giảm giá</th>
                             <th></th>
                         </tr>
-                        <tr style="border: 1px solid black; text-align:left">
+                        <tr style="border: 1px solid black; text-align:left" id="amount_total_row">
                             <th></th>
                             <th></th>
                             <th style="border: 1px solid black;width:25%">Tổng tiền thanh toán</th>
