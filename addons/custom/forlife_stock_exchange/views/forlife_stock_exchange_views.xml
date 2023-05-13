@@ -23,9 +23,16 @@
 <!--                <attribute name="attrs">{'invisible': [('exchange_code', '=', False), ('other_export', '=', False), ('other_import', '=', False)]}</attribute>-->
 <!--            </xpath>-->
 
+            <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
+                <attribute name="attrs">{'readonly': ['|', ('exchange_code', '=', 'outgoing'), ('state', 'in', ('confirmed', 'assigned','done', 'cancel'))]}</attribute>
+            </xpath>
+
             <xpath expr="//field[@name='amount_total']" position="before">
-                <field name="price_unit" attrs="{'column_invisible': [('parent.exchange_code', '=', False)], 'readonly': [('parent.exchange_code', '=', False)]}"/>
-<!--                <attribute name="attrs">{'column_invisible': [('parent.exchange_code', '!=', False))], 'readonly': [('is_amount_total', '!=', True)]}</attribute>-->
+                <field name="price_unit" attrs="{'column_invisible': [('parent.exchange_code', '=', False)], 'readonly': [('parent.exchange_code', 'in', ('incoming', 'outgoing'))]}"/>
+            </xpath>
+
+            <xpath expr="//field[@name='amount_total']" position="attributes">
+                <attribute name="attrs">{'invisible': [('parent.exchange_code', 'in', ('incoming', 'outgoing')), ('state', '!=', 'done')], 'column_invisible': [('parent.other_import', '!=', True)], 'readonly': ['|', ('parent.exchange_code', 'in', ('incoming', 'outgoing')), ('is_amount_total', '!=', True)]}</attribute>
             </xpath>
         </field>
     </record>

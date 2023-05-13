@@ -1,0 +1,92 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_stock_exchange
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-12 17:18+0000\n"
+"PO-Revision-Date: 2023-05-12 17:18+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_stock_exchange
+#: model_terms:ir.ui.view,arch_db:forlife_stock_exchange.stock_exchange_form
+msgid "<span class=\"o_stat_text\">Outgoing</span>"
+msgstr "<span class=\"o_stat_text\">Phiếu xuất NPL</span>"
+
+#. module: forlife_stock_exchange
+#: model:ir.model.fields,field_description:forlife_stock_exchange.field_stock_move__bom_id
+msgid "BOM ID"
+msgstr ""
+
+#. module: forlife_stock_exchange
+#: model:ir.model.fields,field_description:forlife_stock_exchange.field_stock_move__bom_model
+msgid "BOM Model"
+msgstr ""
+
+#. module: forlife_stock_exchange
+#. odoo-python
+#: code:addons/forlife_stock_exchange/models/stock_picking.py:0
+#, python-format
+msgid "Cannot find BOM for product \"%s\"!"
+msgstr "Không tìm thấy BOM cho sản phẩm \"%s\"!"
+
+#. module: forlife_stock_exchange
+#: model:ir.model.fields,field_description:forlife_stock_exchange.field_stock_picking__exchange_code
+#: model:ir.model.fields,field_description:forlife_stock_exchange.field_stock_picking_type__exchange_code
+msgid "Exchange Code"
+msgstr ""
+
+#. module: forlife_stock_exchange
+#: model:stock.picking.type,name:forlife_stock_exchange.forlife_picking_type_outgoing_exchange
+msgid "Export of materials"
+msgstr "Xuất NPL"
+
+#. module: forlife_stock_exchange
+#. odoo-python
+#: code:addons/forlife_stock_exchange/models/stock_picking.py:0
+#: model:ir.actions.act_window,name:forlife_stock_exchange.action_forlife_stock_exchange
+#: model:ir.ui.menu,name:forlife_stock_exchange.menu_forlife_stock_exchange
+#, python-format
+msgid "Forlife Stock Exchange"
+msgstr "Phiếu nhập thành phẩm"
+
+#. module: forlife_stock_exchange
+#: model:stock.picking.type,name:forlife_stock_exchange.forlife_picking_type_incoming_exchange
+msgid "Import of finished products"
+msgstr "Nhập kho thành phẩm"
+
+#. module: forlife_stock_exchange
+#: model:ir.model.fields.selection,name:forlife_stock_exchange.selection__stock_picking_type__exchange_code__incoming
+msgid "Incoming"
+msgstr "Phiếu nhập thành phẩm"
+
+#. module: forlife_stock_exchange
+#. odoo-python
+#: code:addons/forlife_stock_exchange/models/stock_picking.py:0
+#, python-format
+msgid "No materials found for product \"%s\"!"
+msgstr "Không tìm thấy NPL cho sản phẩm \"%s\"!"
+
+#. module: forlife_stock_exchange
+#: model:ir.model.fields.selection,name:forlife_stock_exchange.selection__stock_picking_type__exchange_code__outgoing
+msgid "Outgoing"
+msgstr "Phiếu xuất NPL"
+
+#. module: forlife_stock_exchange
+#: model:ir.model.fields,field_description:forlife_stock_exchange.field_stock_picking__picking_outgoing_id
+msgid "Picking Outgoing"
+msgstr "Phiếu xuất NPL"
+
+#. module: forlife_stock_exchange
+#. odoo-python
+#: code:addons/forlife_stock_exchange/models/stock_picking.py:0
+#, python-format
+msgid "The stock \"%s\" dose not enough goods to export materials!"
+msgstr "Kho \"%s\" không đủ tồn để xuất nguyên phụ liệu!"

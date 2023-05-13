@@ -169,6 +169,10 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     get_card_rank_discount() {
         return this.card_rank_discount || 0;
     }
+    get_display_price_after_discount() {
+        var total = super.get_display_price_after_discount(...arguments);
+        return total - this.get_card_rank_discount();
+    }
 
     get_discount_detail(cr_program) {
         let total_discounted = (this.get_total_discounted() || 0) - (this.get_point() || 0);
