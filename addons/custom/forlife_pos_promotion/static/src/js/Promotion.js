@@ -820,6 +820,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     quantity:  ol.quantity,
                     price: ol.price,
                     isNew: true,
+                    pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
                 });
@@ -848,6 +849,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     quantity:  min_quantity,
                     price: ol.price,
                     isNew: true,
+                    pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
                 });
@@ -887,6 +889,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                         quantity:  quantity,
                         price: ol.price,
                         isNew: true,
+                        pricelist_item: ol.pricelist_item,
                         selectedReward: ol.selectedReward,
                         promotion_usage_ids: [...ol.promotion_usage_ids]
                     });
@@ -909,6 +912,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     quantity:  ol.quantity,
                     price: ol.price,
                     isNew: true,
+                    pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
                 });
@@ -953,6 +957,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     quantity:  taken_reward_qty,
                     price: ol.price,
                     isNew: true,
+                    pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     is_reward_line: true,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
@@ -1033,6 +1038,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                         quantity: qty_taken_on_candidate,
                         price: ol.price,
                         isNew: true,
+                        pricelist_item: ol.pricelist_item,
                         selectedReward: ol.selectedReward,
                         promotion_usage_ids: [...ol.promotion_usage_ids]
                     });
@@ -1057,6 +1063,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                         quantity: line.quantity,
                         price: line.product.lst_price,
                         isNew: true,
+                        pricelist_item: line.pricelist_item,
                         selectedReward: line.selectedReward,
                         promotion_usage_ids: [...line.promotion_usage_ids]
                     });
@@ -2002,6 +2009,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             promotion_usage_ids: arg.promotion_usage_ids,
             quantity: arg['quantity'],
             is_reward_line: arg.is_reward_line,
+            pricelist_item: arg.pricelist_item,
             selectedReward: arg.selectedReward,
             merge: false,
             is_cart_discounted: arg.is_cart_discounted,
