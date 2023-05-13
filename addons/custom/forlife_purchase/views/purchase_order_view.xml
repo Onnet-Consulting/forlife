@@ -166,12 +166,12 @@
                     <field name="is_purchase_request" attrs="{'invisible': True}"/>
                     <field name="is_check_readonly_partner_id" attrs="{'invisible': True}"/>
                     <field name="is_check_readonly_purchase_type" attrs="{'invisible': True}"/>
-                    <field name="partner_domain" invisible="1"/>
-                    <field name="partner_id" string="Nhà cung cấp" attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}" domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]"/>
+                    <field name="partner_domain" invisible="1" />
+                    <field name="partner_id" string="Nhà cung cấp" attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}" domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                      <field name="currency_id" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
+                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '!=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
@@ -211,6 +211,7 @@
                             <create name="add_note_control" string="Add a note"
                                     context="{'default_display_type': 'line_note'}"/>
                         </control>
+                        <field name="is_change_vendor" invisible="1"/>
                         <field name="is_red_color" invisible="1"/>
                         <field name="is_passersby" invisible="1"/>
                         <field name="display_type" invisible="1"/>
