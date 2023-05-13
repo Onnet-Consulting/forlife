@@ -45,7 +45,8 @@ BEGIN
                 where 1=1
                 and am.state = 'posted'
                 and am.date < _date_from::date
-                and am.date > (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id order by ed.max_period_end_date desc limit 1)
+                and (case when exists (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id order by ed.max_period_end_date desc limit 1) then am.date > (select ed.max_period_end_date from end_date ed where ed.product_id = aml.product_id order by ed.max_period_end_date desc limit 1)
+                    else 1 = 1 end)
                 and am.company_id = _company_id
                 and aml.account_id = (select split_part(value_reference, ',', 2)::integer
                                     from ir_property
