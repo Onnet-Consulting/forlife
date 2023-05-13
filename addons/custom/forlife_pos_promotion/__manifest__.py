@@ -20,11 +20,15 @@
         'forlife_point_of_sale',
         'forlife_promotion',
         'forlife_voucher',
-        'forlife_pos_point_order'
+        'forlife_pos_point_order',
+        'forlife_pos_layout'
     ],
     'assets': {
         'point_of_sale.assets': [
             'forlife_pos_promotion/static/src/js/Promotion.js',
+            'forlife_pos_promotion/static/src/js/CustomOrderline.js',
+            # 'forlife_pos_promotion/static/src/js/OrderSummary.js',
+            'forlife_pos_promotion/static/src/js/CustomOrderSummary.js',
             'forlife_pos_promotion/static/src/js/ProductScreen.js',
             'forlife_pos_promotion/static/src/js/PartnerListScreen.js',
             'forlife_pos_promotion/static/src/js/ControlButtons/PromotionButton.js',
@@ -44,6 +48,7 @@
             'forlife_pos_promotion/static/src/xml/ControlButtons/ResetPromotionProgramsButton.xml',
 
             'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/Orderline.xml',
+            'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/CustomOrderline.xml',
             'forlife_pos_promotion/static/src/xml/Popup/ProgramSelectionPopup.xml',
             'forlife_pos_promotion/static/src/xml/Popup/ComboDetailsPopup.xml',
             'forlife_pos_promotion/static/src/xml/ControlButtons/CartPromotionButton.xml',
