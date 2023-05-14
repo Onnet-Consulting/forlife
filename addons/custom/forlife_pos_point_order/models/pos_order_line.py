@@ -10,6 +10,7 @@ class PosOrderLine(models.Model):
     point = fields.Integer('Points Used', readonly=True)
     money_is_reduced = fields.Monetary('Money is reduced', compute='_compute_money_is_reduced_line')
     discount_details_lines = fields.One2many('pos.order.line.discount.details', 'pos_order_line_id', 'Discount details')
+    is_new_line_point = fields.Boolean()
 
     @api.depends('discount_details_lines.money_reduced')
     def _compute_money_is_reduced_line(self):
@@ -32,6 +33,7 @@ class PosOrderLine(models.Model):
     def _export_for_ui(self, orderline):
         result = super()._export_for_ui(orderline)
         result['point'] = orderline.point
+        result['is_new_line_point'] = orderline.is_new_line_point
         return result
 
     @api.depends('order_id.program_store_point_id')

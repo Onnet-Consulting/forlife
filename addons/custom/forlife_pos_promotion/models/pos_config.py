@@ -22,6 +22,7 @@ class PosConfig(models.Model):
     def get_history_program_usages(self, partner_id: int, programs: list):
         """"""
         programs = [int(p) for p in programs]
+        input_program_ids = self.env['promotion.program'].browse(programs)
         usages = self.env['promotion.usage.line'].search([
             ('order_id.partner_id', '=', partner_id),
             ('program_id', 'in', programs)
@@ -32,21 +33,24 @@ class PosConfig(models.Model):
             value_programs[usage.program_id.id] += usage.order_line_id.qty
         for (program_id, qty) in value_programs.items():
             program = self.env['promotion.program'].browse(program_id)
-            applied_number = qty / program.qty_per_combo \
-                if program.promotion_type == 'combo' and program.qty_per_combo > 0 else qty
+            if program.promotion_type == 'code':
+                applied_number = len(usages.filtered(lambda u: u.program_id.id == program_id).mapped('order_id'))
+            else:
+                applied_number = qty / program.qty_per_combo if program.qty_per_combo > 0 else qty
             result[program_id] = applied_number
 
         # Get history limit qty per program
-        combo_program_ids = self.env['promotion.program'].browse(programs).filtered(
-            lambda p: p.limit_usage_per_program and p.promotion_type == 'combo')
+        combo_program_ids = input_program_ids.filtered(
+            lambda p: p.limit_usage_per_program and p.promotion_type in ('combo', 'code'))
         limited_program_usages = self.env['promotion.usage.line'].search([('program_id', 'in', combo_program_ids.ids)])
-        limited_program_usages = groupby(limited_program_usages, lambda line: line.program_id)
         all_usage_promotions = {}
-        for program, usages in limited_program_usages:
-            usages_list = list(usages)
-            qty = sum([usage.order_line_id.qty for usage in usages_list])
-            applied_number = qty / program.qty_per_combo \
-                if program.promotion_type == 'combo' and program.qty_per_combo > 0 else qty
+        for program in combo_program_ids:
+            usages = limited_program_usages.filtered(lambda u: u.program_id.id == program.id)
+            if program.promotion_type == 'combo':
+                qty = sum([usage.order_line_id.qty for usage in usages])
+                applied_number = qty / program.qty_per_combo if program.qty_per_combo > 0 else qty
+            else:
+                applied_number = len(usages.mapped('order_id'))
             all_usage_promotions[program.id] = applied_number
         result['all_usage_promotions'] = all_usage_promotions
         return result
@@ -103,15 +107,26 @@ class PosConfig(models.Model):
                 },
             }
 
+        history = {}
         if code_id.program_id.limit_usage_per_customer:
             history = self.get_history_program_usages(partner_id, [code_id.program_id.id])
-            if history.get(code_id.program_id.id) >= code_id.program_id.max_usage_per_customer:
+            if history.get(code_id.program_id.id, 0) >= code_id.program_id.max_usage_per_customer:
                 return {
                     'successful': False,
                     'payload': {
                         'error_message': _('This coupon is expired or over maximum usages: (%s).', code),
                     },
                 }
+        if code_id.program_id.limit_usage_per_program:
+            history = history or self.get_history_program_usages(partner_id, [code_id.program_id.id])
+            if history.get('all_usage_promotions', {}).get(code_id.program_id.id, 0) >= code_id.program_id.max_usage_per_program:
+                return {
+                    'successful': False,
+                    'payload': {
+                        'error_message': _('This coupon is expired or over maximum usages: (%s).', code),
+                    },
+                }
+
         has_reward = False
         if code_id.reward_for_referring:
             order_partner = self.env['res.partner'].browse(partner_id)
