@@ -35,6 +35,11 @@ class ProductTemplate(models.Model):
     expiration_date = fields.Date('Expiration Date')
     warning_date = fields.Date('Warning Date')
     pos_ok = fields.Boolean('Available on POS')
+    x_type_cost_product = fields.Selection(
+        selection=[
+            ('internal_costs', 'Chi phí nội bộ'),
+            ('labor_costs', 'Chi phí nhân công'),
+        ], string="Sản phẩn là chi phí")
 
     @api.model
     def default_get(self, default_fields):
