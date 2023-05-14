@@ -32,6 +32,14 @@ class StockValueReport(models.TransientModel):
     account_id = fields.Many2one('account.account', 'Account')
     based_on_account = fields.Boolean('Based on Account', default=True)
 
+    @api.onchange('date_from', 'date_to')
+    def _onchange_date(self):
+        if self.date_from > self.date_to:
+            return {'warning': {
+                'title': 'Warning',
+                'message': _('To date must be greater than From date')
+            }}
+
     # file sql
     def init(self):
         outgoing_value_diff_report = read_sql_file('./forlife_stock_report/sql_functions/outgoing_value_diff_report.sql')
@@ -68,6 +76,8 @@ class StockValueReport(models.TransientModel):
     # bảng kê chênh lệch giá trị xuất
     def action_get_outgoing_value_diff_report(self):
         # must be utc time
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
         current_tz = pytz.timezone(self.env.context.get('tz'))
         utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
         utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
@@ -241,6 +251,9 @@ class StockValueReport(models.TransientModel):
             wssheet.merge_range(last_row + 4, 0, last_row + 4, 3, '(Kí ghi rõ họ tên)',
                                 style_excel['style_header_unbold'])
 
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
+
         # true action
         result = get_data()
 
@@ -265,8 +278,9 @@ class StockValueReport(models.TransientModel):
 
     # bảng kê nhập xuất tồn
     def action_get_stock_incoming_outgoing_report(self):
-        # must be utc time
-        # current_tz = pytz.timezone(self.env.context.get('tz'))
+
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
         utc_datetime_from = str(self.date_from)
         utc_datetime_to = str(self.date_to)
         sql = f"""
@@ -450,6 +464,9 @@ class StockValueReport(models.TransientModel):
             wssheet.merge_range(last_row + 4, 0, last_row + 4, 3, '(Kí ghi rõ họ tên)',
                                 style_excel['style_header_unbold'])
 
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
+
         # true action
         result = get_data()
 
@@ -555,6 +572,9 @@ class StockValueReport(models.TransientModel):
             wssheet.merge_range(last_row + 4, 0, last_row + 4, 3, '(Kí ghi rõ họ tên)',
                                 style_excel['style_header_unbold'])
 
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
+
         # true action
         result, picking_type_name = get_data()
 
@@ -581,6 +601,8 @@ class StockValueReport(models.TransientModel):
         return self.action_download_excel(base64.encodebytes(xlsx_data), _('Outgoing Value Different Report based on Item'))
 
     def action_create_invoice(self):
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
         self._cr.execute(f"""
                         SELECT report.product_id,
                                 report.picking_type_id,
@@ -667,10 +689,10 @@ class StockValueReport(models.TransientModel):
                     account_id,
                     %s,
                     closing_quantity,
-                    closing_value,
                     (case when closing_quantity = 0 then 0
                             else closing_value / closing_quantity
                     end) price_unit,
+                    closing_value,
                     %s,
                     %s,
                     %s,
@@ -687,6 +709,8 @@ class StockValueReport(models.TransientModel):
 
     def validate_report_create_quant(self):
         # check period check report
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
         if not (self.date_from.month == self.date_to.month and self.date_from.year == self.date_to.year):
             raise ValidationError(_('Period check report must be in 1 month'))
         if self.date_from.day != 1:
