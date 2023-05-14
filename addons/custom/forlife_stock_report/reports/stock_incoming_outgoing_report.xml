@@ -30,7 +30,8 @@
                             <field name="detail_ids" readonly="1">
                                 <tree limit="1000">
                                     <field name="report_id" invisible="1"/>
-                                    <field name="account_id"/>
+                                    <field name="account_id" invisible="1"/>
+                                    <field name="account_code"/>
                                     <field name="product_code"/>
                                     <field name="product_id"/>
                                     <field name="opening_quantity" sum="Total Opening Quantity"/>
