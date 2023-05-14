@@ -27,7 +27,7 @@
                             </t>
                         </ul>
                     </div>
-                    <OrderSummary order="order" />
+                    <CustomOrderSummary order="order" />
                 </t>
             </div>
         </xpath>

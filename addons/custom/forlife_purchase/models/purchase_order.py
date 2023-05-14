@@ -104,6 +104,33 @@ class PurchaseOrder(models.Model):
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
+    @api.onchange('partner_id', 'currency_id')
+    def onchange_partner_id_warning(self):
+        res = super().onchange_partner_id_warning()
+        if self.partner_id and self.order_line and self.currency_id:
+            for item in self.order_line:
+                if item.product_id:
+                    item.product_uom = item.product_id.uom_id.id
+                    date_item = datetime.datetime.now().date()
+                    supplier_info = self.env['product.supplierinfo'].search(
+                        [('product_id', '=', item.product_id.id), ('partner_id', '=', self.partner_id.id),
+                         ('date_start', '<', date_item),
+                         ('date_end', '>', date_item),
+                         ('currency_id', '=',  self.currency_id.id)
+                         ])
+                    if supplier_info:
+                        item.purchase_uom = supplier_info[-1].product_uom
+                        data = self.env['product.supplierinfo'].search([
+                            ('product_tmpl_id', '=', item.product_id.product_tmpl_id.id),
+                            ('partner_id', '=', self.partner_id.id),
+                            ('product_uom', '=', item.purchase_uom.id),
+                            ('amount_conversion', '=', item.exchange_quantity)
+                        ], limit=1)
+                        item.vendor_price = data.price if data else False
+                        item.price_unit = item.vendor_price / item.exchange_quantity if item.exchange_quantity else False
+        # Do something with res
+        return res
+
     @api.constrains('currency_id')
     def constrains_currency_id(self):
         for item in self:
@@ -854,6 +881,8 @@ class PurchaseOrderLine(models.Model):
     is_red_color = fields.Boolean(compute='compute_is_red_color')
     name = fields.Char(default="Tên sản phẩm", required=False)
     product_uom = fields.Many2one('uom.uom', related='product_id.uom_id', store=True, required=False)
+    currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
+    is_change_vendor = fields.Integer()
 
     @api.model
     def create(self, vals):
@@ -879,7 +908,7 @@ class PurchaseOrderLine(models.Model):
     def compute_is_red_color(self):
         date_item = datetime.datetime.now().date()
         for item in self:
-            if not (item.product_id and item.supplier_id and item.purchase_uom):
+            if not (item.product_id and item.supplier_id and item.purchase_uom and item.currency_id):
                 item.is_red_color = False
                 continue
             supplier_info = self.search_product_sup(
@@ -887,19 +916,23 @@ class PurchaseOrderLine(models.Model):
                  ('product_id', '=', item.product_id.id),
                  ('partner_id', '=', item.supplier_id.id),
                  ('date_start', '<', date_item),
-                 ('date_end', '>', date_item)])
+                 ('date_end', '>', date_item),
+                 ('currency_id', '>',  item.currency_id),
+                 ])
             item.is_red_color = True if item.exchange_quantity not in supplier_info.mapped(
                 'amount_conversion') else False
 
-    @api.onchange('product_id')
+    @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):
-        if self.product_id:
+        if self.product_id and self.currency_id:
             self.product_uom = self.product_id.uom_id.id
             date_item = datetime.datetime.now().date()
             supplier_info = self.search_product_sup(
                 [('product_id', '=', self.product_id.id), ('partner_id', '=', self.supplier_id.id),
                  ('date_start', '<', date_item),
-                 ('date_end', '>', date_item)])
+                 ('date_end', '>', date_item),
+                 ('currency_id', '=', self.currency_id.id)
+                 ])
             if supplier_info:
                 self.purchase_uom = supplier_info[-1].product_uom
 
@@ -909,8 +942,10 @@ class PurchaseOrderLine(models.Model):
             date_item = datetime.datetime.now().date()
             supplier_info = self.search_product_sup(
                 [('product_id', '=', item.product_id.id), ('partner_id', '=', item.supplier_id.id),
+                 ('currency_id', '=', item.currency_id.id),
                  ('date_start', '<', date_item),
-                 ('date_end', '>', date_item)]) if item.supplier_id and item.product_id else None
+                 ('date_end', '>',
+                  date_item)]) if item.supplier_id and item.product_id and item.currency_id else None
             item.domain_uom = json.dumps(
                 [('id', 'in', supplier_info.mapped('product_uom').ids)]) if supplier_info else json.dumps([])
 

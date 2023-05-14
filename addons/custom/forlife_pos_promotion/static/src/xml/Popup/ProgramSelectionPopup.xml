@@ -8,7 +8,7 @@
             </header>
             <p style="margin: 10px 0 10px 0"><strong style="font-size: 20px;">Tổng giảm đã trên đơn: &nbsp;<t t-esc="this.env.pos.format_currency(state.discount_amount_order)"/></strong></p>
             <p t-if="props.programs.some(p=>p.need_of_reward_selection)" style="margin: 10px 0 10px 0;">
-                <strong style="font-size: 20px;text-color: burlywood;">Vui lòng chọn thêm sản phẩm tặng</strong>
+                <strong style="font-size: 20px;color: coral;">Vui lòng chọn thêm sản phẩm tặng</strong>
             </p>
             <hr/>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">

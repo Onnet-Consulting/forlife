@@ -26,14 +26,15 @@ class InheritStockPicking(models.Model):
         move_outgoing_values = []
         for move in move_incoming_ids:
             bom = move.env[move.bom_model].browse(move.bom_id)
-            move_outgoing_values += ([{
+            move_outgoing_value = [{
                 'picking_id': self.id,
                 'name': material.product_id.name,
                 'product_id': material.product_id.id,
                 'location_id': self.location_id.id,
                 'location_dest_id': self.location_dest_id.id,
-                'product_uom_qty': 1,
-                'price_unit': material.total,
+                'product_uom_qty': move.product_uom_qty,
+                'price_unit': material.product_id.cost,
+                'amount_total': move.product_uom_qty * material.product_id.cost,
                 'bom_model': material._name,
                 'bom_id': material.id,
             } for material in bom.forlife_bom_material_ids] + [{
@@ -42,8 +43,9 @@ class InheritStockPicking(models.Model):
                 'product_id': ingredients.product_id.id,
                 'location_id': self.location_id.id,
                 'location_dest_id': self.location_dest_id.id,
-                'product_uom_qty': 1,
-                'price_unit': ingredients.total,
+                'product_uom_qty': move.product_uom_qty,
+                'price_unit': ingredients.product_id.cost,
+                'amount_total': move.product_uom_qty * ingredients.product_id.cost,
                 'bom_model': ingredients._name,
                 'bom_id': ingredients.id,
             } for ingredients in bom.forlife_bom_ingredients_ids] + [{
@@ -52,11 +54,15 @@ class InheritStockPicking(models.Model):
                 'product_id': expense.product_id.id,
                 'location_id': self.location_id.id,
                 'location_dest_id': self.location_dest_id.id,
-                'product_uom_qty': 1,
-                'price_unit': expense.rated_level,
+                'product_uom_qty': move.product_uom_qty,
+                'price_unit': expense.product_id.cost,
+                'amount_total': move.product_uom_qty * expense.product_id.cost,
                 'bom_model': expense._name,
                 'bom_id': expense.id,
-            } for expense in bom.forlife_bom_service_cost_ids])
+            } for expense in bom.forlife_bom_service_cost_ids]
+            # if not move_outgoing_value:
+            #     raise ValidationError(_('No materials found for product "%s"!', move.product_id.name))
+            move_outgoing_values += move_outgoing_value
         return self.env['stock.move'].create(move_outgoing_values)
 
     def _generate_outgoing_picking(self):
@@ -74,7 +80,7 @@ class InheritStockPicking(models.Model):
         picking_outgoing_id.action_confirm()
         picking_outgoing_id.action_assign()
         if picking_outgoing_id.state != 'assigned':
-            raise ValidationError(_('The stock "%s" is not enough goods to export!' % picking_outgoing_id.location_id.name))
+            raise ValidationError(_('The stock "%s" dose not enough goods to export materials!', picking_outgoing_id.location_id.name))
         picking_outgoing_id.button_validate()
         return picking_outgoing_id
 
@@ -88,14 +94,14 @@ class InheritStockPicking(models.Model):
             }
             for incoming_move in self.move_ids:
                 if incoming_move.product_id.id not in bom_ids:
-                    raise ValidationError(_('Cannot find BOM (product %s)!' % incoming_move.product_id.name))
+                    raise ValidationError(_('Cannot find BOM for product "%s"!', incoming_move.product_id.name))
                 price_unit = incoming_move.price_unit or bom_ids[incoming_move.product_id.id].unit_price
                 incoming_move.write({
                     'bom_model': bom_ids[incoming_move.product_id.id]._name,
                     'bom_id': bom_ids[incoming_move.product_id.id].id,
                     'price_unit': price_unit,
-                    'product_uom_qty': bom_ids[incoming_move.product_id.id].produce_qty,
-                    'amount_total': price_unit * bom_ids[incoming_move.product_id.id].produce_qty
+                    # 'product_uom_qty': bom_ids[incoming_move.product_id.id].produce_qty,
+                    'amount_total': price_unit * incoming_move.product_uom_qty
                 })
             picking_outgoing_id = self._generate_outgoing_picking()
             self.write({'picking_outgoing_id': picking_outgoing_id.id})

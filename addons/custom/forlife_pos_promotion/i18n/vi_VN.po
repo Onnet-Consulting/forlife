@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-12 02:20+0000\n"
-"PO-Revision-Date: 2023-05-12 02:20+0000\n"
+"POT-Creation-Date: 2023-05-14 10:41+0000\n"
+"PO-Revision-Date: 2023-05-14 10:41+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -150,6 +150,11 @@ msgstr ""
 "                        </span>"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__message_needaction
+msgid "Action Needed"
+msgstr ""
+
+#. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_pricelist_item_view_search
 msgid "Activated"
 msgstr "Đang kích hoạt"
@@ -241,6 +246,16 @@ msgid "Archived"
 msgstr "Đã lưu trữ"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_pricelist_item__barcode
+msgid "Barcode"
+msgstr ""
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__limit_usage_per_customer
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__limit_usage_per_order
 #: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_program__limit_usage_per_program
@@ -294,6 +309,7 @@ msgstr "Không thể xóa chương trình khuyến mãi đã được sử dụn
 #. module: forlife_pos_promotion
 #. odoo-javascript
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/CartPromotionPopup.js:0
+#: code:addons/forlife_pos_promotion/static/src/js/Popup/CodeInputPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/ComboDetailsPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/ProgramSelectionPopup.js:0
 #: code:addons/forlife_pos_promotion/static/src/js/Popup/RewardSelectionCartPromotionPopup.js:0
@@ -499,8 +515,8 @@ msgstr "Công thức Combo phải được thiết lập cho chương trình Com
 
 #. module: forlife_pos_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
-msgid "Combo/SP"
-msgstr ""
+msgid "Combo/Order"
+msgstr "Combo/lần"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__company_id
@@ -577,6 +593,16 @@ msgid "Current order"
 msgstr "Đơn hàng hiện tại"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,help:forlife_pos_promotion.field_promotion_pricelist_item__qty_available
+msgid ""
+"Current quantity of products.\n"
+"In a context with a single Stock Location, this includes goods stored at this Location, or any of its children.\n"
+"In a context with a single Warehouse, this includes goods stored in the Stock Location of this Warehouse, or any of its children.\n"
+"stored in the Stock Location of the Warehouse of this Shop, or any of its children.\n"
+"Otherwise, this includes goods stored in any Stock Location with 'internal' type."
+msgstr ""
+
+#. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_campaign__customer_domain
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_configuration__customer_domain
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__customer_domain
@@ -597,6 +623,11 @@ msgstr "Các ngày trong tháng"
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__dayofweek_ids
 msgid "DayOfWeek"
 msgstr "Các ngày trong tuần"
+
+#. module: forlife_pos_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_program_view_form
+msgid "Debug-Recompute Field Binary"
+msgstr ""
 
 #. module: forlife_pos_promotion
 #. odoo-python
@@ -661,6 +692,7 @@ msgstr "Sản phẩm khuyến mãi"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__discount_based_on__discounted_price
+#: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__incl_reward_in_order_type__discounted_price
 msgid "Discounted Price"
 msgstr "Giá đã giảm"
 
@@ -683,6 +715,7 @@ msgid "Domain"
 msgstr "Miền"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_campaign_campaign_check_date
 #: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_program_check_dates
 #: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_program_check_dates_tax_register
 msgid "End date may not be before the starting date."
@@ -699,8 +732,8 @@ msgstr "Nhập mã KM"
 #. odoo-javascript
 #: code:addons/forlife_pos_promotion/static/src/js/ControlButtons/EnterCodeButton.js:0
 #, python-format
-msgid "Ex: FORMAT-001"
-msgstr "VD: FORMAT-001"
+msgid "Ex: 42-FORMAT-001"
+msgstr ""
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_code__expiration_date
@@ -832,6 +865,7 @@ msgstr "Đang chạy"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__incl_reward_in_order
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_program__incl_reward_in_order_type
 msgid "Include Reward in Order"
 msgstr "Gồm giá trị sản phẩm KM"
 
@@ -1059,6 +1093,11 @@ msgid "No Code Found."
 msgstr ""
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__incl_reward_in_order_type__no_incl
+msgid "No Include"
+msgstr "Không bao gồm"
+
+#. module: forlife_pos_promotion
 #. odoo-javascript
 #: code:addons/forlife_pos_promotion/static/src/js/ControlButtons/PromotionButton.js:0
 #, python-format
@@ -1095,6 +1134,13 @@ msgstr ""
 #: code:addons/forlife_pos_promotion/static/src/js/PartnerListScreen.js:0
 #, python-format
 msgid "Offline"
+msgstr ""
+
+#. module: forlife_pos_promotion
+#. odoo-javascript
+#: code:addons/forlife_pos_promotion/static/src/js/Popup/CodeInputPopup.js:0
+#, python-format
+msgid "Ok"
 msgstr ""
 
 #. module: forlife_pos_promotion
@@ -1413,6 +1459,11 @@ msgid "Quantity"
 msgstr "Số lượng"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_pricelist_item__qty_available
+msgid "Quantity On Hand"
+msgstr ""
+
+#. module: forlife_pos_promotion
 #: model:ir.model.constraint,message:forlife_pos_promotion.constraint_promotion_combo_line_combo_line_quantity_check
 msgid "Quantity must be positive"
 msgstr "Số lượng phải là số dương"
@@ -1421,6 +1472,11 @@ msgstr "Số lượng phải là số dương"
 #: model_terms:ir.ui.view,arch_db:forlife_pos_promotion.promotion_generate_wizard_view_form
 msgid "Quantity to generate"
 msgstr "Số lượng cần tạo"
+
+#. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_pos_order__ref_reward_code_ids
+msgid "Ref Reward Code"
+msgstr ""
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__referring_date_from
@@ -1674,6 +1730,7 @@ msgstr "Không có mã KM nào được tạo."
 #. odoo-python
 #: code:addons/forlife_pos_promotion/models/pos_config.py:0
 #: code:addons/forlife_pos_promotion/models/pos_config.py:0
+#: code:addons/forlife_pos_promotion/models/pos_config.py:0
 #, python-format
 msgid "This coupon is expired or over maximum usages: (%s)."
 msgstr "Mã khuyến mãi này hết hạn hoặc vượt quá giới hạn sử dụng: (%s)."
@@ -1725,6 +1782,7 @@ msgstr "Không thể lưu thay đổi"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__discount_based_on__unit_price
+#: model:ir.model.fields.selection,name:forlife_pos_promotion.selection__promotion_program__incl_reward_in_order_type__unit_price
 msgid "Unit Price"
 msgstr "Nguyên giá"
 

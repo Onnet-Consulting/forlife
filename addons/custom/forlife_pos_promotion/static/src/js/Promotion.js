@@ -736,7 +736,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let result = {};
         for (let line of this.get_orderlines_to_check()) {
             for (let usage of line.promotion_usage_ids) {
-                if (this.pos.promotion_program_by_id[usage.program_id].promotion_type == 'combo'){
+                if (['combo', 'code'].includes(this.pos.promotion_program_by_id[usage.program_id].promotion_type)){
                     if (usage.program_id in result) {
                         result[usage.program_id] += line.quantity;
                     } else {
@@ -747,7 +747,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         };
         Object.entries(result).forEach(([k,v]) => {
             let program = this.pos.promotion_program_by_id[k];
-            v = v/program.qty_per_combo;
+            v = v/ (program.qty_per_combo || 1);
             result[k] = v;
         });
         return result
@@ -813,17 +813,30 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (to_check_order_lines.length) {
             check_q = to_check_order_lines.reduce(funct_check_q, 0);
         }
+        var number_product_apply = 0;
         if (codeProgram.reward_type == "code_amount" && ((codeProgram.discount_apply_on == "order" && check_q >= valid_product_ids.size) || !valid_product_ids.size)) {
             for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id) || !valid_product_ids.size)) {
+                var ol_quantity = ol.quantity;
+                number_product_apply += ol_quantity
+                if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
+                    ol_quantity = codeProgram.reward_quantity - number_product_apply + ol_quantity;
+                    number_product_apply = codeProgram.reward_quantity;
+                }
+
+                if (!ol_quantity) {
+                    break;
+                }
+
                 to_discount_line_vals.push({
                     product: ol.product,
-                    quantity:  ol.quantity,
+                    quantity:  ol_quantity,
                     price: ol.price,
                     isNew: true,
+                    pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
                 });
-                ol.quantity = ol.quantity - quantity_combo * min_quantity;
+                ol.quantity -= ol_quantity;
                 ol.quantityStr = field_utils.format.float(ol.quantity, {digits: [69, decimals]});
                 if (ol.key_program && to_apply_lines[ol.key_program]) {
                     for (let new_line of to_apply_lines[ol.key_program].filter((l)=>l.product.id === ol.product.id)) {
@@ -843,16 +856,28 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 quantity_combo = max_count - count
             }
             for (var i =0; i<quantity_combo; i++) {
+                var ol_quantity = min_quantity;
+                number_product_apply += ol_quantity;
+                if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
+                    ol_quantity = codeProgram.reward_quantity - number_product_apply + ol_quantity;
+                    number_product_apply = codeProgram.reward_quantity;
+                }
+
+                if (!ol_quantity) {
+                    break;
+                }
+
                 to_discount_line_vals.push({
                     product: ol.product,
-                    quantity:  min_quantity,
+                    quantity:  ol_quantity,
                     price: ol.price,
                     isNew: true,
+                    pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
                 });
+                ol.quantity -= ol_quantity;
             }
-            ol.quantity = ol.quantity - quantity_combo * min_quantity;
             ol.quantityStr = field_utils.format.float(ol.quantity, {digits: [69, decimals]});
             count += quantity_combo;
             if (ol.key_program && to_apply_lines[ol.key_program]) {
@@ -882,11 +907,21 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     var quantity = ol.quantity;
                     min_quantity_tmp -= ol.quantity;
                     total_quantity -= ol.quantity;
+                    number_product_apply += quantity;
+                    if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
+                        quantity = codeProgram.reward_quantity - number_product_apply + quantity;
+                        number_product_apply = codeProgram.reward_quantity;
+                    }
+
+                    if (!quantity) {
+                        break;
+                    }
                     to_discount_line_vals.push({
                         product: ol.product,
                         quantity:  quantity,
                         price: ol.price,
                         isNew: true,
+                        pricelist_item: ol.pricelist_item,
                         selectedReward: ol.selectedReward,
                         promotion_usage_ids: [...ol.promotion_usage_ids]
                     });
@@ -904,15 +939,27 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
         if (codeProgram.reward_type == "code_percent" && codeProgram.discount_apply_on == "order" && count > 0) {
             for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id))) {
+                var ol_quantity = ol.quantity;
+                number_product_apply += ol_quantity;
+                if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
+                    ol_quantity = codeProgram.reward_quantity - number_product_apply + ol_quantity;
+                    number_product_apply = codeProgram.reward_quantity;
+                }
+
+                if (!ol_quantity) {
+                    break;
+                }
+
                 to_discount_line_vals.push({
                     product: ol.product,
-                    quantity:  ol.quantity,
+                    quantity:  ol_quantity,
                     price: ol.price,
                     isNew: true,
+                    pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
                 });
-                ol.quantity = ol.quantity - quantity_combo * min_quantity;
+                ol.quantity -= ol_quantity;
                 ol.quantityStr = field_utils.format.float(ol.quantity, {digits: [69, decimals]});
                 if (ol.key_program && to_apply_lines[ol.key_program]) {
                     for (let new_line of to_apply_lines[ol.key_program].filter((l)=>l.product.id === ol.product.id)) {
@@ -953,6 +1000,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     quantity:  taken_reward_qty,
                     price: ol.price,
                     isNew: true,
+                    pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     is_reward_line: true,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
@@ -1033,6 +1081,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                         quantity: qty_taken_on_candidate,
                         price: ol.price,
                         isNew: true,
+                        pricelist_item: ol.pricelist_item,
                         selectedReward: ol.selectedReward,
                         promotion_usage_ids: [...ol.promotion_usage_ids]
                     });
@@ -1057,6 +1106,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                         quantity: line.quantity,
                         price: line.product.lst_price,
                         isNew: true,
+                        pricelist_item: line.pricelist_item,
                         selectedReward: line.selectedReward,
                         promotion_usage_ids: [...line.promotion_usage_ids]
                     });
@@ -1087,6 +1137,18 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let historyUsed = (this.historyProgramUsages.all_usage_promotions || {})[program.id] || 0;
                 let applied_per_program = historyUsed + applied_qty_on_order;
                 if  (applied_per_program > program.max_usage_per_program) {
+                    return [program, 'limit_usage_per_program', program.max_usage_per_program - historyUsed];
+                };
+            };
+            if (program.promotion_type=='code' && program.limit_usage_per_customer) {
+                let historyUsed = (this.historyProgramUsages || {})[program.id] || 0;
+                if  (historyUsed >= program.max_usage_per_customer) {
+                    return [program, 'limit_usage_per_customer', program.max_usage_per_customer - historyUsed];
+                };
+            };
+            if (program.promotion_type=='code' && program.limit_usage_per_program) {
+                let historyUsed = (this.historyProgramUsages.all_usage_promotions || {})[program.id] || 0;
+                if  (historyUsed >= program.max_usage_per_program) {
                     return [program, 'limit_usage_per_program', program.max_usage_per_program - historyUsed];
                 };
             };
@@ -1346,7 +1408,20 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 continue
             };
 
-            const amountCheck = totalsPerProgram[program.id]['taxed']
+            let amountCheck = totalsPerProgram[program.id]['taxed'];
+            if (program.incl_reward_in_order_type == 'no_incl' && !['cart_get_voucher', 'cart_get_x_free'].includes(program.reward_type)) {
+                let no_incl_amount = 0;
+                let no_incl_ols = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0)
+                                            .filter(l=>program.discount_product_ids.has(l.product.id));
+                let need_qty = program.reward_quantity;
+                for (let ol of no_incl_ols) {
+                    let taken_qty = 0;
+                    let to_take = Math.min(program.reward_quantity, ol.quantity);
+                    no_incl_amount += to_take * ol.price;
+                    if (need_qty <= 0) {break;}
+                };
+                amountCheck -= no_incl_amount;
+            };
             if (program.order_amount_min >0 && program.order_amount_min > amountCheck) {
                 continue;
             };
@@ -1989,6 +2064,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             promotion_usage_ids: arg.promotion_usage_ids,
             quantity: arg['quantity'],
             is_reward_line: arg.is_reward_line,
+            pricelist_item: arg.pricelist_item,
             selectedReward: arg.selectedReward,
             merge: false,
             is_cart_discounted: arg.is_cart_discounted,

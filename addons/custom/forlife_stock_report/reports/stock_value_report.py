@@ -29,22 +29,28 @@ class StockValueReport(models.TransientModel):
     date_from = fields.Date('From Date', required=True)
     date_to = fields.Date('To Date', default=fields.Date.context_today, required=True)
     detail_ids = fields.One2many('stock.value.report.detail', 'report_id', 'Detail')
+    account_id = fields.Many2one('account.account', 'Account')
     based_on_account = fields.Boolean('Based on Account', default=True)
+
+    @api.onchange('date_from', 'date_to')
+    def _onchange_date(self):
+        if self.date_from > self.date_to:
+            return {'warning': {
+                'title': 'Warning',
+                'message': _('To date must be greater than From date')
+            }}
 
     # file sql
     def init(self):
         outgoing_value_diff_report = read_sql_file('./forlife_stock_report/sql_functions/outgoing_value_diff_report.sql')
         outgoing_value_diff_account_report = read_sql_file(
             './forlife_stock_report/sql_functions/outgoing_value_diff_account_report.sql')
-        stock_incoming_outgoing_report = read_sql_file(
-            './forlife_stock_report/sql_functions/stock_incoming_outgoing_report.sql')
         stock_incoming_outgoing_account_report = read_sql_file(
             './forlife_stock_report/sql_functions/stock_incoming_outgoing_account_report.sql')
         outgoing_value_diff_account_report_picking_type = read_sql_file(
             './forlife_stock_report/sql_functions/outgoing_value_diff_account_report_picking_type.sql')
         self.env.cr.execute(outgoing_value_diff_report)
         self.env.cr.execute(outgoing_value_diff_account_report)
-        self.env.cr.execute(stock_incoming_outgoing_report)
         self.env.cr.execute(stock_incoming_outgoing_account_report)
         self.env.cr.execute(outgoing_value_diff_account_report_picking_type)
 
@@ -70,6 +76,8 @@ class StockValueReport(models.TransientModel):
     # bảng kê chênh lệch giá trị xuất
     def action_get_outgoing_value_diff_report(self):
         # must be utc time
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
         current_tz = pytz.timezone(self.env.context.get('tz'))
         utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
         utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
@@ -243,6 +251,9 @@ class StockValueReport(models.TransientModel):
             wssheet.merge_range(last_row + 4, 0, last_row + 4, 3, '(Kí ghi rõ họ tên)',
                                 style_excel['style_header_unbold'])
 
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
+
         # true action
         result = get_data()
 
@@ -267,69 +278,81 @@ class StockValueReport(models.TransientModel):
 
     # bảng kê nhập xuất tồn
     def action_get_stock_incoming_outgoing_report(self):
-        # must be utc time
-        current_tz = pytz.timezone(self.env.context.get('tz'))
-        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
-        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
-        self._cr.execute(f"""
-            DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
-            INSERT INTO stock_value_report_detail (
-                                        report_id,
-                                        currency_id,
-                                        product_id,
-                                        opening_quantity,
-                                        opening_value,
-                                        incoming_quantity,
-                                        incoming_value,
-                                        odoo_outgoing_quantity,
-                                        real_outgoing_value,
-                                        closing_quantity,
-                                        closing_value,
-                                        create_date,
-                                        write_date,
-                                        create_uid,
-                                        write_uid)
-            SELECT %s,
-                    %s,
-                    product_id,
-                    opening_quantity,
-                    opening_value,
-                    incoming_quantity,
-                    incoming_value,
-                    odoo_outgoing_quantity,
-                    real_outgoing_value,
-                    closing_quantity,
-                    closing_value,
-                    %s,
-                    %s,
-                    %s,
-                    %s
-            FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s, %s)
-        """, (self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(), datetime.utcnow(),
-              self.env.user.id, self.env.user.id, utc_datetime_from, utc_datetime_to, self.env.company.id, self.env['stock.quant.period'].get_last_date_period(self.date_from)))
+
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
+        utc_datetime_from = str(self.date_from)
+        utc_datetime_to = str(self.date_to)
+        sql = f"""
+                DELETE FROM stock_value_report_detail WHERE create_uid = %s and report_id = %s;
+                INSERT INTO stock_value_report_detail (
+                                            report_id,
+                                            currency_id,
+                                            product_id,
+                                            account_id,
+                                            opening_quantity,
+                                            opening_value,
+                                            incoming_quantity,
+                                            incoming_value,
+                                            odoo_outgoing_quantity,
+                                            real_outgoing_value,
+                                            closing_quantity,
+                                            closing_value,
+                                            create_date,
+                                            write_date,
+                                            create_uid,
+                                            write_uid)
+                SELECT %s,
+                        %s,
+                        product_id,
+                        account_id,
+                        opening_quantity,
+                        opening_value,
+                        incoming_quantity,
+                        incoming_value,
+                        odoo_outgoing_quantity,
+                        real_outgoing_value,
+                        closing_quantity,
+                        closing_value,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                FROM stock_incoming_outgoing_report_account(%s, %s, %s)
+                """
+        params = (self.env.user.id, self.id, self.id, self.env.company.currency_id.id, datetime.utcnow(),
+                  datetime.utcnow(), self.env.user.id, self.env.user.id, utc_datetime_from, utc_datetime_to,
+                  self.env.company.id)
+        if self.account_id:
+            sql += f""" WHERE account_id = {self.account_id.id}"""
+        self._cr.execute(sql, params)
 
     def action_export_stock_incoming_outgoing_report(self):
         # define function
         def get_data():
             # must be utc time
-            current_tz = pytz.timezone(self.env.context.get('tz'))
-            utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
-            utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
-            self._cr.execute(f"""
-                                SELECT pp.default_code,
-                                        pt.name,
-                                        report.opening_quantity,
-                                        report.opening_value,
-                                        report.incoming_quantity,
-                                        report.incoming_value,
-                                        report.odoo_outgoing_quantity,
-                                        report.real_outgoing_value,
-                                        report.closing_quantity,
-                                        report.closing_value
-                                FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s, %s) as report
-                                LEFT JOIN product_product pp ON pp.id = report.product_id
-                                LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id""",
-                             (utc_datetime_from, utc_datetime_to, self.env.company.id, self.env['stock.quant.period'].get_last_date_period(self.date_from)))
+            utc_datetime_from = str(self.date_from)
+            utc_datetime_to = str(self.date_to)
+            sql = f"""
+                    SELECT pp.default_code,
+                            pt.name,
+                            aa.code account_code,
+                            report.opening_quantity,
+                            report.opening_value,
+                            report.incoming_quantity,
+                            report.incoming_value,
+                            report.odoo_outgoing_quantity,
+                            report.real_outgoing_value,
+                            report.closing_quantity,
+                            report.closing_value
+                    FROM stock_incoming_outgoing_report_account(%s, %s, %s) as report
+                    LEFT JOIN product_product pp ON pp.id = report.product_id
+                    LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                    LEFT JOIN account_account aa ON aa.id = report.account_id"""
+            params = (utc_datetime_from, utc_datetime_to, self.env.company.id)
+            if self.account_id:
+                sql += f""" WHERE report.account_id = {self.account_id.id}"""
+            self._cr.execute(sql, params)
             return self._cr.dictfetchall()
 
         def write_header(wssheet):
@@ -345,20 +368,20 @@ class StockValueReport(models.TransientModel):
             wssheet.merge_range("A7:A8", 'STT', style_excel['style_header_bold_border'])
             wssheet.merge_range("B7:B8", 'Mã sản phẩm', style_excel['style_header_bold_border'])
             wssheet.merge_range("C7:C8", 'Tên sản phẩm', style_excel['style_header_bold_border'])
-            wssheet.merge_range("D7:E7", 'Tồn đầu kỳ', style_excel['style_header_bold_border'])
-            wssheet.merge_range("F7:G7", 'Nhập kho', style_excel['style_header_bold_border'])
-            wssheet.merge_range("H7:I7", 'Xuất kho', style_excel['style_header_bold_border'])
-            wssheet.merge_range("J7:K7", 'Tồn cuối kỳ',
-                                style_excel['style_header_bold_border'])
-            wssheet.merge_range("L7:L8", 'Ghi chú', style_excel['style_header_bold_border'])
-            wssheet.write("D8", 'Số lượng', style_excel['style_header_bold_border'])
-            wssheet.write("E8", 'Giá trị', style_excel['style_header_bold_border'])
-            wssheet.write("F8", 'Số lượng', style_excel['style_header_bold_border'])
-            wssheet.write("G8", 'Giá trị', style_excel['style_header_bold_border'])
-            wssheet.write("H8", 'Số lượng', style_excel['style_header_bold_border'])
-            wssheet.write("I8", 'Giá trị', style_excel['style_header_bold_border'])
-            wssheet.write("J8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.merge_range("D7:D8", 'Tài khoản', style_excel['style_header_bold_border'])
+            wssheet.merge_range("E7:F7", 'Tồn đầu kỳ', style_excel['style_header_bold_border'])
+            wssheet.merge_range("G7:H7", 'Nhập kho', style_excel['style_header_bold_border'])
+            wssheet.merge_range("I7:J7", 'Xuất kho', style_excel['style_header_bold_border'])
+            wssheet.merge_range("K7:L7", 'Tồn cuối kỳ', style_excel['style_header_bold_border'])
+            wssheet.merge_range("M7:M8", 'Ghi chú', style_excel['style_header_bold_border'])
+            wssheet.write("E8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.write("F8", 'Giá trị', style_excel['style_header_bold_border'])
+            wssheet.write("G8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.write("H8", 'Giá trị', style_excel['style_header_bold_border'])
+            wssheet.write("I8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.write("J8", 'Giá trị', style_excel['style_header_bold_border'])
             wssheet.write("K8", 'Số lượng', style_excel['style_header_bold_border'])
+            wssheet.write("L8", 'Giá trị', style_excel['style_header_bold_border'])
 
         def write_detail_table(wssheet, result):
 
@@ -384,15 +407,16 @@ class StockValueReport(models.TransientModel):
                 wssheet.write(row, 1, item.get('default_code', ''), style_excel['style_left_data_string_border'])
                 wssheet.write(row, 2, self.get_name_with_lang(item.get('name', {})),
                               style_excel['style_left_data_string_border'])
-                wssheet.write(row, 3, opening_quantity, style_excel['style_right_data_float'])
-                wssheet.write(row, 4, opening_value, style_excel['style_right_data_float'])
-                wssheet.write(row, 5, incoming_quantity, style_excel['style_right_data_float'])
-                wssheet.write(row, 6, incoming_value, style_excel['style_right_data_float'])
-                wssheet.write(row, 7, odoo_outgoing_quantity, style_excel['style_right_data_float'])
-                wssheet.write(row, 8, real_outgoing_value, style_excel['style_right_data_float'])
-                wssheet.write(row, 9, closing_quantity, style_excel['style_right_data_float'])
-                wssheet.write(row, 10, closing_value, style_excel['style_right_data_float'])
-                wssheet.write(row, 11, '', style_excel['style_right_data_float'])
+                wssheet.write(row, 3, item.get('account_code', ''), style_excel['style_left_data_string_border'])
+                wssheet.write(row, 4, opening_quantity, style_excel['style_right_data_float'])
+                wssheet.write(row, 5, opening_value, style_excel['style_right_data_float'])
+                wssheet.write(row, 6, incoming_quantity, style_excel['style_right_data_float'])
+                wssheet.write(row, 7, incoming_value, style_excel['style_right_data_float'])
+                wssheet.write(row, 8, odoo_outgoing_quantity, style_excel['style_right_data_float'])
+                wssheet.write(row, 9, real_outgoing_value, style_excel['style_right_data_float'])
+                wssheet.write(row, 10, closing_quantity, style_excel['style_right_data_float'])
+                wssheet.write(row, 11, closing_value, style_excel['style_right_data_float'])
+                wssheet.write(row, 12, '', style_excel['style_right_data_float'])
 
                 total_opening_quantity += opening_quantity
                 total_opening_value += opening_value
@@ -405,23 +429,24 @@ class StockValueReport(models.TransientModel):
 
                 row += 1
             # Sum
-            wssheet.merge_range(row, 0, row, 2, "Tổng cộng", style_excel['style_header_bold_border'])
-            wssheet.write(row, 3, total_opening_quantity if total_opening_quantity != 0 else '',
+            wssheet.merge_range(row, 0, row, 3, "Tổng cộng", style_excel['style_header_bold_border'])
+            wssheet.write(row, 4, total_opening_quantity if total_opening_quantity != 0 else '',
                           style_excel['style_right_data_float'])
-            wssheet.write(row, 4, total_opening_value if total_opening_value != 0 else '',
+            wssheet.write(row, 5, total_opening_value if total_opening_value != 0 else '',
                           style_excel['style_right_data_float'])
-            wssheet.write(row, 5, total_incoming_quantity if total_incoming_quantity != 0 else '',
+            wssheet.write(row, 6, total_incoming_quantity if total_incoming_quantity != 0 else '',
                           style_excel['style_right_data_float'])
-            wssheet.write(row, 6, total_incoming_value if total_incoming_value != 0 else '',
+            wssheet.write(row, 7, total_incoming_value if total_incoming_value != 0 else '',
                           style_excel['style_right_data_float'])
-            wssheet.write(row, 7, total_odoo_outgoing_quantity if total_odoo_outgoing_quantity != 0 else '',
+            wssheet.write(row, 8, total_odoo_outgoing_quantity if total_odoo_outgoing_quantity != 0 else '',
                           style_excel['style_right_data_float'])
-            wssheet.write(row, 8, total_real_outgoing_value if total_real_outgoing_value != 0 else '',
+            wssheet.write(row, 9, total_real_outgoing_value if total_real_outgoing_value != 0 else '',
                           style_excel['style_right_data_float'])
-            wssheet.write(row, 9, total_closing_quantity if total_closing_quantity != 0 else '',
+            wssheet.write(row, 10, total_closing_quantity if total_closing_quantity != 0 else '',
                           style_excel['style_right_data_float'])
-            wssheet.write(row, 10, total_closing_value if total_closing_value != 0 else '',
+            wssheet.write(row, 11, total_closing_value if total_closing_value != 0 else '',
                           style_excel['style_right_data_float'])
+            wssheet.write(row, 12, '', style_excel['style_left_data_string_border'])
 
             return row
 
@@ -438,6 +463,9 @@ class StockValueReport(models.TransientModel):
                                 style_excel['style_header_bold'])
             wssheet.merge_range(last_row + 4, 0, last_row + 4, 3, '(Kí ghi rõ họ tên)',
                                 style_excel['style_header_unbold'])
+
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
 
         # true action
         result = get_data()
@@ -544,6 +572,9 @@ class StockValueReport(models.TransientModel):
             wssheet.merge_range(last_row + 4, 0, last_row + 4, 3, '(Kí ghi rõ họ tên)',
                                 style_excel['style_header_unbold'])
 
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
+
         # true action
         result, picking_type_name = get_data()
 
@@ -570,6 +601,8 @@ class StockValueReport(models.TransientModel):
         return self.action_download_excel(base64.encodebytes(xlsx_data), _('Outgoing Value Different Report based on Item'))
 
     def action_create_invoice(self):
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
         self._cr.execute(f"""
                         SELECT report.product_id,
                                 report.picking_type_id,
@@ -629,45 +662,59 @@ class StockValueReport(models.TransientModel):
         # validate report
         self.validate_report_create_quant()
         # must be utc time
-        current_tz = pytz.timezone(self.env.context.get('tz'))
-        utc_datetime_from = convert_to_utc_datetime(current_tz, str(self.date_from) + " 00:00:00") if not self.based_on_account else str(self.date_from)
-        utc_datetime_to = convert_to_utc_datetime(current_tz, str(self.date_to) + " 23:59:59") if not self.based_on_account else str(self.date_to)
-        self._cr.execute(f"""
-                    DELETE FROM stock_quant_period WHERE period_end_date = %s;
-                    INSERT INTO stock_quant_period (
-                                                period_end_date,
-                                                product_id,
-                                                currency_id,
-                                                closing_quantity,
-                                                price_unit,
-                                                closing_value,
-                                                create_uid,
-                                                create_date,
-                                                write_uid,
-                                                write_date)
-                    SELECT %s,
-                            product_id,
-                            %s,
-                            closing_quantity,
-                            closing_value,
-                            (case when closing_quantity = 0 then 0
-                                    else closing_value / closing_quantity
-                            end) price_unit,
-                            %s,
-                            %s,
-                            %s,
-                            %s
-                    FROM {"stock_incoming_outgoing_report" if not self.based_on_account else "stock_incoming_outgoing_report_account"}(%s, %s, %s, %s)
-                """, (
-        str(self.date_to), str(self.date_to), self.env.company.currency_id.id, self.env.user.id, datetime.utcnow(), self.env.user.id,
-        datetime.utcnow(), utc_datetime_from, utc_datetime_to, self.env.company.id, self.env['stock.quant.period'].get_last_date_period(self.date_from)))
+        utc_datetime_from = str(self.date_from)
+        utc_datetime_to = str(self.date_to)
+        # unlink stock_quant_period
+        sql = """DELETE FROM stock_quant_period WHERE period_end_date = %s"""
+        params = (str(self.date_to), )
+        if self.account_id:
+            sql += f""" AND account_id = {self.account_id.id}"""
+        self._cr.execute(sql, params)
+        sql = f"""
+            INSERT INTO stock_quant_period (
+                                        period_end_date,
+                                        product_id,
+                                        account_id,
+                                        currency_id,
+                                        closing_quantity,
+                                        price_unit,
+                                        closing_value,
+                                        create_uid,
+                                        create_date,
+                                        write_uid,
+                                        write_date,
+                                        company_id)
+            SELECT %s,
+                    product_id,
+                    account_id,
+                    %s,
+                    closing_quantity,
+                    (case when closing_quantity = 0 then 0
+                            else closing_value / closing_quantity
+                    end) price_unit,
+                    closing_value,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s
+            FROM stock_incoming_outgoing_report_account(%s, %s, %s)
+            """
+        params = (str(self.date_to), self.env.company.currency_id.id, self.env.user.id,
+                  datetime.utcnow(), self.env.user.id, datetime.utcnow(), self.env.company.id, utc_datetime_from,
+                  utc_datetime_to, self.env.company.id)
+        if self.account_id:
+            sql += f""" WHERE account_id = {self.account_id.id}"""
+        self._cr.execute(sql, params)
 
     def validate_report_create_quant(self):
         # check period check report
+        if self.date_from > self.date_to:
+            raise ValidationError(_('To date must be greater than From date'))
         if not (self.date_from.month == self.date_to.month and self.date_from.year == self.date_to.year):
             raise ValidationError(_('Period check report must be in 1 month'))
-        # if self.date_from.day != 1:
-        #     raise ValidationError(_('Date from must be the first day of month'))
+        if self.date_from.day != 1:
+            raise ValidationError(_('Date from must be the first day of month'))
         if self.date_to.day != calendar.monthrange(self.date_to.year, self.date_to.month)[1]:
             raise ValidationError(_('Date to must be the last day of month'))
         if not self.detail_ids:

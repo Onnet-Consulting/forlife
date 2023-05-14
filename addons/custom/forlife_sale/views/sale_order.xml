@@ -6,11 +6,39 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_quotation_send']" position="after">
+                    <button name="action_create_picking"
+                        string="Xác nhận" type="object" context="{'validate_analytic': True}"
+                        attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="after">
+                    <button name="action_punish"
+                        string="Phạt" type="object" context="{'validate_analytic': True}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//field[@name='partner_shipping_id']" position="after">
                     <field name="x_sale_type"/>
                     <field name="x_sale_chanel"/>
                     <field name="x_account_analytic_ids" widget="many2many_tags"/>
                     <field name="x_occasion_code_ids" widget="many2many_tags"/>
+                </xpath>
+                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="before">
+                    <field name="x_cart_discount_fixed_price"/>
+                    <field name="x_location_id"/>
+                    <field name="x_scheduled_date"/>
+                    <field name="x_manufacture_order_code_id"/>
+                    <field name="x_product_code_id"
+                           attrs="{'column_invisible': [('parent.x_sale_type','!=','service')]}"
+                           force_save="1"/>
+                    <field name="x_account_analytic_id"/>
+                    <field name="x_occasion_code_id"/>
+                </xpath>
+                <xpath expr="//field[@name='payment_term_id']" position="before">
+                    <field name="x_process_punish"/>
+                    <field name="x_shipping_punish"/>
+                    <field name="x_manufacture_order_code_id"/>
                 </xpath>
             </field>
         </record>

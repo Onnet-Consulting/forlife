@@ -18,6 +18,7 @@
                                 <Orderline line="orderline" />
                             </t>
                         </ul>
+                        <OrderSummary order="order" />
                     </t>
                     <t t-else="">
                         <div class="list-order">
@@ -35,8 +36,9 @@
                                 </t>
                             </ul>
                         </div>
+                        <CustomOrderSummary order="order" />
                     </t>
-                    <OrderSummary order="order" />
+
                 </t>
             </div>
         </xpath>
