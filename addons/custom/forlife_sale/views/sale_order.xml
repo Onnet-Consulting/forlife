@@ -11,6 +11,10 @@
                         string="Xác nhận" type="object" context="{'validate_analytic': True}"
                         attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
                 </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="after">
+                    <button name="action_punish"
+                        string="Phạt" type="object" context="{'validate_analytic': True}"/>
+                </xpath>
                 <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -30,6 +34,11 @@
                            force_save="1"/>
                     <field name="x_account_analytic_id"/>
                     <field name="x_occasion_code_id"/>
+                </xpath>
+                <xpath expr="//field[@name='payment_term_id']" position="before">
+                    <field name="x_process_punish"/>
+                    <field name="x_shipping_punish"/>
+                    <field name="x_manufacture_order_code_id"/>
                 </xpath>
             </field>
         </record>

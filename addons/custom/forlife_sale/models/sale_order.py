@@ -23,6 +23,9 @@ class SaleOrder(models.Model):
         string='Kênh bán', default='wholesale')
     x_account_analytic_ids = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_ids = fields.Many2many('occasion.code', string='Mã vụ việc')
+    x_process_punish = fields.Boolean(string='Đơn phạt nhà gia công')
+    x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển')
+    x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
 
     def get_rule_domain(self):
         domain = ['&', ('location_dest_id', '=', self.partner_shipping_id.property_stock_customer.id),
@@ -54,7 +57,8 @@ class SaleOrder(models.Model):
             'picking_type_id': rule.picking_type_id.id,
             'location_id': self.warehouse_id.lot_stock_id.id,
             'location_dest_id': self.partner_shipping_id.property_stock_customer.id,
-            'sale_id': self.id
+            'sale_id': self.id,
+            'state': 'confirmed'
         }
         list_location = []
         stock_move_ids = {}
@@ -94,12 +98,16 @@ class SaleOrder(models.Model):
                     stock_move_ids[line.x_location_id.id].append((0, 0, detail_data))
             else:
                 stock_move_ids['Null'].append((0, 0, detail_data))
+        if self.x_process_punish or self.x_shipping_punish:
+            condition = True
+        else:
+            condition = False
         for move in stock_move_ids:
             master_data = master
             master_data['name'] = rule.picking_type_id.sequence_id.next_by_id()
             picking_id = self.env['stock.picking'].create(master_data)
             picking_id.move_ids_without_package = stock_move_ids[move]
-            picking_id.action_confirm()
+            picking_id.confirm_from_so(condition)
             sql = f""" 
                 with A as (
                     SELECT *
@@ -112,6 +120,12 @@ class SaleOrder(models.Model):
                 """
             self._cr.execute(sql)
         self.state = 'sale'
+        if condition:
+            invoice_id = self.env['sale.advance.payment.inv'].create({
+                'sale_order_ids': [(6, 0, self.ids)],
+                'advance_payment_method': 'delivered'
+            }).create_invoices()
+            invoice_id.action_post()
 
     def action_cancel(self):
         for line in self.order_line:
@@ -119,6 +133,17 @@ class SaleOrder(models.Model):
                 raise UserError(_('Đơn hàng đã được giao'))
         res = super(SaleOrder, self).action_cancel()
         return res
+
+    def action_punish(self):
+        self.x_shipping_punish = True
+        return {
+            'name': _('Tạo hóa đơn phạt'),
+            'view_mode': 'form',
+            'res_model': 'create.sale.order.punish',
+            'type': 'ir.actions.act_window',
+            'views': [(False, 'form')],
+            'target': 'new'
+        }
 
 
 class SaleOrderLine(models.Model):
@@ -132,11 +157,11 @@ class SaleOrderLine(models.Model):
     x_account_analytic_id = fields.Many2one('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_id = fields.Many2one('occasion.code', string='Mã vụ việc')
 
-
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0] if self.order_id.x_account_analytic_ids else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0] if self.order_id.x_occasion_code_ids else None
+        self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
         if self.order_id.x_sale_type and self.order_id.x_sale_type in ('product', 'service'):
             domain = [('product_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
@@ -163,3 +188,34 @@ class SaleOrderLine(models.Model):
         for line in self:
             line.price_subtotal = line.price_unit * line.product_uom_qty - line.x_cart_discount_fixed_price
         return res
+
+    @api.depends('product_id', 'product_uom', 'product_uom_qty')
+    def _compute_price_unit(self):
+        res = super(SaleOrderLine, self)._compute_price_unit()
+        for line in self:
+            if line.order_id.partner_id and self.product_id and (
+                    line.order_id.x_process_punish or line.order_id.x_shipping_punish):
+                line.set_price_unit()
+        return res
+
+    def set_price_unit(self):
+        tmpl_id = self.product_id.product_tmpl_id.id
+        sql = f"""
+            select ppi.product_tmpl_id  , ppi.fixed_price from product_pricelist pp 
+            left join product_pricelist_item ppi on ppi.pricelist_id = pp.id
+            where 1=1
+            and pp.x_punish is True
+            and pp.x_partner_id = {self.order_id.partner_id.id}
+            and (ppi.product_tmpl_id = {tmpl_id} or ppi.product_tmpl_id is null)
+            and '{str(self.order_id.date_order)}'::date between ppi.date_start and ppi.date_end
+            order by pp.id desc
+            limit 2 
+        """
+        self._cr.execute(sql)
+        result = self._cr.dictfetchall()
+        if not result:
+            raise UserError(_('Khách hàng chưa được cấu hình bảng giá cho đơn phạt'))
+        if len(result) > 1:
+            self.price_unit = [r.get('fixed_price') for r in result if r.get('product_tmpl_id') == tmpl_id][0]
+        else:
+            self.price_unit = [r.get('fixed_price') for r in result][0]

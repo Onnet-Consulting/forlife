@@ -1,19 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
 
+    <record id="stock_quant_period_view_search" model="ir.ui.view">
+        <field name="name">stock.quant.period.view.search</field>
+        <field name="model">stock.quant.period</field>
+        <field name="arch" type="xml">
+            <search string="Quant Period">
+                <filter string="Product" name="groupby_product_id" context="{'group_by': 'product_id'}"/>
+                <filter string="Period End Date" name="groupby_period_end_date" context="{'group_by': 'period_end_date'}"/>
+            </search>
+        </field>
+    </record>
+
     <record id="stock_quant_period_view_tree" model="ir.ui.view">
         <field name="name">stock.quant.period.view.tree</field>
         <field name="model">stock.quant.period</field>
         <field name="arch" type="xml">
             <tree string="Inventory Period">
+                <field name="period_end_date"/>
+                <field name="account_id" invisible="1"/>
+                <field name="account_code"/>
                 <field name="product_code"/>
                 <field name="product_id"/>
                 <field name="closing_quantity"/>
                 <field name="price_unit"/>
                 <field name="closing_value"/>
-                <field name="period_end_date"/>
             </tree>
         </field>
     </record>
+
+    <record id="stock_quant_period_action" model="ir.actions.act_window">
+        <field name="name">Quant Period</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">stock.quant.period</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{'search_default_groupby_period_end_date': 1}</field>
+    </record>
+
+    <menuitem id="stock_quant_period_menu" name="Quant Period" parent="stock.menu_stock_inventory_control"
+              action="stock_quant_period_action" sequence="105"/>
 
 </odoo>
