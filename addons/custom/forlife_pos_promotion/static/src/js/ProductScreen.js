@@ -52,7 +52,8 @@ export const PosPromotionProductScreen = (ProductScreen) =>
                 if (invalidProgram[1] == 'limit_usage_per_order') {
                     msg = `Chỉ ${invalidProgram[1]} combo / 1 đơn hàng`
                 } else {
-                    msg = `Khả dụng: ${invalidProgram[2]} combo`
+                    let unit = invalidProgram[0].promotion_type == 'code' ? 'lần' : 'combo';
+                    msg = `Khả dụng: ${invalidProgram[2]} ${unit}`
                 };
                 this.showPopup('ErrorPopup', {
                     title: this.env._t('Limited Promotion Validation Error'),
