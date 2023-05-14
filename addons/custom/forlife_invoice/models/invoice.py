@@ -465,14 +465,14 @@ class AccountMove(models.Model):
                     'invoice_line_ids': account_tnk,
                 })
 
-    def action_post(self):
-        res = super(AccountMove, self).action_post()
-        for rec in self:
-            if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
-                self.create_invoice_tnk_and_tttdb()
-            else:
-                pass
-        return res
+    # def action_post(self):
+    #     res = super(AccountMove, self).action_post()
+    #     for rec in self:
+    #         if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
+    #             self.create_invoice_tnk_and_tttdb()
+    #         else:
+    #             pass
+    #     return res
 
 
 class AccountMoveLine(models.Model):
