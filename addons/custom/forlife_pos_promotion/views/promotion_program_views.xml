@@ -97,16 +97,16 @@
                                 <span attrs="{'invisible': [('limit_usage_per_order', '=', False)]}"> to <field name="max_usage_per_order" class="oe_inline"/> combo/SP</span>
                             </span>
                             <label for="limit_usage_per_customer"
-                                   attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
-                            <span attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">
+                                   attrs="{'invisible': [('promotion_type', 'not in', ('code','combo'))]}"/>
+                            <span attrs="{'invisible': [('promotion_type', 'not in', ('code','combo'))]}">
                                 <field name="limit_usage_per_customer" class="oe_inline"/>
-                                <span attrs="{'invisible': [('limit_usage_per_customer', '=', False)]}"> to <field name="max_usage_per_customer" class="oe_inline"/> Combo/SP</span>
+                                <span attrs="{'invisible': [('limit_usage_per_customer', '=', False)]}"> to <field name="max_usage_per_customer" class="oe_inline"/> Combo/Order</span>
                             </span>
                             <label for="limit_usage_per_program"
-                                   attrs="{'invisible': [('promotion_type', '!=', 'combo')]}"/>
-                            <span attrs="{'invisible': [('promotion_type', '!=', 'combo')]}">
+                                   attrs="{'invisible': [('promotion_type', 'not in', ('code','combo'))]}"/>
+                            <span attrs="{'invisible': [('promotion_type', 'not in', ('code','combo'))]}">
                                 <field name="limit_usage_per_program" class="oe_inline"/>
-                                <span attrs="{'invisible': [('limit_usage_per_program', '=', False)]}"> to <field name="max_usage_per_program" class="oe_inline"/> Combo/SP</span>
+                                <span attrs="{'invisible': [('limit_usage_per_program', '=', False)]}"> to <field name="max_usage_per_program" class="oe_inline"/> Combo/Order</span>
                             </span>
                             <field name="company_id" invisible="1"/>
                             <field name="apply_online"/>
@@ -137,7 +137,7 @@
                     <group string="Conditions" attrs="{'invisible': [('promotion_type', 'not in', ('code', 'cart'))]}">
                         <field name="with_code" attrs="{'invisible': [('promotion_type', 'not in', ('cart', 'code'))]}"/>
                         <field name="order_amount_min" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
-                        <field name="incl_reward_in_order" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
+<!--                        <field name="incl_reward_in_order" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>-->
                         <field name="incl_reward_in_order_type" attrs="{'invisible': [('promotion_type', 'not in', ('cart'))]}"/>
                         <field name="product_ids" widget="many2many_tags"
                                attrs="{ 'invisible': [('promotion_type', 'not in', ('code', 'cart'))],
