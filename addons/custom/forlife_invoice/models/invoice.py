@@ -469,7 +469,8 @@ class AccountMove(models.Model):
         res = super(AccountMove, self).action_post()
         for rec in self:
             if rec.partner_id.group_id.id == self.env.ref('forlife_pos_app_member.partner_group_1').id:
-                self.create_invoice_tnk_and_tttdb()
+                if rec.exchange_rate_line:
+                    self.create_invoice_tnk_and_tttdb()
             else:
                 pass
         return res
