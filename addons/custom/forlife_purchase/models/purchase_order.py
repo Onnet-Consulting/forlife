@@ -879,10 +879,11 @@ class PurchaseOrderLine(models.Model):
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
     domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
     is_red_color = fields.Boolean(compute='compute_is_red_color')
-    name = fields.Char(default="Tên sản phẩm", required=False)
+    name = fields.Char(related='product_id.name', store=True, required=False)
     product_uom = fields.Many2one('uom.uom', related='product_id.uom_id', store=True, required=False)
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
     is_change_vendor = fields.Integer()
+
 
     @api.model
     def create(self, vals):
@@ -917,7 +918,7 @@ class PurchaseOrderLine(models.Model):
                  ('partner_id', '=', item.supplier_id.id),
                  ('date_start', '<', date_item),
                  ('date_end', '>', date_item),
-                 ('currency_id', '>',  item.currency_id),
+                 ('currency_id', '>',  item.currency_id.id),
                  ])
             item.is_red_color = True if item.exchange_quantity not in supplier_info.mapped(
                 'amount_conversion') else False
@@ -1429,6 +1430,7 @@ class StockPicking(models.Model):
     def create_invoice_npl(self, po, record):
         list_line_xk = []
         invoice_line_npls = []
+        cost_labor_internal_costs = []
         for item in po.order_line_production_order:
             material = self.env['purchase.order.line.material.line'].search(
                 [('purchase_order_line_id', '=', item.id)])
@@ -1439,51 +1441,79 @@ class StockPicking(models.Model):
             else:
                 raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
             debit = 0
+            debit_cost = 0
             for material_line in material:
-                number_product = self.env['stock.quant'].search(
-                    [('location_id', '=', record.location_dest_id.id),
-                     ('product_id', '=', material_line.product_id.id)])
-                # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                #     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
-                if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
-                    raise ValidationError('Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
-                list_line_xk.append((0, 0, {
-                    'product_id': material_line.product_id.id,
-                    'product_uom': material_line.uom.id,
-                    'price_unit': material_line.price_unit,
-                    'location_id': record.location_dest_id.id,
-                    'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
-                    'product_uom_qty': material_line.product_plan_qty,
-                    'quantity_done': material_line.product_plan_qty,
-                    'amount_total': material_line.price_unit * material_line.product_plan_qty,
-                    'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
-                    'reason_id': self.env.ref('forlife_stock.export_production_order').id,
-                }))
-                # Tạo bút toán cho nguyên phụ liệu
                 credit = material_line.price_unit * material_line.product_plan_qty
-                credit_npl = (0, 0, {
-                    'account_id': self.env.ref(
-                        'forlife_stock.export_production_order').valuation_in_account_id.id,
-                    'name': material_line.product_id.name,
-                    'debit': 0,
-                    'credit': credit,
+                if material_line.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
+                    if not material_line.product_id.categ_id or not material_line.product_id.categ_id.property_stock_account_input_categ_id:
+                        raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
+                    account_cost = material_line.product_id.categ_id.property_stock_account_input_categ_id
+                    credit_npl = (0, 0, {
+                        'account_id': account_cost.id,
+                        'name': material_line.product_id.name,
+                        'debit': 0,
+                        'credit': credit,
+                        'is_uncheck': True,
+                    })
+                    cost_labor_internal_costs.append(credit_npl)
+                    debit_cost += credit
+                else:
+                    number_product = self.env['stock.quant'].search(
+                        [('location_id', '=', record.location_dest_id.id),
+                         ('product_id', '=', material_line.product_id.id)])
+                    # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                    #     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
+                    if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
+                        raise ValidationError(
+                            'Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
+                    list_line_xk.append((0, 0, {
+                        'product_id': material_line.product_id.id,
+                        'product_uom': material_line.uom.id,
+                        'price_unit': material_line.price_unit,
+                        'location_id': record.location_dest_id.id,
+                        'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
+                        'product_uom_qty': material_line.product_plan_qty,
+                        'quantity_done': material_line.product_plan_qty,
+                        'amount_total': material_line.price_unit * material_line.product_plan_qty,
+                        'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
+                        'reason_id': self.env.ref('forlife_stock.export_production_order').id,
+                    }))
+                    # Tạo bút toán cho nguyên phụ liệu
+                    credit_npl = (0, 0, {
+                        'account_id': self.env.ref(
+                            'forlife_stock.export_production_order').valuation_in_account_id.id,
+                        'name': material_line.product_id.name,
+                        'debit': 0,
+                        'credit': credit,
+                        'is_uncheck': True,
+
+                    })
+                    invoice_line_npls.append(credit_npl)
+                    debit += credit
+                # end
+            if debit_cost > 0:
+                debit_cost_line = (0, 0, {
+                    'account_id': account_1561, 'name': item.product_id.name,
+                    'debit': debit_cost,
+                    'credit': 0,
+                    'is_uncheck': True,
+                })
+                cost_labor_internal_costs.append(debit_cost_line)
+            if debit > 0:
+                debit_npl = (0, 0, {
+                    'account_id': account_1561, 'name': item.product_id.name,
+                    'debit': debit,
+                    'credit': 0,
                     'is_uncheck': True,
 
                 })
-                invoice_line_npls.append(credit_npl)
-                debit += credit
-                # end
-            debit_npl = (0, 0, {
-                'account_id': account_1561, 'name': item.product_id.name,
-                'debit': debit,
-                'credit': 0,
-                'is_uncheck': True,
-
-            })
-            invoice_line_npls.append(debit_npl)
-        account_nl = self.create_account_move(po, invoice_line_npls, record)
-        master_xk = self.create_xk_picking(po, record, list_line_xk)
-        return master_xk
+                invoice_line_npls.append(debit_npl)
+        if cost_labor_internal_costs:
+            account_cost = self.create_account_move(po, cost_labor_internal_costs, record)
+        if invoice_line_npls and list_line_xk:
+            account_nl = self.create_account_move(po, invoice_line_npls, record)
+            master_xk = self.create_xk_picking(po, record, list_line_xk)
+        return True
 
     def create_xk_picking(self, po, record, list_line_xk):
         master_xk = {
