@@ -20,8 +20,6 @@ class PosSession(models.Model):
             'name': r.name
         } for r in branchs]
         labels = [{'id': r.id, 'name': r.display_name} for r in pos_expense_labels]
-        print('labels')
-        print(labels)
         loaded_data.update({
             'pos.customize': pos,
             'pos.branch': branch,
