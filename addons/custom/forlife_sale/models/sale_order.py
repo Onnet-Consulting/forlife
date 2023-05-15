@@ -95,8 +95,6 @@ class SaleOrder(models.Model):
                     list_location.append(line.x_location_id.id)
                 else:
                     stock_move_ids[line.x_location_id.id].append((0, 0, detail_data))
-            else:
-                stock_move_ids['Null'].append((0, 0, detail_data))
         if self.x_process_punish or self.x_shipping_punish:
             condition = True
         else:
@@ -172,7 +170,7 @@ class SaleOrderLine(models.Model):
         self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
 
     @api.onchange('price_unit')
-    def set_price_unit(self):
+    def _set_price_unit(self):
         if self.product_id and self.price_unit:
             if self.product_id.product_tmpl_id.x_negative_value:
                 self.price_unit = - abs(self.price_unit)
@@ -193,6 +191,7 @@ class SaleOrderLine(models.Model):
     def _compute_price_unit(self):
         res = super(SaleOrderLine, self)._compute_price_unit()
         for line in self:
+            line._set_price_unit()
             if line.order_id.partner_id and self.product_id and (
                     line.order_id.x_process_punish or line.order_id.x_shipping_punish):
                 line.set_price_unit()
