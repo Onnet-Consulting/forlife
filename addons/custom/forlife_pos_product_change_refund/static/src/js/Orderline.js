@@ -13,10 +13,11 @@ odoo.define('forlife_pos_product_change_refund.Orderline', function(require) {
 
 			onchangeValue(event) {
 			    var self = this;
-			    if(event.target.value > 0){
+			    var order_new = this.env.pos.get_order()
+			    if(event.target.value > 0 &&  order_new.is_change_product){
 			        let user = this.env.pos.user;
                     if (user.employee_id) {
-                        this.employee_id = user.employee_id[0];
+                        self.props.line.employee_id = user.employee_id[0];
                     }
 			    }
 			    if (event.target.value > self.props.line.quantity_canbe_refund) {
