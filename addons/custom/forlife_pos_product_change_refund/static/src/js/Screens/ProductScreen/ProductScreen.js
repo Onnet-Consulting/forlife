@@ -17,6 +17,19 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
             }
         }
 
+        async _getAddProductOptions(product, base_code) {
+            var data = await super._getAddProductOptions(...arguments);
+            if (this.currentOrder.is_change_product) {
+                var total_price = this.currentOrder.get_total_with_tax();
+                if (total_price < 0) {
+                    if (product.is_voucher_auto) {
+                        data.price = Math.abs(total_price);
+                    }
+                }
+            }
+            return data;
+        }
+
         async _onClickPay() {
             // manhld
             var self = this;
@@ -41,7 +54,7 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
                 });
                 self.showPopup('ErrorPopup', {
                     title: self.env._t('Warning'),
-                    body: self.env._t('Product ' + products.join(', ') + ' has expired. Please click submit to browse to continue the exchange!'),
+                    body: _.str.sprintf(self.env._t('Product %s has expired. Please click submit to browse to continue the exchange!'), products.join(', ')),
                 });
                 return;
             }
@@ -74,7 +87,9 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
                             })
                             if (product_auto_id) {
                                 const product_auto = this.env.pos.db.get_product_by_id(product_auto_id);
-                                order.add_product(product_auto, {price: Math.abs(total_price)});
+                                const options = await this._getAddProductOptions(product_auto);
+                                options.price =  Math.abs(total_price);
+                                order.add_product(product_auto, options);
                             }
                         }
                     }

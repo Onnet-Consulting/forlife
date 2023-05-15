@@ -57,6 +57,6 @@ class PurchaseOrderExchangeRate(models.Model):
     @api.depends('vat_tax_amount')
     def compute_tax_amount(self):
         for rec in self:
-            rec.total_tax_amount = rec.vnd_amount + rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
+            rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
 
 

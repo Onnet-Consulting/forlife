@@ -10,7 +10,7 @@ class ProgramVoucher(models.Model):
 
     name = fields.Char('Program Voucher Name', required=True)
 
-    program_voucher_code = fields.Char('Voucher Program Code', store=True, copy=False, readonly=True, default='New')
+    program_voucher_code = fields.Char('Voucher Program Code', store=True, copy=False, readonly=False, default='New')
 
     type = fields.Selection([('v', 'V-Giấy'), ('e', 'E-Điện tử')], string='Type', required=True)
 
@@ -34,7 +34,7 @@ class ProgramVoucher(models.Model):
 
     product_id = fields.Many2one('product.template', 'Product Voucher', compute='compute_product', inverse='product_inverse', domain=[('voucher','=',True)])
 
-    product_apply_ids = fields.Many2many('product.template', string='Sản phẩm áp dụng')
+    product_apply_ids = fields.Many2many('product.product', string='Sản phẩm áp dụng')
 
     product_ids = fields.One2many('product.template', 'program_voucher_id')
 
@@ -45,6 +45,43 @@ class ProgramVoucher(models.Model):
     using_limit = fields.Integer('Giới hạn sử dụng', default=0)
 
     details = fields.Char('Diễn giải')
+
+    def popup_message_show(self):
+        view = self.env.ref('sh_message.sh_message_wizard')
+        view_id = view and view.id or False
+        context = dict(self._context or {})
+        context['message'] = 'Created successfully'
+        return {
+            'name': 'Success',
+            'type': 'ir.actions.act_window',
+            'view_type':'form',
+            'view_mode':'form',
+            'res_model': 'sh.message.wizard',
+            'views': [(view.id, 'form')],
+            'view_id':view.id,
+            'target':'new',
+            'context': context
+        }
+
+    def action_compute_product_apply(self):
+        product_ids = [x.product_id.id for x in self.env['product.program.import'].search([('program_vocher_id','=',self.id)])]
+        self.product_apply_ids = [(4, product_id) for product_id in product_ids]
+        return self.popup_message_show()
+
+    def action_view_product_apply(self):
+        ctx = dict(self._context)
+        ctx.update({
+            'default_program_vocher_id': self.id,
+        })
+        return {
+            'name': _('Sản phẩm'),
+            'domain': [('program_vocher_id', '=', self.id)],
+            'res_model': 'product.program.import',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': ctx,
+        }
 
     @api.depends('product_ids')
     def compute_product(self):
@@ -73,6 +110,8 @@ class ProgramVoucher(models.Model):
     def onchange_type_program_voucher(self):
         if self.type == 'v':
             self.apply_many_times = False
+        if self.type:
+            self.product_id = False
 
     @api.depends('voucher_ids')
     def _compute_count_voucher(self):
@@ -89,22 +128,22 @@ class ProgramVoucher(models.Model):
 
     @api.model
     def create(self, vals):
-        if 'program_voucher_line_ids' not in vals or not vals['program_voucher_line_ids']:
-            raise UserError(_('Please set the infomation of Vourcher!'))
-        last_record = self.get_last_sequence()
-        if last_record:
-            #change character of sequence
-            code = last_record.program_voucher_code
-            if code[1:] == '999':
-                seq = self.env['ir.sequence'].search([('code', '=', 'program.voucher')])
-                vals_seq = {
-                    'prefix': self.change_prefix_sequence(code[0]),
-                    'number_next_actual': 1,
-
-                }
-                seq.write(vals_seq)
-        if vals.get('program_voucher_code', 'New') == 'New':
-            vals['program_voucher_code'] = self.env['ir.sequence'].next_by_code('program.voucher') or 'New'
+        # if 'program_voucher_line_ids' not in vals or not vals['program_voucher_line_ids']:
+        #     raise UserError(_('Please set the infomation of Vourcher!'))
+        # last_record = self.get_last_sequence()
+        # if last_record:
+        #     #change character of sequence
+        #     code = last_record.program_voucher_code
+        #     if code[1:] == '999':
+        #         seq = self.env['ir.sequence'].search([('code', '=', 'program.voucher')])
+        #         vals_seq = {
+        #             'prefix': self.change_prefix_sequence(code[0]),
+        #             'number_next_actual': 1,
+        #
+        #         }
+        #         seq.write(vals_seq)
+        # if vals.get('program_voucher_code', 'New') == 'New':
+        #     vals['program_voucher_code'] = self.env['ir.sequence'].next_by_code('program.voucher') or 'New'
         return super(ProgramVoucher, self).create(vals)
 
     def get_last_sequence(self):
@@ -121,47 +160,27 @@ class ProgramVoucher(models.Model):
                         for i in range(rec.count):
                             self.env['voucher.voucher'].create({
                                 'program_voucher_id': self.id,
-                                'type':self.type,
-                                'brand_id':self.brand_id.id,
-                                'store_ids': [(6, False, self.store_ids.ids)],
                                 'start_date':self.start_date,
                                 'state':'new',
                                 'partner_id': p.id,
                                 'price': rec.price,
                                 'price_used': 0,
                                 'price_residual': rec.price - 0,
-                                'derpartment_id': self.derpartment_id.id,
                                 'end_date':self.end_date,
-                                'apply_many_times': self.apply_many_times,
-                                'apply_contemp_time':self.apply_contemp_time,
-                                'product_voucher_id': self.product_id.id,
-                                'purpose_id': self.purpose_id.id,
-                                'product_apply_ids': [(6, False, self.product_apply_ids.ids)],
-                                'is_full_price_applies': self.is_full_price_applies,
-                                'using_limit':self.using_limit
                             })
+                    self.program_voucher_line_ids = [(5, self.program_voucher_line_ids.ids)]
                 if not rec.partner_ids:
                     for i in range(rec.count):
                         self.env['voucher.voucher'].create({
                             'program_voucher_id': self.id,
-                            'type': self.type,
-                            'brand_id': self.brand_id.id,
-                            'store_ids': [(6, False, self.store_ids.ids)],
                             'start_date': self.start_date,
                             'state': 'new',
                             'price': rec.price,
                             'price_used': 0,
                             'price_residual': rec.price - 0,
-                            'derpartment_id': self.derpartment_id.id,
                             'end_date': self.end_date,
-                            'apply_many_times': self.apply_many_times,
-                            'apply_contemp_time': self.apply_contemp_time,
-                            'product_voucher_id': self.product_id.id,
-                            'purpose_id':self.purpose_id.id,
-                            'product_apply_ids': [(6, False, self.product_apply_ids.ids)],
-                            'is_full_price_applies': self.is_full_price_applies,
-                            'using_limit':self.using_limit
                         })
+                    self.program_voucher_line_ids = [(5, self.program_voucher_line_ids.ids)]
         else:
             raise UserError(_("Vui lòng thêm dòng thông tin cho vourcher!"))
 

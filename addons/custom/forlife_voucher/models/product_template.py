@@ -1,17 +1,29 @@
 from odoo import api, fields, models
-
+from odoo.osv import expression
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+        if 'filter_product_follow_type' in self._context and self._context.get('filter_product_follow_type'):
+            if self._context.get('filter_product_follow_type') == 'v':
+                products = self.search([('detailed_type','=','product'),('program_voucher_id','=',False)])
+                args = expression.AND([[('id', 'in', products.ids)], args])
+            else:
+                products = self.search([('detailed_type', '=', 'service'),('program_voucher_id','=',False)])
+                args = expression.AND([[('id', 'in', products.ids)], args])
+        res = super(ProductTemplate, self)._name_search(name, args, operator, limit, name_get_uid)
+        return res
+
+    @api.onchange('voucher')
+    def _onchange_voucher(self):
+        if self.voucher:
+            self.list_price = 0.0
+
     voucher = fields.Boolean('Voucher')
     program_voucher_id = fields.Many2one('program.voucher', readonly=True)
 
-    # @api.onchange('program_voucher_id')
-    # def onchange_program_id(self):
-    #     product_include = self.search([('program_voucher_id', '=', self.program_voucher_id.id)])
-    #     if product_include:
-    #         product_include.program_voucher_id = False
 
     def write(self, vals):
         if 'program_voucher_id' in vals and vals['program_voucher_id']:

@@ -29,12 +29,13 @@ class ParentBatchImport(models.Model):
     number_of_split_file = fields.Integer(string="Number of split file", compute="_compute_number_of_split_file", store=True)
     with_delay = fields.Integer(string="Delay execute between every batch", default=10)
     child_batch_import_ids = fields.One2many(string="Children  Batch", comodel_name="child.batch.import", inverse_name='parent_batch_import_id')
-    done_batch_count = fields.Integer(string="Done Batch", compute="compute_batch_count", store=True)
-    total_batch = fields.Integer(string="Total Batch", compute="compute_batch_count", store=True)
-    progress_bar = fields.Float('Progress Done (%)', digits=(16, 2), compute='compute_batch_count', store=True)
+    done_batch_count = fields.Integer(string="Done Batch", compute="compute_batch_count", store=False)
+    total_batch = fields.Integer(string="Total Batch", compute="compute_batch_count", store=False)
+    progress_bar = fields.Float('Progress Done (%)', digits=(16, 2), compute='compute_batch_count', store=False)
     file_invalid_records = fields.Binary(string="Invalid Records", attachment=True)
     file_invalid_records_name = fields.Char('Invalid records file')
     log = fields.Text(string="Log")
+    context = fields.Text(string="Context")
 
     def merge_file_log_errors(self):
         import pandas as pd
@@ -129,6 +130,7 @@ class ParentBatchImport(models.Model):
                     'list_field': json.dumps(fields),
                     'columns': json.dumps(columns),
                     'options': json.dumps(options),
+                    'context': json.dumps(self.env.context),
                     'limit': options.get('limit'),
                     'dryrun': dryrun,
                     'status': 'draft',
@@ -144,7 +146,7 @@ class ParentBatchImport(models.Model):
                 else:
                     self.split_parent_batch_import_exel(batch_import=batch_import, sheet_name=options.get('sheet_name') if options.get('sheet_name') else "Sheet1")
                 # clean base_import.import to release memory before swap to batch import
-                base_import.unlink()
+                base_import.sudo().unlink()
 
                 return dst_url
         return False

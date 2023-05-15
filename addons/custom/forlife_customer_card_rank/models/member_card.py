@@ -2,8 +2,9 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
-import pytz
+import json
 import copy
+import base64
 
 
 class MemberCard(models.Model):
@@ -45,7 +46,7 @@ class MemberCard(models.Model):
     discount_account_id = fields.Many2one('account.account', string='Discount Account', tracking=True)
     value_account_id = fields.Many2one('account.account', string='Value Account', tracking=True)
     value_remind = fields.Float('Value Remind', tracking=True, digits=(16, 0))
-    customer_not_apply_ids = fields.Many2many('res.partner', relation="customers_not_apply_rel", string='Customer not apply', compute='_compute_customer')
+    customer_not_apply = fields.Binary(string='Customer not apply', compute='_compute_customer', store=True)
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -56,13 +57,14 @@ class MemberCard(models.Model):
             line.qty_order_rank = len(line.order_ids)
             line.qty_order_discount = self.env['pos.order'].search_count([('card_rank_program_id', '=', line.id)])
 
+    @api.depends('retail_type_not_apply_ids')
     def _compute_customer(self):
         partners = self.env['res.partner'].search_read([('retail_type_ids', '!=', False)], ['id', 'retail_type_ids'])
         for line in self:
             if line.retail_type_not_apply_ids:
-                line.customer_not_apply_ids = [x['id'] for x in partners if any([i in x['retail_type_ids'] for i in line.retail_type_not_apply_ids.ids])]
+                line.customer_not_apply = base64.b64encode((json.dumps([x['id'] for x in partners if any([i in x['retail_type_ids'] for i in line.retail_type_not_apply_ids.ids])])).encode('utf-8'))
             else:
-                line.customer_not_apply_ids = False
+                line.customer_not_apply = False
 
     @api.constrains("from_date", "to_date", 'active', 'min_turnover', 'card_rank_id')
     def validate_time(self):

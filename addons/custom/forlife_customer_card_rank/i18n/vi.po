@@ -280,7 +280,7 @@ msgid "Customer Retail Types"
 msgstr "Loại khách hàng lẻ"
 
 #. module: forlife_customer_card_rank
-#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__customer_not_apply_ids
+#: model:ir.model.fields,field_description:forlife_customer_card_rank.field_member_card__customer_not_apply
 msgid "Customer not apply"
 msgstr "Khách hàng không được áp dụng chiết khấu hạng thẻ"
 

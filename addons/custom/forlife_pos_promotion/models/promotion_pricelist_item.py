@@ -15,8 +15,11 @@ class PromotionPricelistItem(models.Model):
     program_id = fields.Many2one(
         'promotion.program', string='Promotion Program', ondelete='cascade', required=True,
         domain="[('promotion_type', '=', 'pricelist')]")
-    product_id = fields.Many2one('product.product', string='Product', domain="[('available_in_pos', '=', True)]", required=True)
+    product_id = fields.Many2one('product.product', string='Product', domain="[('available_in_pos', '=', True)]",
+                                 required=True)
     fixed_price = fields.Float('Fix price')
+    barcode = fields.Char(related='product_id.barcode')
+    qty_available = fields.Float(related='product_id.qty_available')
 
     @api.constrains('program_id', 'program_id')
     def check_unique_product_id(self):
@@ -27,6 +30,8 @@ class PromotionPricelistItem(models.Model):
     def name_get(self):
         res = []
         for line in self:
-            name = line.program_id.name + ': ' + line.product_id.name
+            name = line.program_id.name + ': ' + \
+                   (line.product_id.barcode and '[' + line.product_id.barcode + ']' + ' ' or '') + \
+                   line.product_id.name
             res += [(line.id, name)]
         return res

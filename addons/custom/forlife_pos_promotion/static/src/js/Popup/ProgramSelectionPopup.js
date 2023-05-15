@@ -5,7 +5,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
     const Registries = require('point_of_sale.Registries');
     const { _lt } = require('@web/core/l10n/translation');
 
-    const { useState } = owl;
+    const { useState, onMounted } = owl;
 
     class ProgramSelectionPopup extends AbstractAwaitablePopup {
 
@@ -17,7 +17,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 discount_amount_order: this.props.discount_amount_order || 0,
             });
             this.combo_details = {}
-            this.selectItem(undefined);
+            onMounted(this.selectItem);
         }
 
         // Thể hiện thứ tự áp dụng các CTKM, index=1 đối với CTKM nào được áp dụng đầu tiên
@@ -57,7 +57,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             let details = [];
             this.combo_details[program_id].forEach((line) => {
                 let usage = line.promotion_usage_ids.find(l => l.str_id == program_id)
-                if (usage) {
+                if (usage && line.quantity > 0) {
                     details.push({
                         product: this.env.pos.db.get_product_by_id(line.product.id),
                         quantity: line.quantity,
@@ -103,28 +103,30 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             not_selected_programs.forEach(p => p.discounted_amount = 0.0);
 
             let [newLinesToApply, remainingLines, combo_count] = this.env.pos.get_order().computeForListOfProgram(clone_order_lines, selectedPrograms);
-
-            let [newLinesToApplyCode, remainingLinesCode, code_count] = this.env.pos.get_order().computeForListOfCodeProgram(clone_order_lines, selectedPrograms, newLinesToApply);
-
-            newLinesToApply = newLinesToApplyCode;
-            remainingLines = remainingLinesCode
+//            let [newLinesToApplyCode, remainingLinesCode, code_count] = this.env.pos.get_order().computeForListOfCodeProgram(clone_order_lines, selectedPrograms, newLinesToApply);
+//            newLinesToApply = newLinesToApplyCode;
+//            remainingLines = remainingLinesCode
 
             this.setComboDetails(newLinesToApply);
 
             // todo: chương trình không có giảm giá thì kiểm tra promotion_usage_ids có undefined không?
             // Tính số tiền đã giảm cho mỗi chương trình đã áp dụng, và cấp số lượng combo đã áp dụng
-            for (let [program_id, lines] of Object.entries(newLinesToApply)) {
-                let total_amount_disc = lines.reduce((acc, line) => {
-                    let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0);
-                    return acc + amountPerLine
-                }, 0.0);
-                this.state.programs.find(p => p.id == program_id).discounted_amount = total_amount_disc;
-            };
-            this.state.programs.forEach(p => {
-                if (combo_count.hasOwnProperty(p.id)) {
-                    p.numberCombo = combo_count[p.id];
-                };
-            });
+            let discountedLines = Object.values(newLinesToApply).reduce((tmp, arr) => {tmp.push(...arr); return tmp;}, []).filter(l=>l.quantity > 0);
+            for (let option of this.state.programs) {
+                let amount =  discountedLines.reduce((tmp, line) => {
+                    let per_line = line.promotion_usage_ids.reduce((tmp_line, u) => {
+                        if (u.str_id == option.id) {
+                            tmp_line += line.quantity * u.discount_amount
+                        };
+                        return tmp_line;
+                    }, 0);
+                    return tmp + per_line;
+                }, 0);
+                option.discounted_amount = amount;
+            }
+            for (let [str_id, count] of Object.entries(combo_count)) {
+                this.state.programs.find(op => op.id == str_id).numberCombo = count;
+            }
 
             // Tính tổng số tiền đã giảm trên đơn hàng
             this.state.discount_amount_order = this.state.programs.reduce((acc, p) => acc + p.discounted_amount, 0.0);
@@ -137,24 +139,41 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 // This step to copy without reference
                 let remaining_clone_order_lines = JSON.parse(JSON.stringify(remainingLinesClone));
 
-                let [newLinesToApplyNoSelected, ol, combo_count] = this.env.pos.get_order()
-                        .computeForListOfProgram(remaining_clone_order_lines, [notSelectProgram]);
+                let newLinesToApplyClone = {};
+                for (let [key, vals] of Object.entries(newLinesToApply)) {
+                    newLinesToApplyClone[key] = vals.map(line => {
+                        return {
+                            isNew: line.isNew,
+                            price: line.price,
+                            product: line.product,
+                            promotion_usage_ids: [...line.promotion_usage_ids],
+                            quantity: line.quantity
+                        }
+                    });
+                };
 
+                let [newLinesToApplyNoSelected, ol, combo_count] = this.env.pos.get_order()
+                        .computeForListOfProgram(remaining_clone_order_lines, [notSelectProgram], newLinesToApplyClone);
+
+//                let [newLinesToApplyNoSelectedCode, olCode, code_count] = this.env.pos.get_order()
+//                    .computeForListOfCodeProgram(remaining_clone_order_lines, [notSelectProgram], newLinesToApplyNoSelected);
+
+//               this.setComboDetails(newLinesToApplyNoSelectedCode);
                this.setComboDetails(newLinesToApplyNoSelected);
 
-                this.state.programs.forEach(p => {
-                    if (combo_count.hasOwnProperty(p.id)) {
-                        p.forecastedNumber = combo_count[p.id];
-                        p.forecasted_discounted_amount = 0.0;
-                    };
-                });
-                for (let [program_id, lines] of Object.entries(newLinesToApplyNoSelected)) {
-                    let forecasted_discounted_amount = lines.reduce((acc, line) => {
-                        let amountPerLine = line.promotion_usage_ids.reduce((subAcc, usage) => {return subAcc + usage.discount_amount * line.quantity;}, 0.0);
-                        return acc + amountPerLine
-                    }, 0.0);
-                    this.state.programs.find(p => p.id == program_id).forecasted_discounted_amount = forecasted_discounted_amount;
-                };
+                let discountedLinesNoSelect = Object.values(newLinesToApplyNoSelected).reduce((tmp, arr) => {tmp.push(...arr); return tmp;}, []);
+                let noSelectedOption = not_selected_programs.find(op => op.id == notSelectProgram.str_id);
+
+                noSelectedOption.forecastedNumber = combo_count[notSelectProgram.str_id];
+                noSelectedOption.forecasted_discounted_amount = discountedLinesNoSelect.reduce((tmp, line) => {
+                    let per_line = line.promotion_usage_ids.reduce((tmp_line, u) => {
+                        if (u.str_id == noSelectedOption.id) {
+                            tmp_line += line.quantity * u.discount_amount
+                        };
+                        return tmp_line;
+                    }, 0);
+                    return tmp + per_line;
+                }, 0);
             };
         }
         /**

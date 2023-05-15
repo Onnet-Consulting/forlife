@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="forlife_pos_point_order.EditListPopup" t-inherit="point_of_sale.EditListPopup" t-inherit-mode="extension" owl="1">
+        <xpath expr="//main" position="inside">
+                <a href="#" style="color: #8D7069; margin-left: -254px;font-size: 15px;" t-on-click="createNewItem">Thêm số lô/seri</a>
+        </xpath>
+    </t>
+</templates>

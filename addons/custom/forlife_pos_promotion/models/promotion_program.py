@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import base64
 import itertools
+import json
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -60,14 +62,17 @@ class PromotionProgram(models.Model):
         # ('cheapest_product', 'Cheapest Products'),
     ], string='Discount Apply On', required=True, default='order')
 
-    limit_usage = fields.Boolean(string='Limit Usage')
-    max_usage = fields.Integer()
+    limit_usage = fields.Boolean(string='Limit Order Usage')
+    max_usage = fields.Integer(string='Max Order Number')
 
     limit_usage_per_order = fields.Boolean(string='Limit usage per Order', help='Based on qty of combo/product')
-    max_usage_per_order = fields.Integer(string='Max usage per Order', help='Based on qty of combo/product')
+    max_usage_per_order = fields.Integer(string='Max qty per Order', help='Based on qty of combo/product')
 
     limit_usage_per_customer = fields.Boolean(string='Limit usage per Customer', help='Based on qty of combo/product')
-    max_usage_per_customer = fields.Integer(string='Max usage per Customer', help='Based on qty of combo/product')
+    max_usage_per_customer = fields.Integer(string='Max qty per Customer', help='Based on qty of combo/product')
+
+    limit_usage_per_program = fields.Boolean(string='Limit usage per Program', help='Based on qty of combo/product')
+    max_usage_per_program = fields.Integer(string='Max qty per Program', help='Based on qty of combo/product')
 
     state = fields.Selection(related='campaign_id.state', store=True, readonly=True)
 
@@ -106,6 +111,8 @@ class PromotionProgram(models.Model):
     valid_product_ids = fields.Many2many(
         'product.product', compute='_compute_valid_product_ids', string='Valid Products')
     product_count = fields.Integer(compute='_compute_valid_product_ids', string='Valid Product Counts')
+    json_valid_product_ids = fields.Binary(
+        compute='_compute_json_valid_product_ids', string='Json Valid Products', store=True)
 
     # Cart
     order_amount_min = fields.Float()
@@ -130,7 +137,7 @@ class PromotionProgram(models.Model):
         'product.product', domain="[('product_tmpl_id', '=', voucher_product_id)]", string='Voucher Product Variant')
     voucher_price = fields.Monetary(string='Voucher Price', currency_field='currency_id')
     voucher_apply_product_ids = fields.Many2many(
-        'product.template', related='voucher_program_id.product_apply_ids', string='Applicable Products')
+        'product.product', related='voucher_program_id.product_apply_ids', string='Applicable Products')
     voucher_ids = fields.One2many('voucher.voucher', 'promotion_program_id')
     voucher_count = fields.Integer(compute='_compute_voucher_count')
 
@@ -168,7 +175,6 @@ class PromotionProgram(models.Model):
             if program.promotion_type == 'combo' and program.reward_ids and program.reward_type in ['combo_percent_by_qty', 'combo_fixed_price_by_qty']:
                 if len(program.reward_ids) != len(set(program.reward_ids.mapped('quantity_min'))):
                     raise UserError(_('%s: Không được khai báo cùng số lượng trên các chi tiết combo!') % program.name)
-
 
     _sql_constraints = [
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
@@ -220,6 +226,13 @@ class PromotionProgram(models.Model):
             else:
                 line.valid_product_ids = self.env['product.product']
             line.product_count = len(line.valid_product_ids)
+
+    @api.depends('product_ids', 'product_categ_ids')
+    def _compute_json_valid_product_ids(self):
+        for pro in self:
+            product_ids = pro.valid_product_ids.ids or []
+            product_ids_json_encode = base64.b64encode(json.dumps(product_ids).encode('utf-8'))
+            pro.json_valid_product_ids = product_ids_json_encode
 
     def _compute_total_order_count(self):
         self.total_order_count = 0
@@ -293,6 +306,11 @@ class PromotionProgram(models.Model):
             if bool(self.env['promotion.usage.line'].search([('program_id', '=', program.id)])):
                 raise UserError(_('Can not unlink program which is already used!'))
         return super().unlink()
+
+    def action_recompute_new_field_binary(self):
+        self.search([])._compute_json_valid_product_ids()
+        self.search([]).combo_line_ids._compute_json_valid_product_ids()
+        return True
 
     def open_products(self):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")

@@ -12,7 +12,7 @@ class PointsPromotion(models.Model):
 
     name = fields.Char('Program Name', required=True)
     brand_id = fields.Many2one('res.brand', string='Brand', required=True)
-    store_ids = fields.Many2many('store', string='Stores', required=True)
+    store_ids = fields.Many2many('store', string='Stores')
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
     first_order = fields.Integer('First Order', default=0)
@@ -33,21 +33,6 @@ class PointsPromotion(models.Model):
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
 
-    # def action_view_point_products(self):
-    #     ctx = dict(self._context)
-    #     ctx.update({
-    #         'default_points_promotion_id': self.id,
-    #         'default_product_existed': json.dumps(self.points_product_ids.mapped('product_ids.id')),
-    #     })
-    #     return {
-    #         'type': 'ir.actions.act_window',
-    #         'name': _('Points Product'),
-    #         'domain': [('points_promotion_id', '=', self.id)],
-    #         'res_model': 'points.product',
-    #         'view_mode': 'tree,form',
-    #         'view_id': False,
-    #         'context': ctx,
-    #     }
 
     @api.onchange('brand_id')
     def onchange_brand(self):

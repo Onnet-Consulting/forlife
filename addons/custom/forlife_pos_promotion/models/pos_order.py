@@ -69,7 +69,22 @@ class PosOrder(models.Model):
                 new_code = self.env['promotion.code'].create(gen_code_wizard._get_coupon_values(customer, force_partner=True))
                 new_code.original_order_id = order_id
                 new_code.surprising_reward_line_id = surprising_reward_line_id
-
+        # Kiểm tra và ghi nhận số tiền đã sử dụng cho CTKM Code giảm tiền
+        code_vals = {}
+        for line in order['data']['lines']:
+            for usage in line[2]['promotion_usage_ids']:
+                code_id = usage[2]['code_id']
+                if code_id and usage[2].get('discount_amount', 0):
+                    if code_id in code_vals:
+                        code_vals[code_id] += line[2]['qty'] * usage[2]['discount_amount']
+                    else:
+                        code_vals[code_id] = line[2]['qty'] * usage[2]['discount_amount']
+        if code_vals:
+            get_code = self.env['promotion.code'].sudo().browse
+            for [code_id, consumed_amount] in code_vals.items():
+                code_obj = get_code(code_id)
+                if code_obj.exists() and code_obj.program_id.reward_type == 'code_amount':
+                    code_obj.consumed_amount += consumed_amount
         return order_id
 
     def issue_promotion_voucher(self, order_id, reward_voucher_program_id, program_id):

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+    <t name="forlife_payment_terminal_base.PaymentScreenPaymentLines" owl="1" t-inherit="point_of_sale.PaymentScreenPaymentLines" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('electronic_payment')]" position="inside">
+            <t t-if="line.payment_status == 'timeout'">
+                <div class="electronic_status">
+                    Payment request timeout
+                </div>
+                <div class="button set_payment_done_manually highlight" title="Done manually" t-on-click="() => this.trigger('set-done-manually', line)">
+                    Confirm
+                </div>
+            </t>
+
+            <t t-if="line.payment_status == 'sent_failed'">
+                <div class="electronic_status">
+                    Send payment request failed
+                </div>
+                <div class="button retry-failed-payment highlight" title="Done manually" t-on-click="() => this.trigger('send-payment-request', line)">
+                    Retry
+                </div>
+            </t>
+        </xpath>
+    </t>
+</templates>

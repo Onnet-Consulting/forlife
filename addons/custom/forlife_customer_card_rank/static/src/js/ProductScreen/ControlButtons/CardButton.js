@@ -43,8 +43,11 @@ export class CardButton extends PosComponent {
 CardButton.template = 'CardButton';
 
 ProductScreen.addControlButton({
-    component: CardButton, position: ['after', 'RefundButton'], condition: function () {
-        return this.env.pos.get_order().order_can_apply_card_rank() && this.env.pos.get_order().orderlines.length > 0 && !this.env.pos.get_order().card_rank_program;
+    component: CardButton,
+    position: ['after', 'RefundButton'],
+    condition: function () {
+        let order = this.env.pos && this.env.pos.get_order();
+        return order.orderlines.length > 0 && !order.card_rank_program && order.order_can_apply_card_rank();
     }
 });
 

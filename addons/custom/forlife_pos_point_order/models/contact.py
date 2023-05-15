@@ -94,7 +94,8 @@ class Contact(models.Model):
         point_promotion_format_id = self.env['points.promotion'].search([('brand_id', '=', brand_format_id.id), ('state', '=', 'in_progress')], limit=1)
 
         # Reset Forlife point
-        reset_forlife_partners = self.search([('reset_day_of_point_forlife', '<=', now), ('point_forlife_reseted', '=', False),('total_points_available_forlife','>',0)])
+        reset_forlife_partners = self.search([('reset_day_of_point_forlife', '<=', now), ('point_forlife_reseted', '=', False)])
+        reset_forlife_partners = reset_forlife_partners.filtered(lambda x: x.total_points_available_forlife > 0)
         if reset_forlife_partners:
             # vals = {'point_forlife_reseted': True}
             vals = {}
@@ -135,16 +136,17 @@ class Contact(models.Model):
                     })
 
                 # Update reset date
-                new_reset_date = now + relativedelta(days=point_promotion_forlife_id.point_expiration)
-                vals.update({
-                    'reset_day_of_point_forlife': new_reset_date,
-                    'point_forlife_reseted': False
-                })
+                    new_reset_date = now + relativedelta(days=point_promotion_forlife_id.point_expiration)
+                    vals.update({
+                        'reset_day_of_point_forlife': new_reset_date,
+                        'point_forlife_reseted': False
+                    })
 
-            reset_forlife_partners.write(vals)
+                    partner.write(vals)
 
         # Reset Format point
-        reset_format_partners = self.search([('reset_day_of_point_format', '<=', now), ('point_format_reseted', '=', False),('total_points_available_format','>',0)])
+        reset_format_partners = self.search([('reset_day_of_point_format', '<=', now), ('point_format_reseted', '=', False)])
+        reset_format_partners.filtered(lambda x: x.total_points_available_format > 0)
         if reset_format_partners:
             # vals = {'point_format_reseted': True}
             vals = {}
@@ -185,10 +187,10 @@ class Contact(models.Model):
                     })
 
                 # Update reset date
-                new_reset_date = now + relativedelta(days=point_promotion_format_id.point_expiration)
-                vals.update({
-                    'reset_day_of_point_format': new_reset_date,
-                    'point_format_reseted': False
-                })
+                    new_reset_date = now + relativedelta(days=point_promotion_format_id.point_expiration)
+                    vals.update({
+                        'reset_day_of_point_format': new_reset_date,
+                        'point_format_reseted': False
+                    })
 
-            reset_format_partners.write(vals)
+                    partner.write(vals)

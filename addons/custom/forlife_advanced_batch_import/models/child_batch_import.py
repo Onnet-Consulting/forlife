@@ -4,6 +4,7 @@ import base64
 from io import StringIO
 from io import BytesIO
 from odoo.addons.base_import.models.base_import import FILE_TYPE_DICT, _logger
+from odoo.tools.misc import clean_context
 
 
 class ChildBatchImport(models.Model):
@@ -75,7 +76,7 @@ class ChildBatchImport(models.Model):
         for rec in self:
             try:
                 if rec.file:
-                    base_import_from_batch = self.env['base_import.import'].sudo().create({
+                    base_import_from_batch = self.with_context(clean_context(json.loads(rec.parent_batch_import_id.context))).env['base_import.import'].create({
                         'file': base64.b64decode(rec.file),
                         'file_name': rec.file_name,
                         'file_type': rec.file_type,
@@ -125,7 +126,7 @@ class ChildBatchImport(models.Model):
                             'file_length': file_length
                         })
                     rec.make_file_log_invalid_records(error_rows=error_rows)
-                    base_import_from_batch.unlink()
+                    base_import_from_batch.sudo().unlink()
             except Exception as e:
                 rec.status = 'error'
                 rec.log = str(e)
@@ -133,7 +134,7 @@ class ChildBatchImport(models.Model):
     def test_execute_import(self):
         for rec in self:
             if rec.file:
-                base_import_from_batch = self.env['base_import.import'].sudo().create({
+                base_import_from_batch = self.with_context(clean_context(json.loads(rec.parent_batch_import_id.context))).env['base_import.import'].create({
                     'file': base64.b64decode(rec.file),
                     'file_name': rec.file_name,
                     'file_type': rec.file_type,
@@ -166,7 +167,7 @@ class ChildBatchImport(models.Model):
                         'log': json.dumps(result, ensure_ascii=False)
                     })
                 rec.make_file_log_invalid_records(error_rows=error_rows)
-                base_import_from_batch.unlink()
+                base_import_from_batch.sudo().unlink()
 
     def set_to_processing(self, delay_time=0):
         index = 1
@@ -197,6 +198,8 @@ class ChildBatchImport(models.Model):
                                 if message.get('record') not in error_rows:
                                     error_rows.append(message.get('record'))
             if len(error_rows) > 0 and rec.file:
+                # sort error_rows
+                error_rows.sort()
                 decoded_data = base64.b64decode(rec.file)
                 df = pd.read_csv(StringIO(decoded_data.decode('utf-8')), dtype=str)
                 # Lọc các hàng cần giữ lại
@@ -210,7 +213,12 @@ class ChildBatchImport(models.Model):
                                 error_dict[message.get('record')] = str(message.get('message'))
                             else:
                                 error_dict[message.get('record')] = str(error_dict.get(message.get('record'))) + " + " + str(message.get('message'))
-                    error_messages = [value for value in error_dict.values()]
+                    # sort dict by key (record)
+                    myKeys = list(error_dict.keys())
+                    myKeys.sort()
+                    sorted_dict = {i: error_dict[i] for i in myKeys}
+                    # assign to last column in error file
+                    error_messages = [value for value in sorted_dict.values()]
                     if len(error_messages) > 0:
                         filtered_df = filtered_df.assign(Error=error_messages)
                 except Exception as e:
@@ -229,6 +237,7 @@ class ChildBatchImport(models.Model):
         for rec in self:
             if rec.log:
                 if len(error_rows) == 0:
+                    # get error_rows by record
                     error_rows = []
                     if json.loads(rec.log).get('messages'):
                         for message in json.loads(rec.log).get('messages'):
@@ -237,6 +246,8 @@ class ChildBatchImport(models.Model):
                                     error_rows.append(message.get('record'))
                 sheet_name = json.loads(rec.parent_batch_import_id.options).get('sheet_name') if json.loads(rec.parent_batch_import_id.options).get('sheet_name') else "Sheet1"
                 if len(error_rows) > 0 and rec.file:
+                    # sort error_rows
+                    error_rows.sort()
                     decoded_data = base64.b64decode(rec.file)
                     df = pd.read_excel(BytesIO(decoded_data), dtype=str)
                     # Lọc các hàng cần giữ lại
@@ -250,7 +261,12 @@ class ChildBatchImport(models.Model):
                                     error_dict[message.get('record')] = str(message.get('message'))
                                 else:
                                     error_dict[message.get('record')] = str(error_dict.get(message.get('record'))) + " + " + str(message.get('message'))
-                        error_messages = [value for value in error_dict.values()]
+                        # sort dict by key (record)
+                        myKeys = list(error_dict.keys())
+                        myKeys.sort()
+                        sorted_dict = {i: error_dict[i] for i in myKeys}
+                        # assign to last column in error file
+                        error_messages = [value for value in sorted_dict.values()]
                         if len(error_messages) > 0:
                             filtered_df = filtered_df.assign(Error=error_messages)
                     except Exception as e:

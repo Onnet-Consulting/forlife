@@ -9,11 +9,13 @@ class PosSession(models.Model):
         values = super(PosSession, self)._loader_params_product_product()
 
         values['search_params']['fields'].append('is_product_auto')
+        values['search_params']['fields'].append('is_voucher_auto')
         return values
 
     def load_pos_data(self):
         loaded_data = super(PosSession, self).load_pos_data()
-        reason_refund_ids = self.env['pos.reason.refund'].search([])
+        reason_refund_ids = self.env['pos.reason.refund'].search(
+            [('brand_id', '=', self.config_id.store_id.brand_id.id)])
         reason = [{
             'id': rr.id,
             'name': rr.name,

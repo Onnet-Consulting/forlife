@@ -28,4 +28,17 @@ class PosVoucherLine(models.Model):
     using_limit = fields.Integer('Giới hạn sử dụng')
     program_voucher_id = fields.Many2one('program.voucher')
     product_voucher_name = fields.Char('Product Voucher Name')
+    derpartment_name = fields.Char('Derpartment Name')
+
+    def _export_for_ui(self, voucher):
+        return {
+            'voucher_id': voucher.voucher_id.id,
+            'voucher_name': voucher.voucher_id.name,
+            'price_residual': voucher.price_residual,
+            'price_used': voucher.price_used,
+            'type': voucher.type,
+        }
+
+    def export_for_ui(self):
+        return self.mapped(self._export_for_ui) if self else []
 

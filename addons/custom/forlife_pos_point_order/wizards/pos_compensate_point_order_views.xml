@@ -2,7 +2,7 @@
 <odoo>
 
     <record id="view_pos_compensate_point_order" model="ir.ui.view">
-        <field name="name">POS Compensate Point</field>
+        <field name="name">view.pos.compensate.point.order</field>
         <field name="model">pos.compensate.point.order</field>
         <field name="arch" type="xml">
             <form string="Compensate Point">
@@ -23,14 +23,23 @@
         </field>
     </record>
 
+    <record id="model_pos_order_check" model="ir.actions.server">
+        <field name="name">Tích điểm bù</field>
+        <field name="model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+                action = records.check_pos_order_compensate_point_from_list()
+        </field>
+    </record>
+
     <record id="action_view_pos_compensate_point_order" model="ir.actions.act_window">
         <field name="name">Compensate Point</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">pos.compensate.point.order</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="binding_model_id" ref="point_of_sale.model_pos_order"/>
-        <field name="binding_view_types">list</field>
     </record>
 
 </odoo>

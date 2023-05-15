@@ -65,7 +65,22 @@ class ImportPartnerCardRank(models.TransientModel):
                 'line_ids': value,
             }
                 for customer, value in new_data.items()]
-            self.env['partner.card.rank'].sudo().create(final_new_data)
-        if add_data:
-            self.env['partner.card.rank.line'].sudo().create(add_data)
+            while len(final_new_data) > 0:
+                number_split = min(500, len(final_new_data))
+                split_data = final_new_data[:number_split]
+                final_new_data = final_new_data[number_split:]
+                self.with_delay(description='Import partner card rank (create)').create_partner_card_rank(split_data)
+        while len(add_data) > 0:
+            number_split = min(1000, len(add_data))
+            split_data = add_data[:number_split]
+            add_data = add_data[number_split:]
+            self.with_delay(description='Import partner card rank (update)').create_partner_card_rank_line(split_data)
         return True
+
+    def create_partner_card_rank(self, values):
+        self.env['partner.card.rank'].sudo().create(values)
+
+    def create_partner_card_rank_line(self, values):
+        self.env['partner.card.rank.line'].sudo().create(values)
+
+

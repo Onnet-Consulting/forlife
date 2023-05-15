@@ -38,7 +38,7 @@
                     <button string="Reject " name="%(forlife_stock.reject_stock_request_wizard)d"
                             type="action" attrs="{'invisible':[('state', 'in', ('draft', 'approved', 'done', 'cancel', 'reject'))]}"/>
                     <button string="Cancel" name="action_cancel"
-                            type="object" attrs="{'invisible':[('state', 'in', ('draft','done','cancel'))]}" confirm="Do you really want to cancel?"/>
+                            type="object" attrs="{'invisible':[('state', 'in', ('draft','done','cancel'))]}" confirm="Bạn có thực sự muốn hủy bỏ?"/>
                     <button string="Done" name="action_done" type="object" attrs="{'invisible': [('state', 'in', ('draft', 'wait_confirm','reject','cancel','done'))]}"/>
                     <field name="state" widget="statusbar"/>
                 </header>
@@ -47,7 +47,7 @@
                         <button name="action_stock_transfer" type="object" class="oe_stat_button">
                             <div class="o_stat_info">
                                 <field name="count_stock_transfer" class="o_stat_value"/>
-                                Stock Transfer
+                                Phiếu điều chuyển
                             </div>
                         </button>
                     </div>

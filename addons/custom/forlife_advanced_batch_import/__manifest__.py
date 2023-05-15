@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'queue_job', 'base_import'],
+    'depends': ['base', 'queue_job', 'base_import', 'product'],
 
     # always loaded
     'data': [

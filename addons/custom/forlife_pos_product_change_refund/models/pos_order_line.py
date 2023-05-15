@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models
 from datetime import timedelta
+import pytz
 
 
 class PosOrderLine(models.Model):
@@ -27,7 +28,9 @@ class PosOrderLine(models.Model):
     @api.depends('order_id.date_order', 'product_id.number_days_change_refund')
     def _compute_expire_change_refund_date(self):
         for r in self:
-            r.expire_change_refund_date = r.order_id.date_order.date() + timedelta(days=r.product_id.number_days_change_refund)
+            user_tz = pytz.timezone(self.env.context.get('tz') or self.env.user.tz)
+            date_order = pytz.utc.localize(r.order_id.date_order).astimezone(user_tz)
+            r.expire_change_refund_date = date_order.date() + timedelta(days=r.product_id.number_days_change_refund)
 
     @api.depends('qty', 'refunded_qty')
     def _compute_quantity_canbe_refund(self):
