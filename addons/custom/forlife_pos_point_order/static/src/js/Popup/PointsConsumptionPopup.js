@@ -26,7 +26,6 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
         }
 
         delete_val() {
-            console.log($('.o_input'))
             $('.o_input').val('')
         }
 
