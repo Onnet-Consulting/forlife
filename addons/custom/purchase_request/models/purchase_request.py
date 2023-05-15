@@ -133,7 +133,7 @@ class PurchaseRequest(models.Model):
 
     def create_purchase_orders(self):
         self.is_check_button_orders_smart_button = True
-        order_lines_ids = self.filtered(lambda r: r.state != 'close').order_lines.filtered(lambda r: r.is_close == False).ids
+        order_lines_ids = self.filtered(lambda r: r.state != 'close' and r.type_po).order_lines.filtered(lambda r: r.is_close == False).ids
         order_lines_groups = self.env['purchase.request.line'].read_group(domain=[('id', 'in', order_lines_ids)],
                                     fields=['product_id', 'vendor_code', 'product_type'],
                                     groupby=['vendor_code', 'product_type'], lazy=False)
