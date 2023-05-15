@@ -6,6 +6,7 @@ from odoo.exceptions import AccessError
 
 class HrEmployee(models.Model):
     _inherit = 'hr.employee'
+    _rec_names_search = ["work_email"]
 
     def action_create_related_user(self):
         if not self.env.user.has_group('base.group_system'):
