@@ -15,7 +15,7 @@
                     <field name="money_reduce"/>
                     <field name="percent_reduce"/>
                     <field name="total_reduce" required="1"/>
-                    <field name="defective_type" required="1"/>
+                    <field name="defective_type_id" required="1"/>
                     <field name="detail_defective"/>
                 </tree>
             </field>
@@ -44,13 +44,18 @@
                                 <field name="money_reduce"/>
                                 <field name="percent_reduce"/>
                                 <field name="total_reduce" required="1"/>
-                                <field name="defective_type" required="1"/>
+                                <field name="defective_type_id" required="1"/>
                                 <field name="detail_defective"/>
                             </group>
                             <group>
                             </group>
                         </group>
                     </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
                 </form>
             </field>
         </record>

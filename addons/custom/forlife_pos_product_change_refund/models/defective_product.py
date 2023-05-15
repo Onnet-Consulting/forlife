@@ -1,22 +1,23 @@
-from odoo import api, fields, models
-
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 class ProductDefective(models.Model):
     _name = 'product.defective'
+    _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _order = 'create_date desc'
     _description = 'Product Defective'
 
     store_id = fields.Many2one('store', 'Cửa hàng')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id)
-    product_id = fields.Many2one('product.template', 'Sản phẩm')
+    product_id = fields.Many2one('product.product', 'Sản phẩm')
     quantity_defective_approved = fields.Integer('Số lượng lỗi đã duyệt')
-    quantity_inventory_store = fields.Integer('Số lượng tồn theo cửa hàng', readonly=True, store=True)
-    quantity_can_be_sale = fields.Integer('Số lượng lỗi có thể bán', readonly=True)
-    price = fields.Monetary('Nguyên giá')
+    quantity_inventory_store = fields.Integer('Số lượng tồn theo cửa hàng', readonly=True, store=True, compute='compute_quantity_inventory_store')
+    quantity_can_be_sale = fields.Integer('Số lượng lỗi có thể bán')
+    price = fields.Float('Nguyên giá', related='product_id.lst_price')
     money_reduce = fields.Monetary('Số tiền giảm')
     percent_reduce = fields.Monetary('Phần trăm giảm')
     total_reduce = fields.Monetary('Tổng giảm', compute='_compute_total_reduce', store=True)
-    defective_type = fields.Many2one('defective.type', 'Loại lỗi')
+    defective_type_id = fields.Many2one('defective.type', 'Loại lỗi')
     detail_defective = fields.Char('Chi tiết lỗi')
     state = fields.Selection([('new', 'New'), ('waiting approve', 'Waiting Approve'), ('approved','Approved'),('refuse','Refuse')], string='Trạng thái', default='new')
 
@@ -25,11 +26,22 @@ class ProductDefective(models.Model):
         for rec in self:
             rec.total_reduce = rec.price * rec.percent_reduce + rec.money_reduce
 
+    def name_get(self):
+        return [(rec.id, '%s' % rec.product_id.name) for rec in self]
+
+    @api.depends('product_id')
+    def compute_quantity_inventory_store(self):
+        for rec in self:
+            quant = self.env['stock.quant'].search([('product_id','=', rec.product_id.id), ('location_id','=', rec.store_id.warehouse_id.lot_stock_id.id)], limit=1)
+            rec.quantity_inventory_store = quant.available_quantity
+
     def action_send_request_approve(self):
         self.state = 'waiting approve'
         self._send_mail_approve(self.id)
 
     def action_approve(self):
+        if self.quantity_defective_approved > self.quantity_inventory_store:
+            raise ValidationError(_('Tồn kho không đáp ứng'))
         self.state = 'approved'
 
     def action_refuse(self):
@@ -48,3 +60,25 @@ class ProductDefective(models.Model):
             }
             mailTmplObj.with_context(**ctx).send_mail(id, force_send=True)
 
+    @api.model
+    def get_product_defective(self, store_id, products, store_name):
+        if len(products) == 1:
+            product_ids = str(tuple(products)).replace(',', '')
+        else:
+            product_ids = tuple(products)
+        sql = f"SELECT pt.name as product_name, ppd.quantity_can_be_sale as quantity," \
+              f"ppd.total_reduce as total_reduce, ppd.detail_defective as detail_defective,ppd.product_id as product_id, dt.name as type_defective FROM product_defective ppd " \
+              f"JOIN product_product pp on pp.id = ppd.product_id " \
+              f"JOIN product_template pt on pt.id = pp.product_tmpl_id " \
+              f"JOIN defective_type dt on dt.id = ppd.defective_type_id " \
+              f"WHERE store_id = {store_id} AND product_id in {product_ids} AND quantity_can_be_sale >= 1 AND state = 'approved'"
+        self._cr.execute(sql)
+        data = self._cr.dictfetchall()
+        for i in range(len(data)):
+            data[i].update({
+                'product_name': data[i]['product_name']['vi_VN'],
+                'store_name': store_name,
+                'id': i
+            })
+        print()
+        return data
