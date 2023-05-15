@@ -9,30 +9,35 @@ odoo.define('forlife_pos_point_order.models', function (require) {
         class extends Orderline {
             constructor(obj, options) {
                 super(...arguments);
+                this.is_new_line_point = this.is_new_line_point || false;
             }
 
-            set_quantity(quantity, keep_price){
-                this.order.old_data = false
-                for (let i = 0; i < this.order.orderlines.length; i++) {
-                     this.order.orderlines[i].point = false
-                }
-                return super.set_quantity(quantity, keep_price)
-            }
+//            set_quantity(quantity, keep_price){
+//                this.order.old_data = false
+//                for (let i = 0; i < this.order.orderlines.length; i++) {
+//                    this.order.orderlines[i].point = false
+//                    this.order.orderlines[i].is_new_line_point = false
+//                }
+//                return super.set_quantity(quantity, keep_price)
+//            }
 
             init_from_JSON(json) {
                 super.init_from_JSON(...arguments);
                 this.point = json.point;
+                this.is_new_line_point = json.is_new_line_point;
             }
 
             clone() {
                 let orderline = super.clone(...arguments);
                 orderline.point = this.point;
+                orderline.is_new_line_point = this.is_new_line_point;
                 return orderline;
             }
 
             export_as_JSON() {
                 const json = super.export_as_JSON(...arguments);
                 json.point = this.point;
+                json.is_new_line_point = this.is_new_line_point;
                 return json;
             }
 
@@ -140,10 +145,24 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 this.old_data = false;
                 for (let i = 0; i < this.orderlines.length; i++) {
                      this.orderlines[i].point = false
+                     this.orderlines[i].is_new_line_point = false
                 }
                 return super.add_product(product,options)
             }
+            remove_orderline( line ){
+                super.remove_orderline(line)
+                this.old_data = false;
+                for (let i = 0; i < this.orderlines.length; i++) {
+                     this.orderlines[i].point = false
+                     this.orderlines[i].is_new_line_point = false
+                }
+            }
 
+            createNewLinePoint(line){
+                  this.fix_tax_included_price(line);
+                  this.add_orderline(line);
+                  return line
+            }
         }
     Registries.Model.extend(Orderline, PointsOrderLine);
     Registries.Model.extend(Order, PointsOrder);

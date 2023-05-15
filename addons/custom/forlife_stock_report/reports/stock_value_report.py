@@ -34,7 +34,7 @@ class StockValueReport(models.TransientModel):
 
     @api.onchange('date_from', 'date_to')
     def _onchange_date(self):
-        if self.date_from > self.date_to:
+        if self.date_from and self.date_to and self.date_from > self.date_to:
             return {'warning': {
                 'title': 'Warning',
                 'message': _('To date must be greater than From date')
