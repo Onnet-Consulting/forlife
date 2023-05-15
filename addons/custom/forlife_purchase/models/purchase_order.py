@@ -104,6 +104,33 @@ class PurchaseOrder(models.Model):
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
+    @api.onchange('partner_id', 'currency_id')
+    def onchange_partner_id_warning(self):
+        res = super().onchange_partner_id_warning()
+        if self.partner_id and self.order_line and self.currency_id:
+            for item in self.order_line:
+                if item.product_id:
+                    item.product_uom = item.product_id.uom_id.id
+                    date_item = datetime.datetime.now().date()
+                    supplier_info = self.env['product.supplierinfo'].search(
+                        [('product_id', '=', item.product_id.id), ('partner_id', '=', self.partner_id.id),
+                         ('date_start', '<', date_item),
+                         ('date_end', '>', date_item),
+                         ('currency_id', '=',  self.currency_id.id)
+                         ])
+                    if supplier_info:
+                        item.purchase_uom = supplier_info[-1].product_uom
+                        data = self.env['product.supplierinfo'].search([
+                            ('product_tmpl_id', '=', item.product_id.product_tmpl_id.id),
+                            ('partner_id', '=', self.partner_id.id),
+                            ('product_uom', '=', item.purchase_uom.id),
+                            ('amount_conversion', '=', item.exchange_quantity)
+                        ], limit=1)
+                        item.vendor_price = data.price if data else False
+                        item.price_unit = item.vendor_price / item.exchange_quantity if item.exchange_quantity else False
+        # Do something with res
+        return res
+
     @api.constrains('currency_id')
     def constrains_currency_id(self):
         for item in self:
@@ -288,7 +315,7 @@ class PurchaseOrder(models.Model):
                 if picking_in:
                     for orl in record.order_line:
                         for pkl in picking_in.move_ids_without_package:
-                            if orl.product_id == pkl.product_id and orl.location_id.id == pkl.location_dest_id.id:
+                            if orl.product_id == pkl.product_id:
                                 pkl.write({
                                     'quantity_done': orl.product_qty,
                                     'occasion_code_id': orl.occasion_code_id.id,
@@ -296,10 +323,11 @@ class PurchaseOrder(models.Model):
                                 })
 
                         for pk in picking_in.move_line_ids_without_package:
-                            if orl.product_id == pk.product_id and orl.location_id.id == pk.location_dest_id.id:
+                            if orl.product_id == pk.product_id:
                                 pk.write({
                                     'purchase_uom': orl.purchase_uom,
                                     'quantity_change': orl.exchange_quantity,
+                                    'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
                                 })
                 record.write({'custom_state': 'approved'})
             else:
@@ -645,7 +673,7 @@ class PurchaseOrder(models.Model):
                                  'account_analytic_id': line.account_analytic_id.id,
                                  'request_code': line.request_purchases,
                                  'quantity_purchased': line.purchase_quantity,
-                                 'discount_invoice': line.discount,
+                                 'discount': line.discount,
                                  'taxes_id': line.taxes_id.id,
                                  'tax_amount': line.price_tax,
                                  'uom_id': line.product_uom.id,
@@ -851,8 +879,11 @@ class PurchaseOrderLine(models.Model):
                                 domain=['|', ('active', '=', False), ('active', '=', True)])
     domain_uom = fields.Char(string='Lọc đơn vị', compute='compute_domain_uom')
     is_red_color = fields.Boolean(compute='compute_is_red_color')
-    name = fields.Char(default="Tên sản phẩm", required=False)
+    name = fields.Char(related='product_id.name', store=True, required=False)
     product_uom = fields.Many2one('uom.uom', related='product_id.uom_id', store=True, required=False)
+    currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
+    is_change_vendor = fields.Integer()
+
 
     @api.model
     def create(self, vals):
@@ -860,13 +891,25 @@ class PurchaseOrderLine(models.Model):
         if not line.product_uom or not line.name:
             line.product_uom = line.product_id.uom_id.id
             line.name = line.product_id.name
+        if not line.vendor_price and all((line.product_id, line.supplier_id, line.purchase_uom, not line.is_red_color)):
+            data = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
+                ('partner_id', '=', line.supplier_id.id),
+                ('product_uom', '=', line.purchase_uom.id),
+                ('amount_conversion', '=', line.exchange_quantity)
+            ], limit=1)
+            if data:
+                line.update({
+                    'vendor_price': data.price,
+                    'price_unit': data.price / line.exchange_quantity if line.exchange_quantity else False
+                })
         return line
 
     @api.depends('exchange_quantity')
     def compute_is_red_color(self):
         date_item = datetime.datetime.now().date()
         for item in self:
-            if not (item.product_id and item.supplier_id and item.purchase_uom):
+            if not (item.product_id and item.supplier_id and item.purchase_uom and item.currency_id):
                 item.is_red_color = False
                 continue
             supplier_info = self.search_product_sup(
@@ -874,19 +917,23 @@ class PurchaseOrderLine(models.Model):
                  ('product_id', '=', item.product_id.id),
                  ('partner_id', '=', item.supplier_id.id),
                  ('date_start', '<', date_item),
-                 ('date_end', '>', date_item)])
+                 ('date_end', '>', date_item),
+                 ('currency_id', '>',  item.currency_id.id),
+                 ])
             item.is_red_color = True if item.exchange_quantity not in supplier_info.mapped(
                 'amount_conversion') else False
 
-    @api.onchange('product_id')
+    @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):
-        if self.product_id:
+        if self.product_id and self.currency_id:
             self.product_uom = self.product_id.uom_id.id
             date_item = datetime.datetime.now().date()
             supplier_info = self.search_product_sup(
                 [('product_id', '=', self.product_id.id), ('partner_id', '=', self.supplier_id.id),
                  ('date_start', '<', date_item),
-                 ('date_end', '>', date_item)])
+                 ('date_end', '>', date_item),
+                 ('currency_id', '=', self.currency_id.id)
+                 ])
             if supplier_info:
                 self.purchase_uom = supplier_info[-1].product_uom
 
@@ -896,8 +943,10 @@ class PurchaseOrderLine(models.Model):
             date_item = datetime.datetime.now().date()
             supplier_info = self.search_product_sup(
                 [('product_id', '=', item.product_id.id), ('partner_id', '=', item.supplier_id.id),
+                 ('currency_id', '=', item.currency_id.id),
                  ('date_start', '<', date_item),
-                 ('date_end', '>', date_item)]) if item.supplier_id and item.product_id else None
+                 ('date_end', '>',
+                  date_item)]) if item.supplier_id and item.product_id and item.currency_id else None
             item.domain_uom = json.dumps(
                 [('id', 'in', supplier_info.mapped('product_uom').ids)]) if supplier_info else json.dumps([])
 
@@ -991,7 +1040,7 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('vendor_price', 'exchange_quantity')
     def onchange_price_unit(self):
-            self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity else False
+        self.price_unit = self.vendor_price / self.exchange_quantity if self.exchange_quantity else False
 
     @api.onchange('product_id', 'order_id', 'order_id.receive_date', 'order_id.location_id', 'order_id.production_id',
                   'order_id.account_analytic_ids', 'order_id.occasion_code_ids', 'order_id.event_id')
@@ -1006,8 +1055,12 @@ class PurchaseOrderLine(models.Model):
             if self.order_id.occasion_code_ids:
                 self.occasion_code_id = self.order_id.occasion_code_ids[-1].id.origin
 
-    # discount
+    @api.onchange('product_id', 'order_id', 'order_id.location_id')
+    def onchange_location_id(self):
+        if self.order_id and self.order_id.location_id:
+            self.location_id = self.order_id.location_id
 
+    # discount
     @api.onchange("free_good")
     def _onchange_free_good(self):
         if self.free_good:
@@ -1377,6 +1430,7 @@ class StockPicking(models.Model):
     def create_invoice_npl(self, po, record):
         list_line_xk = []
         invoice_line_npls = []
+        cost_labor_internal_costs = []
         for item in po.order_line_production_order:
             material = self.env['purchase.order.line.material.line'].search(
                 [('purchase_order_line_id', '=', item.id)])
@@ -1387,51 +1441,79 @@ class StockPicking(models.Model):
             else:
                 raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
             debit = 0
+            debit_cost = 0
             for material_line in material:
-                number_product = self.env['stock.quant'].search(
-                    [('location_id', '=', record.location_dest_id.id),
-                     ('product_id', '=', material_line.product_id.id)])
-                # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
-                #     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
-                if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
-                    raise ValidationError('Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
-                list_line_xk.append((0, 0, {
-                    'product_id': material_line.product_id.id,
-                    'product_uom': material_line.uom.id,
-                    'price_unit': material_line.price_unit,
-                    'location_id': record.location_dest_id.id,
-                    'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
-                    'product_uom_qty': material_line.product_plan_qty,
-                    'quantity_done': material_line.product_plan_qty,
-                    'amount_total': material_line.price_unit * material_line.product_plan_qty,
-                    'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
-                    'reason_id': self.env.ref('forlife_stock.export_production_order').id,
-                }))
-                # Tạo bút toán cho nguyên phụ liệu
                 credit = material_line.price_unit * material_line.product_plan_qty
-                credit_npl = (0, 0, {
-                    'account_id': self.env.ref(
-                        'forlife_stock.export_production_order').valuation_in_account_id.id,
-                    'name': material_line.product_id.name,
-                    'debit': 0,
-                    'credit': credit,
+                if material_line.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
+                    if not material_line.product_id.categ_id or not material_line.product_id.categ_id.property_stock_account_input_categ_id:
+                        raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
+                    account_cost = material_line.product_id.categ_id.property_stock_account_input_categ_id
+                    credit_npl = (0, 0, {
+                        'account_id': account_cost.id,
+                        'name': material_line.product_id.name,
+                        'debit': 0,
+                        'credit': credit,
+                        'is_uncheck': True,
+                    })
+                    cost_labor_internal_costs.append(credit_npl)
+                    debit_cost += credit
+                else:
+                    number_product = self.env['stock.quant'].search(
+                        [('location_id', '=', record.location_dest_id.id),
+                         ('product_id', '=', material_line.product_id.id)])
+                    # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
+                    #     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
+                    if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
+                        raise ValidationError(
+                            'Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
+                    list_line_xk.append((0, 0, {
+                        'product_id': material_line.product_id.id,
+                        'product_uom': material_line.uom.id,
+                        'price_unit': material_line.price_unit,
+                        'location_id': record.location_dest_id.id,
+                        'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
+                        'product_uom_qty': material_line.product_plan_qty,
+                        'quantity_done': material_line.product_plan_qty,
+                        'amount_total': material_line.price_unit * material_line.product_plan_qty,
+                        'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
+                        'reason_id': self.env.ref('forlife_stock.export_production_order').id,
+                    }))
+                    # Tạo bút toán cho nguyên phụ liệu
+                    credit_npl = (0, 0, {
+                        'account_id': self.env.ref(
+                            'forlife_stock.export_production_order').valuation_in_account_id.id,
+                        'name': material_line.product_id.name,
+                        'debit': 0,
+                        'credit': credit,
+                        'is_uncheck': True,
+
+                    })
+                    invoice_line_npls.append(credit_npl)
+                    debit += credit
+                # end
+            if debit_cost > 0:
+                debit_cost_line = (0, 0, {
+                    'account_id': account_1561, 'name': item.product_id.name,
+                    'debit': debit_cost,
+                    'credit': 0,
+                    'is_uncheck': True,
+                })
+                cost_labor_internal_costs.append(debit_cost_line)
+            if debit > 0:
+                debit_npl = (0, 0, {
+                    'account_id': account_1561, 'name': item.product_id.name,
+                    'debit': debit,
+                    'credit': 0,
                     'is_uncheck': True,
 
                 })
-                invoice_line_npls.append(credit_npl)
-                debit += credit
-                # end
-            debit_npl = (0, 0, {
-                'account_id': account_1561, 'name': item.product_id.name,
-                'debit': debit,
-                'credit': 0,
-                'is_uncheck': True,
-
-            })
-            invoice_line_npls.append(debit_npl)
-        account_nl = self.create_account_move(po, invoice_line_npls, record)
-        master_xk = self.create_xk_picking(po, record, list_line_xk)
-        return master_xk
+                invoice_line_npls.append(debit_npl)
+        if cost_labor_internal_costs:
+            account_cost = self.create_account_move(po, cost_labor_internal_costs, record)
+        if invoice_line_npls and list_line_xk:
+            account_nl = self.create_account_move(po, invoice_line_npls, record)
+            master_xk = self.create_xk_picking(po, record, list_line_xk)
+        return True
 
     def create_xk_picking(self, po, record, list_line_xk):
         master_xk = {

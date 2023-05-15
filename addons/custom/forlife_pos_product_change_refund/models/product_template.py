@@ -11,13 +11,13 @@ class ProductTemplate(models.Model):
 
     @api.model
     def create(self, vals_list):
-        if 'categ_id' in vals_list:
+        if 'categ_id' in vals_list and not self._context.get('import_file'):
             categ = self.env['product.category'].search([('id','=', int(vals_list['categ_id']))])
             vals_list['number_days_change_refund'] = categ.number_days_change_refund
         return super(ProductTemplate, self).create(vals_list)
 
     def write(self, vals_list):
-        if 'categ_id' in vals_list:
+        if 'categ_id' in vals_list and not self._context.get('import_file'):
             categ = self.env['product.category'].search([('id','=', int(vals_list['categ_id']))])
             vals_list['number_days_change_refund'] = categ.number_days_change_refund
         return super(ProductTemplate, self).write(vals_list)

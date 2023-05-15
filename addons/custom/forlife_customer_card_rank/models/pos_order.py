@@ -231,7 +231,7 @@ class PosOrder(models.Model):
         if self.allow_for_point and (self.config_id.store_id.id in program.store_ids.ids or not program.store_ids) and current_rank_of_customer and program.card_rank_active:
             accumulate_by_rank = program.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0])
             if accumulate_by_rank:
-                return int((money_value * accumulate_by_rank.accumulative_rate / 100) * (program.card_rank_point_addition / program.card_rank_value_convert) * (accumulate_by_rank.coefficient or 1))
+                return int(int((money_value * accumulate_by_rank.accumulative_rate / 100) * (program.card_rank_point_addition / program.card_rank_value_convert)) * (accumulate_by_rank.coefficient or 1))
         return result
 
 

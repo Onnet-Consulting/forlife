@@ -36,8 +36,8 @@
                                 <tr height="50px" class="payment-item">
                                     <td class="section-title-line" t-esc="line.product.display_name"/>
                                     <td class="section-title-line" style="text-align: center;" t-esc="line.quantity"/>
-                                    <td class="section-title-line" style="text-align: center;" t-esc="this.env.pos.format_currency(line.pre_price)"/>
-                                    <td class="section-title-line" style="text-align: center;" t-esc="this.env.pos.format_currency(line.new_price)"/>
+                                    <td class="section-title-line" style="text-align: center;" t-esc="line.pre_price != null and this.env.pos.format_currency(line.pre_price) or ''"/>
+                                    <td class="section-title-line" style="text-align: center;" t-esc="line.new_price != null and this.env.pos.format_currency(line.new_price) or ''"/>
                                     <td class="section-title-line" style="text-align: center;" t-esc="this.env.pos.format_currency(line.discount_amount*line.quantity)"/>
                                 </tr>
                             </t>
