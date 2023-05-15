@@ -157,8 +157,8 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
-        self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0] if self.order_id.x_account_analytic_ids else None
-        self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0] if self.order_id.x_occasion_code_ids else None
+        self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0].id if self.order_id.x_account_analytic_ids else None
+        self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0].id if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
         if self.order_id.x_sale_type and self.order_id.x_sale_type in ('product', 'service'):
             domain = [('product_type', '=', self.order_id.x_sale_type)]
