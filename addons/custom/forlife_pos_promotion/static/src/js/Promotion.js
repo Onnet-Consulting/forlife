@@ -398,6 +398,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             await this.update_surprising_program();
         };
         await this.load_promotion_valid_new_partner();
+        // Đặt lại và gán pricelist_item vào các order_line
+        this.assign_pricelist_item_to_orderline()
         this.activatedInputCodes = [];
         this._resetPromotionPrograms();
         this._resetCartPromotionPrograms();
@@ -497,7 +499,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             priceItem = this._getPricelistItem(product);
         }
         else {
-            priceItem = this.validOnOrderPricelistItem.find(item => this.pos.pro_pricelist_item_by_id[item].product_id == product.id);
+            priceItem = this.validOnOrderPricelistItem.find(item => {return this.pos.pro_pricelist_item_by_id[item].product_id == product.id});
+            priceItem = this.pos.pro_pricelist_item_by_id[priceItem];
         };
         if (priceItem) {
             options['pricelist_item'] = priceItem;
@@ -717,6 +720,20 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let lines = this.get_orderlines().filter(line => line.is_applied_promotion());
         return lines.reduce((acc, line) => {
         acc.push(...line.promotion_usage_ids); return acc;}, []);
+    }
+
+    assign_pricelist_item_to_orderline() {
+        this.validOnOrderPricelistItem = [];
+        for (let line of this.get_orderlines()) {
+            line.pricelist_item = null;
+            let priceItem = this._getPricelistItem(line.product);
+            if (priceItem) {
+                line.pricelist_item = priceItem;
+                if (priceItem.str_id && !this.validOnOrderPricelistItem.includes(priceItem.str_id)) {
+                    this.validOnOrderPricelistItem.push(priceItem.str_id);
+                };
+            };
+        }
     }
 
     _getPricelistItem(product) {
