@@ -4,7 +4,7 @@
         <xpath expr="//li[hasclass('price')]" position="after">
                 <t t-if="props.line.point">
                     <li class="info orderline-point" style="width: 65%;">
-                        <em>Giảm giá theo tiêu điểm</em>
+                        <em>Giảm giá theo CT tiêu điểm</em>
                     </li>
                     <li class="info orderline-point" style="width: 35%;">
                             <i class="fa fa-ticket" role="img" aria-label="Point" title="Point"/>
