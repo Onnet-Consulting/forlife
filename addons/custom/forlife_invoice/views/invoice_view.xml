@@ -119,7 +119,7 @@
                             <field name="type"/>
                             <field name="promotions"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                            <field name="current_user"/>
+<!--                            <field name="current_user"/>-->
                             <field name="asset_code"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
                             <field name="asset_name"
