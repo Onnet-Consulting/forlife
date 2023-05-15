@@ -35,6 +35,9 @@ class ProductCombo(models.Model):
             pr.product_id.write({
                 'combo_id': result.id if vals['state'] in ['in_progress'] else None
             })
+            pr.product_id.product_variant_id.write({
+                'combo_id': self.id if self.state in ['in_progress'] else None
+            })
 
         return result
 
@@ -42,6 +45,9 @@ class ProductCombo(models.Model):
         res = super().write(values)
         for pr in self.combo_product_ids:
             pr.product_id.write({
+                'combo_id': self.id if self.state in ['in_progress'] else None
+            })
+            pr.product_id.product_variant_id.write({
                 'combo_id': self.id if self.state in ['in_progress'] else None
             })
         return res
