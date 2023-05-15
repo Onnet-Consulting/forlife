@@ -62,7 +62,6 @@ class SaleOrder(models.Model):
         }
         list_location = []
         stock_move_ids = {}
-        stock_move_ids['Null'] = []
         line_x_scheduled_date = []
         for line in self.order_line:
             date = datetime.combine(line.x_scheduled_date,
@@ -78,7 +77,7 @@ class SaleOrder(models.Model):
                 'product_uom': line.product_uom.id,
                 'product_uom_qty': line.product_uom_qty,
                 'partner_id': line.order_id.partner_id.id,
-                'location_id': line.order_id.warehouse_id.lot_stock_id.id,
+                'location_id': line.x_location_id.id,
                 'location_dest_id': line.order_id.partner_shipping_id.property_stock_customer.id,
                 'rule_id': rule.id,
                 'procure_method': 'make_to_stock',
@@ -105,6 +104,7 @@ class SaleOrder(models.Model):
         for move in stock_move_ids:
             master_data = master
             master_data['name'] = rule.picking_type_id.sequence_id.next_by_id()
+            master_data['location_id'] = stock_move_ids[move][0][2].get('location_id')
             picking_id = self.env['stock.picking'].create(master_data)
             picking_id.move_ids_without_package = stock_move_ids[move]
             picking_id.confirm_from_so(condition)
