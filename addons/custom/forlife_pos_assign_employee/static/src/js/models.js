@@ -18,16 +18,8 @@ odoo.define('forlife_pos_assign_employee.models', function (require) {
         class extends Orderline {
             constructor(obj, options) {
                 super(...arguments);
-                if (!options.json) {
-                    if (this.pos.config.module_pos_hr) {
-                        this.employee_id = this.pos.get_cashier().id;
-                    } else {
-                        let user = this.pos.user;
-                        if (user.employee_id) {
-                            this.employee_id = user.employee_id[0];
-                        }
-                    }
-                }
+                this.employee_id = this.employee_id || this.pos.user.employee_id[0];
+
             }
 
             init_from_JSON(json) {

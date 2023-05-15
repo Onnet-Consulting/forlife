@@ -11,6 +11,7 @@ class PosOrderLine(models.Model):
     def _export_for_ui(self, orderline):
         result = super()._export_for_ui(orderline)
         result['assigned_employee'] = orderline.employee_id.name
+        result['employee_id'] = orderline.employee_id.id
         return result
 
     @api.model
