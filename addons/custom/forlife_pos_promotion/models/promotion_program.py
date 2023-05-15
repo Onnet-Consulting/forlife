@@ -87,7 +87,7 @@ class PromotionProgram(models.Model):
         related='campaign_id.pos_config_ids', string="Point of Sales", help="Restrict publishing to those shops.",
         readonly=True)
 
-    customer_domain = fields.Char(related='campaign_id.customer_domain')
+    customer_domain = fields.Char(related='campaign_id.customer_domain', store=True)
     valid_customer_ids = fields.Many2many(related='campaign_id.valid_customer_ids')
 
     total_order_count = fields.Integer("Total Order Count", compute="_compute_total_order_count")
@@ -117,6 +117,11 @@ class PromotionProgram(models.Model):
     # Cart
     order_amount_min = fields.Float()
     incl_reward_in_order = fields.Boolean(string='Include Reward in Order')
+    incl_reward_in_order_type = fields.Selection([
+        ('no_incl', 'No Include'),
+        ('unit_price', 'Unit Price'),
+        ('discounted_price', 'Discounted Price')
+    ], string='Include Reward in Order', compute='_compute_incl_reward_in_order_type', store=True, readonly=False)
     # Pricelist
 
     pricelist_item_ids = fields.One2many(
@@ -160,6 +165,9 @@ class PromotionProgram(models.Model):
     registering_tax = fields.Boolean('Register Tax')
     tax_from_date = fields.Date('Registered Tax From')
     tax_to_date = fields.Date('Registered Tax To')
+
+    apply_online = fields.Boolean(string='Apply online', default=False)
+    for_new_customer = fields.Boolean(string='For new customer', default=False)
 
     @api.constrains('promotion_type', 'combo_line_ids', 'reward_ids', 'reward_type')
     def _check_duplicate_product_in_combo(self):
@@ -233,6 +241,11 @@ class PromotionProgram(models.Model):
             product_ids = pro.valid_product_ids.ids or []
             product_ids_json_encode = base64.b64encode(json.dumps(product_ids).encode('utf-8'))
             pro.json_valid_product_ids = product_ids_json_encode
+
+    @api.depends('incl_reward_in_order')
+    def _compute_incl_reward_in_order_type(self):
+        for pro in self:
+            pro.incl_reward_in_order_type = pro.incl_reward_in_order and 'discounted_price' or 'unit_price'
 
     def _compute_total_order_count(self):
         self.total_order_count = 0

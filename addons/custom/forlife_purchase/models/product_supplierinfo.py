@@ -7,7 +7,7 @@ class SupplierInfo(models.Model):
     _inherit = 'product.supplierinfo'
 
     vendor_code = fields.Char(related='partner_id.code')
-    uom_product_tmpl = fields.Many2one(related="product_tmpl_id.uom_id")
+    uom_product_tmpl = fields.Many2one(related="product_tmpl_id.uom_id", string="Đơn vị tính")
     uom_product = fields.Many2one(related="product_id.uom_id")
     amount_conversion = fields.Float('Số lượng quy đổi')
 
@@ -40,3 +40,10 @@ class SupplierInfo(models.Model):
         for record in self:
             if record.amount_conversion < 0:
                 raise models.ValidationError("Số lượng quy đổi phải là số dương!")
+
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Nhập bảng giá nhà cung cấp'),
+            'template': '/forlife_purchase/static/src/xlsx/banggianhacungcap.xlsx'
+        }]

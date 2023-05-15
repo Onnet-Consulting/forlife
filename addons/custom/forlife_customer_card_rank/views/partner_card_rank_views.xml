@@ -6,7 +6,7 @@
             <field name="model">partner.card.rank</field>
             <field name="arch" type="xml">
                 <tree string="partner_card_rank_tree">
-                    <field name="customer_id" invisible="1"/>
+                    <field name="customer_id"/>
                     <field name="brand_id"/>
                     <field name="card_rank_id"/>
                     <field name="accumulated_sales"/>
@@ -65,7 +65,7 @@
             <field name="name">Customer Card Rank</field>
             <field name="res_model">partner.card.rank</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'search_default_customer_group': 1}</field>
+            <field name="context">{}</field>
         </record>
     </data>
 
@@ -82,6 +82,7 @@
                     <field name="value_to_upper"/>
                     <field name="old_card_rank_id"/>
                     <field name="new_card_rank_id"/>
+                    <field name="status"/>
                 </tree>
             </field>
         </record>
@@ -132,6 +133,7 @@
                         <field name="partner_card_rank_id" invisible="1"/>
                         <field name="order_date" invisible="1"/>
                         <field name="new_card_rank_id" invisible="1" force_save="1"/>
+                        <field name="status" invisible="1" force_save="1"/>
                     </sheet>
                 </form>
             </field>

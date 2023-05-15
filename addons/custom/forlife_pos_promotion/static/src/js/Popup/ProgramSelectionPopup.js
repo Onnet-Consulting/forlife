@@ -38,10 +38,18 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
 
         // Set Combo Details
         setComboDetails(newLinesToApply) {
-            Object.entries(newLinesToApply).forEach(
-            ([k, v]) => {
-            this.combo_details[k] = v;
-            });
+            let result = {};
+            for (let line of Object.values(newLinesToApply).flat(2).filter(l => l.quantity)) {
+                for (let usage of line.promotion_usage_ids) {
+                    let pro_str_id = usage.str_id;
+                    if (result.hasOwnProperty(usage.str_id)) {
+                        result[usage.str_id].push([line.quantity, usage, line.product.id, line.selectedReward]);
+                    } else {
+                        result[usage.str_id] = [[line.quantity, usage, line.product.id, line.selectedReward]];
+                    };
+                };
+            };
+            Object.assign(this.combo_details, result);
         }
 
         async view_combo_details(program_id) {
@@ -52,20 +60,17 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 });
             };
             let program = this.env.pos.get_program_by_id(program_id);
-            let qty_per_combo = program.comboFormula.reduce((total, line) => total + line.quantity, 0);
-            let qty_of_combo = this.combo_details[program_id].reduce((total, line) => total + line.quantity, 0);
+            let qty_per_combo = program.comboFormula.reduce((total, line) => total + line.quantity, 0) || 1;
+            let qty_of_combo = this.combo_details[program_id].reduce((total, line) => total + line[0], 0);
             let details = [];
             this.combo_details[program_id].forEach((line) => {
-                let usage = line.promotion_usage_ids.find(l => l.str_id == program_id)
-                if (usage && line.quantity > 0) {
-                    details.push({
-                        product: this.env.pos.db.get_product_by_id(line.product.id),
-                        quantity: line.quantity,
-                        pre_price: usage.original_price,
-                        new_price: usage.new_price,
-                        discount_amount: usage.discount_amount
-                    });
-                };
+                details.push({
+                    product: this.env.pos.db.get_product_by_id(line[2]),
+                    quantity: line[0],
+                    pre_price: line[1].original_price,
+                    new_price: line[1].new_price,
+                    discount_amount: line[1].discount_amount
+                });
             });
             try {
                 await this.showPopup('ComboDetailsPopup', {
@@ -103,9 +108,6 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
             not_selected_programs.forEach(p => p.discounted_amount = 0.0);
 
             let [newLinesToApply, remainingLines, combo_count] = this.env.pos.get_order().computeForListOfProgram(clone_order_lines, selectedPrograms);
-//            let [newLinesToApplyCode, remainingLinesCode, code_count] = this.env.pos.get_order().computeForListOfCodeProgram(clone_order_lines, selectedPrograms, newLinesToApply);
-//            newLinesToApply = newLinesToApplyCode;
-//            remainingLines = remainingLinesCode
 
             this.setComboDetails(newLinesToApply);
 
@@ -147,7 +149,9 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                             price: line.price,
                             product: line.product,
                             promotion_usage_ids: [...line.promotion_usage_ids],
-                            quantity: line.quantity
+                            quantity: line.quantity,
+                            selectedReward: line.selectedReward,
+                            is_reward_line: line.is_reward_line
                         }
                     });
                 };
@@ -155,10 +159,6 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 let [newLinesToApplyNoSelected, ol, combo_count] = this.env.pos.get_order()
                         .computeForListOfProgram(remaining_clone_order_lines, [notSelectProgram], newLinesToApplyClone);
 
-//                let [newLinesToApplyNoSelectedCode, olCode, code_count] = this.env.pos.get_order()
-//                    .computeForListOfCodeProgram(remaining_clone_order_lines, [notSelectProgram], newLinesToApplyNoSelected);
-
-//               this.setComboDetails(newLinesToApplyNoSelectedCode);
                this.setComboDetails(newLinesToApplyNoSelected);
 
                 let discountedLinesNoSelect = Object.values(newLinesToApplyNoSelected).reduce((tmp, arr) => {tmp.push(...arr); return tmp;}, []);
@@ -175,18 +175,61 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                     return tmp + per_line;
                 }, 0);
             };
+            for (let option of this.state.programs.filter(p => p.program.reward_type == 'code_buy_x_get_y')) {
+                option.need_of_reward_selection = false;
+                option.applied_qty = 0;
+                let reward_products = new Set(this.env.pos.get_valid_reward_code_promotion(option.program));
+                if (this.combo_details[option.id]) {
+                    let applied_reward_qty = this.combo_details[option.id].filter(l => reward_products.has(l[2])).reduce((tmp, line) => tmp + line[0], 0);
+                    option.applied_qty = applied_reward_qty;
+                    let max_reward_qty = option.program.reward_quantity * (option.isSelected && option.numberCombo || option.forecastedNumber);
+                    let applied_reward_qty_added = this.combo_details[option.id]
+                                                        .filter(l => reward_products.has(l[2]) && !l[3])
+                                                        .reduce((tmp, line) => tmp + line[0], 0);
+                    option.remaining_reward_qty = max_reward_qty - applied_reward_qty_added;
+                    if (max_reward_qty > applied_reward_qty_added) {
+                        option.need_of_reward_selection = true;
+                    };
+                } else {
+                    option.need_of_reward_selection = true;
+                    option.remaining_reward_qty = 0;
+                };
+            };
+
+            for (let option of this.state.programs.filter(p => p.program.reward_type != 'code_buy_x_get_y')) {
+                option.applied_qty = 0
+                if (this.combo_details[option.id]) {
+                    let applied_reward_qty = this.combo_details[option.id].reduce((tmp, line) => tmp + line[0], 0);
+                    if (['code', 'pricelist'].includes(option.program.promotion_type)) {
+                        option.applied_qty = applied_reward_qty;
+                    } else if (option.program.promotion_type == 'combo') {
+                        let qty_per_combo = option.program.comboFormula.reduce((total, line) => total + line.quantity, 0);
+                        option.applied_qty = qty_per_combo > 0 ? Math.floor(applied_reward_qty/qty_per_combo) : 0
+                    }
+                }
+            }
         }
+
         /**
          * We send as payload of the response the selected item.
          *
          * @override
          */
+
+        selectRewardProduct(value, program_str_id) {
+            let program_by_id = this.env.pos.get_program_by_id.bind(this.env.pos);
+            let program = program_by_id(program_str_id);
+            let reward_product_id = parseInt(value);
+            program.reward_product_id_selected = reward_product_id || null;
+            this.selectItem(undefined);
+        }
+
         getPayload() {
             self = this;
             let computePro = function(p) {
                 var program = self.env.pos.get_program_by_id(p.id);
                 var reward_product_id = jQuery("#reward_product_selected_"+p.id).val();
-                program.reward_product_id_selected = new Set([parseInt(reward_product_id)]);
+                program.reward_product_id_selected = reward_product_id;
                 return program;
             }
             return this.state.programs.filter(p => p.isSelected)

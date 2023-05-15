@@ -109,6 +109,7 @@ class ResPartner(models.Model):
             app_retail_type_id = False
         return app_retail_type_id
 
+
     @api.model_create_multi
     def create(self, vals_list):
         env_context = self.env.context

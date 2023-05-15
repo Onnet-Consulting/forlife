@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates id="template" xml:space="preserve">
-    <t t-name="Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension" owl="1">
-        <xpath expr="//span[hasclass('price')]" position="inside">
+    <t t-name="CustomOrderline" t-inherit="forlife_pos_layout.CustomOrderline" t-inherit-mode="extension" owl="1">
+        <xpath expr="//ul[hasclass('custom-info-list')]" position="inside">
             <t t-if="props.line.card_rank_applied">
-                <li class="info orderline-card-rank">
+                <li class="info orderline-card-rank" style="width: 65%;">
+                    <em>Giảm giá theo CT <t t-esc="props.line.order.card_rank_program.card_rank_name"/></em>
+                </li>
+                <li class="info orderline-card-rank" style="width: 35%;">
                     <i class="fa fa-id-card-o" role="img" aria-label="Discount Card" title="Discount Card"/>
                     <span>&#160;<t t-esc="env.pos.format_currency(-props.line.get_card_rank_discount())"/></span>
                 </li>

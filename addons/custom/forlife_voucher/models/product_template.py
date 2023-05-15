@@ -5,14 +5,25 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     @api.model
+    def search_read(self, domain=None, fields=None, offset=0, limit=None, order=None):
+        if 'filter_product_follow_type' in self._context and self._context.get('filter_product_follow_type'):
+            if self._context.get('filter_product_follow_type') == 'v':
+                products = self.search([('detailed_type', '=', 'product'), ('program_voucher_id', '=', False)])
+                domain = expression.AND([domain, [('id', 'in', products.ids)]])
+            else:
+                products = self.search([('detailed_type', '=', 'service'), ('program_voucher_id', '=', False)])
+                domain = expression.AND([domain, [('id', 'in', products.ids)]])
+        return super(ProductTemplate, self).search_read(domain=domain, fields=fields, offset=offset, limit=limit, order=order)
+
+    @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         if 'filter_product_follow_type' in self._context and self._context.get('filter_product_follow_type'):
             if self._context.get('filter_product_follow_type') == 'v':
-                products = self.search([('detailed_type','=','product'),('program_voucher_id','=',False)])
-                args = expression.AND([[('id', 'in', products.ids)], args])
+                products = self.sudo().search([('detailed_type','=','product'),('program_voucher_id','=',False)])
+                args = expression.AND([args, [('id', 'in', products.ids)]])
             else:
-                products = self.search([('detailed_type', '=', 'service'),('program_voucher_id','=',False)])
-                args = expression.AND([[('id', 'in', products.ids)], args])
+                products = self.sudo().search([('detailed_type', '=', 'service'),('program_voucher_id','=',False)])
+                args = expression.AND([args, [('id', 'in', products.ids)]])
         res = super(ProductTemplate, self)._name_search(name, args, operator, limit, name_get_uid)
         return res
 

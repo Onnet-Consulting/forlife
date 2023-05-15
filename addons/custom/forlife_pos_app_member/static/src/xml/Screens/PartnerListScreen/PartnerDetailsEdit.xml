@@ -29,6 +29,25 @@
                         </option>
                 </select>
             </div>
+            <div class="partner-detail">
+                <span class="label">Nghề nghiệp</span>
+                    <t t-if="props.partner.job_ids">
+                        <t t-set="jobs" t-value="props.partner.job_ids"/>
+                    </t>
+                    <t t-else="">
+                        <t t-set="jobs" t-value="[]"/>
+                    </t>
+                <div id="checkboxes" style="display: flex;flex-wrap: wrap;justify-content: space-between;margin-left: 77px;margin-top: -50px;width: 383px;">
+                        <t t-foreach="env.pos.jobs" t-as="job" t-key="job.id">
+                            <label style="flex: 0 0 calc(100% / 3 - 5px);padding:0">
+                            <input class="o_input_job" t-att-value="job.id" t-att-checked="jobs.includes(job.id)" style="width:20px;" type="checkbox" /><span><t t-esc="job.name"></t></span></label>
+                        </t>
+                </div>
+
+<!--                <input type="text" class="form-control js_select2" placeholder="Tags" value="Tags"-->
+<!--                       />-->
+
+            </div>
         </xpath>
         <xpath expr="//input[@name='barcode']" position="attributes">
             <attribute name="readonly">readonly</attribute>

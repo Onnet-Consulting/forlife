@@ -1294,7 +1294,7 @@ msgstr "Phiếu xuất khác"
 #: model:ir.ui.menu,name:forlife_stock.asset_transfer_stock_inventory_menu
 #: model_terms:ir.ui.view,arch_db:forlife_stock.transfer_stock_inventory_tree
 msgid "Transfer Stock Inventory"
-msgstr "Tự kiểm kê cân tồn"
+msgstr "Nhập xuất tách mã-kiểm kê cân tồn"
 
 #. module: forlife_stock
 #: model:ir.model.fields,field_description:forlife_stock.field_stock_location__is_price_unit
@@ -1341,3 +1341,16 @@ msgstr "Ngày xác nhận"
 #: model:ir.model.fields,field_description:forlife_stock.field_hr_asset_transfer__cancel_date
 msgid "Cancel Date"
 msgstr "Ngày hủy"
+
+#. module: forlife_stock
+#: model:ir.actions.act_window,name:forlife_stock.forlife_other_in_out_request_action
+#: model:ir.model,name:forlife_stock.model_forlife_other_in_out_request
+#: model_terms:ir.ui.view,arch_db:forlife_stock.forlife_other_in_out_request_tree
+msgid "Forlife Other In Out Request"
+msgstr "Yêu cầu nhập khác/xuất khác"
+
+#. module: forlife_stock
+#: model:ir.model.fields,field_description:forlife_stock.field_forlife_other_in_out_request_line__other_in_out_request_id
+#: model:ir.ui.menu,name:forlife_stock.other_in_out_request
+msgid "Other In Out Request"
+msgstr "Yêu cầu nhập khác/xuất khác"

@@ -15,7 +15,8 @@ class ProductionOrder(models.Model):
         ('normal', 'Attach Ingredients'),
         ('phantom', 'Product Separation')], 'BoM Type', default='normal', required=True)
     product_id = fields.Many2one('product.product', 'Product', required=True)
-    order_line_ids = fields.One2many('production.order.line', 'order_id', 'Production Order Lines')
+    production_uom = fields.Many2one('uom.uom', string='Đơn vị', related='product_id.uom_id')
+    order_line_ids = fields.One2many('production.order.line', 'order_id', 'Production Order Lines', copy=True)
     product_qty = fields.Float('Quantity', default=1.0, digits='Unit of Measure', required=True)
     domain_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')
 
@@ -23,7 +24,7 @@ class ProductionOrder(models.Model):
     def _constraint_product_id(self):
         for rec in self:
             if rec.search_count(
-                    [('product_id', '=', rec.product_id.id), ('id', '!=', rec.id)]) > 1:
+                    [('product_id', '=', rec.product_id.id), ('id', '!=', rec.id)]):
                 raise ValidationError(_('Sản phẩm %s đã được khai báo nguyên phụ liệu/phân tách sản phẩm, bạn cần kiểm tra lại!') % rec.product_id.name)
 
     @api.model
