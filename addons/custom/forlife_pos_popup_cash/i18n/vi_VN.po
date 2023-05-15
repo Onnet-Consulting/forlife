@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-10 09:44+0000\n"
-"PO-Revision-Date: 2023-01-10 09:44+0000\n"
+"POT-Creation-Date: 2023-05-15 07:15+0000\n"
+"PO-Revision-Date: 2023-05-15 07:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -48,9 +48,12 @@ msgstr "Tài khoản trung gian"
 msgid ""
 "Amount transferred to company must be a negative number and transfer type "
 "'out'"
-msgstr ""
-"Tiền chuyển từ điểm bán đến công ty phải là số âm và là loại rút tiền"
-""
+msgstr "Tiền chuyển từ điểm bán đến công ty phải là số âm và là loại rút tiền"
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model,name:forlife_pos_popup_cash.model_account_bank_statement_line
+msgid "Bank Statement Line"
+msgstr "Giao dịch trên sổ quỹ/sổ phụ"
 
 #. module: forlife_pos_popup_cash
 #. odoo-javascript
@@ -87,6 +90,16 @@ msgid "Default Office Account"
 msgstr "Tài khoản văn phòng mặc định"
 
 #. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__from_store_tranfer
+msgid "From POS?"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__is_reference
+msgid "Is Reference Tranfer?"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
 #: model:ir.model,name:forlife_pos_popup_cash.model_account_move
 msgid "Journal Entry"
 msgstr "Bút toán "
@@ -104,6 +117,16 @@ msgstr ""
 #, python-format
 msgid "Mã phiếu"
 msgstr ""
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields.selection,name:forlife_pos_popup_cash.selection__account_bank_statement_line__pos_transfer_type__1
+msgid "Office"
+msgstr "Văn phòng"
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields.selection,name:forlife_pos_popup_cash.selection__account_bank_statement_line__pos_transfer_type__3
+msgid "Other Difference"
+msgstr "Chênh lệch khác"
 
 #. module: forlife_pos_popup_cash
 #: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_store__other_payable_account_id
@@ -135,6 +158,23 @@ msgid "POS Transfer Cash to POS"
 msgstr "Chuyển tiền đến VP"
 
 #. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_transfer_type
+msgid "POS Transfer Type"
+msgstr "Loại chuyển tiền POS"
+
+#. module: forlife_pos_popup_cash
+#. odoo-javascript
+#: code:addons/forlife_pos_popup_cash/static/src/js/onchange_selection.js:0
+#, python-format
+msgid "Please choose a store before confirming!"
+msgstr "Vui lòng chọn một cửa hàng trước khi xác nhận!"
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_config_id
+msgid "Point of Sale"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
 #: model:ir.model,name:forlife_pos_popup_cash.model_pos_session
 msgid "Point of Sale Session"
 msgstr "Phiên bán hàng"
@@ -154,6 +194,11 @@ msgid "Pos Trans Session"
 msgstr "Phiên POS"
 
 #. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_store__receipt_expense_journal_id
+msgid "Receipt/Expense Journal"
+msgstr "Sổ nhật ký thu/chi"
+
+#. module: forlife_pos_popup_cash
 #: model:ir.model,name:forlife_pos_popup_cash.model_store
 #: model:ir.model.fields.selection,name:forlife_pos_popup_cash.selection__account_bank_statement_line__pos_transfer_type__2
 msgid "Store"
@@ -163,8 +208,41 @@ msgstr "Cửa hàng"
 #. odoo-javascript
 #: code:addons/forlife_pos_popup_cash/static/src/js/CashMoveButton.js:0
 #, python-format
-msgid "Successfully made a cash %s of %s."
-msgstr "Lệnh %s cho %s đã thực hiện thành công."
+msgid "Successfully made a cash in of %s."
+msgstr "Thực hiện thu %s thành công!"
+
+#. module: forlife_pos_popup_cash
+#. odoo-javascript
+#: code:addons/forlife_pos_popup_cash/static/src/js/CashMoveButton.js:0
+#, python-format
+msgid "Successfully made a cash out of %s."
+msgstr "Thực hiện chi %s thành công!"
+
+#. module: forlife_pos_popup_cash
+#. odoo-python
+#: code:addons/forlife_pos_popup_cash/models/pos_session.py:0
+#, python-format
+msgid "The function to load %s has not been implemented."
+msgstr ""
+
+#. module: forlife_pos_popup_cash
+#. odoo-python
+#: code:addons/forlife_pos_popup_cash/models/pos_session.py:0
+#, python-format
+msgid "The ticket already in use!"
+msgstr "Mã phiếu đã được sử dụng"
+
+#. module: forlife_pos_popup_cash
+#. odoo-python
+#: code:addons/forlife_pos_popup_cash/models/pos_session.py:0
+#, python-format
+msgid "There is no cash payment method for this PoS Session"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__to_store_tranfer
+msgid "To POS?"
+msgstr ""
 
 #. module: forlife_pos_popup_cash
 #. odoo-python
@@ -195,8 +273,8 @@ msgid ""
 "You must set to draft and delete the journal entry related to pos transfer "
 "difference first!"
 msgstr ""
-"Bạn phải thiết lập về nháp và xóa bút toán liên quan đến chênh lệnh lệch nạp/rút tiền trước ! "
-""
+"Bạn phải thiết lập về nháp và xóa bút toán liên quan đến chênh lệnh lệch "
+"nạp/rút tiền trước ! "
 
 #. module: forlife_pos_popup_cash
 #. odoo-javascript
@@ -211,18 +289,3 @@ msgstr "thu"
 #, python-format
 msgid "out"
 msgstr "chi"
-
-#. module: forlife_pos_popup_cash
-#: model:ir.model.fields.selection,name:forlife_pos_popup_cash.selection__account_bank_statement_line__pos_transfer_type__1
-msgid "Office"
-msgstr "Văn phòng"
-
-#. module: forlife_pos_popup_cash
-#: model:ir.model.fields.selection,name:forlife_pos_popup_cash.selection__account_bank_statement_line__pos_transfer_type__3
-msgid "Other Difference"
-msgstr "Chênh lệch khác"
-
-#. module: forlife_pos_popup_cash
-#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_transfer_type
-msgid "POS Transfer Type"
-msgstr "Loại chuyển tiền POS"

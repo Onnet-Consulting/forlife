@@ -15,6 +15,7 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
                 reference: '',
                 type_tranfer: '',
                 shop: '',
+                expense_label: '',
                 inputAmount: '',
                 inputType: '',
                 inputReason: '',
@@ -30,6 +31,11 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
                 this.errorMessage = this.env._t('Please choose a store before confirming!');
                 return;
             }
+            if (parse.float(this.state.type_tranfer) == 4 && (parse.float(this.state.expense_label) == 0 || this.state.inputType == 'in')) {
+                this.state.inputHasError = true;
+                this.errorMessage = this.env._t('Please choose a expense label before confirming!');
+                return;
+            }
             return super.confirm();
         }
 
@@ -39,11 +45,23 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
                 $('#shop').css('display', 'block')
                 $('#shop_label').css('display', 'block')
                 $('#type_store').css('margin-right', '14px');
+                // hide expense_label
+                $('#expense_label').css('display', 'none')
+                $('#expense_label_label').css('display', 'none')
+            }
+            else if ($("#type").val() == 4 && this.state.inputType == 'out') {
+                $('#expense_label').css('display', 'block')
+                $('#expense_label_label').css('display', 'block')
+                $('#shop').css('display', 'none');
+                $('#shop_label').css('display', 'none');
             }
             else {
                 $('#shop').css('display', 'none');
                 $('#shop_label').css('display', 'none');
                 $('#type_store').css('margin-right', '149px');
+                // hide expense_label
+                $('#expense_label').css('display', 'none')
+                $('#expense_label_label').css('display', 'none')
             }
         }
 
@@ -66,6 +84,7 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
 //                        this.state.inputReason = `Nhận tiền chuyển từ ${statementLine.pos_config_id[1]}`
                     };
                 };
+                this.checked_shop();
             } else {
                 $('#type').val('0');
                 $('#shop').val('0');
@@ -84,8 +103,10 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
                     }
                 })
                 this.env.pos.pos_customizes = this.env.pos.pos_customizes.filter(item => listIdofPosTranfer.includes(item.id))
+                this.checked_shop()
             }else{
                 this.env.pos.pos_customizes =  this.state.old_pos
+                this.checked_shop()
             }
 
         }
@@ -95,6 +116,7 @@ odoo.define('forlife_pos_popup_cash.CashMovePopup2', function (require) {
             res.reference = this.state.reference,
             res.type_tranfer = parse.float(this.state.type_tranfer),
             res.shop= parse.float(this.state.shop)
+            res.expense_label = parse.float(this.state.expense_label)
             return res
         }
     };
