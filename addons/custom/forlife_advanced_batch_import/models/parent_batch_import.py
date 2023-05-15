@@ -171,7 +171,7 @@ class ParentBatchImport(models.Model):
         # Chuyển decoded_data thành đối tượng StringIO để đọc dữ liệu CSV
         file_data = StringIO(decoded_data.decode('utf-8'))
         # Đọc dữ liệu CSV vào DataFrame
-        df = pd.read_csv(file_data)
+        df = pd.read_csv(file_data, dtype=str)
 
         # Tính số lượng file con cần tạo
         if len(df) % batch_import.limit == 0:
@@ -205,7 +205,7 @@ class ParentBatchImport(models.Model):
         decoded_data = base64.b64decode(batch_import.file)
 
         # Đọc dữ liệu của attachment vào DataFrame với Pandas
-        df = pd.read_excel(BytesIO(decoded_data))
+        df = pd.read_excel(BytesIO(decoded_data), dtype=str)
 
         chunk_size = batch_import.limit
         # Chia DataFrame thành các chunk có số dòng là chunk_size

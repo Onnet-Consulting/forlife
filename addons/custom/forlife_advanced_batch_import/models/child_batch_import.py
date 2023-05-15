@@ -36,7 +36,7 @@ class ChildBatchImport(models.Model):
         # Chuyển decoded_data thành đối tượng StringIO để đọc dữ liệu CSV
         file_data = StringIO(decoded_data.decode('utf-8'))
         # Đọc dữ liệu CSV vào DataFrame
-        df = pd.read_csv(file_data)
+        df = pd.read_csv(file_data, dtype=str)
         return df
 
     def rec_file_exel(self, file):
@@ -46,7 +46,7 @@ class ChildBatchImport(models.Model):
         decoded_data = base64.b64decode(file)
 
         # Đọc dữ liệu của attachment vào DataFrame với Pandas
-        df = pd.read_excel(BytesIO(decoded_data))
+        df = pd.read_excel(BytesIO(decoded_data), dtype=str)
         return df
 
     @api.depends('complete_records', 'file_length')
@@ -198,7 +198,7 @@ class ChildBatchImport(models.Model):
                                     error_rows.append(message.get('record'))
             if len(error_rows) > 0 and rec.file:
                 decoded_data = base64.b64decode(rec.file)
-                df = pd.read_csv(StringIO(decoded_data.decode('utf-8')))
+                df = pd.read_csv(StringIO(decoded_data.decode('utf-8')), dtype=str)
                 # Lọc các hàng cần giữ lại
                 filtered_df = df[df.index.isin(error_rows)]
                 # log error messages
@@ -238,7 +238,7 @@ class ChildBatchImport(models.Model):
                 sheet_name = json.loads(rec.parent_batch_import_id.options).get('sheet_name') if json.loads(rec.parent_batch_import_id.options).get('sheet_name') else "Sheet1"
                 if len(error_rows) > 0 and rec.file:
                     decoded_data = base64.b64decode(rec.file)
-                    df = pd.read_excel(BytesIO(decoded_data))
+                    df = pd.read_excel(BytesIO(decoded_data), dtype=str)
                     # Lọc các hàng cần giữ lại
                     filtered_df = df[df.index.isin(error_rows)]
                     # log error messages
