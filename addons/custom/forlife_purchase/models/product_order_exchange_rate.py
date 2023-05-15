@@ -6,23 +6,24 @@ class PurchaseOrderExchangeRate(models.Model):
     _description = 'Purchase Order Exchange Rate'
 
     name = fields.Char(string='Name')
-    product_id = fields.Many2one('product.product', string='Product')
+    product_id = fields.Many2one('product.product', string='Mã sản phẩm')
 
-    usd_amount = fields.Float(string='USD Amount')  # đây chính là cột Thành tiền bên tab Sản phầm, a Trung đã viết trước
-    vnd_amount = fields.Float(string='VND Amount', compute='compute_vnd_amount', store=1)
+    usd_amount = fields.Float(string='Thành tiền USF')  # đây chính là cột Thành tiền bên tab Sản phầm, a Trung đã viết trước
+    vnd_amount = fields.Float(string='Thành tiền', compute='compute_vnd_amount', store=1)
 
-    import_tax = fields.Float(string='Import Tax')
+    import_tax = fields.Float(string='% Thuế nhập khẩu')
     tax_amount = fields.Float(string='Tax Amount', compute='_compute_tax_amount', store=1)
 
-    special_consumption_tax = fields.Float(string='% Special Consumption Tax')
+    special_consumption_tax = fields.Float(string='% Thuế tiêu thụ đặc biệt')
     special_consumption_tax_amount = fields.Float(string='Special Consumption Tax', compute='_compute_special_consumption_tax_amount', store=1)
 
-    vat_tax = fields.Float(string='% VAT')
+    vat_tax = fields.Float(string='% Thuế GTGT')
     vat_tax_amount = fields.Float(string='VAT', compute='_compute_vat_tax_amount', store=1)
 
     # total_vnd_amount = fields.Float(string='Total VND Amount', compute='compute_vnd_amount')
     total_tax_amount = fields.Float(string='Total Tax Amount', compute='compute_tax_amount', store=1)
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order')
+    qty_product = fields.Float(copy=True, string="Số lượng đặt mua")
 
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
     def constrains_per(self):

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="OrderWidget" owl="1" t-inherit="point_of_sale.OrderWidget" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('order')]" position="replace">
+            <div class="order">
+                <t t-if="orderlinesArray.length === 0">
+                    <div class='order-empty'>
+                        <i class='fa fa-shopping-cart' role="img" aria-label="Shopping cart"
+                           title="Shopping cart"/>
+                        <h1>This order is empty</h1>
+                    </div>
+                </t>
+                <t t-else="">
+                    <t t-if="order.is_refund_product or order.is_change_product">
+                        <ul class="orderlines">
+                            <t t-foreach="orderlinesArray" t-as="orderline" t-key="orderline.id">
+                                <Orderline line="orderline" />
+                            </t>
+                        </ul>
+                        <OrderSummary order="order" />
+                    </t>
+                    <t t-else="">
+                        <div class="list-order">
+                            <ul class="head">
+                                <li style="width: 25%">TÊN SẢN PHẨM</li>
+                                <li style="width: 10%">SỐ LƯỢNG</li>
+                                <li style="width: 15%">ĐƠN GIÁ</li>
+                                <li style="width: 15%">%GG</li>
+                                <li style="width: 15%">GIẢM GIÁ</li>
+                                <li style="width: 20%">THÀNH TIỀN</li>
+                            </ul>
+                            <ul class="orderlines">
+                                <t t-foreach="orderlinesArray" t-as="orderline" t-key="orderline.id">
+                                    <CustomOrderline line="orderline" />
+                                </t>
+                            </ul>
+                        </div>
+                        <CustomOrderSummary order="order" />
+                    </t>
+
+                </t>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

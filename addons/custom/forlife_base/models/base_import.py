@@ -31,43 +31,76 @@ class Import(models.TransientModel):
 
         return super(Import, self)._read_xls_book(book, sheet_name)
 
+    def _get_barcode_from_db(self, list_barcode=[]):
+        query = 'SELECT barcode FROM product_template WHERE barcode in %(list_barcode)s'
+        self.env.cr.execute(query, {'list_barcode': tuple(list_barcode)})
+        data = self.env.cr.fetchall()
+        return [barcode[0] for barcode in data]
+
     def _read_xls_book_product(self, book, sheet_name):
         sheet = book.sheet_by_name(sheet_name)
         rows = []
         dic_col = {}
+        attributes = {}
+        col_barcode = -1
+        list_barcodes = []
+        barcode_exits = []
+
         for rowx, row in enumerate(map(sheet.row, range(1)), 1):
             for colx, cell in enumerate(row, 1):
-                attribute_id = self.env['product.attribute'].search([('name', '=', str(cell.value))])
-                if attribute_id:
-                    dic_col[colx] = str(cell.value)
+                if rowx == 1:
+                    # if 'Barcode' == str(cell.value):
+                    #     col_barcode = colx
+                    attribute_id = self.env['product.attribute'].search([('name', '=', str(cell.value))])
+                    if attribute_id:
+                        dic_col[colx] = str(cell.value)
+                        attributes[colx] = attribute_id
+                # elif col_barcode > -1:
+                #     if colx == col_barcode:
+                #         list_barcodes.append(str(cell.value))
+
+        # if list_barcodes:
+        #     barcode_exits = self._get_barcode_from_db(list_barcodes)
+
         col_number = 0
         for rowx, row in enumerate(map(sheet.row, range(sheet.nrows)), 1):
             values = []
             row_attrs = []
+            add_row = True
             if rowx == 1 and dic_col:
                 for colx, cell in enumerate(row, 1):
                     if not dic_col.get(colx, False):
                         values.append(str(cell.value))
-                values.append("Thuộc tính sản phẩm / Thuộc tính")
+                values.append("Thuộc tính sản phẩm / Thuộc tính / ID Cơ sở dữ liệu")
                 values.append("Thuộc tính sản phẩm / Giá trị / ID Cơ sở dữ liệu")
                 col_number = len(values) - 1
             else:
                 for colx, cell in enumerate(row, 1):
-                    cell_value = str(cell.value)
+                    cell_value = cell.value
+                    # if colx == col_barcode:
+                    #     if str(cell_value) in barcode_exits:
+                    #         add_row = False
+                    #         break
                     if dic_col and dic_col.get(colx, False):
+                        if type(cell_value) == float:
+                            cell_value = int(cell_value)
+                        cell_value = str(cell_value)
                         if cell.value and cell_value.strip():
                             cell_values = cell_value.split(',')
                             value_attrs = []
                             attr_val_ids = []
                             for attr_val in cell_values:
-                                val_attribute_id = self.env['product.attribute.value'].search(
-                                [('name', '=', attr_val.strip()), ('attribute_id.name', '=', dic_col[colx])])
-                                if not val_attribute_id:
-                                    raise ValueError(_("Không tồn tại giá trị {} của thuộc tính {}".format(cell_value, dic_col[colx])))
-                                attr_val_ids.append(str(val_attribute_id.id))
+                                attr = attributes[colx]
+                                list_attr_vals = attr.value_ids
+                                val_attribute_id = 0
+                                for val in list_attr_vals:
+                                    if val.code == attr_val.strip():
+                                        val_attribute_id = val.id
+                                    # raise ValueError(_("Không tồn tại giá trị {} của thuộc tính {}".format(cell_value, dic_col[colx])))
+                                attr_val_ids.append(str(val_attribute_id))
                             for i in range(1, col_number):
                                 value_attrs.append('')
-                            value_attrs.append(str(dic_col[colx]))
+                            value_attrs.append(str(attr.id))
                             value_attrs.append(','.join(attr_val_ids))
                             row_attrs.append(value_attrs)
                     else:
@@ -94,15 +127,21 @@ class Import(models.TransientModel):
                                     'row': rowx,
                                     'col': colx,
                                     'cell_value': xlrd.error_text_from_code.get(cell.value,
-                                                                                _("unknown error code %s", cell.value))
+                                                                                _("unknown error code %s",
+                                                                                  cell.value))
                                 }
                             )
                         else:
                             values.append(cell.value)
-            if row_attrs:
-                values.append(row_attrs[0][-2])
-                values.append(row_attrs[0][-1])
-                row_attrs.pop(0)
-            rows.append(values)
+                if row_attrs:
+                    values.append(row_attrs[0][-2])
+                    values.append(row_attrs[0][-1])
+                    row_attrs.pop(0)
+                else:
+                    values.append('')
+                    values.append('')
+            if add_row:
+                rows.append(values)
             rows += row_attrs
+
         return len(rows), rows

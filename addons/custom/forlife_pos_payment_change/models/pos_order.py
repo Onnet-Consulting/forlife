@@ -148,22 +148,46 @@ class PosOrder(models.Model):
         return action
 
     @api.model
-    def check_stock_quant_inventory(self, picking_type_id,order_lines):
-        StockQuant = self.env['stock.quant'].sudo()
-        Product = self.env['product.product'].sudo()
-        stock_picking_type = self.env['stock.picking.type'].sudo().search([('id','=',int(picking_type_id))])
-        stock_location = stock_picking_type.default_location_src_id
+    def check_stock_quant_inventory(self, session_id, order_lines):
+        session = self.env['pos.session'].browse(session_id)
+        stock_location = session.config_id.picking_type_id.default_location_src_id
         product_not_availabel = []
+        product_ids = []
+        seri_list = []
         for rec in order_lines[0]:
-            product = Product.search([('id','=', rec['product_id']), ('detailed_type','=','product')])
-            if product:
-                lot_id = self.env['stock.lot'].sudo().search([('name', '=', rec['seri'])])
-                quant = StockQuant.search([('product_id','=',product.id), ('location_id','=', stock_location.id),('lot_id','=',lot_id.id)])
-                if not quant:
-                    product_not_availabel.append(product.with_context(lang=self.env.user.lang).name)
-                if quant and rec['count'] > quant.available_quantity:
-                    product_not_availabel.append(quant.product_id.with_context(lang=self.env.user.lang).name)
+            product_ids.append(rec['product_id'])
+            if rec['seri']:
+                seri_list.append(rec['seri'])
+        if product_ids:
+            if len(product_ids) == 1:
+                product_ids = str(tuple(product_ids))
+                product_ids = product_ids.replace(',','')
+            else:
+                product_ids = tuple(product_ids)
+        else:
+            product_ids = "(null)"
+        if seri_list:
+            if len(seri_list) == 1:
+                seri_list = str(tuple(seri_list))
+                seri_list = seri_list.replace(',','')
+            else:
+                seri_list = tuple(seri_list)
+        else:
+            seri_list = "('')"
+        sql = f"SELECT pp.id as product_id, pt.detailed_type as detailed_type, stq.id as quant_id, " \
+              f"stq.quantity, stq.reserved_quantity, stq.lot_id FROM stock_quant stq " \
+              f"JOIN product_product pp ON stq.product_id = pp.id " \
+              f"JOIN product_template pt ON pp.product_tmpl_id = pt.id " \
+              f"WHERE product_id in {product_ids} and location_id = {stock_location.id} and detailed_type = " \
+              f"'product' and (lot_id is null or lot_id in (SELECT id FROM stock_lot WHERE name in {seri_list}) )"
+        self._cr.execute(sql)
+        data = self._cr.dictfetchall()
+        for rec in order_lines[0]:
+            for r in data:
+                if rec['product_id'] == r['product_id'] and (r['quantity'] - r['reserved_quantity']) < rec['count']:
+                    product_not_availabel.append(rec['product_name'])
         if len(product_not_availabel) > 0:
             message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {stock_location.name} kho {stock_location.warehouse_id.name}"
             return message
         return False
+

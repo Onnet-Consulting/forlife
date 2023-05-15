@@ -21,7 +21,8 @@
         'forlife_point_of_sale',
         'forlife_pos_point_order',
         'forlife_voucher',
-        'forlife_pos_assign_employee'
+        'forlife_pos_assign_employee',
+        'forlife_pos_layout',
     ],
     'assets': {
         'point_of_sale.assets': [
@@ -42,6 +43,7 @@
         'views/pos_order_views.xml',
         'views/product_template_views.xml',
         'views/pos_reason_refund.xml',
+        'views/product_category_view.xml'
         # Menu
     ]
 }

@@ -75,6 +75,18 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             }
             super.remove_orderline(...arguments);
         }
+        get_total_with_tax() {
+            var total = super.get_total_with_tax()
+            var vals = 0
+            if(this.is_refund_product){
+                for (let i = 0; i < this.orderlines.length; i++) {
+                    if(!this.orderlines[i].is_new_line)
+                     vals += parseInt(this.orderlines[i].get_display_price_with_reduce())
+                }
+                return vals
+            }
+            return total;
+        }
 
 //        get_total_with_tax() {
 //            var total = super.get_total_with_tax();
@@ -104,6 +116,8 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.handle_change_refund_id = this.handle_change_refund_id || undefined;
             this.money_is_reduced = this.money_is_reduced || 0;
             this.money_point_is_reduced = this.money_point_is_reduced || 0;
+            this.price_unit_refund = this.price_unit_refund ||0;
+            this.price_subtotal_incl_refund = this.price_subtotal_incl_refund ||0;
         }
         init_from_JSON(json) {
             super.init_from_JSON(...arguments);
@@ -118,6 +132,8 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.handle_change_refund_id = json.handle_change_refund_id || undefined;
             this.money_is_reduced = json.money_is_reduced || 0;
             this.money_point_is_reduced = json.money_point_is_reduced || 0;
+            this.price_unit_refund = json.price_unit_refund || 0;
+            this.price_subtotal_incl_refund = json.price_subtotal_incl_refund || 0;
         }
         clone() {
             let orderline = super.clone(...arguments);
@@ -132,6 +148,8 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             orderline.handle_change_refund_id = this.handle_change_refund_id;
             orderline.money_is_reduced = this.money_is_reduced;
             orderline.money_point_is_reduced = this.money_point_is_reduced;
+            orderline.price_unit_refund = this.price_unit_refund;
+            orderline.price_subtotal_incl_refund = this.price_subtotal_incl_refund;
             return orderline;
         }
         export_as_JSON() {
@@ -147,16 +165,44 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.handle_change_refund_id = this.handle_change_refund_id || undefined;
             json.money_is_reduced = this.money_is_reduced || 0;
             json.money_point_is_reduced = this.money_point_is_reduced || 0;
+            json.price_unit_refund = this.price_unit_refund || 0;
+            json.price_subtotal_incl_refund = this.price_subtotal_incl_refund || 0;
             return json;
         }
+
+        get_unit_display_price_with_reduce(){
+            var res = this.get_unit_display_price()
+            if(this.order.is_refund_product && !this.is_new_line){
+                if(this.get_quantity() !=0){
+                   var result = (Math.abs(this.get_display_price()) - Math.abs(this.money_is_reduced))/Math.abs(this.get_quantity())
+                   this.price_unit_refund = result
+                   return result
+                }
+            }
+            return res
+        }
+
+        get_display_price_with_reduce(){
+            var res = this.get_display_price()
+            if(this.order.is_refund_product && !this.is_new_line){
+                if(this.get_quantity() !=0){
+                   var result = this.get_unit_display_price_with_reduce() * this.get_quantity()
+                   this.price_subtotal_incl_refund = result
+                   return result
+                }
+            }
+            return res
+        }
+
 
 //        get_price_with_tax() {
 //            var total = super.get_price_with_tax();
 //            var vals = 0;
-//            if (this.order.is_change_product && !this.is_new_line) {
-//                vals += (this.money_point_is_reduced /this.quantity_canbe_refund) * this.quantity;
+//            if (this.order.is_refund_product && !this.is_new_line) {
+//                vals = this.unit_display_price_with_reduce
+//                return vals
 //            }
-//            return total + vals;
+//            return total;
 //        }
 //        get_price_without_tax() {
 //            var total = super.get_price_without_tax();

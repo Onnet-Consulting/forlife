@@ -11,23 +11,33 @@ const PosOrderCardRank = (Order) => class extends Order {
         super(...arguments);
         if (!this.card_rank_program) {
             this.card_rank_program = null;
+            this.order_status_format = this.order_status_format || false;
+            this.order_status_tokyolife = this.order_status_tokyolife || false;
         }
     }
 
     init_from_JSON(json) {
         super.init_from_JSON(...arguments);
         this.card_rank_program = json.card_rank_program || null;
+        this.order_status_format = json.order_status_format || false;
+        this.order_status_tokyolife = json.order_status_tokyolife || false;
     }
 
     export_as_JSON() {
         const json = super.export_as_JSON(...arguments);
         json.card_rank_program = this.card_rank_program;
+        json.order_status_format = this.order_status_format;
+        json.order_status_tokyolife = this.order_status_tokyolife;
         return json;
     }
 
     set_partner(partner) {
         const oldPartner = this.get_partner();
         super.set_partner(partner);
+        if (partner) {
+            this.order_status_format = partner.card_rank_status_format;
+            this.order_status_tokyolife = partner.card_rank_status_tokyolife;
+        }
         let newPartner = this.get_partner();
         if (oldPartner !== newPartner && this.card_rank_program) {
             this.action_reset_card_rank_program();
@@ -133,7 +143,7 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     }
 
     action_apply_card_rank(line_data) {
-        if (line_data && line_data.total_discounted < line_data.card_rank_disc) {
+        if (line_data && line_data.card_rank_disc > (line_data.total_discounted + line_data.extra_card_rank_disc)) {
             this.card_rank_discount = line_data.card_rank_disc;
             this.card_rank_applied = true;
             this.old_point = this.point;
@@ -141,6 +151,10 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
             this.reset_unit_price();
             this.promotion_usage_ids = [];
 
+        } else if (line_data && line_data.extra_card_rank_disc > 0) {
+            this.card_rank_discount = line_data.extra_card_rank_disc;
+            this.card_rank_applied = true;
+            this.old_point = this.point;
         }
     }
 
@@ -155,11 +169,16 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
     get_card_rank_discount() {
         return this.card_rank_discount || 0;
     }
+    get_display_price_after_discount() {
+        var total = super.get_display_price_after_discount(...arguments);
+        return total - this.get_card_rank_discount();
+    }
 
     get_discount_detail(cr_program) {
         let total_discounted = (this.get_total_discounted() || 0) - (this.get_point() || 0);
         let original_price = this.get_original_price();
         let card_rank_disc = 0;
+        let extra_card_rank_disc = 0;
         let check_skip_cr = false;
         if (this.promotion_usage_ids.length > 0) {
             for (let promotion of this.promotion_usage_ids) {
@@ -173,11 +192,11 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
             let quantity = this.get_quantity();
             card_rank_disc = cr_program.on_original_price * (quantity * original_price) / 100;
             let promotion_pricelist = this.pos.promotionPricelistItems.find(p => p.product_id === this.product.id);
-            if (promotion_pricelist && promotion_pricelist.valid_customer_ids.has(this.order.get_partner().id)) {
+            if (promotion_pricelist && promotion_pricelist.valid_customer_ids.has(this.order.get_partner().id) && this.promotion_usage_ids.find(p => p.program_id === promotion_pricelist.program_id)) {
                 let pricelist_disc = (1 - (promotion_pricelist.fixed_price / original_price)) * 100;
                 for (let line of cr_program.extra_discount) {
                     if (pricelist_disc > line.from && pricelist_disc <= line.to) {
-                        card_rank_disc = card_rank_disc + (line.disc * (quantity * original_price - card_rank_disc) / 100);
+                        extra_card_rank_disc = line.disc * quantity * promotion_pricelist.fixed_price / 100;
                         break;
                     }
                 }
@@ -189,7 +208,8 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
             price: original_price,
             total_discounted: total_discounted,
             card_rank_disc: card_rank_disc,
-            apply_cr_discount: card_rank_disc - total_discounted > 0,
+            extra_card_rank_disc: extra_card_rank_disc,
+            apply_cr_discount: card_rank_disc - (total_discounted + extra_card_rank_disc) > 0,
         }
     }
 };

@@ -5,12 +5,15 @@
             <field name="model">assets.assets</field>
             <field name="arch" type="xml">
                 <form>
+                    <header>
+                    </header>
                     <sheet>
                         <group>
                             <group>
                                 <field name="name"/>
                                 <field name="type"/>
                                 <field name="code"/>
+                                <field name="state"/>
                                 <field name="card_no"/>
                                 <field name="item_code"/>
                                 <field name="company_id"/>
@@ -45,6 +48,7 @@
                 <tree string="Tài sản">
                                 <field name="name"/>
                                 <field name="type"/>
+                                <field name="state"/>
                                 <field name="code"/>
                                 <field name="card_no"/>
                                 <field name="item_code"/>

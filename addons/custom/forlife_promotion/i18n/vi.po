@@ -832,12 +832,6 @@ msgid "Sunday"
 msgstr "Chủ nhật"
 
 #. module: forlife_promotion
-#: model:ir.model.constraint,message:forlife_promotion.constraint_points_product_data_uniq
-msgid ""
-"The combination of Point Addition, From Date and To Date must be unique !"
-msgstr "Tổ hợp của Điểm cộng, Từ ngày, Đến ngày phải là duy nhất !"
-
-#. module: forlife_promotion
 #. odoo-python
 #: code:addons/forlife_promotion/models/event.py:0
 #, python-format

@@ -6,3 +6,4 @@ pandas
 xlrd==1.2.0
 pycryptodome
 pyodbc
+pika

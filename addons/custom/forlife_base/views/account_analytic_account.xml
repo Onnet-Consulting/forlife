@@ -10,6 +10,9 @@
                     <field name="internal_name"/>
                     <field name="address"/>
                 </xpath>
+                <field name="code" position="attributes">
+                    <attribute name="string">Mã</attribute>
+                </field>
             </field>
         </record>
     </data>

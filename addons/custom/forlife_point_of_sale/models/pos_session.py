@@ -1,6 +1,7 @@
 from odoo import fields, models, api
 from odoo.osv import expression
 
+
 class PosSession(models.Model):
     _inherit = 'pos.session'
 
@@ -12,7 +13,7 @@ class PosSession(models.Model):
                     JOIN product_product pp ON pp.id = sq.product_id 
                     JOIN product_template pt ON pt.id = pp.product_tmpl_id
                     JOIN sl ON sl.id = sq.location_id
-                    GROUP BY ppid;
+                    GROUP BY ppid HAVING SUM(sq.quantity) > 0;
                 '''
         self.env.cr.execute(query, {'warehouse_id': warehouse_id})
         data = self.env.cr.fetchall()
@@ -22,7 +23,8 @@ class PosSession(models.Model):
         product_id = self._get_product_ids_by_store()
         res = super(PosSession, self)._loader_params_product_product()
         if product_id and res.get('search_params', False) and res['search_params'].get('domain', False):
-            res['search_params']['domain'] = expression.AND([res['search_params']['domain'], ['|',('id', 'in', product_id ), ('detailed_type', '=', 'service')]])
+            res['search_params']['domain'] = expression.AND(
+                [res['search_params']['domain'], ['|', ('id', 'in', product_id), ('detailed_type', '=', 'service')]])
         return res
 
     def _get_pos_ui_product_product(self, params):
@@ -36,3 +38,12 @@ class PosSession(models.Model):
 
     def _get_attributes_by_ptal_id(self):
         return []
+
+    def load_pos_data(self):
+        loaded_data = super(PosSession, self).load_pos_data()
+        pos_brand = self.config_id.store_id.brand_id
+        pos_brand_info = {"code": pos_brand.code, "id": pos_brand.id}
+        loaded_data.update({
+            'pos_brand_info': pos_brand_info
+        })
+        return loaded_data

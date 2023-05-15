@@ -20,7 +20,6 @@ class PointsProduct(models.Model):
     state_related = fields.Selection('State Related', related='points_promotion_id.state', store=True)
     product_count = fields.Integer('Count product', compute='_compute_product_count')
     _sql_constraints = [
-        ('data_uniq', 'unique (points_promotion_id, point_addition, from_date, to_date)', 'The combination of Point Addition, From Date and To Date must be unique !'),
         ('check_dates', 'CHECK (from_date <= to_date)', 'End date may not be before the starting date.'),
     ]
 
