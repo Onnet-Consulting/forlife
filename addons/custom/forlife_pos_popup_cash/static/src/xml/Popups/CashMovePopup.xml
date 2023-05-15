@@ -32,6 +32,7 @@
                         <option value="1">Văn phòng</option>
                         <option value="2">Cửa hàng</option>
                         <option value="3">Chênh lệch khác</option>
+                        <option value="4">Mua chi phí</option>
                     </select>
                 </div>
                 <div>
@@ -46,6 +47,24 @@
                     </select>
                 </div>
 
+            </div>
+        </div>
+        <div>
+            <div style="display:none">
+                <span style="float: left; font-size:14px;margin-top:5px; display:none" id="expense_label_label">Chi tiết chi phí</span>
+            </div>
+            <div>
+                <div style="margin-top:10px;font-size:14px;">
+                    <select name="expense_label" t-model="state.expense_label" id="expense_label" class="details"
+                        style="float: left; display: block; border: 1px solid black; font-size: 14px;">
+                        <option t-att-value="0">--Chọn khoản mục dòng tiền--</option>
+                        <t t-foreach="env.pos.pos_expense_labels" t-as="expense" t-key="expense.id">
+                            <option t-att-value="expense.id">
+                                <t t-esc="expense.name"/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
             </div>
         </div>
     </xpath>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="pos_expense_label_view_form" model="ir.ui.view">
+            <field name="name">pos.expense.label.view.form</field>
+            <field name="model">pos.expense.label</field>
+            <field name="arch" type="xml">
+                <form string="Expense Label">
+                    <field name="code"/>
+                    <field name="name"/>
+                </form>
+            </field>
+        </record>
+        <record id="pos_expense_label_view_tree" model="ir.ui.view">
+            <field name="name">pos.expense.label.view.tree</field>
+            <field name="model">pos.expense.label</field>
+            <field name="arch" type="xml">
+                <tree string="Expense Label" editable="top">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_pos_expense_label" model="ir.actions.act_window">
+            <field name="name">Expense Label</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">pos.expense.label</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" eval="False"/>
+            <field name="domain">[]</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Add a new pos shop
+                </p>
+            </field>
+        </record>
+        <menuitem id="menu_pos_expense_label" parent="point_of_sale.menu_point_config_product" action="action_pos_expense_label"
+                  sequence="20" groups="base.group_user"/>
+
+
+    </data>
+</odoo>
