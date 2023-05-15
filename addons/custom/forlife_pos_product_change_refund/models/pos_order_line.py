@@ -15,6 +15,8 @@ class PosOrderLine(models.Model):
     money_point_is_reduced = fields.Monetary('Money Point is reduced', compute='_compute_money_point_is_reduced_line')
     price_unit_refund = fields.Float(string='Unit Price Refund', digits=0)
     price_subtotal_incl_refund = fields.Float(string='Subtotal Refund', digits=0)
+    is_product_defective = fields.Boolean('Là sản phẩm lỗi', default=False)
+    money_reduce_from_product_defective = fields.Float()
 
     @api.depends('discount_details_lines.money_reduced')
     def _compute_money_point_is_reduced_line(self):
@@ -47,4 +49,6 @@ class PosOrderLine(models.Model):
         result['money_is_reduced'] = orderline.money_is_reduced
         result['money_point_is_reduced'] = orderline.money_point_is_reduced
         result['is_voucher_conditional'] = orderline.is_voucher_conditional
+        result['is_product_defective'] = orderline.is_product_defective
+        result['money_reduce_from_product_defective'] = orderline.money_reduce_from_product_defective
         return result
