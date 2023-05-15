@@ -29,7 +29,7 @@ class AccountMove(models.Model):
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string="Exchange Rate", default=1)
     accounting_date = fields.Datetime(string='Accounting Date')
-    payment_status = fields.Char(string='Payment status')
+    payment_status = fields.Char(string='Payment onchange_purchase_typestatus')
     is_check_cost_view = fields.Boolean(default=False, string='Hóa đơn chi phí')
     is_check_invoice_tnk = fields.Boolean(default=False)
 
@@ -335,15 +335,15 @@ class AccountMove(models.Model):
         res = super(AccountMove, self).write(vals)
         return res
 
-    @api.onchange('purchase_type')
-    def onchange_purchase_type(self):
-        order_invoice_line_ids = []
-        for line in self.invoice_line_ids:
-            if line.product_type == self.purchase_type:
-                order_invoice_line_ids.append(line.id)
-        self.write({
-            'invoice_line_ids': [(6, 0, order_invoice_line_ids)]
-        })
+    # @api.onchange('purchase_type')
+    # def onchange_purchase_type(self):
+    #     order_invoice_line_ids = []
+    #     for line in self.invoice_line_ids:
+    #         if line.product_type == self.purchase_type:
+    #             order_invoice_line_ids.append(line.id)
+    #     self.write({
+    #         'invoice_line_ids': [(6, 0, order_invoice_line_ids)]
+    #     })
 
     @api.onchange('partner_id', 'is_check_cost_view')
     def onchange_partner_domain(self):
