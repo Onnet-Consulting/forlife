@@ -673,7 +673,7 @@ class PurchaseOrder(models.Model):
                                  'account_analytic_id': line.account_analytic_id.id,
                                  'request_code': line.request_purchases,
                                  'quantity_purchased': line.purchase_quantity,
-                                 'discount_invoice': line.discount,
+                                 'discount': line.discount,
                                  'taxes_id': line.taxes_id.id,
                                  'tax_amount': line.price_tax,
                                  'uom_id': line.product_uom.id,
