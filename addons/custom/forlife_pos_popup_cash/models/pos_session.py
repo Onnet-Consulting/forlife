@@ -69,6 +69,8 @@ class PosSession(models.Model):
             'partner_id': self.config_id.store_id.contact_id.id,
             'company_id': self.company_id.id,
         }
+        if self.config_id.store_id.receipt_expense_journal_id:
+            move_val['journal_id'] = self.config_id.store_id.receipt_expense_journal_id.id
         liquidity_line_vals = {
             'name': _('Transfer POS-Office: %s') % self.name + ' ' + reason or '',
             'partner_id': self.config_id.store_id.contact_id.id,
