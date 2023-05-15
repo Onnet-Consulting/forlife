@@ -533,8 +533,8 @@ class AccountMove(models.Model):
                 account_331 = (0, 0, {
                     'product_id': item.product_id.id,
                     'display_type': 'tax',
-                    'account_id': item.product_id.property_account_expense_id.id,
-                    'name': item.product_id.property_account_expense_id.name,
+                    'account_id': rec.partner_id.property_account_receivable_id.id,
+                    'name': rec.partner_id.property_account_receivable_id.name,
                     'debit': rec.total_trade_discount,
                     'credit': 0,
                     'is_uncheck': True,
@@ -570,7 +570,7 @@ class AccountMove(models.Model):
                     rec.create_invoice_tnk_db_vat()
             if rec.total_trade_discount:
                 rec.create_trade_discount()
-            res = super(AccountMove, self).action_post()
+        res = super(AccountMove, self).action_post()
         return res
 
     # @api.onchange('invoice_line_ids', 'invoice_line_ids.price_unit', 'invoice_line_ids.quantity')
@@ -597,7 +597,7 @@ class AccountMoveLine(models.Model):
     is_uncheck = fields.Boolean('', default=False)
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
-    current_user = fields.Many2one('res.users', default=lambda self: self.env.user, string='Account', required=1)
+    # current_user = fields.Many2one('res.users', default=lambda self: self.env.user, string='Account', required=1)
     uom_id = fields.Many2one('uom.uom', string='Uom')
     warehouse = fields.Many2one('stock.location', string='Whs')
     discount_percent = fields.Float(string='Chiết khấu (%)', digits='Discount', default=0.0)
