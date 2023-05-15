@@ -570,7 +570,7 @@ class AccountMove(models.Model):
                     rec.create_invoice_tnk_db_vat()
             if rec.total_trade_discount:
                 rec.create_trade_discount()
-            res = super(AccountMove, self).action_post()
+        res = super(AccountMove, self).action_post()
         return res
 
     # @api.onchange('invoice_line_ids', 'invoice_line_ids.price_unit', 'invoice_line_ids.quantity')
