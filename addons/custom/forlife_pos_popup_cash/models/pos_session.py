@@ -10,6 +10,7 @@ class PosSession(models.Model):
         loaded_data = super(PosSession, self).load_pos_data()
         all_pos = self.env['pos.config'].search([('store_id', '=', self.config_id.store_id.id), ('id', '!=', self.config_id.id)])
         branchs = self.config_id.store_id.brand_id
+        pos_expense_labels = self.env['pos.expense.label'].search([])
         pos = [{
             'id': r.id,
             'name': r.name
@@ -18,9 +19,13 @@ class PosSession(models.Model):
             'id': r.id,
             'name': r.name
         } for r in branchs]
+        labels = [{'id': r.id, 'name': r.display_name} for r in pos_expense_labels]
+        print('labels')
+        print(labels)
         loaded_data.update({
             'pos.customize': pos,
-            'pos.branch': branch
+            'pos.branch': branch,
+            'pos.expense.label': labels,
         })
         return loaded_data
 
@@ -99,17 +104,22 @@ class PosSession(models.Model):
         sessions = self.filtered('cash_journal_id')
         if not sessions:
             raise UserError(_("There is no cash payment method for this PoS Session"))
+        payment_ref = ''
+        if extras['type_tranfer'] == 4 and extras['expense_label']:
+            expense = self.env['pos.expense.label'].browse(extras['expense_label'])
+            payment_ref = ' '.join([s.name for s in sessions]) + ': ' + expense.display_name if expense else ''
+
         account_bank_st_line = self.env['account.bank.statement.line'].create([
             {
                 'pos_session_id': session.id,
                 'journal_id': session.cash_journal_id.id,
                 'amount': sign * amount,
                 'date': fields.Date.context_today(self),
-                'payment_ref': '-'.join([session.name, extras['translatedType'], reason]),
+                'payment_ref': payment_ref or '-'.join([session.name, extras['translatedType'], reason]),
                 'to_store_tranfer': extras['shop']
                 if 'shop' in extras and _type == 'out' and extras['shop'] and extras['type_tranfer'] == 2 else False,
                 'is_reference': True if 'reference' in extras and extras['reference'] else False,
-                'pos_transfer_type': str(extras.get('type_tranfer')) if extras.get('type_tranfer') !=0 else False
+                'pos_transfer_type': str(extras.get('type_tranfer')) if extras.get('type_tranfer') != 0 else False
             }
             for session in sessions
         ])
@@ -137,3 +147,5 @@ class PosSession(models.Model):
             for session in sessions:
                 session.create_pos_transfer_journal_entry(_type, amount, reason, extras)
         return True
+
+# [(1, 'Văn phòng'), (2, 'Cửa hàng'), (3, 'Chênh lệch khác'), (4, 'Mua chi phí')]
