@@ -320,7 +320,7 @@ class PurchaseOrder(models.Model):
                 if picking_in:
                     for orl in record.order_line:
                         for pkl in picking_in.move_ids_without_package:
-                            if orl.product_id == pkl.product_id and orl.purchase_quantity == pkl.product_uom_qty:
+                            if orl.product_id == pkl.product_id:
                                 pkl.write({
                                     'quantity_done': orl.product_qty,
                                     'occasion_code_id': orl.occasion_code_id.id,
@@ -328,7 +328,7 @@ class PurchaseOrder(models.Model):
                                 })
 
                         for pk in picking_in.move_line_ids_without_package:
-                            if orl.product_id == pk.product_id and orl.purchase_quantity == pk.qty_done:
+                            if orl.product_id == pk.product_id:
                                 pk.write({
                                     'purchase_uom': orl.purchase_uom,
                                     'quantity_change': orl.exchange_quantity,
@@ -641,130 +641,131 @@ class PurchaseOrder(models.Model):
         return super().copy(default)
 
     def action_create_invoice(self):
-        """Create the invoice associated to the PO.
-        """
-        if len(self) > 1 and self[0].type_po_cost in ('cost', 'tax'):
-            result = self.create_multi_invoice_vendor()
-        else:
-            precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
-            # 1) Prepare invoice vals and clean-up the section lines
-            invoice_vals_list = []
-            sequence = 10
-            for order in self:
-                if order.custom_state != 'approved':
+            """Create the invoice associated to the PO.
+            """
+            if len(self) > 1 and self[0].type_po_cost in ('cost', 'tax'):
+                result = self.create_multi_invoice_vendor()
+            else:
+                precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+
+                # 1) Prepare invoice vals and clean-up the section lines
+                invoice_vals_list = []
+                sequence = 10
+                for order in self:
+                    if order.custom_state != 'approved':
+                        raise UserError(
+                            _('Tạo hóa đơn không hợp lệ!'))
+                    # Disable because custom state
+                    # if order.invoice_status != 'to invoice':
+                    #     continue
+                    order = order.with_company(order.company_id)
+                    pending_section = None
+                    # Invoice values.
+                    invoice_vals = order._prepare_invoice()
+                    invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.datetime.now(),
+                                         'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
+                    # Invoice line values (keep only necessary sections).
+                    picking_in = self.env['stock.picking'].search([('origin', '=', order.name),
+                                                                   ('state', '=', 'done'),
+                                                                   ('ware_check', '=', False)])
+                    if not picking_in:
+                        raise UserError(
+                            _('Không thể tạo hóa đơn khi không còn phiếu nhập kho liên quan!'))
+                    for picking_false in picking_in:
+                        for line, ware in zip(order.order_line, picking_in.move_line_ids_without_package):
+                            data_line = {
+                                'product_id': ware.product_id.id,
+                                'sequence': sequence,
+                                'price_subtotal': line.price_subtotal,
+                                'promotions': line.free_good,
+                                'exchange_quantity': line.exchange_quantity,
+                                'quantity': ware.qty_done,
+                                'vendor_price': line.vendor_price,
+                                'warehouse': line.location_id.id,
+                                'discount': line.discount,
+                                'event_id': line.event_id.id,
+                                'work_order': line.production_id.id,
+                                'account_analytic_id': line.account_analytic_id.id,
+                                'request_code': line.request_purchases,
+                                'quantity_purchased': ware.qty_done,
+                                'discount_percent': line.discount_percent,
+                                'taxes_id': line.taxes_id.id,
+                                'tax_amount': line.price_tax,
+                                'uom_id': line.product_uom.id,
+                                'price_unit': line.price_unit,
+                            }
+                            if line.display_type == 'line_section':
+                                pending_section = line
+                                continue
+                            # Current value always = 0
+                            # if not float_is_zero(line.qty_to_invoice, precision_digits=precision):
+                            if pending_section:
+                                line_vals = pending_section._prepare_account_move_line()
+                                line_vals.update(data_line)
+                                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                sequence += 1
+                                pending_section = None
+                            line_vals = line._prepare_account_move_line()
+                            line_vals.update(data_line)
+                            invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                            sequence += 1
+                            picking_false.ware_check = True
+                        invoice_vals_list.append(invoice_vals)
+
+                if not invoice_vals_list:
                     raise UserError(
-                        _('Tạo hóa đơn không hợp lệ!'))
-                # Disable because custom state
-                # if order.invoice_status != 'to invoice':
-                #     continue
-                order = order.with_company(order.company_id)
-                pending_section = None
-                # Invoice values.
-                invoice_vals = order._prepare_invoice()
-                invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.datetime.now(),
-                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
-                # Invoice line values (keep only necessary sections).
-                picking_in = self.env['stock.picking'].search([('origin', '=', order.name),
-                                                               ('state', '=', 'done'),
-                                                               ('ware_check', '=', False)])
-                data_line = {}
-                if not picking_in:
-                    raise UserError(
-                        _('Không thể tạo hóa đơn khi không còn phiếu nhập kho liên quan!'))
-                for ware in picking_in:
-                    for ware_lines, line in zip(ware.move_line_ids_without_package, order.order_line):
-                        data_line = {
-                            'sequence': sequence,
-                            'price_subtotal': line.price_subtotal,
-                            'promotions': line.free_good,
-                            'exchange_quantity': line.exchange_quantity,
-                            'quantity': ware_lines.qty_done,
-                            'vendor_price': line.vendor_price,
-                            'warehouse': line.location_id.id,
-                            'discount': line.discount,
-                            'event_id': line.event_id.id,
-                            'work_order': line.production_id.id,
-                            'account_analytic_id': line.account_analytic_id.id,
-                            'request_code': line.request_purchases,
-                            'quantity_purchased': ware_lines.qty_done,
-                            'discount_percent': line.discount_percent,
-                            'taxes_id': line.taxes_id.id,
-                            'tax_amount': line.price_tax,
-                            'uom_id': line.product_uom.id,
-                            'price_unit': line.price_unit,
-                        }
-                    if line.display_type == 'line_section':
-                        pending_section = line
-                        continue
-                    # Current value always = 0
-                    # if not float_is_zero(line.qty_to_invoice, precision_digits=precision):
-                    if pending_section:
-                        line_vals = pending_section._prepare_account_move_line()
-                        line_vals.update(data_line)
-                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                        sequence += 1
-                        pending_section = None
-                    line_vals = line._prepare_account_move_line()
-                    line_vals.update(data_line)
-                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                    sequence += 1
-                    ware.ware_check = True
-                invoice_vals_list.append(invoice_vals)
+                        _('There is no invoiceable line. If a product has a control policy based on received quantity, please make sure that a quantity has been received.'))
 
-            if not invoice_vals_list:
-                raise UserError(
-                    _('There is no invoiceable line. If a product has a control policy based on received quantity, please make sure that a quantity has been received.'))
+                # 2) group by (company_id, partner_id, currency_id) for batch creation
+                new_invoice_vals_list = []
+                for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
+                        x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
+                    origins = set()
+                    payment_refs = set()
+                    refs = set()
+                    ref_invoice_vals = None
+                    # request_co = []
+                    # request_co.append((0, 0, {
+                    #     'request_code': self.source_document
+                    # }))
+                    for invoice_vals in invoices:
+                        if not ref_invoice_vals:
+                            ref_invoice_vals = invoice_vals
+                        else:
+                            ref_invoice_vals['invoice_line_ids'] += invoice_vals['invoice_line_ids']
+                        origins.add(invoice_vals['invoice_origin'])
+                        payment_refs.add(invoice_vals['payment_reference'])
+                        refs.add(invoice_vals['ref'])
+                    ref_invoice_vals.update({
+                        'purchase_type': self.purchase_type if len(self) == 1 else 'product',
+                        'reference': ', '.join(self.mapped('name')),
+                        'ref': ', '.join(refs)[:2000],
+                        'invoice_origin': ', '.join(origins),
+                        'is_check': True,
+                        # 'invoice_line_ids': request_co,
+                        'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
+                    })
+                    new_invoice_vals_list.append(ref_invoice_vals)
+                invoice_vals_list = new_invoice_vals_list
 
-            # 2) group by (company_id, partner_id, currency_id) for batch creation
-            new_invoice_vals_list = []
-            for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
-                    x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
-                origins = set()
-                payment_refs = set()
-                refs = set()
-                ref_invoice_vals = None
-                # request_co = []
-                # request_co.append((0, 0, {
-                #     'request_code': self.source_document
-                # }))
-                for invoice_vals in invoices:
-                    if not ref_invoice_vals:
-                        ref_invoice_vals = invoice_vals
-                    else:
-                        ref_invoice_vals['invoice_line_ids'] += invoice_vals['invoice_line_ids']
-                    origins.add(invoice_vals['invoice_origin'])
-                    payment_refs.add(invoice_vals['payment_reference'])
-                    refs.add(invoice_vals['ref'])
-                ref_invoice_vals.update({
-                    'purchase_type': self.purchase_type if len(self) == 1 else 'product',
-                    'reference': ', '.join(self.mapped('name')),
-                    'ref': ', '.join(refs)[:2000],
-                    'invoice_origin': ', '.join(origins),
-                    'is_check': True,
-                    # 'invoice_line_ids': request_co,
-                    'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
-                })
-                new_invoice_vals_list.append(ref_invoice_vals)
-            invoice_vals_list = new_invoice_vals_list
-
-            # 3) Create invoices.
-            moves = self.env['account.move']
-            AccountMove = self.env['account.move'].with_context(default_move_type='in_invoice')
-            for vals in invoice_vals_list:
-                moves |= AccountMove.with_company(vals['company_id']).create(vals)
-            # 4) Some moves might actually be refunds: convert them if the total amount is negative
-            # We do this after the moves have been created since we need taxes, etc. to know if the total
-            # is actually negative or not
-            moves.filtered(
-                lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
-            return {
-                'name': 'Hóa đơn nhà cung cấp',
-                'type': 'ir.actions.act_window',
-                'res_model': 'account.move',
-                'view_id': False,
-                'view_mode': 'tree,form',
-                'domain': [('id', 'in', moves.ids)],
-            }
+                # 3) Create invoices.
+                moves = self.env['account.move']
+                AccountMove = self.env['account.move'].with_context(default_move_type='in_invoice')
+                for vals in invoice_vals_list:
+                    moves |= AccountMove.with_company(vals['company_id']).create(vals)
+                # 4) Some moves might actually be refunds: convert them if the total amount is negative
+                # We do this after the moves have been created since we need taxes, etc. to know if the total
+                # is actually negative or not
+                moves.filtered(
+                    lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
+                return {
+                    'name': 'Hóa đơn nhà cung cấp',
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'account.move',
+                    'view_id': False,
+                    'view_mode': 'tree,form',
+                    'domain': [('id', 'in', moves.ids)],
+                }
 
     def action_view_invoice_new(self):
         for rec in self:
@@ -777,53 +778,54 @@ class PurchaseOrder(models.Model):
             'view_mode': 'tree,form',
             'domain': [('id', 'in', data_search)],
         }
-    # def create_multi_invoice_vendor(self):
-    #     sequence = 10
-    #     vals_all_invoice = {}
-    #     for order in self:
-    #         if order.inventory_status != 'done' and order.purchase_type == 'product':
-    #             raise ValidationError(
-    #                 'Phiếu nhận hàng của đơn mua hàng %s có thể chưa hoàn thành/chưa có!' % (order.name))
-    #         if order.custom_state != 'approved':
-    #             raise UserError(
-    #                 _('Tạo hóa đơn không hợp lệ!'))
-    #         for line in order.order_line:
-    #             data_line = {'sequence': sequence, 'price_subtotal': line.price_subtotal,
-    #                          'promotions': line.free_good,
-    #                          'exchange_quantity': line.exchange_quantity,
-    #                          'quantity': line.product_qty,
-    #                          'vendor_price': line.vendor_price,
-    #                          'warehouse': line.location_id.id,
-    #                          'discount': line.discount_percent,
-    #                          'event_id': line.event_id.id,
-    #                          'work_order': line.production_id.id,
-    #                          'account_analytic_id': line.account_analytic_id.id,
-    #                          'request_code': line.request_purchases,
-    #                          'quantity_purchased': line.purchase_quantity,
-    #                          'discount_invoice': line.discount,
-    #                          'taxes_id': line.taxes_id.id,
-    #                          'tax_amount': line.price_tax,
-    #                          'uom_id': line.product_uom.id,
-    #                          'price_unit': line.price_unit}
-    #             sequence += 1
-    #             key = order.purchase_type
-    #             invoice_vals = order._prepare_invoice()
-    #             invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.datetime.now(),
-    #                                  'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id})
-    #             order = order.with_company(order.company_id)
-    #             line_vals = line._prepare_account_move_line()
-    #             line_vals.update(data_line)
-    #             invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-    #             if vals_all_invoice.get(key):
-    #                 vals_all_invoice.get(key)['invoice_line_ids'].append((0, 0, line_vals))
-    #             else:
-    #                 vals_all_invoice.update({
-    #                     key: invoice_vals
-    #                 })
-    #     moves = self.env['account.move']
-    #     for data in vals_all_invoice:
-    #         move = moves.create(vals_all_invoice.get(data)).action_post()
-    #     return True
+
+    def create_multi_invoice_vendor(self):
+        sequence = 10
+        vals_all_invoice = {}
+        for order in self:
+            if order.inventory_status != 'done' and order.purchase_type == 'product':
+                raise ValidationError(
+                    'Phiếu nhận hàng của đơn mua hàng %s có thể chưa hoàn thành/chưa có!' % (order.name))
+            if order.custom_state != 'approved':
+                raise UserError(
+                    _('Tạo hóa đơn không hợp lệ!'))
+            for line in order.order_line:
+                data_line = {'sequence': sequence, 'price_subtotal': line.price_subtotal,
+                             'promotions': line.free_good,
+                             'exchange_quantity': line.exchange_quantity,
+                             'quantity': line.product_qty,
+                             'vendor_price': line.vendor_price,
+                             'warehouse': line.location_id.id,
+                             'discount': line.discount_percent,
+                             'event_id': line.event_id.id,
+                             'work_order': line.production_id.id,
+                             'account_analytic_id': line.account_analytic_id.id,
+                             'request_code': line.request_purchases,
+                             'quantity_purchased': line.purchase_quantity,
+                             'discount_invoice': line.discount,
+                             'taxes_id': line.taxes_id.id,
+                             'tax_amount': line.price_tax,
+                             'uom_id': line.product_uom.id,
+                             'price_unit': line.price_unit}
+                sequence += 1
+                key = order.purchase_type
+                invoice_vals = order._prepare_invoice()
+                invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.datetime.now(),
+                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id})
+                order = order.with_company(order.company_id)
+                line_vals = line._prepare_account_move_line()
+                line_vals.update(data_line)
+                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                if vals_all_invoice.get(key):
+                    vals_all_invoice.get(key)['invoice_line_ids'].append((0, 0, line_vals))
+                else:
+                    vals_all_invoice.update({
+                        key: invoice_vals
+                    })
+        moves = self.env['account.move']
+        for data in vals_all_invoice:
+            move = moves.create(vals_all_invoice.get(data)).action_post()
+        return True
 
     def _prepare_picking(self):
         if not self.group_id:
