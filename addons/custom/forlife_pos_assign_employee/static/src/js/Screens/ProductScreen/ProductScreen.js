@@ -6,11 +6,20 @@ odoo.define('forlife_pos_assign_employee.ProductScreen', function (require) {
 
     const EmployeeProductScreen = ProductScreen => class extends ProductScreen {
         async _onClickPay() {
-            if (!this.currentOrder.get_orderlines().length === 0) {
+            if (this.currentOrder.get_orderlines().length === 0) {
                 this.showPopup('ErrorPopup', {
                     title: this.env._t('Empty Order'),
                     body: this.env._t(
                         'There must be at least one product in your order before it can be process payment.'
+                    ),
+                });
+                return false;
+            }
+            if (!this.currentOrder.get_partner()) {
+                this.showPopup('ErrorPopup', {
+                    title: this.env._t('Empty Order'),
+                    body: this.env._t(
+                        'Hãy chọn một khách hàng!'
                     ),
                 });
                 return false;
