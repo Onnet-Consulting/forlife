@@ -11,6 +11,7 @@ class AccountBank(models.Model):
         ('1', 'Office'),
         ('2', 'Store'),
         ('3', 'Other Difference'),
+        ('4', 'Buy Expense'),
     ], string='POS Transfer Type', default=False, readonly=True)
     pos_config_id = fields.Many2one(related='pos_session_id.config_id')
 
@@ -23,12 +24,14 @@ class AccountBank(models.Model):
                 counterpart_account_id = debit_account_id
             elif self.amount > 0.0 and credit_account_id:
                 counterpart_account_id = credit_account_id
+        if self.pos_transfer_type == '4' and self.pos_session_id and self.amount < 0.0 and self.pos_session_id.config_id.store_id.contact_id.property_account_payable_id:
+            counterpart_account_id = self.pos_session_id.config_id.store_id.contact_id.property_account_payable_id.id
 
         res = super(AccountBank, self)._prepare_move_line_default_vals(counterpart_account_id)
         if counterpart_account_id is None and self.to_store_tranfer or self.from_store_tranfer or self.is_reference:
             res[1]['account_id'] = self.pos_session_id.config_id.store_id.account_intermediary_pos.id
             res[1]['partner_id'] = self.pos_session_id.config_id.store_id.contact_id.id
 
-        if self.pos_transfer_type == '3' and self.pos_session_id:
+        if self.pos_transfer_type in ['3', '4'] and self.pos_session_id:
             res[1]['partner_id'] = self.pos_session_id.config_id.store_id.contact_id.id
         return res

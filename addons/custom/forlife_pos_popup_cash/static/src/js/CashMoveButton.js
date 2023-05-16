@@ -30,7 +30,7 @@ odoo.define('forlife_pos_popup_cash.CashMoveButton2', function (require) {
                 old_pos: this.env.pos.pos_customizes,
             });
             if (!confirmed) return;
-            const { type, amount, reason, reference, type_tranfer, shop} = payload;
+            const { type, amount, reason, reference, type_tranfer, shop, expense_label} = payload;
             const translatedType = TRANSLATED_CASH_MOVE_TYPE[type];
             const formattedAmount = this.env.pos.format_currency(amount);
             if (!amount) {
@@ -39,7 +39,7 @@ odoo.define('forlife_pos_popup_cash.CashMoveButton2', function (require) {
                     3000
                 );
             }
-            const extras = { formattedAmount, translatedType, reference, type_tranfer, shop };
+            const extras = { formattedAmount, translatedType, reference, type_tranfer, shop , expense_label};
             await this.rpc({
                 model: 'pos.session',
                 method: 'try_cash_in_out',
