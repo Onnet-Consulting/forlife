@@ -287,3 +287,14 @@ class StockMove(models.Model):
                 r.name = r.product_id.name
                 r.amount_total = r.product_id.standard_price if not r.reason_id.is_price_unit else 0
 
+
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
+
+    @api.constrains('qty_done', 'picking_id.move_ids_without_package')
+    def constrains_qty_done(self):
+        for rec in self:
+            for line in rec.picking_id.move_ids_without_package:
+                if rec.qty_done > line.product_uom_qty:
+                    raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
+
