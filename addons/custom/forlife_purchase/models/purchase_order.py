@@ -320,7 +320,7 @@ class PurchaseOrder(models.Model):
                 if picking_in:
                     for orl in record.order_line:
                         for pkl in picking_in.move_ids_without_package:
-                            if orl.product_id == pkl.product_id:
+                            if orl.product_id == pkl.product_id and orl.purchase_quantity == pkl.product_uom_qty:
                                 pkl.write({
                                     'quantity_done': orl.product_qty,
                                     'occasion_code_id': orl.occasion_code_id.id,
@@ -328,7 +328,7 @@ class PurchaseOrder(models.Model):
                                 })
 
                         for pk in picking_in.move_line_ids_without_package:
-                            if orl.product_id == pk.product_id:
+                            if orl.product_id == pk.product_id and orl.purchase_quantity == pk.qty_done:
                                 pk.write({
                                     'purchase_uom': orl.purchase_uom,
                                     'quantity_change': orl.exchange_quantity,
