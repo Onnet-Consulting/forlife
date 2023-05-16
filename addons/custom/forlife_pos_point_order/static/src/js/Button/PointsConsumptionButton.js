@@ -146,6 +146,7 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                                 order_lines[j].set_point(-data[i].point*1000)
                                 this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,order_lines[j].id, true)
                             }else if(!order_lines[j].is_new_line_point && data[i].id == order_lines[j].id && data[i].point == 0){
+                                order_lines[j].set_point(0)
                                 this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,order_lines[j].id, false)
                             }else if(!order_lines[j].is_new_line_point && data[i].id == order_lines[j].id && data[i].point !== 0 && order_lines[j].quantity >=2 ){
                                 let line = Orderline.create({}, {pos: this.env.pos, order: this.env.pos.get_order(), product: order_lines[j].product});
