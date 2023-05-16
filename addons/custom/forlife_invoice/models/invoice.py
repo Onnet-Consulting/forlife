@@ -29,7 +29,7 @@ class AccountMove(models.Model):
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string="Exchange Rate", default=1)
     accounting_date = fields.Datetime(string='Accounting Date')
-    payment_status = fields.Char(string='Payment status')
+    payment_status = fields.Char(string='Payment onchange_purchase_typestatus')
     is_check_cost_view = fields.Boolean(default=False, string='Hóa đơn chi phí')
     is_check_invoice_tnk = fields.Boolean(default=False)
 
@@ -300,50 +300,50 @@ class AccountMove(models.Model):
                             rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
 
     def write(self, vals):
-        for rec in self:
-            if rec.is_check_cost_view:
-                for line in rec.line_ids:
-                    duplicate = rec.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
-                    if not duplicate:
-                        continue
-                    line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
-                                })
-                    for dup in duplicate:
-                        dup.write({'product_id': False,
-                                   'display_type': 'product'
-                                   })
-                    if line.product_id.id and line.display_type == 'product' and line.name:
-                        item.write({'account_id': line.product_id.categ_id.property_account_expense_categ_id.id,
-                                    'name': line.product_id.categ_id.property_account_expense_categ_id.name
-                                    })
-                    else:
-                        pass
-                for item in rec.invoice_line_ids:
-                    if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
-                        item.unlink()
-            else:
-                for item in rec.invoice_line_ids:
-                    if item.product_id.id and item.display_type == 'product' and item.name:
-                        item.write({'account_id': item.product_id.categ_id.property_stock_account_input_categ_id.id,
-                                    'name': item.product_id.categ_id.property_stock_account_input_categ_id.name
-                                    })
-                    if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
-                        item.unlink()
-                for rate in rec.exchange_rate_line:
-                    if not rate.product_id.id:
-                        rate.unlink()
+        # for rec in self:
+        #     if rec.is_check_cost_view:
+        #         for line in rec.line_ids:
+        #             duplicate = rec.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
+        #             if not duplicate:
+        #                 continue
+        #             line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
+        #                         })
+        #             for dup in duplicate:
+        #                 dup.write({'product_id': False,
+        #                            'display_type': 'product'
+        #                            })
+        #             if line.product_id.id and line.display_type == 'product' and line.name:
+        #                 item.write({'account_id': line.product_id.categ_id.property_account_expense_categ_id.id,
+        #                             'name': line.product_id.categ_id.property_account_expense_categ_id.name
+        #                             })
+        #             else:
+        #                 pass
+        #         for item in rec.invoice_line_ids:
+        #             if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
+        #                 item.unlink()
+        #     else:
+        #         for item in rec.invoice_line_ids:
+        #             if item.product_id.id and item.display_type == 'product' and item.name:
+        #                 item.write({'account_id': item.product_id.categ_id.property_stock_account_input_categ_id.id,
+        #                             'name': item.product_id.categ_id.property_stock_account_input_categ_id.name
+        #                             })
+        #             if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
+        #                 item.unlink()
+        #         for rate in rec.exchange_rate_line:
+        #             if not rate.product_id.id:
+        #                 rate.unlink()
         res = super(AccountMove, self).write(vals)
         return res
 
-    @api.onchange('purchase_type')
-    def onchange_purchase_type(self):
-        order_invoice_line_ids = []
-        for line in self.invoice_line_ids:
-            if line.product_type == self.purchase_type:
-                order_invoice_line_ids.append(line.id)
-        self.write({
-            'invoice_line_ids': [(6, 0, order_invoice_line_ids)]
-        })
+    # @api.onchange('purchase_type')
+    # def onchange_purchase_type(self):
+    #     order_invoice_line_ids = []
+    #     for line in self.invoice_line_ids:
+    #         if line.product_type == self.purchase_type:
+    #             order_invoice_line_ids.append(line.id)
+    #     self.write({
+    #         'invoice_line_ids': [(6, 0, order_invoice_line_ids)]
+    #     })
 
     @api.onchange('partner_id', 'is_check_cost_view')
     def onchange_partner_domain(self):
@@ -533,8 +533,8 @@ class AccountMove(models.Model):
                 account_331 = (0, 0, {
                     'product_id': item.product_id.id,
                     'display_type': 'tax',
-                    'account_id': item.product_id.property_account_expense_id.id,
-                    'name': item.product_id.property_account_expense_id.name,
+                    'account_id': rec.partner_id.property_account_receivable_id.id,
+                    'name': rec.partner_id.property_account_receivable_id.name,
                     'debit': rec.total_trade_discount,
                     'credit': 0,
                     'is_uncheck': True,
@@ -570,7 +570,7 @@ class AccountMove(models.Model):
                     rec.create_invoice_tnk_db_vat()
             if rec.total_trade_discount:
                 rec.create_trade_discount()
-            res = super(AccountMove, self).action_post()
+        res = super(AccountMove, self).action_post()
         return res
 
     # @api.onchange('invoice_line_ids', 'invoice_line_ids.price_unit', 'invoice_line_ids.quantity')
@@ -597,7 +597,7 @@ class AccountMoveLine(models.Model):
     is_uncheck = fields.Boolean('', default=False)
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
-    current_user = fields.Many2one('res.users', default=lambda self: self.env.user, string='Account', required=1)
+    # current_user = fields.Many2one('res.users', default=lambda self: self.env.user, string='Account', required=1)
     uom_id = fields.Many2one('uom.uom', string='Uom')
     warehouse = fields.Many2one('stock.location', string='Whs')
     discount_percent = fields.Float(string='Chiết khấu (%)', digits='Discount', default=0.0)

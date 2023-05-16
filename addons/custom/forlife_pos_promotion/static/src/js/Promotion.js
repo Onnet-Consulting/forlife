@@ -398,6 +398,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             await this.update_surprising_program();
         };
         await this.load_promotion_valid_new_partner();
+        // Đặt lại và gán pricelist_item vào các order_line
+        this.assign_pricelist_item_to_orderline()
         this.activatedInputCodes = [];
         this._resetPromotionPrograms();
         this._resetCartPromotionPrograms();
@@ -497,7 +499,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             priceItem = this._getPricelistItem(product);
         }
         else {
-            priceItem = this.validOnOrderPricelistItem.find(item => this.pos.pro_pricelist_item_by_id[item].product_id == product.id);
+            priceItem = this.validOnOrderPricelistItem.find(item => {return this.pos.pro_pricelist_item_by_id[item].product_id == product.id});
+            priceItem = this.pos.pro_pricelist_item_by_id[priceItem];
         };
         if (priceItem) {
             options['pricelist_item'] = priceItem;
@@ -717,6 +720,20 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let lines = this.get_orderlines().filter(line => line.is_applied_promotion());
         return lines.reduce((acc, line) => {
         acc.push(...line.promotion_usage_ids); return acc;}, []);
+    }
+
+    assign_pricelist_item_to_orderline() {
+        this.validOnOrderPricelistItem = [];
+        for (let line of this.get_orderlines()) {
+            line.pricelist_item = null;
+            let priceItem = this._getPricelistItem(line.product);
+            if (priceItem) {
+                line.pricelist_item = priceItem;
+                if (priceItem.str_id && !this.validOnOrderPricelistItem.includes(priceItem.str_id)) {
+                    this.validOnOrderPricelistItem.push(priceItem.str_id);
+                };
+            };
+        }
     }
 
     _getPricelistItem(product) {
@@ -1409,16 +1426,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
 
             let amountCheck = totalsPerProgram[program.id]['taxed'];
-            if (program.incl_reward_in_order_type == 'no_incl' && !['cart_get_voucher', 'cart_get_x_free'].includes(program.reward_type)) {
+            if (program.incl_reward_in_order_type == 'no_incl') {
                 let no_incl_amount = 0;
                 let no_incl_ols = orderLines.filter(l=>!l.is_applied_promotion() && l.quantity > 0)
                                             .filter(l=>program.discount_product_ids.has(l.product.id));
-                let need_qty = program.reward_quantity;
                 for (let ol of no_incl_ols) {
-                    let taken_qty = 0;
-                    let to_take = Math.min(program.reward_quantity, ol.quantity);
-                    no_incl_amount += to_take * ol.price;
-                    if (need_qty <= 0) {break;}
+                    no_incl_amount += ol.quantity * ol.price;
                 };
                 amountCheck -= no_incl_amount;
             };

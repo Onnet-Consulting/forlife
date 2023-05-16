@@ -53,8 +53,22 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
                             });
                             return;
                         }
-                        orderlines[i].money_reduce_from_product_defective = parseInt(products_defective[j].total_reduce)*products_defective[j].quantity
-                        orderlines[i].is_product_defective = true
+                        if(!orderlines[i].is_product_defective){
+                            orderlines[i].money_reduce_from_product_defective = parseInt(products_defective[j].total_reduce)*orderlines[i].quantity
+                            orderlines[i].is_product_defective = true
+                            orderlines[i].product_defective_id = products_defective[j].product_defective_id
+                        }else{
+                            this.showPopup('ErrorPopup', {
+                                title: this.env._t("Warning"),
+                                body: _.str.sprintf(
+                                    this.env._t(
+                                        "Đã áp dụng cho sản phẩm này!"
+                                    ),
+                                    ''
+                                ),
+                            });
+                            return;
+                        }
                     }
                 }
             }

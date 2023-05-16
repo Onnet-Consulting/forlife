@@ -80,5 +80,4 @@ class ProductDefective(models.Model):
                 'store_name': store_name,
                 'id': i
             })
-        print()
         return data
