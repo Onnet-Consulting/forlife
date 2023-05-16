@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-15 07:15+0000\n"
-"PO-Revision-Date: 2023-05-15 07:15+0000\n"
+"POT-Creation-Date: 2023-05-16 01:53+0000\n"
+"PO-Revision-Date: 2023-05-16 01:53+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,6 +20,13 @@ msgstr ""
 #: code:addons/forlife_pos_popup_cash/static/src/xml/Popups/CashMovePopup.xml:0
 #, python-format
 msgid "--Chọn cửa hàng--"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
+#. odoo-javascript
+#: code:addons/forlife_pos_popup_cash/static/src/xml/Popups/CashMovePopup.xml:0
+#, python-format
+msgid "--Chọn khoản mục dòng tiền--"
 msgstr ""
 
 #. module: forlife_pos_popup_cash
@@ -42,6 +49,11 @@ msgid "Account intermediary"
 msgstr "Tài khoản trung gian"
 
 #. module: forlife_pos_popup_cash
+#: model_terms:ir.actions.act_window,help:forlife_pos_popup_cash.action_pos_expense_label
+msgid "Add a new item"
+msgstr "Thêm khoản mục mới"
+
+#. module: forlife_pos_popup_cash
 #. odoo-python
 #: code:addons/forlife_pos_popup_cash/models/pos_session.py:0
 #, python-format
@@ -56,6 +68,11 @@ msgid "Bank Statement Line"
 msgstr "Giao dịch trên sổ quỹ/sổ phụ"
 
 #. module: forlife_pos_popup_cash
+#: model:ir.model.fields.selection,name:forlife_pos_popup_cash.selection__account_bank_statement_line__pos_transfer_type__4
+msgid "Buy Expense"
+msgstr "Mua chi phí"
+
+#. module: forlife_pos_popup_cash
 #. odoo-javascript
 #: code:addons/forlife_pos_popup_cash/static/src/js/CashMoveButton.js:0
 #, python-format
@@ -66,8 +83,20 @@ msgstr "Lệnh nạp rút %s được bỏ qua."
 #. odoo-javascript
 #: code:addons/forlife_pos_popup_cash/static/src/xml/Popups/CashMovePopup.xml:0
 #, python-format
+msgid "Chi tiết chi phí"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
+#. odoo-javascript
+#: code:addons/forlife_pos_popup_cash/static/src/xml/Popups/CashMovePopup.xml:0
+#, python-format
 msgid "Chênh lệch khác"
 msgstr ""
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_pos_expense_label__code
+msgid "Code"
+msgstr "Mã"
 
 #. module: forlife_pos_popup_cash
 #. odoo-python
@@ -75,6 +104,16 @@ msgstr ""
 #, python-format
 msgid "Counterpart Transfer POS-Office: %s"
 msgstr "Chuyển tiền POS-VP: %s"
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_pos_expense_label__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_pos_expense_label__create_date
+msgid "Created on"
+msgstr ""
 
 #. module: forlife_pos_popup_cash
 #. odoo-javascript
@@ -90,8 +129,31 @@ msgid "Default Office Account"
 msgstr "Tài khoản văn phòng mặc định"
 
 #. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_pos_expense_label__name
+msgid "Description"
+msgstr "Mô tả"
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_pos_expense_label__display_name
+msgid "Display Name"
+msgstr "Tên hiển thị"
+
+#. module: forlife_pos_popup_cash
+#: model:ir.actions.act_window,name:forlife_pos_popup_cash.action_pos_expense_label
+#: model:ir.ui.menu,name:forlife_pos_popup_cash.menu_pos_expense_label
+#: model_terms:ir.ui.view,arch_db:forlife_pos_popup_cash.pos_expense_label_view_form
+#: model_terms:ir.ui.view,arch_db:forlife_pos_popup_cash.pos_expense_label_view_tree
+msgid "Expense Label"
+msgstr "Khoản mục dòng tiền"
+
+#. module: forlife_pos_popup_cash
 #: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__from_store_tranfer
 msgid "From POS?"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_pos_expense_label__id
+msgid "ID"
 msgstr ""
 
 #. module: forlife_pos_popup_cash
@@ -105,10 +167,32 @@ msgid "Journal Entry"
 msgstr "Bút toán "
 
 #. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_pos_expense_label____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_pos_expense_label__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
+#: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_pos_expense_label__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
 #. odoo-javascript
 #: code:addons/forlife_pos_popup_cash/static/src/xml/Popups/CashMovePopup.xml:0
 #, python-format
 msgid "Loại"
+msgstr ""
+
+#. module: forlife_pos_popup_cash
+#. odoo-javascript
+#: code:addons/forlife_pos_popup_cash/static/src/xml/Popups/CashMovePopup.xml:0
+#, python-format
+msgid "Mua chi phí"
 msgstr ""
 
 #. module: forlife_pos_popup_cash
@@ -144,6 +228,11 @@ msgid "POS Cash Transfer"
 msgstr "Chuyển tiền từ POS"
 
 #. module: forlife_pos_popup_cash
+#: model:ir.model,name:forlife_pos_popup_cash.model_pos_expense_label
+msgid "POS Expense Label"
+msgstr "Khoản mục dòng tiền"
+
+#. module: forlife_pos_popup_cash
 #: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_orig_amount
 #: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_move__pos_orig_amount
 #: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_payment__pos_orig_amount
@@ -161,6 +250,13 @@ msgstr "Chuyển tiền đến VP"
 #: model:ir.model.fields,field_description:forlife_pos_popup_cash.field_account_bank_statement_line__pos_transfer_type
 msgid "POS Transfer Type"
 msgstr "Loại chuyển tiền POS"
+
+#. module: forlife_pos_popup_cash
+#. odoo-javascript
+#: code:addons/forlife_pos_popup_cash/static/src/js/onchange_selection.js:0
+#, python-format
+msgid "Please choose a expense label before confirming!"
+msgstr "Vui lòng chọn khoản mục dòng tiền trước khi xác nhận!"
 
 #. module: forlife_pos_popup_cash
 #. odoo-javascript
