@@ -39,6 +39,7 @@
                     <field name="x_process_punish"/>
                     <field name="x_shipping_punish" force_save="1" readonly="1"/>
                     <field name="x_manufacture_order_code_id"/>
+                    <field name="x_origin"/>
                 </xpath>
             </field>
         </record>
