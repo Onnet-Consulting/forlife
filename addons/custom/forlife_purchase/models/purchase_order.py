@@ -294,7 +294,7 @@ class PurchaseOrder(models.Model):
                 if picking_in:
                     for orl in record.order_line:
                         for pkl in picking_in.move_ids_without_package:
-                            if orl.product_id == pkl.product_id:
+                            if orl.product_id == pkl.product_id and orl.purchase_quantity == pkl.product_uom_qty:
                                 pkl.write({
                                     'quantity_done': orl.product_qty,
                                     'occasion_code_id': orl.occasion_code_id.id,
@@ -302,7 +302,7 @@ class PurchaseOrder(models.Model):
                                 })
 
                         for pk in picking_in.move_line_ids_without_package:
-                            if orl.product_id == pk.product_id:
+                            if orl.product_id == pk.product_id and orl.purchase_quantity == pk.qty_done:
                                 pk.write({
                                     'purchase_uom': orl.purchase_uom,
                                     'quantity_change': orl.exchange_quantity,
@@ -646,13 +646,13 @@ class PurchaseOrder(models.Model):
                                  'quantity': line.product_qty,
                                  'vendor_price': line.vendor_price,
                                  'warehouse': line.location_id.id,
-                                 'discount': line.discount_percent,
+                                 'discount': line.discount,
                                  'event_id': line.event_id.id,
                                  'work_order': line.production_id.id,
                                  'account_analytic_id': line.account_analytic_id.id,
                                  'request_code': line.request_purchases,
                                  'quantity_purchased': line.purchase_quantity,
-                                 'discount': line.discount,
+                                 'discount_percent': line.discount_percent,
                                  'taxes_id': line.taxes_id.id,
                                  'tax_amount': line.price_tax,
                                  'uom_id': line.product_uom.id,
