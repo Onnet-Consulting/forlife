@@ -57,7 +57,12 @@
                         <th></th>
                         <th style="border: 1px solid black;width:25%">Tổng tiền thanh toán</th>
                         <th>
-                            <t t-esc="env.pos.format_currency(_totalPriceNotFormat)" />
+                            <t t-if="(_totalPriceTax - _totalPriceNotFormat) >0">
+                               <t t-esc="env.pos.format_currency(_totalPriceNotFormat - (_totalPriceTax - _totalPriceNotFormat))" />
+                            </t>
+                            <t t-else="">
+                                <t t-esc="env.pos.format_currency(_totalPriceNotFormat + (_totalPriceTax - _totalPriceNotFormat))" />
+                            </t>
                         </th>
                     </tr>
                 </table>
