@@ -53,7 +53,7 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
                             });
                             return;
                         }
-                        orderlines[i].money_reduce_from_product_defective = parseInt(products_defective[j].total_reduce)*products_defective[j].quantity
+                        orderlines[i].money_reduce_from_product_defective = parseInt(products_defective[j].total_reduce)*orderlines[i].quantity
                         orderlines[i].is_product_defective = true
                     }
                 }
