@@ -42,8 +42,8 @@
         <menuitem
                 id="menu_hr_team_tree"
                 action="hr_team_tree_action"
-                parent="menu_config_employee"
+                parent="hr.menu_config_employee"
                 sequence="4"
-                groups="group_hr_user"/>
+                groups="hr.group_hr_user"/>
     </data>
 </odoo>
