@@ -24,7 +24,7 @@ class SaleOrder(models.Model):
     x_account_analytic_ids = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_ids = fields.Many2many('occasion.code', string='Mã vụ việc')
     x_process_punish = fields.Boolean(string='Đơn phạt nhà gia công')
-    x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển')
+    x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
     x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
 
     def get_rule_domain(self):
@@ -86,6 +86,9 @@ class SaleOrder(models.Model):
                 'date_deadline': datetime.now(),
                 'description_picking': line.name,
                 'sale_line_id': line.id,
+                'occasion_code_id': line.x_occasion_code_id,
+                'work_production': line.x_manufacture_order_code_id,
+                'account_analytic_id': line.x_account_analytic_id,
                 'group_id': group_id.id
             }
             line_x_scheduled_date.append((line.id, str(date)))
@@ -157,8 +160,8 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
-        self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0].id if self.order_id.x_account_analytic_ids else None
-        self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0].id if self.order_id.x_occasion_code_ids else None
+        self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
+        self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
         if self.order_id.x_sale_type and self.order_id.x_sale_type in ('product', 'service'):
             domain = [('product_type', '=', self.order_id.x_sale_type)]
@@ -192,8 +195,7 @@ class SaleOrderLine(models.Model):
         res = super(SaleOrderLine, self)._compute_price_unit()
         for line in self:
             line._set_price_unit()
-            if line.order_id.partner_id and self.product_id and (
-                    line.order_id.x_process_punish or line.order_id.x_shipping_punish):
+            if line.order_id.partner_id and self.product_id and (line.order_id.x_process_punish):
                 line.set_price_unit()
         return res
 
