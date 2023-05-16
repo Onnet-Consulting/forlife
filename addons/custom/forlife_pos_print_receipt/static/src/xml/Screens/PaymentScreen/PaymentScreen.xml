@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-name="PaymentScreen" t-inherit="point_of_sale.PaymentScreen" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('partner-button')]" position="after">
+            <div class="partner-button">
+                <div class="button" t-att-class="{ highlight: currentOrder.get_note() }" t-on-click="showOrderNotePopup">
+                    <i class="fa fa-sticky-note"/>
+                    <span>Note</span>
+                </div>
+            </div>
+        </xpath>
+    </t>
+</templates>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:spce="preserve">
+
+    <t t-name="OrderReceipt_TokyoLife" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('pos-receipt')]" position="after">
+            <t t-if="env.pos.pos_brand_info.code == 'TKL'">
+                <div class="pos-receipt">
+                    <t t-call="TokyoLifeOrderReceipt"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="TokyoLifeOrderReceipt" owl="1">
+        <t t-call="TokyoLifeOrderHeaderReceipt"/>
+        <t t-call="TokyoLifeOrderLinesReceipt"/>
+        <t t-call="TokyoLifeOrderPaymentLinesReceipt"/>
+        <t t-call="TokyoLifeOrderFooterReceipt"/>
+    </t>
+
+    <t t-name="TokyoLifeOrderHeaderReceipt" owl="1">
+        <div class="receipt-header">
+            <img class="pos-receipt-logo tokyolife"
+                 src="/forlife_pos_print_receipt/static/src/img/logo-tokyolife.png" height="25"/>
+            <div class="store-address">
+                <t t-if="env.pos.pos_store_info.address">
+                    <div class="text-center">
+                        <t t-esc="env.pos.pos_store_info.address"/>
+                    </div>
+                </t>
+                <t t-if="env.pos.pos_store_info.phone">
+                    <div class="text-center">
+                        <t t-esc="env.pos.pos_store_info.phone"/>
+                    </div>
+                </t>
+            </div>
+
+            <t t-if="receipt.mobile_app_url_qr_code">
+                <div class="mobile-app-qr">
+                    <div class="text-center text-bold">Kính mời Quý khách quét mã QR, cài App tich lũy 1% giá trị hóa
+                        đơn
+                        sau 24h và nhận thông tin các ưu đãi mới nhất, lớn nhất
+                    </div>
+                    <img id="posqrcode" t-att-src="receipt.mobile_app_url_qr_code" class="pos-receipt-logo"/>
+                    <div class="text-center">Mã QR chỉ có giá trị trong vòng 03 ngày kể từ ngày mua hàng</div>
+                </div>
+            </t>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Ngày giờ:</td>
+                        <td>
+                            <t t-esc="receipt.date.localestring1"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Số hóa đơn:</td>
+                        <td>
+                            <t t-esc="receipt.name"/>
+                        </td>
+                    </tr>
+                    <t t-if="receipt.partner">
+                        <tr>
+                            <td>Khách hàng:</td>
+                            <td>
+                                <t t-esc="receipt.partner.name"/>
+                                -
+                                <t t-esc="receipt.partner.phone || ''"/>
+                            </td>
+                        </tr>
+                    </t>
+                    <tr>
+                        <td>Nhân viên:</td>
+                        <td>
+                            <t t-esc="receipt.cashier"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Ghi chú:</td>
+                        <td>
+                            <t t-esc="receipt.note"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </t>
+
+    <t t-name="TokyoLifeOrderLinesReceipt" owl="1">
+        <div class="orderlines">
+            <t t-call="SeparateLine"/>
+            <table class="lines-detail">
+                <tbody>
+                    <tr>
+                        <th class="num_1 text">Tên hàng</th>
+                        <th class="num_2 number">SL</th>
+                        <th class="num_3 number">ĐG</th>
+                        <th class="num_4 number">GG</th>
+                        <th class="num_5 number">Tổng tiền</th>
+                    </tr>
+                </tbody>
+            </table>
+            <t t-call="SeparateLine"/>
+            <table class="lines-detail">
+                <tbody>
+                    <t t-foreach='receipt.orderlines' t-as='line' t-key="line.id">
+                        <tr>
+                            <td colspan="5">
+                                <t t-esc="line.product_name_wrapped[0]"/>
+                            </td>
+                        </tr>
+                        <tr class="product-price-qty-detail">
+                            <td class="num_1 text">
+                                <t t-esc="line.product_default_code || ''"/>
+                            </td>
+                            <td class="num_2 number">
+                                <t t-esc="line.quantity"/>
+                            </td>
+                            <td class="num_3 number">
+                                <t t-esc="env.pos.format_currency_no_symbol(line.price)"/>
+                            </td>
+                            <td class="num_4 number">
+                                0
+                            </td>
+                            <td class="num_5 number">
+                                <t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+    </t>
+
+    <t t-name="TokyoLifeOrderPaymentLinesReceipt" owl="1">
+        <t t-call="SeparateLine"/>
+
+        <div class="payment_lines">
+            <table class="payment-detail">
+                <tbody>
+                    <tr>
+                        <td class="col1"/>
+                        <td class="col2"/>
+                        <td class="col3"/>
+                        <td class="col4"/>
+                        <td class="col5"/>
+                    </tr>
+                    <tr>
+                        <td class="col1 text">Tổng cộng:</td>
+                        <td class="col2 number">
+                            <t t-esc="receipt.total_line_qty"/>
+                        </td>
+                        <td class="number" colspan="3">
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_rounded)"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col1">Chiết khấu:</td>
+                        <td colspan="4" class="text-right">
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_discount)"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <t t-call="SeparateLine"/>
+
+            <table class="payment-detail">
+                <tbody>
+                    <tr>
+                        <td colspan="2">Tổng tiền thanh toán:</td>
+                        <td colspan="3" class="text-right">
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_paid || 0)"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table class="payment-line-detail">
+                <tbody>
+                    <t t-foreach='receipt.paymentlines' t-as='line' t-key="line_index">
+                        <tr>
+                            <td>
+                                <t t-esc="line.name"/>:
+                            </td>
+                            <td class="text-right">
+                                <t t-esc="env.pos.format_currency_no_symbol(line.amount)"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+
+            <t t-call="SeparateLine"/>
+        </div>
+    </t>
+
+    <t t-name="TokyoLifeOrderFooterReceipt" owl="1">
+        <div class="receipt-footer">
+            <div t-out="receipt.footer"/>
+        </div>
+    </t>
+
+</templates>

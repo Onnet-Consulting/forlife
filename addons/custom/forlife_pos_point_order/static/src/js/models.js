@@ -53,6 +53,14 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                 return this.get_all_prices_of_point().total_point_without_Tax;
             }
 
+            get_display_price_after_discount() {
+                var total = super.get_display_price_after_discount(...arguments);
+                if (this.point) {
+                    total += this.point;
+                }
+                return total;
+            }
+
 
             get_all_prices_of_point(qty = 1) {
                 var pointOfline = this.point ? parseInt(-this.point) : 0;

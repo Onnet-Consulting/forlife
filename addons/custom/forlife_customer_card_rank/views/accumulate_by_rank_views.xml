@@ -11,6 +11,7 @@
                     <field name="points_promotion_id" invisible="1"/>
                     <field name="card_rank_id"/>
                     <field name="accumulative_rate"/>
+                    <field name="coefficient"/>
                 </tree>
             </field>
         </record>
@@ -24,6 +25,7 @@
                         <group>
                             <field name="card_rank_id"/>
                             <field name="accumulative_rate"/>
+                            <field name="coefficient"/>
                         </group>
                     </sheet>
                 </form>

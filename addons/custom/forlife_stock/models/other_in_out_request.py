@@ -27,6 +27,20 @@ class ForlifeOtherInOutRequest(models.Model):
     count_other_import_export = fields.Integer(compute="compute_count_other_import_export", copy=False)
     other_import_export_ids = fields.One2many('stock.picking', 'other_import_export_request_id',
                                               string="Other Import/Export")
+    reject_reason = fields.Text()
+    quantity_match = fields.Boolean(compute='compute_qty_match', store=1)
+
+    @api.depends('other_import_export_ids', 'other_import_export_ids.state')
+    def compute_qty_match(self):
+        for rec in self:
+            rec.quantity_match = all(x == 'done' for x in rec.other_import_export_ids.mapped(
+                'state')) if rec.other_import_export_ids else False
+
+    @api.constrains('other_in_out_request_line_ids')
+    def _constrains_other_in_out_request_line_ids(self):
+        for rec in self:
+            if not rec.other_in_out_request_line_ids:
+                raise ValidationError(_("Bạn chưa thêm sản phẩm nào"))
 
     @api.model
     def create(self, vals):
@@ -133,7 +147,7 @@ class ForlifeOtherInOutRequestLine(models.Model):
     description = fields.Char(string='Mô tả', related="product_id.name")
     asset_id = fields.Many2one('assets.assets', string='Tài sản')
     date_expected = fields.Datetime(string='Ngày dự kiến')
-    quantity = fields.Float(string='Số lượng')
+    quantity = fields.Float(string='Số lượng', required=True)
     uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
     whs_from_id = fields.Many2one('stock.location', string='Từ kho')
     reason_from_id = fields.Many2one('stock.location', string='Lý do')
@@ -143,4 +157,11 @@ class ForlifeOtherInOutRequestLine(models.Model):
     production_id = fields.Many2one('forlife.production', string='Lệnh sản xuất')
     cost_center = fields.Many2one('account.analytic.account', string='Trung tâm chi  phí')
     stock_move_ids = fields.One2many('stock.move', 'product_other_id')
+
+    @api.constrains('quantity')
+    def _constrains_quantity(self):
+        for rec in self:
+            if rec.quantity <= 0:
+                raise ValidationError(_("Số lượng phải lớn hơn 0"))
+
 
