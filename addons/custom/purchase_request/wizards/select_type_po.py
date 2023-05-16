@@ -22,7 +22,7 @@ class SelectTypePo(models.TransientModel):
                     item.write({
                         'type_po': rec.type_po,
                     })
-                item.create_purchase_orders()
+            current_request.create_purchase_orders()
         return {
             'name': 'Purchase Orders',
             'type': 'ir.actions.act_window',

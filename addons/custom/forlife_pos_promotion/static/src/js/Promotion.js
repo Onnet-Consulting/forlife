@@ -275,7 +275,12 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
             this.order._resetCartPromotionPrograms();
         };
         if (!this.pos.no_reset_program) {
-            this.order._updateActivatedPromotionPrograms();
+            // Trường hợp thêm sản phẩm vào đơn, ordeline này không có trong order.orderlines, cần xét thêm line_no_incl_order
+            let line_no_incl_order = null;
+            if (!this.order.orderlines.find(l => l.cid == this.cid)) {
+                line_no_incl_order = {...this};
+            };
+            this.order._updateActivatedPromotionPrograms(line_no_incl_order);
         }
         return result;
     }
@@ -614,12 +619,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return result;
     }
 
-    async _updateActivatedPromotionPrograms() {
+    async _updateActivatedPromotionPrograms(line_no_incl_order) {
         this.activatedComboPrograms = new Set();
         this.activatedCodePrograms = new Set();
         this.activatedPricelistItem = new Set();
         let to_check = this._get_to_check_programs();
-        let validPromotionPrograms = this.verifyProgramOnOrder(to_check);
+        let validPromotionPrograms = this.verifyProgramOnOrder(to_check, line_no_incl_order);
         for (let proID of Object.keys(validPromotionPrograms)) {
             if (proID.includes('p') && this.pos.get_program_by_id(proID).promotion_type === 'pricelist') {
                 this.activatedPricelistItem.add(proID);
@@ -1275,7 +1280,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     /* return {<program_id>: number_of_combo}*/
-    verifyProgramOnOrder(toVerifyPromotionPrograms) {
+    verifyProgramOnOrder(toVerifyPromotionPrograms, line_no_incl_order) {
         var comboProgramToCheck = new Set();
         var programIsVerified = new Object();
         for (const program of toVerifyPromotionPrograms) {
@@ -1284,8 +1289,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
         };
         for (const program of comboProgramToCheck) {
+            let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
+            if (line_no_incl_order) {
+                line_no_incl_order.promotion_usage_ids = [];
+                to_check_order_lines.push(line_no_incl_order);
+            };
             if (program.promotion_type == 'combo') {
-                let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
                 if (this._filterOrderLinesToCheckComboPro(to_check_order_lines).length > 0) {
                     let NumberOfCombo = this._checkNumberOfCombo(program, to_check_order_lines, [] , 0)[2];
                     if (['combo_percent_by_qty', 'combo_fixed_price_by_qty'].includes(program.reward_type) && !(NumberOfCombo >= program.qty_min_required)) {
@@ -1298,7 +1307,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
             }
             else if (program.promotion_type == 'code') {
-                var to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
                 // todo: check if suitable order_line exist before check number of product
                 let NumberOfCombo = this._checkNumberOfCode(program, to_check_order_lines, [] , 0)[2];
                 if (NumberOfCombo >= 1) {
@@ -1320,7 +1328,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                             .reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []));
                 if (inOrderProductsList.size) {
                     if (inOrderProductsList.has(program.product_id)) {
-                        let to_check_order_lines = this.get_orderlines_to_check().map(obj => ({...obj}));
                         let QtyOfProduct = this._checkQtyOfProductForPricelist(program, to_check_order_lines)[2];
                         if (QtyOfProduct > 0) {
                             programIsVerified[program.str_id] = QtyOfProduct;

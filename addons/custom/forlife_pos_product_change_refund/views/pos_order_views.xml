@@ -10,6 +10,7 @@
             </xpath>
             <xpath expr="//field[@name='lines']/tree/field[@name='qty']" position="after">
                 <field name="refunded_qty" position="move"/>
+                <field name="is_product_defective"/>
             </xpath>
             <xpath expr="//field[@name='fiscal_position_id']" position="after">
                 <field name="pay_point"/>

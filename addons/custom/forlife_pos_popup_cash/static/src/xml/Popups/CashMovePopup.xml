@@ -49,14 +49,14 @@
 
             </div>
         </div>
-        <div>
-            <div style="display:none">
-                <span style="float: left; font-size:14px;margin-top:5px; display:none" id="expense_label_label">Chi tiết chi phí</span>
+        <div style="display: flex; flex-direction: column; margin-top:10px;">
+            <div>
+                <span style="float: left; font-size:14px; display:none" id="expense_label_label">Khoản mục dòng tiền</span>
             </div>
             <div>
                 <div style="margin-top:10px;font-size:14px;">
                     <select name="expense_label" t-model="state.expense_label" id="expense_label" class="details"
-                        style="float: left; display: block; border: 1px solid black; font-size: 14px;">
+                        style="float: left; display: none; border: 1px solid black; font-size: 14px;">
                         <option t-att-value="0">--Chọn khoản mục dòng tiền--</option>
                         <t t-foreach="env.pos.pos_expense_labels" t-as="expense" t-key="expense.id">
                             <option t-att-value="expense.id">
