@@ -15,3 +15,5 @@ class Store(models.Model):
     default_office_cash_account_id = fields.Many2one(
         'account.account', company_dependent=True, string='Default Office Account',
         domain="[('deprecated', '=', False), ('company_id', '=', current_company_id)]")
+
+    receipt_expense_journal_id = fields.Many2one('account.journal', string='Receipt/Expense Journal')
