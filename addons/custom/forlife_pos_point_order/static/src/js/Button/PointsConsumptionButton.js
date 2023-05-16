@@ -1,7 +1,7 @@
 odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require) {
     "use strict";
 
-
+    const {PosGlobalState, Orderline, Order} = require('point_of_sale.models');
     const PosComponent = require('point_of_sale.PosComponent');
     const ProductScreen = require('point_of_sale.ProductScreen');
     const Registries = require('point_of_sale.Registries');
@@ -107,40 +107,75 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                 cancelTitle: this.env._t('Hủy bỏ'),
             });
             if (confirmed){
-                var old_data = data;
                 let order_lines = this.order_lines;
-                for(let i = 0; i< old_data.length; i++){
-                     for(let j = 0; j< order_lines.length; j++){
-                         if(old_data[i].id == order_lines[j].id){
-                            old_data[i]['display_name'] = order_lines[j].product.display_name
-                            old_data[i]['unit_price'] = order_lines[j].get_taxed_lst_unit_price()
-                            old_data[i]['idx'] = i
-                         }
-                     }
-                }
-                this.env.pos.selectedOrder.old_data = old_data;
                 var tempResult = {}
                 for(let { id, point } of data){
                         tempResult[id] = {
                         id,
                         point: tempResult[id] ? point + (tempResult[id].point) : point,
-                        // count: tempResult[id] ? tempResult[id].count + 1 : 1
                     }
                 }
                 let result = Object.values(tempResult)
-                if (result.length < order_lines.length){
-                    for(let i = 0; i< order_lines.length; i++){
-                        for(let j = 0; j< result.length; j++){
-                            if (order_lines[i].id == result[j].id){
-                                order_lines[i].set_point(-result[j].point * 1000)
+                var OrderCurrent = this.env.pos.get_order()
+//                var filteredDataItems = data.filter(item => item.point !== 0)
+                var list_order_line_new = []
+                if(!this.env.pos.selectedOrder.old_data){
+                    for(let i = 0; i< data.length; i ++){
+                        for(let j = 0; j< order_lines.length; j++){
+                            if(order_lines[j].quantity == 1 && data[i].id == order_lines[j].id){
+                                order_lines[j].set_point(-data[i].point*1000)
+                                order_lines[j].is_new_line_point = false
+                                this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,order_lines[j].id, false)
+                            }
+                            if(data[i].id == order_lines[j].id && data[i].point !==0 && order_lines[j].quantity >=2 ){
+                                let line = Orderline.create({}, {pos: this.env.pos, order: this.env.pos.get_order(), product: order_lines[j].product});
+                                let line_new = OrderCurrent.createNewLinePoint(line)
+                                OrderCurrent.set_orderline_options(order_lines[j], {quantity: order_lines[j].quantity - line_new.quantity})
+                                list_order_line_new.push({id: line_new.id, point:data[i].point})
+                                this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,line_new.id, true)
+                            }
+                            if(data[i].id == order_lines[j].id && data[i].point ==0){
+                                this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,order_lines[j].id, false)
                             }
                         }
                     }
-                }else{
-                    for(let i = 0; i< result.length; i++){
-                        order_lines[i].set_point(- result[i].point * 1000)
+               }else{
+                    for(let i =0; i< data.length;i++){
+                        for(let j=0; j< order_lines.length;j++){
+                            if(order_lines[j].is_new_line_point && data[i].id == order_lines[j].id && data[i].point !==0 ){
+                                order_lines[j].set_point(-data[i].point*1000)
+                                this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,order_lines[j].id, true)
+                            }else if(!order_lines[j].is_new_line_point && data[i].id == order_lines[j].id && data[i].point == 0){
+                                this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,order_lines[j].id, false)
+                            }else if(!order_lines[j].is_new_line_point && data[i].id == order_lines[j].id && data[i].point !== 0 && order_lines[j].quantity >=2 ){
+                                let line = Orderline.create({}, {pos: this.env.pos, order: this.env.pos.get_order(), product: order_lines[j].product});
+                                let line_new = OrderCurrent.createNewLinePoint(line)
+                                OrderCurrent.set_orderline_options(order_lines[j], {quantity: order_lines[j].quantity - line_new.quantity})
+                                list_order_line_new.push({id: line_new.id, point:data[i].point})
+                                this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,line_new.id, true)
+                            }else if(order_lines[j].is_new_line_point == true && data[i].id == order_lines[j].id && data[i].point == 0){
+                                order_lines[j].set_point(0)
+                                this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,order_lines[j].id, false)
+                            }else if(!order_lines[j].is_new_line_point && data[i].id == order_lines[j].id && data[i].point != 0){
+                                order_lines[j].set_point(-data[i].point*1000)
+                                this.set_param_old_data(data[i],order_lines[j].product.display_name,order_lines[j].price,i,order_lines[j].id, false)
+                            }
+                        }
                     }
-                };
+               }
+               for(let i=0; i< order_lines.length; i++){
+                    for(let j=0; j< list_order_line_new.length;j++){
+                        if(order_lines[i].id == list_order_line_new[j].id){
+                            order_lines[i].set_point(-list_order_line_new[j].point * 1000)
+                            order_lines[i].is_new_line_point = true
+                        }
+                    }
+               }
+
+                this.env.pos.selectedOrder.old_data = data;
+//                }
+
+                //--------/
                 var total_point_used = 0;
                 order_lines.forEach(function(item){
                     if(!item.point){
@@ -149,10 +184,21 @@ odoo.define('forlife_pos_point_order.PointsConsumptionButton', function (require
                     let point = -item.point
                     total_point_used += point
                 })
+                OrderCurrent.detelte_history_point = true
                 this.env.pos.selectedOrder.total_order_line_point_used = total_point_used/1000;
                 this.env.pos.selectedOrder.total_order_line_redisual = points_of_customer - this.env.pos.selectedOrder.total_order_line_point_used
             }
         }
+
+        set_param_old_data(data,display_name,price,index, id_new, is_new_line_point){
+            data['display_name'] = display_name
+            data['unit_price'] = price
+            data['idx'] = index
+            data['id_new'] = id_new
+            data['is_new_line_point'] = is_new_line_point
+            return data
+        }
+
 
     }
 

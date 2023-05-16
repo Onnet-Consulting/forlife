@@ -21,6 +21,10 @@ odoo.define('forlife_pos_layout.OrderSummary', function(require) {
             }
             return total;
         }
+        getTotalNotFormat() {
+            return this.props.order.get_total_with_tax();
+        }
+
     }
     Registries.Component.extend(OrderSummary, OrderSummaryCustom);
 

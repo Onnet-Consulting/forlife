@@ -113,7 +113,7 @@ class PosOrder(models.Model):
     def _order_fields(self, ui_order):
         res = super()._order_fields(ui_order)
         if 'card_rank_program_id' not in res and ui_order.get('card_rank_program'):
-            res.update({'card_rank_program_id': ui_order.get('card_rank_program')})
+            res.update({'card_rank_program_id': ui_order.get('card_rank_program', {}).get('id')})
         if ui_order.get('order_status_format'):
             res.update({
                 'order_status_format': ui_order.get('order_status_format') or False,
@@ -157,21 +157,28 @@ class PosOrder(models.Model):
             }),
         ]
 
-    @api.model
-    def _process_order(self, order, draft, existing_order):
-        pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
-        HistoryPoint = self.env['partner.history.point']
-        if not existing_order:
-            pos = self.env['pos.order'].browse(pos_id)
-            store = pos._get_store_brand_from_program()
-            if store is not None:
-                history_values = pos._prepare_history_point_coefficient_value(store, pos.plus_point_coefficient + sum(
-                                                                                 [x.plus_point_coefficient for x in
-                                                                                  pos.lines]))
-                HistoryPoint.sudo().create(history_values)
-                pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
-                                                  store)
-        return pos_id
+    # @api.model
+    # def _process_order(self, order, draft, existing_order):
+    #     pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
+    #     HistoryPoint = self.env['partner.history.point']
+    #     if not existing_order:
+    #         pos = self.env['pos.order'].browse(pos_id)
+    #         store = pos._get_store_brand_from_program()
+    #         if store is not None:
+    #             history_values = pos._prepare_history_point_coefficient_value(store, pos.plus_point_coefficient + sum(
+    #                                                                              [x.plus_point_coefficient for x in
+    #                                                                               pos.lines]))
+    #             HistoryPoint.sudo().create(history_values)
+    #             pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration,
+    #                                               store)
+    #     return pos_id
+    
+    def _prepare_history_point_value(self, store: str, point_type='new', reason='', points_used=0, points_back=0):
+        vals = super()._prepare_history_point_value(store, point_type='new', reason='', points_used=0, points_back=0)
+        pos = self
+        vals['points_coefficient'] = (pos.plus_point_coefficient + sum([x.plus_point_coefficient for x in pos.lines]))
+        vals['points_store'] += (pos.plus_point_coefficient + sum([x.plus_point_coefficient for x in pos.lines]))
+        return vals
 
     @api.depends('program_store_point_id')
     def _compute_plus_point(self):
@@ -203,7 +210,7 @@ class PosOrder(models.Model):
     def _compute_total_point(self):
         super()._compute_total_point()
         for order in self:
-            order.total_point += order.plus_point_coefficient
+            order.total_point += (order.plus_point_coefficient + sum([x.plus_point_coefficient for x in order.lines]))
 
     def _prepare_history_point_coefficient_value(self, store, points_coefficient, point_type='coefficient', reason=''):
         return {
@@ -220,10 +227,11 @@ class PosOrder(models.Model):
     def get_point_order(self, money_value, brand_id):
         result = super().get_point_order(money_value, brand_id)
         current_rank_of_customer = (self.partner_id.card_rank_by_brand or {}).get(str(brand_id))
-        if self.allow_for_point and (self.config_id.store_id.id in self.program_store_point_id.store_ids.ids or not self.program_store_point_id.store_ids) and current_rank_of_customer and self.program_store_point_id.card_rank_active:
-            accumulate_by_rank = self.program_store_point_id.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0])
+        program = self.program_store_point_id
+        if self.allow_for_point and (self.config_id.store_id.id in program.store_ids.ids or not program.store_ids) and current_rank_of_customer and program.card_rank_active:
+            accumulate_by_rank = program.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0])
             if accumulate_by_rank:
-                return int((money_value * accumulate_by_rank.accumulative_rate / 100) * (self.program_store_point_id.card_rank_point_addition / self.program_store_point_id.card_rank_value_convert))
+                return int(int((money_value * accumulate_by_rank.accumulative_rate / 100) * (program.card_rank_point_addition / program.card_rank_value_convert)) * (accumulate_by_rank.coefficient or 1))
         return result
 
 

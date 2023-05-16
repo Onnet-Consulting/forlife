@@ -16,10 +16,11 @@ odoo.define('forlife_pos_layout.CustomOrderline', function(require) {
             var percent_discount = 0;
             var discount = this.getTotalDiscount();
             var unit_price = this.props.line.get_unit_display_price();
-            if (unit_price !== 0) {
-                percent_discount = (discount / unit_price) * 100;
+            var quantity = this.props.line.get_quantity();
+            if (unit_price !== 0 && quantity !== 0) {
+                percent_discount = ((discount / quantity) / unit_price) * 100;
             }
-            return round_pr(percent_discount, this.env.pos.currency.rounding);
+            return Math.round(percent_discount * 100) / 100;
         }
     }
     CustomOrderline.template = 'CustomOrderline';

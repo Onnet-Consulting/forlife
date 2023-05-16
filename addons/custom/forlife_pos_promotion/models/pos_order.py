@@ -25,7 +25,7 @@ class PosOrder(models.Model):
             discounted_amount = 0.0
             lst_price = line[2]['price_unit']
             for usage in line[2]['promotion_usage_ids']:
-                discount_per_unit = usage[2].get('discount_amount', 0)
+                discount_per_unit = usage[2].get('discount_amount', 0) or 0.0
                 if discount_per_unit > 0:
                     discounted_amount += discount_per_unit*line[2]['qty']
                     lst_price = usage[2]['original_price'] > lst_price and usage[2]['original_price'] or lst_price

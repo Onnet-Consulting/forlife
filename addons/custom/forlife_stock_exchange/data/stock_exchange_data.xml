@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
 
         <record id="forlife_stock_location_exchange" model="stock.location">
             <field name="name">Import of finished products</field>

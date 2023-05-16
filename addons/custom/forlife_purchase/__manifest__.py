@@ -37,6 +37,7 @@
         # 'wizard/account_payment_register_view.xml',
         'report/purchase_order_templates.xml',
         'views/product_supplierinfo_views.xml',
+        'views/stock_picking_view.xml'
     ],
     "assets": {
         "web.assets_backend": [

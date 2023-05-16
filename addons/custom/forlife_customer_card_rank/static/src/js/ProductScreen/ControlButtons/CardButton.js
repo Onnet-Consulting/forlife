@@ -34,7 +34,7 @@ export class CardButton extends PosComponent {
                 order_lines: order_line_data,
             });
             if (confirmed) {
-                order.action_apply_card_rank_program(card_rank_program.id, order_line_data);
+                order.action_apply_card_rank_program(card_rank_program, order_line_data);
             }
         }
     }

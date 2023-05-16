@@ -40,3 +40,10 @@ class SupplierInfo(models.Model):
         for record in self:
             if record.amount_conversion < 0:
                 raise models.ValidationError("Số lượng quy đổi phải là số dương!")
+
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Nhập bảng giá nhà cung cấp'),
+            'template': '/forlife_purchase/static/src/xlsx/banggianhacungcap.xlsx'
+        }]

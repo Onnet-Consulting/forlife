@@ -4,7 +4,7 @@
         <xpath expr="//ul[hasclass('custom-info-list')]" position="inside">
             <t t-if="props.line.card_rank_applied">
                 <li class="info orderline-card-rank" style="width: 65%;">
-                    <em>Giảm giá theo hạng thẻ</em>
+                    <em>Giảm giá theo CT <t t-esc="props.line.order.card_rank_program.card_rank_name"/></em>
                 </li>
                 <li class="info orderline-card-rank" style="width: 35%;">
                     <i class="fa fa-id-card-o" role="img" aria-label="Discount Card" title="Discount Card"/>
