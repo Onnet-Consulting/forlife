@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">name</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="currency_rate_live.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='main_currency']" position="after">
+                <div id="vietin_bank_info" class="col-12 col-lg-6 o_setting_box"
+                     attrs="{'invisible': [('module_currency_rate_live', '=', False)]}">
+                    <div class="o_setting_left_pane"/>
+                    <div class="o_setting_right_pane">
+                        <span class="o_form_label">VietinBank Integration</span>
+                        <div class="text-muted">
+                            VietinBank exchange rate API configuration
+                        </div>
+                        <group class="mt16">
+                            <field name="vietin_bank_exchange_rate_url"/>
+                            <field name="vietin_bank_provider_id"/>
+                            <field name="vietin_bank_client_id"/>
+                            <field name="vietin_bank_client_secret"/>
+                            <field name="vietin_bank_server_private_key" filename="'PRIVATE key''"/>
+                        </group>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
