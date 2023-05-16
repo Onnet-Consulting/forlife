@@ -37,7 +37,7 @@
                 </div>
                 <div>
                     <select name="shop" t-model="state.shop" id="shop"
-                            style="float:right; display:none;margin-top: -20px;border: 1px solid black;font-size:14px;" class="details">
+                            style="float:right;width:138px; display:none;margin-top: -20px;border: 1px solid black;font-size:14px;" class="details">
                         <option t-att-value="0">--Chọn cửa hàng--</option>
                         <t t-foreach="env.pos.pos_customizes" t-as="pos" t-key="pos.id">
                             <option t-att-value="pos.id">
