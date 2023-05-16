@@ -819,9 +819,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let result = [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
         var valid_product_ids = codeProgram.valid_product_ids;
 
-        if (codeProgram.reward_type == "code_amount") {
-            max_count = 1;
-        }
+//        if (codeProgram.reward_type == "code_amount") {
+//            max_count = 1;
+//        }
         // todo: consider to sort by 'lst_price' ASC for type code_buy_x_get_cheapest
         to_check_order_lines.sort((a,b) => (a.product.lst_price < b.product.lst_price) ? 1 : ((b.product.lst_price < a.product.lst_price) ? -1 : 0))
         var oneCombo = [];
