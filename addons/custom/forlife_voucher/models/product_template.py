@@ -33,7 +33,7 @@ class ProductTemplate(models.Model):
             self.list_price = 0.0
 
     voucher = fields.Boolean('Voucher')
-    program_voucher_id = fields.Many2one('program.voucher', readonly=True)
+    program_voucher_id = fields.Many2one('program.voucher', readonly=True, copy=False)
 
 
     def write(self, vals):
