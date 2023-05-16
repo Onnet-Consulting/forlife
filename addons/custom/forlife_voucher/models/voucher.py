@@ -114,10 +114,10 @@ class Voucher(models.Model):
             else:
                 vourcher = self.sudo().search([('name', '=', code['value'])], limit=1)
                 if vourcher:
-                    sql = f"SELECT product_product_id FROM product_product_program_voucher_rel WHERE program_voucher_id = {vourcher.program_voucher_id.id}"
-                    self._cr.execute(sql)
-                    product_ids = self._cr.fetchall()
-                    product_ids = [id[0] for id in product_ids]
+                    # sql = f"SELECT product_product_id FROM product_product_program_voucher_rel WHERE program_voucher_id = {vourcher.program_voucher_id.id}"
+                    # self._cr.execute(sql)
+                    # product_ids = self._cr.fetchall()
+                    # product_ids = [id[0] for id in product_ids]
                     start_date = self._format_time_zone(vourcher.start_date)
                     end_date = self._format_time_zone(vourcher.end_date)
                     end_date_format = datetime.strptime(end_date.strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
@@ -141,7 +141,7 @@ class Voucher(models.Model):
                             'state': vourcher.state,
                             'start_date': start_date_format,
                             'apply_contemp_time': vourcher.apply_contemp_time,
-                            'product_apply_ids': product_ids,
+                            'product_apply_ids': vourcher.product_apply_ids.ids,
                             'is_full_price_applies': vourcher.is_full_price_applies,
                             'using_limit': vourcher.program_voucher_id.using_limit,
                             'program_voucher_id': vourcher.program_voucher_id.id,
