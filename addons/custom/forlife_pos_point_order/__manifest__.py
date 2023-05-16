@@ -45,7 +45,6 @@
             'forlife_pos_point_order/static/src/xml/PointsConsumptionPopup.xml',
             'forlife_pos_point_order/static/src/xml/EditlistPopup.xml',
             'forlife_pos_point_order/static/src/js/Button/PointsConsumptionButton.js',
-            'forlife_pos_point_order/static/src/js/Button/MergerPointsConsumptionButton.js',
             'forlife_pos_point_order/static/src/js/Popup/PointsConsumptionPopup.js',
             'forlife_pos_point_order/static/src/js/OrderDetails/OrderLinesDetails.js',
             'forlife_pos_point_order/static/src/js/models.js',
