@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
 
+    <t t-name="TakePriceProductButton" owl="1">
+        <span class="control-button" id="take-price-button">
+            <span>Lấy giá</span>
+        </span>
+    </t>
+
     <t t-name="ProductChangeButton" owl="1">
         <span class="control-button" id="product-change-button">
             <span>Đổi hàng</span>
