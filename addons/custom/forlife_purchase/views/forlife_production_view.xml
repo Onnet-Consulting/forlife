@@ -132,7 +132,7 @@
                             <page string="Materials" name="materials">
                                 <field name="forlife_bom_material_ids" mode="tree" string="Nguyên vật liệu">
                                     <tree editable="bottom">
-                                        <field name="product_id"/>
+                                        <field name="product_id" required ="1"/>
                                         <field name="description"/>
                                         <field name="uom_id"/>
                                         <field name="production_uom_id"/>
@@ -161,6 +161,7 @@
                                 <field name="forlife_bom_service_cost_ids" mode="tree" string="Chi phí dịch vụ">
                                     <tree editable="bottom">
                                         <field name="product_id"/>
+                                        <field name="description" readonly="1"/>
                                         <field name="rated_level"/>
                                     </tree>
                                 </field>

@@ -74,6 +74,12 @@ class PurchaseOrder(models.Model):
             })
         return res
 
+    @api.onchange("partner_id")
+    def __onchange_partner_id(self):
+        for rec in self:
+            rec.order_line.taxes_id = [(5, 0, 0)]
+
+
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
@@ -84,12 +90,15 @@ class PurchaseOrderLine(models.Model):
                                                             'purchase_order_line_id')
     product_type = fields.Selection(related='product_id.product_type', readonly=True)
     product_id = fields.Many2one('product.product', string='Product', change_default=True, index='btree_not_null')
-
+    taxes_id = fields.Many2many('account.tax', string='Taxes',
+                                domain=['|', ('active', '=', False), ('active', '=', True)])
     @api.constrains('taxes_id')
     def _check_taxes_id(self):
         for line in self:
             if len(line.taxes_id) > 1:
                 raise ValidationError('Only one tax can be applied to a purchase order line.')
+
+
 
     def action_npl(self):
         self.ensure_one()

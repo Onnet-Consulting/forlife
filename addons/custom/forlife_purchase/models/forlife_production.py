@@ -45,6 +45,8 @@ class ForlifeProduction(models.Model):
 
     selected_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')
 
+
+
     @api.depends('forlife_production_finished_product_ids')
     def compute_product_id(self):
         for rec in self:
@@ -90,6 +92,8 @@ class ForlifeProductionFinishedProduct(models.Model):
     forlife_bom_material_ids = fields.One2many('forlife.production.material', 'forlife_production_id', string='Materials')
     forlife_bom_service_cost_ids = fields.One2many('forlife.bom.service.cost', 'forlife_bom_id', string='Service costs')
     forlife_bom_ingredients_ids = fields.One2many('forlife.bom.ingredients', 'forlife_bom_id', string='Ingredients')
+
+
 
     @api.constrains('produce_qty')
     def _constrains_produce_qty(self):
@@ -155,7 +159,7 @@ class ForlifeProductionMaterial(models.Model):
     _name = 'forlife.production.material'
     _description = 'Forlife Production Material'
 
-    forlife_production_id = fields.Many2one('forlife.production.finished.product', ondelete='cascade')
+    forlife_production_id = fields.Many2one('forlife.production.finished.product', ondelete='cascade',required=True)
     product_id = fields.Many2one('product.product', required=True, string='Product')
     description = fields.Char(string='Description', related="product_id.name")
     quantity = fields.Integer()
@@ -165,6 +169,32 @@ class ForlifeProductionMaterial(models.Model):
     rated_level = fields.Float(string='Rated level')
     loss = fields.Float(string='Loss %')
     total = fields.Float(string='Total')
+
+    @api.constrains('total')
+    def ___validate__total__(self):
+        for rec in self:
+            if (rec.total) < 0:
+                raise ValidationError("Tổng nhu cầu không được âm!")
+
+    @api.constrains('loss')
+    def ___validate__loss__(self):
+        for rec in self:
+            if (rec.loss) < 0:
+                raise ValidationError("Hao hụt không được âm!")
+
+    @api.constrains('conversion_coefficient')
+    def ___validate__conversion_coefficient__(self):
+        for rec in self:
+            if (rec.conversion_coefficient) < 0:
+                raise ValidationError("Hệ số quy đổi không được âm!")
+
+    @api.constrains('rated_level')
+    def ___validate__rated_level__(self):
+        for rec in self:
+            if (rec.rated_level) < 0:
+                raise ValidationError("Định mức không được âm!")
+
+
 
 
 class ForlifeProductionServiceCost(models.Model):
@@ -177,6 +207,8 @@ class ForlifeProductionServiceCost(models.Model):
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id')
     prices = fields.Monetary()
+
+
 
 
 class ForlifeBOMServiceCost(models.Model):
@@ -212,29 +244,7 @@ class ForlifeBOMIngredients(models.Model):
     loss = fields.Float(string='Loss %')
     total = fields.Float(string='Total')
 
-    @api.constrains('conversion_coefficient')
-    def constrains_conversion_coefficient(self):
-        for item in self:
-            if item.conversion_coefficient < 0:
-                raise ValidationError("Conversion coefficient must be greater than 0!")
 
-    @api.constrains('rated_level')
-    def constrains_rated_level(self):
-        for item in self:
-            if item.rated_level < 0:
-                raise ValidationError("Rated level must be greater than 0!")
-
-    @api.constrains('loss')
-    def constrains_loss(self):
-        for item in self:
-            if item.loss < 0:
-                raise ValidationError("Loss must be greater than 0!")
-
-    @api.constrains('total')
-    def constrains_total(self):
-        for item in self:
-            if item.total < 0:
-                raise ValidationError("Total must be greater than 0!")
 
     @api.constrains('conversion_coefficient')
     def constrains_conversion_coefficient(self):
@@ -259,3 +269,8 @@ class ForlifeBOMIngredients(models.Model):
         for item in self:
             if item.total < 0:
                 raise ValidationError("Total must be greater than 0!")
+
+
+
+
+
