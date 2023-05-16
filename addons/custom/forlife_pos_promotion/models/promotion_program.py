@@ -143,6 +143,7 @@ class PromotionProgram(models.Model):
     pricelist_item_count = fields.Integer(compute='_compute_pricelist_item_count')
 
     # Rewards
+    progressive_reward_compute = fields.Boolean('Progressive Reward Compute', default=False)
     reward_type = fields.Selection(REWARD_TYPE, string='Reward Type')
 
     reward_ids = fields.One2many('promotion.reward.line', 'program_id', 'Rewards', copy=True, readonly=False, store=True)
