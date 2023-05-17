@@ -12,8 +12,8 @@ class CreateSaleOrderPunish(models.Model):
         order_punish_id = self.env['sale.order'].browse(self._context.get('active_id')).copy()
         order_punish_id.partner_id = self.x_partner_id
         order_punish_id.state = 'draft'
-        for line in order_punish_id.order_line:
-            line._compute_price_unit()
+        # for line in order_punish_id.order_line:
+        #     line._compute_price_unit()
         return {
             'name': _(order_punish_id.name),
             'view_mode': 'form',

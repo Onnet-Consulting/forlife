@@ -62,7 +62,7 @@
                             <field name="start_date" required="1"/>
                             <field name="end_date" required="1"/>
                             <field name="partner_id"/>
-                            <field name="price"/>
+                            <field name="price" readonly="True"/>
                             <field name="price_used" readonly="1"/>
                             <field name="price_residual" readonly="1"/>
                             <field name="sale_id" readonly="1"/>

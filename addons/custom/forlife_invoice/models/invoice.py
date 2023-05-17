@@ -538,6 +538,7 @@ class AccountMoveLine(models.Model):
             else:
                 rec.price_unit = rec.vendor_price
 
+
     @api.depends('quantity', 'price_unit', 'taxes_id')
     def _compute_tax_amount(self):
         for line in self:
