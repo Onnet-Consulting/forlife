@@ -27,8 +27,8 @@ class ProductCombo(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('code', 'New') == 'New':
-            vals['code'] = self.env['ir.sequence'].next_by_code('product.combo') or 'New'
+
+        vals['code'] = self.env['ir.sequence'].next_by_code('product.combo')
 
         result = super(ProductCombo, self).create(vals)
         for pr in result.combo_product_ids:
