@@ -23,6 +23,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/store.xml',
+        'views/pos_expense_label_views.xml',
         'views/account_move_views.xml',
     ],
     'installable': True,
