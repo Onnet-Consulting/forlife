@@ -237,7 +237,10 @@ class StockTransfer(models.Model):
     def _action_in_approve_in_process(self):
         location_id = self.location_id
         location_dest_id = self.location_dest_id
-        stock_picking_type = self.env.ref('stock.picking_type_internal')
+        company_id = self.env.context.get('allowed_company_ids')
+        stock_picking_type = self.env['stock.picking.type'].search([
+            ('code', '=', 'internal'),
+            ('warehouse_id.company_id', 'in', company_id)], limit=1)
         data = []
         diff_transfer = self.env['stock.transfer']
         for line in self.stock_transfer_line:
