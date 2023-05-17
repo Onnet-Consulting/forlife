@@ -45,9 +45,19 @@ class ResCompany(models.Model):
         data = self._vietin_bank_send_request_exchange_rate()
         if data['status']['code'] != '0':
             return
-        # TODO: parse data here
+        response_exchange_rates = data['ForeignExchangeRateInfo']
+        available_currency_names = available_currencies.mapped('name')
+        date_rate = fields.Date.context_today(self)
         rates_dict = {}
-        rates_dict['VND'] = (1.0, fields.Date.context_today(self))
+        for res_rate in response_exchange_rates:
+            currency_name = res_rate['Currency']
+            if currency_name not in available_currency_names:
+                continue
+            foreign_rate = float(res_rate['Sell_Rate'])
+            foreign_rate = 1 / foreign_rate if foreign_rate != 0 else 0
+            rates_dict[currency_name] = (foreign_rate, date_rate)
+        if 'VND' in available_currency_names:
+            rates_dict['VND'] = (1.0, date_rate)
         return rates_dict
 
     def _vietin_bank_send_request_exchange_rate(self):

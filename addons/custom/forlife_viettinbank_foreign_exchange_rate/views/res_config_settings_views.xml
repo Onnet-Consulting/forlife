@@ -18,7 +18,7 @@
                             <field name="vietin_bank_exchange_rate_url"/>
                             <field name="vietin_bank_provider_id"/>
                             <field name="vietin_bank_client_id"/>
-                            <field name="vietin_bank_client_secret"/>
+                            <field name="vietin_bank_client_secret" password="True"/>
                             <field name="vietin_bank_server_private_key" filename="'PRIVATE key''"/>
                         </group>
                     </div>
