@@ -10,6 +10,8 @@ import time
 from Crypto.Hash import SHA256
 from Crypto.Signature import PKCS1_v1_5
 from Crypto.PublicKey import RSA
+from Crypto.Hash import SHA1
+
 
 VN_COMPANY_CODES = [
     '1200'
@@ -85,11 +87,9 @@ class ResCompany(models.Model):
 
     def _vietin_bank_sign_message(self, message):
         company_sudo = self.env.company.sudo()
-        digest = SHA256.new()
-        digest.update(message.encode('utf-8'))
         server_private_key = b64decode(company_sudo.vietin_bank_server_private_key)
         private_key = RSA.importKey(server_private_key)
-        # Sign the message
         signer = PKCS1_v1_5.new(private_key)
-        sig = signer.sign(digest)
+        hash_obj = SHA256.new(message.encode('utf-8'))
+        sig = signer.sign(hash_obj)
         return b64encode(sig).decode('utf-8')
