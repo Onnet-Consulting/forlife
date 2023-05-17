@@ -178,12 +178,12 @@ class StockPicking(models.Model):
         if self.env.context.get('default_other_import'):
             return [{
                 'label': _('Tải xuống mẫu phiếu nhập khác'),
-                'template': '/forlife_stock/static/src/xlsx/mau_nhap_khac.xlsx?download=true'
+                'template': '/forlife_stock/static/src/xlsx/nhap_khac.xlsx?download=true'
             }]
         else:
             return [{
                 'label': _('Tải xuống mẫu phiếu xuất khác'),
-                'template': '/forlife_stock/static/src/xlsx/mau_xuat_khac.xlsx?download=true'
+                'template': '/forlife_stock/static/src/xlsx/xuat_khac.xlsx?download=true'
             }]
 
 
