@@ -137,8 +137,9 @@ class AccountMove(models.Model):
                                 [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
                                  ('state', '=', 'done')])
                             if receiving_warehouse_id:
-                                receiving_warehouse.append(receiving_warehouse_id.id)
-                                rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
+                                for item in receiving_warehouse_id:
+                                    receiving_warehouse.append(item.id)
+                                    rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
                         if rec.is_check_cost_view:
                             data_search = self.env['purchase.order'].search(
                                 [('custom_state', '=', 'approved'),
@@ -227,8 +228,8 @@ class AccountMove(models.Model):
                             receiving_warehouse_id = self.env['stock.picking'].search(
                                 [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
                                  ('state', '=', 'done')])
-                            for item in receiving_warehouse_id:
-                                if receiving_warehouse_id:
+                            if receiving_warehouse_id:
+                                for item in receiving_warehouse_id:
                                     receiving_warehouse.append(item.id)
                                     rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
                         if rec.is_check_cost_view:
