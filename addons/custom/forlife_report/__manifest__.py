@@ -45,6 +45,8 @@
         'wizard/report_num15_views.xml',
         'wizard/report_num16_views.xml',
         'wizard/report_num17_views.xml',
+        'wizard/report_num18_views.xml',
+        'wizard/report_num19_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
