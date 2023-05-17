@@ -33,8 +33,8 @@ class ForlifeOtherInOutRequest(models.Model):
     @api.depends('other_import_export_ids', 'other_import_export_ids.state')
     def compute_qty_match(self):
         for rec in self:
-            rec.quantity_match = all(x == 'done' for x in rec.other_import_export_ids.mapped(
-                'state')) if rec.other_import_export_ids else False
+            rec.quantity_match = all(x == 'done' for x in rec.other_import_export_ids.mapped('state')) \
+                if rec.other_import_export_ids else False
 
     @api.constrains('other_in_out_request_line_ids')
     def _constrains_other_in_out_request_line_ids(self):
@@ -57,6 +57,13 @@ class ForlifeOtherInOutRequest(models.Model):
             record.write({'status': 'wait_approve'})
 
     def action_approve(self):
+        company_id = self.env.context.get('allowed_company_ids')
+        picking_type_in = self.env['stock.picking.type'].search([
+            ('code', '=', 'incoming'),
+            ('warehouse_id.company_id', 'in', company_id)], limit=1)
+        picking_type_out = self.env['stock.picking.type'].search([
+            ('code', '=', 'outgoing'),
+            ('warehouse_id.company_id', 'in', company_id)], limit=1)
         for record in self:
             value = {}
             for item in record.other_in_out_request_line_ids:
@@ -83,7 +90,7 @@ class ForlifeOtherInOutRequest(models.Model):
                              'other_import': True,
                              'location_id': record.location_id.id,
                              'location_dest_id': record.location_dest_id.id,
-                             'picking_type_id': self.env.ref('stock.picking_type_in').id if record.type_other == 'other_import' else self.env.ref('stock.picking_type_out').id,
+                             'picking_type_id': picking_type_in.id if record.type_other == 'other_import' else picking_type_out.id,
                              'company_id': self.env.company.id,
                              'scheduled_date': record.date_planned,
                              'origin': record.name,
