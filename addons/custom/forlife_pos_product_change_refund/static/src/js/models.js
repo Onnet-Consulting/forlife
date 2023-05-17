@@ -54,6 +54,9 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             if(options.money_is_reduced !== 0){
                 orderline.money_is_reduced = options.money_is_reduced;
             }
+            if(options.price !== undefined && options.quantity){
+                orderline.money_is_reduced = (orderline.price - options.price)*options.quantity;
+            }
             if(options.money_point_is_reduced !== 0){
                 orderline.money_point_is_reduced = options.money_point_is_reduced;
             }
