@@ -10,11 +10,17 @@
     'depends': [
         'base',
         'product',
+        'purchase_request',
+        'forlife_stock',
     ],
     'installable': True,
     'auto_install': True,
     'data': [
+        'security/forlife_permission_management_security.xml',
+        # 'security/ir.model.access.csv',
+        'data/menu.xml',
         'views/product_product_views.xml',
         'views/res_users_views.xml',
+        'views/hr_team_views.xml',
     ],
 }
