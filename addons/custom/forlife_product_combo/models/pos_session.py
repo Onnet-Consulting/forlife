@@ -1,19 +1,21 @@
 from odoo import fields, models, api
 from odoo.osv import expression
-
+from datetime import datetime, time
 
 class PosSession(models.Model):
     _inherit = 'pos.session'
 
     def load_pos_data(self):
         loaded_data = super(PosSession, self).load_pos_data()
-        product_combos = self.env['product.combo'].sudo().search([('state', '=', 'in_progress')])
+        now = datetime.now()
+        product_combos = self.env['product.combo'].sudo().search([('state', '=', 'in_progress'), ('to_date', '>=', now)])
         product_combo_lines = []
         for rec in product_combos:
             product_combolines = self.env['product.combo.line'].sudo().search([('combo_id', '=', rec.id), ('state', '=', 'in_progress')])
             combo_ids = [{
                 'product_id': cpl.product_id.id,
                 'product_name': cpl.product_id.name,
+                'sku_code': cpl.product_id.sku_code,
                 'quantity': cpl.max_quantity,
             } for cpl in product_combolines]
 
