@@ -9,9 +9,10 @@ import time
 
 from Crypto.Hash import SHA256
 from Crypto.Signature import PKCS1_v1_5
+from Crypto.Signature import pkcs1_15
+
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA1
-
 
 VN_COMPANY_CODES = [
     '1200'
@@ -40,11 +41,11 @@ class ResCompany(models.Model):
         for record in self:
             record.currency_provider = 'vietin'
 
-    # FIXME: add real API here
     def _parse_vietin_data(self, available_currencies):
         data = self._vietin_bank_send_request_exchange_rate()
         if data['status']['code'] != '0':
             return
+        # TODO: parse data here
         rates_dict = {}
         rates_dict['VND'] = (1.0, fields.Date.context_today(self))
         return rates_dict
@@ -71,14 +72,14 @@ class ResCompany(models.Model):
             'requestId': str(time.time()),
             'providerId': provider_id,
             'merchantId': "",
-            "trans_date": fields.Date.context_today(self).strftime('%d/%m/%Y'),
+            "trans_date": fields.Date.context_today(self).strftime('%m/%d/%Y'),
             "language": 'vi',
             'channel': 'WEB',
             'version': "1.0.1",
             "clientIP": ''
         }
-        signature_keys = ['requestId', 'providerId', 'merchantId',
-                          'trans_date', 'clientIP', 'channel', 'version', 'language']
+
+        signature_keys = ['requestId', 'trans_date']
 
         unsigned_signature = ''.join([request_data[k] for k in signature_keys])
         signed_signature = self._vietin_bank_sign_message(unsigned_signature)
@@ -89,7 +90,7 @@ class ResCompany(models.Model):
         company_sudo = self.env.company.sudo()
         server_private_key = b64decode(company_sudo.vietin_bank_server_private_key)
         private_key = RSA.importKey(server_private_key)
-        signer = PKCS1_v1_5.new(private_key)
+        signer = pkcs1_15.new(private_key)
         hash_obj = SHA256.new(message.encode('utf-8'))
         sig = signer.sign(hash_obj)
         return b64encode(sig).decode('utf-8')
