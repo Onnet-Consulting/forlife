@@ -291,10 +291,11 @@ class StockMove(models.Model):
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
-    # @api.constrains('qty_done', 'picking_id.move_ids_without_package')
-    # def constrains_qty_done(self):
-    #     for rec in self:
-    #         for line in rec.picking_id.move_ids_without_package:
-    #             if rec.qty_done > line.product_uom_qty:
-    #                 raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
+    @api.constrains('qty_done', 'picking_id.move_ids_without_package')
+    def constrains_qty_done(self):
+        for rec in self:
+            for line in rec.picking_id.move_ids_without_package:
+                if rec.product_id == line.product_id:
+                    if rec.qty_done > line.product_uom_qty:
+                        raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 
