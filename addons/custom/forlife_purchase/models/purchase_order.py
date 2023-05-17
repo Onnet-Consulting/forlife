@@ -742,6 +742,7 @@ class PurchaseOrder(models.Model):
                         'ref': ', '.join(refs)[:2000],
                         'invoice_origin': ', '.join(origins),
                         'is_check': True,
+                        'purchase_order_product_id': [(6, 0, [self.id])],
                         # 'invoice_line_ids': request_co,
                         'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                     })
@@ -1008,6 +1009,14 @@ class PurchaseOrderLine(models.Model):
         for item in self:
             if len(item.taxes_id) > 1:
                 raise ValidationError('Bạn chỉ chọn được 1 giá trị thuế')
+
+    @api.constrains('price_subtotal, price_total')
+    def constrains_taxes_id(self):
+        for item in self:
+            if item.price_subtotal <= 0:
+                raise ValidationError('Thành tiền không được nhỏ hoặc bằng 0')
+            if item.price_total <= 0:
+                raise ValidationError('Thành tiền không được nhỏ hoặc bằng 0')
 
     _sql_constraints = [
         (
@@ -1385,7 +1394,7 @@ class StockPicking(models.Model):
                                   'name': rec.name,
                                   'debit': 0,
                                   'credit': total / total_money * rec.expensive_total,
-                                  'is_uncheck': True,
+                                  
                                   },
                     })
                     for pro, len_pro in zip(data_in_line, range(1, len(data_in_line) + 1)):
@@ -1394,14 +1403,14 @@ class StockPicking(models.Model):
                                 'account_id': account_1561, 'name': "Auto",
                                 'debit': 0,
                                 'credit': 0,
-                                'is_uncheck': True,
+                                
                             }
                         })
                     vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
                         'account_id': account_1561, 'name': item.name,
                         'debit': total / total_money * rec.expensive_total,
                         'credit': 0,
-                        'is_uncheck': True,
+                        
 
                     })
                 else:
@@ -1411,7 +1420,7 @@ class StockPicking(models.Model):
                         'account_id': account_1561, 'name': item.name,
                         'debit': total / total_money * rec.expensive_total,
                         'credit': 0,
-                        'is_uncheck': True,
+                        
 
                     })
         for line in vals:
@@ -1436,7 +1445,7 @@ class StockPicking(models.Model):
                     'account_id': account_1561, 'name': r.name,
                     'debit': credit_333 + credit_332,
                     'credit': 0,
-                    'is_uncheck': True,
+                    
 
                 })
             invoice_line_3333 = (
@@ -1446,7 +1455,7 @@ class StockPicking(models.Model):
                  'name': r.name,
                  'debit': 0,
                  'credit': credit_333,
-                 'is_uncheck': True,
+                 
 
                  })
             invoice_line_3332 = (
@@ -1456,7 +1465,7 @@ class StockPicking(models.Model):
                  'name': r.name,
                  'debit': 0,
                  'credit': credit_332,
-                 'is_uncheck': True,
+                 
 
                  })
             lines = [invoice_line_1561, invoice_line_3333, invoice_line_3332]
@@ -1490,7 +1499,7 @@ class StockPicking(models.Model):
                         'name': material_line.product_id.name,
                         'debit': 0,
                         'credit': credit,
-                        'is_uncheck': True,
+                        
                     })
                     cost_labor_internal_costs.append(credit_npl)
                     debit_cost += credit
@@ -1522,7 +1531,7 @@ class StockPicking(models.Model):
                         'name': material_line.product_id.name,
                         'debit': 0,
                         'credit': credit,
-                        'is_uncheck': True,
+                        
 
                     })
                     invoice_line_npls.append(credit_npl)
@@ -1533,7 +1542,7 @@ class StockPicking(models.Model):
                     'account_id': account_1561, 'name': item.product_id.name,
                     'debit': debit_cost,
                     'credit': 0,
-                    'is_uncheck': True,
+                    
                 })
                 cost_labor_internal_costs.append(debit_cost_line)
             if debit > 0:
@@ -1541,7 +1550,7 @@ class StockPicking(models.Model):
                     'account_id': account_1561, 'name': item.product_id.name,
                     'debit': debit,
                     'credit': 0,
-                    'is_uncheck': True,
+                    
 
                 })
                 invoice_line_npls.append(debit_npl)
