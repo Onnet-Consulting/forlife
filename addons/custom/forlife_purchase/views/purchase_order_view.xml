@@ -225,7 +225,6 @@
                         </control>
                         <field name="is_change_vendor" invisible="1"/>
                         <field name="is_red_color" invisible="1"/>
-                        <field name="is_passersby" invisible="1"/>
                         <field name="display_type" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
                         <field name="state" invisible="1"/>
@@ -257,7 +256,7 @@
                         <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
                         <field name="vendor_price"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), ('is_passersby', '=', False), ('parent.purchase_type', '=', 'asset')]}"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), ('parent.is_passersby', '=', False)]}"
                                force_save="1"/>
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"

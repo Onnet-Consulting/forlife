@@ -86,8 +86,8 @@
                 </xpath>
                 <xpath expr="//div[@name='journal_div']" position="after">
                     <field name="partner_domain" invisible="1"/>
-                    <!--                    <field name="partner_domain_2" invisible="1"/>-->
-                    <!--                    <field name="stock_pinking_domain_by_purchase_order_product_id" invisible="1"/>-->
+                    <field name="partner_domain_2" invisible="1"/>
+<!--                    <field name="stock_pinking_domain_by_purchase_order_product_id" invisible="1"/>-->
                     <field name="journal_id" attrs="{'readonly': [('state', '=', 'posted')]}"/>
                     <field name="purchase_order_product_id"
                            domain="partner_domain"
@@ -96,7 +96,7 @@
                            force_save="1"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('move_type', '=', 'out_invoice')]}"/>
                     <field name="receiving_warehouse_id"
-                           domain=""
+                           domain="partner_domain_2"
                            widget="many2many_tags"
                            options="{'no_open': False}"
                            force_save="1"
@@ -120,7 +120,7 @@
                             <field name="is_check_is_passersby" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
                                    context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
-                                   domain="[('product_type', '=', parent.purchase_type),('id', 'in', parent.product_product_mm), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                                   domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
                             <field name="description" related="product_id.name" string="Mô tả"/>
                             <field name="request_code"/>
                             <field name="type"/>
@@ -156,10 +156,6 @@
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                             <field name="account_analytic_id"/>
                             <field name="cost_type" force_save="1" invisible="1"/>
-                            <field name="cost_line_id" force_save="1" invisible="1"/>
-                            <field name="is_uncheck" force_save="1" invisible="1"/>
-                            <!--                            <field name="debit_tnk" force_save="1"/>-->
-                            <!--                            <field name="credit_tnk" force_save="1"/>-->
                         </tree>
                     </field>
                 </xpath>
