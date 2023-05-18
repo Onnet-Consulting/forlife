@@ -127,7 +127,6 @@ class PosSession(models.Model):
                     'voucher_price',
                     'qty_min_required',
                     'reward_quantity',
-                    'progressive_reward_compute',
                     'discount_product_ids',
                     'reward_product_ids',
                     'disc_amount',

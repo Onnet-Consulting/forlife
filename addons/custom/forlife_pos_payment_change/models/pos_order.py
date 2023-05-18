@@ -184,7 +184,7 @@ class PosOrder(models.Model):
         data = self._cr.dictfetchall()
         for rec in order_lines[0]:
             for r in data:
-                if rec['count'] > 0 and rec['product_id'] == r['product_id'] and (r['quantity'] - r['reserved_quantity']) < rec['count']:
+                if rec['product_id'] == r['product_id'] and (r['quantity'] - r['reserved_quantity']) < rec['count']:
                     product_not_availabel.append(rec['product_name'])
         if len(product_not_availabel) > 0:
             message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {stock_location.name} kho {stock_location.warehouse_id.name}"

@@ -26,7 +26,6 @@ class SaleOrder(models.Model):
     x_process_punish = fields.Boolean(string='Đơn phạt nhà gia công')
     x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
     x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
-    x_origin = fields.Many2one('sale.order', 'Tài liệu gốc')
 
     def get_rule_domain(self):
         domain = ['&', ('location_dest_id', '=', self.partner_shipping_id.property_stock_customer.id),

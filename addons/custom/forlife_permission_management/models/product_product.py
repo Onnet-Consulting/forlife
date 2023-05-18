@@ -10,7 +10,7 @@ class ProductTemplate(models.Model):
         user_id = self.env['res.users'].browse(self._uid)
         if not user_id:
             return
-        return user_id.brand_default_id
+        return user_id.brand_default_id if user_id.brand_default_id else False
 
     brand_id = fields.Many2one('res.brand', string='Brand', default=_get_brand_default)
 

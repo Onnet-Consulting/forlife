@@ -21,7 +21,6 @@
     'application': True,
     'data': [
         'wizard/create_sale_order_punish.xml',
-        'wizard/stock_picking_return.xml',
         # 'views/account_move.xml',
         'views/product_pricelist.xml',
         'views/sale_order.xml',
