@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <function name="write" model="res.company">
+        <function name="search" model="res.company">
+            <value eval="[]"/>
+        </function>
+        <value eval="{'country_id': ref('base.vn'), 'currency_interval_unit': 'daily'}"/>
+    </function>
+</odoo>
