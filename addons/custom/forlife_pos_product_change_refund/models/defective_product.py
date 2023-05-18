@@ -40,7 +40,7 @@ class ProductDefective(models.Model):
         self._send_mail_approve(self.id)
 
     def action_approve(self):
-        if self.quantity_defective_approved > self.quantity_inventory_store:
+        if self.quantity_defective_approved > self.quantity_inventory_store - self.quantity_can_be_sale:
             raise ValidationError(_('Tồn kho không đáp ứng'))
         self.state = 'approved'
 
