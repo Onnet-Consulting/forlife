@@ -13,7 +13,7 @@ class PurchaseRequest(models.Model):
 
     name = fields.Char(string="Request name", required=True, default='New', copy=False)
     # wo_code = fields.Char(string="Work Order Code")
-    # user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
+    user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
     employee_id = fields.Many2one('hr.employee', string='User Request', required=True)
     department_id = fields.Many2one('hr.department', string='Department', required=True)
     date_planned = fields.Datetime(string='Expected Arrival', required=True,  widget='datetime', options={'format': 'DD-MM-YYYY HH:mm:ss'})
@@ -133,7 +133,7 @@ class PurchaseRequest(models.Model):
 
     def create_purchase_orders(self):
         self.is_check_button_orders_smart_button = True
-        order_lines_ids = self.filtered(lambda r: r.state != 'close').order_lines.filtered(lambda r: r.is_close == False).ids
+        order_lines_ids = self.filtered(lambda r: r.state != 'close' and r.type_po).order_lines.filtered(lambda r: r.is_close == False).ids
         order_lines_groups = self.env['purchase.request.line'].read_group(domain=[('id', 'in', order_lines_ids)],
                                     fields=['product_id', 'vendor_code', 'product_type'],
                                     groupby=['vendor_code', 'product_type'], lazy=False)

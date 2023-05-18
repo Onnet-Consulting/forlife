@@ -17,3 +17,5 @@ from . import report_num14
 from . import report_num15
 from . import report_num16
 from . import report_num17
+from . import report_num18
+from . import report_num19

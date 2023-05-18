@@ -11,6 +11,7 @@
                     <field name="other_receivable_account_id"/>
                     <field name="other_payable_account_id"/>
                     <field name="default_office_cash_account_id"/>
+                    <field name="receipt_expense_journal_id"/>
                 </xpath>
             </field>
             

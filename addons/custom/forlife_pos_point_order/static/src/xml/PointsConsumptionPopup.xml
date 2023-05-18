@@ -20,8 +20,6 @@
                                 <t t-foreach="props.product_valid_apply_all" t-as="line" t-key="line.id">
                                     <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
                                         <tr style="width:100%; border:1px solid black;">
-                                            <t t-esc="line.id"/>
-                                            <t t-esc="line.is_new_line_point"/>
                                             <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
                                             <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
                                             <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.price)"/></td>

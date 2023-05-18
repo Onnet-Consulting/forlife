@@ -10,6 +10,7 @@ odoo.define('forlife_pos_popup_cash.popupcustomize', function (require) {
             this.bank_statement = loadedData['account.bank.statement.line'];
             this.pos_customizes = loadedData['pos.customize'];
             this.pos_branch = loadedData['pos.branch'];
+            this.pos_expense_labels = loadedData['pos.expense.label'];
         }
     }
 Registries.Model.extend(PosGlobalState, PosGlobalStateCustomize);

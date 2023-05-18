@@ -237,7 +237,10 @@ class StockTransfer(models.Model):
     def _action_in_approve_in_process(self):
         location_id = self.location_id
         location_dest_id = self.location_dest_id
-        stock_picking_type = self.env.ref('stock.picking_type_internal')
+        company_id = self.env.context.get('allowed_company_ids')
+        stock_picking_type = self.env['stock.picking.type'].search([
+            ('code', '=', 'internal'),
+            ('warehouse_id.company_id', 'in', company_id)], limit=1)
         data = []
         diff_transfer = self.env['stock.transfer']
         for line in self.stock_transfer_line:
@@ -350,7 +353,7 @@ class StockTransfer(models.Model):
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             warehouse = self.env['stock.location'].browse(vals.get('location_id')).code
-            vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.sequence') + (warehouse if warehouse else '' + str(datetime.now().year)) or 'PXB'
+            vals['name'] = (self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'PXB') + str(datetime.now().year)
         return super(StockTransfer, self).create(vals)
 
     def unlink(self):

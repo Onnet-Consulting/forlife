@@ -231,7 +231,7 @@ class PosOrder(models.Model):
                     if event_valid:
                         domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
                         partner_condition = self.env['res.partner'].search(domain)
-                        if rec.partner_id.id in partner_condition.ids:
+                        if rec.partner_id.id in partner_condition.ids or not partner_condition:
                             rec.point_event_order = int(money_value / event_valid.value_conversion) * event_valid.point_addition  # b
                         else:
                             rec.point_event_order = 0
@@ -247,7 +247,7 @@ class PosOrder(models.Model):
                     if event_valid:
                         domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
                         partner_condition = self.env['res.partner'].search(domain)
-                        if rec.partner_id.id in partner_condition.ids:
+                        if rec.partner_id.id in partner_condition.ids or not partner_condition:
                             rec.point_event_order = int(money_value / event_valid.value_conversion) * event_valid.point_addition  # b
                         else:
                             rec.point_event_order = 0

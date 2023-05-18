@@ -79,7 +79,7 @@ class StockPicking(models.Model):
                 res.update({'picking_type_id': picking_type_id.id})
 
         return res
-
+    ware_check = fields.Boolean('',default=False)
     transfer_id = fields.Many2one('stock.transfer')
     reason_type_id = fields.Many2one('forlife.reason.type')
     other_export = fields.Boolean(default=False)
@@ -178,12 +178,12 @@ class StockPicking(models.Model):
         if self.env.context.get('default_other_import'):
             return [{
                 'label': _('Tải xuống mẫu phiếu nhập khác'),
-                'template': '/forlife_stock/static/src/xlsx/mau_nhap_khac.xlsx?download=true'
+                'template': '/forlife_stock/static/src/xlsx/nhap_khac.xlsx?download=true'
             }]
         else:
             return [{
                 'label': _('Tải xuống mẫu phiếu xuất khác'),
-                'template': '/forlife_stock/static/src/xlsx/mau_xuat_khac.xlsx?download=true'
+                'template': '/forlife_stock/static/src/xlsx/xuat_khac.xlsx?download=true'
             }]
 
 
@@ -286,4 +286,16 @@ class StockMove(models.Model):
                 r.reason_type_id = r.picking_id.reason_type_id.id
                 r.name = r.product_id.name
                 r.amount_total = r.product_id.standard_price if not r.reason_id.is_price_unit else 0
+
+
+class StockMoveLine(models.Model):
+    _inherit = 'stock.move.line'
+
+    @api.constrains('qty_done', 'picking_id.move_ids_without_package')
+    def constrains_qty_done(self):
+        for rec in self:
+            for line in rec.picking_id.move_ids_without_package:
+                if rec.product_id == line.product_id:
+                    if rec.qty_done > line.product_uom_qty:
+                        raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 
