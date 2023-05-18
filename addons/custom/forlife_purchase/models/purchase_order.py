@@ -743,7 +743,6 @@ class PurchaseOrder(models.Model):
                         'invoice_origin': ', '.join(origins),
                         'is_check': True,
                         'purchase_order_product_id': [(6, 0, [self.id])],
-                        # 'invoice_line_ids': request_co,
                         'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                     })
                     new_invoice_vals_list.append(ref_invoice_vals)
