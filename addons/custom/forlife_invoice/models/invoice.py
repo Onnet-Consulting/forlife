@@ -300,41 +300,41 @@ class AccountMove(models.Model):
                             rec.purchase_type = 'product'
                             rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
 
-    def write(self, vals):
-        for rec in self:
-            if rec.is_check_cost_view:
-                for line in rec.line_ids:
-                    duplicate = rec.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
-                    if not duplicate:
-                        continue
-                    line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
-                                })
-                    for dup in duplicate:
-                        dup.write({'product_id': False,
-                                   'display_type': 'product'
-                                   })
-                    if line.product_id.id and line.display_type == 'product' and line.name:
-                        item.write({'account_id': line.product_id.categ_id.property_account_expense_categ_id.id,
-                                    'name': line.product_id.categ_id.property_account_expense_categ_id.name
-                                    })
-                    else:
-                        pass
-                for item in rec.invoice_line_ids:
-                    if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
-                        item.unlink()
-            else:
-                for item in rec.invoice_line_ids:
-                    if item.product_id.id and item.display_type == 'product' and item.name:
-                        item.write({'account_id': item.product_id.categ_id.property_stock_account_input_categ_id.id,
-                                    'name': item.product_id.categ_id.property_stock_account_input_categ_id.name
-                                    })
-                    if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
-                        item.unlink()
-                for rate in rec.exchange_rate_line:
-                    if not rate.product_id.id:
-                        rate.unlink()
-        res = super(AccountMove, self).write(vals)
-        return res
+    # def write(self, vals):
+    #     for rec in self:
+    #         if rec.is_check_cost_view:
+    #             for line in rec.line_ids:
+    #                 duplicate = rec.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
+    #                 if not duplicate:
+    #                     continue
+    #                 line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
+    #                             })
+    #                 for dup in duplicate:
+    #                     dup.write({'product_id': False,
+    #                                'display_type': 'product'
+    #                                })
+    #                 if line.product_id.id and line.display_type == 'product' and line.name:
+    #                     item.write({'account_id': line.product_id.categ_id.property_account_expense_categ_id.id,
+    #                                 'name': line.product_id.categ_id.property_account_expense_categ_id.name
+    #                                 })
+    #                 else:
+    #                     pass
+    #             for item in rec.invoice_line_ids:
+    #                 if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
+    #                     item.unlink()
+    #         else:
+    #             for item in rec.invoice_line_ids:
+    #                 if item.product_id.id and item.display_type == 'product' and item.name:
+    #                     item.write({'account_id': item.product_id.categ_id.property_stock_account_input_categ_id.id,
+    #                                 'name': item.product_id.categ_id.property_stock_account_input_categ_id.name
+    #                                 })
+    #                 if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
+    #                     item.unlink()
+    #             for rate in rec.exchange_rate_line:
+    #                 if not rate.product_id.id:
+    #                     rate.unlink()
+    #     res = super(AccountMove, self).write(vals)
+    #     return res
 
     # @api.onchange('purchase_type')
     # def onchange_purchase_type(self):
