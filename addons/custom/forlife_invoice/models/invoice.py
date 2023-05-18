@@ -137,8 +137,9 @@ class AccountMove(models.Model):
                                 [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
                                  ('state', '=', 'done')])
                             if receiving_warehouse_id:
-                                receiving_warehouse.append(receiving_warehouse_id.id)
-                                rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
+                                for item in receiving_warehouse_id:
+                                    receiving_warehouse.append(item.id)
+                                    rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
                         if rec.is_check_cost_view:
                             data_search = self.env['purchase.order'].search(
                                 [('custom_state', '=', 'approved'),
@@ -227,8 +228,8 @@ class AccountMove(models.Model):
                             receiving_warehouse_id = self.env['stock.picking'].search(
                                 [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
                                  ('state', '=', 'done')])
-                            for item in receiving_warehouse_id:
-                                if receiving_warehouse_id:
+                            if receiving_warehouse_id:
+                                for item in receiving_warehouse_id:
                                     receiving_warehouse.append(item.id)
                                     rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
                         if rec.is_check_cost_view:
@@ -583,6 +584,25 @@ class AccountMove(models.Model):
     #                                                                          and x.vnd_amount == line.price_subtotal)
 
 
+    @api.onchange('invoice_line_ids.quantity', 'invoice_line_ids', 'is_check_cost_view')
+    def onchange_quantity_compare_po_relationship(self):
+        data_po_relationship = self.env['purchase.order'].search([('partner_id', '=', self.partner_id.id),
+                                                                  ('name', '=', self.reference),
+                                                                  ('currency_id', '=', self.currency_id.id)],
+                                                                 limit=1)
+        data_inv_relationship = self.search([('partner_id', '=', data_po_relationship.partner_id.id),
+                                             ('reference', '=', data_po_relationship.name),
+                                             ('currency_id', '=', data_po_relationship.currency_id.id)])
+        if data_po_relationship.order_line.product_qty == sum(data_inv_relationship.invoice_line_ids.mapped('quantity')):
+            pass
+        else:
+            if not self.is_check_cost_view:
+                raise ValidationError(
+                    _('Bạn không thể nhập số lượng của các hóa đơn liên quan tới %s nhỏ hoặc lớn hơn số lượng của đơn mua hàng') % data_po_relationship.name)
+            else:
+                pass
+
+
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
@@ -646,6 +666,8 @@ class AccountMoveLine(models.Model):
     # field check vendor_price khi ncc vãng lại:
     is_check_is_passersby = fields.Boolean(default=False)
 
+    # Field check phân biệt lần nhập kho khi tạo hóa đơn theo từng lần hoàn thành số lượng
+
     @api.model_create_multi
     def create(self, list_vals):
         for line in list_vals:
@@ -694,6 +716,7 @@ class AccountMoveLine(models.Model):
                         pass
                 else:
                     pass
+
 
     @api.depends('quantity', 'price_unit', 'taxes_id')
     def _compute_tax_amount(self):

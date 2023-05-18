@@ -79,7 +79,7 @@ class StockPicking(models.Model):
                 res.update({'picking_type_id': picking_type_id.id})
 
         return res
-
+    ware_check = fields.Boolean('',default=False)
     transfer_id = fields.Many2one('stock.transfer')
     reason_type_id = fields.Many2one('forlife.reason.type')
     other_export = fields.Boolean(default=False)
