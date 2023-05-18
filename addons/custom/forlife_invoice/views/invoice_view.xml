@@ -138,7 +138,7 @@
                             <field name="price_unit" force_save="1" required="1"/>
                             <field name="warehouse"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                            <field name="discount_percent" attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': [('readonly_discount_percent', '=', True)]}"/>
+<!--                            <field name="discount_percent" attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': [('readonly_discount_percent', '=', True)]}"/>-->
                             <field name="discount" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('readonly_discount', '=', True)]}"/>
                             <field name="taxes_id" optional="show"/>
                             <field name="tax_amount"/>
@@ -150,7 +150,7 @@
                             <field name="account_analytic_id"/>
                             <field name="cost_type" force_save="1" invisible="1"/>
                             <field name="cost_line_id" force_save="1" invisible="1"/>
-                            <field name="is_uncheck" force_save="1" invisible="1"/>
+<!--                            <field name="is_uncheck" force_save="1" invisible="1"/>-->
 <!--                            <field name="debit_tnk" force_save="1"/>-->
 <!--                            <field name="credit_tnk" force_save="1"/>-->
                         </tree>
@@ -192,7 +192,7 @@
                                 <field name="name" readonly="1"/>
 <!--                                <field name="usd_amount" readonly="1" invisible="1"/>-->
                                 <field name="vnd_amount" force_save="1" readonly="1"/>
-                                <field name="qty_product" force_save="1" readonly="1" string="Số lượng đặt mua"/>
+<!--                                <field name="qty_product" force_save="1" readonly="1" string="Số lượng đặt mua"/>-->
                                 <field name="import_tax"/>
                                 <field name="tax_amount" readonly="1" force_save="1"/>
                                 <field name="special_consumption_tax"/>
@@ -240,9 +240,9 @@
                                 <field name="vendor"/>
                                 <field name="code_tax"/>
                                 <field name="street_ven"/>
-                                <field name="company_id"/>
-                                <field name="invoice_reference"/>
-                                <field name="invoice_description"/>
+<!--                                <field name="company_id"/>-->
+<!--                                <field name="invoice_reference"/>-->
+<!--                                <field name="invoice_description"/>-->
                             </tree>
                         </field>
                     </page>

@@ -412,7 +412,7 @@ msgstr "Hạn xử lý"
 #: model:ir.model.fields.selection,name:forlife_purchase.selection__purchase_order__custom_state__draft
 #: model:ir.model.fields.selection,name:forlife_purchase.selection__forlife_production__state__draft
 msgid "Draft"
-msgstr "Dự thảo"
+msgstr "Chưa nhập"
 
 #. module: forlife_invoice
 #: model:ir.model.fields,field_description:forlife_invoice.field_account_move_line__promotions
@@ -605,7 +605,16 @@ msgstr "Đã có hóa đơn"
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_material__product_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_service_cost__product_id
 msgid "Product"
-msgstr "Mã sản phẩm"
+msgstr "Mã nguyên liệu"
+
+#. module: forlife_purchase
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_finished_product__product_id
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_material__product_id
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_service_cost__product_id
+msgid "remaining_qty"
+msgstr "Còn lại"
+
+
 
 #. module: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_service_cost__product_id
@@ -854,7 +863,7 @@ msgstr "Danh mục sản phẩm"
 #. module: forlife_purchase
 #: model:ir.model.fields.selection,name:forlife_purchase.selection__forlife_production__state__open
 msgid "Open"
-msgstr "Chờ"
+msgstr "Dang dở"
 
 #. module: forlife_purchase
 #: model_terms:ir.ui.view,arch_db:forlife_purchase.forlife_production_form
@@ -889,7 +898,7 @@ msgstr "Chi phí"
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_service_cost__description
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__description
 msgid "Description"
-msgstr "Mô tả"
+msgstr "Tên nguyên liệu"
 
 #. modules: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__description
@@ -963,7 +972,7 @@ msgstr "Tạo hóa đơn"
 #. modules: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__forlife_production_id
 msgid "Forlife Production"
-msgstr "Mã lệnh sản xuất"
+msgstr "Lệnh sản xuất"
 
 #. modules: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom__product_id
@@ -988,7 +997,8 @@ msgstr "Đơn vị tính"
 #. modules: forlife_purchase
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_material__uom_id
 #: model:ir.model.fields,field_description:forlife_purchase.field_forlife_bom_ingredients__uom_id
-msgid "Unit of Measure"
+#: model:ir.model.fields,field_description:forlife_purchase.field_forlife_production_material__uom_id
+msgid "Unit"
 msgstr "Đơn vị tính lưu kho"
 
 #. modules: forlife_purchase

@@ -38,12 +38,36 @@ class ForlifeProduction(models.Model):
     state = fields.Selection([
         ('draft', 'Draft'),
         ('open', 'Open'),
-        ('confirm', 'Confirm'),
-        ('approved', 'Approved'),
         ('done', 'Done'),
     ], default='draft')
 
     selected_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')
+
+    @api.onchange('forlife_production_finished_product_ids')
+    def _onchange_model_b_ids(self):
+        for line in self.forlife_production_finished_product_ids:
+            if not line.product_id:
+                line.unlink()
+
+    @api.model
+    def create(self, values):
+        record = super(ForlifeProduction, self).create(values)
+        if not record.forlife_production_finished_product_ids.filtered(lambda line: line.product_id):
+            raise ValidationError("Không được để trống trường sản phẩm!")
+        return record
+
+    def write(self, values):
+        res = super(ForlifeProduction, self).write(values)
+        print('production',values)
+        # if 'forlife_bom_material_ids' in values:
+        #     for line in values.get('forlife_bom_material_ids'):
+        #         if not line[2].get('product_id'):
+        #             raise ValidationError("Name is required for Model B!")
+        if 'forlife_production_finished_product_ids' in values and not self.forlife_production_finished_product_ids.filtered(
+                lambda line: line.product_id):
+            raise ValidationError("Không được để trống trường sản phẩm")
+        return res
+
 
 
 
@@ -94,6 +118,30 @@ class ForlifeProductionFinishedProduct(models.Model):
     forlife_bom_ingredients_ids = fields.One2many('forlife.bom.ingredients', 'forlife_bom_id', string='Ingredients')
 
 
+    @api.constrains('forlife_bom_material_ids.product_id','ischeck')
+    def _onchange_model_b_ids(self):
+        print (len(self.forlife_bom_material_ids))
+        # for line in self.forlife_bom_material_ids:
+        #     if not line.product_id:
+        #         line.unlink()
+
+    @api.model
+    def create(self, values):
+        record = super(ForlifeProductionFinishedProduct, self).create(values)
+        if 'forlife_bom_material_ids' not in values and not record.forlife_bom_material_ids.filtered(lambda line: line.product_id):
+            raise ValidationError("Không được để trống trường sản phẩm!")
+        return record
+
+    def write(self, values):
+        res = super(ForlifeProductionFinishedProduct, self).write(values)
+        # if 'forlife_bom_material_ids' in values:
+        #     for line in values.get('forlife_bom_material_ids'):
+        #         if not line[2].get('product_id'):
+        #             raise ValidationError("Name is required for Model B!")
+        if 'forlife_bom_material_ids' in values and not self.forlife_bom_material_ids.filtered(lambda line: line.product_id):
+
+            raise ValidationError("Không được để trống trường sản phẩm")
+        return res
 
     @api.constrains('produce_qty')
     def _constrains_produce_qty(self):
@@ -160,7 +208,7 @@ class ForlifeProductionMaterial(models.Model):
     _description = 'Forlife Production Material'
 
     forlife_production_id = fields.Many2one('forlife.production.finished.product', ondelete='cascade',required=True)
-    product_id = fields.Many2one('product.product', required=True, string='Product')
+    product_id = fields.Many2one('product.product',required=True, string='Product')
     description = fields.Char(string='Description', related="product_id.name")
     quantity = fields.Integer()
     uom_id = fields.Many2one(related="product_id.uom_id", string='Unit')
@@ -169,6 +217,7 @@ class ForlifeProductionMaterial(models.Model):
     rated_level = fields.Float(string='Rated level')
     loss = fields.Float(string='Loss %')
     total = fields.Float(string='Total')
+
 
     @api.constrains('total')
     def ___validate__total__(self):
