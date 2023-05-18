@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.rule" id="purchase_request_read">
+            <field name="name">purchase_request_read</field>
+            <field name="model_id" ref="purchase_request.model_purchase_request"/>
+            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
+                False), ('department_id','=', user.get_department())]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="purchase_request_write_create">
+            <field name="name">purchase_request_write_create</field>
+            <field name="model_id" ref="purchase_request.model_purchase_request"/>
+            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
+                False), ('department_id','=', user.get_department())]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="purchase_request_unlink">
+            <field name="name">purchase_request_unlink</field>
+            <field name="model_id" ref="purchase_request.model_purchase_request"/>
+            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
+                False), ('department_id','=', user.get_department())]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record model="ir.rule" id="forlife_other_in_out_request_read">
+            <field name="name">forlife_other_in_out_request_read</field>
+            <field name="model_id" ref="forlife_stock.model_forlife_other_in_out_request"/>
+            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
+                False), ('department_id','=', user.get_department())]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="forlife_other_in_out_request_write_create">
+            <field name="name">forlife_other_in_out_request_write_create</field>
+            <field name="model_id" ref="forlife_stock.model_forlife_other_in_out_request"/>
+            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
+                False), ('department_id','=', user.get_department())]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="forlife_other_in_out_request_unlink">
+            <field name="name">forlife_other_in_out_request_unlink</field>
+            <field name="model_id" ref="forlife_stock.model_forlife_other_in_out_request"/>
+            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
+                False), ('department_id','=', user.get_department())]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record model="ir.rule" id="stock_transfer_read">
+            <field name="name">stock_transfer_read</field>
+            <field name="model_id" ref="stock.model_stock_transfer"/>
+            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
+                False), ('department_id','=', user.get_department())]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="stock_transfer_write_create">
+            <field name="name">stock_transfer_write_create</field>
+            <field name="model_id" ref="stock.model_stock_transfer"/>
+            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
+                False), ('department_id','=', user.get_department())]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="stock_transfer_unlink">
+            <field name="name">stock_transfer_unlink</field>
+            <field name="model_id" ref="stock.model_stock_transfer"/>
+            <field name="domain_force">['|', '|', ('stock_id','=', user.get_department()), ('department_id','=',
+                False), ('department_id','=', user.get_department())]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+    </data>
+</odoo>

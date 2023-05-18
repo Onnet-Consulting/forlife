@@ -15,3 +15,9 @@ class ResUsers(models.Model):
     team_ids = fields.Many2many('hr.team', string='Team')
     team_default_id = fields.Many2one('hr.team', string='Team Default')
 
+    @api.model
+    def get_department(self):
+        department_ids = self.department_ids.mapped('id') if self.department_ids else []
+        return department_ids
+
+
