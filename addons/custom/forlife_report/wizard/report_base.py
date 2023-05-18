@@ -45,7 +45,7 @@ class ReportBase(models.AbstractModel):
     def get_available_report(self):
         return [r for r in AVAILABLE_REPORT.values()]
 
-    def get_data(self):
+    def get_data(self, allowed_company):
         report_data = AVAILABLE_REPORT.get(self._name, {})
         return {
             'reportTitle': report_data.get('name', ''),

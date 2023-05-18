@@ -44,7 +44,7 @@ odoo.define('forlife_report.report_base', function (require) {
             const reportPromise = this._rpc({
                 model: this.report_model,
                 method: 'get_data',
-                args: [this.report_id],
+                args: [this.report_id, this.odoo_context.allowed_company_ids || []],
                 context: this.odoo_context
             }, {
                 // default timeout is 3 seconds
