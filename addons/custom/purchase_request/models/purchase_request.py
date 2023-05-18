@@ -13,7 +13,7 @@ class PurchaseRequest(models.Model):
 
     name = fields.Char(string="Request name", required=True, default='New', copy=False)
     # wo_code = fields.Char(string="Work Order Code")
-    user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
+    # user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
     employee_id = fields.Many2one('hr.employee', string='User Request', required=True)
     department_id = fields.Many2one('hr.department', string='Department', required=True)
     date_planned = fields.Datetime(string='Expected Arrival', required=True,  widget='datetime', options={'format': 'DD-MM-YYYY HH:mm:ss'})

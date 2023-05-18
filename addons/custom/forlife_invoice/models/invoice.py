@@ -137,9 +137,8 @@ class AccountMove(models.Model):
                                 [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
                                  ('state', '=', 'done')])
                             if receiving_warehouse_id:
-                                for item in receiving_warehouse_id:
-                                    receiving_warehouse.append(item.id)
-                                    rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
+                                receiving_warehouse.append(receiving_warehouse_id.id)
+                                rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
                         if rec.is_check_cost_view:
                             data_search = self.env['purchase.order'].search(
                                 [('custom_state', '=', 'approved'),
@@ -228,8 +227,8 @@ class AccountMove(models.Model):
                             receiving_warehouse_id = self.env['stock.picking'].search(
                                 [('origin', '=', po.name), ('location_dest_id', '=', po.location_id.id),
                                  ('state', '=', 'done')])
-                            if receiving_warehouse_id:
-                                for item in receiving_warehouse_id:
+                            for item in receiving_warehouse_id:
+                                if receiving_warehouse_id:
                                     receiving_warehouse.append(item.id)
                                     rec.receiving_warehouse_id = [(6, 0, receiving_warehouse)]
                         if rec.is_check_cost_view:
@@ -300,41 +299,41 @@ class AccountMove(models.Model):
                             rec.purchase_type = 'product'
                             rec.product_product_mm = [(6, 0, invoice_cost_2.ids)]
 
-    def write(self, vals):
-        for rec in self:
-            if rec.is_check_cost_view:
-                for line in rec.line_ids:
-                    duplicate = rec.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
-                    if not duplicate:
-                        continue
-                    line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
-                                })
-                    for dup in duplicate:
-                        dup.write({'product_id': False,
-                                   'display_type': 'product'
-                                   })
-                    if line.product_id.id and line.display_type == 'product' and line.name:
-                        item.write({'account_id': line.product_id.categ_id.property_account_expense_categ_id.id,
-                                    'name': line.product_id.categ_id.property_account_expense_categ_id.name
-                                    })
-                    else:
-                        pass
-                for item in rec.invoice_line_ids:
-                    if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
-                        item.unlink()
-            else:
-                for item in rec.invoice_line_ids:
-                    if item.product_id.id and item.display_type == 'product' and item.name:
-                        item.write({'account_id': item.product_id.categ_id.property_stock_account_input_categ_id.id,
-                                    'name': item.product_id.categ_id.property_stock_account_input_categ_id.name
-                                    })
-                    if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
-                        item.unlink()
-                for rate in rec.exchange_rate_line:
-                    if not rate.product_id.id:
-                        rate.unlink()
-        res = super(AccountMove, self).write(vals)
-        return res
+    # def write(self, vals):
+        # for rec in self:
+        #     if rec.is_check_cost_view:
+        #         for line in rec.line_ids:
+        #             duplicate = rec.line_ids.filtered(lambda x: x.account_id.id == line.account_id.id and x.product_id.id == line.product_id.id and x.id != line.id)
+        #             if not duplicate:
+        #                 continue
+        #             line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit'))
+        #                         })
+        #             for dup in duplicate:
+        #                 dup.write({'product_id': False,
+        #                            'display_type': 'product'
+        #                            })
+        #             if line.product_id.id and line.display_type == 'product' and line.name:
+        #                 item.write({'account_id': line.product_id.categ_id.property_account_expense_categ_id.id,
+        #                             'name': line.product_id.categ_id.property_account_expense_categ_id.name
+        #                             })
+        #             else:
+        #                 pass
+        #         for item in rec.invoice_line_ids:
+        #             if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
+        #                 item.unlink()
+        #     else:
+        #         for item in rec.invoice_line_ids:
+        #             if item.product_id.id and item.display_type == 'product' and item.name:
+        #                 item.write({'account_id': item.product_id.categ_id.property_stock_account_input_categ_id.id,
+        #                             'name': item.product_id.categ_id.property_stock_account_input_categ_id.name
+        #                             })
+        #             if not item.product_id.id and item.display_type == 'product' and item.is_uncheck == False:
+        #                 item.unlink()
+        #         for rate in rec.exchange_rate_line:
+        #             if not rate.product_id.id:
+        #                 rate.unlink()
+        # res = super(AccountMove, self).write(vals)
+        # return res
 
     # @api.onchange('purchase_type')
     # def onchange_purchase_type(self):
@@ -584,25 +583,6 @@ class AccountMove(models.Model):
     #                                                                          and x.vnd_amount == line.price_subtotal)
 
 
-    @api.onchange('invoice_line_ids.quantity', 'invoice_line_ids', 'is_check_cost_view')
-    def onchange_quantity_compare_po_relationship(self):
-        data_po_relationship = self.env['purchase.order'].search([('partner_id', '=', self.partner_id.id),
-                                                                  ('name', '=', self.reference),
-                                                                  ('currency_id', '=', self.currency_id.id)],
-                                                                 limit=1)
-        data_inv_relationship = self.search([('partner_id', '=', data_po_relationship.partner_id.id),
-                                             ('reference', '=', data_po_relationship.name),
-                                             ('currency_id', '=', data_po_relationship.currency_id.id)])
-        if data_po_relationship.order_line.product_qty == sum(data_inv_relationship.invoice_line_ids.mapped('quantity')):
-            pass
-        else:
-            if not self.is_check_cost_view:
-                raise ValidationError(
-                    _('Bạn không thể nhập số lượng của các hóa đơn liên quan tới %s nhỏ hoặc lớn hơn số lượng của đơn mua hàng') % data_po_relationship.name)
-            else:
-                pass
-
-
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
@@ -666,8 +646,6 @@ class AccountMoveLine(models.Model):
     # field check vendor_price khi ncc vãng lại:
     is_check_is_passersby = fields.Boolean(default=False)
 
-    # Field check phân biệt lần nhập kho khi tạo hóa đơn theo từng lần hoàn thành số lượng
-
     @api.model_create_multi
     def create(self, list_vals):
         for line in list_vals:
@@ -716,7 +694,6 @@ class AccountMoveLine(models.Model):
                         pass
                 else:
                     pass
-
 
     @api.depends('quantity', 'price_unit', 'taxes_id')
     def _compute_tax_amount(self):
