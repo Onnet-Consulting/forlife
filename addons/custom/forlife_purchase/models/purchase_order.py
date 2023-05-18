@@ -1315,6 +1315,9 @@ class StockPicking(models.Model):
             po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],
                                                    limit=1)
             if po:
+                _context = {
+                    'pk_no_input_warehouse': False,
+                }
                 invoice_line = []
                 invoice_line_cost_in_tax = []
                 if po.type_po_cost == 'tax':
