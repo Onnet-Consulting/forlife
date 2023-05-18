@@ -70,7 +70,7 @@ AVAILABLE_REPORT = {
         'tag': 'report_num12_action',
     },
     'report.num13': {
-        'module': 'Kho',
+        'module': 'Mua hàng',
         'name': 'Tình hình thực hiện đơn hàng mua',
         'reportTemplate': 'ReportNum13Template',
     },
@@ -93,5 +93,17 @@ AVAILABLE_REPORT = {
         'module': 'Bán hàng',
         'name': 'Danh sách hóa đơn bán - đổi - trả',
         'reportTemplate': 'ReportNum17Template',
+    },
+    'report.num18': {
+        'module': 'Mua hàng',
+        'name': 'Báo cáo chi tiết PR',
+        'reportTemplate': 'ReportNum18Template',
+        'reportPager': True,
+    },
+    'report.num19': {
+        'module': 'Kho',
+        'name': 'Báo cáo tình hình thực hiện yêu cầu chuyển kho',
+        'reportTemplate': 'ReportNum19Template',
+        'reportPager': True,
     },
 }
