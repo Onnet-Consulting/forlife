@@ -29,7 +29,6 @@ class ProductCombo(models.Model):
     def create(self, vals):
 
         vals['code'] = self.env['ir.sequence'].next_by_code('product.combo')
-
         result = super(ProductCombo, self).create(vals)
         for pr in result.combo_product_ids:
             pr.product_id.write({
