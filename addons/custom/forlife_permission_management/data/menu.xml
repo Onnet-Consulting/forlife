@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
+        <record model="ir.ui.menu" id="stock.menu_stock_root">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="sale.sale_menu_root">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
         <record model="ir.ui.menu" id="forlife_stock.stock_transfer">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
@@ -53,6 +63,11 @@
         <record model="ir.ui.menu" id="forlife_stock_report.stock_incoming_outgoing_report_menu">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_point_root">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="point_of_sale.menu_pos_dashboard">
