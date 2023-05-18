@@ -24,7 +24,7 @@ class ProductDefective(models.Model):
     @api.depends('price', 'percent_reduce', 'money_reduce')
     def _compute_total_reduce(self):
         for rec in self:
-            rec.total_reduce = rec.price * rec.percent_reduce + rec.money_reduce
+            rec.total_reduce = (rec.price * rec.percent_reduce)/100 + rec.money_reduce
 
     def name_get(self):
         return [(rec.id, '%s' % rec.product_id.name) for rec in self]
