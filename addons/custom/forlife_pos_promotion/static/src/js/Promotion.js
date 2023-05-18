@@ -819,9 +819,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let result = [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
         var valid_product_ids = codeProgram.valid_product_ids;
 
-        if (codeProgram.reward_type == "code_amount") {
-            max_count = 1;
-        }
+//        if (codeProgram.reward_type == "code_amount") {
+//            max_count = 1;
+//        }
         // todo: consider to sort by 'lst_price' ASC for type code_buy_x_get_cheapest
         to_check_order_lines.sort((a,b) => (a.product.lst_price < b.product.lst_price) ? 1 : ((b.product.lst_price < a.product.lst_price) ? -1 : 0))
         var oneCombo = [];
@@ -1428,6 +1428,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
         let result = [];
         for (let program of cardPrograms) {
+            let max_reward_quantity = program.reward_quantity;
+            let required_order_amount_min = program.order_amount_min;
             if (!this._programIsApplicableAutomatically(program)) {
                 continue
             };
@@ -1445,6 +1447,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (program.order_amount_min >0 && program.order_amount_min > amountCheck) {
                 continue;
             };
+            // Tính lũy tuyến cho số lượng phần thưởng
+            if (program.progressive_reward_compute && program.order_amount_min) {
+                let floorNumber = Math.floor(amountCheck/program.order_amount_min);
+                max_reward_quantity = floorNumber * program.reward_quantity;
+                required_order_amount_min = floorNumber * required_order_amount_min;
+            }
             let to_check_products = program.valid_product_ids.size > 0;
             let qty_taken = 0;
             for (const line of orderLines) {
@@ -1470,6 +1478,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             result.push({
                 id: program.id,
                 program: program,
+                max_reward_quantity: max_reward_quantity,
+                required_order_amount_min: required_order_amount_min,
                 voucher_program_id,
                 to_reward_lines,
                 to_discount_lines,
