@@ -295,6 +295,7 @@ class StockMoveLine(models.Model):
     def constrains_qty_done(self):
         for rec in self:
             for line in rec.picking_id.move_ids_without_package:
-                if rec.qty_done > line.product_uom_qty:
-                    raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
+                if rec.product_id == line.product_id:
+                    if rec.qty_done > line.product_uom_qty:
+                        raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 
