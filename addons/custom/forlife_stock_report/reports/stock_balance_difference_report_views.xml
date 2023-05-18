@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="stock_balance_difference_report_form" model="ir.ui.view">
+        <field name="name">stock.balance.difference.report.form</field>
+        <field name="model">stock.balance.difference.report</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1 class="text-center">
+                        Stock Balance Difference Report
+                    </h1>
+                    <separator/>
+                    <group>
+                        <group>
+                            <field name="period"/>
+                            <field name="account_id"/>
+                        </group>
+                    </group>
+                    <div>
+                        <button name="generate_details" string="Generate" type="object" class="btn-primary text-center"/>
+                        <button name="create_account_move" string="Create Account Move" type="object" class="btn-primary text-center"/>
+                    </div>
+
+                    <notebook>
+                        <page id="detail" string="Detail">
+                            <field name="line_ids" readonly="1">
+                                <tree limit="1000">
+                                    <field name="product_id" invisible="1"/>
+                                    <field name="account_id" invisible="1"/>
+                                    <field name="product_code"/>
+                                    <field name="product_name"/>
+                                    <field name="account_code"/>
+                                    <field name="debit" sum="Debit Total"/>
+                                    <field name="credit" sum="Credit Total"/>
+                                    <field name="difference" sum="Difference Total"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page id="account_move" string="Account Move">
+                            <field name="account_move_ids" readonly="1">
+                                <tree limit="1000">
+                                    <field name="product_id" invisible="1"/>
+                                    <field name="debit_account_id" invisible="1"/>
+                                    <field name="credit_account_id" invisible="1"/>
+                                    <field name="product_code"/>
+                                    <field name="product_name"/>
+                                    <field name="debit_account_code"/>
+                                    <field name="credit_account_code"/>
+                                    <field name="amount_total" sum="Amount Total"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="stock_balance_difference_report_action" model="ir.actions.act_window">
+        <field name="name">Stock Balance Difference Report</field>
+        <field name="res_model">stock.balance.difference.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('forlife_stock_report.stock_balance_difference_report_form')})]"/>
+    </record>
+
+    <menuitem
+        id="stock_balance_difference_report_menu"
+        name="Stock Balance Difference Report"
+        parent="stock.menu_warehouse_report"
+        action="forlife_stock_report.stock_balance_difference_report_action"
+        sequence="314"
+        groups="base.group_user"
+    />
+
+</odoo>
