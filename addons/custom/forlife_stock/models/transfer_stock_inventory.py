@@ -85,6 +85,13 @@ class TransferStockInventory(models.Model):
             rec.write({'state': 'wait_confirm'})
 
     def action_approve(self):
+        company_id = self.env.context.get('allowed_company_ids')
+        picking_type_in = self.env['stock.picking.type'].search([
+            ('code', '=', 'incoming'),
+            ('warehouse_id.company_id', 'in', company_id)], limit=1)
+        picking_type_out = self.env['stock.picking.type'].search([
+            ('code', '=', 'outgoing'),
+            ('warehouse_id.company_id', 'in', company_id)], limit=1)
         for rec in self:
             data_ex_other = {}
             if not self.env.ref('forlife_stock.export_inventory_balance').valuation_in_account and not self.env.ref(
