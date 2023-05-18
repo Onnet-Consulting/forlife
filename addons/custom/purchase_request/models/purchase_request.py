@@ -142,6 +142,7 @@ class PurchaseRequest(models.Model):
             if rec.state != 'approved':
                 raise ValidationError('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt!')
         for group in order_lines_groups:
+            keys = {}
             domain = group['__domain']
             vendor_code = group['vendor_code']
             product_type = group['product_type']
@@ -158,6 +159,9 @@ class PurchaseRequest(models.Model):
                 #         date_planned_po = rec.date_planned
                 #     else:
                 #         date_planned_po = line.date_planned
+                keys.update({
+                    line.request_id.name: line.request_id.name
+                })
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
@@ -181,7 +185,10 @@ class PurchaseRequest(models.Model):
                     'name': line.product_id.name,
                 }))
             if po_line_data:
-                source_document = ', '.join(self.mapped('name'))
+                name_pr = []
+                for key in keys:
+                    name_pr.append(keys[key])
+                source_document = ', '.join(name_pr)
                 po_data = {
                     'is_inter_company': False,
                     'type_po_cost': rec.type_po,
