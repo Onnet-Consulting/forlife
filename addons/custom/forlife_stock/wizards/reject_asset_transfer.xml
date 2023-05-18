@@ -4,12 +4,12 @@
             <field name="name">reject.asset.transfer.form</field>
             <field name="model">reject.asset.transfer</field>
             <field name="arch" type="xml">
-                <form string="Reason">
+                <form string="Lý do">
                     <group class="oe_title">
                         <field name="reject_reason" />
                     </group>
                     <footer>
-                        <button name="action_reject" string="Submit" type="object" class="btn-primary"/>
+                        <button name="action_reject" string="Đồng ý" type="object" class="btn-primary"/>
                         <button string="Cancel" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
@@ -17,7 +17,7 @@
         </record>
 
         <record id="reject_asset_transfer_wizard" model="ir.actions.act_window">
-            <field name="name">Reject Asset Transfer</field>
+            <field name="name">Từ chối điều chuyển TSCĐ</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">reject.asset.transfer</field>
             <field name="view_mode">form</field>

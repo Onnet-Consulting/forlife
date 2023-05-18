@@ -74,7 +74,7 @@ class HrAssetTransferLine(models.Model):
     _name = 'hr.asset.transfer.line'
     _description = 'Hr Asset Transfer Line'
 
-    asset_code = fields.Many2one('assets.assets', string='Asset Code')
+    asset_code = fields.Many2one('assets.assets', string='Tài sản')
     employee_from_id = fields.Many2one('hr.employee', string="Employee From")
     employee_to_id = fields.Many2one('hr.employee', string="Employee To")
     account_analytic_from_id = fields.Many2one('account.analytic.account', string="Cost Center From")
@@ -98,13 +98,15 @@ class HrAssetTransferLine(models.Model):
         for rec in self:
             if rec.employee_from_id.id != rec.asset_code.employee.id:
                 raise ValidationError(_('Wrong value for employee. Please check again!'))
-            if not rec.employee_to_id:
-                raise ValidationError(_('Employee to is empty. Please check again!'))
+            # if not rec.employee_to_id:
+            #     raise ValidationError(_('Employee to is empty. Please check again!'))
             if rec.account_analytic_from_id.id != rec.asset_code.dept_code.id:
                 raise ValidationError(_('Wrong value for account analytic. Please check again!'))
-            if not rec.account_analytic_to_id:
-                raise ValidationError(_('Account analytic to is empty. Please check again!'))
+            # if not rec.account_analytic_to_id:
+            #     raise ValidationError(_('Account analytic to is empty. Please check again!'))
             if rec.asset_location_from_id.id != rec.asset_code.location.id:
                 raise ValidationError(_('Wrong value for asset location. Please check again!'))
-            if not rec.asset_location_to_id:
-                raise ValidationError(_('Asset location to is empty. Please check again!'))
+            # if not rec.asset_location_to_id:
+            #     raise ValidationError(_('Asset location to is empty. Please check again!'))
+            if not rec.check_required:
+                raise ValidationError(_('Chưa nhập 1 trong 3 trường!'))
