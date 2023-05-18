@@ -179,11 +179,6 @@ class PurchaseRequest(models.Model):
                     'product_id': line.product_id.id,
                     'name': line.product_id.name,
                 }))
-                po_cost_line_data.append((0, 0, {
-                    'purchase_order_id': line.id,
-                    'product_id': line.product_id.id,
-                    'name': line.product_id.name,
-                }))
             if po_line_data:
                 name_pr = []
                 for key in keys:
@@ -200,7 +195,7 @@ class PurchaseRequest(models.Model):
                     'purchase_request_ids': [(6, 0, purchase_request_lines.mapped('request_id').ids)],
                     'order_line': po_line_data,
                     'exchange_rate_line': po_ex_line_data,
-                    'cost_line': po_cost_line_data,
+                    # 'cost_line': po_cost_line_data,
                     'occasion_code_ids': [(6, 0, self.mapped('occasion_code_id').ids)],
                     'account_analytic_ids': [(6, 0, self.mapped('account_analytic_id').ids)],
                     'source_document': source_document,
