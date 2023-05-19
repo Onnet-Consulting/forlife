@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum18Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum18MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum18MainTemplate">
+        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                <t t-foreach="widget.data" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.nha_cung_cap"/></td>
+                        <td><t t-esc="line.ghi_chu"/></td>
+                        <td><t t-esc="line.san_pham"/></td>
+                        <td><t t-esc="line.mo_ta"/></td>
+                        <td><t t-esc="line.loai_hh"/></td>
+                        <td><t t-esc="line.so_phieu_yc"/></td>
+                        <td><t t-esc="line.so_dong_tren_phieu_yc"/></td>
+                        <td><t t-esc="line.mo_ta_ts"/></td>
+                        <td><t t-esc="format_decimal(line.sl_dat_mua, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.sl_da_dat, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.sl_con_lai, 0)"/></td>
+                        <td><t t-esc="line.don_vi_mua"/></td>
+                        <td><t t-esc="format_decimal(line.ty_le_quy_doi, 2)"/></td>
+                        <td><t t-esc="format_decimal(line.sl_ton_kho_quy_doi, 2)"/></td>
+                        <td><t t-esc="line.don_vi_tinh"/></td>
+                        <td><t t-esc="line.tt_chi_phi"/></td>
+                        <td><t t-esc="line.lenh_sx"/></td>
+                        <td><t t-esc="line.ma_vu_viec"/></td>
+                        <td><t t-esc="line.ngay_du_kien"/></td>
+                        <td><t t-esc="line.trang_thai"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>

@@ -2,7 +2,7 @@
 <odoo>
     <t t-name="ReportHeader">
         <div class="header">
-            <div class="btn_back fa fa-2x fa-chevron-left" title="Back" aria-label="Back"/>
+            <div class="btn_back fa fa-2x fa-arrow-left" title="Back" aria-label="Back"/>
             <div class="title">
                 <t t-esc="widget.reportTitle"/>
             </div>

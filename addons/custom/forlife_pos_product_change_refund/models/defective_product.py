@@ -24,7 +24,7 @@ class ProductDefective(models.Model):
     @api.depends('price', 'percent_reduce', 'money_reduce')
     def _compute_total_reduce(self):
         for rec in self:
-            rec.total_reduce = rec.price * rec.percent_reduce + rec.money_reduce
+            rec.total_reduce = (rec.price * rec.percent_reduce)/100 + rec.money_reduce
 
     def name_get(self):
         return [(rec.id, '%s' % rec.product_id.name) for rec in self]
@@ -40,8 +40,9 @@ class ProductDefective(models.Model):
         self._send_mail_approve(self.id)
 
     def action_approve(self):
-        if self.quantity_defective_approved > self.quantity_inventory_store:
+        if self.quantity_defective_approved > self.quantity_inventory_store - self.quantity_can_be_sale:
             raise ValidationError(_('Tồn kho không đáp ứng'))
+        self.quantity_can_be_sale = self.quantity_defective_approved
         self.state = 'approved'
 
     def action_refuse(self):
