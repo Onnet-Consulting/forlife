@@ -21,3 +21,4 @@ from . import stock_location
 from . import stock_quant
 from . import pos_order
 from . import sale_order
+from . import program_voucher
