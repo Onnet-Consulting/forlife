@@ -10,19 +10,21 @@ class StockBalanceDifferenceReport(models.TransientModel):
     _description = 'Stock Balance Difference Report'
 
     name = fields.Char(compute='_compute_name', store=True)
-    period = fields.Date(string='Period', required=True)
-    account_id = fields.Many2one(comodel_name='account.account', string='Account', required=True)
+    period_start = fields.Date(string='Period Start', required=True)
+    period_end = fields.Date(string='Period End', required=True)
+    account_id = fields.Many2one(comodel_name='account.account', string='Account', required=True, domain=lambda r: [('company_id', '=',  r.env.company.id)])
     line_ids = fields.One2many(comodel_name='stock.balance.difference.report.line', inverse_name='report_id')
     account_move_ids = fields.One2many(comodel_name='stock.balance.difference.report.account.move', inverse_name='report_id')
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
 
-    @api.depends('period')
+    @api.depends('period_start', 'period_end')
     def _compute_name(self):
         for rec in self:
-            rec.name = _('Stock Balance Difference Report %s') % rec.period.strftime('%m/%Y')
+            rec.name = _('Stock Balance Difference Report %s - %s') % (rec.period_start.strftime('%d/%m/%Y'), rec.period_end.strftime('%d/%m/%Y'))
 
     def create_valuation(self):
         return {
-            valuation.product_id.id: valuation.id
+            valuation.product_id.id: valuation.ids
             for valuation in self.env['stock.valuation.layer'].create({
                 'value': line.difference,
                 'unit_cost': 0,
@@ -56,11 +58,44 @@ class StockBalanceDifferenceReport(models.TransientModel):
                 }),
             ],
             'move_type': 'entry',
-            'stock_valuation_layer_ids': [(6, 0, [valuation[line.product_id]])]
+            'stock_valuation_layer_ids': [(6, 0, valuation[line.product_id])]
         } for line in self.line_ids])
         moves._post()
 
+    def _generate_details(self, period_start, period_end):
+        self._cr.execute(
+            query='''
+                SELECT 
+                    pp.id product_id, 
+                    aa.id account_id,
+                    max(pp.default_code) product_code, 
+                    (ARRAY_AGG(pt.name))[1]::json->%s product_name, 
+                    max(aa.code) account_code, 
+                    sum(aml.debit) debit, 
+                    sum(aml.credit) credit, 
+                    sum(aml.debit) - sum(aml.credit) difference
+                FROM account_move_line aml 
+                JOIN product_product pp on pp.id = aml.product_id 
+                JOIN product_template pt on pt.id = pp.product_tmpl_id
+                JOIN ir_property ip on ip.res_id = 'product.category,' || pt.categ_id AND ip."name" = 'property_stock_valuation_account_id' AND ip.company_id = %s
+                JOIN account_account aa on 'account.account,' || aa.id = ip.value_reference
+                WHERE aml.company_id = %s AND aml.account_id = %s AND aml.product_id IS NOT NULL AND aml.date BETWEEN %s AND %s
+                GROUP BY pp.id, aa.id
+                ORDER BY pp.id
+            ''',
+            params=(
+                self._context.get('lang') or 'en_US',
+                self.env.user.company_id.id,
+                self.env.user.company_id.id,
+                self.account_id.id,
+                period_start,
+                period_end
+            )
+        )
+        return self._cr.dictfetchall()
+
     def create_account_move(self):
+        self.generate_details()
         self._create_account_move()
         self.account_move_ids = [(6, 0, self.env['stock.balance.difference.report.account.move'].create([{
             'product_id': line.product_id,
@@ -73,46 +108,29 @@ class StockBalanceDifferenceReport(models.TransientModel):
             'amount_total': line.difference,
         } for line in self.line_ids]).ids)]
 
-    def _generate_details(self, period_start, period_end):
-        self._cr.execute('''
-            SELECT 
-                pp.id product_id, 
-                max(pp.default_code) product_code, 
-                (ARRAY_AGG(pt.name))[1]::json->%s product_name, 
-                max(aa.id) account_id, 
-                max(aa.code) account_code, 
-                sum(aml.debit) debit, 
-                sum(aml.credit) credit, 
-                sum(aml.debit) - sum(aml.credit) difference
-            FROM account_move_line aml 
-            JOIN product_product pp on pp.id = aml.product_id 
-            JOIN product_template pt on pt.id = pp.product_tmpl_id
-            JOIN ir_property ip on ip.res_id = 'product.category,' || pt.categ_id and ip."name" = 'property_stock_valuation_account_id'
-            JOIN account_account aa on 'account.account,' ||aa.id = ip.value_reference
-            WHERE aml.product_id IS NOT NULL AND aml.date BETWEEN %s AND %s
-            GROUP BY pp.id 
-            ORDER BY pp.id
-        ''', (self._context.get('lang') or 'en_US', period_start, period_end))
-        return self._cr.dictfetchall()
-
     def generate_details(self):
         current_tz = pytz.timezone(self._context.get('tz'))
         period_start = convert_to_utc_datetime(
             current_tz=current_tz,
-            str_datetime=datetime(self.period.year, self.period.month, 1).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+            str_datetime=datetime(
+                self.period_start.year,
+                self.period_start.month,
+                self.period_start.day
+            ).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         )
         period_end = convert_to_utc_datetime(
             current_tz=current_tz,
             str_datetime=datetime(
-                self.period.year,
-                self.period.month,
-                calendar.monthrange(self.period.year, self.period.month)[1], 23, 59, 59
+                self.period_end.year,
+                self.period_end.month,
+                self.period_end.day,
+                23, 59, 59
             ).strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         )
         results = self._generate_details(period_start, period_end)
         self.line_ids = None
         self.account_move_ids = None
-        self.line_ids = [(0, 0, line) for line in results if line['difference'] != 0]
+        self.line_ids = [(0, 0, line) for line in results if int(line['difference']) != 0]
 
 
 class StockBalanceDifferenceReportLine(models.TransientModel):
