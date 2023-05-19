@@ -7,15 +7,15 @@
             <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="uom_product_tmpl"/>
                     <field name="amount_conversion"/>
                 </xpath>
+                <field name="partner_id" position="after">
+<!--                    <field name="vendor_code"/>-->
+                    <field name="uom_product_tmpl" invisible="1"/>
+                    <field name="uom_product" invisible="1"/>
+                </field>
                 <xpath expr="//field[@name='date_start']" position="attributes">
-                    <attribute name="required">1</attribute>
-                </xpath>
-                <xpath expr="//field[@name='product_uom']" position="before">
-                    <label for="product_uom" string="Đơn vị mua"/>
-                </xpath>
-                <xpath expr="//field[@name='product_uom']" position="attributes">
                     <attribute name="required">1</attribute>
                 </xpath>
                 <xpath expr="//field[@name='date_end']" position="attributes">
