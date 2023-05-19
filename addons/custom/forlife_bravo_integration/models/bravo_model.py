@@ -355,7 +355,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
                 identity_values.extend([dict(zip(identity_keys, row)) for row in data])
         return self.bravo_separate_records_by_identity_values(identity_values)
 
-    def bravo_get_update_value_for_existing_record(self):
+    def bravo_get_update_value_for_existing_record(self, **kwargs):
         self.ensure_one()
         bravo_fields = self.bravo_fields_get()
         normal_bravo_fields = list(filter(lambda bfield: not bfield.identity, bravo_fields))
@@ -373,7 +373,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
 
     def bravo_get_update_sql_for_existing_single_record(self, **kwargs):
         self.ensure_one()
-        updated_value = self.bravo_get_update_value_for_existing_record()
+        updated_value = self.bravo_get_update_value_for_existing_record(**kwargs)
         default_update_value = self.bravo_get_default_insert_value()
         identity_key_value = self.bravo_get_identity_key_values_single_record()
         bravo_table = self.bravo_get_table(**kwargs)
