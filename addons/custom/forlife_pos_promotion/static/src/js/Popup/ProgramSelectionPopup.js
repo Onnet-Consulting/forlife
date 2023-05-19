@@ -58,6 +58,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                     title: 'Lỗi hiển thị',
                     body: 'Không có sản phẩm nào được áp dụng!'
                 });
+                return false;
             };
             let program = this.env.pos.get_program_by_id(program_id);
             let qty_per_combo = program.comboFormula.reduce((total, line) => total + line.quantity, 0) || 1;

@@ -120,7 +120,7 @@ class PurchaseOrder(models.Model):
                         [('product_id', '=', item.product_id.id), ('partner_id', '=', self.partner_id.id),
                          ('date_start', '<', date_item),
                          ('date_end', '>', date_item),
-                         ('currency_id', '=',  self.currency_id.id)
+                         ('currency_id', '=', self.currency_id.id)
                          ])
                     if supplier_info:
                         item.purchase_uom = supplier_info[-1].product_uom
@@ -716,9 +716,10 @@ class PurchaseOrder(models.Model):
                                 _('Không thể tạo hóa đơn khi không còn phiếu nhập kho liên quan!'))
                     invoice_vals_list.append(invoice_vals)
 
-                if not invoice_vals_list:
-                    raise UserError(
-                        _('There is no invoiceable line. If a product has a control policy based on received quantity, please make sure that a quantity has been received.'))
+                    else:
+                        raise UserError(
+                            _('Không thể tạo hóa đơn khi không còn phiếu nhập kho liên quan!'))
+                invoice_vals_list.append(invoice_vals)
 
                 # 2) group by (company_id, partner_id, currency_id) for batch creation
                 new_invoice_vals_list = []
@@ -918,7 +919,6 @@ class PurchaseOrderLine(models.Model):
     product_uom = fields.Many2one('uom.uom', related='product_id.uom_id', store=True, required=False)
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
     is_change_vendor = fields.Integer()
-
 
     # @api.model
     # def create(self, vals):
@@ -1418,7 +1418,6 @@ class StockPicking(models.Model):
                         'debit': total / total_money * rec.expensive_total,
                         'credit': 0,
 
-
                     })
                 else:
                     vals[key_acc]["credit"] = vals[key_acc]["credit"] + (
@@ -1427,7 +1426,6 @@ class StockPicking(models.Model):
                         'account_id': account_1561, 'name': item.name,
                         'debit': total / total_money * rec.expensive_total,
                         'credit': 0,
-
 
                     })
         for line in vals:
@@ -1557,8 +1555,6 @@ class StockPicking(models.Model):
                     'account_id': account_1561, 'name': item.product_id.name,
                     'debit': debit,
                     'credit': 0,
-                    
-
                 })
                 invoice_line_npls.append(debit_npl)
         if cost_labor_internal_costs:
