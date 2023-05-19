@@ -103,6 +103,25 @@ class PurchaseOrder(models.Model):
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
+    def action_view_stock(self):
+        for item in self:
+            context = {'create': True, 'delete': True, 'edit': True}
+            return {
+                'name': _('Phiếu xuất khác'),
+                'view_mode': 'tree,form',
+                'res_model': 'stock.picking',
+                'type': 'ir.actions.act_window',
+                'target': 'current',
+                'domain': [('origin', '=', item.name), ('other_export', '=', True)],
+                'context': context
+            }
+
+    count_stock = fields.Integer(compute="compute_count_stock", copy=False)
+
+    def compute_count_stock(self):
+        for item in self:
+            item.count_stock = self.env['stock.picking'].search_count([('origin', '=', item.name), ('other_export', '=', True)])
+
     @api.onchange('partner_id', 'currency_id')
     def onchange_partner_id_warning(self):
         res = super().onchange_partner_id_warning()
@@ -413,6 +432,10 @@ class PurchaseOrder(models.Model):
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
         partner_so = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
+        company_id = self.env.context.get('allowed_company_ids')
+        picking_type_in = self.env['stock.picking.type'].search([
+            ('code', '=', 'incoming'),
+            ('warehouse_id.company_id', 'in', company_id)], limit=1)
         if company_partner:
             data_all_picking = {}
             order_line_so = []
@@ -428,7 +451,7 @@ class PurchaseOrder(models.Model):
                      'quantity_done': item.get('product_quantity')})
                 picking_master = {
                     'state': 'done',
-                    'picking_type_id': self.env.ref('stock.picking_type_in').id,
+                    'picking_type_id': picking_type_in.id,
                     'partner_id': company_partner.id,
                     'location_id': self.env.ref('forlife_stock.export_production_order').id,
                     'location_dest_id': data.get('location_id'),
@@ -1257,7 +1280,7 @@ class PurchaseOrderLine(models.Model):
             if rec.exchange_quantity < 0:
                 raise ValidationError(_('The number of exchanges is not filled with negative numbers !!'))
             elif rec.purchase_quantity < 0:
-                raise ValidationError(_('Purchase quantity cannot be negative !!'))
+                raise ValidationError(_('Số lượng đặt mua lớn hơn số lượng đã đặt'))
 
     def _prepare_stock_move_vals(self, picking, price_unit, product_uom_qty, product_uom):
         self.ensure_one()
@@ -1511,15 +1534,16 @@ class StockPicking(models.Model):
                     if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
                         raise ValidationError(
                             'Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
+                    finished_qty = (material_line.product_plan_qty / record.move_ids_without_package.previous_qty) * record.move_ids_without_package.quantity_done
                     list_line_xk.append((0, 0, {
-                        'product_id': material_line.product_id.id,
+                        'product_id': record.move_ids_without_package.product_id.id,
                         'product_uom': material_line.uom.id,
                         'price_unit': material_line.price_unit,
                         'location_id': record.location_dest_id.id,
                         'location_dest_id': self.env.ref('forlife_stock.export_production_order').id,
-                        'product_uom_qty': material_line.product_plan_qty,
-                        'quantity_done': material_line.product_plan_qty,
-                        'amount_total': material_line.price_unit * material_line.product_plan_qty,
+                        'product_uom_qty': finished_qty,
+                        'quantity_done': finished_qty,
+                        'amount_total': material_line.price_unit * finished_qty,
                         'reason_type_id': self.env.ref('forlife_stock.reason_type_6').id,
                         'reason_id': self.env.ref('forlife_stock.export_production_order').id,
                     }))
@@ -1559,6 +1583,10 @@ class StockPicking(models.Model):
         return True
 
     def create_xk_picking(self, po, record, list_line_xk):
+        company_id = self.env.context.get('allowed_company_ids')
+        picking_type_out = self.env['stock.picking.type'].search([
+            ('code', '=', 'outgoing'),
+            ('warehouse_id.company_id', 'in', company_id)], limit=1)
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
@@ -1569,7 +1597,7 @@ class StockPicking(models.Model):
             'origin': po.name,
             'other_export': True,
             'state': 'assigned',
-            'picking_type_id': self.env.ref('stock.picking_type_out').id,
+            'picking_type_id': picking_type_out.id,
             'move_ids_without_package': list_line_xk
         }
         result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(

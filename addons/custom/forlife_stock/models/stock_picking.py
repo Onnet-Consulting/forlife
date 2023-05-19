@@ -280,7 +280,7 @@ class StockMove(models.Model):
                         if r.product_id == rec.product_id and r.amount_total == rec.amount_total:
                             rec.write({'previous_qty': r.previous_qty})
             else:
-                if rec.picking_id.state not in ('assigned', 'done'):
+                if rec.picking_id.state not in 'done':
                     rec.previous_qty = rec.product_uom_qty
 
     @api.onchange('product_id')

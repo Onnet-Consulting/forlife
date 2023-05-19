@@ -25,7 +25,8 @@
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="qty_done"
                                    decoration-warning="reserved_uom_qty &lt; qty_done"
-                                   decoration-success="reserved_uom_qty == qty_done" readonly="0" force_save="1"/>
+                                   decoration-success="reserved_uom_qty == qty_done" force_save="1"
+                                   attrs="{'readonly': [('parent.state', '=', 'done')]}"/>
                             <field name="product_uom_id"/>
                             <field name="product_uom_category_id" invisible="1"/>
                             <field name="company_id" invisible="1"/>
