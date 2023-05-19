@@ -51,7 +51,7 @@ class PosOrder(models.Model):
     # Update brand in POS Order
     @api.model
     def _process_order(self, order, draft, existing_order):
-        if order['data']['is_refund_product']:
+        if order['data'].get('is_refund_product', False):
             for l in order['data']['lines']:
                 if l[2]['price_subtotal_incl_refund']:
                     l[2]['price_subtotal_incl'] = l[2]['price_subtotal_incl_refund']
