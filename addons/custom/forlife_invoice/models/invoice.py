@@ -19,7 +19,7 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     invoice_description = fields.Char(string="Invoce Description")
-    currency_id = fields.Many2one('res.currency', related='company_id.currency_id', required=1)
+    # currency_id = fields.Many2one('res.currency', related='company_id.currency_id', required=1)
     purchase_type = fields.Selection([
         ('product', 'Goods'),
         ('asset', 'Asset'),
