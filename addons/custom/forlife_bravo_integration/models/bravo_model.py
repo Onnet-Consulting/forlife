@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 from ..fields import BravoField
 
 
@@ -12,6 +13,9 @@ class BravoModelCore(models.AbstractModel):
 
     @api.model
     def bravo_get_table(self, **kwargs):
+        res = self._bravo_table
+        if res == 'BravoTable':
+            raise ValidationError(_('%s is not a valid Bravo table name' % res))
         return self._bravo_table
 
     @api.model

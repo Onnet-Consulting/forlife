@@ -4,7 +4,8 @@ from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 import re
 
-CONTEXT_CATEGORY_KEY = 'product_category_level'
+CONTEXT_CATEGORY_KEY = 'bravo_product_category_level'
+CONTEXT_CATEGORY_ACCOUNT_KEY = 'bravo_product_category_need_accounts'
 
 
 class ProductCategory(models.Model):
@@ -14,18 +15,22 @@ class ProductCategory(models.Model):
     @api.model
     def bravo_get_table(self, **kwargs):
         product_category_level = kwargs.get(CONTEXT_CATEGORY_KEY)
-        if product_category_level:
+        product_category_need_accounts = kwargs.get(CONTEXT_CATEGORY_ACCOUNT_KEY)
+        bravo_table = self._bravo_table
+        if product_category_need_accounts:
+            bravo_table = 'B20ItemGroup'
+        elif product_category_level:
             if product_category_level == 4:
                 bravo_table = 'B20Structure'
             elif product_category_level == 3:
                 bravo_table = 'B20ItemLine'
             elif product_category_level == 2:
-                bravo_table = 'B20ItemGroup'
-            else:
+                bravo_table = 'B20CommodityGroup'
+            elif product_category_level == 1:
                 bravo_table = 'B20Brand'
-            return bravo_table
-        else:
-            return self._bravo_table
+        if bravo_table == 'BravoTable':
+            raise ValidationError(_('%s is not a valid Bravo table name' % bravo_table))
+        return bravo_table
 
     def bravo_get_identity_key_values(self):
         records = self.bravo_filter_records()
@@ -40,23 +45,12 @@ class ProductCategory(models.Model):
 
     def bravo_get_record_values(self, to_update=False):
         bravo_column_names = [
-            "Code", "Name",
-            "ItemAccount", "COGSAccount", "SalesAccount",
-            "ItemAccount1", "COGSAccount1", "SalesAccount1",
-            "ItemAccount2", "COGSAccount2", "SalesAccount2",
-            "ItemAccount3", "COGSAccount3", "SalesAccount3",
+            "Code", "Name"
         ]
         if not self:
             if to_update:
                 return []
             return bravo_column_names, []
-        company_codes = ['1100', '1200', '1300', '1400']
-        companies = self.env['res.company'].sudo().search([('code', 'in', company_codes)])
-        company_by_code = {c.code: c for c in companies}
-        missing_company_codes = set(company_codes) - set(company_by_code.keys())
-        if missing_company_codes:
-            raise ValidationError(_("Missing company codes: %r") % list(missing_company_codes))
-
         values = []
         for record in self:
             value = {"Name": record.name}
@@ -64,31 +58,6 @@ class ProductCategory(models.Model):
                 value.update({
                     "Code": record.category_code
                 })
-
-            record_1200 = record.with_company(company_by_code['1200']).sudo()
-            value.update({
-                "ItemAccount": record_1200.property_stock_valuation_account_id.code,
-                "COGSAccount": record_1200.property_account_expense_categ_id.code,
-                "SalesAccount": record_1200.property_account_income_categ_id.code,
-            })
-            record_1300 = record.with_company(company_by_code['1300']).sudo()
-            value.update({
-                "ItemAccount1": record_1300.property_stock_valuation_account_id.code,
-                "COGSAccount1": record_1300.property_account_expense_categ_id.code,
-                "SalesAccount1": record_1300.property_account_income_categ_id.code,
-            })
-            record_1400 = record.with_company(company_by_code['1400']).sudo()
-            value.update({
-                "ItemAccount2": record_1400.property_stock_valuation_account_id.code,
-                "COGSAccount2": record_1400.property_account_expense_categ_id.code,
-                "SalesAccount2": record_1400.property_account_income_categ_id.code,
-            })
-            record_1100 = record.with_company(company_by_code['1100']).sudo()
-            value.update({
-                "ItemAccount3": record_1100.property_stock_valuation_account_id.code,
-                "COGSAccount3": record_1100.property_account_expense_categ_id.code,
-                "SalesAccount3": record_1100.property_account_income_categ_id.code,
-            })
             values.append(value)
 
         if to_update:
@@ -96,9 +65,9 @@ class ProductCategory(models.Model):
         return bravo_column_names, values
 
     def bravo_get_update_value_for_existing_record(self):
-        column_names, values = self.bravo_get_update_values(True)
+        values = self.bravo_get_update_values(True)
         if values:
-            return values[0]
+            return values[0] if type(values) is list else values
         return {}
 
     def bravo_get_insert_values(self, **kwargs):
@@ -112,6 +81,9 @@ class ProductCategory(models.Model):
 
     def bravo_filter_record_by_level(self, level):
         return self.filtered(lambda rec: len(re.findall('/', rec.parent_path)) == level)
+
+    def bravo_filter_record_need_send_account(self):
+        return self.filtered(lambda rec: rec.child_id)
 
     def bravo_get_inset_sql_all_level(self):
         queries = []
@@ -131,7 +103,9 @@ class ProductCategory(models.Model):
         for level in [1, 2, 3, 4]:
             records = self.bravo_filter_record_by_level(level)
             update_sql = records.bravo_get_update_sql(None, **{CONTEXT_CATEGORY_KEY: level})
+            # category_with_account_update_sql = records.bravo_get_update_sql(None, **{CONTEXT_CATEGORY_ACCOUNT_KEY: True})
             queries.extend(update_sql)
+            # queries.extend(category_with_account_update_sql)
         return queries
 
     def bravo_get_update_sql(self, values=None, **kwargs):
