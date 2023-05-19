@@ -64,16 +64,8 @@
                             <field name="department_id"/>
                             <field name="type_other"/>
                             <field name="type_other_id"/>
-                            <label for="location_id" string="Lý do nhập khác" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
-                            <label for="location_id" string="Địa điểm nguồn" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
-                            <div>
-                                <field name="location_id"/>
-                            </div>
-                            <label for="location_dest_id" string="Địa điểm đích" attrs="{'invisible': [('type_other','=', 'other_export')]}"/>
-                            <label for="location_dest_id" string="Lý do xuất khác" attrs="{'invisible': [('type_other','=', 'other_import')]}"/>
-                            <div>
-                                <field name="location_dest_id"/>
-                            </div>
+                            <field name="location_id"/>
+                            <field name="location_dest_id"/>
                             <field name="quantity_match" invisible="1"/>
                         </group>
                         <group>

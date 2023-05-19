@@ -22,10 +22,6 @@
                                 <field name="department_default_id"/>
                                 <field name="department_ids" widget="many2many_tags"/>
                             </group>
-                            <group string="Team" name="team">
-                                <field name="team_default_id"/>
-                                <field name="team_ids" widget="many2many_tags"/>
-                            </group>
                         </group>
                     </page>
                 </xpath>
