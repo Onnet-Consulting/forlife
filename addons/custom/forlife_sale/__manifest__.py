@@ -14,6 +14,7 @@
         'base',
         'sale',
         'stock',
+        'product',
         'account',
         'forlife_base'
     ],
@@ -27,6 +28,8 @@
         'views/product_pricelist.xml',
         'views/sale_order.xml',
         'views/product_template.xml',
+        'views/product_category.xml',
+        'views/stock_picking_type.xml',
         'security/ir.model.access.csv',
 
     ]

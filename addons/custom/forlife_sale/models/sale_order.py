@@ -162,8 +162,9 @@ class SaleOrderLine(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         lines = super().create(vals_list)
-        for line in lines:
-            line._set_price_unit()
+        if self._context.get('import_file'):
+            for line in lines:
+                line._set_price_unit()
         return lines
 
     @api.onchange('product_id')
