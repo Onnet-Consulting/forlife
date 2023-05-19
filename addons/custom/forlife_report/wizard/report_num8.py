@@ -47,7 +47,7 @@ select
         )
     ))                                                                      as store_info,
     vv.name 																as voucher_code,
-    case when vv.apply_many_times is true then 'Voucher sử dụng nhiều lần'
+    case when pv.apply_many_times is true then 'Voucher sử dụng nhiều lần'
         else 'Voucher sử dụng 1 lần' end									as voucher_type,
     sv.applicable_object 												 	as object,
     substr(vv.name, 0, 9) 													as voucher_code8,
@@ -60,10 +60,10 @@ select
 from pos_order po
     join pos_voucher_line pv_line on po.id = pv_line.pos_order_id
     join voucher_voucher vv on vv.id = pv_line.voucher_id
-    left join setup_voucher sv on sv.id = vv.purpose_id
     left join program_voucher pv on pv.id = vv.program_voucher_id
-    left join hr_department hd on hd.id = vv.derpartment_id
-where vv.brand_id = {self.brand_id.id} 
+    left join setup_voucher sv on sv.id = pv.purpose_id
+    left join hr_department hd on hd.id = pv.derpartment_id
+where po.brand_id = {self.brand_id.id} 
 and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
 {po_conditions}
 {voucher_conditions} 

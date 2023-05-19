@@ -70,7 +70,7 @@ order_line_data as (
         pol.product_id  																		    as product_id,
         pp.default_code 																		    as product_code,
         pol.full_product_name 																 	    as product_name,
-        (select name from uom_name_by_id where id = pt.uom_id) 									    as uom_name,
+        uom.name                                                								    as uom_name,
         to_char(po.date_order + interval '{tz_offset} hours', 'DD/MM/YYYY')                         as by_day,
         to_char(po.date_order + interval '{tz_offset} hours', 'MM/YYYY')		                    as by_month,
         pol.qty 																		 	        as qty,
@@ -87,6 +87,7 @@ order_line_data as (
         left join product_template pt on pt.id = pp.product_tmpl_id
         left join hr_employee emp on emp.id = pol.employee_id
         left join res_partner rp on rp.id = po.partner_id
+        left join uom_name_by_id uom on uom.id = pt.uom_id
     where {employee_conditions} 
         and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = {str(self.store_id.id)}))
         and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
@@ -219,9 +220,9 @@ from employee_list employee
             },
         }
 
-    def get_data(self):
+    def get_data(self, allowed_company):
         self.ensure_one()
-        values = super().get_data()
+        values = super().get_data(allowed_company)
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()

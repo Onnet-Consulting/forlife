@@ -47,7 +47,7 @@ select
 from pos_voucher_line pvl
     join voucher_voucher vv on vv.id = pvl.voucher_id
     join program_voucher pv on pv.id = vv.program_voucher_id
-    join hr_department hd on hd.id = vv.derpartment_id
+    join hr_department hd on hd.id = pv.derpartment_id
     join pos_order po on po.id = pvl.pos_order_id
     left join res_partner rp on rp.id = po.partner_id
 where po.brand_id = {self.brand_id.id} and vv.name ilike '%{self.voucher}%'

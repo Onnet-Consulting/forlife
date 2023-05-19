@@ -34,7 +34,7 @@ class ReportNum9(models.TransientModel):
 select
     substr(vv.name, 0, 9) 													as voucher_code8,
     hd.name 																as department,
-    case when vv.apply_many_times is true then 'Voucher sử dụng nhiều lần'
+    case when pv.apply_many_times is true then 'Voucher sử dụng nhiều lần'
         else 'Voucher sử dụng 1 lần' end									as voucher_type,
     sv.applicable_object 												 	as object,
     pv.name 																as program_name,
@@ -45,9 +45,9 @@ select
     to_char(vv.end_date + interval '7 hours', 'DD/MM/YYYY')				    as end_date
 from program_voucher pv
     join voucher_voucher vv on pv.id = vv.program_voucher_id
-    left join setup_voucher sv on sv.id = vv.purpose_id
-    left join hr_department hd on hd.id = vv.derpartment_id
-where vv.brand_id = {self.brand_id.id}
+    left join setup_voucher sv on sv.id = pv.purpose_id
+    left join hr_department hd on hd.id = pv.derpartment_id
+where pv.brand_id = {self.brand_id.id}
     and {format_date_query("vv.start_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
 {voucher_conditions} 
         """

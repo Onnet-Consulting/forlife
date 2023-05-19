@@ -21,11 +21,8 @@
                                 to
                                 <field name="end_time" widget="float_time" class="oe_inline" required="1"/>
                             </div>
-                            <field name="all_warehouses"/>
+                            <field name="warehouse_domain" widget="domain" options="{'model': 'stock.warehouse', 'in_dialog': true}"/>
                         </group>
-                    </group>
-                    <group>
-                        <field name="warehouse_ids" widget="many2many_tags" attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"/>
                     </group>
                 </sheet>
             </form>

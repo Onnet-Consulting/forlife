@@ -88,6 +88,7 @@ AVAILABLE_REPORT = {
         'module': 'Kho',
         'name': 'Chi tiết xuất nhập hàng',
         'reportTemplate': 'ReportNum16Template',
+        'reportPager': True,
     },
     'report.num17': {
         'module': 'Bán hàng',
