@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-from datetime import datetime, time
+from datetime import datetime, timedelta, time
 import logging
 import gzip
 import base64
@@ -441,22 +441,13 @@ class AccountMoveBKAV(models.Model):
                     pass
         return res
 
-    is_check_inv_line = fields.Boolean('', compute='_compute_check_inv_line', store=1)
-
-    @api.depends('invoice_line_ids')
-    def _compute_check_inv_line(self):
-        for rec in self:
-            if not rec.invoice_line_ids:
-                rec.is_check_inv_line = True
-            else:
-                rec.is_check_inv_line = False
-
     def post_invoice_to_bkav_end_day(self):
         today = datetime.now().date()
-        start_of_day = datetime.combine(today, time.min)
+        next_day = today + timedelta(days=1)
+        start_of_day = datetime.combine(next_day, time(hour=2, minute=0, second=0))
         end_of_day = datetime.combine(today, time.max)
         invoices = self.search(
-            [('is_post_bkav', '=', False), ('is_check_inv_line', '=', False), ('state', '=', 'posted'),
+            [('is_post_bkav', '=', False), ('state', '=', 'posted'),
              ('create_date', '>=', start_of_day), ('create_date', '<=', end_of_day)])
         if len(invoices):
             inv_bkav = self.create({
