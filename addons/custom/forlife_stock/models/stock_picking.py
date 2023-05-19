@@ -79,7 +79,8 @@ class StockPicking(models.Model):
                 res.update({'picking_type_id': picking_type_id.id})
 
         return res
-    ware_check = fields.Boolean('',default=False)
+
+    ware_check = fields.Boolean('', default=False)
     transfer_id = fields.Many2one('stock.transfer')
     reason_type_id = fields.Many2one('forlife.reason.type')
     other_export = fields.Boolean(default=False)
@@ -186,6 +187,11 @@ class StockPicking(models.Model):
                 'template': '/forlife_stock/static/src/xlsx/xuat_khac.xlsx?download=true'
             }]
 
+    @api.depends('move_line_ids_without_package', 'move_line_ids_without_package.ware_check_line')
+    def compute_ware_check(self):
+        for rec in self:
+            rec.is_no_more_quantity = all(rec.order_lines.mapped('ware_check_line'))
+
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
@@ -291,10 +297,14 @@ class StockMove(models.Model):
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
+    po_id = fields.Char('')
+    ware_check_line = fields.Boolean('')
+
     @api.constrains('qty_done', 'picking_id.move_ids_without_package')
     def constrains_qty_done(self):
         for rec in self:
             for line in rec.picking_id.move_ids_without_package:
-                if rec.qty_done > line.product_uom_qty:
-                    raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
+                if rec.product_id == line.product_id:
+                    if rec.qty_done > line.product_uom_qty:
+                        raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 

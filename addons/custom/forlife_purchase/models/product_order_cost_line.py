@@ -9,7 +9,7 @@ class PurchaseOrderCostLine(models.Model):
     name = fields.Char(string='Mô tả', related='product_id.name')
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order')
     expensive_total = fields.Float(string='Tổng tiền', compute='compute_expensive_total', store=True)
-    dollars_money = fields.Float(string='Tiền USD')
+    dollars_money = fields.Float(string='Tiền Ngoại tệ')
 
     @api.depends('purchase_order_id', 'purchase_order_id.exchange_rate', 'dollars_money')
     def compute_expensive_total(self):
