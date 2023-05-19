@@ -63,6 +63,7 @@ class StockWarehouse(models.Model):
     status_ids = fields.Many2one('stock.warehouse.status', string="Status", copy=False)
     district_id = fields.Many2one('res.state.district', string="District", copy=False)
     ward_id = fields.Many2one('res.ward', string="Ward", copy=False)
+    warehouse_gr_id = fields.Many2one('warehouse.group', 'Nhóm kho')
 
 
 class StockWarehouseGroup(models.Model):
@@ -70,13 +71,10 @@ class StockWarehouseGroup(models.Model):
 
     _description = 'Nhóm kho'
 
-    code_level_1 = fields.Char(string='Mã cấp 1')
-    code_level_2 = fields.Char(string='Mã cấp 2')
-    name = fields.Char('Tên')
+    code_level_1 = fields.Char(string='Mã nhóm kho')
+    name = fields.Char('Tên nhóm kho')
+    parent_warehouse_group_id = fields.Many2one('warehouse.group', 'Nhóm kho cha')
 
     _sql_constraints = [
-        ('unique_code', 'UNIQUE(code_level_1)', 'Mã cấp 1 phải là duy nhất!'),
-        ('unique_code', 'UNIQUE(code_level_2)', 'Mã cấp 2 phải là duy nhất!')
+        ('unique_code', 'UNIQUE(code_level_1)', 'Mã phải là duy nhất!')
     ]
-
-    parent_warehouse_group_id = fields.Many2one('warehouse.group', 'Nhóm kho cha')

@@ -54,7 +54,7 @@
                 </xpath>
                 <xpath expr="//notebook/page[@name='product_cost']" position="after">
                     <page string="Nguyên phụ liệu" name="production_order_domain"
-                          attrs="{'invisible': [('is_check_line_material_line', '=', True)]}">
+                          attrs="{'invisible': ['|', ('is_check_line_material_line', '=', True), ('is_inter_company', '=', True)]}">
                         <field name="order_line_production_order" class="width-hh" widget="one2many" mode="tree"
                                options="{'no_create': True}">
                             <tree editable="bottom" create="0" delete="0" class="hide_add_and_remove">

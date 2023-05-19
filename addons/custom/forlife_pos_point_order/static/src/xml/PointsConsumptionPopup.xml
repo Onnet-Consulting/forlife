@@ -22,7 +22,7 @@
                                         <tr style="width:100%; border:1px solid black;">
                                             <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
                                             <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
-                                            <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
+                                            <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.price)"/></td>
                                             <td style="border:1px solid black;width:85px;">
                                                         <input style="width: 100%;text-align: center;"
                                                                t-att-data-value_id="line.get_taxed_lst_unit_price()"
@@ -40,7 +40,7 @@
                                             <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(num.unit_price)"/></td>
                                             <td style="border:1px solid black;width:85px;">
                                                         <input style="width: 100%;text-align: center;"
-                                                               t-att-id="num.id"
+                                                               t-att-id="num.id_new"
                                                                t-att-value="num.point ? num.point : ''"
                                                                type="text" class="o_input"/>
                                             </td>
@@ -78,7 +78,7 @@
                                         <tr style="width:100%; border:1px solid black;">
                                             <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
                                             <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
-                                            <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.get_taxed_lst_unit_price())"/></td>
+                                            <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.price)"/></td>
                                             <td style="border:1px solid black;width:85px;">
                                                     <input style="width: 100%;text-align: center;"
                                                            t-att-data-value_id="line.get_taxed_lst_unit_price()"
@@ -95,7 +95,7 @@
                                             <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(num.unit_price)"/></td>
                                             <td style="border:1px solid black;width:85px;">
                                                         <input style="width: 100%;text-align: center;"
-                                                               t-att-id="num.id"
+                                                               t-att-id="num.id_new"
                                                                t-att-value="num.point ? num.point : ''"
                                                                type="text" class="o_input"/>
                                             </td>

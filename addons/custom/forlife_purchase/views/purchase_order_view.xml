@@ -67,7 +67,7 @@
                         <button name="action_create_invoice" string="Create Invoice"
                                 class="btn btn-primary ms-md-2" type="object"
                                 attrs="{'invisible':['|',('is_inter_company', '=', True),'&amp;',('is_done_picking', '=', False),'|',('purchase_type', '=', 'product'),('custom_state', 'in', ('draft','confirm','reject','cancel','close'))]}"/>
-                        <button string="Submit" name="action_confirm"
+                        <button string="Gửi duyệt" name="action_confirm"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>
                         <button string="Approved" name="action_approved"
                                 type="object" attrs="{'invisible':[('custom_state', '!=', 'confirm')]}"/>
@@ -102,8 +102,10 @@
                                 <field name="total_tax_amount" readonly="1"/>
                             </tree>
                         </field>
+                        <button string="Câp nhật thuế nhập  khẩu" name="action_update_import"
+                                type="object" attrs="{'invisible':[('custom_state', '!=', 'draft')]}"/>
                     </page>
-                    <page string="Product Cost" name="product_cost" attrs="{'invisible': [('is_inter_company', '=', True)]}">
+                    <page string="Product Cost" name="product_cost" attrs="{'invisible': ['|', ('exchange_rate_line', '=', True), ('is_inter_company', '=', True)]}">
                         <field name="is_inter_company" invisible="1"/>
                         <field name="cost_line" widget="section_and_note_one2many" mode="tree" attrs="{'readonly': [('custom_state', 'not in', ('draft'))]}">
                             <tree editable="bottom" class="width-hh">
@@ -164,12 +166,12 @@
                     <field name="is_purchase_request" attrs="{'invisible': True}"/>
                     <field name="is_check_readonly_partner_id" attrs="{'invisible': True}"/>
                     <field name="is_check_readonly_purchase_type" attrs="{'invisible': True}"/>
-                    <field name="partner_domain" invisible="1"/>
-                    <field name="partner_id" string="Nhà cung cấp" domain="partner_domain" attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                    <field name="partner_domain" invisible="1" />
+                    <field name="partner_id" string="Nhà cung cấp" attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}" domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                      <field name="currency_id" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
+                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '!=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
@@ -209,6 +211,8 @@
                             <create name="add_note_control" string="Add a note"
                                     context="{'default_display_type': 'line_note'}"/>
                         </control>
+                        <field name="is_change_vendor" invisible="1"/>
+                        <field name="is_red_color" invisible="1"/>
                         <field name="is_passersby" invisible="1"/>
                         <field name="display_type" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
@@ -219,7 +223,7 @@
                         <field name="sequence" widget="handle"/>
                         <field name="product_id"
                                context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
-                               domain="[('detailed_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                               domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" force_save="1"/>
                         <field name="name" invisible="1"/>
                         <field name="description"/>
                         <field name="product_type" string="Type"/>
@@ -232,10 +236,11 @@
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="purchase_quantity"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                        <field name="purchase_uom"
+                        <field name="domain_uom" invisible="1"/>
+                        <field name="purchase_uom" domain="domain_uom"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="exchange_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_passersby', '=', False)]}" force_save="1"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}" decoration-danger="is_red_color == True" force_save="1"/>
                         <field name="product_qty" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
                         <field name="vendor_price"
@@ -244,7 +249,7 @@
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
-                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}" force_save="1" string="Đơn vị tính"/>
                         <field name="location_id"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="taxes_id" widget="many2many_tags"
@@ -254,7 +259,7 @@
                                attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')]}"
                         />
                         <field name="price_tax" string="Thuế" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')]}"/>
-                        <field name="price_subtotal" widget="monetary"/>
+                        <field name="price_subtotal" widget="monetary" sum="discounted subtotal" force_save="1"/>
                         <field name="discount_percent"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('readonly_discount_percent', '=', True)]}"
                                force_save="1"/>
@@ -274,8 +279,7 @@
                         <field name="billed" attrs="{'invisible': [('billed', '=', False)]}"/>
                         <field name="readonly_discount" invisible="1"/>
                         <field name="readonly_discount_percent" invisible="1"/>
-                        <field name="date_planned" invisible="1" attrs="{'required': [('display_type', '=', False)]}"
-                               force_save="1"/>
+                        <field name="date_planned" invisible="1" attrs="{'required': [('display_type', '=', False)]}"/>
                         <field name="analytic_distribution" widget="analytic_distribution"
                                invisible="1"
                                groups="analytic.group_analytic_accounting"

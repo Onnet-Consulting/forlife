@@ -1,10 +1,10 @@
 from odoo import api, fields, models
-
+from odoo.exceptions import UserError, ValidationError
 
 class AssetsAssets(models.Model):
     _name = 'assets.assets'
 
-    type = fields.Selection([('CCDC', '0'), ('TSCD', '1')], string='Type')
+    type = fields.Selection([('CCDC', '0'), ('TSCD', '1'), ('XDCB', '2')], string='Type')
     code = fields.Char('Code', size=24, required=True)
     state = fields.Selection([('using','Đang sử dụng'),('paid','Đã thanh lí')], string='Trạng thái')
     card_no = fields.Char('CardNo', size=24)
@@ -31,3 +31,16 @@ class AssetsAssets(models.Model):
     _sql_constraints = [
         ('unique_code', 'UNIQUE(code, company_id)', 'Mã nhóm phải là duy nhất trong cùng một công ty!')
     ]
+
+    def write(self, values):
+        self.check_type(values)
+        return super(AssetsAssets, self).write(values)
+
+    @api.model
+    def create(self, vals):
+        self.check_type(vals)
+        return super(AssetsAssets, self).create(vals)
+
+    def check_type(self,vals):
+        if 'type' in vals and (vals['type'] == "CCDC" or vals['type'] == "TSCD"):
+            raise ValidationError('Không được phép tạo tài sản từ odoo')

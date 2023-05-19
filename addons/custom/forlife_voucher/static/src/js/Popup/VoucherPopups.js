@@ -250,6 +250,7 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
 
 //            validate error expect
             var priority = []
+            let count_apply_contemp_time = 0;
             for(let i = 0; i < data.length; i ++){
                 let error = [];
                 let error_continue = [];
@@ -287,8 +288,11 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         if(data[i].value.state == 'expired'){
                             error.push("Mã voucher đã hết thời gian sử dụng!")
                         }
-                        if(!data[i].value.apply_contemp_time && data_value.length > 1){
-                            error.push("Voucher chỉ được sử dụng độc lập!")
+                        if(!data[i].value.apply_contemp_time){
+                            count_apply_contemp_time +=1 ;
+                            if(count_apply_contemp_time >=2){
+                                error.push("Voucher chỉ được sử dụng độc lập!")
+                            }
                         }
                         if(this.env.pos.selectedOrder.creation_date < new Date(data[i].value.start_date)){
                             error.push("Mã voucher chưa đến thời gian sử dụng!")

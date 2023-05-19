@@ -51,6 +51,35 @@ class StockPicking(models.Model):
         if self.env.context.get('default_other_export'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
+    @api.model
+    def default_get(self, fields):
+        res = super(StockPicking, self).default_get(fields)
+        company_id = self.env.context.get('allowed_company_ids')
+        if self.env.context.get('from_inter_company'):
+            company = self.env.context.get('company_po')
+            pk_type = self.env['stock.picking.type'].sudo().search(
+                [('company_id', '=', company), ('code', '=', 'outgoing')], limit=1)
+            if not pk_type:
+                pk_type = self.env['stock.picking.type'].sudo().create(
+                    {'name': 'Giao hàng', 'code': 'outgoing', 'company_id': company,
+                     'sequence_code': 'sequence_code1'})
+            ## Tạo mới phiếu nhập hàng và xác nhận phiếu xuất
+            res.update({'picking_type_id': pk_type})
+        if self.env.context.get('default_other_import'):
+            picking_type_id = self.env['stock.picking.type'].search([
+                ('code', '=', 'incoming'),
+                ('warehouse_id.company_id', 'in', company_id)], limit=1)
+            if picking_type_id:
+                res.update({'picking_type_id': picking_type_id.id})
+        if self.env.context.get('default_other_export'):
+            picking_type_id = self.env['stock.picking.type'].search([
+                ('code', '=', 'outgoing'),
+                ('warehouse_id.company_id', 'in', company_id)], limit=1)
+            if picking_type_id:
+                res.update({'picking_type_id': picking_type_id.id})
+
+        return res
+
     transfer_id = fields.Many2one('stock.transfer')
     reason_type_id = fields.Many2one('forlife.reason.type')
     other_export = fields.Boolean(default=False)
@@ -110,25 +139,26 @@ class StockPicking(models.Model):
         self.state = 'draft'
 
     def action_cancel(self):
-        if self.other_import or self.other_export:
-            self.state = 'cancel'
-            for line in self.move_line_ids_without_package:
-                line.qty_done = 0
-                line.reserved_uom_qty = 0
-                line.qty_done = 0
-            for line in self.move_ids_without_package:
-                line.forecast_availability = 0
-                line.quantity_done = 0
-            layers = self.env['stock.valuation.layer'].search([('stock_move_id.picking_id', '=', self.id)])
-            for layer in layers:
-                layer.quantity = 0
-                layer.unit_cost = 0
-                layer.value = 0
-                layer.account_move_id.button_draft()
-                layer.account_move_id.button_cancel()
-        else:
-            self.move_ids._action_cancel()
-            self.write({'is_locked': True})
+        for rec in self:
+            if rec.other_import or rec.other_export:
+                rec.state = 'cancel'
+                for line in rec.move_line_ids_without_package:
+                    line.qty_done = 0
+                    line.reserved_uom_qty = 0
+                    line.qty_done = 0
+                for line in rec.move_ids_without_package:
+                    line.forecast_availability = 0
+                    line.quantity_done = 0
+                layers = rec.env['stock.valuation.layer'].search([('stock_move_id.picking_id', '=', rec.id)])
+                for layer in layers:
+                    layer.quantity = 0
+                    layer.unit_cost = 0
+                    layer.value = 0
+                    layer.account_move_id.button_draft()
+                    layer.account_move_id.button_cancel()
+            else:
+                rec.move_ids._action_cancel()
+                rec.write({'is_locked': True})
         return True
 
     @api.model
@@ -239,7 +269,7 @@ class StockMove(models.Model):
                 if back_order:
                     for r in back_order.move_ids_without_package:
                         if r.product_id == rec.product_id and r.amount_total == rec.amount_total:
-                            rec.previous_qty = r.previous_qty if r.previous_qty != 0 else rec.product_uom_qty
+                            rec.write({'previous_qty': r.previous_qty})
             else:
                 if rec.picking_id.state not in ('assigned', 'done'):
                     rec.previous_qty = rec.product_uom_qty

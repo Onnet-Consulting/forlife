@@ -29,6 +29,7 @@ class TransferStockInventory(models.Model):
                    ('cancel', 'Cancel')], default='draft', copy=False)
     reason_reject = fields.Text('Reason Reject')
     reason_cancel = fields.Text('Reason Cancel')
+    is_nk_xk = fields.Boolean(default=False, copy=False)
 
     def action_import_other(self):
         for item in self:
@@ -158,7 +159,7 @@ class TransferStockInventory(models.Model):
             for item in data_ex_other:
                 result = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
                     data_ex_other.get(item)).button_validate()
-            rec.write({'state': 'approved'})
+            rec.write({'state': 'approved', 'is_nk_xk': True})
 
     def action_cancel(self):
         for rec in self:
@@ -197,7 +198,6 @@ class TransferStockInventoryLine(models.Model):
     location_id = fields.Many2one('stock.location', string='Location')
     qty_in = fields.Integer(string="Quantity In")
     unit_price_to = fields.Float(string="Unit Price")
-    cost_price = fields.Float(string="Cost Price")
     total_in = fields.Float(string='Total In', compute='compute_total_in')
     mrp_production_to_id = fields.Many2one('forlife.production', string="MRP production to ")
 

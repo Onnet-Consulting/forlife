@@ -34,7 +34,8 @@
             <field name="arch" type="xml">
                 <tree string="Purchase Request" default_order="create_date desc" limit="25">
                     <header>
-                        <button name="create_purchase_orders" string="Create Purchase Order" class="btn btn-primary ms-md-2" type="object"/>
+                        <button string="TẠO ĐƠN MUA HÀNG" name="%(purchase_request.action_select_type_wizard)d" type="action"/>
+<!--                        <button name="create_purchase_orders" string="Create Purchase Order" class="btn btn-primary ms-md-2" type="object"/>-->
                     </header>
                      <field name="name" string="Reference" decoration-bf="1"/>
                     <field name="employee_id"/>
@@ -52,7 +53,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button string="Submit" name="submit_action"
+                    <button string="Gửi duyệt" name="submit_action"
                             type="object" attrs="{'invisible':[('state', '!=', 'draft')]}"/>
                     <button string="Approve" name="approve_action" type="object"
                             attrs="{'invisible':[ ('state', '!=', 'confirm')]}"
@@ -66,7 +67,8 @@
                     <button string="Set to draft" name="set_to_draft" type="object"
                             attrs="{'invisible': [('state', 'not in', ('reject', 'cancel'))]}"/>
                     <field name="state" widget="statusbar"/>
-                    <button name="create_purchase_orders" string="Create Purchase Order" class="btn btn-primary ms-md-2" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}"/>
+                        <button string="TẠO ĐƠN MUA HÀNG" name="%(purchase_request.action_select_type_wizard)d" type="action" attrs="{'invisible': [('state', '!=', 'approved')]}"/>
+<!--                    <button name="create_purchase_orders" string="Create Purchase Order" class="btn btn-primary ms-md-2" type="object" attrs="{'invisible': [('state', '!=', 'approved')]}"/>-->
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box" attrs="{'invisible': [('is_check_button_orders_smart_button', '=', False)]}">
@@ -107,7 +109,7 @@
                                    'default_production_id': production_id, 'default_account_analytic_id': account_analytic_id}">
                                 <tree editable="bottom" decoration-muted="is_no_more_quantity == True" class="width-hh">
                                     <field name="is_close" string="Đã Đóng"/>
-                                    <field name="product_id" domain="[('detailed_type', '!=', 'consu')]"/>
+                                    <field name="product_id" domain="[('product_type', '!=', 'consu')]"/>
                                     <field name="state" invisible="1"/>
                                     <field name="description" optional="show"/>
                                     <field name="product_type" optional="show"/>
@@ -115,7 +117,7 @@
                                     <field name="purchase_quantity" optional="show"/>
                                     <field name="exchange_quantity" optional="show"/>
                                     <field name="purchase_uom" optional="show" readonly="0"/>
-                                    <field name="product_qty" optional="show"/>
+                                    <field name="product_qty" invisible="1" force_save="1"/>
                                     <field name="vendor_code" optional="show" context="{'form': 'purchase_request_from_view'}"/>
                                     <field name="production_id" optional="show"/>
                                     <field name="account_analytic_id" optional="show"/>

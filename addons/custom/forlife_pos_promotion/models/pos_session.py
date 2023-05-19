@@ -131,6 +131,7 @@ class PosSession(models.Model):
                     'min_quantity',
                     'order_amount_min',
                     'incl_reward_in_order',
+                    'incl_reward_in_order_type',
                     'reward_type',
                     'voucher_program_id',
                     'voucher_product_variant_id',

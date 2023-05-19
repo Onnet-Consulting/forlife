@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-24 09:18+0000\n"
-"PO-Revision-Date: 2023-04-24 09:18+0000\n"
+"POT-Creation-Date: 2023-05-14 10:20+0000\n"
+"PO-Revision-Date: 2023-05-14 10:20+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,6 +20,20 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_stock_report.product_template_form_view_inherit
 msgid "<span class=\"o_stat_text\">Quantity Period</span>"
 msgstr "<span class=\"o_stat_text\">Tồn kho theo kỳ</span>"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__account_id
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__account_id
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__x_studio_many2one_field_GPG2X
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__account_id
+msgid "Account"
+msgstr "Tài khoản"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__account_code
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__account_code
+msgid "Account Code"
+msgstr "Tài khoản"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__based_on_account
@@ -37,6 +51,11 @@ msgstr "Tồn cuối kỳ"
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__closing_value
 msgid "Closing Value"
 msgstr "Giá trị tồn cuối kỳ"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__company_id
+msgid "Company"
+msgstr "Công ty"
 
 #. module: forlife_stock_report
 #: model_terms:ir.ui.view,arch_db:forlife_stock_report.outgoing_value_diff_report_view_form
@@ -67,6 +86,13 @@ msgstr "Tạo vào"
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__currency_id
 msgid "Currency"
 msgstr "Tiền tệ"
+
+#. module: forlife_stock_report
+#. odoo-python
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#, python-format
+msgid "Date from must be the first day of month"
+msgstr "Ngày bắt đầu phải là ngày đầu tiên trong tháng"
 
 #. module: forlife_stock_report
 #. odoo-python
@@ -208,22 +234,23 @@ msgstr "Bảng kê chênh lệch giá trị xuất kho theo Item"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__period_end_date
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_quant_period_view_search
 msgid "Period End Date"
-msgstr ""
+msgstr "Ngày cuối kỳ"
 
 #. module: forlife_stock_report
 #. odoo-python
 #: code:addons/forlife_stock_report/reports/stock_value_report.py:0
 #, python-format
 msgid "Period check report must be in 1 month"
-msgstr ""
+msgstr "Kỳ xem báo cáo phải trong 1 tháng"
 
 #. module: forlife_stock_report
 #. odoo-python
 #: code:addons/forlife_stock_report/reports/stock_value_report.py:0
 #, python-format
 msgid "Please get report before update quant period"
-msgstr ""
+msgstr "vui long lấy báo cáo trước khi cập nhật tồn kho theo kỳ"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__price_unit
@@ -234,6 +261,7 @@ msgstr "Đơn giá"
 #: model:ir.model,name:forlife_stock_report.model_product_template
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__product_id
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__product_id
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_quant_period_view_search
 msgid "Product"
 msgstr "Sản phẩm"
 
@@ -251,6 +279,13 @@ msgstr "Biến thể sản phẩm"
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__product_code
 msgid "Product code"
 msgstr "Mã sản phẩm"
+
+#. module: forlife_stock_report
+#: model:ir.actions.act_window,name:forlife_stock_report.stock_quant_period_action
+#: model:ir.ui.menu,name:forlife_stock_report.stock_quant_period_menu
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_quant_period_view_search
+msgid "Quant Period"
+msgstr "Tồn kho theo kỳ"
 
 #. module: forlife_stock_report
 #: model:ir.model,name:forlife_stock_report.model_stock_quant_period
@@ -304,6 +339,20 @@ msgstr "Không có sự chênh lệch về giá trị xuất kho!"
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__date_to
 msgid "To Date"
 msgstr "Đến ngày"
+
+#. module: forlife_stock_report
+#. odoo-python
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#: code:addons/forlife_stock_report/reports/stock_value_report.py:0
+#, python-format
+msgid "To date must be greater than From date"
+msgstr "Đến ngày phải lớn hơn Từ ngày"
 
 #. module: forlife_stock_report
 #: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_incoming_outgoing_report_view_form

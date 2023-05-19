@@ -185,8 +185,7 @@ class AccountMoveBKAV(models.Model):
                     },
                     "ListInvoiceDetailsWS": [
                         {
-                            "ItemName": (line.product_id.name or line.name) if (
-                                        line.product_id.name or line.name) else '',
+                            "ItemName": (line.product_id.name or line.name) if (line.product_id.name or line.name) else '',
                             "UnitName": line.uom_id.name or '',
                             "Qty": line.quantity or 0.0,
                             "Price": line.price_unit,

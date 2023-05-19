@@ -10,3 +10,6 @@ from . import pos_reason_refund
 from . import pos_session
 from . import handle_change_refund_line
 from . import handle_change_refund
+from . import product_category
+from . import defective_product
+from . import defective_type
