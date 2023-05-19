@@ -15,8 +15,8 @@ class Contact(models.Model):
     is_member_app_format = fields.Boolean('Is Member App?', compute='_compute_member_pos', store=True)
     reset_day_of_point_forlife = fields.Datetime('Day Reset Forlife', readonly=True)
     reset_day_of_point_format = fields.Datetime('Day Reset Format', readonly=True)
-    total_points_available_forlife = fields.Integer('Total Points Availible', compute='compute_point_total')
-    total_points_available_format = fields.Integer('Total Points Availible', compute='compute_point_total')
+    total_points_available_forlife = fields.Integer('Total Points Availible', compute='compute_point_total', store=True)
+    total_points_available_format = fields.Integer('Total Points Availible', compute='compute_point_total', store=True)
     history_points_format_ids = fields.One2many('partner.history.point', 'partner_id', string='History Point Store', domain=[('store', '=', 'format')], readonly=True)
     history_points_forlife_ids = fields.One2many('partner.history.point', 'partner_id', string='History Point Store', domain=[('store', '=', 'forlife')], readonly=True)
 
@@ -24,7 +24,7 @@ class Contact(models.Model):
     point_format_reseted = fields.Boolean('Format was reseted', default=False)
 
 
-    @api.depends('history_points_format_ids', 'history_points_forlife_ids')
+    @api.depends('history_points_format_ids.points_store', 'history_points_forlife_ids.points_store')
     def compute_point_total(self):
         for rec in self:
             rec.total_points_available_forlife = sum([x.points_store for x in rec.history_points_forlife_ids])
