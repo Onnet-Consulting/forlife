@@ -10,7 +10,7 @@
             <p t-if="state.hasError" style="color: red; background-color: antiquewhite;">
                 <t t-esc="error_msg" />
             </p>
-            <div><span style="font-weight: normal">Tối đa: </span><strong t-esc="this.state.program.max_reward_quantity"/> sản phẩm</div>
+            <div><span style="font-weight: normal">Tối đa: </span><strong t-esc="this.state.program.program.reward_quantity"/> sản phẩm</div>
             <div><span style="font-weight: normal">Đã chọn: </span><strong t-esc="this.selectedQtyOnProgram()"/> sản phẩm</div>
             <hr/>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
