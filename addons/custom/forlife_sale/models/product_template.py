@@ -17,3 +17,7 @@ class ProductTemplate(models.Model):
     def onchange_x_free_good(self):
         if self.x_free_good:
             self.list_price = 0
+    @api.onchange('list_price')
+    def onchange_list_price(self):
+        self.onchange_x_free_good()
+        self.onchange_x_negative_value()
