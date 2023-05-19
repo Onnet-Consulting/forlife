@@ -30,7 +30,7 @@ odoo.define('forlife_pos_search_customer.PartnerListScreen', function(require) {
             const fieldName = event.detail.fieldName.toLowerCase();
             let domain = [];
             if(this.state.query != ""){
-                domain = [[fieldName, "ilike", this.state.query + "%"]]
+                domain = [[fieldName, "like", this.state.query]]
             }
             this.env.pos.db.partner_sorted = [];
             this.env.pos.db.partner_by_id = [];
