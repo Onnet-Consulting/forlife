@@ -86,9 +86,9 @@ where pr.company_id = {self.company_id.id}
 """
         return sql
 
-    def get_data(self):
+    def get_data(self, allowed_company):
         self.ensure_one()
-        values = dict(super().get_data())
+        values = dict(super().get_data(allowed_company))
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()
@@ -98,8 +98,8 @@ where pr.company_id = {self.company_id.id}
         })
         return values
 
-    def generate_xlsx_report(self, workbook):
-        data = self.get_data()
+    def generate_xlsx_report(self, workbook, allowed_company):
+        data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
         state = {
             'open': 'Mở',

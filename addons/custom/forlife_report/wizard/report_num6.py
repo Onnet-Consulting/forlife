@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from odoo.tools.safe_eval import safe_eval
 
 TITLES = ['STT', 'Nhóm hàng', 'Dòng hàng', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Giới tính', 'Tổng bán', 'Tổng tồn', 'Nhân viên']
+COLUMN_WIDTHS = [10, 20, 20, 15, 30, 20, 20, 20, 20, 20, 20]
 
 
 class ReportNum6(models.TransientModel):
@@ -92,7 +93,8 @@ product_info as (
         left join product_category pc on pc.id = pt.categ_id
     where pp.id in (select product_id from products)
 )
-select pr.product_id                                                              as product_id,
+select row_number() over ()                                                       as num,
+        pr.product_id                                                             as product_id,
         COALESCE(sa.qty, 0)                                                       as sale_qty,
         COALESCE(sa.employee_id, 0)                                               as employee_id,
         emp.name                                                                  as employee_name,
@@ -108,6 +110,7 @@ from products pr
     left join sales sa on sa.product_id = pr.product_id
     left join stocks st on st.product_id = pr.product_id
     left join hr_employee emp on emp.id = sa.employee_id
+order by num
 """
         return query
 
@@ -124,3 +127,33 @@ from products pr
             "data": data,
         })
         return values
+
+    def convert_time(self, value):
+        return '{:02d}:{:02d}'.format(int(value), int((value - int(value)) * 60))
+
+    def generate_xlsx_report(self, workbook, allowed_company):
+        data = self.get_data(allowed_company)
+        formats = self.get_format_workbook(workbook)
+        sheet = workbook.add_worksheet('Báo cáo bán - trưng hàng')
+        sheet.set_row(0, 25)
+        sheet.write(0, 0, 'Báo cáo bán - trưng hàng', formats.get('header_format'))
+        sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))
+        sheet.write(2, 2, 'Ngày: %s' % self.date.strftime('%d/%m/%Y'), formats.get('italic_format'))
+        sheet.write(2, 4, 'Khung giờ từ %s đến %s' % (self.convert_time(self.start_time), self.convert_time(self.end_time)), formats.get('italic_format'))
+        for idx, title in enumerate(data.get('titles')):
+            sheet.write(4, idx, title, formats.get('title_format'))
+            sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
+        row = 5
+        for value in data.get('data'):
+            sheet.write(row, 0, value.get('num'), formats.get('center_format'))
+            sheet.write(row, 1, value.get('product_group'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('product_line'), formats.get('normal_format'))
+            sheet.write(row, 3, value.get('product_barcode'), formats.get('normal_format'))
+            sheet.write(row, 4, value.get('product_name'), formats.get('normal_format'))
+            sheet.write(row, 5, value.get('product_size'), formats.get('normal_format'))
+            sheet.write(row, 6, value.get('product_color'), formats.get('normal_format'))
+            sheet.write(row, 7, value.get('gender'), formats.get('normal_format'))
+            sheet.write(row, 8, value.get('sale_qty'), formats.get('int_number_format'))
+            sheet.write(row, 9, value.get('stock_qty'), formats.get('int_number_format'))
+            sheet.write(row, 10, value.get('employee_name'), formats.get('normal_format'))
+            row += 1

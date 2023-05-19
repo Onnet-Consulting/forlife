@@ -51,6 +51,7 @@ class ReportBase(models.AbstractModel):
             'reportTitle': report_data.get('name', ''),
             'reportTemplate': report_data.get('reportTemplate', ''),
             'reportPager': report_data.get('reportPager', False),
+            'recordPerPage': 80 if report_data.get('reportPager', False) else False,
         }
 
     def view_report(self):

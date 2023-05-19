@@ -5,6 +5,7 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 
 TITLES = ['STT', 'Dòng hàng', 'Số lượng', 'Doanh thu', '% danh thu']
+COLUMN_WIDTHS = [10, 20, 20, 25, 15]
 
 
 class ReportNum7(models.TransientModel):
@@ -76,12 +77,14 @@ po_line as (
         and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
         {employee_conditions}
 )
-select product_line                                             as product_line,
+select row_number() over ()                                     as num,
+        product_line                                            as product_line,
         sum(qty)                                                as qty,
         sum(revenue)                                            as revenue,
         sum(revenue) / (select sum(revenue) from po_line) * 100 as percent_revenue
 from po_line
 group by product_line
+order by num
 """
         return query
 
@@ -98,3 +101,23 @@ group by product_line
             "data": data,
         })
         return values
+
+    def generate_xlsx_report(self, workbook, allowed_company):
+        data = self.get_data(allowed_company)
+        formats = self.get_format_workbook(workbook)
+        sheet = workbook.add_worksheet('Báo cáo doanh thu tại cửa hàng theo dòng hàng')
+        sheet.set_row(0, 25)
+        sheet.write(0, 0, 'Báo cáo doanh thu tại cửa hàng theo dòng hàng', formats.get('header_format'))
+        sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))
+        sheet.write(2, 2, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
+        for idx, title in enumerate(data.get('titles')):
+            sheet.write(4, idx, title, formats.get('title_format'))
+            sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
+        row = 5
+        for value in data.get('data'):
+            sheet.write(row, 0, value.get('num'), formats.get('center_format'))
+            sheet.write(row, 1, value.get('product_line'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('qty'), formats.get('int_number_format'))
+            sheet.write(row, 3, value.get('revenue'), formats.get('int_number_format'))
+            sheet.write(row, 4, value.get('percent_revenue'), formats.get('float_number_format'))
+            row += 1

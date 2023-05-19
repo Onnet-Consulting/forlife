@@ -11,10 +11,9 @@
             <t t-call="ReportTitle"/>
             <tbody>
                 <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
-                <t t-set="num" t-value="1"/>
-                <t t-foreach="widget.data" t-as="line">
+                <t t-foreach="options.data" t-as="line">
                     <tr>
-                        <td><t t-esc="num"/></td>
+                        <td><t t-esc="line.num"/></td>
                         <td><t t-esc="line.product_group"/></td>
                         <td><t t-esc="line.product_line"/></td>
                         <td><t t-esc="line.product_barcode"/></td>
@@ -26,7 +25,6 @@
                         <td><t t-esc="format_decimal(line.stock_qty, 0)"/></td>
                         <td><t t-esc="line.employee_name"/></td>
                     </tr>
-                    <t t-set="num" t-value="num + 1"/>
                 </t>
             </tbody>
         </table>

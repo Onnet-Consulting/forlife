@@ -26,7 +26,6 @@ odoo.define('forlife_report.report_base', function (require) {
             'click .export_data': 'action_export_data',
             'click .btn_back': 'action_back',
         },
-        record_per_page: 80,
         readDataTimeout: 300,
 
         init: function (parent, action) {
@@ -82,6 +81,7 @@ odoo.define('forlife_report.report_base', function (require) {
             this.report_filename = data.reportTitle + '.xls';
             this.report_type_id = 'all_data';
             this.titles = data.titles;
+            this.record_per_page = data.recordPerPage || this.data.length;
             this.total_records = this.data.length;
             this.total_page = Math.ceil(this.total_records / this.record_per_page);
             this.options = this.build_options(1);

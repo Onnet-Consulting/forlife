@@ -49,7 +49,7 @@ with account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho b
     from product_category cate
         left join ir_property ir on ir.res_id = concat('product.category,', cate.id)
         left join account_account aa on concat('account.account,',aa.id) = ir.value_reference
-    where  ir.name='property_stock_valuation_account_id' and ir.company_id = {self.company_id.id}
+    where  ir.name='property_stock_valuation_account_id' and ir.company_id = any( array{allowed_company})
     order by cate.id 
 ),
 product_cate_info as (

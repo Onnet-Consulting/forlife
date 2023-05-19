@@ -30,7 +30,7 @@ class ReportNum1(models.TransientModel):
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
 
-    def _get_query(self, product_ids, warehouse_ids):
+    def _get_query(self, product_ids, warehouse_ids, allowed_company):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
@@ -64,7 +64,7 @@ from pos_order_line pol
     left join store on store.id = pc.store_id
     left join stock_warehouse wh on wh.id = store.warehouse_id
     left join product_category cate on cate.id = (select categ_id from product_data_by_id where id = pp.id)
-where po.company_id = {self.company_id.id}
+where po.company_id = any(array{allowed_company})
     and po.state in ('paid', 'done', 'invoiced')
     and {format_date_query("po.date_order", tz_offset)} >= '{self.from_date}'
     and {format_date_query("po.date_order", tz_offset)} <= '{self.to_date}'
@@ -119,7 +119,7 @@ WITH account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho b
     from product_category cate
         left join ir_property ir on ir.res_id = concat('product.category,', cate.id)
         left join account_account aa on concat('account.account,',aa.id) = ir.value_reference
-    where  ir.name='property_stock_valuation_account_id' and ir.company_id = {self.company_id.id}
+    where  ir.name='property_stock_valuation_account_id' and ir.company_id = any(array{allowed_company})
     order by cate.id 
 ),
 product_data_by_id as ( -- lấy tên sản phẩm đã convert, đơn vị tính đã conver, categ_id bằng product.product ID
@@ -182,11 +182,12 @@ order by product_name
         return final_query
 
     def get_data(self, allowed_company):
+        allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
         product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
         warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)]).ids or [-1]
-        query = self._get_query(product_ids, warehouse_ids)
+        query = self._get_query(product_ids, warehouse_ids, allowed_company)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         values.update({
