@@ -712,9 +712,37 @@ class PurchaseOrder(models.Model):
                             _('Không thể tạo hóa đơn khi không còn phiếu nhập kho liên quan!'))
                 invoice_vals_list.append(invoice_vals)
 
-            if not invoice_vals_list:
-                raise UserError(
-                    _('There is no invoiceable line. If a product has a control policy based on received quantity, please make sure that a quantity has been received.'))
+                # 2) group by (company_id, partner_id, currency_id) for batch creation
+                new_invoice_vals_list = []
+                for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
+                        x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
+                    origins = set()
+                    payment_refs = set()
+                    refs = set()
+                    ref_invoice_vals = None
+                    # request_co = []
+                    # request_co.append((0, 0, {
+                    #     'request_code': self.source_document
+                    # }))
+                    for invoice_vals in invoices:
+                        if not ref_invoice_vals:
+                            ref_invoice_vals = invoice_vals
+                        else:
+                            ref_invoice_vals['invoice_line_ids'] += invoice_vals['invoice_line_ids']
+                        origins.add(invoice_vals['invoice_origin'])
+                        payment_refs.add(invoice_vals['payment_reference'])
+                        refs.add(invoice_vals['ref'])
+                    ref_invoice_vals.update({
+                        'purchase_type': self.purchase_type if len(self) == 1 else 'product',
+                        'reference': ', '.join(self.mapped('name')),
+                        'ref': ', '.join(refs)[:2000],
+                        'invoice_origin': ', '.join(origins),
+                        'is_check': True,
+                        # 'invoice_line_ids': request_co,
+                        'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
+                    })
+                    new_invoice_vals_list.append(ref_invoice_vals)
+                invoice_vals_list = new_invoice_vals_list
 
             # 2) group by (company_id, partner_id, currency_id) for batch creation
             new_invoice_vals_list = []

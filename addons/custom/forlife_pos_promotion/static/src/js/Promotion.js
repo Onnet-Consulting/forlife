@@ -56,18 +56,19 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.surprisingRewardProducts = loadedData['surprising.reward.product.line'] || [];
         this.promotionComboLines = loadedData['promotion.combo.line'] || [];
         this.rewardLines = loadedData['promotion.reward.line'] || [];
-        this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
         this.monthData = loadedData['month.data'] || [];
         this.dayofmonthData = loadedData['dayofmonth.data'] || [];
         this.dayofweekData = loadedData['dayofweek.data'] || [];
         this.hourData = loadedData['hour.data'] || [];
+        this.promotionPricelistItems = [];
         this._loadPromotionData();
+        this.loadPromotionPriceListItemBackground();
     }
     _loadPromotionData() {
         this.promotion_program_by_id = {};
         this.reward_line_by_id = {};
         this.pro_pricelist_item_by_id = {};
-        this.pricelistProApplicableProducts = new Set(); // todo: use to estimate performance
+//        this.pricelistProApplicableProducts = new Set(); // todo: use to estimate performance
         var self = this;
         for (const line of this.surprisingRewardProducts) {
             line.to_check_product_ids = new Set(line.to_check_product_ids);
@@ -141,10 +142,34 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             reward.program = this.promotion_program_by_id[reward.program_id];
             reward.program.rewards.push(reward);
         };
-        for (let item of this.promotionPricelistItems) {
+    }
+
+    async loadPromotionPriceListItemBackground() {
+        let page = 0;
+        let promotionItems = [];
+        do {
+            promotionItems = await this.env.services.rpc({
+                model: 'pos.session',
+                method: 'get_pos_ui_promotion_price_list_item_by_params',
+                args: [odoo.pos_session_id, {
+                    offset: page * 10000,
+                    limit: 10000,
+                }],
+            }, { shadow: true });
+
+            this._loadPromotionPriceListItem(promotionItems);
+            page += 1;
+        } while(promotionItems.length > 0);
+        if (this.get_order() && promotionItems.length > 0) {
+            this.get_order().assign_pricelist_item_to_orderline();
+        };
+    }
+
+    _loadPromotionPriceListItem(promotionItems) {
+        for (let item of promotionItems) {
             let str_id = `${item.program_id[0]}p${item.id}`;
             this.pro_pricelist_item_by_id[str_id] = item;
-            self.pricelistProApplicableProducts.add(item.product_id[0]); // todo: bổ sung thêm nếu sử dụng cơ chế load CT làm giá trong background
+//            self.pricelistProApplicableProducts.add(item.product_id[0]); // todo: bổ sung thêm nếu sử dụng cơ chế load CT làm giá trong background
             item.product_id = item.product_id[0];
             item.str_id = str_id;
             item.program_id = item.program_id[0];
@@ -158,6 +183,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             delete program_clone.display_name;
             item = Object.assign(item, program_clone);
         };
+        this.promotionPricelistItems.push(...promotionItems);
     }
 
     get_reward_product_ids(program) {
@@ -184,10 +210,10 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         str_id = String(str_id);
         if (str_id.includes('p')) {
             let [pId, itemId] = str_id.split('p');
-            return this.promotionPricelistItems.find(p => p.id == itemId)
+            return this.pro_pricelist_item_by_id[str_id];
         } else {
-            return this.promotionPrograms.find(p=>p.id == str_id)
-        }
+            return this.promotion_program_by_id[str_id];
+        };
     }
 
     getPromotionCode(program) {
@@ -819,9 +845,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let result = [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
         var valid_product_ids = codeProgram.valid_product_ids;
 
-        if (codeProgram.reward_type == "code_amount") {
-            max_count = 1;
-        }
+//        if (codeProgram.reward_type == "code_amount") {
+//            max_count = 1;
+//        }
         // todo: consider to sort by 'lst_price' ASC for type code_buy_x_get_cheapest
         to_check_order_lines.sort((a,b) => (a.product.lst_price < b.product.lst_price) ? 1 : ((b.product.lst_price < a.product.lst_price) ? -1 : 0))
         var oneCombo = [];
@@ -1428,6 +1454,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
         let result = [];
         for (let program of cardPrograms) {
+            let max_reward_quantity = program.reward_quantity;
+            let required_order_amount_min = program.order_amount_min;
             if (!this._programIsApplicableAutomatically(program)) {
                 continue
             };
@@ -1445,6 +1473,12 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (program.order_amount_min >0 && program.order_amount_min > amountCheck) {
                 continue;
             };
+            // Tính lũy tuyến cho số lượng phần thưởng
+            if (program.progressive_reward_compute && program.order_amount_min) {
+                let floorNumber = Math.floor(amountCheck/program.order_amount_min);
+                max_reward_quantity = floorNumber * program.reward_quantity;
+                required_order_amount_min = floorNumber * required_order_amount_min;
+            }
             let to_check_products = program.valid_product_ids.size > 0;
             let qty_taken = 0;
             for (const line of orderLines) {
@@ -1470,6 +1504,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             result.push({
                 id: program.id,
                 program: program,
+                max_reward_quantity: max_reward_quantity,
+                required_order_amount_min: required_order_amount_min,
                 voucher_program_id,
                 to_reward_lines,
                 to_discount_lines,
