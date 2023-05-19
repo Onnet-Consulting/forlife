@@ -4,8 +4,12 @@
         <record model="ir.rule" id="purchase_request_read">
             <field name="name">purchase_request_read</field>
             <field name="model_id" ref="purchase_request.model_purchase_request"/>
-            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
-                False), ('department_id','=', user.get_department())]
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', '|', '&amp;', '|', ('department_id','=', user.get_department()),
+                ('department_id','=',
+                False), ('team_id','=', user.get_team()), ('team_id','=',
+                False), ('company_id','=', user.get_company()), ('company_id','=',
+                False)]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -16,8 +20,12 @@
         <record model="ir.rule" id="purchase_request_write_create">
             <field name="name">purchase_request_write_create</field>
             <field name="model_id" ref="purchase_request.model_purchase_request"/>
-            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
-                False), ('department_id','=', user.get_department())]
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', '|', '&amp;', '|', ('department_id','=', user.get_department()),
+                ('department_id','=',
+                False), ('team_id','=', user.get_team()), ('team_id','=',
+                False), ('company_id','=', user.get_company()), ('company_id','=',
+                False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -28,8 +36,12 @@
         <record model="ir.rule" id="purchase_request_unlink">
             <field name="name">purchase_request_unlink</field>
             <field name="model_id" ref="purchase_request.model_purchase_request"/>
-            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
-                False), ('department_id','=', user.get_department())]
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', '|', '&amp;', '|', ('department_id','=', user.get_department()),
+                ('department_id','=',
+                False), ('team_id','=', user.get_team()), ('team_id','=',
+                False), ('company_id','=', user.get_company()), ('company_id','=',
+                False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
@@ -40,8 +52,12 @@
         <record model="ir.rule" id="forlife_other_in_out_request_read">
             <field name="name">forlife_other_in_out_request_read</field>
             <field name="model_id" ref="forlife_stock.model_forlife_other_in_out_request"/>
-            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
-                False), ('department_id','=', user.get_department())]
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', '|', '&amp;', '|', ('department_id','=', user.get_department()),
+                ('department_id','=',
+                False), ('team_id','=', user.get_team()), ('team_id','=',
+                False), ('company_id','=', user.get_company()), ('company_id','=',
+                False)]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -52,8 +68,12 @@
         <record model="ir.rule" id="forlife_other_in_out_request_write_create">
             <field name="name">forlife_other_in_out_request_write_create</field>
             <field name="model_id" ref="forlife_stock.model_forlife_other_in_out_request"/>
-            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
-                False), ('department_id','=', user.get_department())]
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', '|', '&amp;', '|', ('department_id','=', user.get_department()),
+                ('department_id','=',
+                False), ('team_id','=', user.get_team()), ('team_id','=',
+                False), ('company_id','=', user.get_company()), ('company_id','=',
+                False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -64,8 +84,60 @@
         <record model="ir.rule" id="forlife_other_in_out_request_unlink">
             <field name="name">forlife_other_in_out_request_unlink</field>
             <field name="model_id" ref="forlife_stock.model_forlife_other_in_out_request"/>
-            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
-                False), ('department_id','=', user.get_department())]
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', '|', '&amp;', '|', ('department_id','=', user.get_department()),
+                ('department_id','=',
+                False), ('team_id','=', user.get_team()), ('team_id','=',
+                False), ('company_id','=', user.get_company()), ('company_id','=',
+                False)]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record model="ir.rule" id="stock_transfer_request_read">
+            <field name="name">stock_transfer_request_read</field>
+            <field name="model_id" ref="forlife_stock.model_stock_transfer_request"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', '|', '&amp;', '|', ('department_id','=', user.get_department()),
+                ('department_id','=',
+                False), ('team_id','=', user.get_team()), ('team_id','=',
+                False), ('company_id','=', user.get_company()), ('company_id','=',
+                False)]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="stock_transfer_request_write_create">
+            <field name="name">stock_transfer_request_write_create</field>
+            <field name="model_id" ref="forlife_stock.model_stock_transfer_request"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', '|', '&amp;', '|', ('department_id','=', user.get_department()),
+                ('department_id','=',
+                False), ('team_id','=', user.get_team()), ('team_id','=',
+                False), ('company_id','=', user.get_company()), ('company_id','=',
+                False)]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="stock_transfer_request_unlink">
+            <field name="name">stock_transfer_request_unlink</field>
+            <field name="model_id" ref="forlife_stock.model_stock_transfer_request"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', '|', '&amp;', '|', ('department_id','=', user.get_department()),
+                ('department_id','=',
+                False), ('team_id','=', user.get_team()), ('team_id','=',
+                False), ('company_id','=', user.get_company()), ('company_id','=',
+                False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>
@@ -76,8 +148,9 @@
         <record model="ir.rule" id="stock_transfer_read">
             <field name="name">stock_transfer_read</field>
             <field name="model_id" ref="stock.model_stock_transfer"/>
-            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
-                False), ('department_id','=', user.get_department())]
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', ('location_id','in', user.get_stock()), ('location_dest_id','in',
+                False)]
             </field>
             <field name="perm_read" eval="True"/>
             <field name="perm_write" eval="False"/>
@@ -88,8 +161,9 @@
         <record model="ir.rule" id="stock_transfer_write_create">
             <field name="name">stock_transfer_write_create</field>
             <field name="model_id" ref="stock.model_stock_transfer"/>
-            <field name="domain_force">['|', '|', ('department_id','=', user.get_department()), ('department_id','=',
-                False), ('department_id','=', user.get_department())]
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', ('location_id','in', user.get_stock()), ('location_dest_id','in',
+                False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="True"/>
@@ -100,8 +174,48 @@
         <record model="ir.rule" id="stock_transfer_unlink">
             <field name="name">stock_transfer_unlink</field>
             <field name="model_id" ref="stock.model_stock_transfer"/>
-            <field name="domain_force">['|', '|', ('stock_id','=', user.get_department()), ('department_id','=',
-                False), ('department_id','=', user.get_department())]
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', ('location_id','in', user.get_stock()), ('location_dest_id','in',
+                False)]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <record model="ir.rule" id="stock_picking_read">
+            <field name="name">stock_picking_read</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', ('location_id','in', user.get_stock()), ('location_dest_id','in',
+                False)]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="stock_picking_write_create">
+            <field name="name">stock_picking_write_create</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', ('location_id','in', user.get_stock()), ('location_dest_id','in',
+                False)]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="stock_picking_unlink">
+            <field name="name">stock_picking_unlink</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', ('location_id','in', user.get_stock()), ('location_dest_id','in',
+                False)]
             </field>
             <field name="perm_read" eval="False"/>
             <field name="perm_write" eval="False"/>

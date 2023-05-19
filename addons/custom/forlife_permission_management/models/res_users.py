@@ -17,7 +17,34 @@ class ResUsers(models.Model):
 
     @api.model
     def get_department(self):
-        department_ids = self.department_ids.mapped('id') if self.department_ids else []
+        if not self.department_ids:
+            department_ids = self.department_ids.search([]).mapped('id')
+        else:
+            department_ids = self.department_ids.mapped('id')
         return department_ids
+
+    @api.model
+    def get_team(self):
+        if not self.x_studio_many2one_field_AkIph:
+            team_ids = self.x_studio_many2one_field_AkIph.search([]).mapped('id')
+        else:
+            team_ids = self.x_studio_many2one_field_AkIph.mapped('id')
+        return team_ids
+
+    @api.model
+    def get_company(self):
+        if not self.conpany_ids:
+            conpany_ids = self.conpany_ids.search([]).mapped('id')
+        else:
+            conpany_ids = self.conpany_ids.mapped('id')
+        return conpany_ids
+
+    @api.model
+    def get_stock(self):
+        if not self.stock_ids:
+            stock_ids = self.stock_ids.search([]).mapped('id')
+        else:
+            stock_ids = self.stock_ids.mapped('id')
+        return stock_ids
 
 
