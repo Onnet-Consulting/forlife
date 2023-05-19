@@ -298,7 +298,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     po_id = fields.Char('')
-    ware_check_line = fields.Boolean('')
+    ware_check_line = fields.Boolean('', default=False)
 
     @api.constrains('qty_done', 'picking_id.move_ids_without_package')
     def constrains_qty_done(self):
