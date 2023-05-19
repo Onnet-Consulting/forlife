@@ -21,6 +21,7 @@
         'forlife_pos_point_order',
         'forlife_point_of_sale',
         'forlife_pos_app_member',
+        'forlife_voucher',
     ],
     'auto_install': True,
 

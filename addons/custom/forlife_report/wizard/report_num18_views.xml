@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="report_num13_form" model="ir.ui.view">
+    <record id="report_num18_form" model="ir.ui.view">
         <field name="name">form</field>
-        <field name="model">report.num13</field>
+        <field name="model">report.num18</field>
         <field name="arch" type="xml">
-            <form string="Report on the status of PO" create="0">
+            <form string="Purchase Request Detail Report" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
                         <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
                     </div>
                     <group>
@@ -17,9 +18,10 @@
                                 to
                                 <field name="to_date" class="oe_inline" required="1"/>
                             </div>
+                            <field name="state" class="oe_inline"/>
                         </group>
                         <group>
-                            <field name="po_number" placeholder="PO001,PO002,..."/>
+                            <field name="pr_number" placeholder="PR001,PR002,..."/>
                         </group>
                     </group>
                 </sheet>
@@ -27,15 +29,15 @@
         </field>
     </record>
 
-    <record id="report_num13_window_action" model="ir.actions.act_window">
-        <field name="name">Report on the status of PO</field>
-        <field name="res_model">report.num13</field>
+    <record id="report_num18_window_action" model="ir.actions.act_window">
+        <field name="name">Purchase Request Detail Report</field>
+        <field name="res_model">report.num18</field>
         <field name="view_mode">form</field>
         <field name="target">inline</field>
     </record>
 
-    <menuitem id="report_num13_menu"
-              action="report_num13_window_action"
+    <menuitem id="report_num18_menu"
+              action="report_num18_window_action"
               parent="report_menu_purchase"
-              sequence="0"/>
+              sequence="5"/>
 </odoo>

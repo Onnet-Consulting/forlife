@@ -77,8 +77,8 @@ order_line_data as (
         pol.price_unit 																	 		    as lst_price,
         coalesce((select sum(
             case when type = 'card' then recipe * listed_price / 100 else recipe * 1000 end
-        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)::int
-        + (pol.discount * pol.price_unit * pol.qty / 100)::int									    as money_reduced,
+        ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)
+        + (pol.discount * pol.price_unit * pol.qty / 100)									        as money_reduced,
         0																		 		 		    as price_subtotal,
         ''																		 		 		    as note
     from pos_order_line pol
@@ -130,11 +130,11 @@ prepare_value_data_invoice_list as (
         customer_code,
         customer_phone,
         sum(qty) as sl,
-        sum(qty * lst_price)::int as tt,
+        sum(qty * lst_price) as tt,
         sum(money_reduced) as money_reduced,
-        sum(0)::int as gg_bill,
-        sum(case when qty >= 0 then price_subtotal else 0 end)::int as money_real,
-        sum(case when qty < 0 then price_subtotal else 0 end)::int as refund,
+        sum(0) as gg_bill,
+        sum(case when qty >= 0 then price_subtotal else 0 end) as money_real,
+        sum(case when qty < 0 then price_subtotal else 0 end) as refund,
         note
     from order_line_data
     group by employee_id,
@@ -156,7 +156,7 @@ total_by_time as (
     select employee_id, json_object_agg({self.view_type}, total) as qty_by_time from (
         select employee_id,
             {self.view_type},
-            sum(case when qty < 0 then qty * lst_price + money_reduced else qty * lst_price - money_reduced  end)::int as total
+            sum(case when qty < 0 then qty * lst_price + money_reduced else qty * lst_price - money_reduced  end) as total
         from order_line_data group by employee_id, {self.view_type}
     ) as tb_by_time group by employee_id
 ),
