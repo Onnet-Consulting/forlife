@@ -42,6 +42,7 @@ class ProductDefective(models.Model):
     def action_approve(self):
         if self.quantity_defective_approved > self.quantity_inventory_store - self.quantity_can_be_sale:
             raise ValidationError(_('Tồn kho không đáp ứng'))
+        self.quantity_can_be_sale = self.quantity_defective_approved
         self.state = 'approved'
 
     def action_refuse(self):
