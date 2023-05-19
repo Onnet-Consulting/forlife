@@ -15,4 +15,5 @@ from . import hr_asset_transfer
 from . import assets_assets
 from . import res_currency_rate
 from . import account_move
+from . import stock_warehouse
 # from . import product_product
