@@ -893,6 +893,24 @@ class PurchaseOrder(models.Model):
             })
         return vals
 
+    product_not_is_passersby = fields.Many2many('product.product', compute='compute_product_is_passersby')
+
+    @api.depends('partner_id', 'partner_id.is_passersby')
+    def compute_product_is_passersby(self):
+        for rec in self:
+            if rec.partner_id:
+                data = []
+                if not rec.partner_id.is_passersby:
+                    data_product_not_is_passersby = self.env['product.supplierinfo'].search(
+                        [('partner_id', '=', rec.partner_id.id)])
+                    for item in data_product_not_is_passersby:
+                        if item.product_id:
+                            data.append(item.product_id.id)
+                    rec.product_not_is_passersby = [(6, 0, data)]
+                else:
+                    data_product_is_passersby = self.env['product.product'].search([])
+                    rec.product_not_is_passersby = [(6, 0, data_product_is_passersby.ids)]
+
 
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
@@ -933,7 +951,6 @@ class PurchaseOrderLine(models.Model):
     readonly_discount = fields.Boolean(default=False)
     readonly_discount_percent = fields.Boolean(default=False)
     request_purchases = fields.Char(string='Purchases', readonly=1)
-    is_passersby = fields.Boolean(related='order_id.is_passersby')
     supplier_id = fields.Many2one('res.partner', related='order_id.partner_id')
     receive_date = fields.Datetime(string='Date receive')
     tolerance = fields.Float(related='product_id.tolerance', string='Dung sai')
