@@ -134,13 +134,16 @@ data_final as (
         join card_rank cr on cr.id = cpcr.current_rank_id
         join value_to_upper_by_customer vtu on vtu.pcr_id = cpcr.pcr_id
 )
-select * from data_final where value_remind <= dt_ps
-        """
+select *, row_number() over () as num
+from data_final
+where value_remind <= dt_ps
+order by num
+"""
         return query
 
-    def get_data(self):
+    def get_data(self, allowed_company):
         self.ensure_one()
-        values = dict(super().get_data())
+        values = dict(super().get_data(allowed_company))
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()
@@ -149,3 +152,31 @@ select * from data_final where value_remind <= dt_ps
             "data": data,
         })
         return values
+
+    def generate_xlsx_report(self, workbook, allowed_company):
+        data = self.get_data(allowed_company)
+        formats = self.get_format_workbook(workbook)
+        sheet = workbook.add_worksheet('Sắp lên hạng')
+        sheet.set_row(0, 25)
+        sheet.write(0, 0, 'Sắp lên hạng', formats.get('header_format'))
+        sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))
+        sheet.write(2, 2, 'Đến ngày %s' % self.to_date.strftime('%d/%m/%Y'), formats.get('italic_format'))
+        for idx, title in enumerate(data.get('titles')):
+            sheet.write(4, idx, title, formats.get('title_format'))
+        sheet.set_column(0, len(TITLES), 20)
+        row = 5
+        for value in data.get('data'):
+            sheet.write(row, 0, value.get('num'), formats.get('center_format'))
+            sheet.write(row, 1, value.get('store_name'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('customer_info')[0], formats.get('normal_format'))
+            sheet.write(row, 3, value.get('customer_info')[1], formats.get('normal_format'))
+            sheet.write(row, 4, value.get('customer_info')[2], formats.get('normal_format'))
+            sheet.write(row, 5, value.get('customer_info')[3], formats.get('normal_format'))
+            sheet.write(row, 7, value.get('ngay_mua_dk'), formats.get('center_format'))
+            sheet.write(row, 8, value.get('ngay_mua_gn'), formats.get('center_format'))
+            sheet.write(row, 8, value.get('ngay_ck'), formats.get('center_format'))
+            sheet.write(row, 9, value.get('dt_ps', 0), formats.get('int_number_format'))
+            sheet.write(row, 9, value.get('min_turnover', 0) - value.get('dt_ps', 0), formats.get('int_number_format'))
+            sheet.write(row, 10, value.get('current_rank'), formats.get('normal_format'))
+            sheet.write(row, 11, value.get('new_rank'), formats.get('normal_format'))
+            row += 1
