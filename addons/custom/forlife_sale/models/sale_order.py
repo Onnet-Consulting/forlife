@@ -159,6 +159,14 @@ class SaleOrderLine(models.Model):
     x_account_analytic_id = fields.Many2one('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_id = fields.Many2one('occasion.code', string='Mã vụ việc')
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        if self._context.get('import_file'):
+            for line in lines:
+                line._set_price_unit()
+        return lines
+
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
@@ -176,6 +184,8 @@ class SaleOrderLine(models.Model):
     @api.onchange('price_unit')
     def _set_price_unit(self):
         if self.product_id and self.price_unit:
+            if self.product_id.product_tmpl_id.x_free_good:
+                self.price_unit = 0
             if self.product_id.product_tmpl_id.x_negative_value:
                 self.price_unit = - abs(self.price_unit)
             else:
