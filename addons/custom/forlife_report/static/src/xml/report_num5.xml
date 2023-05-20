@@ -57,7 +57,7 @@
                             <td><t t-esc="format_decimal(line.tt, 0)"/></td>
                             <td><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
                             <td><t t-esc="format_decimal(line.gg_bill, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.money_real, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.tt - line.money_reduced - line.gg_bill, 0)"/></td>
                             <td><t t-esc="format_decimal(line.refund, 0)"/></td>
                             <td><t t-esc="line.note"/></td>
                         </tr>

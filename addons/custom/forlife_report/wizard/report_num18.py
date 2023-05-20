@@ -27,7 +27,7 @@ class ReportNum18(models.TransientModel):
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
 
-    def _get_query(self):
+    def _get_query(self, allowed_company):
         self.ensure_one()
         tz_offset = self.tz_offset
         user_lang_code = self.env.user.lang
@@ -79,7 +79,7 @@ from purchase_request_line prl
     left join account_analytic_account aaa on aaa.id = prl.account_analytic_id
     left join forlife_production fp on fp.id = prl.production_id
     left join occasion_code oc on oc.id = pr.occasion_code_id
-where pr.company_id = {self.company_id.id}
+where pr.company_id = any( array{allowed_company})
   and {format_date_query("pr.request_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
   {where_condition}
   order by pr.id, prl.id
@@ -87,9 +87,10 @@ where pr.company_id = {self.company_id.id}
         return sql
 
     def get_data(self, allowed_company):
+        allowed_company = allowed_company or [-1]
         self.ensure_one()
         values = dict(super().get_data(allowed_company))
-        query = self._get_query()
+        query = self._get_query(allowed_company)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         values.update({
