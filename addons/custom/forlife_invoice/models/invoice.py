@@ -613,6 +613,7 @@ class AccountMoveLine(models.Model):
     #             else:
     #                 pass
 
+
     @api.depends('quantity', 'price_unit', 'taxes_id')
     def _compute_tax_amount(self):
         for line in self:
