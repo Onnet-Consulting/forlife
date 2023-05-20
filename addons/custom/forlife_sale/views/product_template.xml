@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='taxes_id']" position="before">
                     <field name="x_negative_value"/>
+                    <field name="x_free_good"/>
                 </xpath>
             </field>
         </record>
