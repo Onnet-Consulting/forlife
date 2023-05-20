@@ -5,7 +5,7 @@ class RejectAssetTransfer(models.TransientModel):
     _name = "reject.asset.transfer"
     _description = "Reject Asset Transfer"
 
-    reject_reason = fields.Text()
+    reject_reason = fields.Text(string='Lý do từ chối')
 
     def action_reject(self):
         req_id = self._context.get('active_id')
