@@ -190,7 +190,7 @@ class StockPicking(models.Model):
     @api.depends('move_line_ids_without_package', 'move_line_ids_without_package.ware_check_line')
     def compute_ware_check(self):
         for rec in self:
-            rec.is_no_more_quantity = all(rec.order_lines.mapped('ware_check_line'))
+            rec.ware_check = all(rec.move_line_ids_without_package.mapped('ware_check_line'))
 
 
 class StockMove(models.Model):
@@ -300,11 +300,11 @@ class StockMoveLine(models.Model):
     po_id = fields.Char('')
     ware_check_line = fields.Boolean('', default=False)
 
-    @api.constrains('qty_done', 'picking_id.move_ids_without_package')
-    def constrains_qty_done(self):
-        for rec in self:
-            for line in rec.picking_id.move_ids_without_package:
-                if rec.product_id == line.product_id:
-                    if rec.qty_done > line.product_uom_qty:
-                        raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
+    # @api.constrains('qty_done', 'picking_id.move_ids_without_package')
+    # def constrains_qty_done(self):
+    #     for rec in self:
+    #         for line in rec.picking_id.move_ids_without_package:
+    #             if rec.product_id == line.product_id:
+    #                 if rec.qty_done > line.product_uom_qty:
+    #                     raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 

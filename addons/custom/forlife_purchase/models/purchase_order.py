@@ -663,9 +663,20 @@ class PurchaseOrder(models.Model):
         default['custom_state'] = 'draft'
         return super().copy(default)
 
+    # ware_house = fields.Many2many('stock.picking')
+    #
+    # @api.depends('name', 'location_id')
+    # def _compute_domain_ware_house(self):
+    #     for rec in self:
+    #         data_search = self.env['stock.picking'].search([('origin', '=', self.name),
+    #                                                        ('state', '=', 'done'),
+    #                                                        ('ware_check', '=', True)]).picking_type_id
+
+
     def action_create_invoice(self):
         """Create the invoice associated to the PO.
         """
+
         if len(self) > 1 and self[0].type_po_cost in ('cost', 'tax'):
             result = self.create_multi_invoice_vendor()
         else:
@@ -674,6 +685,9 @@ class PurchaseOrder(models.Model):
             invoice_vals_list = []
             sequence = 10
             for order in self:
+                picking_in = self.env['stock.picking'].search([('origin', '=', order.name),
+                                                               ('state', '=', 'done'),
+                                                               ('ware_check', '=', False)])
                 if order.custom_state != 'approved':
                     raise UserError(
                         _('Tạo hóa đơn không hợp lệ!'))
@@ -684,9 +698,6 @@ class PurchaseOrder(models.Model):
                 invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.now(),
                                      'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
                 # Invoice line values (keep only necessary sections).
-                picking_in = self.env['stock.picking'].search([('origin', '=', order.name),
-                                                               ('state', '=', 'done'),
-                                                               ('ware_check', '=', False)])
 
                 for line in order.order_line:
                     wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
@@ -735,12 +746,9 @@ class PurchaseOrder(models.Model):
                         raise UserError(
                             _('Không thể tạo hóa đơn khi không còn phiếu nhập kho liên quan!'))
 
-            if not invoice_vals_list:
-                raise UserError(
-                    _('There is no invoiceable line. If a product has a control policy based on received quantity, please make sure that a quantity has been received.'))
-
             # 2) group by (company_id, partner_id, currency_id) for batch creation
             new_invoice_vals_list = []
+            picking_incoming = picking_in.filtered(lambda r: r.origin == order.name and r.state == 'done' and r.picking_type_id.code == 'incoming' and r.ware_check == False)
             for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
                     x.get('company_id'), x.get('partner_id'), x.get('currency_id'), x.get('location_id'))):
                 origins = set()
@@ -762,6 +770,7 @@ class PurchaseOrder(models.Model):
                     'invoice_origin': ', '.join(origins),
                     'is_check': True,
                     'purchase_order_product_id': [(6, 0, [self.id])],
+                    'receiving_warehouse_id': [(6, 0, picking_incoming.ids)],
                     'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                 })
                 new_invoice_vals_list.append(ref_invoice_vals)
@@ -772,6 +781,7 @@ class PurchaseOrder(models.Model):
             AccountMove = self.env['account.move'].with_context(default_move_type='in_invoice')
             for vals in invoice_vals_list:
                 moves |= AccountMove.with_company(vals['company_id']).create(vals)
+
             # 4) Some moves might actually be refunds: convert them if the total amount is negative
             # We do this after the moves have been created since we need taxes, etc. to know if the total
             # is actually negative or not
@@ -882,6 +892,24 @@ class PurchaseOrder(models.Model):
                 'company_id': self.company_id.id,
             })
         return vals
+
+    product_not_is_passersby = fields.Many2many('product.product', compute='compute_product_is_passersby')
+
+    @api.depends('partner_id', 'partner_id.is_passersby')
+    def compute_product_is_passersby(self):
+        for rec in self:
+            if rec.partner_id:
+                data = []
+                if not rec.partner_id.is_passersby:
+                    data_product_not_is_passersby = self.env['product.supplierinfo'].search(
+                        [('partner_id', '=', rec.partner_id.id)])
+                    for item in data_product_not_is_passersby:
+                        if item.product_id:
+                            data.append(item.product_id.id)
+                    rec.product_not_is_passersby = [(6, 0, data)]
+                else:
+                    data_product_is_passersby = self.env['product.product'].search([])
+                    rec.product_not_is_passersby = [(6, 0, data_product_is_passersby.ids)]
 
 
 class PurchaseOrderLine(models.Model):
@@ -1009,14 +1037,6 @@ class PurchaseOrderLine(models.Model):
         for item in self:
             if len(item.taxes_id) > 1:
                 raise ValidationError('Bạn chỉ chọn được 1 giá trị thuế')
-
-    @api.constrains('price_subtotal, price_total')
-    def constrains_taxes_id(self):
-        for item in self:
-            if item.price_subtotal <= 0:
-                raise ValidationError('Bạn không thể nhập kho với đơn mua hàng có tổng thành tiền bằng 0!')
-            if item.price_total <= 0:
-                raise ValidationError('Bạn không thể nhập kho với đơn mua hàng có tổng thành tiền bằng 0!')
 
     _sql_constraints = [
         (
@@ -1364,12 +1384,15 @@ class StockPicking(models.Model):
                                       ('state', '=', 'done'),
                                       ('ware_check', '=', False)])
             for line in po.order_line:
+                if line.price_subtotal <= 0:
+                    raise ValidationError('Bạn không thể nhập kho với đơn mua hàng có tổng thành tiền bằng 0!')
+                if line.price_total <= 0:
+                    raise ValidationError('Bạn không thể nhập kho với đơn mua hàng có tổng thành tiền bằng 0!')
                 for item in picking_in.move_line_ids_without_package:
                     if item.product_id.id == line.product_id.id:
                         item.write({
                             'po_id': line.id
                         })
-
         return res
 
     def create_account_move(self, po, line, record):
