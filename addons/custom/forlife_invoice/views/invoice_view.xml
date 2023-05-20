@@ -103,7 +103,6 @@
                     <field name="x_asset_fin" widget="radio"/>
                     <field name="x_root" widget="radio"/>
                     <field name="is_check" invisible="1"/>
-                    <field name="product_not_is_passersby" invisible="1"/>
                 </xpath>
                 <xpath expr="//notebook/page[@name='invoice_tab']" position="after">
                     <field name="invoice_line_ids" widget="section_and_note_one2many"
