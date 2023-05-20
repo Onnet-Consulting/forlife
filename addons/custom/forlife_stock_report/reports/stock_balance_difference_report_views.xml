@@ -13,7 +13,8 @@
                     <separator/>
                     <group>
                         <group>
-                            <field name="period"/>
+                            <field name="period_start"/>
+                            <field name="period_end"/>
                             <field name="account_id"/>
                         </group>
                     </group>

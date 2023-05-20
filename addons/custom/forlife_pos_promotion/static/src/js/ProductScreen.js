@@ -13,31 +13,25 @@ export const PosPromotionProductScreen = (ProductScreen) =>
             // Kiểm tra và áp dụng CT Quà tặng bất ngờ
             const order = this.env.pos.get_order();
             order.surprise_reward_program_id = null;
+            order.surprise_reward_program_id = null;
             order.surprising_reward_line_id = null;
-            const inOrderProductsList = order.get_orderlines().filter(l => l.quantity > 0).reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []);
-            let toCheckRewardLines = this.env.pos.surprisingRewardProducts;
-            let validPrograms = [];
-            for (let productLine of toCheckRewardLines) {
-                if (!inOrderProductsList.some(product => productLine.to_check_product_ids.has(product))
-                    && (productLine.max_quantity > productLine.issued_qty || productLine.max_quantity <= 0)) {
-                    validPrograms.push(
-                        [productLine.id, productLine.reward_code_program_id[0], productLine.reward_code_program_id[1]]
-                    );
-                };
-            };
-            if (validPrograms.length > 0 && order.get_partner()) {
-                let programRewards = validPrograms.map((line) => {
-                    return {program_name: line[2], program_id: line[1], line_id: line[0], isSelected: false};
-                });
+            let {validSurprisingPrograms, validBuyVoucherGetCodePrograms} = order.verifySurprisingProgram();
+            if ((validSurprisingPrograms.length > 0 || validBuyVoucherGetCodePrograms.length > 0) && order.get_partner()) {
                 const { confirmed, payload } = await this.showPopup('SurpriseRewardPopup', {
                     title: this.env._t('Please select some rewards'),
-                    programRewards: programRewards || [],
+                    validSurprisingPrograms: validSurprisingPrograms || [],
+                    validBuyVoucherGetCodePrograms: validBuyVoucherGetCodePrograms || []
                 });
-                if (payload) {
-                    order.surprise_reward_program_id = payload.program_id;
-                    order.surprising_reward_line_id = payload.line_id;
-                }
-
+                let [surprisingReward, buyVoucherRewards] = payload || [];
+                if (surprisingReward) {
+                    order.surprise_reward_program_id = surprisingReward.program_id;
+                    order.surprising_reward_line_id = surprisingReward.line_id;
+                };
+                if (!_.isEmpty(buyVoucherRewards)) {
+                    order.buy_voucher_get_code_rewards = buyVoucherRewards.map(r=> {
+                        return {buy_voucher_reward_program_id: r.program_id, surprising_reward_line_id: r.line_id}
+                    });
+                };
             };
             // Kiểm tra còn CTKM chưa được áp dụng hết trên đơn
             let applicablePrograms = this.env.pos.get_order().getPotentialProgramsToSelect();

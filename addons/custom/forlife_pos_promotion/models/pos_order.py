@@ -40,12 +40,13 @@ class PosOrder(models.Model):
         # Gắn Khách hàng vào code đã sử dụng
         code_ids = []
         partner_id = order['data']['partner_id']
-        if partner_id:
+        partner = self.env['res.partner'].browse(partner_id)
+        if partner.exists():
             for line in order['data']['lines']:
                 code_ids += [usage[2].get('code_id') for usage in line[2]['promotion_usage_ids']]
             if len(code_ids) > 0:
                 codes = self.env['promotion.code'].browse(code_ids)
-                codes.used_partner_ids |= self.env['res.partner'].browse(partner_id)
+                codes.used_partner_ids |= partner
         # Kiểm tra và tạo mã Voucher cho khách hàng từ CTKM
         reward_voucher_program_id = order['data'].get('reward_voucher_program_id', 0)
         cart_promotion_program_id = order['data'].get('cart_promotion_program_id', 0)
@@ -57,7 +58,6 @@ class PosOrder(models.Model):
             code_data = order['data'].get('referred_code_id', {})
             code = self.env['promotion.code'].sudo().browse(code_data['id'])
             referring_partner_id = code.partner_id
-            partner = self.env['res.partner'].sudo().browse(partner_id)
             reward_program = self.env['promotion.program'].browse(code_data.get('reward_program_id', 0))
 
             gen_code_wizard = self.env['promotion.generate.code'].create({
@@ -74,19 +74,33 @@ class PosOrder(models.Model):
             })
 
         # Kiểm tra và tạo Mã KM cho chương trình Quà tặng bất ngờ
-        if order['data'].get('surprise_reward_program_id', 0):
+        if order['data'].get('surprise_reward_program_id', 0) and partner.exists():
             surprise_reward_program_id = order['data'].get('surprise_reward_program_id', 0)
             surprising_reward_line_id = order['data'].get('surprising_reward_line_id', 0)
             surprise_program = self.env['promotion.program'].browse(surprise_reward_program_id)
             if surprise_program:
                 gen_code_wizard = self.env['promotion.generate.code'].create({
                     'program_id': surprise_program.id,
-                    'max_usage': 1
+                    'max_usage': surprise_program.max_usage
                 })
-                customer = self.env['res.partner'].sudo().browse(partner_id)
-                new_code = self.env['promotion.code'].create(gen_code_wizard._get_coupon_values(customer, force_partner=True))
+                new_code = self.env['promotion.code'].create(gen_code_wizard._get_coupon_values(partner, force_partner=True))
                 new_code.original_order_id = order_id
                 new_code.surprising_reward_line_id = surprising_reward_line_id
+        # Kiểm tra và tạo Mã KM cho chương trình mua Voucher tặng code giảm giá
+        if order['data'].get('buy_voucher_get_code_rewards', []) and partner.exists():
+            for reward in order['data'].get('buy_voucher_get_code_rewards', []):
+                code_program_id = reward.get('buy_voucher_reward_program_id', 0)
+                line_id = reward.get('surprising_reward_line_id', 0)
+                code_program = self.env['promotion.program'].browse(code_program_id)
+                if code_program.exists():
+                    gen_code_wizard = self.env['promotion.generate.code'].create({
+                        'program_id': code_program.id,
+                        'max_usage': code_program.max_usage
+                    })
+                    new_code = self.env['promotion.code'].create(gen_code_wizard._get_coupon_values(partner, force_partner=True))
+                    new_code.original_order_id = order_id
+                    new_code.surprising_reward_line_id = line_id
+
         # Kiểm tra và ghi nhận số tiền đã sử dụng cho CTKM Code giảm tiền
         code_vals = {}
         for line in order['data']['lines']:

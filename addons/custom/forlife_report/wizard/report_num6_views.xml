@@ -7,6 +7,7 @@
             <form string="Report sale and stock" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
                         <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
                     </div>
                     <group>
@@ -21,11 +22,8 @@
                                 to
                                 <field name="end_time" widget="float_time" class="oe_inline" required="1"/>
                             </div>
-                            <field name="all_warehouses"/>
+                            <field name="warehouse_domain" widget="domain" options="{'model': 'stock.warehouse', 'in_dialog': true}"/>
                         </group>
-                    </group>
-                    <group>
-                        <field name="warehouse_ids" widget="many2many_tags" attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"/>
                     </group>
                 </sheet>
             </form>
