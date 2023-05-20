@@ -19,7 +19,7 @@ class PosOlDiscountDetails(models.Model):
             rec.money_reduced = rec.get_money_reduced()
 
     def get_money_reduced(self):
-        return self.recipe * 1000
+        return -self.recipe * 1000
 
     def _compute_name(self):
         for line in self:

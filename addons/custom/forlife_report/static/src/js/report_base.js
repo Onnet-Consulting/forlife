@@ -26,6 +26,7 @@ odoo.define('forlife_report.report_base', function (require) {
             'click .export_data': 'action_export_data',
             'click .btn_back': 'action_back',
         },
+        record_per_page: 80,
         readDataTimeout: 300,
 
         init: function (parent, action) {
@@ -43,7 +44,7 @@ odoo.define('forlife_report.report_base', function (require) {
             const reportPromise = this._rpc({
                 model: this.report_model,
                 method: 'get_data',
-                args: [this.report_id, this.odoo_context.allowed_company_ids || []],
+                args: [this.report_id],
                 context: this.odoo_context
             }, {
                 // default timeout is 3 seconds
@@ -78,10 +79,9 @@ odoo.define('forlife_report.report_base', function (require) {
             this.reportTitle = data.reportTitle;
             this.reportTemplate = data.reportTemplate;
             this.reportPager = data.reportPager;
-            this.report_filename = data.reportTitle + '.xls';
+            this.report_filename = data.reportTitle + '.xlsx';
             this.report_type_id = 'all_data';
             this.titles = data.titles;
-            this.record_per_page = data.recordPerPage || this.data.length;
             this.total_records = this.data.length;
             this.total_page = Math.ceil(this.total_records / this.record_per_page);
             this.options = this.build_options(1);
@@ -116,13 +116,16 @@ odoo.define('forlife_report.report_base', function (require) {
         },
 
         export_data_by_id: function (id, filename) {
+            var downloadLink;
+            var dataType = 'application/vnd.ms-excel;';
             var tableSelect = document.getElementById(id);
             if (!tableSelect) {
                 alert(_.str.sprintf(_t("Data not found by id '%s'"), id));
             } else {
-                var downloadLink = document.createElement("a");
+                var data = tableSelect.outerText.replace(/ /g, '%20');
+                downloadLink = document.createElement("a");
                 document.body.appendChild(downloadLink);
-                downloadLink.href = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURI("\uFEFF" + tableSelect.outerHTML);
+                downloadLink.href = 'data:' + dataType + ',' + data;
                 downloadLink.download = filename;
                 downloadLink.click();
             }

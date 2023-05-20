@@ -10,9 +10,10 @@
         <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
             <t t-call="ReportTitle"/>
             <tbody>
-                <t t-foreach="options.data" t-as="line">
+                <t t-set="num" t-value="1"/>
+                <t t-foreach="widget.data" t-as="line">
                     <tr>
-                        <td><t t-esc="line.num"/></td>
+                        <td><t t-esc="num"/></td>
                         <td><t t-esc="line.date"/></td>
                         <td><t t-esc="line.so_ct"/></td>
                         <td><t t-esc="line.wh_name"/></td>
@@ -40,6 +41,7 @@
                         <td><t t-esc="line.ngay_to_khai"/></td>
                         <td><t t-esc="line.dien_giai"/></td>
                     </tr>
+                    <t t-set="num" t-value="num + 1"/>
                 </t>
             </tbody>
         </table>

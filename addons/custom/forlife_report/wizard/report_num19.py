@@ -62,9 +62,9 @@ order by str.id, trl.id
 """
         return sql
 
-    def get_data(self, allowed_company):
+    def get_data(self):
         self.ensure_one()
-        values = dict(super().get_data(allowed_company))
+        values = dict(super().get_data())
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()
@@ -74,8 +74,8 @@ order by str.id, trl.id
         })
         return values
 
-    def generate_xlsx_report(self, workbook, allowed_company):
-        data = self.get_data(allowed_company)
+    def generate_xlsx_report(self, workbook):
+        data = self.get_data()
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet('Báo cáo tình hình thực hiện yêu cầu chuyển kho')
         sheet.set_row(0, 25)

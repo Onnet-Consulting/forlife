@@ -103,7 +103,6 @@ class PosSession(models.Model):
                     'id',
                     'to_check_product_ids',
                     'reward_code_program_id',
-                    'has_check_product',
                     'max_quantity',
                     'issued_qty'
                 ]

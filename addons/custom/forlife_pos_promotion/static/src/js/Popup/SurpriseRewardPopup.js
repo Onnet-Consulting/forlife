@@ -12,18 +12,17 @@ odoo.define('forlife_pos_promotion.SurpriseRewardPopup', function (require) {
         setup() {
             super.setup();
             this.state = useState({
-                validSurprisingPrograms: this.props.validSurprisingPrograms,
-                validBuyVoucherGetCodePrograms: this.props.validBuyVoucherGetCodePrograms
+                programRewards: this.props.programRewards
             });
             onMounted(this.selectItem);
         }
 
         selectItem() {
-            const random_index = Math.floor(Math.random() * this.state.validSurprisingPrograms.length);
-            let option = this.state.validSurprisingPrograms[random_index];
+            const random_index = Math.floor(Math.random() * this.state.programRewards.length)
+            let option = this.state.programRewards[random_index];
             option.isSelected = !option.isSelected;
             if (option.isSelected) {
-                let others = this.state.validSurprisingPrograms.filter(p => p.program_id != option.program_id);
+                let others = this.state.programRewards.filter(p => p.program_id != option.program_id);
                 others.forEach(option => {
                     option.isSelected = false;
                 });
@@ -31,7 +30,7 @@ odoo.define('forlife_pos_promotion.SurpriseRewardPopup', function (require) {
         }
 
         getPayload() {
-            return [this.state.validSurprisingPrograms.find(option => option.isSelected), this.state.validBuyVoucherGetCodePrograms]
+            return this.state.programRewards.find(option => option.isSelected)
         }
     }
     SurpriseRewardPopup.template = 'SurpriseRewardPopup';
@@ -39,8 +38,7 @@ odoo.define('forlife_pos_promotion.SurpriseRewardPopup', function (require) {
     SurpriseRewardPopup.defaultProps = {
         cancelText: _lt('Cancel'),
         title: _lt('Select'),
-        validSurprisingPrograms: [],
-        validBuyVoucherGetCodePrograms: [],
+        programRewards: [],
         confirmKey: false,
         discount_total: 0,
     };
