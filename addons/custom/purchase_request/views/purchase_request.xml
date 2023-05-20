@@ -109,7 +109,7 @@
                                    'default_production_id': production_id, 'default_account_analytic_id': account_analytic_id}">
                                 <tree editable="bottom" decoration-muted="is_no_more_quantity == True" class="width-hh">
                                     <field name="is_close" string="Đã Đóng"/>
-                                    <field name="product_id" domain="[('product_type', '!=', 'consu')]"/>
+                                    <field name="product_id"/>
                                     <field name="state" invisible="1"/>
                                     <field name="description" optional="show"/>
                                     <field name="product_type" optional="show"/>
