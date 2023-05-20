@@ -6,6 +6,9 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_invoice']" position="attributes">
+                         <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//div[hasclass('oe_button_box')]/button[@name='action_view_picking']" position="before">
                     <button name="action_view_invoice_ncc"
                         string="Invoice"
@@ -16,6 +19,19 @@
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_value">
                                 <field name="count_invoice_inter_company_ncc"/>
+                            </span>
+                            <span class="o_stat_text">Hóa đơn nhà cung cấp</span>
+                        </div>
+                    </button>
+                    <button name="action_view_invoice_new"
+                        string="Hóa đơn từ PO"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-pencil-square-o"
+                        attrs="{'invisible': [('count_invoice_inter_fix', '=', 0)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="count_invoice_inter_fix"/>
                             </span>
                             <span class="o_stat_text">Hóa đơn nhà cung cấp</span>
                         </div>
@@ -167,7 +183,9 @@
                     <field name="is_check_readonly_partner_id" attrs="{'invisible': True}"/>
                     <field name="is_check_readonly_purchase_type" attrs="{'invisible': True}"/>
                     <field name="partner_domain" invisible="1" />
-                    <field name="partner_id" string="Nhà cung cấp" attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}" domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
+                    <field name="partner_id" string="Nhà cung cấp"
+                           attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}"
+                           domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                      <field name="currency_id" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
@@ -205,11 +223,7 @@
                 <xpath expr="//field[@name='order_line']//tree" position="replace">
                     <tree editable="bottom" class="width-hh">
                         <control>
-                            <create name="add_product_control" string="Add a product"/>
-                            <create name="add_section_control" string="Add a section"
-                                    context="{'default_display_type': 'line_section'}"/>
-                            <create name="add_note_control" string="Add a note"
-                                    context="{'default_display_type': 'line_note'}"/>
+                            <create name="add_product_control" string="Thêm 1 dòng"/>
                         </control>
                         <field name="is_change_vendor" invisible="1"/>
                         <field name="is_red_color" invisible="1"/>
@@ -222,57 +236,58 @@
                         <field name="invoice_lines" invisible="1"/>
                         <field name="sequence" widget="handle"/>
                         <field name="product_id"
-                               context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
+                               context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
+                               attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"
                                domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" force_save="1"/>
                         <field name="name" invisible="1"/>
-                        <field name="description"/>
-                        <field name="product_type" string="Type"/>
-                        <field name="request_purchases"/>
+                        <field name="description" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                        <field name="product_type" string="Type" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>/>
+                        <field name="request_purchases" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>/>
                         <field name="asset_code"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="asset_name"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')]}"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="free_good"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="purchase_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="domain_uom" invisible="1"/>
                         <field name="purchase_uom" domain="domain_uom"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="exchange_quantity"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}" decoration-danger="is_red_color == True" force_save="1"/>
-                        <field name="product_qty" attrs="{'readonly': [('parent.purchase_type', '=', 'product')]}"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}" decoration-danger="is_red_color == True" force_save="1"/>
+                        <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
                         <field name="vendor_price"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('is_passersby', '=', False)]}"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), ('parent.is_passersby', '=', False)]}"
                                force_save="1"/>
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
-                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}" force_save="1" string="Đơn vị tính"/>
+                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
                         <field name="location_id"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="taxes_id" widget="many2many_tags"
                                domain="[('type_tax_use','=','purchase'), ('company_id', '=', parent.company_id), ('country_id', '=', parent.tax_country_id)]"
                                context="{'default_type_tax_use': 'purchase', 'search_view_ref': 'account.account_tax_view_search'}"
                                options="{'no_create': True}" string="Thuế(%)"
                                attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')]}"
                         />
-                        <field name="price_tax" string="Thuế" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')]}"/>
+                        <field name="price_tax" string="Thuế" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="price_subtotal" widget="monetary" sum="discounted subtotal" force_save="1"/>
                         <field name="discount_percent"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('readonly_discount_percent', '=', True)]}"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('readonly_discount_percent', '=', True), ('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
                         <field name="discount"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('readonly_discount', '=', True)]}"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('readonly_discount', '=', True), ('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
                         <!--                    <field name="price_subtotal" string="Discounted Subtotal" widget="monetary"-->
                         <!--                           sum="discounted subtotal" optional="hide"/>-->
 <!--                        <field name="event_id" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"-->
                         />
-                        <field name="occasion_code_id" string="Mã vụ việc" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                        <field name="production_id" string="Manufacturing Order"/>
-                        <field name="account_analytic_id" string="Cost Center"/>
+                        <field name="occasion_code_id" string="Mã vụ việc" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                        <field name="production_id" string="Manufacturing Order" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
+                        <field name="account_analytic_id" string="Cost Center" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="receive_date" string="Receive Date" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
                         <field name="tolerance" string="Tolerance"/>
                         <field name="received" attrs="{'column_invisible': ['|',('received', '=', False),('parent.purchase_type', '!=', 'product')]}"/>
