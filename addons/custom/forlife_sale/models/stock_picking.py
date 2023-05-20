@@ -6,7 +6,9 @@ class StockPicking(models.Model):
 
     def confirm_from_so(self, condition=None):
         if condition:
-            self._sanity_check()
+            for move in self.move_ids:
+                move.check_quantity()
+            self.action_confirm()
             self.move_ids._set_quantities_to_reservation()
             self.with_context(skip_immediate=True).button_validate()
         else:
