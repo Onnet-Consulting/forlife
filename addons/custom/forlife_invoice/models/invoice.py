@@ -76,6 +76,7 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
+    product_not_is_passersby = fields.Many2many('product.product')
 
 
     ###tạo data lấy từ bkav về tab e-invoice
