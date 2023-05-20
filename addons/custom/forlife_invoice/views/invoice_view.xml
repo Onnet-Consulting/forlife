@@ -110,8 +110,7 @@
                            attrs="{'readonly': ['|',('state', '=', 'posted'), ('is_check', '=', True)]}">
                         <tree editable="bottom" class="width-hh">
                             <control>
-                                <create name="add_line_control" string="Thêm 1 dòng"
-                                        attrs="{'invisible': [('parent.is_check', '=', True)]}"/>
+                                <create name="add_line_control" id="hide" string="Thêm 1 dòng"/>
                             </control>
                             <field name="readonly_discount_percent" invisible="1"/>
                             <field name="readonly_discount" invisible="1"/>
@@ -119,7 +118,7 @@
                             <field name="is_check_is_passersby" invisible="1"/>
                             <field name="product_id" string="Sản Phẩm"
                                    context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
-                                   domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
+                                   domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]"/>
                             <field name="description" related="product_id.name" string="Mô tả"/>
                             <field name="request_code"/>
                             <field name="type"/>
