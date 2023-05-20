@@ -76,26 +76,6 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
-    product_not_is_passersby = fields.Many2many('product.product')
-
-
-    ###tạo data lấy từ bkav về tab e-invoice
-    @api.onchange('exists_bkav')
-    def onchange_exitsts_bakv_e_invoice(self):
-        for rec in self:
-            if rec.exists_bkav:
-                data_e_invoice = self.env['e.invoice'].search(
-                    [('e_invoice_id', '=', rec.id), ('number_e_invoice', '=', rec.invoice_no),
-                     ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)],limit=1)
-                if not data_e_invoice:
-                    self.env['e.invoice'].create({
-                        'number_e_invoice': rec.invoice_no,
-                        'date_start_e_invoice': rec.create_date,
-                        'state_e_invoice': rec.invoice_state_e,
-                        'e_invoice_id': rec.id,
-                    })
-                rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
-
     @api.depends('partner_id', 'purchase_order_product_id', 'partner_id.group_id')
     def _compute_partner_domain(self):
         self = self.sudo()
