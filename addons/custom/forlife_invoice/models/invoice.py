@@ -76,7 +76,6 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
-    product_not_is_passersby = fields.Many2many('product.product')
 
 
     ###tạo data lấy từ bkav về tab e-invoice
@@ -95,21 +94,6 @@ class AccountMove(models.Model):
                         'e_invoice_id': rec.id,
                     })
                 rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
-
-    @api.onchange('partner_id', 'partner_id.is_passersby')
-    def onchange_product_is_passersby(self):
-        if self.partner_id:
-            data = []
-            if not self.partner_id.is_passersby:
-                data_product_not_is_passersby = self.env['product.supplierinfo'].search(
-                    [('partner_id', '=', self.partner_id.id)])
-                for item in data_product_not_is_passersby:
-                    if item.product_id:
-                        data.append(item.product_id.id)
-                self.product_not_is_passersby = [(6, 0, data)]
-            else:
-                data_product_is_passersby = self.env['product.product'].search([('active', '=', True)])
-                self.product_not_is_passersby = [(6, 0, data_product_is_passersby.ids)]
 
     @api.depends('partner_id', 'purchase_order_product_id', 'partner_id.group_id')
     def _compute_partner_domain(self):
@@ -577,6 +561,8 @@ class AccountMoveLine(models.Model):
 
     # field check vendor_price khi ncc vãng lại:
     is_check_is_passersby = fields.Boolean(default=False)
+
+    # Field check phân biệt lần nhập kho khi tạo hóa đơn theo từng lần hoàn thành số lượng
 
     @api.model_create_multi
     def create(self, list_vals):
