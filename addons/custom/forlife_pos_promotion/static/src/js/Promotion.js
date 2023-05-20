@@ -370,6 +370,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         json.reward_for_referring = this.reward_for_referring || null;
         json.referred_code_id = this.referred_code_id || null;
         json.surprise_reward_program_id = this.surprise_reward_program_id || null;
+        json.buy_voucher_get_code_rewards = this.buy_voucher_get_code_rewards || [];
         json.surprising_reward_line_id = this.surprising_reward_line_id || null;
         return json;
     }
@@ -387,6 +388,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.reward_for_referring = json.reward_for_referring || null;
         this.referred_code_id = json.referred_code_id || null;
         this.surprise_reward_program_id = json.surprise_reward_program_id || null;
+        this.buy_voucher_get_code_rewards = json.buy_voucher_get_code_rewards || [];
         this.surprising_reward_line_id = json.surprising_reward_line_id || null;
         if (this.partner) {
             this.set_partner(this.partner);
@@ -557,6 +559,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.reward_for_referring = null;
         this.referred_code_id = null;
         this.surprise_reward_program_id = null;
+        this.buy_voucher_get_code_rewards = [];
         this.surprising_reward_line_id = null;
         this._get_reward_lines().forEach(reward_line => {
             this.orderlines.remove(reward_line);
@@ -1478,6 +1481,37 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             });
         };
         return result
+    }
+
+    verifySurprisingProgram() {
+
+        const inOrderProductsList = this.get_orderlines().filter(l => l.quantity > 0)
+                                        .reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []);
+        let toCheckRewardLines = this.pos.surprisingRewardProducts;
+        let validSurprisingPrograms = [];
+        let validBuyVoucherGetCodePrograms = [];
+        for (let productLine of toCheckRewardLines) {
+            if (!productLine.has_check_product && !inOrderProductsList.some(product => productLine.to_check_product_ids.has(product))
+                && (productLine.max_quantity > productLine.issued_qty || productLine.max_quantity <= 0)) {
+                validSurprisingPrograms.push(productLine);
+            };
+            if (productLine.has_check_product && inOrderProductsList.some(product => productLine.to_check_product_ids.has(product))){
+                validBuyVoucherGetCodePrograms.push(productLine);
+            }
+        };
+        function get_line_info(line, selected) {
+            return {
+                'program_name': line.reward_code_program_id[1],
+                'program_id': line.reward_code_program_id[0],
+                'line_id': line.id,
+                'isSelected': selected || false
+            }
+        };
+        let result = {
+            validSurprisingPrograms: validSurprisingPrograms.map(line => get_line_info(line)),
+            validBuyVoucherGetCodePrograms: validBuyVoucherGetCodePrograms.map(line => get_line_info(line, true))
+        };
+        return result;
     }
 
     _computeNewPriceForComboProgram(disc_total, base_total, prePrice, quantity) {
