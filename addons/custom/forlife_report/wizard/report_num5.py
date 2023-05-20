@@ -70,24 +70,25 @@ order_line_data as (
         pol.product_id  																		    as product_id,
         pp.default_code 																		    as product_code,
         pol.full_product_name 																 	    as product_name,
-        (select name from uom_name_by_id where id = pt.uom_id) 									    as uom_name,
+        uom.name                                                								    as uom_name,
         to_char(po.date_order + interval '{tz_offset} hours', 'DD/MM/YYYY')                         as by_day,
         to_char(po.date_order + interval '{tz_offset} hours', 'MM/YYYY')		                    as by_month,
         pol.qty 																		 	        as qty,
         pol.price_unit 																	 		    as lst_price,
         coalesce((select sum(
-            case when type = 'card' then recipe * listed_price / 100 else recipe * 1000 end
+            case when type = 'point' then recipe * 1000 else recipe end
         ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)
         + (pol.discount * pol.price_unit * pol.qty / 100)									        as money_reduced,
-        0																		 		 		    as price_subtotal,
-        ''																		 		 		    as note
+        pol.qty * pol.price_unit	            								 		 		    as price_subtotal,
+        po.note 																 		 		    as note
     from pos_order_line pol
         join pos_order po on po.id = pol.order_id and po.state in ('paid', 'done', 'invoiced')
         join product_product pp on pp.id = pol.product_id
         left join product_template pt on pt.id = pp.product_tmpl_id
         left join hr_employee emp on emp.id = pol.employee_id
         left join res_partner rp on rp.id = po.partner_id
-    where {employee_conditions} 
+        left join uom_name_by_id uom on uom.id = pt.uom_id
+    where {employee_conditions} and pol.qty <> 0
         and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = {str(self.store_id.id)}))
         and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     order by employee_id
@@ -130,10 +131,9 @@ prepare_value_data_invoice_list as (
         customer_code,
         customer_phone,
         sum(qty) as sl,
-        sum(qty * lst_price) as tt,
+        sum(case when qty >= 0 then qty * lst_price else 0 end) as tt,
         sum(money_reduced) as money_reduced,
         sum(0) as gg_bill,
-        sum(case when qty >= 0 then price_subtotal else 0 end) as money_real,
         sum(case when qty < 0 then price_subtotal else 0 end) as refund,
         note
     from order_line_data
@@ -219,9 +219,9 @@ from employee_list employee
             },
         }
 
-    def get_data(self):
+    def get_data(self, allowed_company):
         self.ensure_one()
-        values = super().get_data()
+        values = super().get_data(allowed_company)
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()

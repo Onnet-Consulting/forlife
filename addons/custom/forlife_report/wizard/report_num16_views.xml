@@ -7,25 +7,18 @@
             <form string="Report stock move" create="0">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
                         <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
                     </div>
                     <group>
                         <group>
-                            <field name="all_products"/>
-                            <field name="all_warehouses"/>
+                            <field name="from_date" class="oe_inline"/>
+                            <field name="product_domain" widget="domain" options="{'model': 'product.product', 'in_dialog': true}"/>
                         </group>
                         <group>
-                            <field name="from_date" class="oe_inline"/>
                             <field name="to_date" class="oe_inline"/>
+                            <field name="warehouse_domain" widget="domain" options="{'model': 'stock.warehouse', 'in_dialog': true}"/>
                         </group>
-                    </group>
-                    <group>
-                        <field name="product_ids" attrs="{'invisible': [('all_products', '=', True)], 'required': [('all_products', '=', False)]}" widget="many2many_tags"/>
-                        <field name="warehouse_ids" widget="many2many_tags" attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"/>
-                        <field name="product_brand_id" required="1" class="oe_inline"/>
-                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]"/>
-                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', 'in', product_group_ids)]"/>
-                        <field name="product_texture_ids" widget="many2many_tags" domain="[('parent_id', 'in', product_line_ids)]"/>
                     </group>
                 </sheet>
             </form>
