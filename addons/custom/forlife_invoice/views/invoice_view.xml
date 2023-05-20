@@ -74,7 +74,6 @@
                     <field name="is_check_invoice_tnk" invisible="1" force_save="1"/>
                     <field name="invoice_vendor_bill_id" string="Auto-Complete"
                            attrs="{'readonly': [('state', '=', 'posted')]}"/>
-                    <field name="product_product_mm" invisible="1"/>
                     <!--                    <field name="type_invoice" invisible="1" f/>-->
                     <!--                    <field name="invoice_line_cost_ids" invisible="1"/>-->
                 </xpath>

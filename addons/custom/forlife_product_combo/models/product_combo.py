@@ -7,7 +7,7 @@ class ProductCombo(models.Model):
     _name = 'product.combo'
     _description = 'product combo'
 
-    code = fields.Char('Combo code', readonly=True, required=True, copy=False, default='New')
+    code = fields.Char('Combo code', readonly=True, copy=False, default='New')
     description_combo = fields.Text(string="Description combo")
     state = fields.Selection([
         ('new', _('New')),
@@ -24,7 +24,6 @@ class ProductCombo(models.Model):
         ('combo_check_date', 'CHECK(from_date <= to_date)', 'End date may not be before the starting date.')]
 
 
-
     @api.model
     def create(self, vals):
         if vals.get('code', 'New') == 'New':
@@ -36,6 +35,10 @@ class ProductCombo(models.Model):
                 'combo_id': result.id if vals['state'] in ['in_progress'] else None
             })
 
+            # pr.product_id.product_variant_id.write({
+            #     'combo_id': self.id if self.state in ['in_progress'] else None
+            # })
+
         return result
 
     def write(self, values):
@@ -44,4 +47,7 @@ class ProductCombo(models.Model):
             pr.product_id.write({
                 'combo_id': self.id if self.state in ['in_progress'] else None
             })
+            # pr.product_id.product_variant_id.write({
+            #     'combo_id': self.id if self.state in ['in_progress'] else None
+            # })
         return res
