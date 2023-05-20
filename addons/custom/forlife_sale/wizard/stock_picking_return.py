@@ -9,6 +9,17 @@ class ReturnPicking(models.TransientModel):
     def exchange_returns(self):
         self.create_returns()
         so_id = self.create_sale_order()
+        return {
+            'name': _(so_id.name),
+            'view_mode': 'form',
+            'res_model': 'sale.order',
+            'type': 'ir.actions.act_window',
+            'views': [(False, 'form')],
+            'view_id': self.env.ref('sale.view_order_form').id,
+            'target': 'current',
+            'create': 'True',
+            'res_id': so_id.id
+        }
 
     def create_sale_order(self):
         picking_id = self.env['stock.picking'].browse(self._context.get('active_id'))
@@ -20,6 +31,5 @@ class ReturnPicking(models.TransientModel):
             'x_is_return': True
         }
         so_id = self.env['sale.order'].create(vals)
-        origin.x_sale_return_ids = [(4, so_id.id)]
         return so_id
 
