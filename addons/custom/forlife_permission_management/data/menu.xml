@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.menu" id="stock.menu_stock_root">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="sale.sale_menu_root">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="forlife_stock.stock_transfer">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="forlife_stock.asset_transfer_stock_inventory_menu">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="forlife_stock.stock_picking_other_export_menu">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="stock.all_picking">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="stock.menu_product_variant_config_stock">
+            <field name="groups_id" eval="[(4, ref('forlife_permission_management.group_cashier'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="stock.product_product_menu">
+            <field name="groups_id" eval="[(4, ref('forlife_permission_management.group_cashier'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="stock.menu_product_stock">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="stock.stock_move_line_menu">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="stock.stock_move_menu">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+
+        <record model="ir.ui.menu" id="stock.menu_warehouse_report">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="forlife_stock_report.stock_incoming_outgoing_report_menu">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_point_root">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_pos_dashboard">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_point_of_sale">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_point_ofsale">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_pos_session_all">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_pos_payment">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_point_of_sale_customer">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_pos_products">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.pos_config_menu_action_product_product">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="forlife_print_stamps_barcode.menu_print_stamps_barcode">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="forlife_pos_product_change_refund.handle_change_refund_menu_view">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_report_pos_order_all">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_report_order_details">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="sale.menu_sale_quotations">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="sale.sale_order_menu">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="sale.menu_sale_order">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="sale.res_partner_menu">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+    </data>
+</odoo>
