@@ -951,6 +951,7 @@ class PurchaseOrderLine(models.Model):
     readonly_discount = fields.Boolean(default=False)
     readonly_discount_percent = fields.Boolean(default=False)
     request_purchases = fields.Char(string='Purchases', readonly=1)
+    is_passersby = fields.Boolean(related='order_id.is_passersby')
     supplier_id = fields.Many2one('res.partner', related='order_id.partner_id')
     receive_date = fields.Datetime(string='Date receive')
     tolerance = fields.Float(related='product_id.tolerance', string='Dung sai')
