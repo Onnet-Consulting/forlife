@@ -24,6 +24,7 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
         }
 
         async select_reward(programOption) {
+            console.log('select_reward', this);
             let program = this.env.pos.get_program_by_id(String(programOption.id));
             let to_select_reward_lines;
             if (program.reward_type == 'cart_get_voucher') {

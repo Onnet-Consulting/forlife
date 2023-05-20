@@ -219,6 +219,7 @@
                     <field name="trade_discount"/>
                     <field name="total_trade_discount"/>
                     <field name="is_done_picking" invisible="1"/>
+                    <field name="product_not_is_passersby" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree" position="replace">
                     <tree editable="bottom" class="width-hh">
@@ -227,7 +228,6 @@
                         </control>
                         <field name="is_change_vendor" invisible="1"/>
                         <field name="is_red_color" invisible="1"/>
-                        <field name="is_passersby" invisible="1"/>
                         <field name="display_type" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
                         <field name="state" invisible="1"/>
