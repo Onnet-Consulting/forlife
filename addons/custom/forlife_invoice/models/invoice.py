@@ -96,21 +96,6 @@ class AccountMove(models.Model):
                     })
                 rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
 
-    @api.onchange('partner_id', 'partner_id.is_passersby')
-    def onchange_product_is_passersby(self):
-        if self.partner_id:
-            data = []
-            if not self.partner_id.is_passersby:
-                data_product_not_is_passersby = self.env['product.supplierinfo'].search(
-                    [('partner_id', '=', self.partner_id.id)])
-                for item in data_product_not_is_passersby:
-                    if item.product_id:
-                        data.append(item.product_id.id)
-                self.product_not_is_passersby = [(6, 0, data)]
-            else:
-                data_product_is_passersby = self.env['product.product'].search([('active', '=', True)])
-                self.product_not_is_passersby = [(6, 0, data_product_is_passersby.ids)]
-
     @api.depends('partner_id', 'purchase_order_product_id', 'partner_id.group_id')
     def _compute_partner_domain(self):
         self = self.sudo()
@@ -322,7 +307,6 @@ class AccountMove(models.Model):
                                     })
         res = super(AccountMove, self).write(vals)
         return res
-
     # @api.onchange('purchase_type')
     # def onchange_purchase_type(self):
     #     order_invoice_line_ids = []
@@ -628,7 +612,6 @@ class AccountMoveLine(models.Model):
     #                     pass
     #             else:
     #                 pass
-
 
     @api.depends('quantity', 'price_unit', 'taxes_id')
     def _compute_tax_amount(self):

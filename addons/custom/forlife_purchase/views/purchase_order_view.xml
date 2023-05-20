@@ -183,7 +183,9 @@
                     <field name="is_check_readonly_partner_id" attrs="{'invisible': True}"/>
                     <field name="is_check_readonly_purchase_type" attrs="{'invisible': True}"/>
                     <field name="partner_domain" invisible="1" />
-                    <field name="partner_id" string="Nhà cung cấp" attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}" domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
+                    <field name="partner_id" string="Nhà cung cấp"
+                           attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}"
+                           domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                      <field name="currency_id" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
@@ -234,7 +236,7 @@
                         <field name="invoice_lines" invisible="1"/>
                         <field name="sequence" widget="handle"/>
                         <field name="product_id"
-                               context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
+                               context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
                                attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"
                                domain="[('product_type', '=', parent.purchase_type), ('id', 'in', parent.product_not_is_passersby), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" force_save="1"/>
                         <field name="name" invisible="1"/>
