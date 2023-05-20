@@ -578,8 +578,6 @@ class AccountMoveLine(models.Model):
     # field check vendor_price khi ncc vãng lại:
     is_check_is_passersby = fields.Boolean(default=False)
 
-    # Field check phân biệt lần nhập kho khi tạo hóa đơn theo từng lần hoàn thành số lượng
-
     @api.model_create_multi
     def create(self, list_vals):
         for line in list_vals:
@@ -628,7 +626,6 @@ class AccountMoveLine(models.Model):
     #                     pass
     #             else:
     #                 pass
-
 
     @api.depends('quantity', 'price_unit', 'taxes_id')
     def _compute_tax_amount(self):

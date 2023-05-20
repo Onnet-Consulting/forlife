@@ -781,7 +781,6 @@ class PurchaseOrder(models.Model):
             AccountMove = self.env['account.move'].with_context(default_move_type='in_invoice')
             for vals in invoice_vals_list:
                 moves |= AccountMove.with_company(vals['company_id']).create(vals)
-
             # 4) Some moves might actually be refunds: convert them if the total amount is negative
             # We do this after the moves have been created since we need taxes, etc. to know if the total
             # is actually negative or not
@@ -1037,6 +1036,14 @@ class PurchaseOrderLine(models.Model):
         for item in self:
             if len(item.taxes_id) > 1:
                 raise ValidationError('Bạn chỉ chọn được 1 giá trị thuế')
+
+    @api.constrains('price_subtotal, price_total')
+    def constrains_taxes_id(self):
+        for item in self:
+            if item.price_subtotal <= 0:
+                raise ValidationError('Bạn không thể nhập kho với đơn mua hàng có tổng thành tiền bằng 0!')
+            if item.price_total <= 0:
+                raise ValidationError('Bạn không thể nhập kho với đơn mua hàng có tổng thành tiền bằng 0!')
 
     _sql_constraints = [
         (

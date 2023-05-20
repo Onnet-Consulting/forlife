@@ -76,7 +76,6 @@
         'views/promotion_campaign_views.xml',
         'views/promotion_pricelist_item_views.xml',
         'views/pos_order_line_usage_views.xml',
-        'views/condition_product_promotion_views.xml',
         # Menu
         'menu/menu_views.xml',
     ]
