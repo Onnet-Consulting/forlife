@@ -267,6 +267,11 @@ class SaleOrderLine(models.Model):
     def compute_cart_discount_fixed_price(self):
         self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
 
+    @api.onchange('x_free_good')
+    def _onchange_x_free_good(self):
+        if self.x_free_good:
+            self.price_unit = 0
+
     @api.onchange('price_unit')
     def _set_price_unit(self):
         if self.x_free_good:
