@@ -19,6 +19,7 @@
             <field name="name">Nhập cân đối tồn kho  -  kiểm kê định kỳ</field>
             <field name="code">1381000002</field>
             <field name="type_other">incoming</field>
+            <field name="company_id" eval="False"/>
 <!--            <field name="company_id" eval="False"/>-->
             <field name="reason_type_id" ref="forlife_stock.reason_type_5"/>
         </record>
