@@ -222,5 +222,44 @@
             <field name="perm_create" eval="False"/>
             <field name="perm_unlink" eval="True"/>
         </record>
+
+        <record model="ir.rule" id="stock_transfer_inventory_read">
+            <field name="name">stock_transfer_inventory_read</field>
+            <field name="model_id" ref="stock.model_stock_transfer_inventory"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', ('location_id','in', user.get_stock()), ('location_dest_id','in',
+                False)]
+            </field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="stock_transfer_inventory_write_create">
+            <field name="name">stock_transfer_inventory_write_create</field>
+            <field name="model_id" ref="stock.model_stock_transfer_inventory"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', ('location_id','in', user.get_stock()), ('location_dest_id','in',
+                False)]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <record model="ir.rule" id="stock_transfer_inventory_unlink">
+            <field name="name">stock_transfer_inventory_unlink</field>
+            <field name="model_id" ref="stock.model_stock_transfer_inventory"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="domain_force">['|', ('location_id','in', user.get_stock()), ('location_dest_id','in',
+                False)]
+            </field>
+            <field name="perm_read" eval="False"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
     </data>
 </odoo>
