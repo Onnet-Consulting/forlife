@@ -203,21 +203,33 @@
                             <field name="discount_product_ids"
                                    attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price'))]}"
                                    widget="many2many_tags"/>
+                            <div class="o_cell flex-grow-1 flex-sm-grow-0 o_wrap_label w-100 text-break text-900" style=""
+                                 attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price'))]}"/>
+                            <div class="o_row" attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price'))]}">
+                                <button name="action_open_discount_product" type="object" string="Import Discount Products" class="btn-secondary">
+                                    <span>Import Discount Products</span>
+                                </button>
+                            </div>
                             <field name="reward_product_ids"
                                    attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"
                                    widget="many2many_tags"/>
+                            <div class="o_cell flex-grow-1 flex-sm-grow-0 o_wrap_label w-100 text-break text-900" style=""
+                            attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}"/>
+                            <div class="o_row" attrs="{'invisible': [('reward_type', 'not in', ('code_buy_x_get_y', 'cart_get_x_free'))]}">
+                                <button name="action_open_reward_product" type="object" string="Import Reward Products" class="btn-secondary">
+                                    <span>Import Reward Products</span>
+                                </button>
+                            </div>
                             <label for="reward_quantity" string="Maximum Reward Quantity"
                                     attrs="{'invisible': [('reward_type', 'not in',
                                                         ('code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest'))]}"/>
                             <label for="reward_quantity" string="Maximum Discounted Quantity"
                                     attrs="{'invisible': [('reward_type', 'not in',
                                                         ('code_amount', 'code_percent', 'cart_discount_percent', 'cart_discount_fixed_price'))]}"/>
-                            <div>
-                                <field name="reward_quantity" class="oe_inline"
-                                        attrs="{'invisible': [('reward_type', 'not in',
-                                                ('code_amount', 'code_percent','code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest',
-                                                'cart_discount_percent', 'cart_discount_fixed_price'))]}"/>
-                            </div>
+                            <field name="reward_quantity" nolabel="1"
+                                    attrs="{'invisible': [('reward_type', 'not in',
+                                            ('code_amount', 'code_percent','code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest',
+                                            'cart_discount_percent', 'cart_discount_fixed_price'))]}"/>
 
                         </group>
                         <group/>
