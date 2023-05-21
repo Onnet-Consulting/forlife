@@ -45,13 +45,12 @@ class ReportBase(models.AbstractModel):
     def get_available_report(self):
         return [r for r in AVAILABLE_REPORT.values()]
 
-    def get_data(self, allowed_company):
+    def get_data(self):
         report_data = AVAILABLE_REPORT.get(self._name, {})
         return {
             'reportTitle': report_data.get('name', ''),
             'reportTemplate': report_data.get('reportTemplate', ''),
             'reportPager': report_data.get('reportPager', False),
-            'recordPerPage': 80 if report_data.get('reportPager', False) else False,
         }
 
     def view_report(self):

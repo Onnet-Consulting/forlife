@@ -51,7 +51,6 @@ and (select coalesce(name, '')
 """
         query = f"""
 select
-    row_number() over (order by pcrl.order_date desc)                                  as num,
     (select coalesce(name, '')
      from store where id = (
         select store_id from store_first_order
@@ -89,13 +88,13 @@ where pcr.brand_id = {self.brand_id.id}
     and pcrl.old_card_rank_id <> pcrl.new_card_rank_id
     and {format_date_query("pcrl.order_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
 {conditions}
-order by num
+order by pcrl.order_date desc
         """
         return query
 
-    def get_data(self, allowed_company):
+    def get_data(self):
         self.ensure_one()
-        values = dict(super().get_data(allowed_company))
+        values = dict(super().get_data())
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()
@@ -104,33 +103,3 @@ order by num
             "data": data,
         })
         return values
-
-    def generate_xlsx_report(self, workbook, allowed_company):
-        data = self.get_data(allowed_company)
-        formats = self.get_format_workbook(workbook)
-        sheet = workbook.add_worksheet('Lịch sử nâng hạng')
-        sheet.set_row(0, 25)
-        sheet.write(0, 0, 'Lịch sử nâng hạng', formats.get('header_format'))
-        sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))
-        sheet.write(2, 2, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
-        for idx, title in enumerate(data.get('titles')):
-            sheet.write(4, idx, title, formats.get('title_format'))
-        sheet.set_column(0, len(TITLES), 20)
-        row = 5
-        for value in data.get('data'):
-            sheet.write(row, 0, value.get('num'), formats.get('center_format'))
-            sheet.write(row, 1, value.get('store_name'), formats.get('normal_format'))
-            sheet.write(row, 2, value.get('customer_info')[0], formats.get('normal_format'))
-            sheet.write(row, 3, value.get('customer_info')[1], formats.get('normal_format'))
-            sheet.write(row, 4, value.get('customer_info')[2], formats.get('normal_format'))
-            sheet.write(row, 5, value.get('customer_info')[3], formats.get('normal_format'))
-            sheet.write(row, 6, value.get('customer_info')[4], formats.get('normal_format'))
-            sheet.write(row, 7, value.get('ngay_mua_dk'), formats.get('center_format'))
-            sheet.write(row, 8, value.get('ngay_mua_gn'), formats.get('center_format'))
-            sheet.write(row, 9, value.get('dt_mua', 0), formats.get('int_number_format'))
-            sheet.write(row, 10, value.get('current_rank'), formats.get('normal_format'))
-            sheet.write(row, 11, value.get('new_rank'), formats.get('normal_format'))
-            sheet.write(row, 12, value.get('date_up_rank'), formats.get('center_format'))
-            sheet.write(row, 13, value.get('implementation'), formats.get('normal_format'))
-            sheet.write(row, 14, value.get('date_implementation'), formats.get('center_format'))
-            row += 1

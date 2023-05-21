@@ -13,7 +13,7 @@
                 <tbody>
                     <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
                     <t t-set="num" t-value="1"/>
-                    <t t-foreach="options.data" t-as="line">
+                    <t t-foreach="widget.data" t-as="line">
                         <tr class="show-employee-detail" t-att-id="line.employee_id">
                             <td><t t-esc="num"/></td>
                             <td><t t-esc="line.employee_code"/></td>
@@ -57,7 +57,7 @@
                             <td><t t-esc="format_decimal(line.tt, 0)"/></td>
                             <td><t t-esc="format_decimal(line.money_reduced, 0)"/></td>
                             <td><t t-esc="format_decimal(line.gg_bill, 0)"/></td>
-                            <td><t t-esc="format_decimal(line.tt - line.money_reduced - line.gg_bill, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.money_real, 0)"/></td>
                             <td><t t-esc="format_decimal(line.refund, 0)"/></td>
                             <td><t t-esc="line.note"/></td>
                         </tr>

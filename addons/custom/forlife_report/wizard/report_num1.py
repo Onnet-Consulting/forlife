@@ -3,11 +3,31 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
-from odoo.tools.safe_eval import safe_eval
+
+PICKING_TYPE = [
+    ('all', 'Tất cả'),
+    ('retail', 'Bán lẻ'),
+    ('wholesale', 'Bán buôn'),
+    ('ecom', 'Bán Online')
+]
 
 TITLES = [
-    'STT', 'Kho', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Đơn vị', 'Giá', 'Số lượng',
-    'Chiết khấu', 'Thành tiền', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Mã loại SP', 'Kênh bán',
+    'STT',
+    'Kho',
+    'Mã SP',
+    'Tên SP',
+    'Size',
+    'Màu',
+    'Đơn vị',
+    'Giá',
+    'Số lượng',
+    'Chiết khấu',
+    'Thành tiền',
+    'Nhóm hàng',
+    'Dòng hàng',
+    'Kết cấu',
+    'Mã loại SP',
+    'Kênh bán',
 ]
 
 COLUMN_WIDTHS = [5, 20, 20, 30, 15, 15, 10, 20, 8, 20, 25, 20, 20, 20, 20, 20]
@@ -20,9 +40,11 @@ class ReportNum1(models.TransientModel):
 
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
-    product_domain = fields.Char('Product', default='[]')
-    warehouse_domain = fields.Char('Warehouse', default='[]')
-    picking_type = fields.Selection([('all', 'Tất cả'), ('retail', 'Bán lẻ'), ('wholesale', 'Bán buôn'), ('ecom', 'Bán Online')], 'Picking type', required=True, default='all')
+    all_products = fields.Boolean(string='All products', default=False)
+    all_warehouses = fields.Boolean(string='All warehouses', default=False)
+    product_ids = fields.Many2many('product.product', string='Products')
+    warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
+    picking_type = fields.Selection(PICKING_TYPE, 'Picking type', required=True, default='all')
 
     @api.constrains('from_date', 'to_date')
     def check_dates(self):
@@ -30,13 +52,13 @@ class ReportNum1(models.TransientModel):
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
 
-    def _get_query(self, product_ids, warehouse_ids, allowed_company):
+    def _get_query(self, product_ids, warehouse_ids):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
         query = []
-        product_condition = f'and pp.id = any (array{product_ids})'
-        warehouse_condition = f'and wh.id = any (array{warehouse_ids})'
+        product_condition = 'and pp.id in (%s)' % ','.join(map(str, product_ids)) if product_ids else ''
+        warehouse_condition = 'and wh.id in (%s)' % ','.join(map(str, warehouse_ids)) if warehouse_ids else ''
         if self.picking_type in ('all', 'retail'):
             query.append(f"""
 select
@@ -64,7 +86,7 @@ from pos_order_line pol
     left join store on store.id = pc.store_id
     left join stock_warehouse wh on wh.id = store.warehouse_id
     left join product_category cate on cate.id = (select categ_id from product_data_by_id where id = pp.id)
-where po.company_id = any(array{allowed_company})
+where po.company_id = {self.company_id.id}
     and po.state in ('paid', 'done', 'invoiced')
     and {format_date_query("po.date_order", tz_offset)} >= '{self.from_date}'
     and {format_date_query("po.date_order", tz_offset)} <= '{self.to_date}'
@@ -119,7 +141,7 @@ WITH account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho b
     from product_category cate
         left join ir_property ir on ir.res_id = concat('product.category,', cate.id)
         left join account_account aa on concat('account.account,',aa.id) = ir.value_reference
-    where  ir.name='property_stock_valuation_account_id' and ir.company_id = any(array{allowed_company})
+    where  ir.name='property_stock_valuation_account_id' and ir.company_id = {self.company_id.id}
     order by cate.id 
 ),
 product_data_by_id as ( -- lấy tên sản phẩm đã convert, đơn vị tính đã conver, categ_id bằng product.product ID
@@ -181,13 +203,12 @@ order by product_name
                 """
         return final_query
 
-    def get_data(self, allowed_company):
-        allowed_company = allowed_company or [-1]
+    def get_data(self):
         self.ensure_one()
-        values = dict(super().get_data(allowed_company))
-        product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
-        warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)]).ids or [-1]
-        query = self._get_query(product_ids, warehouse_ids, allowed_company)
+        values = dict(super().get_data())
+        product_ids = (self.env['product.product'].search([('type', '=', 'product')]).ids or [-1]) if self.all_products else self.product_ids.ids
+        warehouse_ids = (self.env['stock.warehouse'].search([]).ids or [-1]) if self.all_warehouses else self.warehouse_ids.ids
+        query = self._get_query(product_ids, warehouse_ids)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         values.update({
@@ -196,21 +217,15 @@ order by product_name
         })
         return values
 
-    def generate_xlsx_report(self, workbook, allowed_company):
-        p_type = {
-            'all': 'Tất cả',
-            'retail': 'Bán lẻ',
-            'wholesale': 'Bán buôn',
-            'ecom': 'Bán Online'
-        }
-        data = self.get_data(allowed_company)
+    def generate_xlsx_report(self, workbook):
+        data = self.get_data()
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet('Báo cáo doanh thu theo sản phẩm')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo doanh thu theo sản phẩm', formats.get('header_format'))
         sheet.write(2, 0, 'Từ ngày: %s' % self.from_date.strftime('%d/%m/%Y'), formats.get('italic_format'))
         sheet.write(2, 2, 'Đến ngày: %s' % self.to_date.strftime('%d/%m/%Y'), formats.get('italic_format'))
-        sheet.write(2, 4, 'Loại phiếu: %s' % p_type.get(self.picking_type, ''), formats.get('italic_format'))
+        sheet.write(2, 4, 'Loại phiếu: %s' % next((t[1] for t in self._fields.get('picking_type').selection if t[0] == self.picking_type), ''), formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
             sheet.write(4, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])

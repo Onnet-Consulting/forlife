@@ -153,7 +153,6 @@ class SurprisingRewardProduct(models.Model):
     active = fields.Boolean(default=True)
     to_check_product_ids = fields.Many2many(
         'product.product', string='To Check Products', required=True, domain="[('available_in_pos', '=', True)]")
-    has_check_product = fields.Boolean(default=False)
     reward_code_program_id = fields.Many2one(
         'promotion.program', 'Program Reward',
         domain="[('with_code', '=', True), ('state', 'in', ['new', 'in_progress'])]", required=True)

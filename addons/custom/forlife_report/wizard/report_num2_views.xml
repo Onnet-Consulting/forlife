@@ -12,11 +12,23 @@
                     </div>
                     <group>
                         <group>
-                            <field name="product_domain" widget="domain" options="{'model': 'product.product', 'in_dialog': true}"/>
+                            <field name="all_products"/>
+                            <field name="product_ids"
+                                   attrs="{'invisible': [('all_products', '=', True)], 'required': [('all_products', '=', False)]}"
+                                   widget="many2many_tags"/>
                         </group>
                         <group>
-                            <field name="warehouse_domain" widget="domain" options="{'model': 'stock.warehouse', 'in_dialog': true}"/>
+                            <field name="all_warehouses"/>
+                            <field name="warehouse_ids"
+                                   attrs="{'invisible': [('all_warehouses', '=', True)], 'required': [('all_warehouses', '=', False)]}"
+                                   widget="many2many_tags"/>
                         </group>
+                    </group>
+                    <group>
+                        <field name="product_brand_id" required="1"/>
+                        <field name="product_group_ids" widget="many2many_tags" domain="[('parent_id', '=', product_brand_id), ('parent_id', '!=', False)]"/>
+                        <field name="product_line_ids" widget="many2many_tags" domain="[('parent_id', 'in', product_group_ids)]"/>
+                        <field name="product_texture_ids" widget="many2many_tags" domain="[('parent_id', 'in', product_line_ids)]"/>
                     </group>
                 </sheet>
             </form>

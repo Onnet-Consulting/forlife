@@ -14,24 +14,23 @@ class ReportBase(models.AbstractModel):
         return {
             'type': 'ir.actions.act_url',
             'name': self._description,
-            'url': '/custom/download/xlsx/%s/%s/%d/%s' % (self._description, self._name, self.id, self._context.get('allowed_company_ids', [])),
+            'url': '/custom/download/xlsx/%s/%s/%d' % (self._description, self._name, self.id),
             'target': 'current'
-
         }
 
     def view_report(self):
         ...
 
-    def generate_xlsx_report(self, workbook, allowed_company):
+    def generate_xlsx_report(self, workbook):
         ...
 
-    def get_xlsx(self, allowed_company):
+    def get_xlsx(self):
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output, {
             'in_memory': True,
             'strings_to_formulas': False,
         })
-        self.generate_xlsx_report(workbook, allowed_company)
+        self.generate_xlsx_report(workbook)
         workbook.close()
         output.seek(0)
         generated_file = output.read()
