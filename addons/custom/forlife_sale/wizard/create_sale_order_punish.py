@@ -13,6 +13,7 @@ class CreateSaleOrderPunish(models.Model):
         order_punish_id.partner_id = self.x_partner_id
         order_punish_id.update(
             {'state': 'draft',
+             'x_origin': self._context.get('active_id'),
              'x_shipping_punish': True}
         )
         # for line in order_punish_id.order_line:
