@@ -1433,6 +1433,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         for (let program of cardPrograms) {
             let max_reward_quantity = program.reward_quantity;
             let required_order_amount_min = program.order_amount_min;
+            let required_min_quantity = program.min_quantity;
             if (!this._programIsApplicableAutomatically(program)) {
                 continue
             };
@@ -1450,20 +1451,40 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             if (program.order_amount_min >0 && program.order_amount_min > amountCheck) {
                 continue;
             };
-            // Tính lũy tuyến cho số lượng phần thưởng
-            if (program.progressive_reward_compute && program.order_amount_min) {
-                let floorNumber = Math.floor(amountCheck/program.order_amount_min);
-                max_reward_quantity = floorNumber * program.reward_quantity;
-                required_order_amount_min = floorNumber * required_order_amount_min;
-            }
-            let to_check_products = program.valid_product_ids.size > 0;
+            let is_required_check_products = program.valid_product_ids.size > 0;
             let qty_taken = 0;
             for (const line of orderLines) {
                 if (!line.is_reward_line && program.valid_product_ids.has(line.product.id)) {
                     qty_taken += line.quantity;
                 };
             };
-            if (to_check_products && qty_taken < program.min_quantity) {
+            // Nếu không có sản phẩm điều kiện, Loại CT k thõa
+            if (program.valid_product_ids.size > 0 && qty_taken == 0) {
+                return
+            };
+
+            // Tính lũy tuyến cho số lượng phần thưởng
+            if (program.progressive_reward_compute) {
+                if (program.order_amount_min > 0 && program.min_quantity > 0) {
+                    let amountOrderFloor = Math.floor(amountCheck/program.order_amount_min);
+                    let qtyFloor = Math.floor(qty_taken /  program.min_quantity);
+                    let floor = Math.min(amountOrderFloor, qtyFloor);
+
+                    max_reward_quantity         = floor * program.reward_quantity;
+                    required_order_amount_min   = floor * program.order_amount_min;
+                    required_min_quantity       = floor * program.min_quantity;
+                } else if (program.order_amount_min > 0) {
+                    let floor = Math.floor(amountCheck/program.order_amount_min);
+                    max_reward_quantity         = floor * program.reward_quantity;
+                    required_order_amount_min   = floor * program.order_amount_min;
+                } else if (program.min_quantity > 0) {
+                    let floor = Math.floor(qty_taken/program.min_quantity);
+                    max_reward_quantity         = floor * program.reward_quantity;
+                    required_min_quantity       = floor * program.min_quantity;
+                }
+            }
+
+            if (is_required_check_products && qty_taken < required_min_quantity) {
                 continue;
             };
             let to_discount_lines = [];
@@ -1483,6 +1504,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 program: program,
                 max_reward_quantity: max_reward_quantity,
                 required_order_amount_min: required_order_amount_min,
+                required_min_quantity: required_min_quantity,
                 voucher_program_id,
                 to_reward_lines,
                 to_discount_lines,
@@ -1490,6 +1512,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 reward_line_vals: []
             });
         };
+        console.log('result', result);
         return result
     }
 
