@@ -106,14 +106,14 @@
                                 <field name="product_id" readonly="1"/>
                                 <field name="name" readonly="1"/>
                                 <field name="usd_amount" readonly="1" invisible="1"/>
-                                <field name="vnd_amount" readonly="1"/>
-                                <field name="qty_product" readonly="1" string="Số lượng đặt mua"/>
+                                <field name="vnd_amount" readonly="1" force_save="1"/>
+                                <field name="qty_product" readonly="1" string="Số lượng đặt mua" force_save="1"/>
                                 <field name="import_tax"/>
-                                <field name="tax_amount" readonly="1"/>
+                                <field name="tax_amount" readonly="1" force_save="1"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" readonly="1"/>
+                                <field name="special_consumption_tax_amount" readonly="1" force_save="1"/>
                                 <field name="vat_tax"/>
-                                <field name="vat_tax_amount" readonly="1"/>
+                                <field name="vat_tax_amount" readonly="1" ie="1"/>
 <!--                                <field name="total_vnd_amount" readonly="1"/>-->
                                 <field name="total_tax_amount" readonly="1"/>
                             </tree>
@@ -188,8 +188,9 @@
                            domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                     <field name="currency_id" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '!=', 'cost')]}" force_save="1"/>
+                    <field name="currency_id"
+                           attrs="{'readonly': ['|', ('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}"/>
+                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
@@ -219,6 +220,7 @@
                     <field name="trade_discount"/>
                     <field name="total_trade_discount"/>
                     <field name="is_done_picking" invisible="1"/>
+<!--                    <field name="product_not_is_passersby" invisible="1"/>-->
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree" position="replace">
                     <tree editable="bottom" class="width-hh">

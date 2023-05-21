@@ -187,11 +187,6 @@ class StockPicking(models.Model):
                 'template': '/forlife_stock/static/src/xlsx/xuat_khac.xlsx?download=true'
             }]
 
-    @api.depends('move_line_ids_without_package', 'move_line_ids_without_package.ware_check_line')
-    def compute_ware_check(self):
-        for rec in self:
-            rec.ware_check = all(rec.move_line_ids_without_package.mapped('ware_check_line'))
-
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
