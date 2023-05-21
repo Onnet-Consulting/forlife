@@ -415,3 +415,51 @@ class PromotionProgram(models.Model):
             'domain': [('program_id', '=', self.id)],
             'context': {'default_program_id': self.id, 'search_default_active': 1}
         }
+
+    def action_open_discount_product(self):
+        return {
+            'name': _('Discount Products') + (self.name and _(' of %s') % self.name) or '',
+            'domain': [('promotion_program_id', '=', self.id)],
+            'res_model': 'promotion.discount.product',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': {'default_promotion_program_id': self.id}
+        }
+
+    def action_open_reward_product(self):
+        return {
+            'name': _('Reward Products') + (self.name and _(' of %s') % self.name) or '',
+            'domain': [('promotion_program_id', '=', self.id)],
+            'res_model': 'promotion.reward.product',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': {'default_promotion_program_id': self.id}
+        }
+
+
+class PromotionDiscountProduct(models.Model):
+    _name = 'promotion.discount.product'
+    _description = 'Promotion Discount Product'
+    _table = 'promotion_program_discount_product_rel'
+
+    product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
+    promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
+
+    def init(self):
+        self.env.cr.execute("""
+            ALTER TABLE promotion_program_discount_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+
+
+class PromotionRewardProduct(models.Model):
+    _name = 'promotion.reward.product'
+    _description = 'Promotion Reward Product'
+    _table = 'promotion_program_reward_product_rel'
+
+    product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
+    promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
+
+    def init(self):
+        self.env.cr.execute("""
+            ALTER TABLE promotion_program_reward_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
