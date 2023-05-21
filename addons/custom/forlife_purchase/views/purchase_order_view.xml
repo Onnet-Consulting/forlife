@@ -220,8 +220,11 @@
                     <field name="total_trade_discount"/>
                     <field name="is_done_picking" invisible="1"/>
                 </xpath>
-                <xpath expr="//field[@name='order_line']//tree" position="replace">
-                    <tree editable="bottom" class="width-hh">
+                <xpath expr="//field[@name='order_line']" position="attributes">
+                     <attribute name="attrs">{'readonly' : [('state','not in',['draft','confirm'])]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree" position="replace" >
+                    <tree editable="bottom" class="width-hh" >
                         <control>
                             <create name="add_product_control" string="Thêm 1 dòng"/>
                         </control>
