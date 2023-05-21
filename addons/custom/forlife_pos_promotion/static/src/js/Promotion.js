@@ -1353,6 +1353,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             for (let line of to_discount_lines) {
                 let originalPrice = line.price;
                 let discAmount = round_decimals(line.price * program.disc_percent/100, this.pos.currency.decimal_places);
+                if (program.disc_max_amount > 0) {
+                    discAmount = discAmount < program.disc_max_amount ? discAmount : program.disc_max_amount;
+                };
                 let newPrice = originalPrice - discAmount;
                 line.price = newPrice;
                 line.promotion_usage_ids.push(new PromotionUsageLine(

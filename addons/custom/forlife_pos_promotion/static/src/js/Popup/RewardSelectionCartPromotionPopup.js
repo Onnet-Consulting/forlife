@@ -72,7 +72,11 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             let program = this.state.program.program;
             let newPrice;
             if (program.reward_type == 'cart_discount_percent') {
-                newPrice = reward.line.price * (1 - program.disc_percent/100);
+                let discAmount = reward.line.price * program.disc_percent/100;
+                if (program.disc_max_amount > 0) {
+                    discAmount = discAmount < program.disc_max_amount ? discAmount : program.disc_max_amount;
+                };
+                newPrice = reward.line.price - discAmount;
             } else if (program.reward_type == 'cart_discount_fixed_price') {
                 newPrice = program.disc_fixed_price;
             } else if (program.reward_type == 'cart_get_x_free') {
