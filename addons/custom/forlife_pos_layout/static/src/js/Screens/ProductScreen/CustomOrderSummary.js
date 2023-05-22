@@ -21,6 +21,9 @@ odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
             const orderlines = this.props.order.orderlines;
             for (const orderline of orderlines) {
                 total += orderline.get_price_with_tax();
+                if(orderline.money_reduce_from_product_defective >0){
+                    total += orderline.money_reduce_from_product_defective;
+                }
             }
             return total;
         }
