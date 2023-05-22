@@ -18,9 +18,9 @@
                     <button type="object"
                         name="action_view_so_return"
                         class="oe_stat_button"
-                        icon="fa-right-left"
+                        icon="fa-folder-open-o"
                         attrs="{'invisible': [('x_order_return_count', '=', 0)]}">
-                        <field name="x_order_return_count" widget="statinfo" string="Đơn trả"/>
+                        <field name="x_order_return_count" widget="statinfo" string="Đơn đổi"/>
                     </button>
                 </xpath>
                 <xpath expr="//button[@name='action_quotation_send']" position="after">
@@ -28,9 +28,13 @@
                         string="Xác nhận" type="object" context="{'validate_analytic': True}"
                         attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
                 </xpath>
-                <xpath expr="//button[@name='action_cancel']" position="after">
+                <xpath expr="//button[@name='action_cancel']" position="before">
                     <button name="action_punish"
                         string="Phạt" type="object" context="{'validate_analytic': True}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="before">
+                    <button name="action_return"
+                        string="Trả hàng" type="object" context="{'validate_analytic': True}"/>
                 </xpath>
                 <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
                     <attribute name="invisible">1</attribute>
