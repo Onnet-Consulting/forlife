@@ -13,8 +13,7 @@ class SaleOrder(models.Model):
 
     x_sale_type = fields.Selection(
         [('product', 'Hàng hóa'),
-         ('service', 'Dịnh vụ/Tài sản'),
-         ('integrated', 'Tích hợp')],
+         ('service', 'Dịnh vụ/Tài sản')],
         string='Loại bán hàng', default='product')
     x_sale_chanel = fields.Selection(
         [('pos', 'Đơn bán hàng POS'),
