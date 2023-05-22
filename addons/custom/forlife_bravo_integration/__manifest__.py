@@ -29,6 +29,7 @@
         'forlife_purchase',
         'forlife_stock',
         'forlife_voucher',
+        'forlife_product',
     ],
     'auto_install': True,
 
