@@ -30,7 +30,6 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
         }
 
         confirm(){
-            var product_id_checked;
             var product_defective_id;
             var products_defective = this.props.response
             var orderlines = this.env.pos.selectedOrder.orderlines
@@ -43,7 +42,18 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
                 for(let i =0; i< products_defective.length; i++){
                     if(product_defective_id == products_defective[i].product_defective_id){
                         for(const line of orderlines) {
-                            if(line.product.id == products_defective[i].product_id){
+                            if(line.quantity > products_defective[i].quantity){
+                                this.showPopup('ErrorPopup', {
+                                title: this.env._t("Warning"),
+                                body: _.str.sprintf(
+                                    this.env._t(
+                                        "Số luợng sản phẩm trên đơn lớn hơn số luợng sản phẩm đã chọn!"
+                                    ),
+                                    ''
+                                ),
+                                });
+                                return;
+                            }else if(line.product.id == products_defective[i].product_id){
                                line.money_reduce_from_product_defective = parseInt(products_defective[i].total_reduce)*line.quantity
                                line.is_product_defective = true
                                line.product_defective_id = products_defective[i].product_defective_id
@@ -53,7 +63,6 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
                 }
             }
             this.env.pos.selectedOrder.product_defective_id = product_defective_id
-
             this.env.posbus.trigger('close-popup', {
                 popupId: this.props.id,
                 response: {confirmed: false, payload: false},
