@@ -63,6 +63,15 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             if (options.check_button) {
                 orderline.check_button = options.check_button;
             }
+            if(options.is_product_defective !== undefined){
+                orderline.is_product_defective = orderline.is_product_defective
+            }
+            if(options.money_reduce_from_product_defective !== 0){
+                orderline.money_reduce_from_product_defective = options.money_reduce_from_product_defective;
+            }
+            if(options.product_defective_id !== 0){
+                orderline.product_defective_id = options.product_defective_id;
+            }
             super.set_orderline_options(...arguments);
         }
 

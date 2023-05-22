@@ -2,7 +2,7 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
     "use strict";
 
     const { _t } = require('web.core');
-
+    const { Orderline } = require('point_of_sale.models');
     const AbstractAwaitablePopup = require('point_of_sale.AbstractAwaitablePopup');
     const PosComponent = require('point_of_sale.PosComponent');
     const Registries = require('point_of_sale.Registries');
@@ -33,6 +33,7 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
             var product_defective_id;
             var products_defective = this.props.response
             var orderlines = this.env.pos.selectedOrder.orderlines
+            var OrderCurrent = this.env.pos.get_order()
             $('.o_check').each(function(index) {
                 if($(this).is(":checked")){
                    product_defective_id = parseInt($(this).attr('value'))
@@ -53,10 +54,24 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
                                 ),
                                 });
                                 return;
-                            }else if(line.product.id == products_defective[i].product_id){
-                               line.money_reduce_from_product_defective = parseInt(products_defective[i].total_reduce)*line.quantity
+                            }else if(line.product.id == products_defective[i].product_id && line.quantity == 1){
+                               line.money_reduce_from_product_defective = parseInt(products_defective[i].total_reduce)
                                line.is_product_defective = true
                                line.product_defective_id = products_defective[i].product_defective_id
+                            }else if(line.product.id == products_defective[i].product_id && line.quantity > 1){
+                                let line_new = Orderline.create({}, {pos: this.env.pos, order: OrderCurrent, product: line.product});
+                                OrderCurrent.fix_tax_included_price(line_new);
+                                let options_line_new = {
+                                    money_reduce_from_product_defective:parseInt(products_defective[i].total_reduce),
+                                    is_product_defective: true,
+                                    product_defective_id: products_defective[i].product_defective_id
+                                }
+                                let options_old_line = {
+                                    quantity: line.quantity -1
+                                }
+                                OrderCurrent.set_orderline_options(line_new, options_line_new);
+                                OrderCurrent.set_orderline_options(line, options_old_line);
+                                OrderCurrent.add_orderline(line_new);
                             }
                         }
                     }
