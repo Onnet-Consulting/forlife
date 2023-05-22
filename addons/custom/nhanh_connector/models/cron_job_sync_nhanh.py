@@ -105,7 +105,7 @@ class SaleOrder(models.Model):
                         'name': v['customerName'],
                         'email': v['customerEmail'],
                         'contact_address_complete': v['customerAddress'],
-                        'nhanh_id': v['customerId'],
+                        'customer_nhanh_id': v['customerId'],
                     }
                     partner = partner_model.sudo().create(partner_value)
                 order_line = []

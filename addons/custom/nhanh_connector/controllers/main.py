@@ -62,7 +62,7 @@ class MainController(http.Controller):
                     'name': data['customerName'],
                     'email': data['customerEmail'],
                     'contact_address_complete': data['customerAddress'],
-                    'nhanh_id': data['customerId'],
+                    'customer_nhanh_id': data['customerId'],
                 }
                 partner = self.partner_model().sudo().create(partner_value)
             order_line = []
