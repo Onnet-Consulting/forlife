@@ -74,8 +74,8 @@ class MainController(http.Controller):
                            'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
                            'product_uom': product.uom_id.id if product.uom_id else self.uom_unit(),
                            'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
-                           'discount': item.get('discount') / item.get('price') * 100,
-                           'x_cart_discount_fixed_price': item.get('discount') * item.get('quantity')}))
+                           'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get('discount') else 0,
+                           'x_cart_discount_fixed_price': float(item.get('discount')) * float(item.get('quantity')) if item.get('discount') else 0}))
 
             status = 'draft'
             if data['status'] == 'confirmed':

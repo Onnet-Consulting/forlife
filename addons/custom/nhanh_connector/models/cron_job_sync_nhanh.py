@@ -118,7 +118,7 @@ class SaleOrder(models.Model):
                     if not product and item.get('productCode'):
                         product = self.search_product(('code_product', '=', item.get('productCode')))
                     if not product:
-                         product = self.env['product.template'].create({
+                        product = self.env['product.template'].create({
                             'detailed_type': 'asset',
                             'nhanh_id': item.get('productId'),
                             'check_data_odoo': False,
@@ -128,7 +128,7 @@ class SaleOrder(models.Model):
                             'list_price': item.get('price'),
                             'uom_id': uom,
                             'weight': item.get('shippingWeight', 0),
-
+                            'responsible_id': None
                         })
                     product_product = self.env['product.product'].search([('product_tmpl_id', '=', product.id)], limit=1)
                     order_line.append((
@@ -137,8 +137,8 @@ class SaleOrder(models.Model):
                          'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
                          'product_uom': product.uom_id.id if product.uom_id else uom,
                          'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
-                         'discount': item.get('discount') / item.get('price') * 100,
-                         'x_cart_discount_fixed_price': item.get('discount') * item.get('quantity')}))
+                         'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get('discount') else 0,
+                         'x_cart_discount_fixed_price': float(item.get('discount')) * float(item.get('quantity')) if item.get('discount') else 0}))
                 # Add orders  to odoo
                 _logger.info(v)
                 status = 'draft'
