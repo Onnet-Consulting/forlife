@@ -90,33 +90,37 @@ class ProductProduct(models.Model):
             value = {
                 bravo_column_names[0]: record.barcode,
                 bravo_column_names[1]: record.name,
-                bravo_column_names[2]: record.sku_code,
+                bravo_column_names[2]: record.sku_code or None,
                 bravo_column_names[3]: record.uom_id.code,
-                bravo_column_names[4]: category_level_1.category_code,
-                bravo_column_names[5]: category_level_2.category_code,
-                bravo_column_names[6]: category_level_3.category_code,
-                bravo_column_names[7]: category_level_4.category_code,
-                bravo_column_names[8]: category_level_5.category_code,
+                bravo_column_names[4]: category_level_1.category_code or None,
+                bravo_column_names[5]: category_level_2.category_code or None,
+                bravo_column_names[6]: category_level_3.category_code or None,
+                bravo_column_names[7]: category_level_4.category_code or None,
+                bravo_column_names[8]: category_level_5.category_code or None,
             }
             if record.detailed_type != 'product':
                 product_type = 0
             else:
                 exist_155_accounts = any([
                     check_account_is_155x(
-                        record.with_company(company_by_code['1300'].sudo()).property_stock_valuation_account_id.code),
+                        record.with_company(
+                            company_by_code['1300'].sudo()).categ_id.property_stock_valuation_account_id.code),
                     check_account_is_155x(
-                        record.with_company(company_by_code['1200'].sudo()).property_stock_valuation_account_id.code),
+                        record.with_company(
+                            company_by_code['1200'].sudo()).categ_id.property_stock_valuation_account_id.code),
                     check_account_is_155x(
-                        record.with_company(company_by_code['1400'].sudo()).property_stock_valuation_account_id.code),
+                        record.with_company(
+                            company_by_code['1400'].sudo()).categ_id.property_stock_valuation_account_id.code),
                     check_account_is_155x(
-                        record.with_company(company_by_code['1100'].sudo()).property_stock_valuation_account_id.code),
+                        record.with_company(
+                            company_by_code['1100'].sudo()).categ_id.property_stock_valuation_account_id.code),
                 ])
                 product_type = 1 if exist_155_accounts else 2
             value.update({
                 bravo_column_names[9]: product_type
             })
 
-            attribute_values = record.product_template_variant_value_ids.mapped('product_attribute_value_id')
+            attribute_values = record.product_template_variant_value_ids
             product_attribute_code_value_mapping = {}
             for attr_value in attribute_values:
                 attribute_code = attr_value.attribute_id.attrs_code
@@ -138,3 +142,6 @@ class ProductProduct(models.Model):
             values.append(value)
 
         return bravo_column_names, values
+
+    def bravo_get_insert_values(self, **kwargs):
+        return self.bravo_get_record_values(**kwargs)
