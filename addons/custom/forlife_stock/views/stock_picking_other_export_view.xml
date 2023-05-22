@@ -92,9 +92,9 @@
                     <field name="amount_total" force_save="1" string="Tổng tiền" attrs="{'column_invisible': [('parent.other_import', '!=', True)], 'readonly': [('is_amount_total', '!=', True)]}"/>
                     <field name="reason_type_id" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
                     <field name="reason_id" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
-                    <field name="occasion_code_id" string="Mã vụ việc" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
+                    <field name="occasion_code_id" string="Mã vụ việc"/>
                     <field name="work_production" attrs="{'required': [('is_production_order', '=', True)], 'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
-                    <field name="account_analytic_id" string="Trung tâm chi phí" attrs="{'column_invisible': [('parent.other_import', '!=', True),('parent.other_export', '!=', True)]}"/>
+                    <field name="account_analytic_id" string="Trung tâm chi phí"/>
                 </xpath>
                 <xpath expr="//field[@name='picking_type_id']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|', ('other_import', '=', True), '|', ('other_export', '=', True), ('hide_picking_type', '=', True)]}</attribute>

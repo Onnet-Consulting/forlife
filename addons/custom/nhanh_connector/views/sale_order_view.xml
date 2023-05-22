@@ -23,6 +23,23 @@
                 <field name="source_record" invisible="1"/>
                 <field name="name_customer" attrs="{'invisible': [('name_customer', '=', False)]}"/>
             </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Thông tin Nhanh.vn" name="nhanh_information" attrs="{'invisible': [('source_record', '=', False)]}">
+                    <group>
+                        <group>
+                            <field name="order_partner_id" readonly="1"/>
+                            <field name="note_customer" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="carrier_name" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                <field name="odoo_price_unit"/>
+                <field name="discount_price_unit"/>
+            </xpath>
         </field>
     </record>
 </odoo>

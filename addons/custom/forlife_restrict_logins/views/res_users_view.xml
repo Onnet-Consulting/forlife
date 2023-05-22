@@ -22,7 +22,7 @@
             <field name="inherit_id" ref="base.view_users_form"/>
             <field name="arch" type="xml">
 
-                <xpath expr="//field[@name='share']" position="after">
+                <xpath expr="//div[hasclass('oe_title')]/group" position="inside">
                     <!-- Add your fields or attributes here -->
                     <field name="restrict_login_only_1_browser"/>
                     <field name="session_life_time"/>

@@ -26,6 +26,18 @@ REWARD_TYPE = [
     ]
 
 
+class PromotionConditionProduct(models.Model):
+    _name = 'promotion.condition.product'
+    _table = 'product_product_promotion_program_rel'
+
+    product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
+    promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
+
+    def init(self):
+        self.env.cr.execute("""
+            ALTER TABLE product_product_promotion_program_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+
+
 class PromotionProgram(models.Model):
     _name = 'promotion.program'
     _description = 'Promotion Program'
@@ -104,7 +116,9 @@ class PromotionProgram(models.Model):
     discount_based_on = fields.Selection([
         ('unit_price', 'Unit Price'),
         ('discounted_price', 'Discounted Price')], string='Discount Based On', required=True, default='unit_price')
-    product_ids = fields.Many2many('product.product', string='Products', domain="[('available_in_pos', '=', True)]")
+    product_ids = fields.Many2many(
+        'product.product', relation='product_product_promotion_program_rel', string='Products',
+        domain="[('available_in_pos', '=', True)]")
     product_categ_ids = fields.Many2many('product.category', string='Product Categories')
     product_domain = fields.Char()
     min_quantity = fields.Float('Minimum Quantity', default=1)
@@ -330,6 +344,17 @@ class PromotionProgram(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")
         action['domain'] = [('id', 'in', self.valid_product_ids.ids)]
         return action
+
+    def action_open_condition_product(self):
+        return {
+            'name': _('Condition Products') + (self.name and _(' of %s') % self.name) or '',
+            'domain': [('promotion_program_id', '=', self.id)],
+            'res_model': 'promotion.condition.product',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': {'default_promotion_program_id': self.id}
+        }
 
     def view_program(self):
         action = self.env["ir.actions.act_window"]._for_xml_id("forlife_pos_promotion.promotion_program_action")
