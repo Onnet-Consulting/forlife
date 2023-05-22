@@ -81,6 +81,10 @@ class ProductProduct(models.Model):
             "Guide": "026",
             "ColorLight": "027",
         }
+        if not self:
+            if to_update:
+                return []
+            return bravo_column_names, []
         for record in self:
             category_level_5 = record.categ_id
             category_level_4 = category_level_5.parent_id
@@ -141,7 +145,23 @@ class ProductProduct(models.Model):
 
             values.append(value)
 
+        if to_update:
+            return values
+
         return bravo_column_names, values
 
     def bravo_get_insert_values(self, **kwargs):
         return self.bravo_get_record_values(**kwargs)
+
+    def bravo_get_update_values(self, values, **kwargs):
+        res = self.bravo_get_record_values(to_update=True, **kwargs)
+        if not res:
+            return {}
+        return res[0]
+
+    def bravo_get_update_value_for_existing_record(self, **kwargs):
+        values = self.bravo_get_update_values(True, **kwargs)
+        if values:
+            return values[0] if type(values) is list else values
+        return {}
+
