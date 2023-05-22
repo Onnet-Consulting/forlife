@@ -21,6 +21,7 @@ class SaleOrder(models.Model):
     _inherit = "sale.order"
     nhanh_status = fields.Char(string='Nhanh order status')
     nhanh_shipping_fee = fields.Float(string='Shipping fee')
+    nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
     nhanh_sale_channel_id = fields.Integer(string='Sale channel id')
 
     def get_nhanh_configs(self):
@@ -85,6 +86,14 @@ class SaleOrder(models.Model):
             for k, v in nhanh_orders.items():
                 name_customer = False
                 # Add customer if not existed
+                nhanh_partner = partner_model.sudo().search(
+                    [('code_current_customers', '=', 'code_current_customers_nhanhvn')], limit=1)
+                if not nhanh_partner:
+                    nhanh_partner = partner_model.sudo().create({
+                        'code_current_customers': 'code_current_customers_nhanhvn',
+                        'name': 'Nhanh.Vn',
+                        'customer_rank': 1
+                    })
                 partner = partner_model.sudo().search(
                     ['|', ('mobile', '=', v['customerMobile']), ('phone', '=', v['customerMobile'])], limit=1)
                 if partner:
@@ -96,6 +105,7 @@ class SaleOrder(models.Model):
                         'name': v['customerName'],
                         'email': v['customerEmail'],
                         'contact_address_complete': v['customerAddress'],
+                        'nhanh_id': v['customerId'],
                     }
                     partner = partner_model.sudo().create(partner_value)
                 order_line = []
@@ -127,7 +137,8 @@ class SaleOrder(models.Model):
                          'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
                          'product_uom': product.uom_id.id if product.uom_id else uom,
                          'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
-                         'discount': item.get('discount')}))
+                         'discount': item.get('discount') / item.get('price') * 100,
+                         'x_cart_discount_fixed_price': item.get('discount') * item.get('quantity')}))
                 # Add orders  to odoo
                 _logger.info(v)
                 status = 'draft'
@@ -142,17 +153,29 @@ class SaleOrder(models.Model):
                 elif v['statusCode'] == 'canceled':
                     status = 'cancel'
 
+                # nhân viên kinh doanh
+                user_id = self.env['res.users'].search([('partner_id.name', '=', v['saleName'])], limit=1)
+                # đội ngũ bán hàng
+                team_id = self.env['crm.team'].search([('name', '=', v['trafficSourceName'])], limit=1)
+
                 value = {
                     'nhanh_id': v['id'],
                     'nhanh_status': v['statusCode'],
-                    'partner_id': partner.id,
+                    'partner_id': nhanh_partner.id,
+                    'order_partner_id': partner.id,
                     'nhanh_shipping_fee': v['shipFee'],
+                    'nhanh_customer_shipping_fee': v['customerShipFee'],
                     'nhanh_sale_channel_id': v['saleChannel'],
                     'source_record': True,
                     'state': status,
                     'code_coupon': v['couponCode'],
                     'name_customer': name_customer,
                     'note': v['privateDescription'],
+                    'note_customer': v['description'],
+                    'x_sale_chanel': 'online',
+                    'carrier_name': v['carrierName'],
+                    'user_id': user_id.id if user_id else None,
+                    'team_id': team_id.id if team_id else None,
                     'order_line': order_line
                 }
                 order_model.sudo().create(value)
