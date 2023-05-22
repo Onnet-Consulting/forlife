@@ -88,10 +88,10 @@ class ProductProduct(models.Model):
             category_level_2 = category_level_3.parent_id
             category_level_1 = category_level_2.parent_id
             value = {
-                bravo_column_names[0]: record.barcode,
+                bravo_column_names[0]: record.barcode or None,
                 bravo_column_names[1]: record.name,
                 bravo_column_names[2]: record.sku_code or None,
-                bravo_column_names[3]: record.uom_id.code,
+                bravo_column_names[3]: record.uom_id.code or None,
                 bravo_column_names[4]: category_level_1.category_code or None,
                 bravo_column_names[5]: category_level_2.category_code or None,
                 bravo_column_names[6]: category_level_3.category_code or None,
@@ -120,7 +120,7 @@ class ProductProduct(models.Model):
                 bravo_column_names[9]: product_type
             })
 
-            attribute_values = record.product_template_variant_value_ids
+            attribute_values = record.product_template_variant_value_ids or record.product_template_attribute_value_ids
             product_attribute_code_value_mapping = {}
             for attr_value in attribute_values:
                 attribute_code = attr_value.attribute_id.attrs_code
