@@ -331,9 +331,12 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                                     usage_total += item.promotion_usage_ids[k].discount_amount
                                 }
                             }
-                            if(data[i].value.price_residual >= (item.product.lst_price*item.quantity + item.point - so_tien_da_tra[item_id] - usage_total)){
-                                data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*item.quantity - so_tien_da_tra[item_id] + item.point - usage_total);
-                                so_tien_da_tra[item_id] = item.product.lst_price*item.quantity + item.point - usage_total;
+                            if(!item.card_rank_discount){
+                                item.card_rank_discount = 0
+                            }
+                            if(data[i].value.price_residual >= (item.product.lst_price*item.quantity + item.point - so_tien_da_tra[item_id] - usage_total - item.card_rank_discount)){
+                                data[i].value.price_residual = data[i].value.price_residual-(item.product.lst_price*item.quantity - so_tien_da_tra[item_id] + item.point - usage_total - item.card_rank_discount);
+                                so_tien_da_tra[item_id] = item.product.lst_price*item.quantity + item.point - usage_total - item.card_rank_discount;
                             }else{
                                 so_tien_da_tra[item_id] = so_tien_da_tra[item_id] + data[i].value.price_residual;
                                 data[i].value.price_residual = 0;
