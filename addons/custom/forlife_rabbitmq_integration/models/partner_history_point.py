@@ -18,13 +18,21 @@ class PartnerCardRankLine(models.Model):
             'forlife': 'TKL',
         }
         for r in self:
-            history_points = r.partner_id.history_points_format_ids if r.store == 'format' else r.partner_id.history_points_forlife_ids
+            if r.store == 'format':
+                history_points = r.partner_id.history_points_format_ids
+                expired_at = r.partner_id.reset_day_of_point_format
+                remaining = r.partner_id.total_points_available_format
+            else:
+                history_points = r.partner_id.history_points_forlife_ids
+                expired_at = r.partner_id.reset_day_of_point_forlife
+                remaining = r.partner_id.total_points_available_forlife
             data.append({
                 'id': r.partner_id.id,
                 'score': {
                     brand.get(r.store): {
                         'used': sum(history_points.mapped('points_used')),
-                        'remaining': sum(history_points.mapped('points_store')),
+                        'remaining': remaining or 0,
+                        'expired_at': expired_at and expired_at.strftime('%Y-%m-%d %H:%M:%S') or None,
                     }
                 }
             })
