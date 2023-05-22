@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-10 08:56+0000\n"
-"PO-Revision-Date: 2023-05-10 08:56+0000\n"
+"POT-Creation-Date: 2023-05-22 01:16+0000\n"
+"PO-Revision-Date: 2023-05-22 01:16+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -37,21 +37,6 @@ msgid "All areas"
 msgstr "Tất cả khu vực"
 
 #. module: forlife_report
-#: model:ir.model.fields,field_description:forlife_report.field_report_num16__all_products
-#: model:ir.model.fields,field_description:forlife_report.field_report_num1__all_products
-#: model:ir.model.fields,field_description:forlife_report.field_report_num2__all_products
-#: model:ir.model.fields,field_description:forlife_report.field_report_num3__all_products
-#: model:ir.model.fields,field_description:forlife_report.field_report_num4__all_products
-msgid "All products"
-msgstr "Tất cả sản phẩm"
-
-#. module: forlife_report
-#: model:ir.model.fields,field_description:forlife_report.field_report_num16__all_warehouses
-#: model:ir.model.fields,field_description:forlife_report.field_report_num1__all_warehouses
-#: model:ir.model.fields,field_description:forlife_report.field_report_num2__all_warehouses
-#: model:ir.model.fields,field_description:forlife_report.field_report_num3__all_warehouses
-#: model:ir.model.fields,field_description:forlife_report.field_report_num4__all_warehouses
-#: model:ir.model.fields,field_description:forlife_report.field_report_num6__all_warehouses
 #: model:ir.model.fields,field_description:forlife_report.field_report_num7__all_warehouses
 msgid "All warehouses"
 msgstr "Tất cả kho"
@@ -97,11 +82,7 @@ msgstr "Chi nhánh"
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12__brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num14__brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num15__brand_id
-#: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num17__brand_id
-#: model:ir.model.fields,field_description:forlife_report.field_report_num2__product_brand_id
-#: model:ir.model.fields,field_description:forlife_report.field_report_num3__product_brand_id
-#: model:ir.model.fields,field_description:forlife_report.field_report_num4__product_brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num5__brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num6__brand_id
 #: model:ir.model.fields,field_description:forlife_report.field_report_num7__brand_id
@@ -257,6 +238,7 @@ msgstr "Không tìm thấy dữ liệu với id = '%s'"
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num15_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num18_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num19_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num1_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num7_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num8_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num9_form
@@ -294,12 +276,23 @@ msgid "Display Name"
 msgstr ""
 
 #. module: forlife_report
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num10_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num11_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num13_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num14_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num15_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num16_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num17_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num18_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num19_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num1_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num2_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num3_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num4_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num6_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num7_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num8_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num9_form
 msgid "Download Excel"
 msgstr "Tải Excel"
 
@@ -423,6 +416,11 @@ msgstr "Số hóa đơn"
 #, python-format
 msgid "Invoice list"
 msgstr "Danh sách hóa đơn"
+
+#. module: forlife_report
+#: model:ir.model,name:forlife_report.model_report_num17
+msgid "Invoice sales and refund list"
+msgstr "Báo cáo bán - đổi - trả"
 
 #. module: forlife_report
 #. odoo-javascript
@@ -615,36 +613,12 @@ msgid "Previous"
 msgstr "Trước đó"
 
 #. module: forlife_report
-#: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_group_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num2__product_group_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num3__product_group_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num4__product_group_ids
-msgid "Product Group"
-msgstr "Nhóm hàng"
-
-#. module: forlife_report
-#: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_line_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num2__product_line_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num3__product_line_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num4__product_line_ids
-msgid "Product Line"
-msgstr "Dòng hàng"
-
-#. module: forlife_report
-#: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_texture_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num2__product_texture_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num3__product_texture_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num4__product_texture_ids
-msgid "Product Texture"
-msgstr "Kết cấu"
-
-#. module: forlife_report
-#: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num1__product_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num2__product_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num3__product_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num4__product_ids
-msgid "Products"
+#: model:ir.model.fields,field_description:forlife_report.field_report_num16__product_domain
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__product_domain
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__product_domain
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__product_domain
+#: model:ir.model.fields,field_description:forlife_report.field_report_num4__product_domain
+msgid "Product"
 msgstr "Sản phẩm"
 
 #. module: forlife_report
@@ -724,7 +698,6 @@ msgstr "Báo cáo bán - trưng hàng"
 
 #. module: forlife_report
 #: model:ir.actions.act_window,name:forlife_report.report_num17_window_action
-#: model:ir.model,name:forlife_report.model_report_num17
 #: model:ir.ui.menu,name:forlife_report.report_num17_menu
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num17_form
 msgid "Report sales and refund"
@@ -883,13 +856,6 @@ msgstr "Tồn kho theo giá bán"
 #, python-format
 msgid "Store"
 msgstr "Cửa hàng"
-
-#. module: forlife_report
-#. odoo-python
-#: code:addons/forlife_report/wizard/report_num7.py:0
-#, python-format
-msgid "Stores not found !"
-msgstr "Không tìm thấy cửa hàng để lấy dữ liệu doanh thu !"
 
 #. module: forlife_report
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num6_form
@@ -1082,20 +1048,16 @@ msgid "Voucher code"
 msgstr "Mã voucher"
 
 #. module: forlife_report
-#. odoo-python
-#: code:addons/forlife_report/wizard/report_num3.py:0
-#: code:addons/forlife_report/wizard/report_num6.py:0
-#, python-format
-msgid "Warehouse not found !"
-msgstr "Không tìm thấy kho để xuất dữ liệu!"
+#: model:ir.model.fields,field_description:forlife_report.field_report_num16__warehouse_domain
+#: model:ir.model.fields,field_description:forlife_report.field_report_num1__warehouse_domain
+#: model:ir.model.fields,field_description:forlife_report.field_report_num2__warehouse_domain
+#: model:ir.model.fields,field_description:forlife_report.field_report_num3__warehouse_domain
+#: model:ir.model.fields,field_description:forlife_report.field_report_num4__warehouse_domain
+#: model:ir.model.fields,field_description:forlife_report.field_report_num6__warehouse_domain
+msgid "Warehouse"
+msgstr "Kho"
 
 #. module: forlife_report
-#: model:ir.model.fields,field_description:forlife_report.field_report_num16__warehouse_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num1__warehouse_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num2__warehouse_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num3__warehouse_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num4__warehouse_ids
-#: model:ir.model.fields,field_description:forlife_report.field_report_num6__warehouse_ids
 #: model:ir.model.fields,field_description:forlife_report.field_report_num7__warehouse_ids
 msgid "Warehouses"
 msgstr "Kho"
@@ -1142,6 +1104,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num15_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num18_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num19_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num1_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num6_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num7_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num8_form
@@ -1156,6 +1119,7 @@ msgstr "từ"
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num15_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num18_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num19_form
+#: model_terms:ir.ui.view,arch_db:forlife_report.report_num1_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num6_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num7_form
 #: model_terms:ir.ui.view,arch_db:forlife_report.report_num8_form
