@@ -787,7 +787,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let result = {};
         for (let line of this.get_orderlines_to_check()) {
             for (let usage of line.promotion_usage_ids) {
-                if (['combo', 'code'].includes(this.pos.promotion_program_by_id[usage.program_id].promotion_type)){
+                if (['combo', 'code', 'cart'].includes(this.pos.promotion_program_by_id[usage.program_id].promotion_type)){
                     if (usage.program_id in result) {
                         result[usage.program_id] += line.quantity;
                     } else {
@@ -1191,13 +1191,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     return [program, 'limit_usage_per_program', program.max_usage_per_program - historyUsed];
                 };
             };
-            if (program.promotion_type=='code' && program.limit_usage_per_customer) {
+            if (['code', 'cart'].includes(program.promotion_type) && program.limit_usage_per_customer) {
                 let historyUsed = (this.historyProgramUsages || {})[program.id] || 0;
                 if  (historyUsed >= program.max_usage_per_customer) {
                     return [program, 'limit_usage_per_customer', program.max_usage_per_customer - historyUsed];
                 };
             };
-            if (program.promotion_type=='code' && program.limit_usage_per_program) {
+            if (['code', 'cart'].includes(program.promotion_type) && program.limit_usage_per_program) {
                 let historyUsed = (this.historyProgramUsages.all_usage_promotions || {})[program.id] || 0;
                 if  (historyUsed >= program.max_usage_per_program) {
                     return [program, 'limit_usage_per_program', program.max_usage_per_program - historyUsed];
@@ -1464,6 +1464,18 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let required_order_amount_min = program.order_amount_min;
             if (!this._programIsApplicableAutomatically(program)) {
                 continue
+            };
+            if (program.limit_usage_per_customer) {
+                let historyUsed = (this.historyProgramUsages || {})[program.id] || 0;
+                if  (historyUsed >= program.max_usage_per_customer) {
+                    continue;
+                };
+            };
+            if (program.limit_usage_per_program) {
+                let historyUsed = (this.historyProgramUsages.all_usage_promotions || {})[program.id] || 0;
+                if  (historyUsed >= program.max_usage_per_program) {
+                    continue;
+                };
             };
 
             let amountCheck = totalsPerProgram[program.id]['taxed'];

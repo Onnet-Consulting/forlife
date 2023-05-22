@@ -97,14 +97,14 @@
                                 <span attrs="{'invisible': [('limit_usage_per_order', '=', False)]}"> to <field name="max_usage_per_order" class="oe_inline"/> combo/SP</span>
                             </span>
                             <label for="limit_usage_per_customer"
-                                   attrs="{'invisible': [('promotion_type', 'not in', ('code','combo'))]}"/>
-                            <span attrs="{'invisible': [('promotion_type', 'not in', ('code','combo'))]}">
+                                   attrs="{'invisible': [('promotion_type', 'not in', ('code','combo', 'cart'))]}"/>
+                            <span attrs="{'invisible': [('promotion_type', 'not in', ('code','combo', 'cart'))]}">
                                 <field name="limit_usage_per_customer" class="oe_inline"/>
                                 <span attrs="{'invisible': [('limit_usage_per_customer', '=', False)]}"> to <field name="max_usage_per_customer" class="oe_inline"/> Combo/Order</span>
                             </span>
                             <label for="limit_usage_per_program"
-                                   attrs="{'invisible': [('promotion_type', 'not in', ('code','combo'))]}"/>
-                            <span attrs="{'invisible': [('promotion_type', 'not in', ('code','combo'))]}">
+                                   attrs="{'invisible': [('promotion_type', 'not in', ('code','combo', 'cart'))]}"/>
+                            <span attrs="{'invisible': [('promotion_type', 'not in', ('code','combo', 'cart'))]}">
                                 <field name="limit_usage_per_program" class="oe_inline"/>
                                 <span attrs="{'invisible': [('limit_usage_per_program', '=', False)]}"> to <field name="max_usage_per_program" class="oe_inline"/> Combo/Order</span>
                             </span>
