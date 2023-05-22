@@ -20,7 +20,7 @@ msgstr ""
 #. module: forlife_print_stamps_barcode
 #: model:ir.actions.report,print_report_name:forlife_print_stamps_barcode.print_stamps_barcode_report
 msgid "'Print Barcode'"
-msgstr "In mã vạch"
+msgstr "'In mã vạch'"
 
 #. module: forlife_print_stamps_barcode
 #: model_terms:ir.ui.view,arch_db:forlife_print_stamps_barcode.view_print_stamps_barcode_form
