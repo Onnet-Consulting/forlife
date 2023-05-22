@@ -187,11 +187,6 @@ class StockPicking(models.Model):
                 'template': '/forlife_stock/static/src/xlsx/xuat_khac.xlsx?download=true'
             }]
 
-    @api.depends('move_line_ids_without_package', 'move_line_ids_without_package.ware_check_line')
-    def compute_ware_check(self):
-        for rec in self:
-            rec.is_no_more_quantity = all(rec.order_lines.mapped('ware_check_line'))
-
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
@@ -280,7 +275,7 @@ class StockMove(models.Model):
                         if r.product_id == rec.product_id and r.amount_total == rec.amount_total:
                             rec.write({'previous_qty': r.previous_qty})
             else:
-                if rec.picking_id.state not in ('assigned', 'done'):
+                if rec.picking_id.state not in 'done':
                     rec.previous_qty = rec.product_uom_qty
 
     @api.onchange('product_id')
@@ -298,13 +293,13 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     po_id = fields.Char('')
-    ware_check_line = fields.Boolean('')
+    ware_check_line = fields.Boolean('', default=False)
 
-    @api.constrains('qty_done', 'picking_id.move_ids_without_package')
-    def constrains_qty_done(self):
-        for rec in self:
-            for line in rec.picking_id.move_ids_without_package:
-                if rec.product_id == line.product_id:
-                    if rec.qty_done > line.product_uom_qty:
-                        raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
+    # @api.constrains('qty_done', 'picking_id.move_ids_without_package')
+    # def constrains_qty_done(self):
+    #     for rec in self:
+    #         for line in rec.picking_id.move_ids_without_package:
+    #             if rec.product_id == line.product_id:
+    #                 if rec.qty_done > line.product_uom_qty:
+    #                     raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 

@@ -31,13 +31,10 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                     _.each(currentOrder.get_orderlines(), function (orderLine) {
                        if(orderLine.product.combo_id[0] !=null && !orderLine.is_new_line && orderLine.quantity !== 0){
                             order_old_lines.push(orderLine);
-
-                           // message = "Code " + orderLine.product.sku_code + " refund not enough quantity!";
                        }
                        if(orderLine.product.combo_id[0] !=null && orderLine.is_new_line){
                             order_new_lines.push(orderLine);
                             order_new_ids.push(orderLine.product.id);
-                           // message = "Code " + orderLine.product.sku_code + " refund not enough quantity!";
                        }
                     })
                     if(order_old_lines){
@@ -50,7 +47,6 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                                     // neu co trong mang check so luong san pham can doi tra
                                     _.each(order_new_lines, function (orderNewLine) {
                                         if(orderOldLine.product.id == orderNewLine.product.id && Math.abs(orderOldLine.quantity) != orderNewLine.quantity){
-                                            // message = "Bạn cần đúng số lượng sản phẩm " + orderLine.product.sku_code + " để đổi trả!";
                                             message = "Bạn cần nhập đúng số lượng sản phẩm để đổi trả!";
                                         }
                                     })
@@ -131,40 +127,42 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                     if(combo) {
                         var message = '';
                         order_lines.forEach(function(item){
-                            if(jQuery.inArray(item.product_tmpl_id, list_product_checked) == -1) {
-                                list_product_checked.push(item.product_tmpl_id);
+                            // kiem tra xem id có trong mang khong neu k co thi them vao
+                            if(jQuery.inArray(item.product_id, list_product_checked) == -1) {
+                                list_product_checked.push(item.product_id);
                                 var product_check_combo = [];
                                 $.each(combo, $.proxy(function(i, e) {
                                     if(e.id == item.combo_id) {
                                         e.product_combolines.forEach(function (pc) {
-                                            var line = [];
-                                             order_lines.forEach(function(pp) {
+                                            var line2 = [];
+                                            order_lines.forEach(function(pp) {
                                                 if(pp.product_tmpl_id == pc.product_id){
-                                                    line.push(pp);
+                                                    line2.push(pp);
                                                 }
                                             })
-
-                                            line.forEach(function (li) {
-                                                if (jQuery.inArray(li.product_tmpl_id, list_product_checked) == -1) {
-                                                    list_product_checked.push(li.product_tmpl_id);
+                                            var total_quantity = 0
+                                            line2.forEach(function (li) {
+                                                if (jQuery.inArray(li.product_id, list_product_checked) == -1) {
+                                                    list_product_checked.push(li.product_id);
                                                 }
-
-                                                if (li.count < pc.quantity) {
-                                                    message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua ";
-                                                }
-
-                                                if (li.count % pc.quantity != 0) {
-                                                    message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua ";
-                                                }
-
-                                                var value = li.count / pc.quantity;
-                                                if (jQuery.inArray(value, product_check_combo) == -1) {
-                                                    product_check_combo.push(value);
-                                                }
-                                                if (product_check_combo.length > 1) {
-                                                    message = "Không đủ số lượng mua combo bộ vui lòng mua bổ xung";
-                                                }
+                                                total_quantity = total_quantity + li.count
                                             })
+                                            //  kiem tra tong so luong cua san pham trong 1 combo
+                                            if (total_quantity < pc.quantity) {
+                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua 1";
+                                            }
+
+                                            if (total_quantity % pc.quantity != 0) {
+                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua  2";
+                                            }
+
+                                            var value = total_quantity / pc.quantity;
+                                            if (jQuery.inArray(value, product_check_combo) == -1) {
+                                                product_check_combo.push(value);
+                                            }
+                                            if (product_check_combo.length > 1) {
+                                                message = "Không đủ số lượng mua combo bộ vui lòng mua bổ xung";
+                                            }
                                         });
                                     }
                                 }, this));

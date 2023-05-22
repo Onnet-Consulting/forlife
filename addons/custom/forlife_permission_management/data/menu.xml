@@ -65,6 +65,11 @@
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
         </record>
 
+        <record model="ir.ui.menu" id="forlife_stock.stock_picking_other_import_menu">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
         <record model="ir.ui.menu" id="point_of_sale.menu_point_root">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
@@ -91,6 +96,11 @@
         </record>
 
         <record model="ir.ui.menu" id="point_of_sale.menu_pos_payment">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="point_of_sale.menu_point_rep">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
         </record>
@@ -133,6 +143,11 @@
         <record model="ir.ui.menu" id="sale.menu_sale_quotations">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="sale.product_menu_catalog">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="sale.sale_order_menu">
