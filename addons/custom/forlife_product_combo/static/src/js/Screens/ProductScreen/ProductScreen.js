@@ -42,7 +42,11 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                             if(order_new_lines){
                                 //  check neu khong co trong mang
                                 if(jQuery.inArray(orderOldLine.product.id, order_new_ids) == -1) {
-                                    message = "Bạn cần chọn sản phẩm " + orderLine.product.sku_code + " để đổi trả!";
+                                    if(orderOldLine.product.sku_code){
+                                        message = "Bạn cần chọn sản phẩm " + orderOldLine.product.sku_code + " để đổi trả!";
+                                    }else{
+                                        message = "Bạn cần chọn sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
+                                    }
                                 }else{
                                     // neu co trong mang check so luong san pham can doi tra
                                     _.each(order_new_lines, function (orderNewLine) {
@@ -53,9 +57,14 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                                 }
                             }
                             else{
-                                message = "Bạn cần chọn sản phẩm " + orderLine.product.sku_code + " để đổi trả!";
+                                if(orderOldLine.product.sku_code){
+                                    message = "Bạn cần chọn sản phẩm " + orderOldLine.product.sku_code + " để đổi trả!";
+                                }else{
+                                    message = "Bạn cần chọn sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
+                                }
                             }
-                        })
+                        }, this)
+
                     }
 
                     if(message.length > 0) {
