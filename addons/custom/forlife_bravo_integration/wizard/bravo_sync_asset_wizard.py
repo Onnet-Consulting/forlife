@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+import re
 
 
 class BravoSyncAssetWizard(models.TransientModel):
@@ -121,7 +122,8 @@ class BravoSyncAssetWizard(models.TransientModel):
         return {comp.code: comp.id for comp in companies}
 
     def generate_product_category_id_by_code(self, codes):
-        product_categories = self.env['product.category'].search([('code', 'in', codes)])
+        product_categories = self.env['product.category'].search([('code', 'in', codes)]). \
+            filtered(lambda category: re.match('\d+/\d+/\d+', category.parent_path))
         res = {}
         for pc in product_categories:
             res[pc.category_code] = pc.id
