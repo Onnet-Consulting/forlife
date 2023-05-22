@@ -85,58 +85,57 @@ class RestrictLoginsSession(http.Controller):
     #     request.session.logout(keep_db=True)
     #     return request.redirect(redirect, 303)
 
+@http.route('/web/login', type='http', auth="none")
+def web_login(self, redirect=None, **kw):
+    ensure_db()
+    request.params['login_success'] = False
+    if request.httprequest.method == 'GET' and redirect and request.session.uid:
+        return request.redirect(redirect)
 
-class RestrictLoginHome(Home):
-
-    @http.route('/web/login', type='http', auth="none")
-    def web_login(self, redirect=None, **kw):
-        ensure_db()
-        request.params['login_success'] = False
-        if request.httprequest.method == 'GET' and redirect and request.session.uid:
-            return request.redirect(redirect)
-
-        # simulate hybrid auth=user/auth=public, despite using auth=none to be able
-        # to redirect users when no db is selected - cfr ensure_db()
-        if request.env.uid is None:
-            if request.session.uid is None:
-                # no user -> auth=public with specific website public user
-                request.env["ir.http"]._auth_method_public()
-            else:
-                # auth=user
-                request.update_env(user=request.session.uid)
-
-        values = {k: v for k, v in request.params.items() if k in SIGN_UP_REQUEST_PARAMS}
-        try:
-            values['databases'] = http.db_list()
-        except odoo.exceptions.AccessDenied:
-            values['databases'] = None
-
-        if request.httprequest.method == 'POST':
-            try:
-                uid = request.session.authenticate(request.db, request.params['login'], request.params['password'])
-                request.params['login_success'] = True
-                return request.redirect(self._login_redirect(uid, redirect=redirect))
-            except odoo.exceptions.AccessDenied as e:
-                failed_uid = request.uid
-                if e.args == odoo.exceptions.AccessDenied().args:
-                    values['error'] = _("Wrong login/password")
-                elif e.args[0] == "already_logged_in":
-                    values['error'] = "User already logged in. Log out from " \
-                                      "other devices and try again."
-                    values['logout_all'] = True
-                    values['failed_uid'] = failed_uid if failed_uid != SUPERUSER_ID else False
-                else:
-                    values['error'] = e.args[0]
+    # simulate hybrid auth=user/auth=public, despite using auth=none to be able
+    # to redirect users when no db is selected - cfr ensure_db()
+    if request.env.uid is None:
+        if request.session.uid is None:
+            # no user -> auth=public with specific website public user
+            request.env["ir.http"]._auth_method_public()
         else:
-            if 'error' in request.params and request.params.get('error') == 'access':
-                values['error'] = _('Only employees can access this database. Please contact the administrator.')
+            # auth=user
+            request.update_env(user=request.session.uid)
 
-        if 'login' not in values and request.session.get('auth_login'):
-            values['login'] = request.session.get('auth_login')
+    values = {k: v for k, v in request.params.items() if k in SIGN_UP_REQUEST_PARAMS}
+    try:
+        values['databases'] = http.db_list()
+    except odoo.exceptions.AccessDenied:
+        values['databases'] = None
 
-        if not odoo.tools.config['list_db']:
-            values['disable_database_manager'] = True
-        response = request.render('web.login', values)
-        response.headers['X-Frame-Options'] = 'SAMEORIGIN'
-        response.headers['Content-Security-Policy'] = "frame-ancestors 'self'"
-        return response
+    if request.httprequest.method == 'POST':
+        try:
+            uid = request.session.authenticate(request.db, request.params['login'], request.params['password'])
+            request.params['login_success'] = True
+            return request.redirect(self._login_redirect(uid, redirect=redirect))
+        except odoo.exceptions.AccessDenied as e:
+            failed_uid = request.uid
+            if e.args == odoo.exceptions.AccessDenied().args:
+                values['error'] = _("Wrong login/password")
+            elif e.args[0] == "already_logged_in":
+                values['error'] = "User already logged in. Log out from " \
+                                  "other devices and try again."
+                values['logout_all'] = True
+                values['failed_uid'] = failed_uid if failed_uid != SUPERUSER_ID else False
+            else:
+                values['error'] = e.args[0]
+    else:
+        if 'error' in request.params and request.params.get('error') == 'access':
+            values['error'] = _('Only employees can access this database. Please contact the administrator.')
+
+    if 'login' not in values and request.session.get('auth_login'):
+        values['login'] = request.session.get('auth_login')
+
+    if not odoo.tools.config['list_db']:
+        values['disable_database_manager'] = True
+    response = request.render('web.login', values)
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['Content-Security-Policy'] = "frame-ancestors 'self'"
+    return response
+
+Home.web_login = web_login

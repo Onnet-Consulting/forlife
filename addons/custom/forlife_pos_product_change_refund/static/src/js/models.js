@@ -203,14 +203,14 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
 //            return res
 //        }
 
-//        get_unit_display_price(){
-//            var res = super.get_unit_display_price()
-//            var total = 0;
-//            if(this.money_reduce_from_product_defective > 0){
-//                total += this.money_reduce_from_product_defective
-//            }
-//            return res - total
-//        }
+        get_unit_display_price(){
+            var res = super.get_unit_display_price()
+            var total = 0;
+            if(this.money_reduce_from_product_defective > 0){
+                total += this.money_reduce_from_product_defective
+            }
+            return res - total
+        }
 
 //        get_display_price_with_reduce(){
 //            var res = this.get_display_price()
@@ -225,13 +225,22 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
 //        }
 
 
-//        get_price_with_tax() {
-//            var total = super.get_price_with_tax();
-//            if(this.money_reduce_from_product_defective > 0){
-//                total -= this.money_reduce_from_product_defective
-//            }
-//            return total;
-//        }
+        get_price_with_tax() {
+            var total = super.get_price_with_tax();
+            if(this.money_reduce_from_product_defective > 0){
+                total -= this.money_reduce_from_product_defective
+            }
+            return total;
+        }
+
+        getTotalDiscountLineDefective() {
+            var total = 0;
+            if(this.money_reduce_from_product_defective > 0){
+                total += this.money_reduce_from_product_defective
+            }
+            return total;
+        }
+
 //        get_price_without_tax() {
 //            var total = super.get_price_without_tax();
 //            var vals = 0;
