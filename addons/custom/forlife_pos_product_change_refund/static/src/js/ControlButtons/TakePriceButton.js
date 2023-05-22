@@ -41,15 +41,17 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProduct', function (requ
                 return;
             }
             var line_product_defective;
-            this.env.pos.selectedOrder.orderlines.forEach(function(item){
-                if(item.is_product_defective){
-                    line_product_defective = item.product.id
-                }
-            })
+            var product_defective_id;
+            if(!this.env.pos.selectedOrder.product_defective_id){
+                product_defective_id = false
+            }else{
+                product_defective_id = this.env.pos.selectedOrder.product_defective_id
+            }
             var response = await this.getProductDefective()
             const {confirmed, payload: data} = await this.showPopup('TakePriceProductPopup', {
                 response: response,
-                line_product_defective:line_product_defective
+                line_product_defective:line_product_defective,
+                product_defective_id: product_defective_id
             });
         }
 

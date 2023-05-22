@@ -222,13 +222,21 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
         }
 
 
-//        get_price_with_tax() {
-//            var total = super.get_price_with_tax();
-//            if(this.money_reduce_from_product_defective > 0){
-//                total -= this.money_reduce_from_product_defective
-//            }
-//            return total;
-//        }
+        get_price_with_tax() {
+            var total = super.get_price_with_tax();
+            if(this.money_reduce_from_product_defective > 0){
+                total -= this.money_reduce_from_product_defective
+            }
+            return total;
+        }
+
+        getTotalDiscountLineDefective() {
+            var total = 0;
+            if(this.money_reduce_from_product_defective > 0){
+                total += this.money_reduce_from_product_defective
+            }
+            return total;
+        }
 //        get_price_without_tax() {
 //            var total = super.get_price_without_tax();
 //            var vals = 0;

@@ -68,7 +68,8 @@ class ProductDefective(models.Model):
         else:
             product_ids = tuple(products)
         sql = f"SELECT pt.name as product_name, ppd.quantity_can_be_sale as quantity," \
-              f"ppd.total_reduce as total_reduce,ppd.id as product_defective_id, ppd.detail_defective as detail_defective,ppd.product_id as product_id, dt.name as type_defective FROM product_defective ppd " \
+              f"ppd.total_reduce as total_reduce,ppd.id as product_defective_id, ppd.detail_defective as detail_defective,ppd.product_id as product_id, dt.name as type_defective " \
+              f"FROM product_defective ppd " \
               f"JOIN product_product pp on pp.id = ppd.product_id " \
               f"JOIN product_template pt on pt.id = pp.product_tmpl_id " \
               f"JOIN defective_type dt on dt.id = ppd.defective_type_id " \
@@ -81,4 +82,5 @@ class ProductDefective(models.Model):
                 'store_name': store_name,
                 'id': i
             })
+        print(data)
         return data
