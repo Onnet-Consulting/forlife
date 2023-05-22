@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_promotion_campaign"
-          name="Promotion Campaigns"
-          parent="point_of_sale.pos_config_menu_catalog"
-          action="forlife_pos_promotion.promotion_campaign_action"
-          sequence="10"/>
+    <menuitem id="menu_pos_promotion_config_root" name="Promotion Campaign" parent="point_of_sale.pos_config_menu_catalog" sequence="20">
+            <menuitem id="menu_promotion_campaign"
+              name="Promotion Campaigns"
+              action="forlife_pos_promotion.promotion_campaign_action"
+              groups="forlife_promotion.promotion_manager"
+              sequence="15"/>
     <menuitem id="menu_promotion_program"
-          name="Promotion Programs"
-          parent="point_of_sale.pos_config_menu_catalog"
-          action="forlife_pos_promotion.promotion_program_action"
-          sequence="15"/>
+              name="Promotion Programs"
+              action="forlife_pos_promotion.promotion_program_action"
+              groups="forlife_promotion.promotion_manager"
+              sequence="16"/>
+    <menuitem id="menu_promotion_code"
+              name="Promotion Code"
+              action="forlife_pos_promotion.promotion_code_card_action"
+              groups="forlife_promotion.promotion_manager"
+              sequence="17"/>
+    </menuitem>
+
 </odoo>

@@ -81,9 +81,9 @@ from aggregation_date_by_key x1
 join count_data_by_store_and_card_rank x2 on x1.key_data = x2.key_data"""
         return query
 
-    def get_data(self):
+    def get_data(self, allowed_company):
         self.ensure_one()
-        values = dict(super().get_data())
+        values = dict(super().get_data(allowed_company))
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()

@@ -30,6 +30,7 @@ class ReportNum15(models.TransientModel):
         tz_offset = self.tz_offset
         sql = f"""
 select
+    row_number() over ()                                                as num,
     (select name from store where id in (
         select store_id from pos_config where id in (
             select config_id from pos_session where id = po.session_id
@@ -47,17 +48,18 @@ select
 from pos_voucher_line pvl
     join voucher_voucher vv on vv.id = pvl.voucher_id
     join program_voucher pv on pv.id = vv.program_voucher_id
-    join hr_department hd on hd.id = vv.derpartment_id
+    join hr_department hd on hd.id = pv.derpartment_id
     join pos_order po on po.id = pvl.pos_order_id
     left join res_partner rp on rp.id = po.partner_id
 where po.brand_id = {self.brand_id.id} and vv.name ilike '%{self.voucher}%'
   and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
+order by num
 """
         return sql
 
-    def get_data(self):
+    def get_data(self, allowed_company):
         self.ensure_one()
-        values = dict(super().get_data())
+        values = dict(super().get_data(allowed_company))
         query = self._get_query()
         self._cr.execute(query)
         data = self._cr.dictfetchall()
@@ -66,3 +68,29 @@ where po.brand_id = {self.brand_id.id} and vv.name ilike '%{self.voucher}%'
             "data": data,
         })
         return values
+
+    def generate_xlsx_report(self, workbook, allowed_company):
+        data = self.get_data(allowed_company)
+        formats = self.get_format_workbook(workbook)
+        sheet = workbook.add_worksheet('Tra cứu mã Voucher đã sử dụng')
+        sheet.set_row(0, 25)
+        sheet.write(0, 0, 'Tra cứu mã Voucher đã sử dụng', formats.get('header_format'))
+        sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))
+        sheet.write(2, 2, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
+        sheet.write(2, 4, 'Voucher: %s' % (self.voucher or ''), formats.get('italic_format'))
+        for idx, title in enumerate(data.get('titles')):
+            sheet.write(4, idx, title, formats.get('title_format'))
+        sheet.set_column(0, len(TITLES), 20)
+        row = 5
+        for value in data.get('data'):
+            sheet.write(row, 0, value.get('num'), formats.get('center_format'))
+            sheet.write(row, 1, value.get('store_name'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('department'), formats.get('normal_format'))
+            sheet.write(row, 3, value.get('date'), formats.get('center_format'))
+            sheet.write(row, 4, value.get('invoice_num'), formats.get('normal_format'))
+            sheet.write(row, 5, value.get('customer_name'), formats.get('normal_format'))
+            sheet.write(row, 6, value.get('voucher'), formats.get('normal_format'))
+            sheet.write(row, 7, value.get('program_name'), formats.get('normal_format'))
+            sheet.write(row, 8, value.get('start_date'), formats.get('center_format'))
+            sheet.write(row, 9, value.get('end_date'), formats.get('center_format'))
+            row += 1

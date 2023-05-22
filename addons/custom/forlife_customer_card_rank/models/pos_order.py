@@ -196,6 +196,9 @@ class PosOrder(models.Model):
                     card_rank_line_id = card_rank_line_ids[0]
                     member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.old_card_rank_id)
                     if member_card_id:
+                        if member_card_id.retail_type_not_apply_ids:
+                            if any(x.id in member_card_id.retail_type_not_apply_ids.ids for x in item.partner_id.retail_type_ids):
+                                return
                         point_coefficient_first_order = member_card_id.point_coefficient_first_order
                         point_plus_first_order = member_card_id.point_plus_first_order
                         if item.program_store_point_id:
@@ -272,6 +275,9 @@ class PosOrderLine(models.Model):
                     card_rank_line_id = card_rank_line_ids[0]
                     member_card_id = member_card_ids.filtered(lambda x: x.card_rank_id == card_rank_line_id.old_card_rank_id)
                     if member_card_id:
+                        if member_card_id.retail_type_not_apply_ids:
+                            if any(x.id in member_card_id.retail_type_not_apply_ids.ids for x in item.order_id.partner_id.retail_type_ids):
+                                return
                         point_coefficient_first_order = member_card_id.point_coefficient_first_order
                         if item.order_id.program_store_point_id:
                             total += ((point_coefficient_first_order - 1) * item.point_addition + (
