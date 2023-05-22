@@ -150,6 +150,11 @@
                    eval="[(4, ref('forlife_permission_management.group_cashier'))]"/>
         </record>
 
+        <record model="ir.ui.menu" id="sale.menu_products">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier'))]"/>
+        </record>
+
         <record model="ir.ui.menu" id="sale.sale_order_menu">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
