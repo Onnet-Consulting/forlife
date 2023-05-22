@@ -894,6 +894,16 @@ class PurchaseOrder(models.Model):
         return vals
 
 
+    def write(self, vals):
+            print('ok',self.custom_state)
+            old_line_count = len(self.order_line)
+            new_line_count = len(vals.get('order_line', []))
+            if (new_line_count > old_line_count) and self.custom_state == "approved":
+                raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái phê duyệt')
+            return super(PurchaseOrder, self).write(vals)
+
+
+
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
