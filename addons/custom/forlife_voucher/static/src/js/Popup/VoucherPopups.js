@@ -156,29 +156,6 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
 
         }
 
-        _onValueChange() {
-            var self = this;
-            self.state.valid = true;
-            if(this.env.pos.selectedOrder.data_voucher != false){
-                    $('.o_price_used').each(function( index ){
-                        if(self.env.pos.selectedOrder.data_voucher[index].value !== false){
-                            let price_used = $(this).val()
-                            let price_used_convert = parseInt(price_used.split('.').join('').replace('₫',''))
-                            if(price_used_convert > parseInt(self.env.pos.selectedOrder.data_voucher[index].value.price_residual_no_compute)){
-                                self.state.valid = false;
-                                self.env.pos.selectedOrder.data_voucher[index].value.price_used = price_used_convert
-                                $(this).css('color', 'red');
-                            }
-                            if(price_used_convert <= parseInt(self.env.pos.selectedOrder.data_voucher[index].value.price_residual_no_compute)){
-                                self.env.pos.selectedOrder.data_voucher[index].value.price_used = price_used_convert
-                                $(this).css('color', '#444');
-                            }
-                        }
-                })
-            }
-            this.state.data = this.env.pos.selectedOrder.data_voucher;
-        }
-
         async check() {
             this.state.data = false;
             this.state.trigger = false;
