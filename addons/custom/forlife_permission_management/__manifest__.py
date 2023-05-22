@@ -10,6 +10,9 @@
     'depends': [
         'base',
         'product',
+        'stock',
+        'forlife_point_of_sale',
+
     ],
     'installable': True,
     'auto_install': True,
