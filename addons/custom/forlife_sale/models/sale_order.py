@@ -14,8 +14,7 @@ class SaleOrder(models.Model):
     x_sale_type = fields.Selection(
         [('product', 'Hàng hóa'),
          ('service', 'Dịnh vụ/Tài sản'),
-         ('integrated', 'Tích hợp'),
-         ('return', 'Trả hàng')],
+         ('integrated', 'Tích hợp')],
         string='Loại bán hàng', default='product')
     x_sale_chanel = fields.Selection(
         [('pos', 'Đơn bán hàng POS'),
@@ -78,7 +77,19 @@ class SaleOrder(models.Model):
             action['res_id'] = count.id
         return action
     def action_view_so_return(self):
-        print(11111111111)
+        count = self.env['sale.order'].search(
+            [('x_origin', '=', self.id), ('x_is_return', '=', True)])
+        action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
+        if len(count) > 1:
+            action['domain'] = [('id', 'in', count.ids)]
+        elif len(count) == 1:
+            form_view = [(self.env.ref('sale.view_order_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = count.id
+        return action
     def get_rule_domain(self):
         domain = ['&', ('location_dest_id', '=', self.partner_shipping_id.property_stock_customer.id),
                   ('action', '!=', 'push')]
@@ -220,6 +231,13 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).action_cancel()
         return res
 
+    def action_return(self):
+        so_return = self.copy()
+        so_return.update({
+            'x_is_return': True,
+            'x_origin': self.id
+        })
+
     def action_punish(self):
         self.x_shipping_punish = True
         return {
@@ -269,8 +287,7 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('x_free_good')
     def _onchange_x_free_good(self):
-        if self.x_free_good:
-            self.price_unit = 0
+        self._compute_price_unit()
 
     @api.onchange('price_unit')
     def _set_price_unit(self):
