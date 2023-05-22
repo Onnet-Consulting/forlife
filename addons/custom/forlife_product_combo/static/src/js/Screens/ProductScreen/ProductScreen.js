@@ -23,6 +23,7 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
 
             //nghiệp vụ đổi hàng
             if(this.env.pos.get_order().is_change_product){
+                // select * from product_template_attribute_value where id = 3964747
                 try{
                     var order_old_lines = [];
                     var order_new_lines = [];
@@ -33,20 +34,24 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                             order_old_lines.push(orderLine);
                        }
                        if(orderLine.product.combo_id[0] !=null && orderLine.is_new_line){
+                           // danh sach combo
+                           //  $.each(combo, $.proxy(function(i, e) {
+                           //      if(e.id == orderLine.product.combo_id[0]) {
+                           //
+                           //      }
+                           //  }, this));
+
                             order_new_lines.push(orderLine);
                             order_new_ids.push(orderLine.product.id);
                        }
                     })
                     if(order_old_lines){
+                        // danh sach don hang moi
                         _.each(order_old_lines, function (orderOldLine) {
                             if(order_new_lines){
                                 //  check neu khong co trong mang
                                 if(jQuery.inArray(orderOldLine.product.id, order_new_ids) == -1) {
-                                    if(orderOldLine.product.sku_code){
-                                        message = "Bạn cần chọn sản phẩm " + orderOldLine.product.sku_code + " để đổi trả!";
-                                    }else{
-                                        message = "Bạn cần chọn sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
-                                    }
+                                   message = "Bạn cần chọn sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
                                 }else{
                                     // neu co trong mang check so luong san pham can doi tra
                                     _.each(order_new_lines, function (orderNewLine) {
@@ -57,11 +62,7 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                                 }
                             }
                             else{
-                                if(orderOldLine.product.sku_code){
-                                    message = "Bạn cần chọn sản phẩm " + orderOldLine.product.sku_code + " để đổi trả!";
-                                }else{
-                                    message = "Bạn cần chọn sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
-                                }
+                                message = "Bạn cần chọn sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
                             }
                         }, this)
 
@@ -97,7 +98,7 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                     if(order_old_lines){
                         _.each(order_old_lines, function (orderOldLine) {
                             if(orderOldLine.quantity != 0 && Math.abs(orderOldLine.quantity) != orderOldLine.quantity_canbe_refund){
-                                message = "Bạn cần trả đúng số lượng sản phẩm combo đã mua!";
+                                message = "Bạn cần trả đúng số lượng sản phẩm " + orderOldLine.product.display_name + " combo đã mua!";
                                 combo_old_ids.push(orderOldLine.product.combo_id[0]);
                             }
                         })
@@ -105,7 +106,7 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                             _.each(order_old_lines, function (orderOldLine) {
                                 if(jQuery.inArray(orderOldLine.product.combo_id[0], combo_old_ids) != -1) {
                                     if(orderOldLine.quantity == 0){
-                                        message = "Bạn cần trả đúng số lượng sản phẩm combo đã mua!";
+                                        message = "Bạn cần trả đúng số lượng sản phẩm " + orderOldLine.product.display_name + " combo đã mua!";
                                     }
                                 }
                             })
