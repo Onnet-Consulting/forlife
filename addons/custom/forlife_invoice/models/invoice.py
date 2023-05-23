@@ -397,9 +397,12 @@ class AccountMove(models.Model):
             account_vat = []
             account_db = []
             account_tnk = []
-            if not self.env.ref('forlife_purchase.product_import_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id \
-                    or not self.env.ref('forlife_purchase.product_excise_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+            if not self.env.ref('forlife_purchase.product_import_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
                 raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế nhập khẩu")
+            if not self.env.ref('forlife_purchase.product_excise_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+                raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế tiêu thụ đặc biệt")
+            if not self.env.ref('forlife_purchase.category_product_vat_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+                raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế VAT (Nhập khẩu)")
             for item in rec.exchange_rate_line:
                 account_debit_tnk = (0, 0, {
                     'account_id': item.product_id.categ_id.property_stock_valuation_account_id.id,
@@ -477,20 +480,21 @@ class AccountMove(models.Model):
     def create_trade_discount(self):
         for rec in self:
             account_ck = []
-            for line in rec.invoice_line_ids:
-                account_331 = (0, 0, {
-                    'account_id': rec.partner_id.property_account_receivable_id.id,
-                    'name': rec.partner_id.property_account_receivable_id.name,
-                    'debit': rec.total_trade_discount,
-                    'credit': 0,
-                })
-                account_771 = (0, 0, {
-                    'account_id': self.env.ref('forlife_purchase.category_product_discount_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
-                    'name': self.env.ref('forlife_purchase.category_product_discount_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.name,
-                    'debit': 0,
-                    'credit': rec.total_trade_discount,
-                })
-                lines_ck = [account_331, account_771]
+            if not self.env.ref('forlife_purchase.category_product_discount_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+                raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục chiết khấu")
+            account_331 = (0, 0, {
+                'account_id': rec.partner_id.property_account_receivable_id.id,
+                'name': rec.partner_id.property_account_receivable_id.name,
+                'debit': rec.total_trade_discount,
+                'credit': 0,
+            })
+            account_771 = (0, 0, {
+                'account_id': self.env.ref('forlife_purchase.category_product_discount_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
+                'name': self.env.ref('forlife_purchase.category_product_discount_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.name,
+                'debit': 0,
+                'credit': rec.total_trade_discount,
+            })
+            lines_ck = [account_331, account_771]
             account_ck.extend(lines_ck)
 
         invoice_ck = self.env['account.move'].create({
