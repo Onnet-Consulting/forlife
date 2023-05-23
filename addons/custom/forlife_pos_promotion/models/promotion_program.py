@@ -27,6 +27,18 @@ REWARD_TYPE = [
     ]
 
 
+class PromotionConditionProduct(models.Model):
+    _name = 'promotion.condition.product'
+    _table = 'product_product_promotion_program_rel'
+
+    product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
+    promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
+
+    def init(self):
+        self.env.cr.execute("""
+            ALTER TABLE product_product_promotion_program_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+
+
 class PromotionProgram(models.Model):
     _name = 'promotion.program'
     _description = 'Promotion Program'
@@ -105,7 +117,9 @@ class PromotionProgram(models.Model):
     discount_based_on = fields.Selection([
         ('unit_price', 'Unit Price'),
         ('discounted_price', 'Discounted Price')], string='Discount Based On', required=True, default='unit_price')
-    product_ids = fields.Many2many('product.product', string='Products', domain="[('available_in_pos', '=', True)]")
+    product_ids = fields.Many2many(
+        'product.product', relation='product_product_promotion_program_rel', string='Products',
+        domain="[('available_in_pos', '=', True)]")
     product_categ_ids = fields.Many2many('product.category', string='Product Categories')
     product_domain = fields.Char()
     min_quantity = fields.Float('Minimum Quantity', default=1)
@@ -130,6 +144,7 @@ class PromotionProgram(models.Model):
     pricelist_item_count = fields.Integer(compute='_compute_pricelist_item_count')
 
     # Rewards
+    progressive_reward_compute = fields.Boolean('Progressive Reward Compute', default=False)
     reward_type = fields.Selection(REWARD_TYPE, string='Reward Type')
 
     reward_ids = fields.One2many('promotion.reward.line', 'program_id', 'Rewards', copy=True, readonly=False, store=True)
@@ -331,6 +346,17 @@ class PromotionProgram(models.Model):
         action['domain'] = [('id', 'in', self.valid_product_ids.ids)]
         return action
 
+    def action_open_condition_product(self):
+        return {
+            'name': _('Condition Products') + (self.name and _(' of %s') % self.name) or '',
+            'domain': [('promotion_program_id', '=', self.id)],
+            'res_model': 'promotion.condition.product',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': {'default_promotion_program_id': self.id}
+        }
+
     def view_program(self):
         action = self.env["ir.actions.act_window"]._for_xml_id("forlife_pos_promotion.promotion_program_action")
         form_view = [(self.env.ref('forlife_pos_promotion.promotion_program_view_form').id, 'form')]
@@ -390,3 +416,51 @@ class PromotionProgram(models.Model):
             'domain': [('program_id', '=', self.id)],
             'context': {'default_program_id': self.id, 'search_default_active': 1}
         }
+
+    def action_open_discount_product(self):
+        return {
+            'name': _('Discount Products') + (self.name and _(' of %s') % self.name) or '',
+            'domain': [('promotion_program_id', '=', self.id)],
+            'res_model': 'promotion.discount.product',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': {'default_promotion_program_id': self.id}
+        }
+
+    def action_open_reward_product(self):
+        return {
+            'name': _('Reward Products') + (self.name and _(' of %s') % self.name) or '',
+            'domain': [('promotion_program_id', '=', self.id)],
+            'res_model': 'promotion.reward.product',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': {'default_promotion_program_id': self.id}
+        }
+
+
+class PromotionDiscountProduct(models.Model):
+    _name = 'promotion.discount.product'
+    _description = 'Promotion Discount Product'
+    _table = 'promotion_program_discount_product_rel'
+
+    product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
+    promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
+
+    def init(self):
+        self.env.cr.execute("""
+            ALTER TABLE promotion_program_discount_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)
+
+
+class PromotionRewardProduct(models.Model):
+    _name = 'promotion.reward.product'
+    _description = 'Promotion Reward Product'
+    _table = 'promotion_program_reward_product_rel'
+
+    product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
+    promotion_program_id = fields.Many2one('promotion.program', required=True, index=True, string='Promotion Program')
+
+    def init(self):
+        self.env.cr.execute("""
+            ALTER TABLE promotion_program_reward_product_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)

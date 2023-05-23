@@ -13,7 +13,7 @@ class PurchaseRequest(models.Model):
 
     name = fields.Char(string="Request name", required=True, default='New', copy=False)
     # wo_code = fields.Char(string="Work Order Code")
-    # user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
+    user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
     employee_id = fields.Many2one('hr.employee', string='User Request', required=True)
     department_id = fields.Many2one('hr.department', string='Department', required=True)
     date_planned = fields.Datetime(string='Expected Arrival', required=True,  widget='datetime', options={'format': 'DD-MM-YYYY HH:mm:ss'})
@@ -142,6 +142,7 @@ class PurchaseRequest(models.Model):
             if rec.state != 'approved':
                 raise ValidationError('Chỉ tạo được đơn hàng mua với các phiếu yêu cầu mua hàng có trạng thái Phê duyệt!')
         for group in order_lines_groups:
+            keys = {}
             domain = group['__domain']
             vendor_code = group['vendor_code']
             product_type = group['product_type']
@@ -158,6 +159,9 @@ class PurchaseRequest(models.Model):
                 #         date_planned_po = rec.date_planned
                 #     else:
                 #         date_planned_po = line.date_planned
+                keys.update({
+                    line.request_id.name: line.request_id.name
+                })
                 po_line_data.append((0, 0, {
                     'purchase_request_line_id': line.id,
                     'product_id': line.product_id.id,
@@ -175,13 +179,11 @@ class PurchaseRequest(models.Model):
                     'product_id': line.product_id.id,
                     'name': line.product_id.name,
                 }))
-                po_cost_line_data.append((0, 0, {
-                    'purchase_order_id': line.id,
-                    'product_id': line.product_id.id,
-                    'name': line.product_id.name,
-                }))
             if po_line_data:
-                source_document = ', '.join(self.mapped('name'))
+                name_pr = []
+                for key in keys:
+                    name_pr.append(keys[key])
+                source_document = ', '.join(name_pr)
                 po_data = {
                     'is_inter_company': False,
                     'type_po_cost': rec.type_po,
@@ -193,7 +195,6 @@ class PurchaseRequest(models.Model):
                     'purchase_request_ids': [(6, 0, purchase_request_lines.mapped('request_id').ids)],
                     'order_line': po_line_data,
                     'exchange_rate_line': po_ex_line_data,
-                    'cost_line': po_cost_line_data,
                     'occasion_code_ids': [(6, 0, self.mapped('occasion_code_id').ids)],
                     'account_analytic_ids': [(6, 0, self.mapped('account_analytic_id').ids)],
                     'source_document': source_document,
@@ -285,10 +286,8 @@ class PurchaseRequestLine(models.Model):
     def _compute_order_quantity(self):
         for rec in self:
             # ### yêu cầu cũ là lọc theo trạng thái purchase
-            # done_purchase_order_line = rec.purchase_order_line_ids.filtered(lambda r: r.state == 'purchase')
-            # rec.order_quantity = sum(done_purchase_order_line.mapped('product_qty'))
-            ### yêu cầu mới là full trạng thái đều update lại số lượng đã đặt bên ycmh
-            rec.order_quantity = sum(rec.purchase_order_line_ids.mapped('product_qty'))
+            done_purchase_order_line = rec.purchase_order_line_ids.filtered(lambda r: r.state == 'purchase')
+            rec.order_quantity = sum(done_purchase_order_line.mapped('product_qty'))
 
     @api.depends('purchase_quantity', 'order_quantity')
     def _compute_is_no_more_quantity(self):

@@ -95,7 +95,7 @@ class ProductProduct(models.Model):
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
-        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False):
+        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False) and not self.env.context.get('is_passersby', False):
             sql = """
             select id from product_product
             where product_tmpl_id in
@@ -108,6 +108,13 @@ class ProductProduct(models.Model):
                 ( select distinct(product_tmpl_id)
                 from product_supplierinfo)
             """ % (self.env.context.get('supplier_id'))
+            self._cr.execute(sql)
+            ids = [x[0] for x in self._cr.fetchall()]
+            args.append(('id', 'in', ids))
+        if self.env.context and self.env.context.get('purchase_type', False) == 'product' and self.env.context.get('supplier_id', False) and self.env.context.get('is_passersby', False):
+            sql = """
+                        select id from product_product
+                        """
             self._cr.execute(sql)
             ids = [x[0] for x in self._cr.fetchall()]
             args.append(('id', 'in', ids))

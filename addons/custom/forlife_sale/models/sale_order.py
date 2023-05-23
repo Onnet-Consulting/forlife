@@ -5,15 +5,15 @@ from odoo import api, fields,models,_
 from odoo.osv import expression
 from datetime import date, datetime
 from odoo.exceptions import UserError
-
+import pyodbc
+from datetime import date, datetime
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     x_sale_type = fields.Selection(
         [('product', 'Hàng hóa'),
-         ('service', 'Dịnh vụ/Tài sản'),
-         ('integrated', 'Tích hợp')],
+         ('service', 'Dịnh vụ/Tài sản')],
         string='Loại bán hàng', default='product')
     x_sale_chanel = fields.Selection(
         [('pos', 'Đơn bán hàng POS'),
@@ -23,10 +23,96 @@ class SaleOrder(models.Model):
         string='Kênh bán', default='wholesale')
     x_account_analytic_ids = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_ids = fields.Many2many('occasion.code', string='Mã vụ việc')
-    x_process_punish = fields.Boolean(string='Đơn phạt nhà gia công')
+    x_process_punish = fields.Boolean(string='Đơn phạt nhà gia công', copy=False)
     x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
+    x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)
     x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
+    x_is_return = fields.Boolean('Đơn trả hàng')
+    x_origin = fields.Many2one('sale.order', 'Tài liệu gốc')
+    x_order_punish_count = fields.Integer('Số đơn phạt', compute='_compute_order_punish_count')
+    x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
+    x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
 
+    def _compute_order_punish_count(self):
+        for r in self:
+            count = self.env['sale.order'].search(
+                [('x_origin', '=', r.id), '|', ('x_shipping_punish', '=', True), ('x_shipping_punish', '=', True)])
+            r.x_order_punish_count = len(count)
+
+    def _compute_exchange_count(self):
+        for r in self:
+            count = self.env['sale.order'].search(
+                [('x_origin', '=', r.id), ('x_is_exchange', '=', True)])
+            r.x_is_exchange_count = len(count)
+
+    def _compute_order_return_count(self):
+        for r in self:
+            count = self.env['sale.order'].search(
+                [('x_origin', '=', r.id), ('x_is_return', '=', True)])
+            r.x_order_return_count = len(count)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
+        res.check_debtBalance()
+        return res
+    def write(self, vals_list):
+        res = super().write(vals_list)
+        self.check_debtBalance()
+        return res
+
+    def check_debtBalance(self):
+        if not self.partner_id.use_partner_credit_limit:
+            return True
+        debtBalance_bravo = self.get_DebtBalance()
+        sale_so_ids = self.env['sale.order'].search([('partner_id', '=', self.partner_id.id), ('state', '=', 'sale')])
+        debtBalance_forlife = sum(so.amount_untaxed for so in sale_so_ids)
+        if debtBalance_bravo + debtBalance_forlife + self.amount_untaxed > self.partner_id.credit_limit:
+            raise UserError(_('Đơn hàng vượt quá hạn mức tín dụng của khách hàng'))
+
+    def action_view_so_punish(self):
+        count = self.env['sale.order'].search(
+            [('x_origin', '=', self.id), '|', ('x_shipping_punish', '=', True), ('x_shipping_punish', '=', True)])
+        action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
+        if len(count) > 1:
+            action['domain'] = [('id', 'in', count.ids)]
+        elif len(count) == 1:
+            form_view = [(self.env.ref('sale.view_order_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = count.id
+        return action
+    def action_view_so_return(self):
+        count = self.env['sale.order'].search(
+            [('x_origin', '=', self.id), ('x_is_return', '=', True)])
+        action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
+        if len(count) > 1:
+            action['domain'] = [('id', 'in', count.ids)]
+        elif len(count) == 1:
+            form_view = [(self.env.ref('sale.view_order_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = count.id
+        return action
+
+    def action_view_so_exchange(self):
+        count = self.env['sale.order'].search(
+            [('x_origin', '=', self.id), ('x_is_exchange', '=', True)])
+        action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
+        if len(count) > 1:
+            action['domain'] = [('id', 'in', count.ids)]
+        elif len(count) == 1:
+            form_view = [(self.env.ref('sale.view_order_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = count.id
+        return action
     def get_rule_domain(self):
         domain = ['&', ('location_dest_id', '=', self.partner_shipping_id.property_stock_customer.id),
                   ('action', '!=', 'push')]
@@ -122,11 +208,44 @@ class SaleOrder(models.Model):
             self._cr.execute(sql)
         self.state = 'sale'
         if condition:
-            invoice_id = self.env['sale.advance.payment.inv'].create({
+            advance_payment = self.env['sale.advance.payment.inv'].create({
                 'sale_order_ids': [(6, 0, self.ids)],
-                'advance_payment_method': 'delivered'
-            }).create_invoices()
+                'advance_payment_method': 'delivered',
+                'deduct_down_payments': True
+            })
+            invoice_id = advance_payment._create_invoices(advance_payment.sale_order_ids)
             invoice_id.action_post()
+
+    def _conn(self, autocommit=True, encrypt="no"):
+        ir_config = self.env['ir.config_parameter'].sudo()
+        driver = ir_config.get_param("mssql.driver")
+        host = ir_config.get_param("mssql.host")
+        database = ir_config.get_param("mssql.database")
+        username = ir_config.get_param("mssql.username")
+        password = ir_config.get_param("mssql.password")
+        return pyodbc.connect(
+            f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};'
+            f'ENCRYPT={encrypt};CHARSET=UTF8;', autocommit=autocommit)
+
+    def get_DebtBalance(self):
+        cnxn = self._conn(True, "no")
+        cursor = cnxn.cursor()
+        doc_date = int(date.today().strftime('%Y%m%d'))
+        ref_partner = self.partner_id.code
+        branch_code = self.company_id.code
+        sql = f"""
+            SET NOCOUNT ON
+              Exec usp_sys_CheckDebtBalance
+              @_CustomerCode  = '{ref_partner}',
+              @_DocDate =  '{doc_date}',
+              @_BranchCode = '{branch_code}'
+            """
+        cursor.execute(sql)
+        result = cursor.fetchone()
+        debtBalance = float(result[0]) if result else 0
+        cursor.close()
+        return debtBalance
+
 
     def action_cancel(self):
         for line in self.order_line:
@@ -134,6 +253,13 @@ class SaleOrder(models.Model):
                 raise UserError(_('Đơn hàng đã được giao'))
         res = super(SaleOrder, self).action_cancel()
         return res
+
+    def action_return(self):
+        so_return = self.copy()
+        so_return.update({
+            'x_is_return': True,
+            'x_origin': self.id
+        })
 
     def action_punish(self):
         self.x_shipping_punish = True
@@ -157,6 +283,16 @@ class SaleOrderLine(models.Model):
     x_product_code_id = fields.Many2one('product.template', string='Mã tài sản')
     x_account_analytic_id = fields.Many2one('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_id = fields.Many2one('occasion.code', string='Mã vụ việc')
+    x_free_good = fields.Boolean(string='Hàng tặng')
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        if self._context.get('import_file'):
+            for line in lines:
+                line._set_price_unit()
+                line.compute_cart_discount_fixed_price()
+        return lines
 
     @api.onchange('product_id')
     def _onchange_product_get_domain(self):
@@ -164,7 +300,7 @@ class SaleOrderLine(models.Model):
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
         if self.order_id.x_sale_type and self.order_id.x_sale_type in ('product', 'service'):
-            domain = [('product_type', '=', self.order_id.x_sale_type)]
+            domain = [('detailed_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                               ('company_id', '=', self.order_id.company_id)] + domain}}
 
@@ -172,8 +308,15 @@ class SaleOrderLine(models.Model):
     def compute_cart_discount_fixed_price(self):
         self.x_cart_discount_fixed_price = self.price_unit * self.discount * self.product_uom_qty / 100
 
+    @api.onchange('x_free_good')
+    def _onchange_x_free_good(self):
+        self._compute_price_unit()
+
     @api.onchange('price_unit')
     def _set_price_unit(self):
+        if self.x_free_good:
+            self.price_unit = 0
+            return
         if self.product_id and self.price_unit:
             if self.product_id.product_tmpl_id.x_negative_value:
                 self.price_unit = - abs(self.price_unit)
@@ -195,7 +338,7 @@ class SaleOrderLine(models.Model):
         res = super(SaleOrderLine, self)._compute_price_unit()
         for line in self:
             line._set_price_unit()
-            if line.order_id.partner_id and self.product_id and (line.order_id.x_process_punish):
+            if line.order_id.partner_id and self.product_id and line.order_id.x_process_punish:
                 line.set_price_unit()
         return res
 

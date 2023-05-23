@@ -80,6 +80,9 @@ class StockMove(models.Model):
             debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
                 if not self.picking_id.location_id.is_price_unit else (self.amount_total/self.previous_qty) * self.quantity_done
                 # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
+        if self.picking_id.picking_type_id.code == 'incoming' and not self.picking_id.other_import:
+            debit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
+            credit_account_id = self.product_id.categ_id.property_stock_account_input_categ_id.id
         res = [(0, 0, line_vals) for line_vals in self._generate_valuation_lines_data(valuation_partner_id, qty, debit_value, credit_value,
                                                                                       debit_account_id, credit_account_id, svl_id, description).values()]
         return res
