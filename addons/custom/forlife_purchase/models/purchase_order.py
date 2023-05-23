@@ -335,6 +335,7 @@ class PurchaseOrder(models.Model):
                 picking_in.picking_type_id.write({
                     'show_operations': True
                 })
+                picking_in.write({'state': 'assigned'})
                 if picking_in:
                     for orl in record.order_line:
                         if orl.price_subtotal <= 0:
@@ -707,6 +708,7 @@ class PurchaseOrder(models.Model):
                 for line in order.order_line:
                     wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
                                                                              and w.product_id.id == line.product_id.id
+                                                                             and w.picking_type_id.code == 'incoming'
                                                                              and w.ware_check_line == False)
                     if picking_in:
                         for wave_item in wave:
@@ -748,9 +750,9 @@ class PurchaseOrder(models.Model):
                             line_vals.update(data_line)
                             invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                             sequence += 1
+                        invoice_vals_list.append(invoice_vals)
                     else:
                         raise UserError(_('Không thể tạo hóa đơn khi không còn phiếu nhập kho liên quan!'))
-                invoice_vals_list.append(invoice_vals)
             # 2) group by (company_id, partner_id, currency_id) for batch creation
             new_invoice_vals_list = []
             picking_incoming = picking_in.filtered(lambda r: r.origin == order.name and r.state == 'done' and r.picking_type_id.code == 'incoming' and r.ware_check == True)
