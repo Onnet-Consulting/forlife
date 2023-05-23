@@ -294,34 +294,35 @@ class AccountMove(models.Model):
                         if line.quantity > nine.move_line_ids_without_package.qty_done:
                             raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
-    def write(self, vals):
-        for rec in self:
-            if rec.is_check_cost_view:
-                for line in rec.invoice_line_ids:
-                    duplicate = rec.line_ids.filtered(lambda x: x.product_id.id == line.product_id.id and x.id != line.id and x.display_type == 'product' and x.duplicate_cost_check_unlink == False)
-                    if not duplicate:
-                        continue
-                    else:
-                        if line.product_id.id and line.display_type == 'product' and line.name and not line.duplicate_cost_check_unlink:
-                            if line.display_type not in ('payment_term', 'tax'):
-                                line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit')),
-                                            'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
-                                            'name': line.product_id.name
-                                            })
-                        for dup in duplicate:
-                            dup.write({'duplicate_cost_check_unlink': True})
-            else:
-                for line in rec.invoice_line_ids:
-                    duplicate = rec.line_ids.filtered(lambda x: x.product_id.id == line.product_id.id and x.id != line.id and x.display_type == 'product' and x.duplicate_cost_check_unlink == False)
-                    if line.product_id.id and line.display_type == 'product' and line.name and not line.duplicate_cost_check_unlink:
-                        if line.display_type not in ('payment_term', 'tax'):
-                            line.write({'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
-                                        'name': line.product_id.name
-                                        })
-                    for dup in duplicate:
-                        dup.write({'duplicate_cost_check_unlink': False})
-        res = super(AccountMove, self).write(vals)
-        return res
+    # def write(self, vals):
+    #     for rec in self:
+    #         if rec.is_check_cost_view:
+    #             for line in rec.invoice_line_ids:
+    #                 duplicate = rec.line_ids.filtered(lambda x: x.product_id.id == line.product_id.id and x.id != line.id and x.display_type == 'product' and x.duplicate_cost_check_unlink == False)
+    #                 if not duplicate:
+    #                     continue
+    #                 else:
+    #                     if line.product_id.id and line.display_type == 'product' and line.name and not line.duplicate_cost_check_unlink:
+    #                         if line.display_type not in ('payment_term', 'tax'):
+    #                             line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit')),
+    #                                         'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
+    #                                         'name': line.product_id.name
+    #                                         })
+    #                     for dup in duplicate:
+    #                         dup.write({'duplicate_cost_check_unlink': True})
+    #         else:
+    #             for line in rec.invoice_line_ids:
+    #                 duplicate = rec.line_ids.filtered(lambda x: x.product_id.id == line.product_id.id and x.id != line.id and x.display_type == 'product' and x.duplicate_cost_check_unlink == False)
+    #                 if line.product_id.id and line.display_type == 'product' and line.name and not line.duplicate_cost_check_unlink:
+    #                     if line.display_type not in ('payment_term', 'tax'):
+    #                         line.write({'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
+    #                                     'name': line.product_id.name
+    #                                     })
+    #                 for dup in duplicate:
+    #                     dup.write({'duplicate_cost_check_unlink': False})
+    #     res = super(AccountMove, self).write(vals)
+    #     return res
+
     # @api.onchange('purchase_type')
     # def onchange_purchase_type(self):
     #     order_invoice_line_ids = []
