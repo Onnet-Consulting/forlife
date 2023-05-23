@@ -193,17 +193,17 @@
                             </div>
 
                             <label for="disc_percent"
-                                   attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent'))]}"/>
-                            <div attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent'))]}">
+                                   attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent', 'combo_discount_percent_x'))]}"/>
+                            <div attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent', 'combo_discount_percent_x'))]}">
                                 <field name="disc_percent" class="oe_inline"/>
                                 <span  class="oe_inline"
-                                       attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent'))]}">%</span>
+                                       attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent', 'combo_discount_percent_x'))]}">%</span>
                             </div>
 
                             <field name="disc_max_amount" widget="monetary" options="{'currency_field': 'currency_id'}"
                                    attrs="{'invisible': [('reward_type', 'not in', ('combo_percent', 'code_percent', 'cart_discount_percent'))]}"/>
                             <field name="discount_product_ids"
-                                   attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price'))]}"
+                                   attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x'))]}"
                                    widget="many2many_tags"/>
                             <div class="o_cell flex-grow-1 flex-sm-grow-0 o_wrap_label w-100 text-break text-900" style=""
                                  attrs="{'invisible': [('reward_type', 'not in', ('cart_discount_percent', 'cart_discount_fixed_price'))]}"/>
@@ -227,11 +227,13 @@
                                                         ('code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest'))]}"/>
                             <label for="reward_quantity" string="Maximum Discounted Quantity"
                                     attrs="{'invisible': [('reward_type', 'not in',
-                                                        ('code_amount', 'code_percent', 'cart_discount_percent', 'cart_discount_fixed_price'))]}"/>
-                            <field name="reward_quantity" nolabel="1"
-                                    attrs="{'invisible': [('reward_type', 'not in',
-                                            ('code_amount', 'code_percent','code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest',
-                                            'cart_discount_percent', 'cart_discount_fixed_price'))]}"/>
+                                                        ('code_amount', 'code_percent', 'cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x'))]}"/>
+                            <div>
+                                <field name="reward_quantity" class="oe_inline"
+                                        attrs="{'invisible': [('reward_type', 'not in',
+                                                ('code_amount', 'code_percent','code_buy_x_get_y', 'cart_get_x_free', 'code_buy_x_get_cheapest',
+                                                'cart_discount_percent', 'cart_discount_fixed_price', 'combo_discount_percent_x'))]}"/>
+                            </div>
 
                         </group>
                         <group/>
