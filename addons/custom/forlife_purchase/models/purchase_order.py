@@ -1531,7 +1531,7 @@ class StockPicking(models.Model):
         list_line_xk = []
         invoice_line_npls = []
         cost_labor_internal_costs = []
-        for item in po.order_line_production_order:
+        for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
             material = self.env['purchase.order.line.material.line'].search(
                 [('purchase_order_line_id', '=', item.id)])
             if not material:
@@ -1566,8 +1566,7 @@ class StockPicking(models.Model):
                     if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
                         raise ValidationError(
                             'Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
-                    for r in record.move_ids_without_package:
-                        finished_qty = (material_line.product_plan_qty / r.previous_qty) * r.quantity_done
+                    finished_qty = (material_line.product_plan_qty / r.previous_qty) * r.quantity_done
                     list_line_xk.append((0, 0, {
                         'product_id': record.move_ids_without_package.product_id.id,
                         'product_uom': material_line.uom.id,
