@@ -36,9 +36,9 @@ class ResUsers(models.Model):
     @api.model
     def get_company(self):
         if not self.conpany_ids:
-            conpany_ids = self.conpany_ids.search([]).mapped('id')
+            conpany_ids = self.company_ids.search([]).mapped('id')
         else:
-            conpany_ids = (self.conpany_ids + self.company_id).mapped('id')
+            conpany_ids = (self.company_ids + self.company_id).mapped('id')
         return conpany_ids
 
     @api.model
@@ -55,6 +55,14 @@ class ResUsers(models.Model):
             brand_ids = self.brand_ids.search([]).mapped('id')
         else:
             brand_ids = (self.brand_ids + self.brand_id).mapped('id')
+        return brand_ids
+
+    @api.model
+    def get_store(self):
+        if not self.brand_ids:
+            brand_ids = self.store_ids.search([]).mapped('id')
+        else:
+            brand_ids = (self.store_ids + self.store_id).mapped('id')
         return brand_ids
 
 
