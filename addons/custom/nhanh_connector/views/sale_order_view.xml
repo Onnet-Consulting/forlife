@@ -21,7 +21,7 @@
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="source_record" invisible="1"/>
-                <field name="name_customer" attrs="{'invisible': [('source_record', '=', False)]}"/>
+                <field name="name_customer" attrs="{'invisible': [('name_customer', '=', False)]}"/>
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page string="Thông tin Nhanh.vn" name="nhanh_information" attrs="{'invisible': [('source_record', '=', False)]}">
@@ -37,8 +37,8 @@
                 </page>
             </xpath>
             <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
-                <field name="odoo_price_unit" attrs="{'invisible': [('source_record', '=', False)]}"/>
-                <field name="discount_price_unit" attrs="{'invisible': [('source_record', '=', False)]}"/>
+                <field name="odoo_price_unit" attrs="{'invisible': [('parent.source_record', '=', False)]}"/>
+                <field name="discount_price_unit" attrs="{'invisible': [('parent.source_record', '=', False)]}"/>
             </xpath>
         </field>
     </record>
