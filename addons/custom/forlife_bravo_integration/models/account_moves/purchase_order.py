@@ -6,13 +6,13 @@ from odoo import api, fields, models, _
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    def bravo_get_purchase_asset_account_move_value(self):
+    def bravo_get_purchase_asset_service_value(self):
         self.ensure_one()
         values = []
         column_names = [
             "CompanyCode", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "Description", "AtchDocDate", "AtchDocNo", "TaxRegName", "TaxRegNo",
-            "EmployeeCode", "IsTransfer", 'PushDate', "DueDate", "IsCompany", "CreditAccount",
+            "EmployeeCode", "IsTransfer", "DueDate", "IsCompany", "CreditAccount",
             "BuiltinOrder", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity9", "ConvertRate9",
             "Quantity", "PriceUnit", "Discount", "OriginalUnitCost", "UnitCostCode", "OriginalAmount", "Amount",
             "IsPromotions", "DocNo_PO", "DeptCode", "DocNo_WO", "RowId",
@@ -48,7 +48,6 @@ class AccountMove(models.Model):
             "TaxRegNo": partner.vat,
             "EmployeeCode": self.user_id.employee_id.code,
             "IsTransfer": 1 if self.x_asset_fin else 0,
-            'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
             "DueDate": self.invoice_date_due,
             "IsCompany": (self.x_root == "Intel" and 1) or (self.x_root == "Winning" and 2) or 0,
             "CreditAccount": payable_account_code,

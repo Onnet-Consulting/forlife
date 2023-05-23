@@ -1,0 +1,59 @@
+# -*- coding:utf-8 -*-
+
+from odoo import api, fields, models, _
+
+CONTEXT_JOURNAL_ACTION = 'bravo_journal_data'
+
+
+class AccountMove(models.Model):
+    _name = 'account.move'
+    _inherit = ['account.move', 'bravo.model.insert.action']
+
+    def _post(self, soft=True):
+        res = super()._post(soft=soft)
+        posted_moves = self.filtered(lambda m: m.state == 'posted')
+        insert_queries = posted_moves.bravo_get_insert_sql()
+        # FIXME: insert sql have value on to prevent job execute with empty function
+        self.env[self._name].sudo().with_delay().bravo_execute_query(insert_queries)
+        return res
+
+    @api.model
+    def bravo_get_table(self):
+        journal_data = self.env.context.get(CONTEXT_JOURNAL_ACTION)
+        bravo_table = 'DEFAULT'
+        if journal_data == 'purchase_asset_service':
+            bravo_table = 'B30AccDocPurchase'
+        return bravo_table
+
+    @api.model
+    def bravo_get_default_insert_value(self):
+        return {
+            'PushDate': "SYSDATETIMEOFFSET() AT TIME ZONE 'SE Asia Standard Time'",
+        }
+
+    def bravo_filter_record_by_context(self, **kwargs):
+        journal_data = kwargs.get(CONTEXT_JOURNAL_ACTION)
+        if journal_data == 'purchase_asset_service':
+            return self.filtered(lambda m: m.invoice_line_ids.mapped('purchase_order_id'))
+        return self
+
+    def bravo_get_insert_values(self, **kwargs):
+        journal_data = kwargs.get(CONTEXT_JOURNAL_ACTION)
+        if journal_data == 'purchase_asset_service':
+            return self.bravo_get_purchase_asset_service_value()
+        return [], []
+
+    def bravo_get_insert_sql_by_journal_action(self):
+        queries = []
+        # Purchase Asset + Service
+        current_context = {CONTEXT_JOURNAL_ACTION: 'purchase_asset_service'}
+        records = self.bravo_filter_record_by_context(**current_context)
+        purchase_asset_service_queries = records.bravo_get_insert_sql(**current_context)
+        if purchase_asset_service_queries:
+            queries.extend(purchase_asset_service_queries)
+        return queries
+
+    def bravo_get_insert_sql(self, **kwargs):
+        if kwargs.get(CONTEXT_JOURNAL_ACTION):
+            return super().bravo_get_insert_sql(**kwargs)
+        return self.bravo_get_insert_sql_by_journal_action()
