@@ -1488,7 +1488,7 @@ class StockPicking(models.Model):
                 account_1561 = r.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id.id
             else:
                 raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
-            if r.qty_product <= 0 or stock.quantity_done <= 0:
+            if r.qty_product <= 0 and stock.quantity_done <= 0:
                 raise ValidationError('Số lượng sản phẩm nhập hay số lương hoàn thành phải lớn hơn 0')
             credit_333 = stock.quantity_done / r.qty_product * r.tax_amount
             credit_332 = stock.quantity_done / r.qty_product * r.special_consumption_tax_amount
@@ -1566,7 +1566,8 @@ class StockPicking(models.Model):
                     if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
                         raise ValidationError(
                             'Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
-                    finished_qty = (material_line.product_plan_qty / record.move_ids_without_package.previous_qty) * record.move_ids_without_package.quantity_done
+                    for r in record.move_ids_without_package:
+                        finished_qty = (material_line.product_plan_qty / r.previous_qty) * r.quantity_done
                     list_line_xk.append((0, 0, {
                         'product_id': record.move_ids_without_package.product_id.id,
                         'product_uom': material_line.uom.id,
@@ -1615,10 +1616,6 @@ class StockPicking(models.Model):
         return True
 
     def create_xk_picking(self, po, record, list_line_xk):
-        company_id = self.env.context.get('allowed_company_ids')
-        picking_type_out = self.env['stock.picking.type'].search([
-            ('code', '=', 'outgoing'),
-            ('warehouse_id.company_id', 'in', company_id)], limit=1)
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
@@ -1629,7 +1626,7 @@ class StockPicking(models.Model):
             'origin': po.name,
             'other_export': True,
             'state': 'assigned',
-            'picking_type_id': picking_type_out.id,
+            'picking_type_id': po.picking_type_id.id,
             'move_ids_without_package': list_line_xk
         }
         result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(
