@@ -8,7 +8,7 @@
             <field name="inherit_id" ref="stock.view_location_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='id_deposit']" position="after">
-                    <field name="account_stock_give" attrs="{'invisible':[('id_deposit','=',False)]}"/>
+                    <field name="account_stock_give" attrs="{'invisible':[('id_deposit','=',False)], 'required': [('id_deposit','=',True)]}"/>
                 </xpath>
             </field>
         </record>

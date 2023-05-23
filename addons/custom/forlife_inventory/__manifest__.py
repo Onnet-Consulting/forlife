@@ -8,7 +8,9 @@
         'forlife_stock'
     ],
     "data": [
-        'views/stock_location_view.xml'
+        'security/ir.model.access.csv',
+        'views/stock_location_view.xml',
+        'views/location_mapping_view.xml'
     ],
     "application": True,
     "installable": True,
