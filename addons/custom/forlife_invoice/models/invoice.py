@@ -168,6 +168,7 @@ class AccountMove(models.Model):
                                         'description': cost.name,
                                         'price_unit': cost.expensive_total,
                                         'cost_type': cost.product_id.detailed_type,
+                                        'account_id': cost.product_id.categ_id.with_company(rec.company_id).property_stock_valuation_account_id.id
                                     })
                             rec.invoice_line_ids = invoice_line_ids
                         else:
@@ -199,6 +200,7 @@ class AccountMove(models.Model):
                                         'work_order': product.production_id.id,
                                         'account_analytic_id': product.account_analytic_id.id,
                                         'cost_type': product.product_id.detailed_type,
+                                        'account_id': product.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id
                                     })
                             rec.invoice_line_ids = invoice_line_ids
                     else:
@@ -234,7 +236,8 @@ class AccountMove(models.Model):
                                         'description': cost.name,
                                         'price_unit': cost.expensive_total,
                                         'cost_type': cost.product_id.detailed_type,
-                                })
+                                        'account_id': cost.product_id.categ_id.with_company(rec.company_id).property_stock_valuation_account_id.id
+                                    })
                             rec.invoice_line_ids = invoice_line_ids
                         else:
                             rec.purchase_type = 'product'
@@ -263,6 +266,7 @@ class AccountMove(models.Model):
                                         'work_order': product.production_id.id,
                                         'account_analytic_id': product.account_analytic_id.id,
                                         'cost_type': product.product_id.detailed_type,
+                                        'account_id': product.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id
                                     })
                             rec.invoice_line_ids = invoice_line_ids
                     else:
@@ -299,19 +303,21 @@ class AccountMove(models.Model):
                         continue
                     else:
                         if line.product_id.id and line.display_type == 'product' and line.name and not line.duplicate_cost_check_unlink:
-                            line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit')),
-                                        'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
-                                        'name': line.product_id.name
-                                        })
+                            if line.display_type not in ('payment_term', 'tax'):
+                                line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit')),
+                                            'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
+                                            'name': line.product_id.name
+                                            })
                         for dup in duplicate:
                             dup.write({'duplicate_cost_check_unlink': True})
             else:
                 for line in rec.invoice_line_ids:
                     duplicate = rec.line_ids.filtered(lambda x: x.product_id.id == line.product_id.id and x.id != line.id and x.display_type == 'product' and x.duplicate_cost_check_unlink == False)
-                    if line.product_id.id and line.display_type == 'product' and line.name:
-                        line.write({'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
-                                    'name': line.product_id.name
-                                    })
+                    if line.product_id.id and line.display_type == 'product' and line.name and not line.duplicate_cost_check_unlink:
+                        if line.display_type not in ('payment_term', 'tax'):
+                            line.write({'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
+                                        'name': line.product_id.name
+                                        })
                     for dup in duplicate:
                         dup.write({'duplicate_cost_check_unlink': False})
         res = super(AccountMove, self).write(vals)
@@ -575,7 +581,7 @@ class AccountMoveLine(models.Model):
         for line in list_vals:
             is_check_invoice_tnk = self.env['account.move'].browse(line.get('move_id')).is_check_invoice_tnk
             is_check_cost_view = self.env['account.move'].browse(line.get('move_id')).is_check_cost_view
-            is_check_partner_id = self.env['account.move'].browse(line.get('move_id')).partner_id
+            is_check_partner_id = self.env['account.move'].browse(line.get('move_id')).partner_id.group_id.id
             if line.get('account_id') == self.env.ref('l10n_vn.1_chart1331').id:
                 if not is_check_partner_id:
                     continue
