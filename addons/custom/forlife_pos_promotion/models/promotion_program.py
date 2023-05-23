@@ -12,6 +12,7 @@ REWARD_TYPE = [
         ('combo_amount', 'Combo Discount Amount'),
         ('combo_percent', 'Combo Discount Percent'),
         ('combo_fixed_price', 'Combo Discount Fixed Price'),
+        ('combo_discount_percent_x', 'Combo Discount Percent X'),
         ('combo_percent_by_qty', 'Combo Discount Percent by Qty'),
         ('combo_fixed_price_by_qty', 'Combo Discount Fixed Price by Qty'),
         ('code_amount', 'Code Discount Amount'),
