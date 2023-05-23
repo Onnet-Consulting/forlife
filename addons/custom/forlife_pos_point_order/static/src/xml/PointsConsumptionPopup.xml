@@ -101,7 +101,6 @@
                                                                t-att-value="num.point ? num.point : ''"
                                                                type="text" class="o_input"/>
                                             </td>
-                                            <t t-esc="num.unit_price"/>
                                         </tr>
                                  </t>
                             </t>
