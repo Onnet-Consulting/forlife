@@ -447,10 +447,10 @@ class PurchaseOrder(models.Model):
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
         partner_so = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
-        company_id = self.env.context.get('allowed_company_ids')
+        company_id = self.env.company.id
         picking_type_in = self.env['stock.picking.type'].search([
             ('code', '=', 'incoming'),
-            ('warehouse_id.company_id', 'in', company_id)], limit=1)
+            ('warehouse_id.company_id', '=', company_id)], limit=1)
         if company_partner:
             data_all_picking = {}
             order_line_so = []
