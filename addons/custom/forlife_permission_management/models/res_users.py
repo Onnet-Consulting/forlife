@@ -30,12 +30,12 @@ class ResUsers(models.Model):
         if not self.team_default_id:
             team_ids = self.team_default_id.search([]).mapped('id')
         else:
-            team_ids = self.team_default_id.mapped('id')
+            team_ids = self.team_default_id.id
         return team_ids
 
     @api.model
     def get_company(self):
-        if not self.conpany_ids:
+        if not self.company_ids:
             conpany_ids = self.company_ids.search([]).mapped('id')
         else:
             conpany_ids = (self.company_ids + self.company_id).mapped('id')
@@ -64,5 +64,4 @@ class ResUsers(models.Model):
         else:
             brand_ids = (self.store_ids + self.store_id).mapped('id')
         return brand_ids
-
 

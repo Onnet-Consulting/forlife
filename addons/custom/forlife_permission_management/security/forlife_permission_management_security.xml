@@ -283,7 +283,5 @@
             <field name="name">Yêu cầu nguyên phụ liệu Nút Approve + Reject</field>
             <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
         </record>
-
-
     </data>
 </odoo>
