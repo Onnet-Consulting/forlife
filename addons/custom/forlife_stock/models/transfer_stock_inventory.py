@@ -85,10 +85,16 @@ class TransferStockInventory(models.Model):
             rec.write({'state': 'wait_confirm'})
 
     def action_approve(self):
+        picking_type_in = self.env['stock.picking.type'].search([
+            ('code', '=', 'incoming'),
+            ('company_id', '=', self.env.user.company_id.id)], limit=1)
+        picking_type_out = self.env['stock.picking.type'].search([
+            ('code', '=', 'outgoing'),
+            ('company_id', '=', self.env.user.company_id.id)], limit=1)
         for rec in self:
             data_ex_other = {}
-            if not self.env.ref('forlife_stock.export_inventory_balance').valuation_in_account and not self.env.ref(
-                    'forlife_stock.enter_inventory_balance').valuation_out_account:
+            if not self.env.ref('forlife_stock.export_inventory_balance').valuation_in_account_id and not self.env.ref(
+                    'forlife_stock.enter_inventory_balance').valuation_out_account_id:
                 raise ValidationError(
                     'Nhập/Xuất cân đối tồn kho - tự kiểm kê chưa có tài khoản định giá tồn kho (xuất hàng)')
             for line in rec.transfer_stock_inventory_line_ids:
@@ -126,7 +132,7 @@ class TransferStockInventory(models.Model):
                     'origin': rec.code,
                     'other_import': True,
                     'state': 'assigned',
-                    'picking_type_id': self.env.ref('stock.picking_type_in').id,
+                    'picking_type_id': picking_type_in.id,
                     'move_ids_without_package': [product_import]
                 }
                 data_export = {
@@ -140,7 +146,7 @@ class TransferStockInventory(models.Model):
                     'origin': rec.code,
                     'other_export': True,
                     'state': 'assigned',
-                    'picking_type_id': self.env.ref('stock.picking_type_out').id,
+                    'picking_type_id': picking_type_out.id,
                     'move_ids_without_package': [product_export]
                 }
                 number_product = self.env['stock.quant'].search(

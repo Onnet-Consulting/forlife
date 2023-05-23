@@ -117,7 +117,7 @@ class PosOrderLine(models.Model):
         if event_valid:
             domain = [('id','in',[x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id','=',event_valid.id)])])]
             partner_condition = self.env['res.partner'].search(domain)
-            if self.order_id.partner_id.id in partner_condition.ids:
+            if self.order_id.partner_id.id in partner_condition.ids or not partner_condition:
                 for r in event_valid.points_product_ids.filtered(lambda x: x.state == 'effective'):
                     dict_product_poit_add[r.points_product_id.product_ids] = r.point_addition
                 return dict_product_poit_add

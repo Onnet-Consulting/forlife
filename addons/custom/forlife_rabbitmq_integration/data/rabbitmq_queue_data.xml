@@ -141,7 +141,7 @@
             <field name="queue_key">res.country.state</field>
             <field name="queue_name">sync_address_info_queue</field>
             <field name="description">Đồng bộ dữ liệu tỉnh/thành phố</field>
-            <field name="target">address_info</field>
+            <field name="target">city</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
@@ -149,7 +149,7 @@
             <field name="queue_key">res.state.district</field>
             <field name="queue_name">sync_address_info_queue</field>
             <field name="description">Đồng bộ dữ liệu quận/huyện</field>
-            <field name="target">address_info</field>
+            <field name="target">district</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
 
@@ -157,7 +157,15 @@
             <field name="queue_key">res.ward</field>
             <field name="queue_name">sync_address_info_queue</field>
             <field name="description">Đồng bộ dữ liệu phường/xã</field>
-            <field name="target">address_info</field>
+            <field name="target">ward</field>
+            <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
+        </record>
+
+        <record id="sync_voucher_program_queue" model="rabbitmq.queue">
+            <field name="queue_key">program.voucher</field>
+            <field name="queue_name">sync_voucher_program_queue</field>
+            <field name="description">Đồng bộ dữ liệu Voucher</field>
+            <field name="target">voucher_program</field>
             <field name="rabbitmq_connection_id" ref="rabbitmq_connection_default"/>
         </record>
     </data>
