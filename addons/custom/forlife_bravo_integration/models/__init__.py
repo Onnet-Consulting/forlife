@@ -19,3 +19,4 @@ from . import stock_warehouse
 from . import product_product
 from . import product_attribute_value
 from . import stock_location
+from . import account_moves
