@@ -286,10 +286,8 @@ class PurchaseRequestLine(models.Model):
     def _compute_order_quantity(self):
         for rec in self:
             # ### yêu cầu cũ là lọc theo trạng thái purchase
-            # done_purchase_order_line = rec.purchase_order_line_ids.filtered(lambda r: r.state == 'purchase')
-            # rec.order_quantity = sum(done_purchase_order_line.mapped('product_qty'))
-            ### yêu cầu mới là full trạng thái đều update lại số lượng đã đặt bên ycmh
-            rec.order_quantity = sum(rec.purchase_order_line_ids.mapped('product_qty'))
+            done_purchase_order_line = rec.purchase_order_line_ids.filtered(lambda r: r.state == 'purchase')
+            rec.order_quantity = sum(done_purchase_order_line.mapped('product_qty'))
 
     @api.depends('purchase_quantity', 'order_quantity')
     def _compute_is_no_more_quantity(self):
