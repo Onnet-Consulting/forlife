@@ -26,6 +26,10 @@
                                 <field name="team_default_id"/>
                                 <field name="team_ids" widget="many2many_tags"/>
                             </group>
+                            <group string="Store" name="store">
+                                <field name="store_default_id"/>
+                                <field name="store_ids" widget="many2many_tags"/>
+                            </group>
                         </group>
                     </page>
                 </xpath>
