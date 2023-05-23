@@ -335,6 +335,7 @@ class PurchaseOrder(models.Model):
                 picking_in.picking_type_id.write({
                     'show_operations': True
                 })
+                picking_in.write({'state': 'assigned'})
                 if picking_in:
                     for orl in record.order_line:
                         if orl.price_subtotal <= 0:
@@ -707,6 +708,7 @@ class PurchaseOrder(models.Model):
                 for line in order.order_line:
                     wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
                                                                              and w.product_id.id == line.product_id.id
+                                                                             and w.picking_type_id.code == 'incoming'
                                                                              and w.ware_check_line == False)
                     if picking_in:
                         for wave_item in wave:
@@ -748,9 +750,9 @@ class PurchaseOrder(models.Model):
                             line_vals.update(data_line)
                             invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                             sequence += 1
+                        invoice_vals_list.append(invoice_vals)
                     else:
                         raise UserError(_('Không thể tạo hóa đơn khi không còn phiếu nhập kho liên quan!'))
-                invoice_vals_list.append(invoice_vals)
             # 2) group by (company_id, partner_id, currency_id) for batch creation
             new_invoice_vals_list = []
             picking_incoming = picking_in.filtered(lambda r: r.origin == order.name and r.state == 'done' and r.picking_type_id.code == 'incoming' and r.ware_check == True)
@@ -1486,7 +1488,7 @@ class StockPicking(models.Model):
                 account_1561 = r.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id.id
             else:
                 raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
-            if r.qty_product <= 0 or stock.quantity_done <= 0:
+            if r.qty_product <= 0 and stock.quantity_done <= 0:
                 raise ValidationError('Số lượng sản phẩm nhập hay số lương hoàn thành phải lớn hơn 0')
             credit_333 = stock.quantity_done / r.qty_product * r.tax_amount
             credit_332 = stock.quantity_done / r.qty_product * r.special_consumption_tax_amount
@@ -1529,7 +1531,7 @@ class StockPicking(models.Model):
         list_line_xk = []
         invoice_line_npls = []
         cost_labor_internal_costs = []
-        for item in po.order_line_production_order:
+        for item, r in zip(po.order_line_production_order, record.move_ids_without_package):
             material = self.env['purchase.order.line.material.line'].search(
                 [('purchase_order_line_id', '=', item.id)])
             if not material:
@@ -1564,7 +1566,7 @@ class StockPicking(models.Model):
                     if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
                         raise ValidationError(
                             'Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
-                    finished_qty = (material_line.product_plan_qty / record.move_ids_without_package.previous_qty) * record.move_ids_without_package.quantity_done
+                    finished_qty = (material_line.product_plan_qty / r.previous_qty) * r.quantity_done
                     list_line_xk.append((0, 0, {
                         'product_id': record.move_ids_without_package.product_id.id,
                         'product_uom': material_line.uom.id,
@@ -1613,10 +1615,6 @@ class StockPicking(models.Model):
         return True
 
     def create_xk_picking(self, po, record, list_line_xk):
-        company_id = self.env.context.get('allowed_company_ids')
-        picking_type_out = self.env['stock.picking.type'].search([
-            ('code', '=', 'outgoing'),
-            ('warehouse_id.company_id', 'in', company_id)], limit=1)
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
@@ -1627,7 +1625,7 @@ class StockPicking(models.Model):
             'origin': po.name,
             'other_export': True,
             'state': 'assigned',
-            'picking_type_id': picking_type_out.id,
+            'picking_type_id': po.picking_type_id.id,
             'move_ids_without_package': list_line_xk
         }
         result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(
