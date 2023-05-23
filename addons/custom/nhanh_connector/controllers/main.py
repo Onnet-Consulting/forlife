@@ -93,7 +93,7 @@ class MainController(http.Controller):
             user_id = self.env['res.users'].search([('partner_id.name', '=', data['saleName'])], limit=1)
             # đội ngũ bán hàng
             team_id = self.env['crm.team'].search([('name', '=', data['trafficSourceName'])], limit=1)
-
+            warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', data['depotId'])], limit=1)
             value = {
                 'nhanh_id': data['orderId'],
                 'nhanh_status': data['status'],
@@ -110,6 +110,7 @@ class MainController(http.Controller):
                 'carrier_name': data['carrierName'],
                 'user_id': user_id.id if user_id else None,
                 'team_id': team_id.id if team_id else None,
+                'warehouse_id': warehouse_id.id if team_id else None,
                 'order_line': order_line
             }
             self.sale_order_model().sudo().create(value)
