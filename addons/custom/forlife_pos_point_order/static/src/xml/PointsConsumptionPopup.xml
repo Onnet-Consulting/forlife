@@ -41,6 +41,7 @@
                                             <td style="border:1px solid black;width:85px;">
                                                         <input style="width: 100%;text-align: center;"
                                                                t-att-id="num.id_new"
+                                                               t-att-data-value_id="num.unit_price"
                                                                t-att-value="num.point ? num.point : ''"
                                                                type="text" class="o_input"/>
                                             </td>
@@ -96,9 +97,11 @@
                                             <td style="border:1px solid black;width:85px;">
                                                         <input style="width: 100%;text-align: center;"
                                                                t-att-id="num.id_new"
+                                                               t-att-data-value_id="num.unit_price"
                                                                t-att-value="num.point ? num.point : ''"
                                                                type="text" class="o_input"/>
                                             </td>
+                                            <t t-esc="num.unit_price"/>
                                         </tr>
                                  </t>
                             </t>
