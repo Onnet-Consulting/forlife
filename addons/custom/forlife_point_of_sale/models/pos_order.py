@@ -6,9 +6,9 @@ from odoo import api, fields, models, _
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
-    invoice_info_company_name = fields.Char('Invoice Info Company Name')
-    invoice_info_address = fields.Char('Invoice Info Address')
-    invoice_info_tax_number = fields.Char('Invoice Info VAT')
+    invoice_info_company_name = fields.Char('Invoice Info Company Name', tracking=True)
+    invoice_info_address = fields.Char('Invoice Info Address', tracking=True)
+    invoice_info_tax_number = fields.Char('Invoice Info VAT', tracking=True)
 
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
