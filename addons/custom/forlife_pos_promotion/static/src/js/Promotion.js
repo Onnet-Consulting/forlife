@@ -1329,6 +1329,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     if (['combo_percent_by_qty', 'combo_fixed_price_by_qty'].includes(program.reward_type) && !(NumberOfCombo >= program.qty_min_required)) {
                         continue;
                     };
+                    let reward_lines = this._get_discount_product_line_for_combo(program, NumberOfCombo, to_check_order_lines);
                     if (NumberOfCombo >= 1) {
                         programIsVerified[program.str_id] = NumberOfCombo;
                     };
@@ -1366,6 +1367,29 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
         };
         return programIsVerified;
+    }
+
+    _get_discount_product_line_for_combo(program, number_of_combo, order_lines) {
+        let to_discount_line_vals = [];
+        let to_check_order_lines = this._filterOrderLinesToCheckComboPro(order_lines);
+        let max_reward_qty = (program.reward_quantity || 1) * number_of_combo;
+        let qty_to_take = max_reward_qty;
+        for (const ol of to_check_order_lines.filter(ol => program.discount_product_ids.has(ol.product.id)  && ol.quantity > 0)) {
+            let qty_taken = Math.min(qty_to_take, ol.quantity);
+            ol.quantity = ol.quantity - qty_taken;
+            to_discount_line_vals.push({
+                product: ol.product,
+                quantity: qty_taken,
+                price: ol.price,
+                isNew: true,
+                pricelist_item: ol.pricelist_item,
+                selectedReward: ol.selectedReward,
+                promotion_usage_ids: [...ol.promotion_usage_ids]
+            });
+            qty_to_take -= qty_taken;
+            if (qty_to_take <= 0.0) {break;};
+        };
+        return to_discount_line_vals;
     }
 
     _apply_cart_program_to_orderline(program, to_discount_lines) {
@@ -1915,6 +1939,21 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 Gui.showNotification(_.str.sprintf(`Không tính được số tiền giảm!\n Bỏ qua việc áp dụng chương trình ${program.name}.`), 3000);
             };
         }
+         // Mua Combo giảm phần trăm sản phẩm khác
+        else if (program.reward_type == 'combo_discount_percent_x' && program.promotion_type == 'combo') {
+            for (let comboLine of comboLineList) {
+                let base_total_amount = comboLine.quantity * comboLine.price;
+                let disc_total_amount = round_decimals(base_total_amount * program.disc_percent / 100, this.pos.currency.decimal_places);
+                if (program.discount_product_ids.has(comboLine.product.id)) {
+                    let originalPrice = comboLine.price;
+                    let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
+                    comboLine.price = newPrice;
+                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, originalPrice, newPrice, discAmount, program.str_id, program.promotion_type, program.discount_based_on));
+                } else {
+                    comboLine.promotion_usage_ids.push(new PromotionUsageLine(program.id, code, null, null, null, 0, program.str_id, program.promotion_type, program.discount_based_on));
+                };
+            };
+        }
         if (diff_amount_new_line) {
             comboLineList.push(diff_amount_new_line);
         }
@@ -1974,7 +2013,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     combo_count[program.str_id] = numberOfComboPerProgram;
                 } else {
                     var [remaining, to_discount_line_vals, numberOfCombo] = this._checkNumberOfCombo(program, orderLines, [], 0);
-
+                    if (program.reward_type == 'combo_discount_percent_x') {
+                        let reward_lines = this._get_discount_product_line_for_combo(program, numberOfCombo, orderLines);
+                        to_discount_line_vals.push(reward_lines);
+                    }
                     combo_count[program.id] = numberOfCombo;
 
                     for (let i = 0; i < to_discount_line_vals.length; i++) {
