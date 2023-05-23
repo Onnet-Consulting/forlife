@@ -157,7 +157,7 @@ class SaleOrder(models.Model):
                 user_id = self.env['res.users'].search([('partner_id.name', '=', v['saleName'])], limit=1)
                 # đội ngũ bán hàng
                 team_id = self.env['crm.team'].search([('name', '=', v['trafficSourceName'])], limit=1)
-                warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', v['depotId'])], limit=1)
+                warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
                 value = {
                     'nhanh_id': v['id'],
                     'nhanh_status': v['statusCode'],
@@ -176,7 +176,7 @@ class SaleOrder(models.Model):
                     'carrier_name': v['carrierName'],
                     'user_id': user_id.id if user_id else None,
                     'team_id': team_id.id if team_id else None,
-                    'warehouse_id': warehouse_id.id if team_id else None,
+                    'warehouse_id': warehouse_id.id if warehouse_id else None,
                     'order_line': order_line
                 }
                 order_model.sudo().create(value)
