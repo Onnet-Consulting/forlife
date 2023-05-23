@@ -57,4 +57,12 @@ class ResUsers(models.Model):
             brand_ids = (self.brand_ids + self.brand_id).mapped('id')
         return brand_ids
 
+    @api.model
+    def get_store(self):
+        if not self.brand_ids:
+            brand_ids = self.store_ids.search([]).mapped('id')
+        else:
+            brand_ids = (self.store_ids + self.store_id).mapped('id')
+        return brand_ids
+
 
