@@ -2,7 +2,8 @@
 <odoo>
     <data>
 
-        <menuitem id="promotion_root" name="Promotion" sequence="100"/>
+        <menuitem id="promotion_root" name="Promotion" sequence="100"
+                  groups="forlife_promotion.promotion_manager"/>
 
         <menuitem id="point_categ_menu" name="Point" parent="forlife_promotion.promotion_root" sequence="5"/>
 

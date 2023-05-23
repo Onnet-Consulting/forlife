@@ -10,14 +10,20 @@
     'depends': [
         'base',
         'product',
-        'stock',
-        'forlife_point_of_sale',
-
+        'purchase_request',
+        'forlife_stock',
+        'forlife_pos_product_change_refund',
+        'point_of_sale',
     ],
     'installable': True,
     'auto_install': True,
     'data': [
+        'security/forlife_permission_management_security.xml',
+        'security/ir.model.access.csv',
+        # 'security/forlife_permission_rule.xml',
+        'data/menu.xml',
         'views/product_product_views.xml',
         'views/res_users_views.xml',
+        'views/hr_team_views.xml',
     ],
 }
