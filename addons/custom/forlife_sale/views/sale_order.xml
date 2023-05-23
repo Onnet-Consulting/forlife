@@ -41,7 +41,8 @@
                 </xpath>
                 <xpath expr="//button[@name='action_cancel']" position="before">
                     <button name="action_return"
-                        string="Trả hàng" type="object" context="{'validate_analytic': True}"/>
+                        string="Trả hàng" type="object" context="{'validate_analytic': True}"
+                        attrs="{'invisible': [('state', '!=', 'sale')]}"/>
                 </xpath>
                 <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -53,6 +54,7 @@
                     <field name="x_occasion_code_ids" widget="many2many_tags"/>
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="before">
+                    <field name="x_origin" attrs="{'column_invisible': [('parent.x_is_return','=',False)]}"/>
                     <field name="x_free_good"/>
                     <field name="x_cart_discount_fixed_price"/>
                     <field name="x_location_id" domain="[('company_id','=',parent.company_id)]" attrs="{'required': [('parent.x_sale_type', '!=', 'service')]}"/>

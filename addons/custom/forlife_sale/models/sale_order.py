@@ -256,10 +256,16 @@ class SaleOrder(models.Model):
 
     def action_return(self):
         so_return = self.copy()
+        picking_location_list = {}
+        for picking in self.picking_ids:
+            picking_location_list[picking.location_id.id] = picking.name
         so_return.update({
             'x_is_return': True,
             'x_origin': self.id
         })
+        for line in so_return.order_line:
+            if picking_location_list.get(line.x_location_id.id):
+                line.x_origin = picking_location_list.get(line.x_location_id.id)
 
     def action_punish(self):
         self.x_shipping_punish = True
@@ -284,6 +290,7 @@ class SaleOrderLine(models.Model):
     x_account_analytic_id = fields.Many2one('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_id = fields.Many2one('occasion.code', string='Mã vụ việc')
     x_free_good = fields.Boolean(string='Hàng tặng')
+    x_origin = fields.Char(string='Tài liệu gốc')
 
     @api.model_create_multi
     def create(self, vals_list):
