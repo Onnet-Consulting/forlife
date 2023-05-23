@@ -77,7 +77,6 @@ class StockPicking(models.Model):
                 ('warehouse_id.company_id', 'in', company_id)], limit=1)
             if picking_type_id:
                 res.update({'picking_type_id': picking_type_id.id})
-
         return res
 
     ware_check = fields.Boolean('', default=False)
@@ -275,7 +274,7 @@ class StockMove(models.Model):
                         if r.product_id == rec.product_id and r.amount_total == rec.amount_total:
                             rec.write({'previous_qty': r.previous_qty})
             else:
-                if rec.picking_id.state not in 'done':
+                if rec.picking_id.state != 'done':
                     rec.previous_qty = rec.product_uom_qty
 
     @api.onchange('product_id')
