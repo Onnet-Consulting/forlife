@@ -375,6 +375,7 @@ class PromotionProgram(models.Model):
             'program_item_name': _('Promotion Code'),
             'default_program_id': self.id,
         }
+        action['domain'] = [('program_id', '=', self.id)]
         return action
 
     def action_open_issued_vouchers(self):

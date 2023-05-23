@@ -28,7 +28,7 @@ class ReturnPicking(models.TransientModel):
             'partner_id': picking_id.partner_id.id,
             'x_sale_type': picking_id.move_ids[0].product_id.product_type,
             'x_origin': origin.id if origin else None,
-            'x_is_return': True
+            'x_is_exchange': True
         }
         so_id = self.env['sale.order'].create(vals)
         return so_id

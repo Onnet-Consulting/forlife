@@ -201,7 +201,13 @@ class SaleOrder(models.Model):
             "toDate": today,
         }
 
-        list_number_phone = list(self.env['res.partner'].search([]).mapped('phone'))
+        # list_number_phone = list(self.env['res.partner'].search([]).mapped('phone'))
+        # self.env.cr.execute("""
+        #             SELECT DISTINCT rp.phone
+        #             FROM res_partner rp
+        #             WHERE rp.active = True
+        #             AND rp.phone IS NOT NULL""")
+        # list_number_phone = self.env.cr.fetchall()
         url = self.get_link_nhanh('customer', 'search', data)
         if url:
             status_post = 1
@@ -218,24 +224,29 @@ class SaleOrder(models.Model):
                     return False
                 else:
                     for item in res.get('data').get('customers'):
-                        if res.get('data').get('customers').get(item).get('mobile') not in list_number_phone:
-                            value_data = res.get('data').get('customers').get(item)
+                        if not res.get('data').get('customers').get(item).get('mobile'):
+                            continue
+                        exist_partner = self.env['res.partner'].search_count([('phone','=',res.get('data').get('customers').get(item).get('mobile'))])
+                        if exist_partner:
+                            continue
+                        value_data = res.get('data').get('customers').get(item)
 
-                            self.env['res.partner'].create({
-                                'source_record': True,
-                                'name': value_data.get('name'),
-                                'phone': value_data.get('mobile'),
-                                'mobile': value_data.get('mobile'),
-                                'email': value_data.get('email'),
-                                'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get('gender') == '2' else False,
-                                'contact_address_complete': value_data.get('address'),
-                                'street': value_data.get('address'),
-                                'vat': value_data.get('taxCode'),
-                                'birthday': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else False,
-                                'type_customer': 'retail_customers' if value_data.get(
-                                    'type') == 1 else 'wholesalers' if value_data.get(
-                                    'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
-                            })
+                        self.env['res.partner'].create({
+                            'source_record': True,
+                            'customer_nhanh_id': int(res.get('data').get('customers').get(item).get('id')),
+                            'name': value_data.get('name'),
+                            'phone': value_data.get('mobile'),
+                            'mobile': value_data.get('mobile'),
+                            'email': value_data.get('email'),
+                            'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get('gender') == '2' else 'other',
+                            'contact_address_complete': value_data.get('address'),
+                            'street': value_data.get('address'),
+                            'vat': value_data.get('taxCode'),
+                            'birthday': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else None,
+                            'type_customer': 'retail_customers' if value_data.get(
+                                'type') == 1 else 'wholesalers' if value_data.get(
+                                'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
+                        })
         ## End
 
     @api.model

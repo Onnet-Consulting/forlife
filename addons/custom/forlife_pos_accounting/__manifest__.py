@@ -22,6 +22,7 @@
     'data': [
         'views/product_views.xml',
         'views/points_promotion_views.xml',
+        'views/promotion_program_views.xml',
         'views/pos_order_views.xml'
     ],
     'installable': True,

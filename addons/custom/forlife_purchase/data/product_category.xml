@@ -13,6 +13,18 @@
             <field name="property_valuation">real_time</field>
             <field name="property_stock_account_input_categ_id" ref="l10n_vn.chart3332"/>
         </record>
+        <record id="category_product_vat_tax" model="product.category">
+            <field name="name">Danh mục thuế VAT nhập khẩu</field>
+            <field name="category_code">1330001111</field>
+            <field name="property_valuation">real_time</field>
+            <field name="property_stock_account_input_categ_id" ref="l10n_vn.chart3334"/>
+        </record>
+        <record id="category_product_discount_tax" model="product.category">
+            <field name="name">Danh mục chiết khấu</field>
+            <field name="category_code">7110000011</field>
+            <field name="property_valuation">real_time</field>
+            <field name="property_stock_account_input_categ_id" ref="l10n_vn.chart3335"/>
+        </record>
         <record id="category_product_internal_costs" model="product.category">
             <field name="name">Danh mục chi phí nội bộ</field>
             <field name="category_code">internal_costs</field>
@@ -36,6 +48,16 @@
             <field name="name">Thuế tiêu thụ đặc biệt</field>
             <!--            <field name="code_product">tax3332000001</field>-->
             <field name="categ_id" ref="forlife_purchase.category_product_excise_tax"/>
+        </record>
+        <record id="product_vat_tax" model="product.product">
+            <field name="name">Thuế VAT (Nhập khẩu)</field>
+            <!--            <field name="code_product">tax3332000001</field>-->
+            <field name="categ_id" ref="forlife_purchase.category_product_vat_tax"/>
+        </record>
+        <record id="product_discount_tax" model="product.product">
+            <field name="name">Chiết khấu tổng đơn</field>
+            <!--            <field name="code_product">tax3332000001</field>-->
+            <field name="categ_id" ref="forlife_purchase.category_product_discount_tax"/>
         </record>
         <record id="product_internal_costs" model="product.template">
             <field name="name">Chi phí nội bộ</field>

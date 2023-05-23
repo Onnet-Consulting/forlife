@@ -20,7 +20,14 @@
                         class="oe_stat_button"
                         icon="fa-folder-open-o"
                         attrs="{'invisible': [('x_order_return_count', '=', 0)]}">
-                        <field name="x_order_return_count" widget="statinfo" string="Đơn đổi"/>
+                        <field name="x_order_return_count" widget="statinfo" string="Đơn trả"/>
+                    </button>
+                    <button type="object"
+                        name="action_view_so_exchange"
+                        class="oe_stat_button"
+                        icon="fa-rotate-right"
+                        attrs="{'invisible': [('x_is_exchange_count', '=', 0)]}">
+                        <field name="x_is_exchange_count" widget="statinfo" string="Đơn đổi"/>
                     </button>
                 </xpath>
                 <xpath expr="//button[@name='action_quotation_send']" position="after">
@@ -59,9 +66,10 @@
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="before">
                     <field name="x_process_punish"/>
-                    <field name="x_shipping_punish" force_save="1" readonly="1"/>
+                    <field name="x_shipping_punish" force_save="1" readonly="1" attrs="{'invisible': [('x_shipping_punish', '=', False)]}"/>
                     <field name="x_manufacture_order_code_id"/>
-                    <field name="x_is_return" force_save="1" readonly="1"/>
+                    <field name="x_is_return" force_save="1" readonly="1" attrs="{'invisible': [('x_is_return', '=', False)]}"/>
+                    <field name="x_is_exchange" force_save="1" readonly="1" attrs="{'invisible': [('x_is_exchange', '=', False)]}"/>
                     <field name="x_origin"/>
                 </xpath>
             </field>
