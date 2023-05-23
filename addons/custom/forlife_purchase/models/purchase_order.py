@@ -359,22 +359,30 @@ class PurchaseOrder(models.Model):
                 record.write({'custom_state': 'approved'})
             else:
                 data = {'partner_id': record.partner_id.id, 'purchase_type': record.purchase_type,
-                        'is_purchase_request': record.is_purchase_request, 'production_id': record.production_id.id,
-                        'event_id': record.event_id, 'currency_id': record.currency_id.id,
+                        'is_purchase_request': record.is_purchase_request,
+                        'production_id': record.production_id.id,
+                        'event_id': record.event_id,
+                        'currency_id': record.currency_id.id,
                         'exchange_rate': record.exchange_rate,
                         'manual_currency_exchange_rate': record.manual_currency_exchange_rate,
-                        'company_id': record.company_id.id, 'has_contract': record.has_contract,
+                        'company_id': record.company_id.id,
+                        'has_contract': record.has_contract,
                         'has_invoice': record.has_invoice,
-                        'location_id': record.location_id.id, 'source_location_id': record.source_location_id.id,
+                        'location_id': record.location_id.id,
+                        'source_location_id': record.source_location_id.id,
                         'date_order': record.date_order,
                         'payment_term_id': record.payment_term_id.id,
-                        'date_planned': record.date_planned, 'receive_date': record.receive_date,
-                        'inventory_status': record.inventory_status, 'picking_type_id': record.picking_type_id.id,
+                        'date_planned': record.date_planned,
+                        'receive_date': record.receive_date,
+                        'inventory_status': record.inventory_status,
+                        'picking_type_id': record.picking_type_id.id,
                         'source_document': record.source_document,
-                        'has_contract_commerce': record.has_contract_commerce, 'note': record.note,
+                        'has_contract_commerce': record.has_contract_commerce,
+                        'note': record.note,
                         'receipt_reminder_email': record.receipt_reminder_email,
                         'reminder_date_before_receipt': record.reminder_date_before_receipt,
-                        'dest_address_id': record.dest_address_id.id, 'purchase_order_id': record.id,
+                        'dest_address_id': record.dest_address_id.id,
+                        'purchase_order_id': record.id,
                         'name': record.name,
                         }
                 order_line = []
@@ -740,10 +748,9 @@ class PurchaseOrder(models.Model):
                             line_vals.update(data_line)
                             invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                             sequence += 1
-                        invoice_vals_list.append(invoice_vals)
                     else:
                         raise UserError(_('Không thể tạo hóa đơn khi không còn phiếu nhập kho liên quan!'))
-
+                invoice_vals_list.append(invoice_vals)
             # 2) group by (company_id, partner_id, currency_id) for batch creation
             new_invoice_vals_list = []
             picking_incoming = picking_in.filtered(lambda r: r.origin == order.name and r.state == 'done' and r.picking_type_id.code == 'incoming' and r.ware_check == True)
@@ -1022,8 +1029,8 @@ class PurchaseOrderLine(models.Model):
     def constrains_asset_code(self):
         for item in self:
             if item.order_id.purchase_type == 'asset':
-                if item.asset_code and item.asset_code.asset_account.code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.property_valuation == 'real_time' and item.product_id.categ_id.property_stock_valuation_account_id:
-                    if item.asset_code.asset_account.code != item.product_id.categ_id.property_stock_valuation_account_id.code:
+                if item.asset_code and item.asset_code.asset_account.code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.with_company(item.company_id).property_valuation == 'real_time' and item.product_id.categ_id.with_company(item.company_id).property_stock_valuation_account_id:
+                    if item.asset_code.asset_account.code != item.product_id.categ_id.with_company(item.company_id).property_stock_valuation_account_id.code:
                         raise ValidationError(
                             'Mã tài sản của bạn khác với mã loại cọc trong tài khoản định giá tồn kho thuộc nhóm sản phẩm')
                 else:
@@ -1422,14 +1429,14 @@ class StockPicking(models.Model):
         # if total_money <= 0:
         #     raise ValidationError('Tổng tiền của sản phẩm là 0')
         for item, total, range_product in zip(data_in_line, list_money, range(1, len(data_in_line) + 1)):
-            if item.product_id.categ_id and item.product_id.categ_id.property_stock_valuation_account_id:
-                account_1561 = item.product_id.categ_id.property_stock_valuation_account_id.id
+            if item.product_id.categ_id and item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id:
+                account_1561 = item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id.id
             else:
                 raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
             for rec in po.cost_line:
 
-                if rec.product_id.categ_id and rec.product_id.categ_id.property_stock_valuation_account_id:
-                    account_acc = rec.product_id.categ_id.property_stock_account_input_categ_id.id
+                if rec.product_id.categ_id and rec.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id:
+                    account_acc = rec.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id.id
                 else:
                     raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
                 key_acc = str(account_acc) + "_" + rec.name
@@ -1474,8 +1481,8 @@ class StockPicking(models.Model):
     def create_invoice_po_tax(self, po, record):
         invoice_line = []
         for r, stock in zip(po.exchange_rate_line, record.move_ids_without_package):
-            if r.product_id.categ_id and r.product_id.categ_id.property_stock_valuation_account_id:
-                account_1561 = r.product_id.categ_id.property_stock_valuation_account_id.id
+            if r.product_id.categ_id and r.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id:
+                account_1561 = r.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id.id
             else:
                 raise ValidationError('Danh mục của sản phẩm chưa được cấu hình!')
             if r.qty_product <= 0 or stock.quantity_done <= 0:
@@ -1490,6 +1497,10 @@ class StockPicking(models.Model):
                     'credit': 0,
 
                 })
+            if not self.env.ref(
+                    'forlife_purchase.product_import_tax').categ_id.property_stock_account_input_categ_id or not self.env.ref(
+                    'forlife_purchase.product_excise_tax').categ_id.property_stock_account_input_categ_id:
+                raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế")
             invoice_line_3333 = (
                 0, 0,
                 {'account_id': self.env.ref(
@@ -1522,8 +1533,8 @@ class StockPicking(models.Model):
                 [('purchase_order_line_id', '=', item.id)])
             if not material:
                 raise ValidationError('Bạn chưa cấu hình nguyên phụ liệu trong đơn mua hàng')
-            if item.product_id.categ_id and item.product_id.categ_id.property_stock_valuation_account_id:
-                account_1561 = item.product_id.categ_id.property_stock_valuation_account_id.id
+            if item.product_id.categ_id and item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id:
+                account_1561 = item.product_id.categ_id.with_company(record.company_id).property_stock_valuation_account_id.id
             else:
                 raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
             debit = 0
@@ -1531,9 +1542,9 @@ class StockPicking(models.Model):
             for material_line in material:
                 credit = material_line.price_unit * material_line.product_plan_qty
                 if material_line.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
-                    if not material_line.product_id.categ_id or not material_line.product_id.categ_id.property_stock_account_input_categ_id:
+                    if not material_line.product_id.categ_id or not material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id:
                         raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
-                    account_cost = material_line.product_id.categ_id.property_stock_account_input_categ_id
+                    account_cost = material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id
                     credit_npl = (0, 0, {
                         'account_id': account_cost.id,
                         'name': material_line.product_id.name,
