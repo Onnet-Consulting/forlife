@@ -35,7 +35,7 @@ class ResUsers(models.Model):
 
     @api.model
     def get_company(self):
-        if not self.conpany_ids:
+        if not self.company_ids:
             conpany_ids = self.company_ids.search([]).mapped('id')
         else:
             conpany_ids = (self.company_ids + self.company_id).mapped('id')
