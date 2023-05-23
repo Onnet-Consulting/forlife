@@ -20,7 +20,7 @@
     'data': [
         'security/forlife_permission_management_security.xml',
         'security/ir.model.access.csv',
-        'security/forlife_permission_rule.xml',
+        # 'security/forlife_permission_rule.xml',
         'data/menu.xml',
         'views/product_product_views.xml',
         'views/res_users_views.xml',
