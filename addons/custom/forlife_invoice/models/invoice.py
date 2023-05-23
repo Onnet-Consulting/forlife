@@ -314,8 +314,6 @@ class AccountMove(models.Model):
                                     })
                     for dup in duplicate:
                         dup.write({'duplicate_cost_check_unlink': False})
-            lines_to_unlink = rec.invoice_line_ids.filtered(lambda x: x.duplicate_cost_check_unlink)
-            lines_to_unlink.unlink()
         res = super(AccountMove, self).write(vals)
         return res
 
