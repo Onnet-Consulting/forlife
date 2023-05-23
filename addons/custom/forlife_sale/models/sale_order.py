@@ -23,13 +23,15 @@ class SaleOrder(models.Model):
         string='Kênh bán', default='wholesale')
     x_account_analytic_ids = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_ids = fields.Many2many('occasion.code', string='Mã vụ việc')
-    x_process_punish = fields.Boolean(string='Đơn phạt nhà gia công')
+    x_process_punish = fields.Boolean(string='Đơn phạt nhà gia công', copy=False)
     x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
+    x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)
     x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
     x_is_return = fields.Boolean('Đơn trả hàng')
     x_origin = fields.Many2one('sale.order', 'Tài liệu gốc')
     x_order_punish_count = fields.Integer('Số đơn phạt', compute='_compute_order_punish_count')
     x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
+    x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
 
     def _compute_order_punish_count(self):
         for r in self:
@@ -37,11 +39,18 @@ class SaleOrder(models.Model):
                 [('x_origin', '=', r.id), '|', ('x_shipping_punish', '=', True), ('x_shipping_punish', '=', True)])
             r.x_order_punish_count = len(count)
 
+    def _compute_exchange_count(self):
+        for r in self:
+            count = self.env['sale.order'].search(
+                [('x_origin', '=', r.id), ('x_is_exchange', '=', True)])
+            r.x_is_exchange_count = len(count)
+
     def _compute_order_return_count(self):
         for r in self:
             count = self.env['sale.order'].search(
                 [('x_origin', '=', r.id), ('x_is_return', '=', True)])
             r.x_order_return_count = len(count)
+
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
@@ -78,6 +87,21 @@ class SaleOrder(models.Model):
     def action_view_so_return(self):
         count = self.env['sale.order'].search(
             [('x_origin', '=', self.id), ('x_is_return', '=', True)])
+        action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
+        if len(count) > 1:
+            action['domain'] = [('id', 'in', count.ids)]
+        elif len(count) == 1:
+            form_view = [(self.env.ref('sale.view_order_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = count.id
+        return action
+
+    def action_view_so_exchange(self):
+        count = self.env['sale.order'].search(
+            [('x_origin', '=', self.id), ('x_is_exchange', '=', True)])
         action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
         if len(count) > 1:
             action['domain'] = [('id', 'in', count.ids)]
