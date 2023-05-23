@@ -238,11 +238,11 @@ class SaleOrder(models.Model):
                             'phone': value_data.get('mobile'),
                             'mobile': value_data.get('mobile'),
                             'email': value_data.get('email'),
-                            'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get('gender') == '2' else False,
+                            'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get('gender') == '2' else 'other',
                             'contact_address_complete': value_data.get('address'),
                             'street': value_data.get('address'),
                             'vat': value_data.get('taxCode'),
-                            'birthday': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else False,
+                            'birthday': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else None,
                             'type_customer': 'retail_customers' if value_data.get(
                                 'type') == 1 else 'wholesalers' if value_data.get(
                                 'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
