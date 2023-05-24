@@ -1697,10 +1697,15 @@ class StockPicking(models.Model):
             account_cost = self.create_account_move(po, cost_labor_internal_costs, record)
         if invoice_line_npls and list_line_xk:
             account_nl = self.create_account_move(po, invoice_line_npls, record)
-            master_xk = self.create_xk_picking(po, record, list_line_xk)
+            if record.state == 'done':
+                master_xk = self.create_xk_picking(po, record, list_line_xk)
         return True
 
     def create_xk_picking(self, po, record, list_line_xk):
+        company_id = self.env.company.id
+        picking_type_out = self.env['stock.picking.type'].search([
+            ('code', '=', 'outgoing'),
+            ('company_id', '=', company_id)], limit=1)
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
@@ -1711,7 +1716,7 @@ class StockPicking(models.Model):
             'origin': po.name,
             'other_export': True,
             'state': 'assigned',
-            'picking_type_id': po.picking_type_id.id,
+            'picking_type_id': picking_type_out.id,
             'move_ids_without_package': list_line_xk
         }
         result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(
