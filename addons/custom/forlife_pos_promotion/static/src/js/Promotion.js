@@ -1525,7 +1525,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
             // Nếu không có sản phẩm điều kiện, Loại CT k thõa
             if (program.valid_product_ids.size > 0 && qty_taken == 0) {
-                return
+                continue;
             };
 
             // Tính lũy tuyến cho số lượng phần thưởng
