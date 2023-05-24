@@ -1492,7 +1492,7 @@ class StockPicking(models.Model):
             'purchase_type': po.purchase_type,
             'move_type': 'entry',
             'reference': po.name,
-            'currency_id': po.currency_id.id,
+            # 'currency_id': po.currency_id.id,
             'exchange_rate': po.exchange_rate,
             'date': datetime.now(),
             'invoice_payment_term_id': po.payment_term_id.id,
