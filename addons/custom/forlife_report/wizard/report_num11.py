@@ -83,7 +83,8 @@ current_partner_card_rank_by_period as (
         pcr.value_remind,
         (to_date('{self.to_date + relativedelta(days=self.number_of_days)}',
             'YYYY-MM-DD') - (coalesce(pcr.time_set_rank, 0) || ' d')::interval)::date            as ngay_mua_dk,
-        to_date('{self.to_date + relativedelta(days=self.number_of_days)}', 'YYYY-MM-DD')::date  as ngay_ck
+        to_date('{self.to_date + relativedelta(days=self.number_of_days)}', 'YYYY-MM-DD')::date  as ngay_ck,
+        pcr.card_rank_id                                                                         as new_cr_id
     from current_partner_card_rank cpcr
         join program_cr pcr on pcr.previous_rank_id = cpcr.current_rank_id
 ),
@@ -120,7 +121,8 @@ data_final as (
         to_char(cpcr.ngay_ck, 'DD/MM/YYYY')                                                 as ngay_ck,
         vtu.amount                                                                          as dt_ps,
         cpcr.min_turnover                                                                   as min_turnover,
-        cr.name                                                                             as current_rank,
+        c_cr.name                                                                           as current_rank,
+        n_cr.name                                                                           as new_rank,
         array[coalesce(rp.internal_code, ''),
               coalesce(rp.name, ''),
               coalesce(to_char(rp.birthday + ({tz_offset} || ' h')::interval, 'DD/MM/YYYY'), ''),
@@ -131,7 +133,8 @@ data_final as (
         left join store_first_order sfo on sfo.customer_id = rp.id and sfo.brand_id = {self.brand_id.id}
         left join store st on st.id = sfo.store_id
         left join ngay_mua_gn_by_id nmgn on nmgn.pcr_id = cpcr.pcr_id
-        join card_rank cr on cr.id = cpcr.current_rank_id
+        join card_rank c_cr on c_cr.id = cpcr.current_rank_id
+        join card_rank n_cr on n_cr.id = cpcr.new_cr_id
         join value_to_upper_by_customer vtu on vtu.pcr_id = cpcr.pcr_id
 )
 select *, row_number() over () as num

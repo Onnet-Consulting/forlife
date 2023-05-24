@@ -51,7 +51,7 @@ from pos_voucher_line pvl
     join hr_department hd on hd.id = pv.derpartment_id
     join pos_order po on po.id = pvl.pos_order_id
     left join res_partner rp on rp.id = po.partner_id
-where po.brand_id = {self.brand_id.id} --and vv.name ilike '%{self.voucher}%'
+where po.brand_id = {self.brand_id.id} and vv.name ilike '%{self.voucher}%'
   and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
 order by num
 """
