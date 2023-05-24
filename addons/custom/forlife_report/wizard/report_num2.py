@@ -86,7 +86,8 @@ from stock_product stp
         values.update({
             'titles': TITLES,
             "data": list(data_by_product_id.values()),
-            "detail_data_by_product_id": detail_data_by_product_id
+            "detail_data_by_product_id": detail_data_by_product_id,
+            "recordPerPage": 25,
         })
         return values
 

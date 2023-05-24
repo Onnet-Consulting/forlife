@@ -34,6 +34,10 @@ class ReportNum17(models.TransientModel):
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
 
+    @api.onchange('brand_id')
+    def onchange_brand_id(self):
+        self.store_id = False
+
     def _get_query(self, store_ids, allowed_company):
         self.ensure_one()
         tz_offset = self.tz_offset
@@ -74,9 +78,11 @@ select
     (select coalesce(sum(qty * price_unit), 0)
      from pos_order_line where order_id = po.id)                                as cong,
     (select coalesce(sum(money_reduced), 0) from (
-        select case when type = 'card' then recipe
-                    when type = 'point' then recipe * 1000
-                    else 0 end as money_reduced
+        select case when type = 'point' then recipe * 1000
+                when type = 'card' then recipe
+                when type = 'ctkm' then discounted_amount
+                else 0
+            end                                          as money_reduced
         from pos_order_line_discount_details
         where pos_order_line_id in (
             select id from pos_order_line where order_id = po.id
@@ -186,8 +192,8 @@ order by num
         sheet = workbook.add_worksheet('Danh sách hóa đơn bán - đổi - trả')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Danh sách hóa đơn bán - đổi - trả', formats.get('header_format'))
-        sheet.write(2, 0, 'Thương hiệu %s' % self.brand_id.name, formats.get('italic_format'))
-        sheet.write(2, 2, 'Từ ngày %s đến ngày: %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
+        sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))
+        sheet.write(2, 2, 'Từ ngày: %s đến ngày: %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
         for idx, title in enumerate(TITLES):
             sheet.write(4, idx, title, formats.get('title_format'))
         sheet.set_column(0, len(TITLES), 20)
