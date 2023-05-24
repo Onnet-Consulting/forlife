@@ -24,20 +24,11 @@ class PosSession(models.Model):
                 'code': rec.code,
                 'from_date': rec.from_date,
                 'to_date': rec.to_date,
-                'size_deviation_allowed': rec.size_deviation_allowed,
-                'color_deviation_allowed': rec.color_deviation_allowed,
+                'size_attribute_id': rec.size_attribute_id.id,
+                'color_attribute_id': rec.color_attribute_id.id,
                 'product_combolines': combo_ids,
             }
             product_combo_lines.append(product_combo_list)
-
-        # product_combos = [{
-        #     'id': r.id,
-        #     'code': r.code,
-        #     'from_date': r.from_date,
-        #     'to_date': r.to_date,
-        #     'size_deviation_allowed': r.size_deviation_allowed,
-        #     'color_deviation_allowed': r.color_deviation_allowed
-        # } for r in product_combos]
 
         loaded_data.update({
             'product_combo': product_combo_lines,
@@ -46,6 +37,7 @@ class PosSession(models.Model):
     def _loader_params_product_product(self):
         result = super()._loader_params_product_product()
         result['search_params']['fields'].append('product_template_attribute_value_ids')
+        result['search_params']['fields'].append('attribute_id')
         result['search_params']['fields'].append('combo_id')
 
         return result
