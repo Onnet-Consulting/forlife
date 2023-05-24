@@ -6,10 +6,15 @@ from odoo import api, fields, models, _
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    def bravo_get_purchase_asset_service_value(self):
-        self.ensure_one()
-        values = []
-        column_names = [
+    def bravo_get_purchase_asset_service_values(self):
+        res = []
+        columns = self.bravo_get_purchase_asset_service_columns()
+        for record in self:
+            res.extend(record.bravo_get_purchase_asset_service_value())
+        return columns, res
+
+    def bravo_get_purchase_asset_service_columns(self):
+        return [
             "CompanyCode", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
             "CustomerName", "Address", "Description", "AtchDocDate", "AtchDocNo", "TaxRegName", "TaxRegNo",
             "EmployeeCode", "IsTransfer", "DueDate", "IsCompany", "CreditAccount",
@@ -18,6 +23,10 @@ class AccountMove(models.Model):
             "IsPromotions", "DocNo_PO", "DeptCode", "DocNo_WO", "RowId",
             "TaxCode", "OriginalAmount3", "Amount3", "DebitAccount3", "CreditAccount3"
         ]
+
+    def bravo_get_purchase_asset_service_value(self):
+        self.ensure_one()
+        values = []
         journal_lines = self.line_ids
         invoice_lines = self.invoice_line_ids
         partner = self.partner_id
@@ -93,7 +102,22 @@ class AccountMove(models.Model):
 
             values.append(journal_value)
 
-        return column_names, values
+        return values
+
+    def bravo_get_purchase_product_values(self):
+        res = []
+        columns = self.bravo_get_purchase_product_columns()
+        for record in self:
+            res.extend(record.bravo_get_purchase_product_value())
+        return columns, res
+
+    def bravo_get_purchase_product_columns(self):
+        return [
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DueDate", "CreditAccount",
+            "BuiltinOrder", "DebitAccount", "Amount", "OriginalAmount", "RowId", "TaxCode", "OriginalAmount3",
+            "Amount3", "DebitAccount3", "CreditAccount3",
+        ]
 
     def bravo_get_purchase_product_value(self):
         self.ensure_one()
@@ -159,3 +183,82 @@ class AccountMove(models.Model):
             values.append(journal_value)
 
         return column_names, values
+
+
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
+
+    def bravo_get_picking_purchase_values(self):
+        res = []
+        columns = self.bravo_get_picking_purchase_columns()
+        for record in self:
+            res.extend(record.bravo_get_picking_purchase_value())
+        return columns, res
+
+    def bravo_get_picking_purchase_columns(self):
+        return [
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
+            "CustomerName", "Address", "EmployeeCode", "PriceUnit", "Discount", "OriginalUnitCost", "UnitCostCode",
+            "ItemCode", "ItemName", "WarehouseCode", "DocNo_PO", "RowId", "BuiltinOrder", 'DebitAccount',
+            'CreditAccount',
+        ]
+
+    def bravo_get_picking_purchase_value(self):
+        count = 1
+        values = []
+        for stock_move in self.move_ids:
+            for account_move in stock_move.account_move_ids:
+                values.append(self.bravo_get_picking_purchase_by_account_move_value(account_move, count))
+                count += 1
+        return values
+
+    def bravo_get_picking_purchase_by_account_move_value(self, account_move, line_count):
+        stock_move = account_move.stock_move_id
+        purchase_order_line = stock_move.purchase_order_line
+        product = stock_move.product_id
+        purchase_order = purchase_order_line.order_id
+        picking = stock_move.picking_id
+        partner = picking.partner_id
+        is_partner_group_1 = partner.group_id == \
+                             self.env.ref('forlife_pos_app_member.partner_group_1', raise_if_not_found=False)
+
+        # purchase order line info
+        line_discount = purchase_order_line.discount / purchase_order_line.purchase_quantity if purchase_order_line.purchase_quantity else 0
+        line_price = purchase_order_line.vendor_price
+        exchange_rate = purchase_order.exchange_rate
+
+        journal_value = {
+            "CompanyCode": picking.company_id.code,
+            "Stt": picking.id,
+            "DocCode": "NK" if is_partner_group_1 else "NM",
+            "DocNo": picking.name,
+            "DocDate": picking.date_done,
+            "CurrencyCode": purchase_order.currency_id.name,
+            "ExchangeRate": exchange_rate,
+            "CustomerCode": partner.ref,
+            "CustomerName": partner.name,
+            "Address": partner.contact_address_complete,
+            "EmployeeCode": picking.user_id.employee_id.code,
+            "PriceUnit": line_price,
+            "Discount": line_discount,
+            "OriginalUnitCost": line_price - line_discount,
+            "UnitCostCode": (line_price - line_discount) * exchange_rate,
+            "ItemCode": product.barcode,
+            "ItemName": product.name,
+            "WarehouseCode": stock_move.location_dest_id.warehouse_id.code,
+            "DocNo_PO": purchase_order.name,
+            "RowId": stock_move.id,
+            "BuiltinOrder": line_count,
+        }
+
+        for move_line in account_move.line_ids:
+            if move_line.debit:
+                journal_value.update({
+                    'DebitAccount': move_line.account_id.code
+                })
+            else:
+                journal_value.update({
+                    'CreditAccount': move_line.account_id.code
+                })
+
+        return journal_value

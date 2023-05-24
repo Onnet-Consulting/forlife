@@ -45,9 +45,9 @@ class AccountMove(models.Model):
     def bravo_get_insert_values(self, **kwargs):
         journal_data = kwargs.get(CONTEXT_JOURNAL_ACTION)
         if journal_data == 'purchase_asset_service':
-            return self.bravo_get_purchase_asset_service_value()
+            return self.bravo_get_purchase_asset_service_values()
         if journal_data == 'purchase_product':
-            return self.bravo_get_purchase_product_value()
+            return self.bravo_get_purchase_product_values()
         return [], []
 
     def bravo_get_insert_sql_by_journal_action(self):
@@ -65,6 +65,7 @@ class AccountMove(models.Model):
         purchase_product_queries = records.bravo_get_insert_sql(**current_context)
         if purchase_product_queries:
             queries.extend(purchase_product_queries)
+
         return queries
 
     def bravo_get_insert_sql(self, **kwargs):
