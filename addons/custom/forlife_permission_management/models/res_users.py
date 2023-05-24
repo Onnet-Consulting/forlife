@@ -44,9 +44,9 @@ class ResUsers(models.Model):
     @api.model
     def get_stock(self):
         if not self.stock_ids:
-            stock_ids = self.stock_ids.search([]).mapped('id')
+            stock_ids = self.stock_ids.search([]).mapped('lot_stock_id.id')
         else:
-            stock_ids = (self.stock_ids + self.stock_default_id).mapped('id')
+            stock_ids = (self.stock_ids + self.stock_default_id).mapped('lot_stock_id.id')
         return stock_ids
 
     @api.model
