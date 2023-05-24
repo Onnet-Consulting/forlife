@@ -426,7 +426,7 @@ class PurchaseOrder(models.Model):
                         'request_code': line.request_purchases,
                         'type': line.product_type,
                         'discount': line.discount_percent,
-                        'discount_invoice': line.discount,
+                        'discount_percent': line.discount,
                         'quantity_purchased': line.purchase_quantity,
                         'uom_id': line.product_id.uom_id.id if line.product_id.uom_id else uom,
                         'exchange_quantity': line.exchange_quantity,
@@ -724,7 +724,6 @@ class PurchaseOrder(models.Model):
                             'tax_amount': line.price_tax,
                             'uom_id': line.product_uom.id,
                             'price_unit': line.price_unit,
-                            'cost_type': self.purchase_type,
                         }
                         if line.display_type == 'line_section':
                             pending_section = line
@@ -816,7 +815,6 @@ class PurchaseOrder(models.Model):
                                     'tax_amount': line.price_tax,
                                     'uom_id': line.product_uom.id,
                                     'price_unit': line.price_unit,
-                                    'cost_type': self.purchase_type,
                                 }
                                 if line.display_type == 'line_section':
                                     pending_section = line
@@ -862,8 +860,7 @@ class PurchaseOrder(models.Model):
                         'is_check': True,
                         'purchase_order_product_id': [(6, 0, [self.id])],
                         'receiving_warehouse_id': [(6, 0, picking_incoming.ids)],
-                        'is_check_invoice_tnk': True if self.env.ref(
-                            'forlife_pos_app_member.partner_group_1') else False,
+                        'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') else False,
                         'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                     })
                     new_invoice_vals_list.append(ref_invoice_vals)
@@ -926,7 +923,7 @@ class PurchaseOrder(models.Model):
                              'account_analytic_id': line.account_analytic_id.id,
                              'request_code': line.request_purchases,
                              'quantity_purchased': line.purchase_quantity,
-                             'discount_invoice': line.discount,
+                             'discount_percent': line.discount,
                              'taxes_id': line.taxes_id.id,
                              'tax_amount': line.price_tax,
                              'uom_id': line.product_uom.id,
@@ -1696,10 +1693,15 @@ class StockPicking(models.Model):
             account_cost = self.create_account_move(po, cost_labor_internal_costs, record)
         if invoice_line_npls and list_line_xk:
             account_nl = self.create_account_move(po, invoice_line_npls, record)
-            master_xk = self.create_xk_picking(po, record, list_line_xk)
+            if record.state == 'done':
+                master_xk = self.create_xk_picking(po, record, list_line_xk)
         return True
 
     def create_xk_picking(self, po, record, list_line_xk):
+        company_id = self.env.company.id
+        picking_type_out = self.env['stock.picking.type'].search([
+            ('code', '=', 'outgoing'),
+            ('company_id', '=', company_id)], limit=1)
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
@@ -1710,7 +1712,7 @@ class StockPicking(models.Model):
             'origin': po.name,
             'other_export': True,
             'state': 'assigned',
-            'picking_type_id': po.picking_type_id.id,
+            'picking_type_id': picking_type_out.id,
             'move_ids_without_package': list_line_xk
         }
         result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(
