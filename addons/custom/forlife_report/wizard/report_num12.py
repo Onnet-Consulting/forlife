@@ -29,36 +29,60 @@ class ReportNum12(models.TransientModel):
         self.ensure_one()
         tz_offset = self.tz_offset
         store_condition = f'where xx.store_id = any (array{self.store_ids.ids})' if self.store_ids else ''
-        query = f"""
-with part_card_rank_data1 as (
+        query = f"""        
+with tong_dt_ms_tb as (
+    select partner_card_rank_id,
+        sum(value_to_upper) as total_value
+    from partner_card_rank_line
+    where value_to_upper <> 0 and {format_date_query("order_date", tz_offset)} < '{self.to_date}'
+    group by partner_card_rank_id
+),
+data_dt as (
+    select partner_card_rank_id,
+        value_to_upper,
+        row_number() over (PARTITION BY partner_card_rank_id ORDER BY real_date desc) as num
+    from partner_card_rank_line
+    where value_to_upper <> 0 and {format_date_query("order_date", tz_offset)} < '{self.to_date}'
+),
+dt_dh_gn_tb as (
+    select partner_card_rank_id, value_to_upper from data_dt where num = 1
+),
+part_card_rank_data1 as (
     select pcr.customer_id,
-        (select store_id from store_first_order where brand_id = {self.brand_id.id} and customer_id = pcr.customer_id)  as store_id,
-        pcr.card_rank_id                                                                                                as card_rank_id,
-        to_char(pcr.last_order_date + interval '{tz_offset} hours', 'DD/MM/YYYY') 								        as last_order_date,
-        (select value_to_upper from partner_card_rank_line
-         where partner_card_rank_id = pcr.id and order_id notnull order by real_date desc limit 1)                      as dt_dh_gn,
-         (select sum(value_to_upper) from partner_card_rank_line
-         where partner_card_rank_id = pcr.id and order_id notnull)                                                      as tong_dt_ms,
-         to_date('{self.to_date}', 'YYYY-MM-DD')::date - (pcr.last_order_date + interval '7 hours')::date               as tg_khong_ms
+        sfo.store_id  as store_id,
+        pcr.card_rank_id                                                                                as card_rank_id,
+        to_char(pcr.last_order_date + interval '7 hours', 'DD/MM/YYYY') 								as last_order_date,
+        coalesce(dt_gn.value_to_upper)                      								            as dt_dh_gn,
+        coalesce(dt.total_value, 0)                                                      	            as tong_dt_ms,
+        to_date('2023-05-23', 'YYYY-MM-DD')::date - (pcr.last_order_date + interval '7 hours')::date    as tg_khong_ms
     from partner_card_rank pcr
+        left join store_first_order sfo on sfo.customer_id = pcr.customer_id and sfo.brand_id = {self.brand_id.id}
+        left join tong_dt_ms_tb dt on dt.partner_card_rank_id = pcr.id
+        left join dt_dh_gn_tb dt_gn on dt_gn.partner_card_rank_id = pcr.id
     where pcr.brand_id = {self.brand_id.id}
         and {format_date_query("pcr.last_order_date", tz_offset)} < '{self.to_date - relativedelta(days=self.number_of_days)}'
 ),
 part_card_rank_data2 as (
     select concat(xx.store_id, '_', xx.card_rank_id) 				                                                            as key_data,
-    (select name from store where id = xx.store_id) 		                                                                    as store_name,
-    (select array[
-        coalesce(internal_code, ''),
-          coalesce(name, ''),
-          case when gender = 'male' then 'Nam' when gender = 'female' then 'Nữ' when gender = 'other' then 'Khác' else '' end,
-          coalesce(phone)
-    ] from res_partner where id = xx.customer_id) 														                        as customer_info,
+    sto.name                                         		                                                                    as store_name,
+    array[
+        coalesce(rp.internal_code, ''),
+        coalesce(rp.name, ''),
+        case
+            when rp.gender = 'male' then 'Nam'
+            when rp.gender = 'female' then 'Nữ'
+            when rp.gender = 'other' then 'Khác' else '' end,
+        coalesce(rp.phone)
+    ]                                            														                        as customer_info,
     xx.last_order_date                                                                                                          as last_order_date,
     xx.dt_dh_gn                                                                                                                 as dt_dh_gn,
-    (select name from card_rank where id = xx.card_rank_id)                                                                     as rank_name,
+    cr.name                                                                                                                     as rank_name,
     xx.tong_dt_ms                                                                                                               as tong_dt_ms,
     xx.tg_khong_ms                                                                                                              as tg_khong_ms
     from part_card_rank_data1 xx
+        left join store sto on sto.id = xx.store_id
+        left join card_rank cr on cr.id = xx.card_rank_id
+        left join res_partner rp on rp.id = xx.customer_id
     {store_condition} 
 ),
 count_data_by_store_and_card_rank as (
