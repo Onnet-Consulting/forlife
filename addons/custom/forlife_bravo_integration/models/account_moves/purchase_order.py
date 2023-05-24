@@ -17,7 +17,6 @@ class AccountMove(models.Model):
             "Quantity", "PriceUnit", "Discount", "OriginalUnitCost", "UnitCostCode", "OriginalAmount", "Amount",
             "IsPromotions", "DocNo_PO", "DeptCode", "DocNo_WO", "RowId",
             "TaxCode", "OriginalAmount3", "Amount3", "DebitAccount3", "CreditAccount3"
-
         ]
         journal_lines = self.line_ids
         invoice_lines = self.invoice_line_ids
@@ -77,6 +76,71 @@ class AccountMove(models.Model):
                 "DocNo_PO": purchase_order.name,
                 "DeptCode": invoice_line.analytic_account_id.code,
                 "DocNo_WO": invoice_line.work_order,
+                "RowId": invoice_line.id
+            })
+            invoice_tax_ids = invoice_line.tax_ids
+            # get journal line that matched tax with invoice line
+            journal_tax_lines = journal_lines.filtered(lambda l: l.tax_line_id & invoice_tax_ids)
+            if journal_tax_lines:
+                tax_line = journal_tax_lines[0]
+                journal_value.update({
+                    "TaxCode": tax_line.tax_line_id.code,
+                    "OriginalAmount3": tax_line.tax_amount,
+                    "Amount3": tax_line.tax_amount * exchange_rate,
+                    "DebitAccount3": tax_line.account_id.code,
+                    "CreditAccount3": payable_account_code
+                })
+
+            values.append(journal_value)
+
+        return column_names, values
+
+    def bravo_get_purchase_product_value(self):
+        self.ensure_one()
+        values = []
+        column_names = [
+            "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "DueDate", "CreditAccount",
+            "BuiltinOrder", "DebitAccount", "Amount", "OriginalAmount", "RowId", "TaxCode", "OriginalAmount3",
+            "Amount3", "DebitAccount3", "CreditAccount3",
+        ]
+        journal_lines = self.line_ids
+        invoice_lines = self.invoice_line_ids
+        partner = self.partner_id
+        # the move has only one vendor -> all invoice lines will have the same partner -> same payable account
+        payable_lines = journal_lines.filtered(lambda l: l.account_id.account_type == 'liability_payable')
+        journal_lines = journal_lines - payable_lines - invoice_lines
+        payable_line = payable_lines and payable_lines[0]
+        payable_account_code = payable_line.account_id.code
+        exchange_rate = self.exchange_rate
+
+        journal_value = {
+            "CompanyCode": self.company_id.code,
+            "Stt": self.name,
+            "DocCode": "BT",
+            "DocNo": self.name,
+            "DocDate": self.date,
+            "CurrencyCode": self.currency_id.name,
+            "ExchangeRate": exchange_rate,
+            "CustomerCode": partner.ref,
+            "CustomerName": partner.name,
+            "Address": partner.contact_address_complete,
+            "Description": self.invoice_description,
+            "EmployeeCode": self.user_id.employee_id.code,
+            "IsTransfer": 1 if self.x_asset_fin else 0,
+            "DueDate": self.invoice_date_due,
+            "CreditAccount": payable_account_code,
+        }
+
+        for idx, invoice_line in enumerate(invoice_lines, start=1):
+            purchase_order = invoice_line.purchase_order_id
+            if not purchase_order:
+                continue
+            journal_value.update({
+                "BuiltinOrder": idx,
+                "DebitAccount": invoice_line.account_id.code,
+                "Amount": invoice_line.price_subtotal * exchange_rate,
+                "OriginalAmount": invoice_line.price_subtotal,
                 "RowId": invoice_line.id
             })
             invoice_tax_ids = invoice_line.tax_ids
