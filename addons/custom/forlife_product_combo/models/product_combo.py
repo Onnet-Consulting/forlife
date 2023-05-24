@@ -16,9 +16,9 @@ class ProductCombo(models.Model):
         ('canceled', _('Canceled'))], string='State', default='new')
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
-    size_deviation_allowed = fields.Boolean('Size Deviation Allowed')
-    color_deviation_allowed = fields.Boolean('Color Deviation Allowed')
     combo_product_ids = fields.One2many('product.combo.line', 'combo_id', string='Combo Applied Products')
+    size_attribute_id = fields.Many2one('product.attribute', string="Size Deviation Allowed", domain="[('create_variant', '=', 'always'), ('id', '!=', color_attribute_id)]")
+    color_attribute_id = fields.Many2one('product.attribute', string="Color Deviation Allowed", domain="[('create_variant', '=', 'always'), ('id', '!=', size_attribute_id)]")
 
     _sql_constraints = [
         ('combo_check_date', 'CHECK(from_date <= to_date)', 'End date may not be before the starting date.')]
