@@ -33,6 +33,14 @@ class Location(models.Model):
     is_price_unit = fields.Boolean(default=False)
     is_work_order = fields.Boolean(default=False)
 
+    @api.constrains('code')
+    def contrainst_code(self):
+        for rec in self:
+            if rec.code:
+                check_code_if_exist = self.env['stock.location'].search([('code','=',rec.code),('company_id','=',rec.company_id.id)], limit=2)
+                if len(check_code_if_exist) > 1:
+                    raise ValidationError(_('Mã địa điểm phải là duy nhất trong công ty này!'))
+
     @api.onchange('type_other')
     def _onchange_type_other(self):
         for r in self:
