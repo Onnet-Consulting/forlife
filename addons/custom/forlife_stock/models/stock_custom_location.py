@@ -32,6 +32,7 @@ class Location(models.Model):
 
     is_price_unit = fields.Boolean(default=False)
     is_work_order = fields.Boolean(default=False)
+    is_assets = fields.Boolean('Bắt buộc chọn thẻ tài sản')
 
     @api.onchange('type_other')
     def _onchange_type_other(self):
