@@ -83,7 +83,6 @@ class BravoSyncAssetWizard(models.TransientModel):
         asset_location_codes = []
         employee_codes = []
         category_codes = []
-        account_account_codes = []
         account_codes = []
         for records in data:
             for rec in records:
@@ -100,7 +99,7 @@ class BravoSyncAssetWizard(models.TransientModel):
                 bravo_category_code = rec_value.get('ElavationGroup3')
                 if bravo_category_code:
                     category_codes.append(bravo_category_code)
-                account_codes = [
+                account_account_codes = [
                     rec_value.get('AssetAccount'),
                     rec_value.get('DeprDebitAccount'),
                     rec_value.get('DeprCreditAccount')
@@ -207,6 +206,9 @@ class BravoSyncAssetWizard(models.TransientModel):
             value = {}
             for bravo_column, odoo_column in mapping_bravo_odoo_fields.items():
                 value.update({odoo_column: rec.get(bravo_column)})
+                value.update({
+                    "state": "using"
+                })
             odoo_values.append(value)
         return odoo_values
 
