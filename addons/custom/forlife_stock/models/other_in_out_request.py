@@ -5,6 +5,7 @@ class ForlifeOtherInOutRequest(models.Model):
     _name = 'forlife.other.in.out.request'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']
     _description = 'Forlife Other In Out Request'
+    _order = 'create_date desc'
 
     name = fields.code = fields.Char(string="Mã phiếu", default="New", copy=False)
     employee_id = fields.Many2one('hr.employee', string="Nhân viên", default=lambda self: self.env.user.employee_id.id)
@@ -57,13 +58,11 @@ class ForlifeOtherInOutRequest(models.Model):
             record.write({'status': 'wait_approve'})
 
     def action_approve(self):
-        company_id = self.env.context.get('allowed_company_ids')
-        picking_type_in = self.env['stock.picking.type'].search([
-            ('code', '=', 'incoming'),
-            ('warehouse_id.company_id', 'in', company_id)], limit=1)
-        picking_type_out = self.env['stock.picking.type'].search([
-            ('code', '=', 'outgoing'),
-            ('warehouse_id.company_id', 'in', company_id)], limit=1)
+        company_id = self.env.company.id
+        picking_type_in = self.env['stock.picking.type'].search(
+            [('company_id', '=', company_id), ('code', '=', 'incoming')], limit=1)
+        picking_type_out = self.env['stock.picking.type'].search(
+            [('company_id', '=', company_id), ('code', '=', 'outgoing')], limit=1)
         for record in self:
             value = {}
             for item in record.other_in_out_request_line_ids:

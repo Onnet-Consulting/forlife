@@ -153,7 +153,7 @@ class PurchaseOrderLineMaterialLine(models.Model):
     def _compute_product_plan_qty(self):
         for rec in self:
             if rec.production_order_product_qty > 0:
-                rec.product_plan_qty = self.purchase_order_line_id.product_qty / rec.production_order_product_qty * rec.production_line_product_qty
+                rec.product_plan_qty = rec.purchase_order_line_id.product_qty / rec.production_order_product_qty * rec.production_line_product_qty
             else:
                 rec.product_plan_qty = 0
 
