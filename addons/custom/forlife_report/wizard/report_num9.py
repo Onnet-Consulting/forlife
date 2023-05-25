@@ -34,13 +34,13 @@ class ReportNum9(models.TransientModel):
 with datas as (
     select
         pv.id                                                                   as program_id,
-        substr(vv.name, 0, 9) 													as voucher_code8,
+        substr(vv.name, 0, 7) 													as voucher_code8,
         hd.name 																as department,
         case when pv.apply_many_times is true then 'Voucher sử dụng nhiều lần'
             else 'Voucher sử dụng 1 lần' end									as voucher_type,
         sv.applicable_object 												 	as object,
         pv.name 																as program_name,
-        '' 					                									as purpose,
+        pv.details			                									as purpose,
         vv.price          														as value,
         to_char(vv.start_date + interval '7 hours', 'DD/MM/YYYY')				as start_date,
         to_char(vv.end_date + interval '7 hours', 'DD/MM/YYYY')				    as end_date
