@@ -33,6 +33,24 @@ class SaleOrder(models.Model):
     x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
 
+    def confirm_return_so(self):
+        so_id = self.x_origin
+        line = []
+        for picking in so_id.picking_ids:
+            line.append((0, 0, {'picking_name': picking.name,
+                                'state': 'Chưa trả',
+                                'picking_id': picking.id,
+                                }))
+
+        comfirm = self.env['confirm.return.so'].create({'line_ids': line})
+        return {
+            'view_mode': 'form',
+            'res_model': 'confirm.return.so',
+            'type': 'ir.actions.act_window',
+            'views': [(False, 'form')],
+            'res_id': comfirm.id,
+            'target': 'current'
+        }
     def _compute_order_punish_count(self):
         for r in self:
             count = self.env['sale.order'].search(
@@ -256,10 +274,16 @@ class SaleOrder(models.Model):
 
     def action_return(self):
         so_return = self.copy()
+        picking_location_list = {}
+        for picking in self.picking_ids:
+            picking_location_list[picking.location_id.id] = picking.name
         so_return.update({
             'x_is_return': True,
             'x_origin': self.id
         })
+        for line in so_return.order_line:
+            if picking_location_list.get(line.x_location_id.id):
+                line.x_origin = picking_location_list.get(line.x_location_id.id)
 
     def action_punish(self):
         self.x_shipping_punish = True
@@ -284,6 +308,7 @@ class SaleOrderLine(models.Model):
     x_account_analytic_id = fields.Many2one('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_id = fields.Many2one('occasion.code', string='Mã vụ việc')
     x_free_good = fields.Boolean(string='Hàng tặng')
+    x_origin = fields.Char(string='Tài liệu gốc')
 
     @api.model_create_multi
     def create(self, vals_list):
