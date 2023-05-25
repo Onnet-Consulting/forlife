@@ -31,21 +31,26 @@
             </div>
             <div class="partner-detail">
                 <span class="label">Nghề nghiệp</span>
-                    <t t-if="props.partner.job_ids">
-                        <t t-set="jobs" t-value="props.partner.job_ids"/>
+                    <t t-if="props.partner.job_id">
+                        <t t-set="job_id" t-value="props.partner.job_id[0]"/>
                     </t>
                     <t t-else="">
-                        <t t-set="jobs" t-value="[]"/>
+                        <t t-set="job_id" t-value="0"/>
                     </t>
-                <div id="checkboxes" style="display: flex;flex-wrap: wrap;justify-content: space-between;margin-left: 77px;margin-top: -50px;width: 383px;">
-                        <t t-foreach="env.pos.jobs" t-as="job" t-key="job.id">
-                            <label style="flex: 0 0 calc(100% / 3 - 5px);padding:0">
-                            <input class="o_input_job" t-att-value="job.id" t-att-checked="jobs.includes(job.id)" style="width:20px;" type="checkbox" /><span><t t-esc="job.name"></t></span></label>
-                        </t>
-                </div>
-
-<!--                <input type="text" class="form-control js_select2" placeholder="Tags" value="Tags"-->
-<!--                       />-->
+                <t t-esc="job_id.id"/>
+                   <select class="detail" id="job_partner">
+                       <t t-foreach="env.pos.jobs" t-as="job" t-key="job.id">
+                           <t t-if="job.id == job_id">
+                               <t t-set="check" t-value="true"/>
+                           </t>
+                           <t t-else="">
+                               <t t-set="check" t-value="false"/>
+                           </t>
+                           <option t-att-value="job.id" t-att-selected="check">
+                                <t t-esc="job.name"/>
+                            </option>
+                       </t>
+                    </select>
 
             </div>
         </xpath>
