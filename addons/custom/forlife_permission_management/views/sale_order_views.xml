@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_order_form_permission" model="ir.ui.view">
+            <field name="name">view_order_form_permission</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_quotation_cancel</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_sales_order_auto_done_setting_permission" model="ir.ui.view">
+            <field name="name">view_sales_order_auto_done_setting_permission</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_sales_order_auto_done_setting"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_toggle_is_locked'][0]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_quotation_lock_unlock,stock.group_stock_manager</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_toggle_is_locked'][1]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_quotation_lock_unlock,stock.group_stock_manager</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
