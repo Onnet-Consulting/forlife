@@ -179,8 +179,8 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         let original_price = this.get_original_price();
         let card_rank_disc = 0;
         let extra_card_rank_disc = 0;
-        let check_skip_cr = false;
-        if (this.promotion_usage_ids.length > 0) {
+        let check_skip_cr = this.is_product_defective || false;
+        if (this.promotion_usage_ids.length > 0 && check_skip_cr !== true) {
             for (let promotion of this.promotion_usage_ids) {
                 if (this.pos.promotion_program_by_id[promotion.program_id].skip_card_rank === true) {
                     check_skip_cr = true;

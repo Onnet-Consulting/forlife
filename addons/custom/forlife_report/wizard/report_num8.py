@@ -50,7 +50,7 @@ select row_number() over ()                                                 as n
     case when pv.apply_many_times is true then 'Voucher sử dụng nhiều lần'
         else 'Voucher sử dụng 1 lần' end									as voucher_type,
     sv.applicable_object 												 	as object,
-    substr(vv.name, 0, 9) 													as voucher_code8,
+    substr(vv.name, 0, 7) 													as voucher_code8,
     hd.name 																as department,
     pv.name 																as program_name,
     pv.details         														as purpose,
