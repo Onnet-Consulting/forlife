@@ -44,7 +44,6 @@ class SaleOrder(models.Model):
 
         comfirm = self.env['confirm.return.so'].create({'line_ids': line})
         return {
-            'name': _('Xác nhận trả hàng'),
             'view_mode': 'form',
             'res_model': 'confirm.return.so',
             'type': 'ir.actions.act_window',

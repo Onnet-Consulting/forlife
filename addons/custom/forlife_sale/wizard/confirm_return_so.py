@@ -6,6 +6,7 @@ from odoo.exceptions import UserError
 class ConfirmReturnSo(models.Model):
     _name = 'confirm.return.so'
 
+    name = fields.Char('Xác nhận trả hàng', default='Xác nhận trả hàng')
     line_ids = fields.One2many('confirm.return.so.line', 'master_id', string='Chọn phiếu trả hàng', copy=False)
 
 
