@@ -150,6 +150,7 @@
                             <field name="taxes_id" optional="show"/>
                             <field name="tax_amount"/>
                             <field name="price_subtotal" widget="monetary" sum="discounted subtotal" force_save="1"/>
+                            <field name="total_vnd_amount" widget="monetary" sum="discounted subtotal" force_save="1"/>
                             <field name="work_order" domain="[('state', '=', 'approved')]"
                                    attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')]}"/>
                             <field name="event_id"
