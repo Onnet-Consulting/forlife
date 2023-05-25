@@ -87,7 +87,7 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                                  // neu co danh sach don hang moi
                                 _.each(order_new_lines, function (orderNewLine) {
                                      if(orderNewLine.product.id == orderOldLine.product.id && orderNewLine.product.combo_id[0] == orderOldLine.product.combo_id[0] && Math.abs(orderOldLine.quantity) != orderNewLine.quantity ){
-                                        message = "Bạn cần mua đủ số lượng sản phẩm " + orderNewLine.product.display_name + "để đổi trả!";
+                                        message = "Bạn cần mua đủ số lượng sản phẩm " + orderNewLine.product.display_name + " để đổi trả!";
                                      }
                                 })
                             }
