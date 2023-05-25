@@ -36,7 +36,7 @@ class PosOrder(models.Model):
     def _prepare_invoice_vals(self):
         result = super(PosOrder, self)._prepare_invoice_vals()
         if self.to_invoice:
-            result['invoice_info_company_name'] = self.invoice_info_tax_number
+            result['invoice_info_company_name'] = self.invoice_info_company_name
             result['invoice_info_address'] = self.invoice_info_address
             result['invoice_info_tax_number'] = self.invoice_info_tax_number
         return result
