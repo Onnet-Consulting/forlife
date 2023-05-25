@@ -43,6 +43,17 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
     _order = 'create_date desc'
 
+    def action_confirm(self):
+        for line in self.move_ids:
+            account = line.ref_asset.asset_account.id
+            if (self.other_export and account != self.location_dest_id.valuation_out_account_id.id) or (
+                    self.other_import and account != self.location_id.valuation_in_account_id.id):
+                raise ValidationError(
+                    _('Tài khoản cấu hình trong thẻ tài sản không khớp với tài khoản trong lý do xuất khác'))
+        res = super().action_confirm()
+        return res
+
+
     def _domain_location_id(self):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
@@ -54,7 +65,7 @@ class StockPicking(models.Model):
     @api.model
     def default_get(self, fields):
         res = super(StockPicking, self).default_get(fields)
-        company_id = self.env.context.get('allowed_company_ids')
+        company_id = self.env.company.id
         if self.env.context.get('from_inter_company'):
             company = self.env.context.get('company_po')
             pk_type = self.env['stock.picking.type'].sudo().search(
@@ -68,13 +79,13 @@ class StockPicking(models.Model):
         if self.env.context.get('default_other_import'):
             picking_type_id = self.env['stock.picking.type'].search([
                 ('code', '=', 'incoming'),
-                ('warehouse_id.company_id', 'in', company_id)], limit=1)
+                ('warehouse_id.company_id', '=', company_id)], limit=1)
             if picking_type_id:
                 res.update({'picking_type_id': picking_type_id.id})
         if self.env.context.get('default_other_export'):
             picking_type_id = self.env['stock.picking.type'].search([
                 ('code', '=', 'outgoing'),
-                ('warehouse_id.company_id', 'in', company_id)], limit=1)
+                ('warehouse_id.company_id', '=', company_id)], limit=1)
             if picking_type_id:
                 res.update({'picking_type_id': picking_type_id.id})
         return res
@@ -112,6 +123,15 @@ class StockPicking(models.Model):
         'stock.picking.type', 'Operation Type',
         required=False, readonly=False, index=True,
         states={'draft': [('readonly', False)]})
+    display_asset = fields.Char(string='Display', compute="compute_display_asset")
+
+    @api.depends('location_id', 'location_dest_id')
+    def compute_display_asset(self):
+        for r in self:
+            if (r.location_id and r.location_id.is_assets and r.other_import) or (r.location_dest_id and r.location_dest_id.is_assets and r.other_export):
+                r.display_asset = 'show'
+            else:
+                r.display_asset = 'hide'
 
     def _action_done(self):
         old_date_done = {
@@ -292,13 +312,13 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     po_id = fields.Char('')
-    ware_check_line = fields.Boolean('', default=False)
+    ware_check_line = fields.Boolean('')
 
-    # @api.constrains('qty_done', 'picking_id.move_ids_without_package')
-    # def constrains_qty_done(self):
-    #     for rec in self:
-    #         for line in rec.picking_id.move_ids_without_package:
-    #             if rec.product_id == line.product_id:
-    #                 if rec.qty_done > line.product_uom_qty:
-    #                     raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
+    @api.constrains('qty_done', 'picking_id.move_ids_without_package')
+    def constrains_qty_done(self):
+        for rec in self:
+            for line in rec.picking_id.move_ids_without_package:
+                if rec.move_id.id == line.id:
+                    if rec.qty_done > line.product_uom_qty:
+                        raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 

@@ -36,7 +36,8 @@ with product_cate_info as
         pp.id     		                                                          as product_id,
         cate.complete_name                                                        as complete_name,
         pp.barcode                                                                as product_barcode,
-        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name
+        coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
+        pt.collection                                                             as collection
     from product_product pp 
         left join product_template pt on pt.id = pp.product_tmpl_id
         join product_category cate on cate.id = pt.categ_id
@@ -62,7 +63,7 @@ select row_number() over ()                     as num,
        split_part(pci.complete_name, ' / ', 2)  as product_group,
        split_part(pci.complete_name, ' / ', 3)  as product_line,
        split_part(pci.complete_name, ' / ', 4)  as texture,
-       ''                                       as collection,
+       pci.collection                           as collection,
        ''                                       as color,
        ''                                       as size,
        stock.qty                                as total_qty

@@ -3,7 +3,7 @@ from odoo import api, fields, models,_
 class StockLocationMapping(models.Model):
     _name = 'stock.location.mapping'
     _description = 'Cấu hình vị trí tương ứng các công ty'
-    _rec_names_search = ['location_id', 'location_child_id']
+    _rec_names_search = ['location_id', 'location_map_id']
 
     location_id = fields.Many2one('stock.location', 'Địa điểm (Công ty sản xuất)', domain=[('company_id.code', '=', '1300')])
     location_map_id = fields.Many2one('stock.location', 'Địa điểm tương ứng(Công ty bán lẻ)', compute='_compute_location_mapping', store=True)

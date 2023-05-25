@@ -118,6 +118,13 @@ class ProductProduct(models.Model):
             self._cr.execute(sql)
             ids = [x[0] for x in self._cr.fetchall()]
             args.append(('id', 'in', ids))
+        if self.env.context and self.env.context.get('type', False) == 'phantom':
+            sql = """
+                        select pp.id from product_product pp join product_template pt on pp.product_tmpl_id = pt.id where pt.detailed_type = 'product'
+                        """
+            self._cr.execute(sql)
+            ids = [x[0] for x in self._cr.fetchall()]
+            args.append(('id', 'in', ids))
         return super(ProductProduct, self).name_search(
             name, args, operator=operator, limit=limit)
 

@@ -161,14 +161,16 @@ class AccountMove(models.Model):
                                 if not cost.product_id.categ_id and cost.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
                                     raise ValidationError("Chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm!!")
                                 else:
-                                    # existing_line = invoice_line_ids.filtered(lambda line: line.product_id.id == product.product_id.id)
-                                    # if not existing_line:
-                                    invoice_line_ids += self.env['account.move.line'].new({
-                                        'product_id': cost.product_id.id,
-                                        'description': cost.name,
-                                        'price_unit': cost.expensive_total,
-                                        'cost_type': cost.product_id.detailed_type,
-                                    })
+                                    existing_line = invoice_line_ids.filtered(lambda line: line.product_id.id == cost.product_id.id)
+                                    if not existing_line:
+                                        invoice_line_ids += self.env['account.move.line'].new({
+                                            'product_id': cost.product_id.id,
+                                            'description': cost.name,
+                                            'price_unit': cost.expensive_total,
+                                            'cost_type': cost.product_id.detailed_type,
+                                        })
+                                    else:
+                                        existing_line.price_unit += cost.expensive_total
                             rec.invoice_line_ids = invoice_line_ids
                         else:
                             rec.purchase_type = 'product'
@@ -227,14 +229,16 @@ class AccountMove(models.Model):
                                 if not cost.product_id.categ_id and not cost.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
                                     raise ValidationError("Chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm!!")
                                 else:
-                                    # existing_line = invoice_line_ids.filtered(lambda line: line.product_id.id == product.product_id.id)
-                                    # if not existing_line:
-                                    invoice_line_ids += self.env['account.move.line'].new({
-                                        'product_id': cost.product_id.id,
-                                        'description': cost.name,
-                                        'price_unit': cost.expensive_total,
-                                        'cost_type': cost.product_id.detailed_type,
-                                })
+                                    existing_line = invoice_line_ids.filtered(lambda line: line.product_id.id == cost.product_id.id)
+                                    if not existing_line:
+                                        invoice_line_ids += self.env['account.move.line'].new({
+                                            'product_id': cost.product_id.id,
+                                            'description': cost.name,
+                                            'price_unit': cost.expensive_total,
+                                            'cost_type': cost.product_id.detailed_type,
+                                        })
+                                    else:
+                                        existing_line.price_unit += cost.expensive_total
                             rec.invoice_line_ids = invoice_line_ids
                         else:
                             rec.purchase_type = 'product'
@@ -275,47 +279,41 @@ class AccountMove(models.Model):
     @api.constrains('invoice_line_ids', 'invoice_line_ids.quantity')
     def constrains_quantity_line(self):
         for rec in self:
-            print(rec.company_id)
-            for line, nine in zip(rec.invoice_line_ids, rec.receiving_warehouse_id):
-                if len(rec.receiving_warehouse_id) == 1:
-                    if str(line.po_id) == str(nine.move_line_ids_without_package.po_id) and line.product_id.id == nine.move_line_ids_without_package.product_id.id:
-                        if (line.quantity <= 0 or nine.move_line_ids_without_package.qty_done) <= 0:
-                            raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % nine.name % line.move_id.name)
-                        if line.quantity > nine.move_line_ids_without_package.qty_done:
-                            raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan") % nine.name)
-                if len(rec.receiving_warehouse_id) > 1:
-                    if line.ware_name == nine.name and (line.quantity <= 0 or nine.move_line_ids_without_package.qty_done <= 0):
-                        raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % nine.name % line.move_id.name)
-                    if line.ware_name == nine.name and str(line.po_id) == str(nine.move_line_ids_without_package.po_id) and line.product_id.id == nine.move_line_ids_without_package.product_id.id:
-                        if line.quantity > nine.move_line_ids_without_package.qty_done:
-                            raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
+            if rec.invoice_line_ids and rec.receiving_warehouse_id:
+                for line, nine in zip(rec.invoice_line_ids, rec.receiving_warehouse_id):
+                    for item in nine.move_line_ids_without_package:
+                        if line.ware_name == nine.name and (line.quantity <= 0 or item.qty_done <= 0):
+                            raise UserError(_("Số lượng hoàn thành của phiếu nhập kho %s hoặc số lượng của hóa đơn %s đang nhỏ hơn hoặc bằng 0") % (nine.name, line.move_id.name))
+                        if line.ware_name == nine.name and str(line.po_id) == str(item.po_id) and line.product_id.id == item.product_id.id:
+                            if line.quantity > item.qty_done:
+                                raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
-    def write(self, vals):
-        for rec in self:
-            if rec.is_check_cost_view:
-                for line in rec.invoice_line_ids:
-                    duplicate = rec.line_ids.filtered(lambda x: x.product_id.id == line.product_id.id and x.id != line.id and x.display_type == 'product' and x.duplicate_cost_check_unlink == False)
-                    if not duplicate:
-                        continue
-                    else:
-                        if line.product_id.id and line.display_type == 'product' and line.name and not line.duplicate_cost_check_unlink:
-                            line.write({'price_unit': line.price_unit + sum(duplicate.mapped('price_unit')),
-                                        'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
-                                        'name': line.product_id.name
-                                        })
-                        for dup in duplicate:
-                            dup.write({'duplicate_cost_check_unlink': True})
-            else:
-                for line in rec.invoice_line_ids:
-                    duplicate = rec.line_ids.filtered(lambda x: x.product_id.id == line.product_id.id and x.id != line.id and x.display_type == 'product' and x.duplicate_cost_check_unlink == False)
-                    if line.product_id.id and line.display_type == 'product' and line.name:
-                        line.write({'account_id': line.product_id.categ_id.with_company(line.company_id).property_stock_account_input_categ_id.id,
-                                    'name': line.product_id.name
-                                    })
-                    for dup in duplicate:
-                        dup.write({'duplicate_cost_check_unlink': False})
-        res = super(AccountMove, self).write(vals)
-        return res
+    # def write(self, vals):
+    #     for rec in self:
+    #         if rec.move_type == 'in_invoice':
+    #             if rec.is_check_cost_view:
+    #                 if rec.invoice_line_ids:
+    #                     for item in rec.invoice_line_ids:
+    #                         existing_lines = rec.invoice_line_ids.filtered(lambda line: line.product_id)
+    #                         # Cập nhật account_id và name trong line_ids từ invoice_line_ids
+    #                         existing_lines.write({
+    #                             'account_id': item.product_id.categ_id.with_company(
+    #                                 rec.company_id).property_stock_account_input_categ_id.id,
+    #                             'name': item.product_id.name
+    #                         })
+    #             else:
+    #                 if rec.invoice_line_ids:
+    #                     for item in rec.invoice_line_ids:
+    #                         existing_lines = rec.invoice_line_ids.filtered(lambda line: line.product_id)
+    #                         # Cập nhật account_id và name trong line_ids từ invoice_line_ids
+    #                         existing_lines.write({
+    #                             'account_id': item.product_id.categ_id.with_company(
+    #                                 rec.company_id).property_stock_account_input_categ_id.id,
+    #                             'name': item.product_id.name
+    #                         })
+    #     res = super(AccountMove, self).write(vals)
+    #     return res
+
     # @api.onchange('purchase_type')
     # def onchange_purchase_type(self):
     #     order_invoice_line_ids = []
@@ -522,7 +520,7 @@ class AccountMoveLine(models.Model):
     cost_type = fields.Char('')
     po_id = fields.Char('')
     ware_name = fields.Char('')
-    duplicate_cost_check_unlink = fields.Boolean('', default=False)
+    duplicate_cost_check_unlink = fields.Boolean()
     type = fields.Selection(related="product_id.product_type", string='Loại mua hàng')
     work_order = fields.Many2one('forlife.production', string='Work Order')
     uom_id = fields.Many2one('uom.uom', string='Uom')
@@ -575,7 +573,7 @@ class AccountMoveLine(models.Model):
         for line in list_vals:
             is_check_invoice_tnk = self.env['account.move'].browse(line.get('move_id')).is_check_invoice_tnk
             is_check_cost_view = self.env['account.move'].browse(line.get('move_id')).is_check_cost_view
-            is_check_partner_id = self.env['account.move'].browse(line.get('move_id')).partner_id
+            is_check_partner_id = self.env['account.move'].browse(line.get('move_id')).partner_id.group_id.id
             if line.get('account_id') == self.env.ref('l10n_vn.1_chart1331').id:
                 if not is_check_partner_id:
                     continue
