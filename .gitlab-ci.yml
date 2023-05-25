@@ -3,7 +3,7 @@ variables:
 
 stages:
   - alpha
-  - beta
+  - beta-cmc
   - production
 
 default:
