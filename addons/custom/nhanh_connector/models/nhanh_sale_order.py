@@ -7,6 +7,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class SaleOrderNhanh(models.Model):
     _inherit = 'sale.order'
 
@@ -61,10 +62,10 @@ class SaleOrderLineNhanh(models.Model):
         for line in self:
             # check if there is already invoiced amount. if so, the price shouldn't change as it might have been
             # manually edited
-            if line.qty_invoiced > 0:
-                continue
+            # if line.qty_invoiced > 0:
+            #     continue
             if not line.product_uom or not line.product_id or not line.order_id.pricelist_id:
-                line.price_unit = 0.0
+                line.odoo_price_unit = 0.0
             else:
                 price = line.with_company(line.company_id)._get_display_price()
                 line.odoo_price_unit = line.product_id._get_tax_included_unit_price(

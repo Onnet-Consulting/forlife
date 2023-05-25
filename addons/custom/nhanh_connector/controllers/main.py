@@ -62,7 +62,7 @@ class MainController(http.Controller):
                     'name': data['customerName'],
                     'email': data['customerEmail'],
                     'contact_address_complete': data['customerAddress'],
-                    'nhanh_id': data['customerId'],
+                    'customer_nhanh_id': data['customerId'],
                 }
                 partner = self.partner_model().sudo().create(partner_value)
             order_line = []
@@ -74,8 +74,8 @@ class MainController(http.Controller):
                            'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
                            'product_uom': product.uom_id.id if product.uom_id else self.uom_unit(),
                            'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
-                           'discount': item.get('discount') / item.get('price') * 100,
-                           'x_cart_discount_fixed_price': item.get('discount') * item.get('quantity')}))
+                           'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get('discount') else 0,
+                           'x_cart_discount_fixed_price': float(item.get('discount')) * float(item.get('quantity')) if item.get('discount') else 0}))
 
             status = 'draft'
             if data['status'] == 'confirmed':
@@ -93,7 +93,7 @@ class MainController(http.Controller):
             user_id = self.env['res.users'].search([('partner_id.name', '=', data['saleName'])], limit=1)
             # đội ngũ bán hàng
             team_id = self.env['crm.team'].search([('name', '=', data['trafficSourceName'])], limit=1)
-
+            warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=',int(data['depotId']))], limit=1)
             value = {
                 'nhanh_id': data['orderId'],
                 'nhanh_status': data['status'],
@@ -110,6 +110,7 @@ class MainController(http.Controller):
                 'carrier_name': data['carrierName'],
                 'user_id': user_id.id if user_id else None,
                 'team_id': team_id.id if team_id else None,
+                'warehouse_id': warehouse_id.id if warehouse_id else None,
                 'order_line': order_line
             }
             self.sale_order_model().sudo().create(value)

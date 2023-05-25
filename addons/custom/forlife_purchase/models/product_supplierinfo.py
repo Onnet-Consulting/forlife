@@ -22,11 +22,15 @@ class SupplierInfo(models.Model):
     @api.constrains('product_tmpl_id', 'date_start', 'date_end', 'partner_id')
     def constrains_check_duplicate_date_by_product_tmpl_id(self):
         for record in self:
-            if record.partner_id and record.product_id and record.product_tmpl_id and record.product_uom and record.date_start and record.date_end and record.search_count(
+            if record.partner_id and record.product_id and record.min_qty and record.amount_conversion and record.price and record.currency_id and record.product_tmpl_id and record.product_uom and record.date_start and record.date_end and record.search_count(
                     [('date_start', '=', record.date_start),
                      ('date_end', '=', record.date_end),
                      ('partner_id', '=', record.partner_id.id),
+                     ('amount_conversion', '=', record.amount_conversion),
                      ('product_uom', '=', record.product_uom.id),
+                     ('price', '=', record.price),
+                     ('currency_id', '=', record.currency_id),
+                     ('min_qty', '=', record.min_qty),
                      ('product_id', '=', record.product_id.id),
                      ('product_tmpl_id', '=', record.product_tmpl_id.id),
                      ('id', '!=', record.id)]) > 1:

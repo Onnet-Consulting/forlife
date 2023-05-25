@@ -32,6 +32,15 @@ class Location(models.Model):
 
     is_price_unit = fields.Boolean(default=False)
     is_work_order = fields.Boolean(default=False)
+    is_assets = fields.Boolean('Bắt buộc chọn thẻ tài sản')
+
+    @api.constrains('code')
+    def contrainst_code(self):
+        for rec in self:
+            if rec.code:
+                check_code_if_exist = self.env['stock.location'].search([('code','=',rec.code),('company_id','=',rec.company_id.id)], limit=2)
+                if len(check_code_if_exist) > 1:
+                    raise ValidationError(_('Mã địa điểm phải là duy nhất trong công ty này!'))
 
     @api.onchange('type_other')
     def _onchange_type_other(self):
@@ -67,6 +76,9 @@ class StockMove(models.Model):
 
         # the standard_price of the product may be in another decimal precision, or not compatible with the coinage of
         # the company currency... so we need to use round() before creating the accounting entries.
+        if self.purchase_line_id and self.purchase_line_id.order_id.type_po_cost == 'tax' \
+                and self.purchase_line_id.order_id.currency_id != self.env.company.currency_id:
+            cost = cost * self.purchase_line_id.order_id.exchange_rate
         debit_value = self.company_id.currency_id.round(cost)
         credit_value = debit_value
 
@@ -80,9 +92,6 @@ class StockMove(models.Model):
             debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
                 if not self.picking_id.location_id.is_price_unit else (self.amount_total/self.previous_qty) * self.quantity_done
                 # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
-        if self.picking_id.picking_type_id.code == 'incoming' and not self.picking_id.other_import:
-            debit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
-            credit_account_id = self.product_id.categ_id.property_stock_account_input_categ_id.id
         res = [(0, 0, line_vals) for line_vals in self._generate_valuation_lines_data(valuation_partner_id, qty, debit_value, credit_value,
                                                                                       debit_account_id, credit_account_id, svl_id, description).values()]
         return res

@@ -53,6 +53,7 @@ class StockPicking(models.Model):
         }
         invoice_id = self.env['account.move'].create(vals)
         return invoice_id.id
+
     def button_validate(self):
         res = super().button_validate()
         if self.picking_type_id.x_is_return:

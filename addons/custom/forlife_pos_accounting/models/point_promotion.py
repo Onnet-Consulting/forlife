@@ -5,7 +5,10 @@ from datetime import date
 class InheritPointsPromotion(models.Model):
     _inherit = 'points.promotion'
 
-    product_discount_id = fields.Many2one(comodel_name='product.product', string='Discount Product', index=True)
+    product_discount_id = fields.Many2one(
+        comodel_name='product.product', string='Discount Product', index=True, required=True,
+        domain="[('is_promotion', '=', True)]"
+    )
     is_state_registration = fields.Boolean(string='State Registration', index=True)
     state_registration_start = fields.Date(string='State Registration Start', index=True)
     state_registration_end = fields.Date(string='State Registration End', index=True)

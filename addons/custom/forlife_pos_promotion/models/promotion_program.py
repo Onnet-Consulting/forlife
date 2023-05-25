@@ -12,6 +12,7 @@ REWARD_TYPE = [
         ('combo_amount', 'Combo Discount Amount'),
         ('combo_percent', 'Combo Discount Percent'),
         ('combo_fixed_price', 'Combo Discount Fixed Price'),
+        ('combo_discount_percent_x', 'Combo Discount Percent X'),
         ('combo_percent_by_qty', 'Combo Discount Percent by Qty'),
         ('combo_fixed_price_by_qty', 'Combo Discount Fixed Price by Qty'),
         ('code_amount', 'Code Discount Amount'),
@@ -375,6 +376,7 @@ class PromotionProgram(models.Model):
             'program_item_name': _('Promotion Code'),
             'default_program_id': self.id,
         }
+        action['domain'] = [('program_id', '=', self.id)]
         return action
 
     def action_open_issued_vouchers(self):
