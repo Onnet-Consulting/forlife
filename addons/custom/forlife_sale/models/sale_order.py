@@ -33,6 +33,25 @@ class SaleOrder(models.Model):
     x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
 
+    def confirm_return_so(self):
+        so_id = self.x_origin
+        line = []
+        for picking in so_id.picking_ids:
+            line.append((0, 0, {'picking_name': picking.name,
+                                'state': 'Chưa trả',
+                                'picking_id': picking.id,
+                                }))
+
+        comfirm = self.env['confirm.return.so'].create({'line_ids': line})
+        return {
+            'name': _('Xác nhận trả hàng'),
+            'view_mode': 'form',
+            'res_model': 'confirm.return.so',
+            'type': 'ir.actions.act_window',
+            'views': [(False, 'form')],
+            'res_id': comfirm.id,
+            'target': 'current'
+        }
     def _compute_order_punish_count(self):
         for r in self:
             count = self.env['sale.order'].search(

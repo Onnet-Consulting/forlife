@@ -43,6 +43,8 @@
                     <button name="action_return"
                         string="Trả hàng" type="object" context="{'validate_analytic': True}"
                         attrs="{'invisible': [('state', '!=', 'sale')]}"/>
+                    <button name="confirm_return_so"
+                        string="TEST" type="object" class="oe_highlight"/>
                 </xpath>
                 <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
                     <attribute name="invisible">1</attribute>

@@ -8,12 +8,16 @@
                 <form string="Lost Reason">
                     <sheet>
                         <group class="oe_title">
-                            <field name="picking_ids" />
+                            <field name="line_ids">
+                                <tree create="0" delete="0" edit="0">
+                                    <field name="picking_name"/>
+                                    <field name="state"/>
+                                    <button name="action_refuse" type="object" class="oe_highlight" string="Trả hàng"/>
+                                </tree>
+                            </field>
                         </group>
                     </sheet>
                     <footer>
-                        <button name="create_invoice_punish" string="Tạo đơn phạt" type="object" class="btn-primary"/>
-                        <button string="Hủy" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
             </field>
