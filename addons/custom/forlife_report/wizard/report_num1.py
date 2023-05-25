@@ -3,31 +3,11 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
-
-PICKING_TYPE = [
-    ('all', 'Tất cả'),
-    ('retail', 'Bán lẻ'),
-    ('wholesale', 'Bán buôn'),
-    ('ecom', 'Bán Online')
-]
+from odoo.tools.safe_eval import safe_eval
 
 TITLES = [
-    'STT',
-    'Kho',
-    'Mã SP',
-    'Tên SP',
-    'Size',
-    'Màu',
-    'Đơn vị',
-    'Giá',
-    'Số lượng',
-    'Chiết khấu',
-    'Thành tiền',
-    'Nhóm hàng',
-    'Dòng hàng',
-    'Kết cấu',
-    'Mã loại SP',
-    'Kênh bán',
+    'STT', 'Kho', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Đơn vị', 'Giá', 'Số lượng',
+    'Chiết khấu', 'Thành tiền', 'Nhóm hàng', 'Dòng hàng', 'Kết cấu', 'Mã loại SP', 'Kênh bán',
 ]
 
 COLUMN_WIDTHS = [5, 20, 20, 30, 15, 15, 10, 20, 8, 20, 25, 20, 20, 20, 20, 20]
@@ -40,11 +20,11 @@ class ReportNum1(models.TransientModel):
 
     from_date = fields.Date(string='From date', required=True)
     to_date = fields.Date(string='To date', required=True)
-    all_products = fields.Boolean(string='All products', default=False)
-    all_warehouses = fields.Boolean(string='All warehouses', default=False)
-    product_ids = fields.Many2many('product.product', string='Products')
-    warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
-    picking_type = fields.Selection(PICKING_TYPE, 'Picking type', required=True, default='all')
+    product_domain = fields.Char('Product', default='[]')
+    warehouse_domain = fields.Char('Warehouse', default='[]')
+    # fixme: ('wholesale', 'Bán buôn'), ('ecom', 'Bán Online'), ('company', 'Bán liên công ty')],
+    picking_type = fields.Selection([('all', 'Tất cả'), ('retail', 'Bán lẻ')],
+                                    'Picking type', required=True, default='all')
 
     @api.constrains('from_date', 'to_date')
     def check_dates(self):
@@ -52,86 +32,80 @@ class ReportNum1(models.TransientModel):
             if record.from_date and record.to_date and record.from_date > record.to_date:
                 raise ValidationError(_('From Date must be less than or equal To Date'))
 
-    def _get_query(self, product_ids, warehouse_ids):
+    def _get_query(self, product_ids, warehouse_ids, allowed_company):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
         query = []
-        product_condition = 'and pp.id in (%s)' % ','.join(map(str, product_ids)) if product_ids else ''
-        warehouse_condition = 'and wh.id in (%s)' % ','.join(map(str, warehouse_ids)) if warehouse_ids else ''
+        product_condition = f'and pol.product_id = any (array{product_ids})'
+        warehouse_condition = f'and wh.id = any (array{warehouse_ids})'
+
         if self.picking_type in ('all', 'retail'):
             query.append(f"""
 select
+    pol.product_id                                                    as product_id,
     wh.code                                                           as warehouse,
-    pp.barcode                                                        as product_barcode,
-    (select product_name from product_data_by_id where id = pp.id)    as product_name,
-    ''                                                                as product_size,
-    ''                                                                as product_color,
-    (select uom_name from product_data_by_id where id = pp.id)        as uom_name,
-    pol.price_unit                                                    as price_unit,
-    sum(pol.qty)                                                      as qty,
-    sum((pol.price_unit * pol.qty) * pol.discount / 100.0)            as discount,
-    sum(pol.price_subtotal_incl)                                      as amount_with_tax,
-    split_part(cate.complete_name, ' / ', 2)                          as product_group,
-    split_part(cate.complete_name, ' / ', 3)                          as product_line,
-    split_part(cate.complete_name, ' / ', 4)                          as texture_name,
-    (select account_code from account_by_categ_id where cate_id = (
-        select categ_id from product_data_by_id where id = pp.id))    as product_type_code,
-    ''                                                                as sale_channel
+    sum(pol.qty)::float                                               as qty,
+    sum(case when disc.type = 'point' then disc.recipe * 1000
+            when disc.type = 'card' then disc.recipe
+            when disc.type = 'ctkm' then disc.discounted_amount
+            else 0
+        end 
+      + (p_data.price_unit * pol.qty) * pol.discount / 100.0)::float  as discount,
+    sum(pol.qty * p_data.price_unit)::float                           as total_amount,
+    'Bán lẻ'                                                          as sale_channel
 from pos_order_line pol
-    left join product_product pp on pol.product_id = pp.id
     left join pos_order po on pol.order_id = po.id
     left join pos_session ps on ps.id = po.session_id
     left join pos_config pc on ps.config_id = pc.id
     left join store on store.id = pc.store_id
     left join stock_warehouse wh on wh.id = store.warehouse_id
-    left join product_category cate on cate.id = (select categ_id from product_data_by_id where id = pp.id)
-where po.company_id = {self.company_id.id}
-    and po.state in ('paid', 'done', 'invoiced')
-    and {format_date_query("po.date_order", tz_offset)} >= '{self.from_date}'
-    and {format_date_query("po.date_order", tz_offset)} <= '{self.to_date}'
+    left join product_data_by_id p_data on p_data.id = pol.product_id
+    left join pos_order_line_discount_details disc on disc.pos_order_line_id = pol.id
+where po.company_id = any(array{allowed_company}) and po.state in ('paid', 'done', 'invoiced')
+    and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     {product_condition} 
     {warehouse_condition}
-group by 
-    warehouse, product_barcode, product_name, product_size, product_color, uom_name,
-    price_unit, product_group, product_line, texture_name, product_type_code, sale_channel
+group by product_id, warehouse, sale_channel
 having sum(pol.qty) > 0
-                """)
-        if self.picking_type in ('all', 'wholesale'):
-            query.append(f"""
-select
-    ''                                                               as warehouse,
-    pp.barcode                                                       as product_barcode,
-    (select product_name from product_data_by_id where id = pp.id)   as product_name,
-    ''                                                               as product_size,
-    ''                                                               as product_color,
-    (select name from uom_name_by_id where id = aml.product_uom_id)  as uom_name,
-    aml.price_unit                                                   as price_unit,
-    sum(aml.quantity)                                                as qty,
-    sum((aml.price_unit * aml.quantity) * aml.discount / 100.0)      as discount,
-    sum(aml.price_subtotal)                                          as amount_with_tax,
-    split_part(cate.complete_name, ' / ', 2)                         as product_group,
-    split_part(cate.complete_name, ' / ', 3)                         as product_line,
-    split_part(cate.complete_name, ' / ', 4)                         as texture_name,
-    (select account_code from account_by_categ_id where cate_id = (
-        select categ_id from product_data_by_id where id = pp.id))   as product_type_code,
-    ''                                                               as sale_channel
-from account_move_line aml
-    left join product_product pp on aml.product_id = pp.id
-    left join account_move am on aml.move_id = am.id
-    left join product_category cate on cate.id = (select categ_id from product_data_by_id where id = pp.id)
-    join sale_order_line_invoice_rel sol_rel on aml.id = sol_rel.invoice_line_id
-where am.state = 'posted'
-    and {format_date_query("am.invoice_date", tz_offset)} >= '{self.from_date}' --fixme: thay ngày hóa đơn (invoice_date) bằng ngày hạch toán (chưa có)
-    and {format_date_query("am.invoice_date", tz_offset)} <= '{self.to_date}'
-    {product_condition}
-group by 
-    warehouse, product_barcode, product_name, product_size, product_color, uom_name,
-    price_unit, product_group, product_line, texture_name, product_type_code, sale_channel
-having sum(aml.quantity) > 0
-                """)
-        if self.picking_type in ('all', 'ecom'):
-            pass
+""")
+
+#         if self.picking_type in ('all', 'wholesale'):
+#             query.append(f"""
+# select
+#     ''                                                               as warehouse,
+#     pp.barcode                                                       as product_barcode,
+#     (select product_name from product_data_by_id where id = pp.id)   as product_name,
+#     ''                                                               as product_size,
+#     ''                                                               as product_color,
+#     (select name from uom_name_by_id where id = aml.product_uom_id)  as uom_name,
+#     aml.price_unit                                                   as price_unit,
+#     sum(aml.quantity)                                                as qty,
+#     sum((aml.price_unit * aml.quantity) * aml.discount / 100.0)      as discount,
+#     sum(aml.price_subtotal)                                          as total_amount,
+#     split_part(cate.complete_name, ' / ', 2)                         as product_group,
+#     split_part(cate.complete_name, ' / ', 3)                         as product_line,
+#     split_part(cate.complete_name, ' / ', 4)                         as texture_name,
+#     (select account_code from account_by_categ_id where cate_id = (
+#         select categ_id from product_data_by_id where id = pp.id))   as product_type_code,
+#     ''                                                               as sale_channel
+# from account_move_line aml
+#     left join product_product pp on aml.product_id = pp.id
+#     left join account_move am on aml.move_id = am.id
+#     left join product_category cate on cate.id = (select categ_id from product_data_by_id where id = pp.id)
+#     join sale_order_line_invoice_rel sol_rel on aml.id = sol_rel.invoice_line_id
+# where am.state = 'posted'
+#     and {format_date_query("am.invoice_date", tz_offset)} >= '{self.from_date}' --fixme: thay ngày hóa đơn (invoice_date) bằng ngày hạch toán (chưa có)
+#     and {format_date_query("am.invoice_date", tz_offset)} <= '{self.to_date}'
+#     {product_condition}
+# group by
+#     warehouse, product_barcode, product_name, product_size, product_color, uom_name,
+#     price_unit, product_group, product_line, texture_name, product_type_code, sale_channel
+# having sum(aml.quantity) > 0
+# """)
+#
+#         if self.picking_type in ('all', 'ecom'):
+#             pass
 
         final_query = f"""
 WITH account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho bằng cate_id
@@ -141,28 +115,35 @@ WITH account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho b
     from product_category cate
         left join ir_property ir on ir.res_id = concat('product.category,', cate.id)
         left join account_account aa on concat('account.account,',aa.id) = ir.value_reference
-    where  ir.name='property_stock_valuation_account_id' and ir.company_id = {self.company_id.id}
+    where  ir.name='property_stock_valuation_account_id' and ir.company_id = any(array{allowed_company})
     order by cate.id 
 ),
-product_data_by_id as ( -- lấy tên sản phẩm đã convert, đơn vị tính đã conver, categ_id bằng product.product ID
+product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng product.product ID
     select 
         pp.id,
+        pp.barcode as product_barcode,
         pt.product_name,
         pt.categ_id,
-        pt.uom_name
+        pt.uom_name,
+        pt.cate_name,
+        pt.price_unit
     from product_product pp
         left join (select
-                    id,
+                    id, categ_id, cate_name, price_unit,
                     substr(product_name, 2, length(product_name)-2) as product_name,
-                    categ_id,
                     substr(uom_name, 2, length(uom_name)-2) as uom_name
                    from (select 
                             pt1.id,
-                            coalesce(pt1.name::json -> '{user_lang_code}', pt1.name::json -> 'en_US')::text as product_name,
                             pt1.categ_id,
+                            pc.complete_name as cate_name,
+                            pt1.list_price as price_unit,
+                            coalesce(pt1.name::json -> '{user_lang_code}', pt1.name::json -> 'en_US')::text as product_name,
                             coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')::text as uom_name
                          from product_template pt1
-                            left join uom_uom uom on uom.id = pt1.uom_id) as subname_table) as pt
+                            left join uom_uom uom on uom.id = pt1.uom_id
+                            left join product_category pc on pc.id = pt1.categ_id
+                        ) as subname_table
+                ) as pt
         on pt.id = pp.product_tmpl_id
     order by pp.product_tmpl_id asc
 ),
@@ -180,35 +161,35 @@ result_table as (
 )
 select 
     row_number() over (order by product_name) as num,
-    warehouse,
-    product_barcode,
-    product_name,
-    product_size,
-    product_color,
-    uom_name,
-    price_unit,
-    sum(qty)                                  as qty,
-    sum(discount)                             as discount,
-    sum(amount_with_tax)                      as amount_with_tax,
-    product_group,
-    product_line,
-    texture_name,
-    product_type_code,
-    sale_channel
-from result_table
-group by 
-    warehouse, product_barcode, product_name, product_size, product_color, uom_name,
-    price_unit, product_group, product_line, texture_name, product_type_code, sale_channel
-order by product_name
+    res.warehouse                             as warehouse,
+    p_data.product_barcode,
+    p_data.product_name,
+    ''                                        as product_size,
+    ''                                        as product_color,
+    p_data.uom_name,
+    p_data.price_unit,
+    res.qty                                   as qty,
+    res.discount                              as discount,
+    res.total_amount                          as total_amount,
+    split_part(p_data.cate_name, ' / ', 2)    as product_group,
+    split_part(p_data.cate_name, ' / ', 3)    as product_line,
+    split_part(p_data.cate_name, ' / ', 4)    as texture_name,
+    acc.account_code                          as product_type_code,
+    res.sale_channel                          as sale_channel
+from result_table res
+    left join product_data_by_id p_data on p_data.id = res.product_id
+    left join account_by_categ_id acc on acc.cate_id = p_data.categ_id
+order by num
                 """
         return final_query
 
-    def get_data(self):
+    def get_data(self, allowed_company):
+        allowed_company = allowed_company or [-1]
         self.ensure_one()
-        values = dict(super().get_data())
-        product_ids = (self.env['product.product'].search([('type', '=', 'product')]).ids or [-1]) if self.all_products else self.product_ids.ids
-        warehouse_ids = (self.env['stock.warehouse'].search([]).ids or [-1]) if self.all_warehouses else self.warehouse_ids.ids
-        query = self._get_query(product_ids, warehouse_ids)
+        values = dict(super().get_data(allowed_company))
+        product_ids = self.env['product.product'].search(safe_eval(self.product_domain)).ids or [-1]
+        warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company)]).ids or [-1]
+        query = self._get_query(product_ids, warehouse_ids, allowed_company)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         values.update({
@@ -217,15 +198,22 @@ order by product_name
         })
         return values
 
-    def generate_xlsx_report(self, workbook):
-        data = self.get_data()
+    def generate_xlsx_report(self, workbook, allowed_company):
+        p_type = {
+            'all': 'Tất cả',
+            'retail': 'Bán lẻ',
+            'wholesale': 'Bán buôn',
+            'ecom': 'Bán Online',
+            'company': 'Bán liên công ty',
+        }
+        data = self.get_data(allowed_company)
         formats = self.get_format_workbook(workbook)
         sheet = workbook.add_worksheet('Báo cáo doanh thu theo sản phẩm')
         sheet.set_row(0, 25)
         sheet.write(0, 0, 'Báo cáo doanh thu theo sản phẩm', formats.get('header_format'))
         sheet.write(2, 0, 'Từ ngày: %s' % self.from_date.strftime('%d/%m/%Y'), formats.get('italic_format'))
         sheet.write(2, 2, 'Đến ngày: %s' % self.to_date.strftime('%d/%m/%Y'), formats.get('italic_format'))
-        sheet.write(2, 4, 'Loại phiếu: %s' % next((t[1] for t in self._fields.get('picking_type').selection if t[0] == self.picking_type), ''), formats.get('italic_format'))
+        sheet.write(2, 4, 'Loại phiếu: %s' % p_type.get(self.picking_type, ''), formats.get('italic_format'))
         for idx, title in enumerate(data.get('titles')):
             sheet.write(4, idx, title, formats.get('title_format'))
             sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
@@ -241,7 +229,7 @@ order by product_name
             sheet.write(row, 7, value.get('price_unit'), formats.get('float_number_format'))
             sheet.write(row, 8, value.get('qty'), formats.get('center_format'))
             sheet.write(row, 9, value.get('discount'), formats.get('float_number_format'))
-            sheet.write(row, 10, value.get('amount_with_tax'), formats.get('float_number_format'))
+            sheet.write(row, 10, value.get('total_amount'), formats.get('float_number_format'))
             sheet.write(row, 11, value.get('product_group'), formats.get('normal_format'))
             sheet.write(row, 12, value.get('product_line'), formats.get('normal_format'))
             sheet.write(row, 13, value.get('texture_name'), formats.get('normal_format'))

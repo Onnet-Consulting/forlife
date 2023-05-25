@@ -24,7 +24,7 @@ class Contact(models.Model):
     point_format_reseted = fields.Boolean('Format was reseted', default=False)
 
 
-    @api.depends('history_points_format_ids', 'history_points_forlife_ids')
+    @api.depends('history_points_format_ids.points_store', 'history_points_forlife_ids.points_store')
     def compute_point_total(self):
         for rec in self:
             rec.total_points_available_forlife = sum([x.points_store for x in rec.history_points_forlife_ids])

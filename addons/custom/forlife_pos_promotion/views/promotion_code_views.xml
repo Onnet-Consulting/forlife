@@ -67,11 +67,25 @@
             </tree>
         </field>
     </record>
+    <record id="promotion_code_view_search" model="ir.ui.view">
+        <field name="name">promotion.code.view.search</field>
+        <field name="model">promotion.code</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="program_id"/>
+                <group expand="0" string="Group By">
+                    <filter string="Promotion Program" name="program_id" domain="[]" context="{'group_by':'program_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="promotion_code_card_action" model="ir.actions.act_window">
-        <field name="name">Coupons</field>
+        <field name="name">Promotion Code</field>
         <field name="res_model">promotion.code</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('program_id', '=', active_id)]</field>
+        <field name="domain">[]</field>
         <field name="context">{'create': False}</field>
         <field name="help" type="html">
             <h1>No Code Found.</h1>

@@ -11,10 +11,9 @@
             <t t-call="ReportTitle"/>
             <tbody>
                 <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
-                <t t-set="num" t-value="1"/>
-                <t t-foreach="widget.data" t-as="line">
+                <t t-foreach="options.data" t-as="line">
                     <tr>
-                        <td><t t-esc="num"/></td>
+                        <td><t t-esc="line.num"/></td>
                         <td><t t-esc="line.chi_nhanh[0]"/></td>
                         <td><t t-esc="line.chi_nhanh[1]"/></td>
                         <td><t t-esc="line.ngay"/></td>
@@ -56,7 +55,6 @@
                         <td><t t-esc="line.ma_van_don"/></td>
                         <td><t t-esc="line.kenh_ban"/></td>
                     </tr>
-                    <t t-set="num" t-value="num + 1"/>
                 </t>
             </tbody>
         </table>

@@ -11,7 +11,7 @@
             <t t-call="ReportTitle"/>
             <tbody>
                 <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
-                <t t-foreach="widget.data" t-as="line">
+                <t t-foreach="options.data" t-as="line">
                     <tr>
                         <td><t t-esc="line.nha_cung_cap"/></td>
                         <td><t t-esc="line.ghi_chu"/></td>

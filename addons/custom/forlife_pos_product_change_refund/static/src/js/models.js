@@ -77,15 +77,15 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
         }
         get_total_with_tax() {
             var total = super.get_total_with_tax()
-            var vals = 0
+//            var vals = 0
             var defective = 0
-            if(this.is_refund_product){
-                for (let i = 0; i < this.orderlines.length; i++) {
-                    if(!this.orderlines[i].is_new_line)
-                     vals += parseInt(this.orderlines[i].get_display_price_with_reduce())
-                }
-                return vals
-            }
+//            if(this.is_refund_product){
+//                for (let i = 0; i < this.orderlines.length; i++) {
+//                    if(!this.orderlines[i].is_new_line)
+//                     vals += parseInt(this.orderlines[i].get_display_price_with_reduce())
+//                }
+//                return vals
+//            }
             for (let i = 0; i < this.orderlines.length; i++) {
                 if(this.orderlines[i].is_product_defective){
                    defective += parseInt(this.orderlines[i].money_reduce_from_product_defective)
