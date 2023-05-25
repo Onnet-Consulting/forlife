@@ -69,7 +69,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.promotion_program_by_id = {};
         this.reward_line_by_id = {};
         this.pro_pricelist_item_by_id = {};
-        this.pricelistProApplicableProducts = new Set(); // todo: use to estimate performance
+        // this.pricelistProApplicableProducts = new Set(); // todo: use to estimate performance
         var self = this;
         for (const line of this.surprisingRewardProducts) {
             line.to_check_product_ids = new Set(line.to_check_product_ids);
@@ -170,7 +170,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         for (let item of promotionItems) {
             let str_id = `${item.program_id[0]}p${item.id}`;
             this.pro_pricelist_item_by_id[str_id] = item;
-            self.pricelistProApplicableProducts.add(item.product_id[0]); // todo: bổ sung thêm nếu sử dụng cơ chế load CT làm giá trong background
+            // self.pricelistProApplicableProducts.add(item.product_id[0]); // todo: bổ sung thêm nếu sử dụng cơ chế load CT làm giá trong background
             item.product_id = item.product_id[0];
             item.str_id = str_id;
             item.program_id = item.program_id[0];
