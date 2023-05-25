@@ -28,6 +28,7 @@ class PartnerCardRankLine(models.Model):
                 remaining = r.partner_id.total_points_available_forlife
             data.append({
                 'id': r.partner_id.id,
+                'updated_at': r.create_date.strftime('%Y-%m-%d %H:%M:%S'),
                 'score': {
                     brand.get(r.store): {
                         'used': sum(history_points.mapped('points_used')),
