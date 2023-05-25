@@ -569,8 +569,8 @@ class AccountMoveLine(models.Model):
     @api.depends('display_type', 'company_id')
     def _compute_account_id(self):
         res = super()._compute_account_id()
-        if self.product_id and self.move_id.purchase_order_product_id and self.move_id.purchase_order_product_id.is_inter_company == False \
-                and self.move_id.purchase_order_product_id.type_po_cost == 'cost':
+        if self.product_id and self.move_id.purchase_order_product_id and self.move_id.purchase_order_product_id[0].is_inter_company == False \
+                and self.move_id.purchase_order_product_id[0].type_po_cost == 'cost':
             self.account_id = self.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
         return res
 
