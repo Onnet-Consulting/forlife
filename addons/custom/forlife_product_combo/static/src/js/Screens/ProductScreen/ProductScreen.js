@@ -189,11 +189,11 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                                             })
                                             //  kiem tra tong so luong cua san pham trong 1 combo
                                             if (total_quantity < pc.quantity) {
-                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua 1";
+                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua";
                                             }
 
                                             if (total_quantity % pc.quantity != 0) {
-                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua  2";
+                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua";
                                             }
 
                                             var value = total_quantity / pc.quantity;
