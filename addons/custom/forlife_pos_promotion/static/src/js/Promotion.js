@@ -759,15 +759,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     assign_pricelist_item_to_orderline() {
         this.validOnOrderPricelistItem = [];
         for (let line of this.get_orderlines()) {
-            line.pricelist_item = null;
-            let priceItem = this._getPricelistItem(line.product);
-            if (priceItem) {
-                line.pricelist_item = priceItem;
-                if (priceItem.str_id && !this.validOnOrderPricelistItem.includes(priceItem.str_id)) {
-                    this.validOnOrderPricelistItem.push(priceItem.str_id);
+            if (!line.pricelist_item) {
+                let priceItem = this._getPricelistItem(line.product);
+                if (priceItem) {
+                    line.pricelist_item = priceItem;
+                    if (priceItem.str_id && !this.validOnOrderPricelistItem.includes(priceItem.str_id)) {
+                        this.validOnOrderPricelistItem.push(priceItem.str_id);
+                    };
                 };
             };
-        }
+        };
     }
 
     _getPricelistItem(product) {
