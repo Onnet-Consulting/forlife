@@ -14,6 +14,13 @@ class ProductCategory(models.Model):
 
     is_accounting_category = fields.Boolean(string='Là nhóm hạch toán', default=False)
 
+    def bravo_get_category_code(self):
+        self.ensure_one()
+        category_code = self.category_code or ''
+        if self.is_accounting_category:
+            return category_code[-4:]
+        return category_code
+
     @api.model
     def bravo_get_table(self, **kwargs):
         product_category_level = kwargs.get(CONTEXT_CATEGORY_KEY)
@@ -38,7 +45,7 @@ class ProductCategory(models.Model):
         records = self.bravo_filter_records()
         res = []
         for record in records:
-            value = {'Code': record.category_code}
+            value = {'Code': record.bravo_get_category_code()}
             res.append(value)
         return res
 
@@ -70,7 +77,7 @@ class ProductCategory(models.Model):
                 value = {"Name": record.name}
                 if not to_update:
                     value.update({
-                        "Code": record.category_code
+                        "Code": record.bravo_get_category_code()
                     })
 
                 record_1300 = record.with_company(company_by_code['1300']).sudo()
@@ -114,7 +121,7 @@ class ProductCategory(models.Model):
                 value = {"Name": record.name}
                 if not to_update:
                     value.update({
-                        "Code": record.category_code
+                        "Code": record.bravo_get_category_code()
                     })
                 values.append(value)
 

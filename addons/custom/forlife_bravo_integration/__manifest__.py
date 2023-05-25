@@ -41,8 +41,8 @@
         'views/res_config_settings.xml',
         'wizard/bravo_sync_account_wizard_views.xml',
         'wizard/bravo_sync_tax_wizard_views.xml',
-        'wizard/bravo_sync_liquidation_asset_views.xml',
         'views/product_category_views.xml',
+        'wizard/bravo_sync_asset_wizard_views.xml',
     ],
     'external_dependencies': {
         'python': ['pyodbc'],
