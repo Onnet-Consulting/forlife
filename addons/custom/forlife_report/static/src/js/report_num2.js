@@ -7,8 +7,6 @@ odoo.define('forlife_report.report_num2', function (require) {
 
 
     let ReportNum2Action = ReportBaseAction.extend({
-        record_per_page: 25,
-
         events: _.extend({}, ReportBaseAction.prototype.events, {
             'click .line_stock_detail': 'show_detail',
         }),

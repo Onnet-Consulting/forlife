@@ -76,7 +76,11 @@ order_line_data as (
         pol.qty 																		 	        as qty,
         pol.price_unit 																	 		    as lst_price,
         coalesce((select sum(
-            case when type = 'point' then recipe * 1000 else recipe end
+            case when type = 'point' then recipe * 1000
+                when type = 'card' then recipe
+                when type = 'ctkm' then discounted_amount
+                else 0
+            end
         ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)
         + (pol.discount * pol.price_unit * pol.qty / 100)									        as money_reduced,
         pol.qty * pol.price_unit	            								 		 		    as price_subtotal,
