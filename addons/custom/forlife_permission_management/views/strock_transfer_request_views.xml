@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="stock_transfer_request_from_view_permission" model="ir.ui.view">
+            <field name="name">stock_transfer_request_from_view_permission</field>
+            <field name="model">stock.transfer.request</field>
+            <field name="inherit_id" ref="forlife_stock.stock_transfer_request_from_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_wait_confirm']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_stock_transfer_send</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_stock_transfer_approve_rject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_stock.reject_stock_request_wizard)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_stock_transfer_approve_rject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_stock_transfer_cancel</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="stock_transfer_form_permission" model="ir.ui.view">
+            <field name="name">stock_transfer_form_permission</field>
+            <field name="model">stock.transfer</field>
+            <field name="inherit_id" ref="forlife_stock.stock_transfer_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_wait_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_send</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_reject']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_cancel</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_in_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_in_approve</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_out_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_out_approve</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="hr_asset_transfer_form_view_permission" model="ir.ui.view">
+            <field name="name">hr_asset_transfer_form_view_permission</field>
+            <field name="model">hr.asset.transfer</field>
+            <field name="inherit_id" ref="forlife_stock.hr_asset_transfer_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_wait_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_tscd_send</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_approved']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_tscd_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_stock.reject_asset_transfer_wizard)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_tscd_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_transfer_tscd_cancel</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="transfer_stock_inventory_form_view_permission" model="ir.ui.view">
+            <field name="name">transfer_stock_inventory_form_view_permission</field>
+            <field name="model">transfer.stock.inventory</field>
+            <field name="inherit_id" ref="forlife_stock.transfer_stock_inventory_from_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_wait_confirm']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_inventory_check_send</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_inventory_check_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_stock.transfer_stock_inventory_wizard)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_inventory_check_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_stock.transfer_stock_inventory_wizard)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_inventory_check_cancel</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="forlife_other_in_out_request_form_permission" model="ir.ui.view">
+            <field name="name">forlife_other_in_out_request_form_permission</field>
+            <field name="model">forlife.other.in.out.request</field>
+            <field name="inherit_id" ref="forlife_stock.forlife_other_in_out_request_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_wait_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_send</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_stock.reject_in_out_request_wizard)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_cancel</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="forlife_other_in_out_request_form_permission" model="ir.ui.view">
+            <field name="name">forlife_other_in_out_request_form_permission</field>
+            <field name="model">forlife.other.in.out.request</field>
+            <field name="inherit_id" ref="forlife_stock.forlife_other_in_out_request_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_wait_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_send</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_stock.reject_in_out_request_wizard)d']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_request_in_out_other_cancel</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="handle_change_refund_form_view_permission" model="ir.ui.view">
+            <field name="name">handle_change_refund_form_view_permission</field>
+            <field name="model">handle.change.refund</field>
+            <field name="inherit_id" ref="forlife_pos_product_change_refund.handle_change_refund_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_refund_approve_refuse</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_refuse']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_refund_approve_refuse</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
