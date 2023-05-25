@@ -12,4 +12,17 @@
         <field name="run_as_queue_job" eval="True"/>
         <field name="channel_id" ref="channel_bravo"/>
     </record>
+
+    <record id="ir_cron_synchronize_bravo_liquidation_assets" model="ir.cron">
+        <field name="name">Bravo: synchronize liquidation assets.assets</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_bravo_sync_liquidation_asset_wizard"/>
+        <field name="code">model.sync()</field>
+        <field name="state">code</field>
+        <field name="run_as_queue_job" eval="True"/>
+        <field name="channel_id" ref="channel_bravo"/>
+    </record>
 </odoo>

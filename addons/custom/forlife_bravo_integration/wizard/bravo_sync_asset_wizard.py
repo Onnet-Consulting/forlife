@@ -46,6 +46,7 @@ class BravoSyncAssetWizard(models.TransientModel):
 
     @api.model
     def get_asset_last_create_date_by_company(self, company_data):
+        """return newest asset record"""
         cr = self.env.cr
         query = """
             SELECT max(bravo_create_date)

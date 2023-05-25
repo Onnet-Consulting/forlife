@@ -14,6 +14,9 @@ class AssetsAssets(models.Model):
         help='This datetime will be save in database in UTC+7 format - timezone (Asia/Ho_Chi_Minh)\n'
              'This value is synchronized between bravo and Odoo, not by normal Odoo action \n'
              'so the datetime will not be convert to UTC value like normally')
+    bravo_write_date = fields.Datetime(
+        readonly=True,
+        help='As same the bravo_create_date field - this field will be updated when wizard liquidation asset run')
 
     br1 = BravoCharField(odoo_name='code', bravo_name='Code', identity=True)
     br2 = BravoCharField(odoo_name='name', bravo_name='Name')
