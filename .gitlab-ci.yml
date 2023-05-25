@@ -24,18 +24,18 @@ build-alpha:
   tags:
     - build-alpha
 
-build-beta:
-  stage: beta
+build-beta-cmc:
+  stage: beta-cmc
   only:
     refs:
-      - beta
+      - beta-cmc
   script:
     - docker image prune -f
     - docker-compose -f docker-compose-gitlab-ci.yml build --no-cache
     - docker-compose -f docker-compose-gitlab-ci.yml up -d
     - docker-compose restart
   tags:
-    - build-beta
+    - build-beta-cmc
 
 build-production:
   stage: production
