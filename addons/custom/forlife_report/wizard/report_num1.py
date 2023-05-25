@@ -45,14 +45,15 @@ class ReportNum1(models.TransientModel):
 select
     pol.product_id                                                    as product_id,
     wh.code                                                           as warehouse,
+    pol.original_price                                                as original_price,
     sum(pol.qty)::float                                               as qty,
     sum(case when disc.type = 'point' then disc.recipe * 1000
             when disc.type = 'card' then disc.recipe
             when disc.type = 'ctkm' then disc.discounted_amount
             else 0
         end 
-      + (p_data.price_unit * pol.qty) * pol.discount / 100.0)::float  as discount,
-    sum(pol.qty * p_data.price_unit)::float                           as total_amount,
+      + (pol.original_price * pol.qty) * pol.discount / 100.0)::float as discount,
+    sum(pol.qty * pol.original_price)::float                          as total_amount,
     'Bán lẻ'                                                          as sale_channel
 from pos_order_line pol
     left join pos_order po on pol.order_id = po.id
@@ -60,13 +61,12 @@ from pos_order_line pol
     left join pos_config pc on ps.config_id = pc.id
     left join store on store.id = pc.store_id
     left join stock_warehouse wh on wh.id = store.warehouse_id
-    left join product_data_by_id p_data on p_data.id = pol.product_id
     left join pos_order_line_discount_details disc on disc.pos_order_line_id = pol.id
 where po.company_id = any(array{allowed_company}) and po.state in ('paid', 'done', 'invoiced')
     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     {product_condition} 
     {warehouse_condition}
-group by product_id, warehouse, sale_channel
+group by product_id, warehouse, sale_channel, original_price
 having sum(pol.qty) > 0
 """)
 
@@ -125,18 +125,16 @@ product_data_by_id as ( -- lấy các thông tin của sản phẩm bằng produ
         pt.product_name,
         pt.categ_id,
         pt.uom_name,
-        pt.cate_name,
-        pt.price_unit
+        pt.cate_name
     from product_product pp
         left join (select
-                    id, categ_id, cate_name, price_unit,
+                    id, categ_id, cate_name,
                     substr(product_name, 2, length(product_name)-2) as product_name,
                     substr(uom_name, 2, length(uom_name)-2) as uom_name
                    from (select 
                             pt1.id,
                             pt1.categ_id,
                             pc.complete_name as cate_name,
-                            pt1.list_price as price_unit,
                             coalesce(pt1.name::json -> '{user_lang_code}', pt1.name::json -> 'en_US')::text as product_name,
                             coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')::text as uom_name
                          from product_template pt1
@@ -167,7 +165,7 @@ select
     ''                                        as product_size,
     ''                                        as product_color,
     p_data.uom_name,
-    p_data.price_unit,
+    res.original_price                        as price_unit,
     res.qty                                   as qty,
     res.discount                              as discount,
     res.total_amount                          as total_amount,
