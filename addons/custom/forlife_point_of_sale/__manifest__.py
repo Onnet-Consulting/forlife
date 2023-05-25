@@ -32,7 +32,8 @@
         'views/pos_order_views.xml',
         'data/mail_template.xml',
         'data/cron.xml',
-        'views/ir_cron_views.xml'
+        'views/ir_cron_views.xml',
+        'views/account_move_views.xml',
     ],
     'assets': {
         'point_of_sale.assets': [

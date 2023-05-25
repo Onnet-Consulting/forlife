@@ -6,6 +6,7 @@ from odoo import api, fields, models, _
 class PosOrder(models.Model):
     _inherit = 'pos.order'
 
+    store_id = fields.Many2one('store')
     invoice_info_company_name = fields.Char('Invoice Info Company Name', tracking=True)
     invoice_info_address = fields.Char('Invoice Info Address', tracking=True)
     invoice_info_tax_number = fields.Char('Invoice Info VAT', tracking=True)
@@ -31,3 +32,19 @@ class PosOrder(models.Model):
             fields['invoice_info_address'] = ui_order.get('invoice_info_address')
             fields['invoice_info_tax_number'] = ui_order.get('invoice_info_tax_number')
         return fields
+
+    def _prepare_invoice_vals(self):
+        result = super(PosOrder, self)._prepare_invoice_vals()
+        if self.to_invoice:
+            result['invoice_info_company_name'] = self.invoice_info_tax_number
+            result['invoice_info_address'] = self.invoice_info_address
+            result['invoice_info_tax_number'] = self.invoice_info_tax_number
+        return result
+
+    def write(self, vals):
+        invoice_fields = ['invoice_info_company_name', 'invoice_info_address', 'invoice_info_tax_number']
+        for order in self:
+            if order.account_move and any(field in vals for field in invoice_fields):
+                val = {field: vals[field] for field in invoice_fields if field in vals}
+                order.account_move.write(val)
+        return super(PosOrder, self).write(vals)

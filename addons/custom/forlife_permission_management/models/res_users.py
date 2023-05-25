@@ -22,7 +22,7 @@ class ResUsers(models.Model):
         if not self.department_ids:
             department_ids = self.department_ids.search([]).mapped('id')
         else:
-            department_ids = (self.department_ids + self.department_id).mapped('id')
+            department_ids = (self.department_ids + self.department_default_id).mapped('id')
         return department_ids
 
     @api.model
@@ -30,7 +30,7 @@ class ResUsers(models.Model):
         if not self.team_default_id:
             team_ids = self.team_default_id.search([]).mapped('id')
         else:
-            team_ids = self.team_default_id.id
+            team_ids = (self.team_default_id + self.team_ids).mapped('id')
         return team_ids
 
     @api.model
@@ -46,7 +46,7 @@ class ResUsers(models.Model):
         if not self.stock_ids:
             stock_ids = self.stock_ids.search([]).mapped('id')
         else:
-            stock_ids = (self.stock_ids + self.stock_id).mapped('id')
+            stock_ids = (self.stock_ids + self.stock_default_id).mapped('id')
         return stock_ids
 
     @api.model
@@ -54,14 +54,14 @@ class ResUsers(models.Model):
         if not self.brand_ids:
             brand_ids = self.brand_ids.search([]).mapped('id')
         else:
-            brand_ids = (self.brand_ids + self.brand_id).mapped('id')
+            brand_ids = (self.brand_ids + self.brand_default_id).mapped('id')
         return brand_ids
 
     @api.model
     def get_store(self):
-        if not self.brand_ids:
-            brand_ids = self.store_ids.search([]).mapped('id')
+        if not self.store_ids:
+            store_ids = self.store_ids.search([]).mapped('id')
         else:
-            brand_ids = (self.store_ids + self.store_id).mapped('id')
-        return brand_ids
+            store_ids = (self.store_ids + self.store_default_id).mapped('id')
+        return store_ids
 

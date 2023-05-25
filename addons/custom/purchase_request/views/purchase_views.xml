@@ -14,7 +14,7 @@
                         string="Invoice"
                         type="object"
                         class="oe_stat_button"
-                        icon="fa-truck">
+                        icon="fa-truck" attrs="{'invisible': [('count_stock', '=', 0)]}">
                         <div class="o_field_widget o_stat_info">
                             <span class="o_stat_value">
                                 <field name="count_stock"/>
@@ -118,7 +118,7 @@
                                         <field name="name" string="Mô tả"/>
                                         <field name="uom" attrs="{'readonly': [('is_from_po', '=', True)]}"
                                                string="Đơn vị"/>
-                                        <field name="product_qty" string="Định lượng"/>
+                                        <field name="product_qty" string="Số lượng điều chuyển"/>
                                         <field name="product_plan_qty" string="Số lượng kế hoạch"/>
                                         <field name="product_remain_qty" string="Số lượng còn lại"/>
                                     </tree>
