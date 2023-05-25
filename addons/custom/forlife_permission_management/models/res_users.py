@@ -30,7 +30,7 @@ class ResUsers(models.Model):
         if not self.team_default_id:
             team_ids = self.team_default_id.search([]).mapped('id')
         else:
-            team_ids = self.team_default_id.id
+            team_ids = (self.team_default_id + self.team_ids).mapped('id')
         return team_ids
 
     @api.model
