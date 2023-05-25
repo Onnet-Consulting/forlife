@@ -44,12 +44,13 @@ class StockPicking(models.Model):
     _order = 'create_date desc'
 
     def action_confirm(self):
-        for line in self.move_ids:
-            account = line.ref_asset.asset_account.id
-            if (self.other_export and account != self.location_dest_id.valuation_out_account_id.id) or (
-                    self.other_import and account != self.location_id.valuation_in_account_id.id):
-                raise ValidationError(
-                    _('Tài khoản cấu hình trong thẻ tài sản không khớp với tài khoản trong lý do xuất khác'))
+        for picking in self:
+            for line in picking.move_ids:
+                account = line.ref_asset.asset_account.id
+                if (picking.other_export and account != picking.location_dest_id.valuation_out_account_id.id) or (
+                        picking.other_import and account != picking.location_id.valuation_in_account_id.id):
+                    raise ValidationError(
+                        _('Tài khoản cấu hình trong thẻ tài sản không khớp với tài khoản trong lý do xuất khác'))
         res = super().action_confirm()
         return res
 
