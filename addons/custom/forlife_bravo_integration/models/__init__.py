@@ -20,3 +20,4 @@ from . import product_attribute_value
 from . import stock_location
 from . import forlife_production
 from . import documents
+from . import warehouse_group

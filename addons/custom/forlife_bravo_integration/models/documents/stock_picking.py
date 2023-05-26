@@ -33,7 +33,7 @@ class StockPicking(models.Model):
     def bravo_filter_record_by_context(self, **kwargs):
         picking_data = kwargs.get(CONTEXT_PICKING_ACTION)
         if picking_data == 'picking_purchase':
-            return self.filtered(lambda m: m.stock_move_id.purchase_line_id)
+            return self.filtered(lambda m: m.move_ids.mapped('purchase_line_id'))
         return self
 
     def bravo_get_insert_values(self, **kwargs):
