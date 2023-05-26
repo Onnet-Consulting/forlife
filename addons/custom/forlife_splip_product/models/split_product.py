@@ -140,12 +140,8 @@ class SpilitProductLine(models.Model):
     product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', required=True, related='product_id.uom_id')
     warehouse_in_id = fields.Many2one('stock.warehouse', 'Kho nhập', required=True)
     unit_price = fields.Float('Đơn giá', readonly=True)
-    value = fields.Float('Giá trị', compute='_compute_value_price', readonly=True, store=True)
+    value = fields.Float('Giá trị', readonly=True)
 
-    @api.depends('unit_price')
-    def _compute_value_price(self):
-        for rec in self:
-            rec.value = 9
 
 
 class SpilitProductLineSub(models.Model):
