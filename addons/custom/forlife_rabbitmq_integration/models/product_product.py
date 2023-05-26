@@ -18,8 +18,8 @@ class ProductProduct(models.Model):
                 'id': product.id,
                 'created_at': product.create_date.strftime('%Y-%m-%d %H:%M:%S'),
                 'updated_at': product.write_date.strftime('%Y-%m-%d %H:%M:%S'),
-                'sku': product.default_code or None,
-                'barcode': product.barcode or None,
+                'product_code': product.sku_code or None,
+                'sku': product.barcode or None,
                 'name': product.name or None,
                 'unit': product.uom_id.name or None,
                 'price': product.lst_price or None,
@@ -46,13 +46,13 @@ class ProductProduct(models.Model):
         return data
 
     def check_update_info(self, values):
-        field_check_update = ['default_code', 'barcode']
+        field_check_update = ['sku_code', 'barcode']
         return [item for item in field_check_update if item in values]
 
     def get_sync_update_data(self, field_update, values):
         map_key_rabbitmq = {
-            'default_code': 'sku',
-            'barcode': 'barcode',
+            'barcode': 'sku',
+            'sku_code': 'product_code',
         }
         vals = {}
         for odoo_key in field_update:

@@ -701,43 +701,95 @@ class PurchaseOrder(models.Model):
                     invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.now(),
                                          'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
                     # Invoice line values (keep only necessary sections).
-
-                    for line in order.order_line:
-                        data_line = {
-                            'po_id': line.id,
-                            'product_id': line.product_id.id,
-                            'sequence': sequence,
-                            'price_subtotal': line.price_subtotal,
-                            'promotions': line.free_good,
-                            'exchange_quantity': line.exchange_quantity,
-                            'quantity': line.product_qty,
-                            'vendor_price': line.vendor_price,
-                            'warehouse': line.location_id.id,
-                            'discount': line.discount,
-                            'event_id': line.event_id.id,
-                            'work_order': line.production_id.id,
-                            'account_analytic_id': line.account_analytic_id.id,
-                            'request_code': line.request_purchases,
-                            'quantity_purchased': line.purchase_quantity,
-                            'discount_percent': line.discount_percent,
-                            'taxes_id': line.taxes_id.id,
-                            'tax_amount': line.price_tax,
-                            'uom_id': line.product_uom.id,
-                            'price_unit': line.price_unit,
-                        }
-                        if line.display_type == 'line_section':
-                            pending_section = line
-                            continue
-                        if pending_section:
-                            line_vals = pending_section._prepare_account_move_line()
+                    invoi_relationship = self.env['account.move'].search([('reference', '=', order.name),
+                                                                          ('partner_id', '=', order.partner_id.id)])
+                    if invoi_relationship:
+                        if sum(invoi_relationship.invoice_line_ids.mapped('price_subtotal')) == sum(order.order_line.mapped('price_subtotal')):
+                            raise UserError(_('Hóa đơn đã được khống chế theo đơn mua hàng!'))
+                        else:
+                            for line in order.order_line:
+                                wave = invoi_relationship.invoice_line_ids.filtered(lambda w: str(w.po_id) == str(line.id) and w.product_id.id == line.product_id.id)
+                                quantity = 0
+                                price_subtotal = 0
+                                for nine in wave:
+                                    quantity += nine.quantity
+                                    # total += nine.price_subtotal
+                                    data_line = {
+                                        'po_id': line.id,
+                                        'product_id': line.product_id.id,
+                                        'sequence': sequence,
+                                        # 'price_subtotal': line.price_subtotal - total,
+                                        'promotions': line.free_good,
+                                        'exchange_quantity': line.exchange_quantity,
+                                        'quantity': line.product_qty - quantity,
+                                        'vendor_price': line.vendor_price,
+                                        'warehouse': line.location_id.id,
+                                        'discount': line.discount,
+                                        'event_id': line.event_id.id,
+                                        'work_order': line.production_id.id,
+                                        'account_analytic_id': line.account_analytic_id.id,
+                                        'request_code': line.request_purchases,
+                                        'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
+                                        'discount_percent': line.discount_percent,
+                                        'taxes_id': line.taxes_id.id,
+                                        'tax_amount': line.price_tax,
+                                        'uom_id': line.product_uom.id,
+                                        'price_unit': line.price_unit,
+                                        'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                                    }
+                                    if line.display_type == 'line_section':
+                                        pending_section = line
+                                        continue
+                                    if pending_section:
+                                        line_vals = pending_section._prepare_account_move_line()
+                                        line_vals.update(data_line)
+                                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                        sequence += 1
+                                        pending_section = None
+                                    line_vals = line._prepare_account_move_line()
+                                    line_vals.update(data_line)
+                                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                    sequence += 1
+                        # invoice_vals_list.append(invoice_vals)
+                    else:
+                        for line in order.order_line:
+                            data_line = {
+                                'po_id': line.id,
+                                'product_id': line.product_id.id,
+                                'sequence': sequence,
+                                'price_subtotal': line.price_subtotal,
+                                'promotions': line.free_good,
+                                'exchange_quantity': line.exchange_quantity,
+                                'quantity': line.product_qty,
+                                'vendor_price': line.vendor_price,
+                                'warehouse': line.location_id.id,
+                                'discount': line.discount,
+                                'event_id': line.event_id.id,
+                                'work_order': line.production_id.id,
+                                'account_analytic_id': line.account_analytic_id.id,
+                                'request_code': line.request_purchases,
+                                'quantity_purchased': line.purchase_quantity,
+                                'discount_percent': line.discount_percent,
+                                'taxes_id': line.taxes_id.id,
+                                'tax_amount': line.price_tax,
+                                'uom_id': line.product_uom.id,
+                                'price_unit': line.price_unit,
+                                'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                            }
+                            if line.display_type == 'line_section':
+                                pending_section = line
+                                continue
+                            if pending_section:
+                                line_vals = pending_section._prepare_account_move_line()
+                                line_vals.update(data_line)
+                                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                                sequence += 1
+                                pending_section = None
+                            line_vals = line._prepare_account_move_line()
                             line_vals.update(data_line)
                             invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
                             sequence += 1
-                            pending_section = None
-                        line_vals = line._prepare_account_move_line()
-                        line_vals.update(data_line)
-                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                        sequence += 1
+                        # invoice_vals_list.append(invoice_vals)
                     invoice_vals_list.append(invoice_vals)
                 # 2) group by (company_id, partner_id, currency_id) for batch creation
                 new_invoice_vals_list = []
@@ -791,7 +843,7 @@ class PurchaseOrder(models.Model):
                                                                                            and w.product_id.id == line.product_id.id
                                                                                            and w.picking_type_id.code == 'incoming'
                                                                                            and w.ware_check_line == False)
-                        if picking_in:
+                        if wave:
                             for wave_item in wave:
                                 data_line = {
                                     'ware_name': wave_item.picking_id.name,
@@ -815,6 +867,7 @@ class PurchaseOrder(models.Model):
                                     'tax_amount': line.price_tax,
                                     'uom_id': line.product_uom.id,
                                     'price_unit': line.price_unit,
+                                    'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                                 }
                                 if line.display_type == 'line_section':
                                     pending_section = line
@@ -872,12 +925,15 @@ class PurchaseOrder(models.Model):
             for vals in invoice_vals_list:
                 moves |= AccountMove.with_company(vals['company_id']).create(vals)
 
+            for line in moves.invoice_line_ids:
+                if line.product_id:
+                    account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
+                    line.account_id = account_id
             # 4) Some moves might actually be refunds: convert them if the total amount is negative
             # We do this after the moves have been created since we need taxes, etc. to know if the total
             # is actually negative or not
             moves.filtered(
                 lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
-
             return {
                 'name': 'Hóa đơn nhà cung cấp',
                 'type': 'ir.actions.act_window',

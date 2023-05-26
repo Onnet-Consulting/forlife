@@ -87,7 +87,7 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                                  // neu co danh sach don hang moi
                                 _.each(order_new_lines, function (orderNewLine) {
                                      if(orderNewLine.product.id == orderOldLine.product.id && orderNewLine.product.combo_id[0] == orderOldLine.product.combo_id[0] && Math.abs(orderOldLine.quantity) != orderNewLine.quantity ){
-                                        message = "Bạn cần mua đủ số lượng sản phẩm " + orderNewLine.product.display_name + "để đổi trả!";
+                                        message = "Bạn cần mua đủ số lượng sản phẩm " + orderNewLine.product.display_name + " để đổi trả!";
                                      }
                                 })
                             }
@@ -189,11 +189,11 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                                             })
                                             //  kiem tra tong so luong cua san pham trong 1 combo
                                             if (total_quantity < pc.quantity) {
-                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua 1";
+                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua";
                                             }
 
                                             if (total_quantity % pc.quantity != 0) {
-                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua  2";
+                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua";
                                             }
 
                                             var value = total_quantity / pc.quantity;

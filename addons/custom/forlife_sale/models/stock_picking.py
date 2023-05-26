@@ -52,6 +52,9 @@ class StockPicking(models.Model):
             'invoice_line_ids': invoice_line_ids,
         }
         invoice_id = self.env['account.move'].create(vals)
+        for line in invoice_id.invoice_line_ids:
+            if line.product_id:
+                line.account_id = line.product_id.product_tmpl_id.categ_id.x_property_account_return_id
         return invoice_id.id
 
     def button_validate(self):

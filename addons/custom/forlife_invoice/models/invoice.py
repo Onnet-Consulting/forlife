@@ -24,7 +24,7 @@ class AccountMove(models.Model):
         ('asset', 'Asset'),
         ('service', 'Service'),
     ], string='PO Type', default='product', required=1)
-    number_bills = fields.Char(string='Number bills', copy=False)
+    number_bills = fields.Char(string='Number bills', copy=False, required=1)
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string="Exchange Rate", default=1)
     accounting_date = fields.Datetime(string='Accounting Date')
@@ -171,7 +171,7 @@ class AccountMove(models.Model):
                                         })
                                     else:
                                         existing_line.price_unit += cost.expensive_total
-                            rec.invoice_line_ids = invoice_line_ids
+                                rec.invoice_line_ids = invoice_line_ids
                         else:
                             rec.purchase_type = 'product'
                             for product in product_cost.order_line:
@@ -288,30 +288,47 @@ class AccountMove(models.Model):
                             if line.quantity > item.qty_done:
                                 raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
-    # def write(self, vals):
+    # @api.onchange('invoice_line_ids')
+    # def compute_invoice_line_ids_fin_line_ids(self):
     #     for rec in self:
-    #         if rec.move_type == 'in_invoice':
+    #         data_id = []
+    #         if rec.line_ids:
+    #             data_search = self.env['account.move.line'].search([('move_id', '=', rec.id)])
+    #             for item in data_search:
+    #                 if item.display_type == 'product':
+    #                     item.write({
+    #                         'account_id': item.product_id.categ_id.with_company(
+    #                             rec.company_id).property_stock_account_input_categ_id.id,
+    #                         'name': item.product_id.name
+    #                     })
+    #                 data_id.append(item.ids)
+    #             rec.line_ids = [(6, 0, data_id)]
+
+
+
+
+    # def write(self, vals):
+    #     res = super(AccountMove, self).write(vals)
+    #     for rec in self:
+    #         if rec.move_type == 'in_invoice' and rec.number_bills:
     #             if rec.is_check_cost_view:
-    #                 if rec.invoice_line_ids:
-    #                     for item in rec.invoice_line_ids:
-    #                         existing_lines = rec.invoice_line_ids.filtered(lambda line: line.product_id)
-    #                         # Cập nhật account_id và name trong line_ids từ invoice_line_ids
+    #                 if rec.line_ids:
+    #                     for item in rec.line_ids:
+    #                         existing_lines = rec.line_ids.filtered(lambda line: line.product_id and line.display_type == 'product')
     #                         existing_lines.write({
     #                             'account_id': item.product_id.categ_id.with_company(
     #                                 rec.company_id).property_stock_account_input_categ_id.id,
     #                             'name': item.product_id.name
     #                         })
     #             else:
-    #                 if rec.invoice_line_ids:
-    #                     for item in rec.invoice_line_ids:
-    #                         existing_lines = rec.invoice_line_ids.filtered(lambda line: line.product_id)
-    #                         # Cập nhật account_id và name trong line_ids từ invoice_line_ids
+    #                 if rec.line_ids:
+    #                     for item in rec.line_ids:
+    #                         existing_lines = rec.line_ids.filtered(lambda line: line.product_id and line.display_type == 'product')
     #                         existing_lines.write({
     #                             'account_id': item.product_id.categ_id.with_company(
     #                                 rec.company_id).property_stock_account_input_categ_id.id,
     #                             'name': item.product_id.name
     #                         })
-    #     res = super(AccountMove, self).write(vals)
     #     return res
 
     # @api.onchange('purchase_type')
@@ -392,47 +409,47 @@ class AccountMove(models.Model):
             account_vat = []
             account_db = []
             account_tnk = []
-            if not self.env.ref('forlife_purchase.product_import_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế nhập khẩu")
-            if not self.env.ref('forlife_purchase.product_excise_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế tiêu thụ đặc biệt")
-            if not self.env.ref('forlife_purchase.category_product_vat_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế VAT (Nhập khẩu)")
+            # if not self.env.ref('forlife_purchase.product_import_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+            #     raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế nhập khẩu")
+            # if not self.env.ref('forlife_purchase.product_excise_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+            #     raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế tiêu thụ đặc biệt")
+            # if not self.env.ref('forlife_purchase.category_product_vat_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+            #     raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế VAT (Nhập khẩu)")
             for item in rec.exchange_rate_line:
                 account_debit_tnk = (0, 0, {
-                    'account_id': item.product_id.categ_id.property_stock_valuation_account_id.id,
-                    'name': item.product_id.categ_id.property_stock_valuation_account_id.name,
+                    'account_id': self.env.ref('forlife_purchase.product_import_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
+                    'name': item.product_id.name,
                     'debit': item.tax_amount,
                     'credit': 0,
                 })
                 account_credit_tnk = (0, 0, {
-                    'account_id': self.env.ref('forlife_purchase.product_import_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
-                    'name': self.env.ref('forlife_purchase.product_import_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.name,
+                    'account_id': self.env.ref('forlife_purchase.product_import_tax').with_company(rec.company_id).property_account_expense_id.id,
+                    'name': self.env.ref('forlife_purchase.product_import_tax').with_company(rec.company_id).property_account_expense_id.name,
                     'debit': 0,
                     'credit': credit_tnk,
                 })
 
                 account_debit_db = (0, 0, {
-                    'account_id': item.product_id.categ_id.with_company(rec.company_id).property_stock_valuation_account_id.id,
-                    'name': item.product_id.categ_id.with_company(rec.company_id).property_stock_valuation_account_id.name,
+                    'account_id': self.env.ref('forlife_purchase.product_excise_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
+                    'name': item.product_id.name,
                     'debit': item.special_consumption_tax_amount,
                     'credit': 0,
                 })
                 account_credit_db = (0, 0, {
-                    'account_id': self.env.ref('forlife_purchase.product_excise_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
-                    'name': self.env.ref('forlife_purchase.product_excise_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.name,
+                    'account_id': self.env.ref('forlife_purchase.product_excise_tax').with_company(rec.company_id).property_account_expense_id.id,
+                    'name': self.env.ref('forlife_purchase.product_excise_tax').with_company(rec.company_id).property_account_expense_id.name,
                     'debit': 0,
                     'credit': credit_db,
                 })
 
                 account_debit_vat = (0, 0, {
                     'account_id': self.env.ref('l10n_vn.1_chart1331').id,
-                    'name': self.env.ref('l10n_vn.1_chart1331').name,
+                    'name': 'thuế nhập khẩu VAT',
                     'debit': debit_vat,
                     'credit': 0,
                 })
                 account_credit_vat = (0, 0, {
-                    'account_id': self.env.ref('forlife_purchase.category_product_vat_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
+                    'account_id': self.env.ref('forlife_purchase.category_product_vat_tax').with_company(rec.company_id).property_stock_account_input_categ_id.id,
                     'name': item.name,
                     'debit': 0,
                     'credit': item.vat_tax_amount,
@@ -475,8 +492,8 @@ class AccountMove(models.Model):
     def create_trade_discount(self):
         for rec in self:
             account_ck = []
-            if not self.env.ref('forlife_purchase.category_product_discount_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục chiết khấu")
+            # if not self.env.ref('forlife_purchase.category_product_discount_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
+            #     raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục chiết khấu")
             account_331 = (0, 0, {
                 'account_id': rec.partner_id.property_account_receivable_id.id,
                 'name': rec.partner_id.property_account_receivable_id.name,
@@ -552,6 +569,7 @@ class AccountMoveLine(models.Model):
                             help="The optional quantity expressed by this line, eg: number of product sold. "
                                  "The quantity is not a legal requirement but is very useful for some reports.",
                             compute='_compute_quantity', store=1)
+    total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
 
     ## asset invoice!!
     asset_code = fields.Char('Mã tài sản cố định')
@@ -565,6 +583,14 @@ class AccountMoveLine(models.Model):
 
     # field check vendor_price khi ncc vãng lại:
     is_check_is_passersby = fields.Boolean(default=False)
+
+    @api.depends('display_type', 'company_id')
+    def _compute_account_id(self):
+        res = super()._compute_account_id()
+        if self.product_id and self.move_id.purchase_order_product_id and self.move_id.purchase_order_product_id[0].is_inter_company == False \
+                and self.move_id.purchase_order_product_id[0].type_po_cost == 'cost':
+            self.account_id = self.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
+        return res
 
     # Field check phân biệt lần nhập kho khi tạo hóa đơn theo từng lần hoàn thành số lượng
 
@@ -584,6 +610,12 @@ class AccountMoveLine(models.Model):
                         list_vals.remove(line)
         res = super().create(list_vals)
         return res
+
+    @api.depends('price_subtotal', 'move_id.exchange_rate', 'move_id')
+    def _compute_total_vnd_amount(self):
+        for rec in self:
+            if rec.price_subtotal and rec.move_id.exchange_rate:
+                rec.total_vnd_amount = rec.price_subtotal * rec.move_id.exchange_rate
 
     # @api.depends('vendor_price', 'exchange_quantity',
     #              'move_id', 'move_id.is_check_cost_view',

@@ -79,7 +79,7 @@ select
     pt.collection                                                               as bo_suu_tap,
     greatest(pol.qty, 0)                                                        as sl_ban,
     - least(pol.qty, 0)                                                         as sl_tra,
-    coalesce(pol.price_unit, 0)                                                 as gia,
+    coalesce(pol.original_price, 0)                                             as gia,
     coalesce((select sum(
             case when type = 'point' then recipe * 1000
                 when type = 'card' then recipe
