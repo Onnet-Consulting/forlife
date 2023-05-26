@@ -10,12 +10,15 @@ class PosSession(models.Model):
     def load_pos_data(self):
         loaded_data = super(PosSession, self).load_pos_data()
         jobs = self.env['res.partner.job'].sudo().search([])
+        partner_types = self.env['res.partner.retail'].sudo().search([])
         jobs = [{
             'id': r.id,
             'name': r.name
         } for r in jobs]
+        partner_types = [{'id': r.id, 'name':r.name_get()[0][1]} for r in partner_types]
         loaded_data.update({
             'jobs': jobs,
+            'partner_types': partner_types
         })
         return loaded_data
 
@@ -33,5 +36,5 @@ class PosSession(models.Model):
         domain = res['search_params']['domain']
         domain = expression.AND([domain, [('group_id', '=', self.env.ref('forlife_pos_app_member.partner_group_c').id)]])
         res['search_params']['domain'] = domain
-        res['search_params']['fields'].extend(['birthday', 'gender', 'job_id'])
+        res['search_params']['fields'].extend(['birthday', 'gender', 'job_id', 'retail_type_ids'])
         return res
