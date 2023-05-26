@@ -64,13 +64,6 @@ class AccountMove(models.Model):
     # Field check page ncc vãng lại
     is_check_vendor_page = fields.Boolean(default=False, compute='_compute_is_check_vendor_page')
 
-    # domain product_cost:
-    product_product_mm = fields.Many2many('product.product')
-
-    # tab e-invoice-bkav
-    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
-                                    compute='_compute_e_invoice_ids_exists_bkav')
-
     # tab e-invoice-bkav
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
                                     compute='_compute_e_invoice_ids_exists_bkav')
@@ -84,9 +77,11 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
-    # tạo data lấy từ bkav về tab e-invoice
-    @api.depends('exists_bkav')
-    def _compute_e_invoice_ids_exists_bkav(self):
+    # product_not_is_passersby = fields.Many2many('product.product')
+    ###tạo data lấy từ bkav về tab e-invoice
+
+    @api.onchange('exists_bkav')
+    def onchange_exitsts_bakv_e_invoice(self):
         for rec in self:
             if rec.exists_bkav:
                 data_e_invoice = self.env['e.invoice'].search(
