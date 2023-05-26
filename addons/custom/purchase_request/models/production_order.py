@@ -18,6 +18,12 @@ class ProductionOrder(models.Model):
     production_uom = fields.Many2one('uom.uom', string='Đơn vị', related='product_id.uom_id')
     order_line_ids = fields.One2many('production.order.line', 'order_id', 'Production Order Lines', copy=True)
     product_qty = fields.Float('Quantity', default=1.0, digits='Unit of Measure', required=True)
+    invoice_status_fake = fields.Selection([
+        ('no', 'Chưa nhận'),
+        ('to invoice', 'Dở dang'),
+        ('invoiced', 'Hoàn thành'),
+    ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
+
 
     @api.constrains('product_id')
     def _constraint_product_id(self):
@@ -35,6 +41,7 @@ class ProductionOrder(models.Model):
 
     def data_search(self, domain):
         return self.env['product.product'].search(domain)
+
 
 
 class ProductionOrderLine(models.Model):
