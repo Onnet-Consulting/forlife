@@ -1,0 +1,20 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "Forlife Splip Products",
+    "category": "Forlife Splip Products",
+    "version": "1.0.0",
+    "description": """Forlife Splip Products""",
+    "depends": [
+        'stock',
+        'account',
+        'hr'
+    ],
+    "data": [
+        'security/ir.model.access.csv',
+        'data/ir_sequence.xml',
+        'views/split_product_views.xml',
+    ],
+    "application": True,
+    "installable": True,
+    "auto_install": False,
+}
