@@ -10,5 +10,15 @@
             <field name="method">_process_payment_lines</field>
             <field name="channel_id" ref="forlife_pos_optimal_performance.channel_job_pos_process_payment" />
         </record>
+
+        <record id="channel_job_pos_order_picking" model="queue.job.channel">
+            <field name="name">pos_order_picking</field>
+            <field name="parent_id" ref="queue_job.channel_root"/>
+        </record>
+        <record id="pos_order_picking" model="queue.job.function">
+            <field name="model_id" ref="point_of_sale.model_pos_order" />
+            <field name="method">_create_order_picking</field>
+            <field name="channel_id" ref="forlife_pos_optimal_performance.channel_job_pos_order_picking" />
+        </record>
     </data>
 </odoo>
