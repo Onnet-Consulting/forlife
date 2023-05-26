@@ -64,18 +64,16 @@ class AccountMove(models.Model):
     # Field check page ncc vãng lại
     is_check_vendor_page = fields.Boolean(default=False, compute='_compute_is_check_vendor_page')
 
-<<<<<<< addons/custom/forlife_invoice/models/invoice.py
     # domain product_cost:
     product_product_mm = fields.Many2many('product.product')
 
     # tab e-invoice-bkav
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
                                     compute='_compute_e_invoice_ids_exists_bkav')
-=======
-    ##tab e-invoice-bkav
-    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
->>>>>>> addons/custom/forlife_invoice/models/invoice.py
 
+    # tab e-invoice-bkav
+    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
+                                    compute='_compute_e_invoice_ids_exists_bkav')
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),
         ('QC', 'QC'),
@@ -86,23 +84,14 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
-<<<<<<< addons/custom/forlife_invoice/models/invoice.py
     # tạo data lấy từ bkav về tab e-invoice
     @api.depends('exists_bkav')
     def _compute_e_invoice_ids_exists_bkav(self):
-=======
-    # product_not_is_passersby = fields.Many2many('product.product')
-
-
-    ###tạo data lấy từ bkav về tab e-invoice
-    @api.onchange('exists_bkav')
-    def onchange_exitsts_bakv_e_invoice(self):
->>>>>>> addons/custom/forlife_invoice/models/invoice.py
         for rec in self:
             if rec.exists_bkav:
                 data_e_invoice = self.env['e.invoice'].search(
                     [('e_invoice_id', '=', rec.id), ('number_e_invoice', '=', rec.invoice_no),
-                     ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)],limit=1)
+                     ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)], limit=1)
                 if not data_e_invoice:
                     self.env['e.invoice'].create({
                         'number_e_invoice': rec.invoice_no,
@@ -318,9 +307,6 @@ class AccountMove(models.Model):
     #                     })
     #                 data_id.append(item.ids)
     #             rec.line_ids = [(6, 0, data_id)]
-
-
-
 
     # def write(self, vals):
     #     res = super(AccountMove, self).write(vals)
@@ -555,6 +541,7 @@ class AccountMove(models.Model):
                 rec.create_trade_discount()
         res = super(AccountMove, self).action_post()
         return res
+
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
