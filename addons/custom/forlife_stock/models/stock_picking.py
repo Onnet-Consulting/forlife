@@ -88,6 +88,10 @@ class StockPicking(models.Model):
     other_import_export_request_id = fields.Many2one('forlife.other.in.out.request', string="Other Import Export Request")
     stock_custom_location_ids = fields.One2many('stock.location', 'stock_custom_picking_id')
 
+    #field check phiếu trả hàng:
+    x_is_check_return = fields.Boolean('', default=False)
+
+    relation_return = fields.Char(string='Phiếu trả lại liên quan')
     move_ids_without_package = fields.One2many(
         'stock.move', 'picking_id', string="Hoạt động", compute='_compute_move_without_package',
         inverse='_set_move_without_package', compute_sudo=True)
