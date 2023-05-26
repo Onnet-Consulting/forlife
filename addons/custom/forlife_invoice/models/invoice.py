@@ -71,6 +71,9 @@ class AccountMove(models.Model):
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
                                     compute='_compute_e_invoice_ids_exists_bkav')
 
+    # tab e-invoice-bkav
+    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
+                                    compute='_compute_e_invoice_ids_exists_bkav')
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),
         ('QC', 'QC'),
@@ -88,7 +91,7 @@ class AccountMove(models.Model):
             if rec.exists_bkav:
                 data_e_invoice = self.env['e.invoice'].search(
                     [('e_invoice_id', '=', rec.id), ('number_e_invoice', '=', rec.invoice_no),
-                     ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)],limit=1)
+                     ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)], limit=1)
                 if not data_e_invoice:
                     self.env['e.invoice'].create({
                         'number_e_invoice': rec.invoice_no,
@@ -513,6 +516,7 @@ class AccountMove(models.Model):
                 rec.create_trade_discount()
         res = super(AccountMove, self).action_post()
         return res
+
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
