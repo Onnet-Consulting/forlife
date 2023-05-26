@@ -213,7 +213,7 @@ class PurchaseOrder(models.Model):
             if item.trade_discount < 0:
                 raise ValidationError('Chiết khấu thương mại không được âm!')
 
-    ## Các action header
+    # Các action header
     def action_view_invoice_ncc(self):
         for item in self:
             sale_order = self.env['sale.order'].search([('origin', '=', item.name)], limit=1)
@@ -274,7 +274,7 @@ class PurchaseOrder(models.Model):
                 'context': context
             }
 
-    ## Compute field action hearder
+    # Compute field action hearder
     def compute_count_invoice_inter_company_customer(self):
         for item in self:
             data = self.data_account_move([('reference', '=', item.name), ('is_from_ncc', '=', False)])
@@ -322,6 +322,8 @@ class PurchaseOrder(models.Model):
 
     def action_confirm(self):
         for record in self:
+            if any(line.product_id.product_tmpl_id.is_trade_discount and line.price_unit > 0 for line in record.order_line):
+                raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
             record.write({'custom_state': 'confirm'})
 
     def action_approved(self):
@@ -518,7 +520,7 @@ class PurchaseOrder(models.Model):
                     'location_id': data.get('source_location_id'),
                     'location_dest_id': data.get('location_id')
                 })
-            ## Sử lý hóa đơn
+            # Sử lý hóa đơn
             invoice_ncc = self.env['sale.advance.payment.inv'].create({
                 'sale_order_ids': [(6, 0, data_so.ids)],
                 'advance_payment_method': 'delivered',
@@ -533,7 +535,7 @@ class PurchaseOrder(models.Model):
                 'reference': data_so.name,
                 'is_from_ncc': True
             })
-            ## Vào sổ hóa đơn bán hàng
+            # Vào sổ hóa đơn bán hàng
             invoice_ncc.action_post()
             invoice_customer.write({
                 'invoice_date': datetime.now(),
@@ -543,7 +545,7 @@ class PurchaseOrder(models.Model):
             })
             sql = f"""update account_move set partner_id = {data.get('partner_id')} where id = {invoice_customer.id}"""
             self._cr.execute(sql)
-            ##Vào sổ hóa đơn mua hàng
+            # Vào sổ hóa đơn mua hàng
             invoice_customer.action_post()
             data_stp_out.with_context({'skip_immediate': True}).button_validate()
             for st in data_all_picking:
@@ -1040,6 +1042,14 @@ class PurchaseOrder(models.Model):
             })
         return vals
 
+    def _prepare_invoice(self):
+        values = super(PurchaseOrder, self)._prepare_invoice()
+        values.update({
+            'trade_discount': self.trade_discount,
+            'total_trade_discount': self.total_trade_discount
+        })
+        return values
+
     # product_not_is_passersby = fields.Many2many('product.product', compute='compute_product_is_passersby')
     #
     # @api.depends('partner_id', 'partner_id.is_passersby')
@@ -1341,7 +1351,7 @@ class PurchaseOrderLine(models.Model):
                 # Avoid updating kit components' stock.move
                 moves = line.move_ids.filtered(
                     lambda s: s.state not in ("cancel", "done")
-                              and s.product_id == line.product_id
+                    and s.product_id == line.product_id
                 )
                 moves.write({"price_unit": line._get_discounted_price_unit()})
         return res
@@ -1458,7 +1468,7 @@ class PurchaseOrderLine(models.Model):
             self.order_id.location_id.id if self.order_id.location_id else False)
         if not location_dest_id:
             location_dest_id = (self.orderpoint_id and not (
-                    self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
+                self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
         picking_line = picking.filtered(lambda p: p.location_dest_id and p.location_dest_id.id == location_dest_id)
         return {
             # truncate to 2000 to avoid triggering index limit error
@@ -1487,6 +1497,11 @@ class PurchaseOrderLine(models.Model):
             'product_packaging_id': self.product_packaging_id.id,
             'sequence': self.sequence,
         }
+
+    def _prepare_account_move_line(self):
+        if self.product_id.product_tmpl_id.is_trade_discount and self.price_unit > 0:
+            raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
+        return super(PurchaseOrderLine, self)._prepare_account_move_line()
 
 
 class AccountMove(models.Model):
@@ -1523,7 +1538,7 @@ class StockPicking(models.Model):
                 if po.type_po_cost in ('cost', 'tax'):
                     if invoice_line:
                         account = self.create_account_move(po, invoice_line, record)
-                ##Tạo nhập khác xuất khác khi nhập kho
+                # Tạo nhập khác xuất khác khi nhập kho
                 if po.order_line_production_order and not po.is_inter_company:
                     npl = self.create_invoice_npl(po, record)
 
@@ -1607,7 +1622,7 @@ class StockPicking(models.Model):
                     })
                 else:
                     vals[key_acc]["credit"] = vals[key_acc]["credit"] + (
-                            total / total_money * rec.expensive_total)
+                        total / total_money * rec.expensive_total)
                     vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
                         'account_id': account_1561, 'name': item.name,
                         'debit': total / total_money * rec.expensive_total,

@@ -44,13 +44,13 @@ class AccountMove(models.Model):
     trade_discount = fields.Integer(string='Chiết khấu thương mại(%)')
     total_trade_discount = fields.Integer(string='Tổng chiết khấu thương mại')
 
-    ## field domain cho 2 field đơn mua hàng và phiếu nhập kho
+    # field domain cho 2 field đơn mua hàng và phiếu nhập kho
     receiving_warehouse_id = fields.Many2many('stock.picking', string='Receiving Warehouse')
     purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order')
     partner_domain = fields.Char(compute='_compute_partner_domain')
     partner_domain_2 = fields.Char(compute='_compute_partner_domain_2')
 
-    ## field chi phí và thuế nhập khẩu
+    # field chi phí và thuế nhập khẩu
     exchange_rate_line = fields.One2many('invoice.exchange.rate', 'invoice_rate_id',
                                          string='Invoice Exchange Rate',
                                          compute='_compute_exchange_rate_line_and_cost_line',
@@ -64,8 +64,17 @@ class AccountMove(models.Model):
     # Field check page ncc vãng lại
     is_check_vendor_page = fields.Boolean(default=False, compute='_compute_is_check_vendor_page')
 
+<<<<<<< addons/custom/forlife_invoice/models/invoice.py
+    # domain product_cost:
+    product_product_mm = fields.Many2many('product.product')
+
+    # tab e-invoice-bkav
+    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
+                                    compute='_compute_e_invoice_ids_exists_bkav')
+=======
     ##tab e-invoice-bkav
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
+>>>>>>> addons/custom/forlife_invoice/models/invoice.py
 
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),
@@ -77,12 +86,18 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
+<<<<<<< addons/custom/forlife_invoice/models/invoice.py
+    # tạo data lấy từ bkav về tab e-invoice
+    @api.depends('exists_bkav')
+    def _compute_e_invoice_ids_exists_bkav(self):
+=======
     # product_not_is_passersby = fields.Many2many('product.product')
 
 
     ###tạo data lấy từ bkav về tab e-invoice
     @api.onchange('exists_bkav')
     def onchange_exitsts_bakv_e_invoice(self):
+>>>>>>> addons/custom/forlife_invoice/models/invoice.py
         for rec in self:
             if rec.exists_bkav:
                 data_e_invoice = self.env['e.invoice'].search(
@@ -490,24 +505,34 @@ class AccountMove(models.Model):
         invoice_vat.action_post()
 
     def create_trade_discount(self):
+        trade_product_id = self.env['product.template'].search([('detailed_type', '=', 'service'), ('is_trade_discount', '=', True)], limit=1)
+
+        if not trade_product_id:
+            raise ValidationError("Không tìm thấy sản phẩm thiết lập CKTM. Vui lòng thiết lập trước khi xác nhận.")
+
         for rec in self:
             account_ck = []
-            # if not self.env.ref('forlife_purchase.category_product_discount_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-            #     raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục chiết khấu")
-            account_331 = (0, 0, {
-                'account_id': rec.partner_id.property_account_receivable_id.id,
-                'name': rec.partner_id.property_account_receivable_id.name,
-                'debit': rec.total_trade_discount,
-                'credit': 0,
-            })
-            account_771 = (0, 0, {
-                'account_id': self.env.ref('forlife_purchase.category_product_discount_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
-                'name': self.env.ref('forlife_purchase.category_product_discount_tax').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.name,
-                'debit': 0,
-                'credit': rec.total_trade_discount,
-            })
-            lines_ck = [account_331, account_771]
-            account_ck.extend(lines_ck)
+            for item in rec.invoice_line_ids:
+                account_income = (0, 0, {
+                    'product_id': item.product_id.id,
+                    'display_type': 'tax',
+                    'account_id': trade_product_id.property_account_income_id.id,
+                    'name': trade_product_id.property_account_income_id.name,
+                    'debit': rec.total_trade_discount,
+                    'credit': 0,
+                    'is_uncheck': True,
+                })
+                account_expense = (0, 0, {
+                    'product_id': item.product_id.id,
+                    'display_type': 'tax',
+                    'account_id': trade_product_id.property_account_expense_id.id,
+                    'name': trade_product_id.property_account_expense_id.name,
+                    'debit': 0,
+                    'credit': rec.total_trade_discount,
+                    'is_uncheck': True,
+                })
+                lines_ck = [account_income, account_expense]
+                account_ck.extend(lines_ck)
 
         invoice_ck = self.env['account.move'].create({
             'partner_id': self.partner_id.id,
@@ -551,14 +576,14 @@ class AccountMoveLine(models.Model):
     price_unit = fields.Float(string='Unit Price',
                               digits='Product Price')
 
-    ## fields common !!
+    # fields common !!
     readonly_discount = fields.Boolean(default=False)
     readonly_discount_percent = fields.Boolean(default=False)
     production_order = fields.Many2one('forlife.production', string='Production order')
     event_id = fields.Many2one('forlife.event', string='Program of events')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
-    ## goods invoice!!
+    # goods invoice!!
     promotions = fields.Boolean(string='Promotions', default=False)
     quantity_purchased = fields.Integer(string='Quantity Purchased', default=1)
     exchange_quantity = fields.Float(string='Exchange Quantity')
@@ -571,7 +596,7 @@ class AccountMoveLine(models.Model):
                             compute='_compute_quantity', store=1)
     total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
 
-    ## asset invoice!!
+    # asset invoice!!
     asset_code = fields.Char('Mã tài sản cố định')
     asset_name = fields.Char('Mô tả tài sản cố định')
     code_tax = fields.Char(string='Mã số thuế')
@@ -587,8 +612,8 @@ class AccountMoveLine(models.Model):
     @api.depends('display_type', 'company_id')
     def _compute_account_id(self):
         res = super()._compute_account_id()
-        if self.product_id and self.move_id.purchase_order_product_id and self.move_id.purchase_order_product_id.is_inter_company == False \
-                and self.move_id.purchase_order_product_id.type_po_cost == 'cost':
+        if self.product_id and self.move_id.purchase_order_product_id and self.move_id.purchase_order_product_id[0].is_inter_company == False \
+                and self.move_id.purchase_order_product_id[0].type_po_cost == 'cost':
             self.account_id = self.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
         return res
 
@@ -792,7 +817,6 @@ class InvoiceExchangeRate(models.Model):
     invoice_rate_id = fields.Many2one('account.move', string='Invoice Exchange Rate')
     qty_product = fields.Float(copy=True, string="Số lượng đặt mua")
 
-
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
     def constrains_per(self):
         for item in self:
@@ -872,4 +896,3 @@ class eInvoice(models.Model):
     number_e_invoice = fields.Char('Số HĐĐT')
     date_start_e_invoice = fields.Char('Ngày phát hành HĐĐT')
     state_e_invoice = fields.Char('Trạng thái HĐĐT', related='e_invoice_id.invoice_state_e')
-

@@ -58,7 +58,7 @@ class InheritPosOrder(models.Model):
         values = []
         results = self.env['account.move']
         for line in self.lines:
-            if not line.product_id.check_is_promotion():
+            if not line.product_src_id:
                 continue
             point_promotion = self.env['points.promotion'].sudo().search([('product_discount_id', '=', line.product_id.id)], limit=1)
             if point_promotion:
@@ -110,7 +110,7 @@ class InheritPosOrder(models.Model):
         return results
 
     def _prepare_invoice_line(self, order_line):
-        if order_line.product_id.check_is_promotion():
+        if order_line.product_src_id:
             return None
         invoice_line = super(InheritPosOrder, self)._prepare_invoice_line(order_line)
         invoice_line.update({
@@ -123,7 +123,7 @@ class InheritPosOrder(models.Model):
         return [
             invoice_line
             for invoice_line in super(InheritPosOrder, self)._prepare_invoice_lines()
-            if invoice_line[-1]
+            if invoice_line[-1] is None
         ]
 
     def _prepare_invoice_vals(self):
@@ -184,11 +184,35 @@ class InheritPosOrderLine(models.Model):
     @api.model_create_multi
     def create(self, values):
         pols = super(InheritPosOrderLine, self).create(values)
-        order_id, source_id = 0, 0
+        pols_promotion_values = []
         for pol in pols:
-            if not pol.product_id.is_promotion:
-                order_id, source_id = pol.order_id.id, pol.id
-                continue
-            if order_id and source_id and pol.product_src_id.id != source_id:
-                pol.write({'product_src_id': source_id, 'discount': 0, 'tax_ids_after_fiscal_position': None})
+            pols_promotion_values += [{
+                'order_id': pol.order_id.id,
+                'product_src_id': pol.id,
+                'product_id': program.product_discount_id,
+                'qty': 1,
+                'price_unit': program.discount_total if program.discount_total <= 0 else -program.discount_total,
+                'price_subtotal': program.discount_total if program.discount_total <= 0 else -program.discount_total,
+                'original_price': program.discount_total if program.discount_total <= 0 else -program.discount_total,
+                'is_state_registration': False,
+                'full_product_name': program.product_discount_id.name,
+                'employee_id': pol.employee_id.id,
+                'description': '',
+                'tax_ids': [(6, 0, program.product_discount_id.taxes_id.mapped(lambda tax: tax.id))]
+            } for program in pol.promotion_usage_ids] + [{
+                'order_id': pol.order_id.id,
+                'product_src_id': pol.id,
+                'product_id': point.product_discount_id.id,
+                'qty': 1,
+                'price_unit': point.money_reduced if point.money_reduced <= 0 else -point.money_reduced,
+                'price_subtotal': point.money_reduced if point.money_reduced <= 0 else -point.money_reduced,
+                'original_price': point.money_reduced if point.money_reduced <= 0 else -point.money_reduced,
+                'is_state_registration': (len(point) == 1) and point.check_validity_state_registration() or False,
+                'full_product_name': point.product_discount_id.name,
+                'employee_id': pol.employee_id.id,
+                'description': '',
+                'tax_ids': [(6, 0, point.product_discount_id.taxes_id.mapped(lambda tax: tax.id))]
+            } for point in pol.discount_details_lines]
+        if pols_promotion_values:
+            self.create(pols_promotion_values)
         return pols
