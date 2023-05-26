@@ -32,6 +32,17 @@ class ProductProduct(models.Model):
     def bravo_get_identity_key_names(self):
         return ['Code']
 
+    def bravo_get_product_category_hierarchy(self, product):
+        category_object = self.env['product.category']
+        accounting_category = product.categ_id
+        category_level = [int(x) for x in accounting_category.parent_path.split('/')]
+        len_category = len(category_level)
+        category_level_1 = category_object.browse(category_level[0]) if len_category > 0 else category_object
+        category_level_2 = category_object.browse(category_level[1]) if len_category > 1 else category_object
+        category_level_3 = category_object.browse(category_level[2]) if len_category > 2 else category_object
+        category_level_4 = category_object.browse(category_level[3]) if len_category > 3 else category_object
+        return category_level_1, category_level_2, category_level_3, category_level_4, accounting_category
+
     def bravo_get_record_values(self, to_update=False, **kwargs):
         def check_account_is_155x(account_code):
             if not account_code:
@@ -42,65 +53,32 @@ class ProductProduct(models.Model):
         values = []
         bravo_column_names = [
             "Code", "Name", "ParentCode", "UnitCode",
-            "BrandCode", "ItemGroupCode", "ItemLineCode", "StructureCode", "CommodityGroup",
+            "BrandCode", "CommodityGroup", "ItemLineCode", "StructureCode", "ItemGroupCode",
             "ItemType"
         ]
         attribute_column_names = [
-            "Object", "BrandName", "MainFabric", "Subclass1", "Subclass2", "Subclass3", "Subclass4", "Subclass5",
-            "Subclass6", "Subclass7", "Subclass8", "Subclass9", "Subclass10", "Attribute1", "Attribute2", "Designer",
-            "Origin", "Source", "YearOfManu", "SeasonCode", "TypeOfGoods", "ColorDesc", "SizeRange", "Reproduce",
-            "QualityCode", "Guide", "ColorLight",
+            "SeasonCode"
         ]
         bravo_column_names.extend(attribute_column_names)
         attribute_column_name_code_mapping = {
-            "Object": "001",
-            "BrandName": "002",
-            "MainFabric": "003",
-            "Subclass1": "004",
-            "Subclass2": "005",
-            "Subclass3": "006",
-            "Subclass4": "007",
-            "Subclass5": "008",
-            "Subclass6": "009",
-            "Subclass7": "010",
-            "Subclass8": "011",
-            "Subclass9": "012",
-            "Subclass10": "013",
-            "Attribute1": "014",
-            "Attribute2": "015",
-            "Designer": "016",
-            "Origin": "017",
-            "Source": "018",
-            "YearOfManu": "019",
             "SeasonCode": "020",
-            "TypeOfGoods": "021",
-            "ColorDesc": "022",
-            "SizeRange": "023",
-            "Reproduce": "024",
-            "QualityCode": "025",
-            "Guide": "026",
-            "ColorLight": "027",
         }
         if not self:
             if to_update:
                 return []
             return bravo_column_names, []
         for record in self:
-            category_level_5 = record.categ_id
-            category_level_4 = category_level_5.parent_id
-            category_level_3 = category_level_4.parent_id
-            category_level_2 = category_level_3.parent_id
-            category_level_1 = category_level_2.parent_id
+            c1, c2, c3, c4, accounting_c = self.bravo_get_product_category_hierarchy(record)
             value = {
                 bravo_column_names[0]: record.barcode or None,
                 bravo_column_names[1]: record.name,
                 bravo_column_names[2]: record.sku_code or None,
                 bravo_column_names[3]: record.uom_id.code or None,
-                bravo_column_names[4]: category_level_1.category_code or None,
-                bravo_column_names[5]: category_level_2.category_code or None,
-                bravo_column_names[6]: category_level_3.category_code or None,
-                bravo_column_names[7]: category_level_4.category_code or None,
-                bravo_column_names[8]: category_level_5.category_code or None,
+                bravo_column_names[4]: c1.bravo_get_category_code() or None,
+                bravo_column_names[5]: c2.bravo_get_category_code() or None,
+                bravo_column_names[6]: c3.bravo_get_category_code() or None,
+                bravo_column_names[7]: c4.bravo_get_category_code() or None,
+                bravo_column_names[8]: accounting_c.bravo_get_category_code() or None,
             }
             if record.detailed_type != 'product':
                 product_type = 0
@@ -125,6 +103,7 @@ class ProductProduct(models.Model):
             })
 
             attribute_values = record.product_template_variant_value_ids or record.product_template_attribute_value_ids
+            attribute_values = record.product_tmpl_id.valid_product_template_attribute_line_ids
             product_attribute_code_value_mapping = {}
             for attr_value in attribute_values:
                 attribute_code = attr_value.attribute_id.attrs_code
@@ -164,4 +143,3 @@ class ProductProduct(models.Model):
         if values:
             return values[0] if type(values) is list else values
         return {}
-

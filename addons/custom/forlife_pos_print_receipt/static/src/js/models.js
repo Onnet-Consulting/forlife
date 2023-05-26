@@ -42,6 +42,8 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             }
         }
 
+        // FIXME: group promotion by program
+
         receipt_group_order_lines_by_promotion(){
             let line_group_by_promotion_info = {};
             let normal_lines = []

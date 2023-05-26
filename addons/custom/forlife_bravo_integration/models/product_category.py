@@ -15,6 +15,8 @@ class ProductCategory(models.Model):
     is_accounting_category = fields.Boolean(string='Là nhóm hạch toán', default=False)
 
     def bravo_get_category_code(self):
+        if not self:
+            return None
         self.ensure_one()
         category_code = self.category_code or ''
         if self.is_accounting_category:
