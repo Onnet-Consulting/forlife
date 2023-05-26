@@ -37,13 +37,17 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                     // ids order new
                     var order_new_ids = [];
 
-
+                    var combo_ids = [];
                     _.each(currentOrder.get_orderlines(), function (orderLine) {
                         var attribute_ids = orderLine.product.attribute_ids.split(",");
 
                        if(orderLine.product.combo_id[0] !=null && !orderLine.is_new_line && orderLine.quantity !== 0){
                             order_old_lines.push(orderLine);
+                            if(jQuery.inArray(orderLine.product.combo_id[0], combo_ids) == -1) {
+                                combo_ids.push(orderLine.product.combo_id[0]);
+                            }
                        }
+
                        if(orderLine.product.combo_id[0] !=null && orderLine.is_new_line){
                            // list combo
                             $.each(combo, $.proxy(function(i, e) {
@@ -62,44 +66,74 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                     var message = '';
                     // danh sach don hang cu
                     if(order_old_lines){
-                        // danh sach don hang cu
-                        _.each(order_old_lines, function (orderOldLine) {
-                            var attribute_ids = orderOldLine.product.attribute_ids.split(",");
+                        if(order_new_lines.length == 0){
+                            message = "Bạn cần mua sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
+                        }
+                         if(combo_ids) {
+                             _.each(combo_ids, function (combo) {
+                                 var list_count = []
+                                 var list_product_ids = []
+                                 _.each(order_old_lines, function (orderOldLine) {
+                                     if(combo == orderOldLine.product.combo_id[0] && Math.abs(orderOldLine.quantity) != 0) {
+                                         if(jQuery.inArray(orderOldLine.product.id, list_product_ids) == -1) {
+                                             var line_combo = [];
+                                             _.each(order_old_lines, function (item) {
+                                                 if(orderOldLine.product.product_tmpl_id == item.product.product_tmpl_id){
+                                                    list_product_ids.push(item.product.id);
+                                                    line_combo.push(item);
+                                                 }
+                                             })
 
-                            if(order_new_lines.length == 0){
-                                message = "Bạn cần mua sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
-                            }else{
+                                             var total_quantity = 0;
+                                             line_combo.forEach(function (line2) {
+                                                total_quantity = total_quantity + Math.abs(line2.quantity)
+                                             })
 
-                                if(jQuery.inArray(orderOldLine.product.id, order_new_ids) == -1) {
-                                    // Neu san pham k co trong don hang hien thi thong bao
-                                    if(order_new_lines_combo){
-                                        _.each(attribute_ids, function (att) {
-                                            if(jQuery.inArray(att, order_new_attribute_ids) != -1 ){
-                                                var total_quantity = 0
-                                                // Nếu có danh sách đơn hàng combo mới
-                                                _.each(order_new_lines_combo, function (orderNewLineCombo) {
-                                                    total_quantity = total_quantity + orderNewLineCombo.quantity
-                                                })
-
-                                                if (total_quantity != Math.abs(orderOldLine.quantity)) {
-                                                    message = "Bạn cần mua đủ số lượng sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
-                                                }
-                                            }
-                                        })
-                                    }
-                                    else
-                                    {
-                                        message = "Bạn cần mua sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
-                                    }
-                                }
-                                 // neu co danh sach don hang moi
-                                _.each(order_new_lines, function (orderNewLine) {
-                                     if(orderNewLine.product.id == orderOldLine.product.id && orderNewLine.product.combo_id[0] == orderOldLine.product.combo_id[0] && Math.abs(orderOldLine.quantity) != orderNewLine.quantity ){
-                                        message = "Bạn cần mua đủ số lượng sản phẩm " + orderNewLine.product.display_name + " để đổi trả!";
+                                             if(jQuery.inArray(total_quantity, list_count) == -1) {
+                                                list_count.push(total_quantity);
+                                             }
+                                         }
                                      }
+
+                                     // check theo attribute
+                                     var attribute_ids = orderOldLine.product.attribute_ids.split(",");
+                                     if(jQuery.inArray(orderOldLine.product.id, order_new_ids) == -1) {
+                                            // Neu san pham k co trong don hang hien thi thong bao
+                                            if(order_new_lines_combo){
+                                                _.each(attribute_ids, function (att) {
+                                                    if(jQuery.inArray(att, order_new_attribute_ids) != -1 ){
+                                                        var total_quantity = 0
+                                                        // Nếu có danh sách đơn hàng combo mới
+                                                        _.each(order_new_lines_combo, function (orderNewLineCombo) {
+                                                            total_quantity = total_quantity + orderNewLineCombo.quantity
+                                                        })
+
+                                                        if (total_quantity != Math.abs(orderOldLine.quantity)) {
+                                                            message = "Bạn cần mua đủ số lượng sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
+                                                        }
+                                                    }
+                                                })
+                                            }
+                                            else
+                                            {
+                                                message = "Bạn cần mua sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
+                                            }
+                                        }
+                                         // neu co danh sach don hang moi
+                                     _.each(order_new_lines, function (orderNewLine) {
+                                             if(orderNewLine.product.id == orderOldLine.product.id && orderNewLine.product.combo_id[0] == orderOldLine.product.combo_id[0] && Math.abs(orderOldLine.quantity) != orderNewLine.quantity ){
+                                                message = "Bạn cần mua đủ số lượng sản phẩm " + orderNewLine.product.display_name + " để đổi trả!";
+                                             }
+                                     })
+
                                 })
-                            }
-                        })
+
+                                if(list_count.length > 1) {
+                                    message = "Bạn cần trả đúng số lượng combo sản phẩm đã mua!";
+                                }
+
+                             })
+                         }
                     }
 
                     if(message.length > 0) {
@@ -132,15 +166,31 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                             }
                        }
                     })
+
                     if(order_old_lines){
                         if(combo_ids){
                             _.each(combo_ids, function (combo) {
                                 var list_count = []
+                                var list_product_ids = []
                                 _.each(order_old_lines, function (orderOldLine) {
-                                    if(combo == orderOldLine.product.combo_id[0]) {
-                                        var quantity = Math.abs(orderOldLine.quantity);
-                                        if(jQuery.inArray(quantity, list_count) == -1) {
-                                            list_count.push(quantity);
+                                    if(combo == orderOldLine.product.combo_id[0] && Math.abs(orderOldLine.quantity) != 0) {
+                                        if(jQuery.inArray(orderOldLine.product.id, list_product_ids) == -1) {
+                                            var line_combo = [];
+                                            _.each(order_old_lines, function (item) {
+                                                if(orderOldLine.product.product_tmpl_id == item.product.product_tmpl_id){
+                                                    list_product_ids.push(item.product.id);
+                                                    line_combo.push(item);
+                                                }
+                                            })
+
+                                            var total_quantity = 0;
+                                            line_combo.forEach(function (line2) {
+                                                total_quantity = total_quantity + Math.abs(line2.quantity)
+                                            })
+
+                                            if(jQuery.inArray(total_quantity, list_count) == -1) {
+                                                list_count.push(total_quantity);
+                                            }
                                         }
                                     }
                                 })
