@@ -22,7 +22,6 @@ class PurchaseOrder(models.Model):
         ('product', 'Goods'),
         ('service', 'Service'),
         ('asset', 'Asset'),
-        ('asset', 'Asset'),
     ], string='Purchase Type', required=True, default='product')
     inventory_status = fields.Selection([
         ('not_received', 'Not Received'),
@@ -86,16 +85,29 @@ class PurchaseOrder(models.Model):
     date_order = fields.Datetime('Order Deadline', required=True, states=READONLY_STATES, index=True, copy=False,
                                  default=fields.Datetime.now,
                                  help="Depicts the date within which the Quotation should be confirmed and converted into a purchase order.")
+
     invoice_status = fields.Selection([
         ('no', 'Nothing to Bill'),
         ('to invoice', 'Waiting Bills'),
         ('invoiced', 'Fully Billed'),
     ], string='Billing Status', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
+
+    invoice_status_fake = fields.Selection([
+        ('no', 'Chưa nhận'),
+        ('to invoice', 'Dở dang'),
+        ('invoiced', 'Hoàn thành'),
+    ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
+
     rejection_reason = fields.Char(string="Lý do từ chối")
     origin = fields.Char('Source Document', copy=False,
                          help="Reference of the document that generated this purchase order "
                               "request (e.g. a sales order)", compute='compute_origin')
     type_po_cost = fields.Selection([('tax', 'Tax'), ('cost', 'Cost')])
+
+
+    show_check_availability = fields.Boolean(
+        compute='_compute_show_check_availability', invisible = True ,
+        help='Technical field used to compute whether the button "Check Availability" should be displayed.')
 
     # Lấy của base về phục vụ import
     order_line = fields.One2many('purchase.order.line', 'order_id', string='Chi tiết',
@@ -173,8 +185,11 @@ class PurchaseOrder(models.Model):
         for item in self:
             if item.source_document:
                 item.origin = item.source_document
+                print("item, origin",item.origin )
             else:
                 item.origin = False
+
+
 
     def compute_inventory_status(self):
         for item in self:
@@ -444,7 +459,7 @@ class PurchaseOrder(models.Model):
                     }
                     invoice_line_ids.append((0, 0, invoice_line))
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
-            record.write({'custom_state': 'approved', 'inventory_status': 'done', 'invoice_status': 'invoiced'})
+            record.write({'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'to invoice'})
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
@@ -601,6 +616,8 @@ class PurchaseOrder(models.Model):
             else:
                 rec.active_manual_currency_rate = False
 
+    #             order.invoice_status = 'no'
+
     # def _prepare_invoice(self):
     #     result = super(PurchaseOrder, self)._prepare_invoice()
     #     result.update({
@@ -683,7 +700,6 @@ class PurchaseOrder(models.Model):
     def action_create_invoice(self):
         """Create the invoice associated to the PO.
         """
-
         if len(self) > 1 and self[0].type_po_cost in ('cost', 'tax'):
             result = self.create_multi_invoice_vendor()
         else:
@@ -693,6 +709,9 @@ class PurchaseOrder(models.Model):
                 invoice_vals_list = []
                 sequence = 10
                 for order in self:
+                    order.write({
+                        'invoice_status_fake': 'to invoice',
+                    })
                     if order.custom_state != 'approved':
                         raise UserError(
                             _('Tạo hóa đơn không hợp lệ!'))
@@ -1510,6 +1529,16 @@ class AccountMove(models.Model):
     is_from_ncc = fields.Boolean('From Ncc')
     reference = fields.Char(string='Tài liệu')
 
+    def action_post(self):
+        for rec in self:
+            if rec.purchase_order_product_id:
+                for item in rec.purchase_order_product_id:
+                    item.write({
+                        'invoice_status_fake': 'invoiced',
+                    })
+        res = super(AccountMove, self).action_post()
+        return res
+
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
@@ -1522,6 +1551,10 @@ class StockPicking(models.Model):
             po = self.env['purchase.order'].search([('name', '=', record.origin), ('is_inter_company', '=', False)],
                                                    limit=1)
             if po:
+                po.write({
+                    'inventory_status': 'done',
+                    'invoice_status_fake': 'to invoice',
+                })
                 _context = {
                     'pk_no_input_warehouse': False,
                 }
@@ -1654,13 +1687,13 @@ class StockPicking(models.Model):
 
                 })
             if not self.env.ref(
-                    'forlife_purchase.product_import_tax').categ_id.property_stock_account_input_categ_id or not self.env.ref(
-                    'forlife_purchase.product_excise_tax').categ_id.property_stock_account_input_categ_id:
+                    'forlife_purchase.product_import_tax_default').categ_id.property_stock_account_input_categ_id or not self.env.ref(
+                    'forlife_purchase.product_excise_tax_default').categ_id.property_stock_account_input_categ_id:
                 raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế")
             invoice_line_3333 = (
                 0, 0,
                 {'account_id': self.env.ref(
-                    'forlife_purchase.product_import_tax').categ_id.property_stock_account_input_categ_id.id,
+                    'forlife_purchase.product_import_tax_default').categ_id.property_stock_account_input_categ_id.id,
                  'name': r.name,
                  'debit': 0,
                  'credit': credit_333,
@@ -1789,3 +1822,5 @@ class StockPicking(models.Model):
         result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(
             master_xk).button_validate()
         return result
+
+

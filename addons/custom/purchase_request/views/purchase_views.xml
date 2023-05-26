@@ -55,7 +55,8 @@
                            attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': [('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
                     <field name="source_document" string="Tài liệu gốc" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="inventory_status"/>
-                    <field name="invoice_status"/>
+                     <field name="invoice_status_fake" />
+                    <field name="invoice_status" invisible="1"/>
                     <!--                    <field name="picking_type_id"/>-->
                     <field name="has_contract" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                     <field name="has_contract_commerce" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
