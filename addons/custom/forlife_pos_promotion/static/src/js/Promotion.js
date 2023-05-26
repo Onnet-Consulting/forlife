@@ -1640,9 +1640,10 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 && (productLine.max_quantity > productLine.issued_qty || productLine.max_quantity <= 0)) {
                 validSurprisingPrograms.push(productLine);
             };
-            if (productLine.has_check_product && inOrderProductsList.some(product => productLine.to_check_product_ids.has(product))){
+            if (productLine.has_check_product && inOrderProductsList.some(product => productLine.to_check_product_ids.has(product))
+                && (productLine.max_quantity > productLine.issued_qty || productLine.max_quantity <= 0)) {
                 validBuyVoucherGetCodePrograms.push(productLine);
-            }
+            };
         };
         function get_line_info(line, selected) {
             return {
