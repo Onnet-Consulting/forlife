@@ -65,8 +65,7 @@ class AccountMove(models.Model):
     is_check_vendor_page = fields.Boolean(default=False, compute='_compute_is_check_vendor_page')
 
     # tab e-invoice-bkav
-    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
-                                    compute='_compute_e_invoice_ids_exists_bkav')
+    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),
         ('QC', 'QC'),
