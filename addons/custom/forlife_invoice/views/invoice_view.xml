@@ -235,6 +235,10 @@
                                 <field name="company_id"/>
                                 <field name="invoice_reference"/>
                                 <field name="invoice_description"/>
+                                <field name="price_subtotal_back"/>
+                                <field name="tax_back"/>
+                                <field name="tax_percent_back"/>
+                                <field name="totals_back"/>
                             </tree>
                         </field>
                     </page>

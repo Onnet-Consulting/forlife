@@ -1636,13 +1636,13 @@ class StockPicking(models.Model):
 
                 })
             if not self.env.ref(
-                    'forlife_purchase.product_import_tax').categ_id.property_stock_account_input_categ_id or not self.env.ref(
-                    'forlife_purchase.product_excise_tax').categ_id.property_stock_account_input_categ_id:
+                    'forlife_purchase.product_import_tax_default').categ_id.property_stock_account_input_categ_id or not self.env.ref(
+                    'forlife_purchase.product_excise_tax_default').categ_id.property_stock_account_input_categ_id:
                 raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế")
             invoice_line_3333 = (
                 0, 0,
                 {'account_id': self.env.ref(
-                    'forlife_purchase.product_import_tax').categ_id.property_stock_account_input_categ_id.id,
+                    'forlife_purchase.product_import_tax_default').categ_id.property_stock_account_input_categ_id.id,
                  'name': r.name,
                  'debit': 0,
                  'credit': credit_333,
