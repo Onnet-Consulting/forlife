@@ -17,7 +17,7 @@ class ResPartner(models.Model):
         'product.category', 'Product Category',
         change_default=True, default=_get_default_category_id, group_expand='_read_group_categ_id',
         required=True)
-    is_passersby = fields.Boolean(defaul=False)
+    is_passersby = fields.Boolean(default=False)
     is_inter_company_purchase = fields.Boolean(default=False)
 
     @api.onchange('internal_code')

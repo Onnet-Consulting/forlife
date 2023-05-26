@@ -59,7 +59,8 @@ product_cate_info as (
         pp.barcode                                                                as product_barcode,
         pp.default_code                                                           as internal_ref,
         coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
-        acc.account_code                                                          as account_code
+        acc.account_code                                                          as account_code,
+        pt.collection                                                             as bo_suu_tap
     from product_product pp 
         left join product_template pt on pt.id = pp.product_tmpl_id
         join product_category cate on cate.id = pt.categ_id
@@ -84,7 +85,7 @@ select row_number() over ()                                               as num
        '' as mau_sac,
        '' as kich_co,
        '' as nam_sx,
-       '' as bo_suu_tap,
+       pci.bo_suu_tap as bo_suu_tap,
        '' as xuat_xu,
        '' as cac_thuoc_tinh,
        coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US') as dv_tinh,

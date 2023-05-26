@@ -13,9 +13,7 @@ class SaleOrder(models.Model):
 
     x_sale_type = fields.Selection(
         [('product', 'Hàng hóa'),
-         ('service', 'Dịnh vụ/Tài sản'),
-         ('integrated', 'Tích hợp'),
-         ('return', 'Trả hàng')],
+         ('service', 'Dịnh vụ/Tài sản')],
         string='Loại bán hàng', default='product')
     x_sale_chanel = fields.Selection(
         [('pos', 'Đơn bán hàng POS'),
@@ -25,25 +23,52 @@ class SaleOrder(models.Model):
         string='Kênh bán', default='wholesale')
     x_account_analytic_ids = fields.Many2many('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_ids = fields.Many2many('occasion.code', string='Mã vụ việc')
-    x_process_punish = fields.Boolean(string='Đơn phạt nhà gia công')
+    x_process_punish = fields.Boolean(string='Đơn phạt nhà gia công', copy=False)
     x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
+    x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)
     x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
     x_is_return = fields.Boolean('Đơn trả hàng')
     x_origin = fields.Many2one('sale.order', 'Tài liệu gốc')
     x_order_punish_count = fields.Integer('Số đơn phạt', compute='_compute_order_punish_count')
     x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
+    x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
 
+    def confirm_return_so(self):
+        so_id = self.x_origin
+        line = []
+        for picking in so_id.picking_ids:
+            line.append((0, 0, {'picking_name': picking.name,
+                                'state': 'Chưa trả',
+                                'picking_id': picking.id,
+                                }))
+
+        comfirm = self.env['confirm.return.so'].create({'line_ids': line})
+        return {
+            'view_mode': 'form',
+            'res_model': 'confirm.return.so',
+            'type': 'ir.actions.act_window',
+            'views': [(False, 'form')],
+            'res_id': comfirm.id,
+            'target': 'current'
+        }
     def _compute_order_punish_count(self):
         for r in self:
             count = self.env['sale.order'].search(
                 [('x_origin', '=', r.id), '|', ('x_shipping_punish', '=', True), ('x_shipping_punish', '=', True)])
             r.x_order_punish_count = len(count)
 
+    def _compute_exchange_count(self):
+        for r in self:
+            count = self.env['sale.order'].search(
+                [('x_origin', '=', r.id), ('x_is_exchange', '=', True)])
+            r.x_is_exchange_count = len(count)
+
     def _compute_order_return_count(self):
         for r in self:
             count = self.env['sale.order'].search(
                 [('x_origin', '=', r.id), ('x_is_return', '=', True)])
             r.x_order_return_count = len(count)
+
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
@@ -78,7 +103,34 @@ class SaleOrder(models.Model):
             action['res_id'] = count.id
         return action
     def action_view_so_return(self):
-        print(11111111111)
+        count = self.env['sale.order'].search(
+            [('x_origin', '=', self.id), ('x_is_return', '=', True)])
+        action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
+        if len(count) > 1:
+            action['domain'] = [('id', 'in', count.ids)]
+        elif len(count) == 1:
+            form_view = [(self.env.ref('sale.view_order_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = count.id
+        return action
+
+    def action_view_so_exchange(self):
+        count = self.env['sale.order'].search(
+            [('x_origin', '=', self.id), ('x_is_exchange', '=', True)])
+        action = self.env['ir.actions.actions']._for_xml_id('sale.action_orders')
+        if len(count) > 1:
+            action['domain'] = [('id', 'in', count.ids)]
+        elif len(count) == 1:
+            form_view = [(self.env.ref('sale.view_order_form').id, 'form')]
+            if 'views' in action:
+                action['views'] = form_view + [(state, view) for state, view in action['views'] if view != 'form']
+            else:
+                action['views'] = form_view
+            action['res_id'] = count.id
+        return action
     def get_rule_domain(self):
         domain = ['&', ('location_dest_id', '=', self.partner_shipping_id.property_stock_customer.id),
                   ('action', '!=', 'push')]
@@ -220,6 +272,19 @@ class SaleOrder(models.Model):
         res = super(SaleOrder, self).action_cancel()
         return res
 
+    def action_return(self):
+        so_return = self.copy()
+        picking_location_list = {}
+        for picking in self.picking_ids:
+            picking_location_list[picking.location_id.id] = picking.name
+        so_return.update({
+            'x_is_return': True,
+            'x_origin': self.id
+        })
+        for line in so_return.order_line:
+            if picking_location_list.get(line.x_location_id.id):
+                line.x_origin = picking_location_list.get(line.x_location_id.id)
+
     def action_punish(self):
         self.x_shipping_punish = True
         return {
@@ -243,6 +308,7 @@ class SaleOrderLine(models.Model):
     x_account_analytic_id = fields.Many2one('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_id = fields.Many2one('occasion.code', string='Mã vụ việc')
     x_free_good = fields.Boolean(string='Hàng tặng')
+    x_origin = fields.Char(string='Tài liệu gốc')
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -269,8 +335,7 @@ class SaleOrderLine(models.Model):
 
     @api.onchange('x_free_good')
     def _onchange_x_free_good(self):
-        if self.x_free_good:
-            self.price_unit = 0
+        self._compute_price_unit()
 
     @api.onchange('price_unit')
     def _set_price_unit(self):

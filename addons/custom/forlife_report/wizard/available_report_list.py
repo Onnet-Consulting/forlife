@@ -117,4 +117,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum19Template',
         'reportPager': True,
     },
+    'report.num20': {
+        'module': 'Bán hàng',
+        'name': 'Bảng kê chi tiết hóa đơn bán - đổi - trả',
+        'reportTemplate': 'ReportNum20Template',
+        'reportPager': True,
+    },
 }
