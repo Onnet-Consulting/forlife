@@ -3,11 +3,13 @@ from odoo.exceptions import UserError
 import datetime
 
 list = [
-        ('product', 'Sản phẩm lưu kho'),
-        ('service', 'Dịch vụ'),
-        ('asset', 'Tài sản'),
-        ('event', 'Vé sự kiện')
-        ]
+    ('product', 'Sản phẩm lưu kho'),
+    ('service', 'Dịch vụ'),
+    ('asset', 'Tài sản'),
+    ('event', 'Vé sự kiện')
+]
+
+
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
@@ -40,6 +42,8 @@ class ProductTemplate(models.Model):
             ('internal_costs', 'Chi phí nội bộ'),
             ('labor_costs', 'Chi phí nhân công'),
         ], string="Sản phẩn là chi phí")
+
+    is_trade_discount = fields.Boolean(string="CKTM", default=False)
 
     @api.model
     def default_get(self, default_fields):
