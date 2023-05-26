@@ -192,6 +192,7 @@
                            attrs="{'readonly': ['|', ('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}"/>
                     <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                     <field name="invoice_status" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
                     <field name="active_manual_currency_rate" invisible="1"/>
@@ -216,6 +217,8 @@
                 <xpath expr="//field[@name='date_order']" position="replace">
                     <field name="date_order" string="Order Date" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
+
+
                 <xpath expr="//field[@name='tax_totals']" position="after">
                     <field name="trade_discount"/>
                     <field name="total_trade_discount"/>
@@ -324,6 +327,7 @@
                 <xpath expr="//field[@name='notes']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', 'in', ('done', 'approved'))]}</attribute>
                 </xpath>
+
             </field>
         </record>
         <!-- Inherit purchase order tree view -->
@@ -336,9 +340,14 @@
                     <field name="purchase_type" widget="badge"/>
                     <field name="custom_state" decoration-success="custom_state == 'approved'" widget="badge"/>
                 </xpath>
+                 <xpath expr="//field[@name='invoice_status']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//field[@name='invoice_status']" position="before">
                     <field name="inventory_status" attrs="{'invisible': [('purchase_type', '!=', 'product')]}"/>
+                    <field name="invoice_status_fake" widget="badge" decoration-success="invoice_status_fake == 'invoiced'" decoration-info="invoice_status_fake == 'to invoice'" optional="show"/>
                     <field name="date_order"/>
+
                 </xpath>
             </field>
         </record>
