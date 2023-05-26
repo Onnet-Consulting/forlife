@@ -9,11 +9,15 @@
                     <header>
                         <button string="Generate" type="object" name="action_generate" class="btn btn-primary" states="new"/>
                         <button string="Approve" type="object" name="action_approve" class="btn btn-primary" states="in_progress"/>
-                        <button string="Cancel" type="object" name="action_cancel" />
-                        <button string="Back to draft" type="object" name="action_draft" />
+                        <button string="Cancel" type="object" name="action_cancel" states="new,in_progress"/>
+                        <button string="Back to draft" type="object" name="action_draft" states="canceled"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
+                         <div class="oe_button_box" name="button_box">
+                            <button name="action_view_picking" string="Các phiếu nhập xuất" type="object" class="oe_stat_button" icon="fa-bars">
+                            </button>
+                        </div>
                         <group>
                             <group>
                                 <field name="user_create_id"/>
@@ -31,15 +35,16 @@
                         <page string="Sản phẩm chính">
                             <field name="split_product_line_ids" mode="tree">
                                 <tree editable="bottom">
-                                    <field name="product_id"/>
+                                    <field name="state" invisible="1"/>
+                                    <field name="product_id" attrs="{'readonly': [('state','=','canceled')]}"/>
                                     <field name="product_uom"/>
-                                    <field name="warehouse_out_id"/>
+                                    <field name="warehouse_out_id" attrs="{'readonly': [('state','=','canceled')]}"/>
                                     <field name="product_quantity_out"/>
-                                    <field name="product_quantity_split"/>
+                                    <field name="product_quantity_split" attrs="{'readonly': [('state','=','canceled')]}"/>
                                     <field name="product_uom_split"/>
-                                    <field name="warehouse_in_id"/>
+                                    <field name="warehouse_in_id" attrs="{'readonly': [('state','=','canceled')]}"/>
                                     <field name="unit_price" invisible="True"/>
-                                    <field name="value"/>
+                                    <field name="value" invisible="True"/>
                                 </tree>
 
                             </field>
@@ -47,13 +52,14 @@
                         <page string="Sản phẩm phân tách">
                             <field name="split_product_line_sub_ids" mode="tree">
                                 <tree editable="bottom">
-                                    <field name="product_id"/>
+                                    <field name="state" invisible="1"/>
+                                    <field name="product_id" attrs="{'readonly': [('state','=','canceled')]}"/>
                                     <field name="product_split"/>
                                     <field name="warehouse_in_id"/>
                                     <field name="quantity"/>
                                     <field name="product_uom_split"/>
                                     <field name="unit_price" invisible="True"/>
-                                    <field name="value"/>
+                                    <field name="value" invisible="True"/>
                                 </tree>
                             </field>
                         </page>
