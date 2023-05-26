@@ -39,22 +39,20 @@
             <field name="property_stock_account_input_categ_id" ref="l10n_vn.1_chart1562"/>
             <field name="property_stock_account_output_categ_id" ref="l10n_vn.1_chart1562"/>
         </record>
-        <record id="product_import_tax" model="product.product">
+        <record id="product_import_tax_default" model="product.product">
             <field name="name">Thuế nhập khẩu</field>
-            <field name="company_id" eval="False"/>
-            <!--            <field name="code_product">tax3333000002</field>-->
+<!--            <field name="code_product"></field>-->
             <field name="categ_id" ref="forlife_purchase.category_product_import_tax"/>
-        </record>
-        <record id="product_excise_tax" model="product.product">
-            <field name="name">Thuế tiêu thụ đặc biệt</field>
-            <field name="company_id" eval="False"/>
-            <!--            <field name="code_product">tax3332000001</field>-->
-            <field name="categ_id" ref="forlife_purchase.category_product_excise_tax"/>
         </record>
         <record id="product_vat_tax" model="product.product">
             <field name="name">Thuế VAT (Nhập khẩu)</field>
             <!--            <field name="code_product">tax3332000001</field>-->
             <field name="categ_id" ref="forlife_purchase.category_product_vat_tax"/>
+        </record>
+        <record id="product_excise_tax_default" model="product.product">
+            <field name="name">Thuế tiêu thụ đặc biệt</field>
+            <!--            <field name="code_product">tax3332000001</field>-->
+            <field name="categ_id" ref="forlife_purchase.category_product_excise_tax"/>
         </record>
         <record id="product_discount_tax" model="product.product">
             <field name="name">Chiết khấu tổng đơn</field>
@@ -80,11 +78,15 @@
         <record id="account_gtgt_tax_1331" model="account.tax">
             <field name="name">Thuế GTGT hàng nhập khẩu</field>
             <field name="amount_type">percent</field>
-<!--            <field name="company_id" eval="False"/>-->
+            <field name="company_id">4</field>
             <field name="active">True</field>
             <field name="type_tax_use">purchase</field>
             <field name="code">Thuế GTGT hàng nhập khẩu</field>
-<!--            <field name="invoice_repartition_line_ids">Thuế GTGT hàng nhập khẩu</field>-->
         </record>
+<!--         <record id="forlife_code_account_1" model="account.account">-->
+<!--            <field name="name">Thuế VAT (10%)</field>-->
+<!--            <field name="code">1331000001</field>-->
+<!--            <field name="account_type">off_balance</field>-->
+<!--        </record>-->
     </data>
 </odoo>
