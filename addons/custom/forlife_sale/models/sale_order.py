@@ -304,7 +304,7 @@ class SaleOrderLine(models.Model):
     x_location_id = fields.Many2one('stock.location', 'Địa điểm kho')
     x_scheduled_date = fields.Date(string='Ngày giao hàng dự kiến')
     x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
-    x_product_code_id = fields.Many2one('product.template', string='Mã tài sản')
+    x_product_code_id = fields.Many2one('assets.assets', string='Mã tài sản')
     x_account_analytic_id = fields.Many2one('account.analytic.account', string='Trung tâm chi phí')
     x_occasion_code_id = fields.Many2one('occasion.code', string='Mã vụ việc')
     x_free_good = fields.Boolean(string='Hàng tặng')
@@ -328,6 +328,18 @@ class SaleOrderLine(models.Model):
             domain = [('detailed_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                               ('company_id', '=', self.order_id.company_id)] + domain}}
+
+    @api.onchange('x_product_code_id')
+    def x_product_code_id_get_domain(self):
+        if self.x_product_code_id:
+            account = self.x_product_code_id.asset_account.id
+            product_categ_id = self.env['product.category'].search(
+                [('property_stock_valuation_account_id', '=', account)])
+            if product_categ_id:
+                product_id = self.env['product.product'].search([('categ_id', 'in', product_categ_id.ids)])
+                domain = [('id', 'in', product_id.ids)]
+                return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
+                                                  ('company_id', '=', self.order_id.company_id)] + domain}}
 
     @api.onchange('price_unit', 'discount', 'product_uom_qty')
     def compute_cart_discount_fixed_price(self):
@@ -363,6 +375,8 @@ class SaleOrderLine(models.Model):
         res = super(SaleOrderLine, self)._compute_price_unit()
         for line in self:
             line._set_price_unit()
+            if line.x_product_code_id:
+                line.price_unit = 0
             if line.order_id.partner_id and self.product_id and line.order_id.x_process_punish:
                 line.set_price_unit()
         return res
