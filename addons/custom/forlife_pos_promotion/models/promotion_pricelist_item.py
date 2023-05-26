@@ -19,6 +19,7 @@ class PromotionPricelistItem(models.Model):
     product_id = fields.Many2one('product.product', string='Product', domain="[('available_in_pos', '=', True)]",
                                  required=True)
     fixed_price = fields.Float('Fix price')
+    lst_price = fields.Float('Sale Price', related='product_id.lst_price', digits='Product Price')
     barcode = fields.Char(related='product_id.barcode')
     qty_available = fields.Float(related='product_id.qty_available')
 
