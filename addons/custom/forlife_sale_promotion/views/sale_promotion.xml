@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="sale_promotion_form" model="ir.ui.view">
+            <field name="name">Sale.promotion.form</field>
+            <field name="model">sale.order.promotion</field>
+            <field name="arch" type="xml">
+                <form string="Sale Promotion">
+                    <sheet>
+                        <group col="4">
+
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
