@@ -32,7 +32,7 @@ class StockBalanceDifferenceReport(models.TransientModel):
                 'remaining_qty': 0,
                 'description': self.name,
                 'product_id': line.product_id,
-                'company_id': 1
+                'company_id': self.env.company.id
             } for line in self.line_ids)
         }
 
@@ -85,8 +85,8 @@ class StockBalanceDifferenceReport(models.TransientModel):
             ''',
             params=(
                 self._context.get('lang') or 'en_US',
-                self.env.user.company_id.id,
-                self.env.user.company_id.id,
+                self.env.company.id,
+                self.env.company.id,
                 self.account_id.id,
                 period_start,
                 period_end
