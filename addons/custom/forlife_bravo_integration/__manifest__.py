@@ -36,6 +36,7 @@
 
     'data': [
         'security/ir.model.access.csv',
+        'data/res_partner_group_data.xml',
         'data/queue_job_data.xml',
         'data/ir_cron_data.xml',
         'views/res_config_settings.xml',

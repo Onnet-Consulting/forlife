@@ -42,45 +42,38 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             }
         }
 
-        receipt_group_order_lines_by_promotion(order_lines){
+        receipt_group_order_lines_by_promotion(){
             let line_group_by_promotion_info = {};
             let normal_lines = []
-            for (const line of order_lines){
+            for (const line of this.get_orderlines()){
                 let {quantity, product, promotion_usage_ids} = line;
                 let product_id = product.id;
-                if (!promotion_usage_ids) {
+                if (!promotion_usage_ids || promotion_usage_ids.length === 0) {
                     normal_lines.push(line);
                     continue;
                 }
-                let product_key = "".concat(product_id, "_", quantity);
+                // let product_qty_key = "".concat(product_id, "_", quantity);
                 for (const pro_line of promotion_usage_ids){
                     let {program_id, pro_priceitem_id, discount_amount} = pro_line;
                     // don't group line discounted by pricelist
-                    if (!pro_priceitem_id) continue;
+                    if (pro_priceitem_id) continue;
+
+                    let product_key = "".concat(product_id, "_", discount_amount)
                     if (!(program_id in line_group_by_promotion_info)){
                         line_group_by_promotion_info[program_id] = {}
                     }
                     if (!(product_key in line_group_by_promotion_info[program_id])){
                         line_group_by_promotion_info[program_id][product_key] = {
-                            "discount_amount":discount_amount
+                            "quantity": quantity
                         }
                     }
                     else{
-                        // let exist_discount_amount = line_group_by_promotion_info[program_id][product_key]['discount_amount']
-                        // if (exist_discount_amount === discount_amount){
-                        //     line_group_by_promotion_info[program_id][product_key]['discount_amount'] = exist_discount_amount*2
-                        // }
-                        // let exist_quantity = product_promotion_info['quantity'];
-                        // let exist_discount_amount = product_promotion_info['discount_amount'];
-
-                    }
-                    line_group_by_promotion_info[program_id] = {
-                        product_id,
-                        quantity,
-                        discount_amount
+                        let exist_quantity  = line_group_by_promotion_info[program_id][product_key]['quantity'];
+                        line_group_by_promotion_info[program_id][product_key]['quantity'] = exist_quantity + quantity;
                     }
                 }
             }
+            return [normal_lines, line_group_by_promotion_info]
         }
 
         export_for_printing() {

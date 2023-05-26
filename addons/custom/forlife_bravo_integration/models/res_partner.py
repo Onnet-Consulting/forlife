@@ -34,3 +34,15 @@ class ResPartnerGroup(models.Model):
     br_1 = BravoCharField(odoo_name="code", bravo_name="Code", identity=True)
     br_2 = BravoCharField(odoo_name="name", bravo_name="Name")
     br_3 = BravoIntegerField(bravo_default=1, bravo_name="IsGroup")
+
+    @api.model
+    def _push_existing_groups(self):
+        exist_groups = self.env.ref("forlife_pos_app_member.partner_group_1") + \
+                       self.env.ref("forlife_pos_app_member.partner_group_2") + \
+                       self.env.ref("forlife_pos_app_member.partner_group_3") + \
+                       self.env.ref("forlife_pos_app_member.partner_group_4") + \
+                       self.env.ref("forlife_pos_app_member.partner_group_5") + \
+                       self.env.ref("forlife_pos_app_member.partner_group_c") + \
+                       self.env.ref("forlife_pos_app_member.partner_group_system")
+        exist_groups.sudo().with_delay().bravo_insert_with_check_existing()
+        return True
