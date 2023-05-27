@@ -16,6 +16,7 @@ class PartnerCardRankLine(models.Model):
         for r in self:
             data.append({
                 'id': r.partner_card_rank_id.customer_id.id,
+                'updated_at': r.create_date.strftime('%Y-%m-%d %H:%M:%S'),
                 'rank': {
                     r.partner_card_rank_id.brand_id.code: {
                         'id': r.new_card_rank_id.id,
