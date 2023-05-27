@@ -256,6 +256,9 @@ odoo.define('forlife_voucher.VoucherPopup', function (require) {
                         if(data[i].value.store_ids.length > 0 && data[i].value.store_ids.includes(this.env.pos.config.store_id[0]) == false){
                             error.push("Không trùng khớp mã cửa hàng!")
                         }
+                        if(data[i].value.type == 'e' && !data[i].value.state_app && data[i].value.apply_many_times){
+                            error.push("Voucher chưa được kích hoạt qua App!")
+                        }
                         if(data[i].value.state == 'new'){
                             error.push("Mã voucher chưa được sử dụng!")
                         }

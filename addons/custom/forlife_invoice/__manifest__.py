@@ -9,7 +9,7 @@
         'account',
         'purchase',
         'base',
-        'forlife_purchase',
+        # 'forlife_purchase',
         'forlife_stock',
         'bkav_connector',
     ],

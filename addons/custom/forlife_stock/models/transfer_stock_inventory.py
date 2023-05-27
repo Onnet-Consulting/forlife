@@ -19,6 +19,7 @@ class TransferStockInventory(models.Model):
     note = fields.Text(string="Note")
     transfer_stock_inventory_line_ids = fields.One2many('transfer.stock.inventory.line', 'transfer_stock_inventory_id',
                                                         copy=True)
+    x_classify = fields.Boolean(compute='check_classify', store=True)
     state = fields.Selection(
         tracking=True,
         string="Status",
@@ -30,6 +31,19 @@ class TransferStockInventory(models.Model):
     reason_reject = fields.Text('Reason Reject')
     reason_cancel = fields.Text('Reason Cancel')
     is_nk_xk = fields.Boolean(default=False, copy=False)
+
+    @api.depends('transfer_stock_inventory_line_ids')
+    def check_classify(self):
+        for r in self:
+            sum_in = 0
+            sum_out = 0
+            for line in r.transfer_stock_inventory_line_ids:
+                sum_out += line.unit_price_from * line.qty_out
+                sum_in += line.unit_price_to * line.qty_in
+            if sum_out == sum_in:
+                r.x_classify = True
+            else:
+                r.x_classify = False
 
     def action_import_other(self):
         for item in self:
@@ -70,7 +84,16 @@ class TransferStockInventory(models.Model):
     def create(self, vals):
         if vals.get('code', 'New') == 'New':
             vals['code'] = self.env['ir.sequence'].next_by_code('transfer.stock.inventory.name.sequence') or 'TSI'
-        return super(TransferStockInventory, self).create(vals)
+        res = super(TransferStockInventory, self).create(vals)
+        if self._context.get('x_classify') and not res.x_classify:
+            raise ValidationError('Giá trị xuất đang không khớp với giá trị nhập')
+        return res
+
+    def write(self, vals_list):
+        res = super().write(vals_list)
+        if self._context.get('x_classify') and not self.x_classify:
+            raise ValidationError('Giá trị xuất đang không khớp với giá trị nhập')
+        return res
 
     def action_wait_confirm(self):
         for rec in self:

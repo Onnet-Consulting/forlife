@@ -6,11 +6,9 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.vpicktree"/>
         <field name="arch" type="xml">
-
             <xpath expr="//field[@name='scheduled_date']" position="after">
                 <field name="date_done"/>
             </xpath>
-
         </field>
     </record>
 
@@ -23,7 +21,9 @@
             <xpath expr="//field[@name='date_done']" position="replace">
                 <field name="date_done" string="Ngày hoàn thành"/>
             </xpath>
-
+            <xpath expr="//field[@name='origin']" position="before">
+                <field name="relation_return"/>
+            </xpath>
         </field>
     </record>
 
