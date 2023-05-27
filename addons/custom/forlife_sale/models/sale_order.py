@@ -7,13 +7,23 @@ from datetime import date, datetime
 from odoo.exceptions import UserError
 import pyodbc
 from datetime import date, datetime
+from odoo.tests import Form
 
+list_state = {
+    'draft': 'Dự thảo',
+    'waiting': 'Đang chờ hoạt động khác',
+    'confirmed': 'Chờ',
+    'assigned': 'Sẵn sàng',
+    'done': 'Hoàn thành',
+    'cancel': 'Đã hủy'
+}
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     x_sale_type = fields.Selection(
         [('product', 'Hàng hóa'),
-         ('service', 'Dịnh vụ/Tài sản')],
+         ('service', 'Dịch vụ'),
+         ('asset', 'Tài sản')],
         string='Loại bán hàng', default='product')
     x_sale_chanel = fields.Selection(
         [('pos', 'Đơn bán hàng POS'),
@@ -35,14 +45,35 @@ class SaleOrder(models.Model):
 
     def confirm_return_so(self):
         so_id = self.x_origin
+        picking_ids = so_id.picking_ids
+        if picking_ids and len(picking_ids) == 1:
+            stock_return_picking_form = Form(
+                self.env['stock.return.picking'].with_context(active_ids=picking_ids.ids,
+                                                              active_id=picking_ids[0].id,
+                                                              active_model='stock.picking'))
+            ctx = {'so_return': self.id}
+            return_wiz = stock_return_picking_form.save()
+            return {
+                'name': _('Trả hàng phiếu %s' % (picking_ids[0].name)),
+                'view_mode': 'form',
+                'res_model': 'stock.return.picking',
+                'type': 'ir.actions.act_window',
+                'views': [(False, 'form')],
+                'res_id': return_wiz.id,
+                'context': ctx,
+                'target': 'new'
+            }
+
         line = []
-        for picking in so_id.picking_ids:
+        for picking in picking_ids:
             line.append((0, 0, {'picking_name': picking.name,
-                                'state': 'Chưa trả',
+                                'state': list_state.get(picking.state),
                                 'picking_id': picking.id,
                                 }))
 
-        comfirm = self.env['confirm.return.so'].create({'line_ids': line})
+        comfirm = self.env['confirm.return.so'].create({
+            'origin': self.id,
+            'line_ids': line})
         return {
             'view_mode': 'form',
             'res_model': 'confirm.return.so',
@@ -286,7 +317,6 @@ class SaleOrder(models.Model):
                 line.x_origin = picking_location_list.get(line.x_location_id.id)
 
     def action_punish(self):
-        self.x_shipping_punish = True
         return {
             'name': _('Tạo hóa đơn phạt'),
             'view_mode': 'form',
@@ -324,7 +354,7 @@ class SaleOrderLine(models.Model):
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
-        if self.order_id.x_sale_type and self.order_id.x_sale_type in ('product', 'service'):
+        if self.order_id.x_sale_type:
             domain = [('detailed_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                               ('company_id', '=', self.order_id.company_id)] + domain}}
@@ -340,6 +370,8 @@ class SaleOrderLine(models.Model):
                 domain = [('id', 'in', product_id.ids)]
                 return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                                   ('company_id', '=', self.order_id.company_id)] + domain}}
+            else:
+                return {'domain': {'product_id': [('id', '=', 0)]}}
 
     @api.onchange('price_unit', 'discount', 'product_uom_qty')
     def compute_cart_discount_fixed_price(self):
