@@ -478,6 +478,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.activatedInputCodes = [];
         this._resetPromotionPrograms();
         this._resetCartPromotionPrograms();
+        this.autoApplyPriceListProgram();
     }
 
     // New method
@@ -2220,12 +2221,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     autoApplyPriceListProgram(new_ol) {
         if (new_ol && new_ol.quantity > 0 && !new_ol.is_applied_promotion() && new_ol.pricelist_item) {
-            this.applyAPricelistProgramToLineVales(new_ol.pricelist_item, [new_ol])
+            if (this._programIsApplicableAutomatically(new_ol.pricelist_item)) {
+                this.applyAPricelistProgramToLineVales(new_ol.pricelist_item, [new_ol]);
+            };
         };
         if (!new_ol) {
             let to_check_orderlines = this.get_orderlines().filter(l => l.quantity > 0 && !l.is_applied_promotion() && l.pricelist_item);
             for (let line of to_check_orderlines) {
-                this.applyAPricelistProgramToLineVales(line.pricelist_item, [line]);
+                if (this._programIsApplicableAutomatically(line.pricelist_item)) {
+                    this.applyAPricelistProgramToLineVales(line.pricelist_item, [line]);
+                };
             };
         };
     }
