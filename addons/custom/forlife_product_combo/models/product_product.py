@@ -5,14 +5,16 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     combo_id = fields.Many2one('product.combo', related='product_tmpl_id.combo_id', string="Product Combo", store=True)
-    attribute_id = fields.Many2one('product.attribute', string="Color Attribute", store=True)
+    attribute_ids = fields.Char(compute='_compute_attribute_ids', store=True, index=True)
 
     def write(self, values):
-        values['attribute_id'] = int(self.product_template_attribute_value_ids.attribute_id.id) if self.product_template_attribute_value_ids.attribute_id.id else None
+        values['attribute_ids'] = self._ids2str(self.product_template_attribute_value_ids.attribute_id)
 
         return super().write(values)
 
-    def create(self, vals):
-        vals['attribute_id'] = int(self.product_template_attribute_value_ids.attribute_id.id) if self.product_template_attribute_value_ids.attribute_id.id else None
+    def _ids2str(self, list_ids):
+        return ','.join([str(i) for i in sorted(list_ids.ids)])
 
-        return super().write(vals)
+    def _compute_attribute_ids(self):
+        for product in self:
+            product.attribute_ids = self._ids2str(self.product_template_attribute_value_ids.attribute_id)
