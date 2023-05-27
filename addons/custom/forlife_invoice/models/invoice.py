@@ -100,8 +100,6 @@ class AccountMove(models.Model):
                         'e_invoice_id': rec.id,
                     })
                 rec.e_invoice_ids = [(6, 0, data_e_invoice.ids)]
-            else:
-                rec.e_invoice_ids = None
 
     @api.depends('partner_id', 'partner_id.group_id')
     def _compute_partner_domain(self):
