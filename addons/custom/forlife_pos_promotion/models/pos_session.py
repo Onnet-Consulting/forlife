@@ -15,7 +15,7 @@ class PosSession(models.Model):
                 'promotion.program',
                 'promotion.combo.line',
                 'promotion.reward.line',
-                # 'promotion.pricelist.item',
+                'promotion.pricelist.item',
                 'month.data',
                 'dayofmonth.data',
                 'dayofweek.data',

@@ -56,14 +56,15 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.surprisingRewardProducts = loadedData['surprising.reward.product.line'] || [];
         this.promotionComboLines = loadedData['promotion.combo.line'] || [];
         this.rewardLines = loadedData['promotion.reward.line'] || [];
-        this.promotionPricelistItems = loadedData['promotion.pricelist.item'] || [];
+        this.promotionPricelistItems =  [];
         this.monthData = loadedData['month.data'] || [];
         this.dayofmonthData = loadedData['dayofmonth.data'] || [];
         this.dayofweekData = loadedData['dayofweek.data'] || [];
         this.hourData = loadedData['hour.data'] || [];
         this._loadPromotionData();
 //        this.promotionPricelistItems = [];
-        this.loadPromotionPriceListItemBackground();
+        // this.loadPromotionPriceListItemBackground();
+        this._loadPromotionPriceListItem(loadedData['promotion.pricelist.item']);
     }
     _loadPromotionData() {
         this.promotion_program_by_id = {};
