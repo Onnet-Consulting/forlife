@@ -11,8 +11,7 @@
             <t t-call="ReportTitle"/>
             <tbody>
                 <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
-                <t t-set="num" t-value="1"/>
-                <t t-foreach="widget.data" t-as="line">
+                <t t-foreach="options.data" t-as="line">
                     <tr>
                         <td><t t-esc="num"/></td>
                         <td><t t-esc="line.store_name"/></td>
@@ -24,11 +23,10 @@
                         <td><t t-esc="line.ngay_mua_gn"/></td>
                         <td><t t-esc="line.ngay_ck"/></td>
                         <td><t t-esc="format_decimal(line.dt_ps, 0)"/></td>
-                        <td><t t-esc="line.gt_cd"/></td>
+                        <td><t t-esc="format_decimal(line.min_turnover - line.dt_ps, 0)"/></td>
                         <td><t t-esc="line.current_rank"/></td>
                         <td><t t-esc="line.new_rank"/></td>
                     </tr>
-                    <t t-set="num" t-value="num + 1"/>
                 </t>
             </tbody>
         </table>

@@ -14,6 +14,7 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
             this.env.pos.selectedOrder.orderlines.forEach(function(item){
                 order_lines.push({
                     product_id: item.product.id,
+                    attribute_id: item.product.attribute_id,
                     product_tmpl_id: item.product.product_tmpl_id,
                     combo_id: item.product.combo_id[0],
                     product_name:item.product.display_name,
@@ -23,41 +24,72 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
 
             //nghiệp vụ đổi hàng
             if(this.env.pos.get_order().is_change_product){
+                // select * from product_template_attribute_value where id = 3964747
                 try{
+                    // don hang cu
                     var order_old_lines = [];
+                    var order_new_lines_combo = [];
+                    var order_new_ids_combo = [];
+                    var order_new_attribute_ids = [];
+
+                    // danh sach don hang moi
                     var order_new_lines = [];
+                    // danh sach id don hang moi
                     var order_new_ids = [];
-                    var message = '';
+
+
                     _.each(currentOrder.get_orderlines(), function (orderLine) {
                        if(orderLine.product.combo_id[0] !=null && !orderLine.is_new_line && orderLine.quantity !== 0){
                             order_old_lines.push(orderLine);
-
-                           // message = "Code " + orderLine.product.sku_code + " refund not enough quantity!";
                        }
                        if(orderLine.product.combo_id[0] !=null && orderLine.is_new_line){
-                            order_new_lines.push(orderLine);
-                            order_new_ids.push(orderLine.product.id);
-                           // message = "Code " + orderLine.product.sku_code + " refund not enough quantity!";
+                           // danh sach combo
+                            $.each(combo, $.proxy(function(i, e) {
+                                //neu tich chon Allowed size hoac color
+                                if(e.id == orderLine.product.combo_id[0] && orderLine.product.attribute_id[0] == e.size_attribute_id || orderLine.product.attribute_id[0] == e.color_attribute_id){
+                                    order_new_lines_combo.push(orderLine);
+                                    order_new_ids_combo.push(orderLine.product.id);
+                                    order_new_attribute_ids.push(orderLine.product.attribute_id[0]);
+                                }else if(e.id == orderLine.product.combo_id[0] && orderLine.product.attribute_id[0] != e.size_attribute_id && orderLine.product.attribute_id[0] != e.color_attribute_id){
+                                    order_new_lines.push(orderLine);
+                                    order_new_ids.push(orderLine.product.id);
+                                }
+                            }, this));
                        }
                     })
+                    var message = '';
+                    // danh sach don hang cu
                     if(order_old_lines){
+                        // danh sach don hang cu
                         _.each(order_old_lines, function (orderOldLine) {
-                            if(order_new_lines){
-                                //  check neu khong co trong mang
+                            if(order_new_lines.length == 0){
+                                message = "Bạn cần mua sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
+                            }else{
+
                                 if(jQuery.inArray(orderOldLine.product.id, order_new_ids) == -1) {
-                                    message = "Bạn cần chọn sản phẩm " + orderLine.product.sku_code + " để đổi trả!";
-                                }else{
-                                    // neu co trong mang check so luong san pham can doi tra
-                                    _.each(order_new_lines, function (orderNewLine) {
-                                        if(orderOldLine.product.id == orderNewLine.product.id && Math.abs(orderOldLine.quantity) != orderNewLine.quantity){
-                                            // message = "Bạn cần đúng số lượng sản phẩm " + orderLine.product.sku_code + " để đổi trả!";
-                                            message = "Bạn cần nhập đúng số lượng sản phẩm để đổi trả!";
+                                    // Neu san pham k co trong don hang hien thi thong bao
+                                    if(order_new_lines_combo && jQuery.inArray(orderOldLine.product.attribute_id[0], order_new_attribute_ids) != -1 ){
+                                        var total_quantity = 0
+                                        // neu co danh sach don hang combo moi
+                                        _.each(order_new_lines_combo, function (orderNewLineCombo) {
+                                            total_quantity = total_quantity + orderNewLineCombo.quantity
+                                        })
+
+                                        if (total_quantity != Math.abs(orderOldLine.quantity)) {
+                                            message = "Bạn cần mua đủ số lượng sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
                                         }
-                                    })
+                                    }
+                                    else
+                                    {
+                                        message = "Bạn cần mua sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
+                                    }
                                 }
-                            }
-                            else{
-                                message = "Bạn cần chọn sản phẩm " + orderLine.product.sku_code + " để đổi trả!";
+                                 // neu co danh sach don hang moi
+                                _.each(order_new_lines, function (orderNewLine) {
+                                     if(orderNewLine.product.id == orderOldLine.product.id && orderNewLine.product.combo_id[0] == orderOldLine.product.combo_id[0] && Math.abs(orderOldLine.quantity) != orderNewLine.quantity ){
+                                        message = "Bạn cần mua đủ số lượng sản phẩm " + orderNewLine.product.display_name + " để đổi trả!";
+                                     }
+                                })
                             }
                         })
                     }
@@ -82,26 +114,30 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
             if(this.env.pos.get_order().is_refund_product) {
                 try{
                     var order_old_lines = [];
-                    var combo_old_ids = [];
+                    var combo_ids = [];
                     var message = '';
                     _.each(currentOrder.get_orderlines(), function (orderLine) {
-                       if(orderLine.product.combo_id[0] !=null && !orderLine.is_new_line){
+                       if(orderLine.product.combo_id[0] !=null && !orderLine.is_new_line ){
                             order_old_lines.push(orderLine);
+                            if(jQuery.inArray(orderLine.product.combo_id[0], combo_ids) == -1) {
+                                combo_ids.push(orderLine.product.combo_id[0]);
+                            }
                        }
                     })
                     if(order_old_lines){
-                        _.each(order_old_lines, function (orderOldLine) {
-                            if(orderOldLine.quantity != 0 && Math.abs(orderOldLine.quantity) != orderOldLine.quantity_canbe_refund){
-                                message = "Bạn cần trả đúng số lượng sản phẩm combo đã mua!";
-                                combo_old_ids.push(orderOldLine.product.combo_id[0]);
-                            }
-                        })
-                        if(combo_old_ids.length > 0) {
-                            _.each(order_old_lines, function (orderOldLine) {
-                                if(jQuery.inArray(orderOldLine.product.combo_id[0], combo_old_ids) != -1) {
-                                    if(orderOldLine.quantity == 0){
-                                        message = "Bạn cần trả đúng số lượng sản phẩm combo đã mua!";
+                        if(combo_ids){
+                            _.each(combo_ids, function (combo) {
+                                var list_count = []
+                                _.each(order_old_lines, function (orderOldLine) {
+                                    if(combo == orderOldLine.product.combo_id[0]) {
+                                        var quantity = Math.abs(orderOldLine.quantity);
+                                        if(jQuery.inArray(quantity, list_count) == -1) {
+                                            list_count.push(quantity);
+                                        }
                                     }
+                                })
+                                if(list_count.length > 1) {
+                                    message = "Bạn cần trả đúng số lượng combo sản phẩm đã mua!";
                                 }
                             })
                         }
@@ -131,40 +167,42 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                     if(combo) {
                         var message = '';
                         order_lines.forEach(function(item){
-                            if(jQuery.inArray(item.product_tmpl_id, list_product_checked) == -1) {
-                                list_product_checked.push(item.product_tmpl_id);
+                            // kiem tra xem id có trong mang khong neu k co thi them vao
+                            if(jQuery.inArray(item.product_id, list_product_checked) == -1) {
+                                list_product_checked.push(item.product_id);
                                 var product_check_combo = [];
                                 $.each(combo, $.proxy(function(i, e) {
                                     if(e.id == item.combo_id) {
                                         e.product_combolines.forEach(function (pc) {
-                                            var line = [];
-                                             order_lines.forEach(function(pp) {
+                                            var line2 = [];
+                                            order_lines.forEach(function(pp) {
                                                 if(pp.product_tmpl_id == pc.product_id){
-                                                    line.push(pp);
+                                                    line2.push(pp);
                                                 }
                                             })
-
-                                            line.forEach(function (li) {
-                                                if (jQuery.inArray(li.product_tmpl_id, list_product_checked) == -1) {
-                                                    list_product_checked.push(li.product_tmpl_id);
+                                            var total_quantity = 0
+                                            line2.forEach(function (li) {
+                                                if (jQuery.inArray(li.product_id, list_product_checked) == -1) {
+                                                    list_product_checked.push(li.product_id);
                                                 }
-
-                                                if (li.count < pc.quantity) {
-                                                    message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua ";
-                                                }
-
-                                                if (li.count % pc.quantity != 0) {
-                                                    message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua ";
-                                                }
-
-                                                var value = li.count / pc.quantity;
-                                                if (jQuery.inArray(value, product_check_combo) == -1) {
-                                                    product_check_combo.push(value);
-                                                }
-                                                if (product_check_combo.length > 1) {
-                                                    message = "Không đủ số lượng mua combo bộ vui lòng mua bổ xung";
-                                                }
+                                                total_quantity = total_quantity + li.count
                                             })
+                                            //  kiem tra tong so luong cua san pham trong 1 combo
+                                            if (total_quantity < pc.quantity) {
+                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua";
+                                            }
+
+                                            if (total_quantity % pc.quantity != 0) {
+                                                message = "Mã " + pc.sku_code + " thuộc bộ nên cần phải hoàn thành bộ khi mua";
+                                            }
+
+                                            var value = total_quantity / pc.quantity;
+                                            if (jQuery.inArray(value, product_check_combo) == -1) {
+                                                product_check_combo.push(value);
+                                            }
+                                            if (product_check_combo.length > 1) {
+                                                message = "Không đủ số lượng mua combo bộ vui lòng mua bổ xung";
+                                            }
                                         });
                                     }
                                 }, this));

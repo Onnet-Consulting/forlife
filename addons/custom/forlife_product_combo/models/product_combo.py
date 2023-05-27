@@ -7,7 +7,7 @@ class ProductCombo(models.Model):
     _name = 'product.combo'
     _description = 'product combo'
 
-    code = fields.Char('Combo code', readonly=True, required=True, copy=False, default='New')
+    code = fields.Char('Combo code', readonly=True, copy=False, default='New')
     description_combo = fields.Text(string="Description combo")
     state = fields.Selection([
         ('new', _('New')),
@@ -16,13 +16,12 @@ class ProductCombo(models.Model):
         ('canceled', _('Canceled'))], string='State', default='new')
     from_date = fields.Datetime('From Date', required=True, default=fields.Datetime.now)
     to_date = fields.Datetime('To Date', required=True)
-    size_deviation_allowed = fields.Boolean('Size Deviation Allowed')
-    color_deviation_allowed = fields.Boolean('Color Deviation Allowed')
     combo_product_ids = fields.One2many('product.combo.line', 'combo_id', string='Combo Applied Products')
+    size_attribute_id = fields.Many2one('product.attribute', string="Size Deviation Allowed", domain="[('create_variant', '=', 'always'), ('id', '!=', color_attribute_id)]")
+    color_attribute_id = fields.Many2one('product.attribute', string="Color Deviation Allowed", domain="[('create_variant', '=', 'always'), ('id', '!=', size_attribute_id)]")
 
     _sql_constraints = [
         ('combo_check_date', 'CHECK(from_date <= to_date)', 'End date may not be before the starting date.')]
-
 
 
     @api.model
@@ -34,9 +33,10 @@ class ProductCombo(models.Model):
             pr.product_id.write({
                 'combo_id': result.id if vals['state'] in ['in_progress'] else None
             })
-            pr.product_id.product_variant_id.write({
-                'combo_id': self.id if self.state in ['in_progress'] else None
-            })
+
+            # pr.product_id.product_variant_id.write({
+            #     'combo_id': self.id if self.state in ['in_progress'] else None
+            # })
 
         return result
 
@@ -46,7 +46,7 @@ class ProductCombo(models.Model):
             pr.product_id.write({
                 'combo_id': self.id if self.state in ['in_progress'] else None
             })
-            pr.product_id.product_variant_id.write({
-                'combo_id': self.id if self.state in ['in_progress'] else None
-            })
+            # pr.product_id.product_variant_id.write({
+            #     'combo_id': self.id if self.state in ['in_progress'] else None
+            # })
         return res

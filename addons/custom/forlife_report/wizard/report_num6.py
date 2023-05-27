@@ -5,8 +5,10 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+from odoo.tools.safe_eval import safe_eval
 
 TITLES = ['STT', 'Nhóm hàng', 'Dòng hàng', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Giới tính', 'Tổng bán', 'Tổng tồn', 'Nhân viên']
+COLUMN_WIDTHS = [10, 20, 20, 15, 30, 20, 20, 20, 20, 20, 20]
 
 
 class ReportNum6(models.TransientModel):
@@ -18,8 +20,7 @@ class ReportNum6(models.TransientModel):
     date = fields.Date('Date', required=True)
     start_time = fields.Float('Start time', default=0)
     end_time = fields.Float('End time', default=23 + (59 / 60))
-    all_warehouses = fields.Boolean(string='All warehouses', default=False)
-    warehouse_ids = fields.Many2many('stock.warehouse', string='Warehouses')
+    warehouse_domain = fields.Char('Warehouse', default='[]')
 
     @api.constrains('start_time', 'end_time')
     def check_times(self):
@@ -27,7 +28,7 @@ class ReportNum6(models.TransientModel):
             if record.start_time < 0.0 or record.start_time >= record.end_time or record.end_time >= 24.0:
                 raise ValidationError(_('Invalid time slot !'))
 
-    def _get_query(self, warehouse_ids):
+    def _get_query(self, warehouse_ids, allowed_company):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
@@ -36,14 +37,12 @@ class ReportNum6(models.TransientModel):
         end_time = datetime.strptime('{} {:02d}:{:02d}:00'.format(
             self.date, int(self.end_time // 1), int(self.end_time % 1 * 60)), '%Y-%m-%d %H:%S:%M') + relativedelta(hours=-tz_offset)
 
-        where_query = """
-            sm.company_id = %s
-            and sm.state = 'done'
-            and pt.type = 'product'\n
-        """ % self.company_id.id
-        where_query += f"and (src_wh.id = any (array{warehouse_ids.ids}) or des_wh.id = any (array{warehouse_ids.ids}))\n"
-        where_query += f"""and {format_date_query("sm.date", tz_offset)} <= '{str(self.date)}'\n"""
-
+        where_query = f"""
+    sm.company_id = any (array{allowed_company})
+    and sm.state = 'done'
+    and (src_wh.id = any (array{warehouse_ids}) or des_wh.id = any (array{warehouse_ids}))
+    and {format_date_query("sm.date", tz_offset)} <= '{str(self.date)}'
+"""
         query = f"""
 with stocks as (
     select 
@@ -69,8 +68,8 @@ sales as (
         left join pos_session ps on ps.id = po.session_id
         left join pos_config pc on ps.config_id = pc.id
         left join store on store.id = pc.store_id
-        left join stock_warehouse wh on wh.id = store.warehouse_id and wh.id = any (array{warehouse_ids.ids})
-    where po.company_id = {self.company_id.id}
+        left join stock_warehouse wh on wh.id = store.warehouse_id and wh.id = any (array{warehouse_ids})
+    where po.company_id = any (array{allowed_company})
         and po.state in ('paid', 'done', 'invoiced')
         and po.date_order between '{start_time}'and '{end_time}'
     group by pol.product_id, pol.employee_id
@@ -94,7 +93,8 @@ product_info as (
         left join product_category pc on pc.id = pt.categ_id
     where pp.id in (select product_id from products)
 )
-select pr.product_id                                                              as product_id,
+select row_number() over ()                                                       as num,
+        pr.product_id                                                             as product_id,
         COALESCE(sa.qty, 0)                                                       as sale_qty,
         COALESCE(sa.employee_id, 0)                                               as employee_id,
         emp.name                                                                  as employee_name,
@@ -110,16 +110,16 @@ from products pr
     left join sales sa on sa.product_id = pr.product_id
     left join stocks st on st.product_id = pr.product_id
     left join hr_employee emp on emp.id = sa.employee_id
+order by num
 """
         return query
 
-    def get_data(self):
+    def get_data(self, allowed_company):
+        allowed_company = allowed_company or [-1]
         self.ensure_one()
-        values = dict(super().get_data())
-        warehouse_ids = self.env['stock.warehouse'].search([('brand_id', '=', self.brand_id.id)]) if self.all_warehouses else self.warehouse_ids
-        if not warehouse_ids:
-            raise ValidationError(_('Warehouse not found !'))
-        query = self._get_query(warehouse_ids)
+        values = dict(super().get_data(allowed_company))
+        warehouse_ids = self.env['stock.warehouse'].search(safe_eval(self.warehouse_domain) + [('company_id', 'in', allowed_company), ('brand_id', '=', self.brand_id.id)]).ids or [-1]
+        query = self._get_query(warehouse_ids, allowed_company)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         values.update({
@@ -127,3 +127,33 @@ from products pr
             "data": data,
         })
         return values
+
+    def convert_time(self, value):
+        return '{:02d}:{:02d}'.format(int(value), int((value - int(value)) * 60))
+
+    def generate_xlsx_report(self, workbook, allowed_company):
+        data = self.get_data(allowed_company)
+        formats = self.get_format_workbook(workbook)
+        sheet = workbook.add_worksheet('Báo cáo bán - trưng hàng')
+        sheet.set_row(0, 25)
+        sheet.write(0, 0, 'Báo cáo bán - trưng hàng', formats.get('header_format'))
+        sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))
+        sheet.write(2, 2, 'Ngày: %s' % self.date.strftime('%d/%m/%Y'), formats.get('italic_format'))
+        sheet.write(2, 4, 'Khung giờ từ %s đến %s' % (self.convert_time(self.start_time), self.convert_time(self.end_time)), formats.get('italic_format'))
+        for idx, title in enumerate(data.get('titles')):
+            sheet.write(4, idx, title, formats.get('title_format'))
+            sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
+        row = 5
+        for value in data.get('data'):
+            sheet.write(row, 0, value.get('num'), formats.get('center_format'))
+            sheet.write(row, 1, value.get('product_group'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('product_line'), formats.get('normal_format'))
+            sheet.write(row, 3, value.get('product_barcode'), formats.get('normal_format'))
+            sheet.write(row, 4, value.get('product_name'), formats.get('normal_format'))
+            sheet.write(row, 5, value.get('product_size'), formats.get('normal_format'))
+            sheet.write(row, 6, value.get('product_color'), formats.get('normal_format'))
+            sheet.write(row, 7, value.get('gender'), formats.get('normal_format'))
+            sheet.write(row, 8, value.get('sale_qty'), formats.get('int_number_format'))
+            sheet.write(row, 9, value.get('stock_qty'), formats.get('int_number_format'))
+            sheet.write(row, 10, value.get('employee_name'), formats.get('normal_format'))
+            row += 1

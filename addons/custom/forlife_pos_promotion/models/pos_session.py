@@ -15,7 +15,7 @@ class PosSession(models.Model):
                 'promotion.program',
                 'promotion.combo.line',
                 'promotion.reward.line',
-                'promotion.pricelist.item',
+                # 'promotion.pricelist.item',
                 'month.data',
                 'dayofmonth.data',
                 'dayofweek.data',
@@ -27,13 +27,34 @@ class PosSession(models.Model):
         product_id = self._get_product_ids_by_store()
         return {
             'search_params': {
-                'domain': ['&', ('program_id', 'in', self.config_id._get_promotion_program_ids().ids), '|', ('product_id.id', 'in', product_id ), ('product_id.detailed_type', '=', 'service')],
+                'domain': ['&', '&',
+                           ('program_id', 'in', self.config_id._get_promotion_program_ids().ids),
+                           ('active', '=', True),
+                           '|', ('product_id.id', 'in', product_id), ('product_id.detailed_type', '=', 'service')],
                 'fields': ['id', 'program_id', 'product_id', 'display_name', 'fixed_price']
             }
         }
 
     # def _get_pos_ui_promotion_pricelist_item(self, params):
     #     return self.env['promotion.pricelist.item'].search_read(**params['search_params'])
+    def get_pos_ui_promotion_price_list_item_by_params(self, custom_search_params):
+        """
+        :param custom_search_params: a dictionary containing params of a search_read()
+        """
+        product_set = set()
+        pricelist_items = self.env['promotion.pricelist.item'].browse()
+        params = self._loader_params_promotion_pricelist_item()
+        # custom_search_params will take priority
+        params['search_params'] = dict(**params['search_params'], **custom_search_params)
+        result = self.env['promotion.pricelist.item'].with_context(active_test=False).search(
+            domain=params['search_params']['domain'],
+            offset=params['search_params']['offset'],
+            limit=params['search_params']['limit']).sorted(key='fixed_price', reverse=False)
+        for item in result:
+            if item.product_id.id not in product_set and item.product_id.lst_price > item.fixed_price:
+                pricelist_items |= item
+                product_set.add(item.product_id.id)
+        return pricelist_items.read(params['search_params']['fields'])
 
     def _get_pos_ui_promotion_pricelist_item(self, params):
         product_set = set()
@@ -85,6 +106,7 @@ class PosSession(models.Model):
                     'id',
                     'to_check_product_ids',
                     'reward_code_program_id',
+                    'has_check_product',
                     'max_quantity',
                     'issued_qty'
                 ]

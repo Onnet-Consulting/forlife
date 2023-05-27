@@ -106,14 +106,14 @@
                                 <field name="product_id" readonly="1"/>
                                 <field name="name" readonly="1"/>
                                 <field name="usd_amount" readonly="1" invisible="1"/>
-                                <field name="vnd_amount" readonly="1"/>
-                                <field name="qty_product" readonly="1" string="Số lượng đặt mua"/>
+                                <field name="vnd_amount" readonly="1" force_save="1"/>
+                                <field name="qty_product" readonly="1" string="Số lượng đặt mua" force_save="1"/>
                                 <field name="import_tax"/>
-                                <field name="tax_amount" readonly="1"/>
+                                <field name="tax_amount" readonly="1" force_save="1"/>
                                 <field name="special_consumption_tax"/>
-                                <field name="special_consumption_tax_amount" readonly="1"/>
+                                <field name="special_consumption_tax_amount" readonly="1" force_save="1"/>
                                 <field name="vat_tax"/>
-                                <field name="vat_tax_amount" readonly="1"/>
+                                <field name="vat_tax_amount" readonly="1" ie="1"/>
 <!--                                <field name="total_vnd_amount" readonly="1"/>-->
                                 <field name="total_tax_amount" readonly="1"/>
                             </tree>
@@ -183,12 +183,16 @@
                     <field name="is_check_readonly_partner_id" attrs="{'invisible': True}"/>
                     <field name="is_check_readonly_purchase_type" attrs="{'invisible': True}"/>
                     <field name="partner_domain" invisible="1" />
-                    <field name="partner_id" string="Nhà cung cấp" attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}" domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
+                    <field name="partner_id" string="Nhà cung cấp"
+                           attrs="{'readonly': ['|',('is_check_readonly_partner_id', '=', True), ('custom_state', 'not in', ('draft', 'confirm'))]}"
+                           domain="[('is_inter_company_purchase', '=', is_inter_company), ('company_id', '=', False)]" force_save="1" on_change="1"/>
                     <field name="is_passersby" invisible="1"/>
                     <field name="purchase_type" attrs="{'readonly': ['|',('is_check_readonly_purchase_type', '=', True),('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                     <field name="currency_id" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '!=', 'cost')]}" force_save="1"/>
+                    <field name="currency_id"
+                           attrs="{'readonly': ['|', ('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}"/>
+                    <field name="exchange_rate" attrs="{'readonly': ['|',('custom_state', 'not in', ('draft', 'confirm')), ('type_po_cost', '=', 'cost')]}" force_save="1"/>
                     <field name="purchase_code" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
+                     <field name="invoice_status" invisible="1"/>
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
                     <field name="active_manual_currency_rate" invisible="1"/>
@@ -213,10 +217,13 @@
                 <xpath expr="//field[@name='date_order']" position="replace">
                     <field name="date_order" string="Order Date" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
+
+
                 <xpath expr="//field[@name='tax_totals']" position="after">
                     <field name="trade_discount"/>
                     <field name="total_trade_discount"/>
                     <field name="is_done_picking" invisible="1"/>
+<!--                    <field name="product_not_is_passersby" invisible="1"/>-->
                 </xpath>
                 <xpath expr="//field[@name='order_line']//tree" position="replace">
                     <tree editable="bottom" class="width-hh">
@@ -225,7 +232,6 @@
                         </control>
                         <field name="is_change_vendor" invisible="1"/>
                         <field name="is_red_color" invisible="1"/>
-                        <field name="is_passersby" invisible="1"/>
                         <field name="display_type" invisible="1"/>
                         <field name="currency_id" invisible="1"/>
                         <field name="state" invisible="1"/>
@@ -234,7 +240,7 @@
                         <field name="invoice_lines" invisible="1"/>
                         <field name="sequence" widget="handle"/>
                         <field name="product_id"
-                               context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type}"
+                               context="{'supplier_id': parent.partner_id, 'purchase_type': parent.purchase_type, 'is_passersby': parent.is_passersby}"
                                attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"
                                domain="[('product_type', '=', parent.purchase_type), ('purchase_ok', '=', True), '|', ('company_id', '=', False), ('company_id', '=', parent.company_id)]" force_save="1"/>
                         <field name="name" invisible="1"/>
@@ -257,7 +263,7 @@
                         <field name="product_qty" attrs="{'readonly': ['|',('parent.purchase_type', '=', 'product'),('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
                         <field name="vendor_price"
-                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), ('is_passersby', '=', False), ('parent.purchase_type', '=', 'asset')]}"
+                               attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|', ('parent.custom_state', '=', 'approved'), ('parent.is_passersby', '=', False)]}"
                                force_save="1"/>
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
@@ -273,6 +279,7 @@
                         />
                         <field name="price_tax" string="Thuế" attrs="{'column_invisible': [('parent.type_po_cost', '=', 'tax')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="price_subtotal" widget="monetary" sum="discounted subtotal" force_save="1"/>
+                        <field name="total_vnd_amount" widget="monetary" sum="discounted subtotal" force_save="1"/>
                         <field name="discount_percent"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('readonly_discount_percent', '=', True), ('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
@@ -321,6 +328,7 @@
                 <xpath expr="//field[@name='notes']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', 'in', ('done', 'approved'))]}</attribute>
                 </xpath>
+
             </field>
         </record>
         <!-- Inherit purchase order tree view -->
@@ -333,9 +341,14 @@
                     <field name="purchase_type" widget="badge"/>
                     <field name="custom_state" decoration-success="custom_state == 'approved'" widget="badge"/>
                 </xpath>
+                 <xpath expr="//field[@name='invoice_status']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
                 <xpath expr="//field[@name='invoice_status']" position="before">
                     <field name="inventory_status" attrs="{'invisible': [('purchase_type', '!=', 'product')]}"/>
+                    <field name="invoice_status_fake" widget="badge" decoration-success="invoice_status_fake == 'invoiced'" decoration-info="invoice_status_fake == 'to invoice'" optional="show"/>
                     <field name="date_order"/>
+
                 </xpath>
             </field>
         </record>

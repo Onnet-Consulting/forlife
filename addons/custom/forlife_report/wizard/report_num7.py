@@ -5,6 +5,7 @@ from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 
 TITLES = ['STT', 'Dòng hàng', 'Số lượng', 'Doanh thu', '% danh thu']
+COLUMN_WIDTHS = [10, 20, 20, 25, 15]
 
 
 class ReportNum7(models.TransientModel):
@@ -51,9 +52,8 @@ select array_agg(emp_id) as ids from (
     def _get_query(self, store_ids):
         self.ensure_one()
         tz_offset = self.tz_offset
-        employee_conditions = ''
-        if self.employee_ids:
-            employee_conditions = f'and pol.employee_id = any (array{self.employee_ids.ids})'
+        employee_conditions = f'and pol.employee_id = any (array{self.employee_ids.ids})' if self.employee_ids else ''
+
         query = f"""
 with product_line_data as (
     select 
@@ -64,34 +64,36 @@ with product_line_data as (
         left join product_category pc on pc.id = pt.categ_id
 ),
 po_line as (
-    select (select product_line from product_line_data where product_id = pol.product_id)         as product_line,
-            pol.qty                                                                               as qty,
-            case when pol.qty > 0 then pol.price_subtotal_incl else -pol.price_subtotal_incl end  as revenue
+    select 
+        pld.product_line                                                                      as product_line,
+        pol.qty                                                                               as qty,
+        case when pol.qty > 0 then pol.price_subtotal_incl else -pol.price_subtotal_incl end  as revenue
     from pos_order_line pol
         join pos_order po on po.id = pol.order_id and po.state in ('paid', 'done', 'invoiced')
         join product_product pp on pp.id = pol.product_id
         left join product_template pt on pt.id = pp.product_tmpl_id
+        left join product_line_data pld on pld.product_id = pol.product_id
     where po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = any (array{store_ids})))
         and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
         {employee_conditions}
 )
-select product_line                                             as product_line,
+select row_number() over ()                                     as num,
+        product_line                                            as product_line,
         sum(qty)                                                as qty,
         sum(revenue)                                            as revenue,
         sum(revenue) / (select sum(revenue) from po_line) * 100 as percent_revenue
 from po_line
 group by product_line
+order by num
 """
         return query
 
-    def get_data(self):
+    def get_data(self, allowed_company):
         self.ensure_one()
-        values = dict(super().get_data())
-        warehouse_ids = self.env['stock.warehouse'].search([('brand_id', '=', self.brand_id.id)]) if self.all_warehouses else self.warehouse_ids
-        store_ids = self.env['store'].search([('warehouse_id', 'in', warehouse_ids.ids)])
-        if not store_ids:
-            raise ValidationError(_('Stores not found !'))
-        query = self._get_query(store_ids.ids)
+        values = dict(super().get_data(allowed_company))
+        warehouse_ids = self.env['stock.warehouse'].search([('brand_id', '=', self.brand_id.id), ('company_id', 'in', allowed_company)]).ids if self.all_warehouses else self.warehouse_ids.ids
+        store_ids = self.env['store'].search([('warehouse_id', 'in', warehouse_ids)]).ids or [-1]
+        query = self._get_query(store_ids)
         self._cr.execute(query)
         data = self._cr.dictfetchall()
         values.update({
@@ -99,3 +101,23 @@ group by product_line
             "data": data,
         })
         return values
+
+    def generate_xlsx_report(self, workbook, allowed_company):
+        data = self.get_data(allowed_company)
+        formats = self.get_format_workbook(workbook)
+        sheet = workbook.add_worksheet('Báo cáo doanh thu tại cửa hàng theo dòng hàng')
+        sheet.set_row(0, 25)
+        sheet.write(0, 0, 'Báo cáo doanh thu tại cửa hàng theo dòng hàng', formats.get('header_format'))
+        sheet.write(2, 0, 'Thương hiệu: %s' % self.brand_id.name, formats.get('italic_format'))
+        sheet.write(2, 2, 'Từ ngày %s đến ngày %s' % (self.from_date.strftime('%d/%m/%Y'), self.to_date.strftime('%d/%m/%Y')), formats.get('italic_format'))
+        for idx, title in enumerate(data.get('titles')):
+            sheet.write(4, idx, title, formats.get('title_format'))
+            sheet.set_column(idx, idx, COLUMN_WIDTHS[idx])
+        row = 5
+        for value in data.get('data'):
+            sheet.write(row, 0, value.get('num'), formats.get('center_format'))
+            sheet.write(row, 1, value.get('product_line'), formats.get('normal_format'))
+            sheet.write(row, 2, value.get('qty'), formats.get('int_number_format'))
+            sheet.write(row, 3, value.get('revenue'), formats.get('int_number_format'))
+            sheet.write(row, 4, value.get('percent_revenue'), formats.get('float_number_format'))
+            row += 1

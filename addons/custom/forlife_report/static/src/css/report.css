@@ -161,7 +161,7 @@ table.available-report-list {
 }
 
 .btn_back:hover {
-    color: #01535e;
+    color: #023a3f;
     background: #80808047;
-    margin-top: 10px;
+    border-radius: 50%;
 }
