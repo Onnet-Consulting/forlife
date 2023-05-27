@@ -300,6 +300,8 @@ class StockTransfer(models.Model):
                     'next': {'type': 'ir.actions.act_window_close'},
                 }
             }
+        return data, location_id, location_dest_id
+
     def _create_diff_transfer(self, data, state='draft', type=''):
         self.ensure_one()
         return self.env['stock.transfer'].create({

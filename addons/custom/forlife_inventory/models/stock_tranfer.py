@@ -3,6 +3,11 @@ from odoo import api, fields, models
 class StockTranfer(models.Model):
     _inherit = 'stock.transfer'
 
+    def _action_in_approve(self):
+        data, location_id, location_dest_id = super(StockTranfer, self)._action_in_approve()
+        self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)
+        return data, location_id, location_dest_id
+
     def _create_stock_picking_other_import_and_export(self, data, location_id, location_dest_id):
         #fetch-data-to-compare
 
@@ -21,48 +26,57 @@ class StockTranfer(models.Model):
         if location_id.company_id.code == '1300' or location_dest_id.company_id.code == '1300':
             if warehouse_dest_id in [warehouse_type_id_tl, warehouse_type_id_fm] and warehouse_id in [warehouse_type_master, warehouse_type_id_ec] \
                     and (s_location_dest_type_id == s_location_pos or s_location_dest_type_id == s_location_sell_ecommerce):
-
                 location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', location_dest_id.id)])
 
                 self._create_orther_import_export(location_mapping, data, type='import', location=location_dest_id)
 
             elif warehouse_dest_id in [warehouse_type_master, warehouse_type_id_ec] and warehouse_id in [warehouse_type_id_tl, warehouse_type_id_fm] \
                     and (s_location_type_id == s_location_pos or s_location_type_id == s_location_sell_ecommerce):
+                print('111')
+                raise
 
                 location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', location_id.id)])
 
                 self._create_orther_import_export(location_mapping, data, type='export', location=location_id)
 
             else:
-                pass
+                return False
         else:
-            pass
+            return False
+        return True
 
     def _create_orther_import_export(self, location_mapping, data, type, location):
         if location_mapping:
             for data_line in data:
                 data_line[2].update({'location_id': location_mapping.location_map_id.id, 'location_dest_id': location_mapping.location_map_id.id})
             company = location_mapping.location_map_id.warehouse_id.company_id.id
-            stock_picking = self.env['stock.picking'].with_company(company).create({
-                'transfer_id': self.id,
-                'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
-                'location_id': location_mapping.location_map_id.id,
-                'location_dest_id': location_mapping.location_map_id.id,
-                'move_ids_without_package': data,
-            })
             # update quant:
-            for data_line in data:
-                quant = self.env['stock.quant'].with_company(company).search(
-                    [('location_id', '=', location_mapping.location_map_id.id), ('product_id', '=', data_line[2]['product_id'])])
-                if type == 'import':
-                    quant.quantity = quant.quantity + data_line[2]['quantity_done']
-                else:
-                    quant.quantity = quant.quantity - data_line[2]['quantity_done']
+            # for data_line in data:
+            #     quant = self.env['stock.quant'].with_company(company).search(
+            #         [('location_id', '=', location_mapping.location_map_id.id), ('product_id', '=', data_line[2]['product_id'])])
+            #     if type == 'import':
+            #         quant.quantity = quant.quantity + data_line[2]['quantity_done']
+            #     else:
+            #         quant.quantity = quant.quantity - data_line[2]['quantity_done']
             if type == 'import':
-                stock_picking.other_import = True
+                stock_picking = self.env['stock.picking'].with_company(company).create({
+                    'transfer_id': self.id,
+                    'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
+                    'location_id': self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong').id,
+                    'location_dest_id': location_mapping.location_map_id.id,
+                    'move_ids_without_package': data,
+                    'other_import': True
+                })
             else:
-                stock_picking.other_export = True
-            stock_picking.state = 'done'
+                stock_picking = self.env['stock.picking'].with_company(company).create({
+                    'transfer_id': self.id,
+                    'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
+                    'location_id': location_mapping.location_map_id.id,
+                    'location_dest_id': location_mapping.location_map_id.id,
+                    'move_ids_without_package': data,
+                    'other_export':True
+                })
+            # stock_picking.state = 'done'
             return stock_picking
         else:
             raise UserError(_(f"Vui lòng cấu hình liên kết cho địa điểm {location.name_get()[0][1]} Cấu hình -> Location Mapping!"))
