@@ -2016,6 +2016,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             for (let comboLine of comboLineList) {
                 let base_total_amount = comboLine.quantity * comboLine.price;
                 let disc_total_amount = round_decimals(base_total_amount * program.disc_percent / 100, this.pos.currency.decimal_places);
+                if (program.disc_max_amount > 0) {
+                    disc_total_amount = disc_total_amount < program.disc_max_amount ? disc_total_amount : program.disc_max_amount;
+                };
                 if (program.discount_product_ids.has(comboLine.product.id)) {
                     let originalPrice = comboLine.price;
                     let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
