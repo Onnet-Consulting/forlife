@@ -1711,7 +1711,7 @@ msgstr "Số lượng cần tạo"
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_pos_order__ref_reward_code_ids
 msgid "Ref Reward Code"
-msgstr ""
+msgstr "MÃ KM thưởng"
 
 #. module: forlife_pos_promotion
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_generate_code__referring_date_from
