@@ -29,6 +29,24 @@ class ReturnPicking(models.TransientModel):
             'res_id': so_id.id
         }
 
+    def _create_returns(self):
+        res = super()._create_returns()
+        if self._context.get('so_return'):
+            new_picking_id, pick_type_id = res
+            self._cr.commit()
+            sql = f"""
+                    update stock_picking
+                    set sale_id = {self._context.get('so_return')}
+                    where id = {new_picking_id}
+                """
+            self._cr.execute(sql)
+        return res
+
+    def x_return(self):
+        for wizard in self:
+            new_picking_id, pick_type_id = wizard._create_returns()
+        return True
+
     def create_sale_order(self):
         picking_id = self.env['stock.picking'].browse(self._context.get('active_id'))
         origin = self.env['sale.order'].search([('name', '=', picking_id.origin)])
@@ -40,4 +58,3 @@ class ReturnPicking(models.TransientModel):
         }
         so_id = self.env['sale.order'].create(vals)
         return so_id
-
