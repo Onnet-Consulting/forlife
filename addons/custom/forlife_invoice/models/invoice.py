@@ -26,7 +26,7 @@ class AccountMove(models.Model):
     ], string='PO Type', default='product', required=1)
     number_bills = fields.Char(string='Number bills', copy=False, required=1)
     reference = fields.Char(string='Source Material')
-    exchange_rate = fields.Float(string="Exchange Rate", default=1)
+    exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8), default=1)
     accounting_date = fields.Datetime(string='Accounting Date')
     payment_status = fields.Char(string='Payment onchange_purchase_typestatus')
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
@@ -64,16 +64,8 @@ class AccountMove(models.Model):
     # Field check page ncc vãng lại
     is_check_vendor_page = fields.Boolean(default=False, compute='_compute_is_check_vendor_page')
 
-    # domain product_cost:
-    product_product_mm = fields.Many2many('product.product')
-
     # tab e-invoice-bkav
-    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
-                                    compute='_compute_e_invoice_ids_exists_bkav')
-
-    # tab e-invoice-bkav
-    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice',
-                                    compute='_compute_e_invoice_ids_exists_bkav')
+    e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),
         ('QC', 'QC'),
@@ -84,9 +76,11 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
-    # tạo data lấy từ bkav về tab e-invoice
-    @api.depends('exists_bkav')
-    def _compute_e_invoice_ids_exists_bkav(self):
+    # product_not_is_passersby = fields.Many2many('product.product')
+    ###tạo data lấy từ bkav về tab e-invoice
+
+    @api.onchange('exists_bkav')
+    def onchange_exitsts_bakv_e_invoice(self):
         for rec in self:
             if rec.exists_bkav:
                 data_e_invoice = self.env['e.invoice'].search(

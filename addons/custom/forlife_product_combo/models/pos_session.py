@@ -36,8 +36,7 @@ class PosSession(models.Model):
         return loaded_data
     def _loader_params_product_product(self):
         result = super()._loader_params_product_product()
-        result['search_params']['fields'].append('product_template_attribute_value_ids')
-        result['search_params']['fields'].append('attribute_id')
+        result['search_params']['fields'].append('attribute_ids')
         result['search_params']['fields'].append('combo_id')
 
         return result
