@@ -39,6 +39,13 @@
             <xpath expr="//field[@name='lines']/tree/field[@name='full_product_name']" position="after">
                 <field name="promotion_usage_ids" widget="many2many_tags"/>
             </xpath>
+            <xpath expr="//field[@name='lines']/tree/field[@name='refunded_qty']" position="after">
+                <field name="is_reward_line" optional="hide"/>
+            </xpath>
+
+            <xpath expr="//field[@name='lines']/form/group/field[@name='tax_ids']" position="after">
+                <field name="is_reward_line"/>
+            </xpath>
 
         </field>
     </record>

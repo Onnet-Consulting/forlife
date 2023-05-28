@@ -43,3 +43,5 @@ class PosOrderLine(models.Model):
     _inherit = 'pos.order.line'
 
     promotion_usage_ids = fields.One2many('promotion.usage.line', 'order_line_id')
+    original_price = fields.Float('Original Price', digits=0, default=0)
+    is_reward_line = fields.Boolean('Is Reward Line')
