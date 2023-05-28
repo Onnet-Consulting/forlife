@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-22 17:21+0000\n"
-"PO-Revision-Date: 2023-05-22 17:21+0000\n"
+"POT-Creation-Date: 2023-05-28 15:24+0000\n"
+"PO-Revision-Date: 2023-05-28 15:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__account_id
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_promotion__account_id
 msgid "Account"
-msgstr ""
+msgstr "Tài khoản"
+
+#. module: forlife_sale_promotion
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__analytic_account_id
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_promotion__analytic_account_id
+msgid "Analytic account"
+msgstr "Tài khoản phân tích"
 
 #. module: forlife_sale_promotion
 #. odoo-python
@@ -43,12 +49,12 @@ msgstr ""
 #. module: forlife_sale_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.sale_order_form_sale_promotion
 msgid "Check Promotion"
-msgstr ""
+msgstr "Kiểm tra khuyễn mãi"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order__state__check_promotion
 msgid "Check promotion"
-msgstr ""
+msgstr "Kiểm tra khuyễn mãi"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__create_uid
@@ -66,12 +72,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__description
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_promotion__description
 msgid "Description"
-msgstr ""
+msgstr "Mô tả"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_product_category__discount_account_id
 msgid "Discount account"
-msgstr ""
+msgstr "Tải khoản giảm giá"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__display_name
@@ -80,19 +86,24 @@ msgid "Display Name"
 msgstr ""
 
 #. module: forlife_sale_promotion
-#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order__state__done
-msgid "Done"
-msgstr ""
+#: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order__state__done_sale
+msgid "Done sale"
+msgstr "Hoàn thành"
 
 #. module: forlife_sale_promotion
-#: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_line__product_gift
-msgid "Gift"
-msgstr ""
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_product_category__expense_online_account_id
+msgid "Expense online account"
+msgstr "Tài khoản chi phí online"
+
+#. module: forlife_sale_promotion
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_product_category__expense_sale_account_id
+msgid "Expense sale account"
+msgstr "Tài khoản chi phí bán buôn"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_product_category__product_gift_account_id
 msgid "Gift account"
-msgstr ""
+msgstr "Tài khoản hàng tặng"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__id
@@ -101,9 +112,24 @@ msgid "ID"
 msgstr ""
 
 #. module: forlife_sale_promotion
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_product_category__income_online_account_id
+msgid "Income online account"
+msgstr "Tài khoản doanh thu online"
+
+#. module: forlife_sale_promotion
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_product_category__income_sale_account_id
+msgid "Income sale account"
+msgstr "Tài khoản doanh thu bán buôn"
+
+#. module: forlife_sale_promotion
 #: model:ir.model,name:forlife_sale_promotion.model_account_move
 msgid "Journal Entry"
 msgstr "Bút toán sổ nhật ký"
+
+#. module: forlife_sale_promotion
+#: model:ir.model,name:forlife_sale_promotion.model_account_move_line
+msgid "Journal Item"
+msgstr "Bút toán"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion____last_update
@@ -124,31 +150,38 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: forlife_sale_promotion
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move__move_id
+msgid "Move"
+msgstr ""
+
+#. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__move_id
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_promotion__order_id
 msgid "Order"
 msgstr ""
 
 #. module: forlife_sale_promotion
+#. odoo-python
+#: code:addons/forlife_sale_promotion/models/sale_order.py:0
+#, python-format
+msgid "Order note invalid!"
+msgstr "Ghi chú đơn hàng không hợp lệ"
+
+#. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_line__prm_price_discount
 msgid "Price discount"
-msgstr ""
+msgstr "Giá trị giảm"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_line__prm_price_total_discount
 msgid "Price total discount"
-msgstr ""
-
-#. module: forlife_sale_promotion
-#: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_line__ghn_price_unit_discount
-msgid "Price unit discount (GHN)"
-msgstr ""
+msgstr "Giá trị sau giảm"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__product_id
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_promotion__product_id
 msgid "Product"
-msgstr ""
+msgstr "Sản phẩm"
 
 #. module: forlife_sale_promotion
 #: model:ir.model,name:forlife_sale_promotion.model_product_category
@@ -156,6 +189,8 @@ msgid "Product Category"
 msgstr "Danh mục sản phẩm"
 
 #. module: forlife_sale_promotion
+#: model:account.account,name:forlife_sale_promotion.account_account_promotion
+#: model:account.journal,name:forlife_sale_promotion.account_journal_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_bank_statement_line__promotion_ids
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move__promotion_ids
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_payment__promotion_ids
@@ -163,24 +198,36 @@ msgstr "Danh mục sản phẩm"
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.sale_order_form_sale_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.view_move_form_promotion
 msgid "Promotion"
-msgstr ""
+msgstr "Khuyễn mãi"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_product_category__promotion_account_id
 msgid "Promotion account"
-msgstr ""
+msgstr "Tài khoản khuyễn mãi"
+
+#. module: forlife_sale_promotion
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_bank_statement_line__promotion_journal_ids
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move__promotion_journal_ids
+#: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_payment__promotion_journal_ids
+msgid "Promotion entry"
+msgstr "But toán khuyễn mãi"
 
 #. module: forlife_sale_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.view_move_form_promotion
 msgid "Promotion journal"
-msgstr ""
+msgstr "Bút toán khuyễn mãi"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_bank_statement_line__promotion_journal_count
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move__promotion_journal_count
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_payment__promotion_journal_count
 msgid "Promotion journal count"
-msgstr ""
+msgstr "Số lượng bút toán khuyễn mãi"
+
+#. module: forlife_sale_promotion
+#: model:ir.model,name:forlife_sale_promotion.model_sale_loyalty_reward_wizard
+msgid "Sale Loyalty - Reward Selection Wizard"
+msgstr "Khách hàng thân thiết bán hàng - Công cụ chọn phần thưởng"
 
 #. module: forlife_sale_promotion
 #: model:ir.model,name:forlife_sale_promotion.model_sale_advance_payment_inv
@@ -205,13 +252,13 @@ msgstr "Trạng thái"
 #. module: forlife_sale_promotion
 #: model:ir.model,name:forlife_sale_promotion.model_stock_move
 msgid "Stock Move"
-msgstr "Dịch chuyển tồn kho"
+msgstr ""
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__value
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_sale_order_promotion__value
 msgid "Value"
-msgstr ""
+msgstr "Giá trị"
 
 #. module: forlife_sale_promotion
 #. odoo-python

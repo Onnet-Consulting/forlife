@@ -20,6 +20,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
                     "product_id": prm.product_id.id,
                     "value": prm.value,
                     "account_id": prm.account_id.id,
+                    "analytic_account_id": prm.analytic_account_id.id,
                     "description": prm.description,
                     "move_id": res.id
                 }) for prm in sale_orders.promotion_ids]
