@@ -130,7 +130,7 @@ class ResPartner(models.Model):
                 group_id = self.env.ref('forlife_pos_app_member.partner_group_3').id
             if group_id:
                 partner_group = self.env['res.partner.group'].browse(group_id)
-                if partner_group.sequence_id:
+                if partner_group.sequence_id and not value.get('ref'):
                     value['ref'] = partner_group.sequence_id.next_by_id()
                 else:
                     value['ref'] = (partner_group.code or '') + (value.get('ref') or '')
