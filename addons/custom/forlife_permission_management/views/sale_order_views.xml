@@ -17,11 +17,11 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_sales_order_auto_done_setting"/>
             <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_toggle_is_locked'][0]" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_quotation_lock_unlock,stock.group_stock_manager</attribute>
+                <xpath expr="//button[@name='action_done']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_quotation_lock_unlock,sales_team.group_sale_manager</attribute>
                 </xpath>
-                <xpath expr="//button[@name='action_toggle_is_locked'][1]" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_quotation_lock_unlock,stock.group_stock_manager</attribute>
+                <xpath expr="//button[@name='action_unlock']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_quotation_lock_unlock,sales_team.group_sale_manager</attribute>
                 </xpath>
             </field>
         </record>

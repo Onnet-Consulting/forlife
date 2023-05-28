@@ -4,15 +4,23 @@
         <record id="view_picking_form_permission" model="ir.ui.view">
             <field name="name">view_picking_form_permission</field>
             <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="forlife_stock.inherit_stock_picking_for_other_export_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_toggle_is_locked'][1]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_in_other_lock_unlock,stock.group_stock_manager</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_picking_form_permission_btn_cancel" model="ir.ui.view">
+            <field name="name">view_picking_form_permission_btn_cancel</field>
+            <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_cancel']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_in_other_cancel</attribute>
                 </xpath>
-                <xpath expr="//button[@name='action_toggle_is_locked'][0]" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_in_other_lock_unlock,stock.group_stock_manager</attribute>
-                </xpath>
-                <xpath expr="//button[@name='action_toggle_is_locked'][1]" position="attributes">
+                <xpath expr="//button[@name='action_toggle_is_locked']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_in_other_lock_unlock,stock.group_stock_manager</attribute>
                 </xpath>
             </field>
