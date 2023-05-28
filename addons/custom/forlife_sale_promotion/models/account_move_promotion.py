@@ -13,3 +13,4 @@ class AccountMovePromotion(models.Model):
     account_id = fields.Many2one('account.account', string="Account")
     description = fields.Char(string="Description")
     move_id = fields.Many2one("account.move", string="Order")
+    analytic_account_id = fields.Many2one('account.analytic.account', string="Analytic account")
