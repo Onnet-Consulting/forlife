@@ -1578,7 +1578,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
             // Tính lũy tuyến cho số lượng phần thưởng
             if (program.progressive_reward_compute) {
-                if (program.order_amount_min > 0 && program.min_quantity > 0) {
+                if (program.order_amount_min > 0 && program.min_quantity > 0 && is_required_check_products) {
                     let amountOrderFloor = Math.floor(amountCheck/program.order_amount_min);
                     let qtyFloor = Math.floor(qty_taken /  program.min_quantity);
                     let floor = Math.min(amountOrderFloor, qtyFloor);
@@ -1590,7 +1590,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     let floor = Math.floor(amountCheck/program.order_amount_min);
                     max_reward_quantity         = floor * program.reward_quantity;
                     required_order_amount_min   = floor * program.order_amount_min;
-                } else if (program.min_quantity > 0) {
+                } else if (program.min_quantity > 0 && is_required_check_products) {
                     let floor = Math.floor(qty_taken/program.min_quantity);
                     max_reward_quantity         = floor * program.reward_quantity;
                     required_min_quantity       = floor * program.min_quantity;
