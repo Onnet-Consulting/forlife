@@ -27,7 +27,8 @@ class ConfirmReturnSoLine(models.Model):
         return_wiz = stock_return_picking_form.save()
         ctx = {
             'x_return': True,
-            'so_return': self.master_id.origin.id
+            'so_return': self.master_id.origin.id,
+            'picking_id': self.picking_id.id
         }
         return {
             'name': _('Trả hàng phiếu %s' % (self.picking_id.name)),

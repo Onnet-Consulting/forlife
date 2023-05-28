@@ -48,7 +48,10 @@ class ReturnPicking(models.TransientModel):
         return True
 
     def create_sale_order(self):
-        picking_id = self.env['stock.picking'].browse(self._context.get('active_id'))
+        if self._context.get('x_return'):
+            picking_id = self.env['stock.picking'].browse(self._context.get('picking_id'))
+        else:
+            picking_id = self.env['stock.picking'].browse(self._context.get('active_id'))
         origin = self.env['sale.order'].search([('name', '=', picking_id.origin)])
         vals = {
             'partner_id': picking_id.partner_id.id,
