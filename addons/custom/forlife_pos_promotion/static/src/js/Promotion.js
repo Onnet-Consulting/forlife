@@ -308,7 +308,9 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
                 line_no_incl_order = {...this};
             };
             this.order._updateActivatedPromotionPrograms(line_no_incl_order);
-            this.order.autoApplyPriceListProgram();
+            if (!this.is_not_create) {
+                this.order.autoApplyPriceListProgram();
+            };
         }
         return result;
     }
@@ -623,7 +625,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     _resetPromotionPrograms(resetActivatedPrograms=true) {
         if (resetActivatedPrograms) {
-            this.activatedInputCodes = [];
+//            this.activatedInputCodes = [];
             this.activatedComboPrograms = new Set();
             this.activatedCodePrograms = new Set();
             this.activatedPricelistItem = new Set();
@@ -2286,7 +2288,8 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     _createLineFromVals(vals) {
 //        vals['lst_price'] = vals['price'];
-        const line = Orderline.create({}, {pos: this.pos, order: this, ...vals});
+        let obj = {is_not_create: vals['is_not_create']}
+        const line = Orderline.create(obj, {pos: this.pos, order: this, ...vals});
         this.fix_tax_included_price(line);
         this.set_orderline_options(line, vals);
         return line;
