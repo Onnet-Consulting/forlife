@@ -12,7 +12,7 @@ class SaleLoyaltyRewardWizard(models.TransientModel):
         for line in self.order_id.order_line:
             if line.is_reward_line:
                 if line.reward_id.reward_type == "product":
-                    line.write({'x_free_good': True})
+                    line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
         return res
         # self.selected_reward_id
         # self.ensure_one()
