@@ -33,7 +33,7 @@
                 <xpath expr="//button[@name='action_quotation_send']" position="after">
                     <button name="action_create_picking"
                         string="Xác nhận" type="object" context="{'validate_analytic': True}"
-                        attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+                        attrs="{'invisible': ['|',('state', 'not in', ['draft']), ('x_is_return', '=', True)]}"/>
                 </xpath>
                 <xpath expr="//button[@name='action_cancel']" position="before">
                     <button name="action_punish"
@@ -59,7 +59,7 @@
                     <field name="x_origin" attrs="{'column_invisible': [('parent.x_is_return','=',False)]}"/>
                     <field name="x_free_good"/>
                     <field name="x_cart_discount_fixed_price"/>
-                    <field name="x_location_id" domain="[('company_id','=',parent.company_id)]" attrs="{'required': [('parent.x_sale_type', '!=', 'service')]}"/>
+                    <field name="x_location_id" domain="[('company_id','=',parent.company_id)]" attrs="{'required': [('parent.x_sale_type', '=', 'product')]}"/>
                     <field name="x_scheduled_date"/>
                     <field name="x_manufacture_order_code_id"/>
                     <field name="x_product_code_id"

@@ -43,15 +43,26 @@ class SaleOrder(models.Model):
     x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
 
+    def copy(self, default=None):
+        default = dict(default or {})
+        res = super().copy(default)
+        for line in res.order_line:
+            line._compute_price_unit()
+        return res
+
     def confirm_return_so(self):
         so_id = self.x_origin
-        picking_ids = so_id.picking_ids
+        picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done')
         if picking_ids and len(picking_ids) == 1:
             stock_return_picking_form = Form(
                 self.env['stock.return.picking'].with_context(active_ids=picking_ids.ids,
                                                               active_id=picking_ids[0].id,
                                                               active_model='stock.picking'))
-            ctx = {'so_return': self.id}
+            ctx = {
+                'so_return': self.id,
+                'x_return': True,
+                'picking_id': picking_ids.id
+            }
             return_wiz = stock_return_picking_form.save()
             return {
                 'name': _('Trả hàng phiếu %s' % (picking_ids[0].name)),
