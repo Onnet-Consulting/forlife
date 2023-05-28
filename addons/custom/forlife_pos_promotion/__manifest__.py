@@ -64,6 +64,8 @@
     },
 
     'data': [
+        # Data
+        'data/ir_cron_data.xml',
         # Security
         'security/ir.model.access.csv',
         # Wizards

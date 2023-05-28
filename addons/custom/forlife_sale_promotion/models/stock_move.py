@@ -27,6 +27,12 @@ class StockMove(models.Model):
         if self.product_id.id in [line.x_free_good and line.product_id.id for line in self.picking_id.sale_id.order_line]:
             if self.product_id.categ_id.product_gift_account_id:
                 acc_dest = self.product_id.categ_id.product_gift_account_id.id
+        elif self.picking_id.sale_id.x_sale_chanel == "online":
+            if self.product_id.categ_id.expense_online_account_id:
+                acc_dest = self.product_id.categ_id.expense_online_account_id.id
+        elif self.picking_id.sale_id.x_sale_chanel == "wholesale":
+            if self.product_id.categ_id.expense_sale_account_id:
+                acc_dest = self.product_id.categ_id.expense_sale_account_id.id
 
         acc_valuation = accounts_data.get('stock_valuation', False)
         if acc_valuation:

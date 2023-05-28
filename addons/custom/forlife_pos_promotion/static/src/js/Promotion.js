@@ -478,6 +478,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         this.activatedInputCodes = [];
         this._resetPromotionPrograms();
         this._resetCartPromotionPrograms();
+        this.autoApplyPriceListProgram();
     }
 
     // New method
@@ -1578,7 +1579,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
             // Tính lũy tuyến cho số lượng phần thưởng
             if (program.progressive_reward_compute) {
-                if (program.order_amount_min > 0 && program.min_quantity > 0) {
+                if (program.order_amount_min > 0 && program.min_quantity > 0 && is_required_check_products) {
                     let amountOrderFloor = Math.floor(amountCheck/program.order_amount_min);
                     let qtyFloor = Math.floor(qty_taken /  program.min_quantity);
                     let floor = Math.min(amountOrderFloor, qtyFloor);
@@ -1590,7 +1591,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     let floor = Math.floor(amountCheck/program.order_amount_min);
                     max_reward_quantity         = floor * program.reward_quantity;
                     required_order_amount_min   = floor * program.order_amount_min;
-                } else if (program.min_quantity > 0) {
+                } else if (program.min_quantity > 0 && is_required_check_products) {
                     let floor = Math.floor(qty_taken/program.min_quantity);
                     max_reward_quantity         = floor * program.reward_quantity;
                     required_min_quantity       = floor * program.min_quantity;
@@ -2020,6 +2021,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             for (let comboLine of comboLineList) {
                 let base_total_amount = comboLine.quantity * comboLine.price;
                 let disc_total_amount = round_decimals(base_total_amount * program.disc_percent / 100, this.pos.currency.decimal_places);
+                if (program.disc_max_amount > 0) {
+                    disc_total_amount = disc_total_amount < program.disc_max_amount ? disc_total_amount : program.disc_max_amount;
+                };
                 if (program.discount_product_ids.has(comboLine.product.id)) {
                     let originalPrice = comboLine.price;
                     let [newPrice, discAmount] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, comboLine.quantity);
@@ -2225,12 +2229,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     autoApplyPriceListProgram(new_ol) {
         if (new_ol && new_ol.quantity > 0 && !new_ol.is_applied_promotion() && new_ol.pricelist_item) {
-            this.applyAPricelistProgramToLineVales(new_ol.pricelist_item, [new_ol])
+            if (this._programIsApplicableAutomatically(new_ol.pricelist_item)) {
+                this.applyAPricelistProgramToLineVales(new_ol.pricelist_item, [new_ol]);
+            };
         };
         if (!new_ol) {
             let to_check_orderlines = this.get_orderlines().filter(l => l.quantity > 0 && !l.is_applied_promotion() && l.pricelist_item);
             for (let line of to_check_orderlines) {
-                this.applyAPricelistProgramToLineVales(line.pricelist_item, [line]);
+                if (this._programIsApplicableAutomatically(line.pricelist_item)) {
+                    this.applyAPricelistProgramToLineVales(line.pricelist_item, [line]);
+                };
             };
         };
     }
