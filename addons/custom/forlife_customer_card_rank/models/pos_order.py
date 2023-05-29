@@ -16,11 +16,6 @@ class PosOrder(models.Model):
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
         self.update_partner_card_rank()
-        if self.card_rank_program_id:
-            total_amount_discount = abs(
-                sum(self.mapped('lines.discount_details_lines').filtered(lambda f: f.type == 'card').mapped(
-                    'money_reduced')))
-            self.accounting_card_rank_discount(total_amount_discount) if total_amount_discount else None
         return res
 
     def update_partner_card_rank(self):
@@ -124,38 +119,6 @@ class PosOrder(models.Model):
             })
 
         return res
-
-    def accounting_card_rank_discount(self, total_amount_discount):
-        values = self._prepare_cr_discount_account_move()
-        values['line_ids'] = self._prepare_cr_discount_account_move_line(total_amount_discount)
-        res = self.env['account.move'].sudo().create(values)
-        return res.action_post() if res else False
-
-    def _prepare_cr_discount_account_move(self):
-        return {
-            'pos_order_id': self.id,
-            'ref': self.name,
-            'date': self.date_order,
-            'journal_id': self.card_rank_program_id.journal_id.id,
-        }
-
-    def _prepare_cr_discount_account_move_line(self, total_amount_discount):
-        if self.card_rank_program_id.is_register and self.card_rank_program_id.register_from_date <= self.date_order.date() and self.card_rank_program_id.register_to_date >= self.date_order.date():
-            debit_account = self.card_rank_program_id.discount_account_id.id
-        else:
-            debit_account = self.card_rank_program_id.value_account_id.id
-        return [
-            (0, 0, {
-                'account_id': debit_account,
-                'debit': total_amount_discount,
-                'analytic_account_id': self.config_id.store_id.analytic_account_id.id,
-            }),
-            (0, 0, {
-                'account_id': self.partner_id.property_account_receivable_id.id,
-                'credit': total_amount_discount,
-                'partner_id': self.config_id.store_id.contact_id.id,
-            }),
-        ]
 
     # @api.model
     # def _process_order(self, order, draft, existing_order):
