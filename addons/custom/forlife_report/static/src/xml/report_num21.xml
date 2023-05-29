@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum21Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum21MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum21MainTemplate">
+        <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+            <t t-call="ReportTitle"/>
+            <tbody>
+                <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                <t t-foreach="options.data" t-as="line">
+                    <tr>
+                        <td><t t-esc="line.num"/></td>
+                        <td><t t-esc="line.trang_thai"/></td>
+                        <td><t t-esc="line.ngay_hd"/></td>
+                        <td><t t-esc="line.so_hd"/></td>
+                        <td><t t-esc="line.ma_kho_xuat"/></td>
+                        <td><t t-esc="line.kho_xuat"/></td>
+                        <td><t t-esc="line.ma_kho_nhan"/></td>
+                        <td><t t-esc="line.kho_nhan"/></td>
+                        <td><t t-esc="line.don_vi_tinh"/></td>
+                        <td><t t-esc="line.ma_vach"/></td>
+                        <td><t t-esc="line.ma_hang"/></td>
+                        <td><t t-esc="line.ten_hang"/></td>
+                        <td><t t-esc="line.nhom_hang"/></td>
+                        <td><t t-esc="line.dong_hang"/></td>
+                        <td><t t-esc="line.ket_cau"/></td>
+                        <td><t t-esc="line.quy_uoc_dong_hang"/></td>
+                        <td><t t-esc="line.mau_sac"/></td>
+                        <td><t t-esc="line.kich_co"/></td>
+                        <td><t t-esc="line.dien_giai"/></td>
+                        <td><t t-esc="line.bo_suu_tap"/></td>
+                        <td><t t-esc="line.kieu_dang"/></td>
+                        <td><t t-esc="format_decimal(line.so_luong, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.gia, 0)"/></td>
+                        <td><t t-esc="format_decimal(line.gia * line.so_luong, 0)"/></td>
+                        <td><t t-esc="line.tk_kho"/></td>
+                        <td><t t-esc="line.tk_gia_von"/></td>
+                        <td><t t-esc="line.ngay_tao"/></td>
+                        <td><t t-esc="line.ma_phieu"/></td>
+                        <td><t t-esc="line.ten_phieu"/></td>
+                        <td><t t-esc="line.doi_tuong"/></td>
+                        <td><t t-esc="line.nam_sx"/></td>
+                    </tr>
+                </t>
+            </tbody>
+        </table>
+    </t>
+</template>
