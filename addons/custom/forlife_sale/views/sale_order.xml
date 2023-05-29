@@ -42,7 +42,7 @@
                 <xpath expr="//button[@name='action_cancel']" position="before">
                     <button name="action_return"
                         string="Trả hàng" type="object" context="{'validate_analytic': True}"
-                        attrs="{'invisible': [('state', '!=', 'sale')]}"/>
+                        attrs="{'invisible': ['|', ('state', '!=', 'sale'), ('x_is_return', '=', True)]}"/>
                     <button name="confirm_return_so" attrs="{'invisible':[('x_is_return','=',False)]}"
                         string="Xác nhận trả hàng" type="object"/>
                 </xpath>

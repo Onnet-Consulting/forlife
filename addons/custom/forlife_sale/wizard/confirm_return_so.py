@@ -20,7 +20,6 @@ class ConfirmReturnSoLine(models.Model):
     state = fields.Char('Trạng thái phiếu kho')
 
     def action_return(self):
-        self.state = 'Đã trả'
         stock_return_picking_form = Form(
             self.env['stock.return.picking'].with_context(active_ids=self.picking_id.ids, active_id=self.picking_id.id,
                                                           active_model='stock.picking'))
@@ -30,6 +29,7 @@ class ConfirmReturnSoLine(models.Model):
             'so_return': self.master_id.origin.id,
             'picking_id': self.picking_id.id
         }
+        self.state = 'Đã trả'
         return {
             'name': _('Trả hàng phiếu %s' % (self.picking_id.name)),
             'view_mode': 'form',
