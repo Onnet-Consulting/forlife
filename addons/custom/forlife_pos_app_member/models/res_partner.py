@@ -79,6 +79,7 @@ class ResPartner(models.Model):
         for rec in self:
             if not rec.phone and rec.group_id == retail_customer_group:
                 raise ValidationError(_("Phone number is required for group %s") % retail_customer_group.name)
+
     #
     # @api.constrains('mobile')
     # def _check_mobile(self):
@@ -111,7 +112,6 @@ class ResPartner(models.Model):
             app_retail_type_id = False
         return app_retail_type_id
 
-
     @api.model_create_multi
     def create(self, vals_list):
         env_context = self.env.context
@@ -131,12 +131,11 @@ class ResPartner(models.Model):
             if env_context.get('from_create_company'):
                 group_id = self.env.ref('forlife_pos_app_member.partner_group_3').id
             if group_id:
-                partner_group = self.env['res.partner.group'].browse(group_id)
-                if partner_group.sequence_id and not value.get('ref'):
-                    value['ref'] = partner_group.sequence_id.next_by_id()
-                else:
-                    value['ref'] = (partner_group.code or '') + (value.get('ref') or '')
                 value['group_id'] = group_id
+                partner_group = self.env['res.partner.group'].browse(group_id)
+                if value.get('ref') or not partner_group.sequence_id:
+                    continue
+                value['ref'] = partner_group.sequence_id.next_by_id()
 
         return super().create(vals_list)
 
