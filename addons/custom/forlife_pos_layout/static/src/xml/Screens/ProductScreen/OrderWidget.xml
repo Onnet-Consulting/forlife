@@ -12,7 +12,6 @@
                     </div>
                 </t>
                 <t t-else="">
-                    <hr/>
                     <div class="list-order">
                         <ul class="head">
                             <li style="width: 25%">TÊN SẢN PHẨM</li>
