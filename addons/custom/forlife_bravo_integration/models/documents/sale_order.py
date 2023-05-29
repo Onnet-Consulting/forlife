@@ -22,23 +22,25 @@ class AccountMove(models.Model):
         journal_lines = journal_lines - receivable_lines - invoice_lines
         receivable_lines = receivable_lines and receivable_lines[0]
         receivable_account_code = receivable_lines.account_id.code
-
         partner = self.partner_id
-        exchange_rate = self.exchange_rate
+
         # FIXME: check fields : DebitAccount, DocumentType
         journal_value = {
             "CompanyCode": self.company_id.code,
             "DocCode": "H2",
+            "DocNo": self.number_bills,
             "DocDate": self.date,
             "CurrencyCode": self.currency_id.name,
-            "ExchangeRate": exchange_rate,
+            "ExchangeRate": self.inverse_company_rate,
             "CustomerCode": partner.ref,
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
             "TaxRegNo": partner.vat,
+            "Description": self.invoice_description,
             "EmployeeCode": self.user_id.employee_id.code,
             "IsTransfer": 1 if self.x_asset_fin else 0,
-            "DebitAccount": receivable_account_code
+            "DebitAccount": receivable_account_code,
+            "DueDate": self.invoice_date_due,
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):
@@ -48,4 +50,5 @@ class AccountMove(models.Model):
                 'BuiltinOrder': idx,
                 "ItemCode": product.barcode,
                 "ItemName": product.name,
+                "CreditAccount2": invoice_line.account_id.code,
             })
