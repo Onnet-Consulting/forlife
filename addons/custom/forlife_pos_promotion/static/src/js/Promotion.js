@@ -1107,6 +1107,11 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 });
                 ol.quantityStr = field_utils.format.float(ol.quantity, {digits: [69, decimals]});
                 to_take_on_reward_qty -= taken_reward_qty;
+                if (ol.key_program && to_apply_lines[ol.key_program]) {
+                    for (let new_line of to_apply_lines[ol.key_program].filter((l)=>l.product.id === ol.product.id)) {
+                        new_line.quantity = ol.quantity;
+                    }
+                }
                 if (to_take_on_reward_qty <= 0.0) {break;};
             };
         };
@@ -2168,24 +2173,24 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 combo_count[program.id] = numberOfCombo;
 
                 var remaining_amount = false;
-                if (program.reward_product_id_selected && numberOfCombo > 0 && program.reward_type == "code_buy_x_get_y") {
-                    let reward_products = new Set(this.pos.get_valid_reward_code_promotion(program));
-                    let available_reward_qty = to_discount_line_vals
-                                                .filter(l => reward_products.has(l.product.id))
-                                                .reduce((tmp, l) => tmp + l.quantity, 0);
-                    let product = this.pos.db.get_product_by_id(program.reward_product_id_selected);
-                    let remaining_reward_qty = numberOfCombo * program.reward_quantity - available_reward_qty;
-                    if (product && remaining_reward_qty > 0) {
-                        to_discount_line_vals.push({
-                            product: product,
-                            quantity:  remaining_reward_qty,
-                            price: product.lst_price,
-                            isNew: true,
-                            is_reward_line: true,
-                            selectedReward: true
-                        });
-                    };
-                };
+//                if (program.reward_product_id_selected && numberOfCombo > 0 && program.reward_type == "code_buy_x_get_y") {
+//                    let reward_products = new Set(this.pos.get_valid_reward_code_promotion(program));
+//                    let available_reward_qty = to_discount_line_vals
+//                                                .filter(l => reward_products.has(l.product.id))
+//                                                .reduce((tmp, l) => tmp + l.quantity, 0);
+//                    let product = this.pos.db.get_product_by_id(program.reward_product_id_selected);
+//                    let remaining_reward_qty = numberOfCombo * program.reward_quantity - available_reward_qty;
+//                    if (product && remaining_reward_qty > 0) {
+//                        to_discount_line_vals.push({
+//                            product: product,
+//                            quantity:  remaining_reward_qty,
+//                            price: product.lst_price,
+//                            isNew: true,
+//                            is_reward_line: true,
+//                            selectedReward: true
+//                        });
+//                    };
+//                };
                     if (numberOfCombo > 0 && program.reward_type == "code_buy_x_get_cheapest") {
                         var numberOfReward = numberOfCombo * program.reward_quantity
                         let new_to_discount_line_val;
