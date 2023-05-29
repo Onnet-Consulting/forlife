@@ -40,22 +40,23 @@ export class CartPromotionButton extends PosComponent {
         };
 
         for (let optionPro of optionPrograms) {
-            if (optionPro.program.reward_type == 'cart_get_x_free' && optionPro.additional_reward_product_id && optionPro.additional_reward_product_qty > 0) {
-                let product = this.env.pos.db.get_product_by_id(optionPro.additional_reward_product_id)
-                let line = order._createLineFromVals({
-                    product: product,
-                    quantity: optionPro.additional_reward_product_qty,
-                    tax_ids: product.tax_ids,
-                    merge: false,
-                    price: round_decimals(product.lst_price, this.env.pos.currency.decimal_places)
-                });
-                let to_apply_lines = order._apply_cart_program_to_orderline(optionPro.program, [line]);
-                to_apply_lines.forEach( newLine => {
-                    let options = order._getNewLineValuesAfterDiscount(newLine);
-                    options['is_reward_line'] = true;
-                    order.orderlines.add(order._createLineFromVals(options));
-                });
-            } else if (optionPro.program.reward_type == 'cart_get_voucher' && optionPro.voucher_program_id) {
+//            if (optionPro.program.reward_type == 'cart_get_x_free' && optionPro.additional_reward_product_id && optionPro.additional_reward_product_qty > 0) {
+//                let product = this.env.pos.db.get_product_by_id(optionPro.additional_reward_product_id)
+//                let line = order._createLineFromVals({
+//                    product: product,
+//                    quantity: optionPro.additional_reward_product_qty,
+//                    tax_ids: product.tax_ids,
+//                    merge: false,
+//                    price: round_decimals(product.lst_price, this.env.pos.currency.decimal_places)
+//                });
+//                let to_apply_lines = order._apply_cart_program_to_orderline(optionPro.program, [line]);
+//                to_apply_lines.forEach( newLine => {
+//                    let options = order._getNewLineValuesAfterDiscount(newLine);
+//                    options['is_reward_line'] = true;
+//                    order.orderlines.add(order._createLineFromVals(options));
+//                });
+//            } else
+            if (optionPro.program.reward_type == 'cart_get_voucher' && optionPro.voucher_program_id) {
                 order.reward_voucher_program_id = optionPro.voucher_program_id[0];
                 order.cart_promotion_program_id = optionPro.program.id;
             }

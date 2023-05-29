@@ -44,12 +44,12 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 
         selectedQtyOnProgram() {
             let result = this.state.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
-            if (this.state.program.additional_reward_product_id) {
-                let qty = this.state.program.additional_reward_product_qty || this.state.additional_reward_remaining_qty;
-                if (qty > 0) {
-                    result += qty;
-                };
-            };
+//            if (this.state.program.additional_reward_product_id) {
+//                let qty = this.state.program.additional_reward_product_qty || this.state.additional_reward_remaining_qty;
+//                if (qty > 0) {
+//                    result += qty;
+//                };
+//            };
             return result;
         }
 
@@ -206,23 +206,23 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             this._computeOnchangeQty(reward, quantity_input);
         }
 
-        onChangeAdditionalRewardProduct(target) {
-            let input = parse.integer(target.value);
-            let product = this.env.pos.db.get_product_by_id(input);
-            if (product) {
-                this.state.program.additional_reward_product_id = product.id
-            } else {
-                this.state.program.additional_reward_product_id = null;
-            }
-        }
+//        onChangeAdditionalRewardProduct(target) {
+//            let input = parse.integer(target.value);
+//            let product = this.env.pos.db.get_product_by_id(input);
+//            if (product) {
+//                this.state.program.additional_reward_product_id = product.id
+//            } else {
+//                this.state.program.additional_reward_product_id = null;
+//            }
+//        }
 
-        onChangeAdditionalRewardQty(target) {
-            let input = parse.float(target.value);
-            if (input > this.state.additional_reward_remaining_qty) {
-                target.value = this.state.additional_reward_remaining_qty;
-            };
-            this.state.program.additional_reward_product_qty = parse.float(target.value);
-        }
+//        onChangeAdditionalRewardQty(target) {
+//            let input = parse.float(target.value);
+//            if (input > this.state.additional_reward_remaining_qty) {
+//                target.value = this.state.additional_reward_remaining_qty;
+//            };
+//            this.state.program.additional_reward_product_qty = parse.float(target.value);
+//        }
 
         selectItem(cid) {
             let order = this.env.pos.get_order();
@@ -257,14 +257,14 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             }
         }
 
-        getPayload() {
-            if (this._currentProgram().reward_type == 'cart_get_x_free' && this.state.program.additional_reward_product_id) {
-                if (!this.state.program.additional_reward_product_qty) {
-                    this.state.program.additional_reward_product_qty = this.state.additional_reward_remaining_qty;
-                }
-            }
-            super.getPayload()
-        }
+//        getPayload() {
+//            if (this._currentProgram().reward_type == 'cart_get_x_free' && this.state.program.additional_reward_product_id) {
+//                if (!this.state.program.additional_reward_product_qty) {
+//                    this.state.program.additional_reward_product_qty = this.state.additional_reward_remaining_qty;
+//                }
+//            }
+//            super.getPayload()
+//        }
 
         cancel() {
             const valid = this._check_valid_rewards()
