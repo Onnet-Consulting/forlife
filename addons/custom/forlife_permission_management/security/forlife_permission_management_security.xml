@@ -118,45 +118,21 @@
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
-        <record id="group_in_other_cancel" model="res.groups">
-            <field name="name">Phiếu nhập khác Nút Cancel</field>
+        <record id="group_stock_picking_cancel" model="res.groups">
+            <field name="name">Phiếu xuất khác, Phiếu nhập khác, Điều chuyển hàng Nút Confirm Nút Cancel</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
-        <record id="group_in_other_confirm" model="res.groups">
-            <field name="name">Phiếu nhập khác Nút Confirm</field>
+        <record id="group_stock_picking_confirm" model="res.groups">
+            <field name="name">Phiếu xuất khác, Phiếu nhập khác, Điều chuyển hàng Nút Confirm</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
-        <record id="group_in_other_lock_unlock" model="res.groups">
-            <field name="name">Phiếu nhập khác Nút Lock + Unlock</field>
+        <record id="group_stock_picking_lock_unlock" model="res.groups">
+            <field name="name">Phiếu xuất khác, Phiếu nhập khác, Điều chuyển hàng Nút Lock + Unlock</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
-        <record id="group_out_other_cancel" model="res.groups">
-            <field name="name">Phiếu xuất khác Nút Cancel</field>
-            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
-        </record>
-
-        <record id="group_out_other_confirm" model="res.groups">
-            <field name="name">Phiếu xuất khác Nút Confirm</field>
-            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
-        </record>
-
-        <record id="group_out_other_lock_unlock" model="res.groups">
-            <field name="name">Phiếu xuất khác Nút Lock+ Unlock</field>
-            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
-        </record>
-
-        <record id="group_product_transfer_cancel" model="res.groups">
-            <field name="name">Điều chuyển hàng Nút Cancel</field>
-            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
-        </record>
-
-        <record id="group_product_transfer_lock_unlock" model="res.groups">
-            <field name="name">Điều chuyển hàng Nút Lock+ Unlock</field>
-            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
-        </record>
 
         <record id="group_product_view_cost_price" model="res.groups">
             <field name="name">Biến thể sản phẩm view Giá vốn</field>
@@ -187,33 +163,13 @@
             <field name="sequence">40</field>
         </record>
 
-        <record id="group_quotation_cancel" model="res.groups">
-            <field name="name">Báo giá Nút Cancel</field>
-            <field name="category_id" ref="forlife_permission_management.module_category_sale"/>
-        </record>
-
-        <record id="group_quotation_lock_unlock" model="res.groups">
-            <field name="name">Báo giá Nút Lock+ Unlock</field>
-            <field name="category_id" ref="forlife_permission_management.module_category_sale"/>
-        </record>
-
         <record id="group_sale_order_cancel" model="res.groups">
-            <field name="name">Đơn hàng Nút Cancel</field>
+            <field name="name">Báo giá, Đơn hàng, Chờ hóa đơn Cancel</field>
             <field name="category_id" ref="forlife_permission_management.module_category_sale"/>
         </record>
 
         <record id="group_sale_order_lock_unlock" model="res.groups">
-            <field name="name">Đơn hàng Nút Lock+ Unlock</field>
-            <field name="category_id" ref="forlife_permission_management.module_category_sale"/>
-        </record>
-
-        <record id="group_sale_order_waiting_cancel" model="res.groups">
-            <field name="name">Đơn hàng chờ hóa đơn Nút Cancel</field>
-            <field name="category_id" ref="forlife_permission_management.module_category_sale"/>
-        </record>
-
-        <record id="group_sale_order_waiting_lock_unlock" model="res.groups">
-            <field name="name">Đơn hàng chờ hóa đơn Nút Lock+ Unlock</field>
+            <field name="name">Báo giá, Đơn hàng, Chờ hóa đơn Nút Lock+ Unlock</field>
             <field name="category_id" ref="forlife_permission_management.module_category_sale"/>
         </record>
 

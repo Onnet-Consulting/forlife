@@ -12,10 +12,10 @@
                 <xpath expr="//button[@name='action_approve']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_inventory_check_approve_reject</attribute>
                 </xpath>
-                <xpath expr="//button[@name='%(forlife_stock.transfer_stock_inventory_wizard)d']" position="attributes">
+                <xpath expr="//button[@id='reject']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_inventory_check_approve_reject</attribute>
                 </xpath>
-                <xpath expr="//button[@name='%(forlife_stock.transfer_stock_inventory_wizard)d']" position="attributes">
+                <xpath expr="//button[@id='cancel']" position="attributes">
                     <attribute name="groups">forlife_permission_management.group_inventory_check_cancel</attribute>
                 </xpath>
             </field>
