@@ -51,7 +51,7 @@ class ReturnPicking(models.TransientModel):
         # validate with case from SO and from Stock_picking
         if self._context.get('x_return'):
             picking_id = self.env['stock.picking'].browse(self._context.get('picking_id'))
-            origin = self._context.get('x_return')
+            origin = self._context.get('so_return')
         else:
             picking_id = self.env['stock.picking'].browse(self._context.get('active_id'))
             so_origin = self.env['sale.order'].search([('name', '=', picking_id.origin)])
