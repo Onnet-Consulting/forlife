@@ -39,7 +39,7 @@ class ProductProduct(models.Model):
                             'name': attr.product_attribute_value_id.name or None,
                             'code': attr.product_attribute_value_id.code or None
                         }
-                    } for attr in product.product_template_variant_value_ids
+                    } for attr in product.product_template_attribute_value_ids
                 ]
             }
             data.append(vals)
