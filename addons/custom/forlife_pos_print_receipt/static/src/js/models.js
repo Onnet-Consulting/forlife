@@ -33,7 +33,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
         get_install_app_barcode_data() {
             // if customer doesn't have barcode yet -> they have not install mobile app
             const mobile_app_url = this.pos.pos_brand_info.mobile_app_url;
-            if (this.get_partner() && ! this.get_partner().barcode && mobile_app_url) {
+            if (this.get_partner() && !this.get_partner().barcode && mobile_app_url) {
                 const codeWriter = new window.ZXing.BrowserQRCodeSvgWriter();
                 let qr_code_svg = new XMLSerializer().serializeToString(codeWriter.write(mobile_app_url, 150, 150));
                 return "data:image/svg+xml;base64," + window.btoa(qr_code_svg);
@@ -44,38 +44,19 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
 
         // FIXME: group promotion by program
 
-        receipt_group_order_lines_by_promotion(){
-            let line_group_by_promotion_info = {};
+        receipt_group_order_lines_by_promotion() {
+            let promotion_lines_by_line_cid = {};
             let normal_lines = []
-            for (const line of this.get_orderlines()){
-                let {quantity, product, promotion_usage_ids} = line;
-                let product_id = product.id;
+            for (const line of this.get_orderlines()) {
+                let {promotion_usage_ids, cid} = line;
                 if (!promotion_usage_ids || promotion_usage_ids.length === 0) {
                     normal_lines.push(line);
                     continue;
                 }
-                // let product_qty_key = "".concat(product_id, "_", quantity);
-                for (const pro_line of promotion_usage_ids){
-                    let {program_id, pro_priceitem_id, discount_amount} = pro_line;
-                    // don't group line discounted by pricelist
-                    if (pro_priceitem_id) continue;
-
-                    let product_key = "".concat(product_id, "_", discount_amount)
-                    if (!(program_id in line_group_by_promotion_info)){
-                        line_group_by_promotion_info[program_id] = {}
-                    }
-                    if (!(product_key in line_group_by_promotion_info[program_id])){
-                        line_group_by_promotion_info[program_id][product_key] = {
-                            "quantity": quantity
-                        }
-                    }
-                    else{
-                        let exist_quantity  = line_group_by_promotion_info[program_id][product_key]['quantity'];
-                        line_group_by_promotion_info[program_id][product_key]['quantity'] = exist_quantity + quantity;
-                    }
-                }
+                promotion_lines_by_line_cid[cid] = _.sortBy(_.map(promotion_usage_ids, pro => pro.program_id), num => num);
             }
-            return [normal_lines, line_group_by_promotion_info]
+            // group line with same promotion lines from most -> least
+            return [normal_lines, promotion_lines_by_line_cid]
         }
 
         export_for_printing() {
