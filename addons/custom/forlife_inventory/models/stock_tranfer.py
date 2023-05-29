@@ -58,6 +58,7 @@ class StockTranfer(models.Model):
             if type == 'import':
                 stock_picking = self.env['stock.picking'].with_company(company).create({
                     'transfer_id': self.id,
+                    'reason_type_id':self.env.ref('forlife_inventory.reason_type_import_auto').id,
                     'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
                     'location_id': self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong').id,
                     'location_dest_id': location_mapping.location_map_id.id,
@@ -67,9 +68,10 @@ class StockTranfer(models.Model):
             else:
                 stock_picking = self.env['stock.picking'].with_company(company).create({
                     'transfer_id': self.id,
+                    'reason_type_id': self.env.ref('forlife_inventory.reason_type_export_auto').id,
                     'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
                     'location_id': location_mapping.location_map_id.id,
-                    'location_dest_id': location_mapping.location_map_id.id,
+                    'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong').id,
                     'move_ids_without_package': data,
                     'other_export': True
                 })

@@ -20,5 +20,17 @@
             <field name="type_other">incoming</field>
             <field name="company_id" eval="False"/>
         </record>
+        <record id="reason_type_import_return_product" model="forlife.reason.type">
+            <field name="code">05</field>
+            <field name="name">Nhập trả lại hàng kí gửi</field>
+        </record>
+        <record id="reason_type_export_auto" model="forlife.reason.type">
+            <field name="code">11</field>
+            <field name="name">Xuất kí gửi tự động</field>
+        </record>
+                <record id="reason_type_import_auto" model="forlife.reason.type">
+            <field name="code">06</field>
+            <field name="name">Nhập kí gửi tự động</field>
+        </record>
     </data>
 </odoo>
