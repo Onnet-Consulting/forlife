@@ -102,6 +102,7 @@ class StockPicking(models.Model):
 
     #field check phiếu trả hàng:
     x_is_check_return = fields.Boolean('', default=False)
+    x_hide_return = fields.Boolean('', default=False)
 
     relation_return = fields.Char(string='Phiếu trả lại liên quan')
     move_ids_without_package = fields.One2many(
