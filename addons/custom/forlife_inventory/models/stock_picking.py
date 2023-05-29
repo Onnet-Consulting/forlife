@@ -7,6 +7,9 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
     def button_validate(self):
+        res = super(StockPicking, self).button_validate()
+        if res is not True:
+            return res
         if self.sale_id.nhanh_id and self.company_id.code == '1300':
             data = []
             if self.company_id.code == '1300':
@@ -38,7 +41,9 @@ class StockPicking(models.Model):
                     'other_export': True,
                     'move_ids_without_package': data,
                 })
-        return super(StockPicking, self).button_validate()
+                orther_export.button_validate()
+            # orther_export.button_validate()
+        return res
 
 
 
