@@ -3,7 +3,7 @@
 from odoo import api, fields, models, _
 
 
-class StockPickingOtherType(models.Model):
+class StockPickingOtherImport(models.Model):
     _inherit = 'stock.picking'
 
     def bravo_get_picking_other_import_values(self):
@@ -34,7 +34,8 @@ class StockPickingOtherType(models.Model):
         stock_move = account_move.stock_move_id
         product = stock_move.product_id
         picking = stock_move.picking_id
-        partner = picking.partner_id
+        employee = picking.user_id.employee_id
+        partner = picking.partner_id or employee.partner_id
         journal_value = {
             "CompanyCode": picking.company_id.code,
             "Stt": picking.id,
@@ -46,7 +47,7 @@ class StockPickingOtherType(models.Model):
             "CustomerCode": partner.ref,
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
-            "EmployeeCode": picking.user_id.employee_id.code,
+            "EmployeeCode": employee.code,
             "BuiltinOrder": line_count,
             "ItemCode": product.barcode,
             "ItemName": product.name,
