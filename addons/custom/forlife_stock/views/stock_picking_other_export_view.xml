@@ -136,16 +136,12 @@
                         '&amp;', ('other_export', '=', False), ('state', '!=', 'done')]}
                     </attribute>
                 </xpath>
-                <xpath expr="//button[@name='action_toggle_is_locked']" position="attributes">
-                    <attribute name="id">lock</attribute>
-                </xpath>
                 <xpath expr="//button[@name='action_toggle_is_locked'][1]" position="attributes">
                     <attribute name="attrs">{'invisible': ['|',
                         '&amp;', '|', ('other_export', '=', True), ('other_import', '=', True), ('state', 'in', ('done', 'cancel')),
                         '&amp;',
                         '&amp;', ('other_export', '=', False), ('other_import', '=', False),
                         '|', ('state', 'in', ('draft','cancel')), ('is_locked', '=', False)]}</attribute>
-                    <attribute name="id">unlock</attribute>
                 </xpath>
                 <xpath expr="//button[@name='action_cancel']" position="attributes">
                     <attribute name="attrs">{'invisible': ['|',
