@@ -6,8 +6,11 @@
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="forlife_stock.inherit_stock_picking_for_other_export_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//button[@name='action_toggle_is_locked'][1]" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_in_other_lock_unlock,stock.group_stock_manager</attribute>
+                <xpath expr="//button[@id='lock']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_picking_lock_unlock,stock.group_stock_manager</attribute>
+                </xpath>
+                <xpath expr="//button[@id='unlock']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_picking_lock_unlock,stock.group_stock_manager</attribute>
                 </xpath>
             </field>
         </record>
@@ -18,10 +21,13 @@
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_cancel']" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_in_other_cancel</attribute>
+                    <attribute name="groups">forlife_permission_management.group_stock_picking_cancel</attribute>
                 </xpath>
-                <xpath expr="//button[@name='action_toggle_is_locked']" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_in_other_lock_unlock,stock.group_stock_manager</attribute>
+                <xpath expr="//button[@name='button_validate'][hasclass('o_btn_validate')]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_picking_confirm</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_validate']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_stock_picking_confirm</attribute>
                 </xpath>
             </field>
         </record>
