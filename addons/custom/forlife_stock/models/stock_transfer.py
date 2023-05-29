@@ -290,6 +290,7 @@ class StockTransfer(models.Model):
             self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type)
         else:
             self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type)
+        self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)
         if diff_transfer:
             return {
                 'type': 'ir.actions.client',
@@ -300,7 +301,6 @@ class StockTransfer(models.Model):
                     'next': {'type': 'ir.actions.act_window_close'},
                 }
             }
-        return data, location_id, location_dest_id
 
     def _create_diff_transfer(self, data, state='draft', type=''):
         self.ensure_one()

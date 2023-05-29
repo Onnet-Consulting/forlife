@@ -213,6 +213,14 @@ class PosOrder(models.Model):
                 rec.point_event_order = 0
             else:
                 branch_id = rec.program_store_point_id.brand_id.id
+                brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
+                brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
+                if branch_id == brand_format:
+                    is_purchased = self.partner_id.is_purchased_of_format or False
+                elif branch_id == brand_tokyolife:
+                    is_purchased = self.partner_id.is_purchased_of_forlife or False
+                else:
+                    is_purchased = False
                 valid_method_ids = rec.program_store_point_id.payment_method_ids.ids
                 valid_product_ids = rec.program_store_point_id.points_product_ids.filtered(
                     lambda x: x.state == 'effective' and x.from_date < rec.date_order < x.to_date).product_ids.ids
@@ -229,7 +237,7 @@ class PosOrder(models.Model):
                     if money_value < 0:
                         money_value = 0
                     # is_purchased_of_format, is_purchased_of_forlife = rec.partner_id._check_is_purchased()
-                    rec.point_order = rec.get_point_order(money_value, branch_id)
+                    rec.point_order = rec.get_point_order(money_value, branch_id, is_purchased)
                     if event_valid:
                         domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
                         partner_condition = self.env['res.partner'].search(domain)
@@ -245,7 +253,7 @@ class PosOrder(models.Model):
                     total_price_product_auto = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is True).mapped('price_subtotal_incl'))  # X2
                     total_product_change = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl > 0).mapped('price_subtotal_incl'))  # Y
                     money_value = valid_money_payment_method - total_price_refund_product - total_price_product_auto - total_product_change
-                    rec.point_order = rec.get_point_order(money_value, branch_id)
+                    rec.point_order = rec.get_point_order(money_value, branch_id, is_purchased)
                     if event_valid:
                         domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
                         partner_condition = self.env['res.partner'].search(domain)
@@ -256,14 +264,10 @@ class PosOrder(models.Model):
                     else:
                         rec.point_event_order = 0
     # Tách hàm này để cộng thêm điểm tích lũy theo hạng thẻ khách hàng
-    def get_point_order(self, money_value, brand_id):
+    def get_point_order(self, money_value, brand_id, is_purchased):
         if self.program_store_point_id.value_conversion <= 0:
             return 0
-        brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
-        brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
-        if self.partner_id.is_purchased_of_forlife and brand_id == brand_tokyolife:
-            return int(money_value / self.program_store_point_id.value_conversion) * self.program_store_point_id.point_addition
-        elif self.partner_id.is_purchased_of_format and brand_id == brand_format:
+        if is_purchased:
             return int(money_value / self.program_store_point_id.value_conversion) * self.program_store_point_id.point_addition
         else:
             return int(money_value / self.program_store_point_id.value_conversion) * self.program_store_point_id.point_addition * self.program_store_point_id.first_order
