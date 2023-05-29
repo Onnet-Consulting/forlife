@@ -16,11 +16,6 @@ class PosOrder(models.Model):
     def action_pos_order_paid(self):
         res = super(PosOrder, self).action_pos_order_paid()
         self.update_partner_card_rank()
-        if self.card_rank_program_id:
-            total_amount_discount = abs(
-                sum(self.mapped('lines.discount_details_lines').filtered(lambda f: f.type == 'card').mapped(
-                    'money_reduced')))
-            self.accounting_card_rank_discount(total_amount_discount) if total_amount_discount else None
         return res
 
     def update_partner_card_rank(self):
@@ -125,38 +120,6 @@ class PosOrder(models.Model):
 
         return res
 
-    def accounting_card_rank_discount(self, total_amount_discount):
-        values = self._prepare_cr_discount_account_move()
-        values['line_ids'] = self._prepare_cr_discount_account_move_line(total_amount_discount)
-        res = self.env['account.move'].sudo().create(values)
-        return res.action_post() if res else False
-
-    def _prepare_cr_discount_account_move(self):
-        return {
-            'pos_order_id': self.id,
-            'ref': self.name,
-            'date': self.date_order,
-            'journal_id': self.card_rank_program_id.journal_id.id,
-        }
-
-    def _prepare_cr_discount_account_move_line(self, total_amount_discount):
-        if self.card_rank_program_id.is_register and self.card_rank_program_id.register_from_date <= self.date_order.date() and self.card_rank_program_id.register_to_date >= self.date_order.date():
-            debit_account = self.card_rank_program_id.discount_account_id.id
-        else:
-            debit_account = self.card_rank_program_id.value_account_id.id
-        return [
-            (0, 0, {
-                'account_id': debit_account,
-                'debit': total_amount_discount,
-                'analytic_account_id': self.config_id.store_id.analytic_account_id.id,
-            }),
-            (0, 0, {
-                'account_id': self.partner_id.property_account_receivable_id.id,
-                'credit': total_amount_discount,
-                'partner_id': self.config_id.store_id.contact_id.id,
-            }),
-        ]
-
     # @api.model
     # def _process_order(self, order, draft, existing_order):
     #     pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
@@ -227,15 +190,15 @@ class PosOrder(models.Model):
             'points_store': points_coefficient
         }
 
-    def get_point_order(self, money_value, brand_id):
-        result = super().get_point_order(money_value, brand_id)
+    def get_point_order(self, money_value, brand_id, is_purchased):
         current_rank_of_customer = (self.partner_id.card_rank_by_brand or {}).get(str(brand_id))
         program = self.program_store_point_id
         if self.allow_for_point and (self.config_id.store_id.id in program.store_ids.ids or not program.store_ids) and current_rank_of_customer and program.card_rank_active:
             accumulate_by_rank = program.accumulate_by_rank_ids.filtered(lambda x: x.card_rank_id.id == current_rank_of_customer[0])
+            coefficient = 1 if is_purchased else (accumulate_by_rank.coefficient or 1)
             if accumulate_by_rank:
-                return int(int((money_value * accumulate_by_rank.accumulative_rate / 100) * (program.card_rank_point_addition / program.card_rank_value_convert)) * (accumulate_by_rank.coefficient or 1))
-        return result
+                return int(int((money_value * accumulate_by_rank.accumulative_rate / 100) * (program.card_rank_point_addition / program.card_rank_value_convert)) * coefficient)
+        return super().get_point_order(money_value, brand_id, is_purchased)
 
 
 class PosOrderLine(models.Model):
