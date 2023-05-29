@@ -4,10 +4,6 @@ from odoo import api, fields, models
 class StockTranfer(models.Model):
     _inherit = 'stock.transfer'
 
-    def _action_in_approve(self):
-        data, location_id, location_dest_id = super(StockTranfer, self)._action_in_approve()
-        self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)
-        return data, location_id, location_dest_id
 
     def _create_stock_picking_other_import_and_export(self, data, location_id, location_dest_id):
         # fetch-data-to-compare
