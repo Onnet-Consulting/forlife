@@ -123,6 +123,11 @@
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
+        <record id="group_in_other_confirm" model="res.groups">
+            <field name="name">Phiếu nhập khác Nút Confirm</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
         <record id="group_in_other_lock_unlock" model="res.groups">
             <field name="name">Phiếu nhập khác Nút Lock + Unlock</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
@@ -130,6 +135,11 @@
 
         <record id="group_out_other_cancel" model="res.groups">
             <field name="name">Phiếu xuất khác Nút Cancel</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
+        <record id="group_out_other_confirm" model="res.groups">
+            <field name="name">Phiếu xuất khác Nút Confirm</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
