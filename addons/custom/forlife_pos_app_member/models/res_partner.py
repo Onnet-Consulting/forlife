@@ -53,6 +53,7 @@ class ResPartner(models.Model):
         ('unique_barcode', 'UNIQUE(barcode)', 'Only one barcode occurrence by partner'),
         ('phone_number_group_uniq', 'unique(phone, group_id)',
          'The phone number must be unique in each Partner Group !'),
+        ('unique_ref', 'UNIQUE(ref)', 'A Partner with the same "ref" already exists!')
     ]
 
     @api.depends('phone', 'create_uid')

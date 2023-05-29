@@ -38,7 +38,7 @@ class AccountMove(models.Model):
             "TaxRegNo": partner.vat,
             "EmployeeCode": self.user_id.employee_id.code,
             "IsTransfer": 1 if self.x_asset_fin else 0,
-            "DebitAccount":  receivable_account_code
+            "DebitAccount": receivable_account_code
         }
 
         for idx, invoice_line in enumerate(invoice_lines, start=1):
@@ -46,5 +46,6 @@ class AccountMove(models.Model):
             journal_value_line = journal_value.copy()
             journal_value_line.update({
                 'BuiltinOrder': idx,
-                # "Item"
+                "ItemCode": product.barcode,
+                "ItemName": product.name,
             })
