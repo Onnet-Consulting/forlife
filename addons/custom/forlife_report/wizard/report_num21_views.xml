@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_num21_form" model="ir.ui.view">
+        <field name="name">form</field>
+        <field name="model">report.num21</field>
+        <field name="arch" type="xml">
+            <form string="Report stock transfer" create="0">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="print_xlsx" type="object" icon="fa-file-excel-o" string="Download Excel" title="Download Excel"/>
+                        <button name="view_report" type="object" icon="fa-bar-chart" string="View" class="btn-primary" title="View"/>
+                    </div>
+                    <group>
+                        <group>
+                            <label for="from_date" string="Date"/>
+                            <div>from
+                                <field name="from_date" class="oe_inline" required="1"/>
+                                to
+                                <field name="to_date" class="oe_inline" required="1"/>
+                            </div>
+                            <field name="location_province_ids" widget="many2many_checkboxes"/>
+                            <field name="warehouse_ids" widget="many2many_tags" domain="[('loc_province_id', 'in', (location_province_ids or [False]))]"/>
+                        </group>
+                        <group>
+                            <label for="is_all" string="Status"/>
+                            <div>
+                                <div>
+                                    <field name="is_all"/>All
+                                </div>
+                                <div attrs="{'invisible': [('is_all', '=', True)]}">
+                                    <field name="is_delivery"/>Delivery
+                                </div>
+                                <div attrs="{'invisible': [('is_all', '=', True)]}">
+                                    <field name="is_receive"/>Receive
+                                </div>
+                                <div attrs="{'invisible': [('is_all', '=', True)]}">
+                                    <field name="is_done"/>Done
+                                </div>
+                            </div>
+                            <field name="product_domain" widget="domain" options="{'model': 'product.product', 'in_dialog': true}"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="report_num21_window_action" model="ir.actions.act_window">
+        <field name="name">Report stock transfer</field>
+        <field name="res_model">report.num21</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+    </record>
+
+    <menuitem id="report_num21_menu"
+              action="report_num21_window_action"
+              parent="report_menu_stock"
+              sequence="21"/>
+</odoo>
