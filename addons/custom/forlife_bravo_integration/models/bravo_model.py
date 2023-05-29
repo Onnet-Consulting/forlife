@@ -221,7 +221,7 @@ class BravoModelUpdateAction(models.AbstractModel):
         res = super().write(values)
         queries = self.bravo_get_update_sql(values)
         if queries:
-            self.env[self._name].sudo().with_delay().bravo_execute_query(queries)
+            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
         return res
 
 
@@ -287,7 +287,7 @@ class BravoModelDeleteAction(models.AbstractModel):
         queries = self.sudo().bravo_get_delete_sql()
         res = super().unlink()
         if queries:
-            self.env[self._name].sudo().with_delay().bravo_execute_query(queries)
+            self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(queries)
         return res
 
 
@@ -424,7 +424,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
-        res.sudo().with_delay().bravo_insert_with_check_existing()
+        res.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
         return res
 
 

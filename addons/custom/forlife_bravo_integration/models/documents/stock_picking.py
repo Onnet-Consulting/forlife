@@ -15,7 +15,7 @@ class StockPicking(models.Model):
         res = super()._action_done()
         done_pickings = self.filtered(lambda p: p.state == 'done')
         insert_queries = done_pickings.bravo_get_insert_sql()
-        self.env[self._name].sudo().with_delay().bravo_execute_query(insert_queries)
+        self.env[self._name].sudo().with_delay(channel="root.Bravo").bravo_execute_query(insert_queries)
         return res
 
     @api.model

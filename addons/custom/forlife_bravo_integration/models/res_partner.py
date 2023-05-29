@@ -44,5 +44,5 @@ class ResPartnerGroup(models.Model):
                        self.env.ref("forlife_pos_app_member.partner_group_5") + \
                        self.env.ref("forlife_pos_app_member.partner_group_c") + \
                        self.env.ref("forlife_pos_app_member.partner_group_system")
-        exist_groups.sudo().with_delay().bravo_insert_with_check_existing()
+        exist_groups.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
         return True
