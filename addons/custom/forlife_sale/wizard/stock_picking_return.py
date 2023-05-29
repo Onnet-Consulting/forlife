@@ -48,15 +48,18 @@ class ReturnPicking(models.TransientModel):
         return True
 
     def create_sale_order(self):
+        # validate with case from SO and from Stock_picking
         if self._context.get('x_return'):
             picking_id = self.env['stock.picking'].browse(self._context.get('picking_id'))
+            origin = self._context.get('x_return')
         else:
             picking_id = self.env['stock.picking'].browse(self._context.get('active_id'))
-        origin = self.env['sale.order'].search([('name', '=', picking_id.origin)])
+            so_origin = self.env['sale.order'].search([('name', '=', picking_id.origin)])
+            origin = so_origin.id if so_origin else None
         vals = {
             'partner_id': picking_id.partner_id.id,
             'x_sale_type': picking_id.move_ids[0].product_id.product_type,
-            'x_origin': origin.id if origin else None,
+            'x_origin': origin,
             'x_is_exchange': True
         }
         so_id = self.env['sale.order'].create(vals)

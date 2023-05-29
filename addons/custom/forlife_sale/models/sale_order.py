@@ -37,7 +37,7 @@ class SaleOrder(models.Model):
     x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
     x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)
     x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
-    x_is_return = fields.Boolean('Đơn trả hàng')
+    x_is_return = fields.Boolean('Đơn trả hàng', copy=False)
     x_origin = fields.Many2one('sale.order', 'Tài liệu gốc')
     x_order_punish_count = fields.Integer('Số đơn phạt', compute='_compute_order_punish_count')
     x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
@@ -321,7 +321,8 @@ class SaleOrder(models.Model):
             picking_location_list[picking.location_id.id] = picking.name
         so_return.update({
             'x_is_return': True,
-            'x_origin': self.id
+            'x_origin': self.id,
+            'state': 'sale'
         })
         for line in so_return.order_line:
             if picking_location_list.get(line.x_location_id.id):
