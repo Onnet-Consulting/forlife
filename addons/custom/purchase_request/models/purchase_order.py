@@ -35,6 +35,10 @@ class PurchaseOrder(models.Model):
     def _inverse_order_line_production_order(self):
         pass
 
+    @api.onchange('order_line_production_order')
+    def _onchange_order_line_production_order(self):
+        pass
+
     def action_approved(self):
         for rec in self:
             for line in rec.order_line:
