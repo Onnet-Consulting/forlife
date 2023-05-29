@@ -22,24 +22,27 @@ class SaleOrder(models.Model):
     def check_sale_promotion(self):
         for rec in self:
             if rec.order_line and rec.state in ["sale", "check_promotion"]:
+                rec.promotion_ids = [Command.clear()]
                 if rec.x_sale_chanel == "online":
                     rec.write({"state": "check_promotion"})
                     text = re.compile('<.*?>')
                     note = rec.note and re.sub(text, '', rec.note.replace("\n", "").replace("\t", "").strip()).replace('&nbsp;', '')
                     # note = BeautifulSoup(rec.note, "lxml").text.replace('&nbsp;', '').strip()
                     # đơn hàng có tôn tại Lấy 3 ký tự đầu tiên của note thỏa với '#mn'
-                    if rec.order_line and note and note[0:3].lower() == "#mn":
+
+                    line_gift_mn = []
+                    if note and note.lower().find('#mn') >= 0:
+                        barcode = note[note.lower().find('#mn') + 3:].strip().split(' ')[0]
                         if len(rec.order_line) == 1:
                             if rec.order_line[0].product_uom_qty == 1:
-                                rec.order_line.write({'x_free_good': True, 'price_unit': 0})
+                                rec.order_line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
                             elif rec.order_line[0].product_uom_qty > 1:
                                 for i in range(int(rec.order_line[0].product_uom_qty)):
                                     new_line = rec.order_line[0].copy({'order_id': rec.order_line[0].order_id.id, 'product_uom_qty': 1})
                                     if i == 0:
-                                        new_line.write({'x_free_good': True, 'price_unit': 0})
+                                        new_line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
                                 rec.order_line[0].unlink()
                         else:
-                            barcode = note[3:].strip()
                             line = self.get_oder_line_barcode(barcode)
                             if not line or len(line) == 0:
                                 rec.write({"state": "check_promotion"})
@@ -50,20 +53,19 @@ class SaleOrder(models.Model):
                                 for i in range(int(line.product_uom_qty)):
                                     new_line = line.copy({'order_id': line.order_id.id, 'product_uom_qty': 1})
                                     if i == 0:
-                                        new_line.write({'x_free_good': True, 'price_unit': 0})
+                                        new_line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
                                 line.unlink()
-                    elif note and note[0:4].lower() == "#vip":
-                        rec.promotion_ids = [Command.clear()]
-                        # percent_arr = note[4:].replace('&nbsp;', '').lstrip().split(' ')
-                        # percent = len(percent_arr) > 0 and int(percent_arr[0])
-                        percent = re.sub("[^0-9]", "", note[4:6])
-                        if percent and str(percent).isnumeric():
+                    if note and note.lower().find('#vip') >= 0:
+                        vip_text = note[note.lower().find('#vip') + 4:]
+                        vip_number_text = vip_text.strip()[:2]
+                        vip_number = re.sub("[^0-9]", "", vip_number_text)
+                        if vip_number and str(vip_number).isnumeric():
                             for ln in rec.order_line:
                                 warehouse_code = ln.x_location_id.warehouse_id.whs_code
                                 analytic_account_id = warehouse_code and self.env['account.analytic.account'].search(
                                     [('code', 'like', '%' + warehouse_code + '%')], limit=1)
                                 ghn_price_unit = ln.price_unit
-                                price_percent = int(percent) / 100 * ghn_price_unit * ln.product_uom_qty
+                                price_percent = int(vip_number) / 100 * ghn_price_unit * ln.product_uom_qty
                                 if not ln.x_free_good:
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': ln.product_id.id,
@@ -72,33 +74,29 @@ class SaleOrder(models.Model):
                                         'analytic_account_id': analytic_account_id.id,
                                         'description': "Giảm giá từ CT làm giá"
                                     })]
-                        else:
-                            return
 
-                    else:
-                        rec.promotion_ids = [Command.clear()]
-                        for ln in rec.order_line:
-                            warehouse_code = ln.x_location_id.warehouse_id.whs_code
-                            analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%'+warehouse_code+'%')], limit=1)
-                            odoo_price_unit = ln.odoo_price_unit
-                            diff_price_unit = odoo_price_unit - ln.price_unit  # thay 0 thanhf don gia Nhanh khi co truong
-                            diff_price = diff_price_unit * ln.product_uom_qty
-                            if ln.x_cart_discount_fixed_price > 0:
-                                rec.promotion_ids = [(0, 0, {
-                                    'product_id': ln.product_id.id,
-                                    'value': ln.x_cart_discount_fixed_price,
-                                    'account_id': ln.product_id.categ_id and ln.product_id.categ_id.discount_account_id.id,
-                                    'analytic_account_id': analytic_account_id.id,
-                                    'description': "Chiết khấu khuyến mãi"
-                                })]
-                            if diff_price > 0:
-                                rec.promotion_ids = [(0, 0, {
-                                    'product_id': ln.product_id.id,
-                                    'value': diff_price_unit,
-                                    'account_id': ln.product_id.categ_id and ln.product_id.categ_id.discount_account_id.id,
-                                    'analytic_account_id': analytic_account_id.id,
-                                    'description': "Chiết khấu khuyến mãi"
-                                })]
+                    for ln in rec.order_line:
+                        warehouse_code = ln.x_location_id.warehouse_id.whs_code
+                        analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%'+warehouse_code+'%')], limit=1)
+                        odoo_price_unit = ln.odoo_price_unit
+                        diff_price_unit = odoo_price_unit - ln.price_unit  # thay 0 thanhf don gia Nhanh khi co truong
+                        diff_price = diff_price_unit * ln.product_uom_qty
+                        if ln.x_cart_discount_fixed_price > 0 and not ln.x_free_good:
+                            rec.promotion_ids = [(0, 0, {
+                                'product_id': ln.product_id.id,
+                                'value': ln.x_cart_discount_fixed_price,
+                                'account_id': ln.product_id.categ_id and ln.product_id.categ_id.discount_account_id.id,
+                                'analytic_account_id': analytic_account_id.id,
+                                'description': "Chiết khấu khuyến mãi"
+                            })]
+                        if diff_price > 0 and not ln.x_free_good:
+                            rec.promotion_ids = [(0, 0, {
+                                'product_id': ln.product_id.id,
+                                'value': diff_price_unit,
+                                'account_id': ln.product_id.categ_id and ln.product_id.categ_id.discount_account_id.id,
+                                'analytic_account_id': analytic_account_id.id,
+                                'description': "Chiết khấu khuyến mãi"
+                            })]
 
                 elif rec.x_sale_chanel == "wholesale":
                     for line in rec.order_line:
@@ -131,7 +129,7 @@ class SaleOrder(models.Model):
             for line in rec.order_line:
                 if line.is_reward_line:
                     if line.reward_id.reward_type == "product":
-                        line.write({'x_free_good': True})
+                        line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
             return res
 
 class SaleOrderLine(models.Model):
