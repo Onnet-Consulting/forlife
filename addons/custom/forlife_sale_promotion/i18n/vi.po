@@ -49,12 +49,12 @@ msgstr ""
 #. module: forlife_sale_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.sale_order_form_sale_promotion
 msgid "Check Promotion"
-msgstr "Kiểm tra khuyễn mãi"
+msgstr "Kiểm tra khuyến mãi"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order__state__check_promotion
 msgid "Check promotion"
-msgstr "Kiểm tra khuyễn mãi"
+msgstr "Kiểm tra khuyến mãi"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__create_uid
@@ -198,31 +198,31 @@ msgstr "Danh mục sản phẩm"
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.sale_order_form_sale_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.view_move_form_promotion
 msgid "Promotion"
-msgstr "Khuyễn mãi"
+msgstr "Khuyến mãi"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_product_category__promotion_account_id
 msgid "Promotion account"
-msgstr "Tài khoản khuyễn mãi"
+msgstr "Tài khoản khuyến mãi"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_bank_statement_line__promotion_journal_ids
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move__promotion_journal_ids
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_payment__promotion_journal_ids
 msgid "Promotion entry"
-msgstr "But toán khuyễn mãi"
+msgstr "But toán khuyến mãi"
 
 #. module: forlife_sale_promotion
 #: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.view_move_form_promotion
 msgid "Promotion journal"
-msgstr "Bút toán khuyễn mãi"
+msgstr "Bút toán khuyến mãi"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_bank_statement_line__promotion_journal_count
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move__promotion_journal_count
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_payment__promotion_journal_count
 msgid "Promotion journal count"
-msgstr "Số lượng bút toán khuyễn mãi"
+msgstr "Số lượng bút toán khuyến mãi"
 
 #. module: forlife_sale_promotion
 #: model:ir.model,name:forlife_sale_promotion.model_sale_loyalty_reward_wizard
