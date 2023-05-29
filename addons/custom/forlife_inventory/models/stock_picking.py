@@ -30,14 +30,14 @@ class StockPicking(models.Model):
                         'company_id': location_mapping.location_map_id.company_id.id
                     }))
                 # if self.sale_id.nhanh_id and self.company_id.code == '1300':
-                    orther_export = self.env['stock.picking'].with_company(location_mapping.location_map_id.company_id).create({
-                        'reason_type_id': self.env.ref('forlife_inventory.reason_type_export_auto', raise_if_not_found=False).id,
-                        'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
-                        'location_id': location_mapping.location_map_id.id,
-                        'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong', raise_if_not_found=False).id,
-                        'other_export': True,
-                        'move_ids_without_package': data,
-                    })
+                orther_export = self.env['stock.picking'].with_company(location_mapping.location_map_id.company_id).create({
+                    'reason_type_id': self.env.ref('forlife_inventory.reason_type_export_auto', raise_if_not_found=False).id,
+                    'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
+                    'location_id': location_mapping.location_map_id.id,
+                    'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong', raise_if_not_found=False).id,
+                    'other_export': True,
+                    'move_ids_without_package': data,
+                })
         return super(StockPicking, self).button_validate()
 
 
