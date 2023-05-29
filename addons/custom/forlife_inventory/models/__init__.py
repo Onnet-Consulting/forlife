@@ -3,3 +3,4 @@ from . import stock_location_mapping
 from . import stock_picking
 from . import stock_tranfer
 from . import stock_picking_return
+from . import stock_inventory_line
