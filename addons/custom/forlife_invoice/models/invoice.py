@@ -233,10 +233,10 @@ class AccountMove(models.Model):
                 for line in rec.invoice_line_ids:
                     if line.product_id and line.display_type == 'product':
                         line.write({
-                                    'account_id': line.product_id.categ_id.with_company(
-                                        line.company_id).property_stock_account_input_categ_id.id,
-                                    'name': line.product_id.name
-                                    })
+                            'account_id': line.product_id.categ_id.with_company(
+                                line.company_id).property_stock_account_input_categ_id.id,
+                            'name': line.product_id.name
+                        })
         for key, value in context_invoice.items():
             print(key, value)
             if value == "purchase.order":

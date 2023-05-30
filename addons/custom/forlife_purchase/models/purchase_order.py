@@ -462,7 +462,6 @@ class PurchaseOrder(models.Model):
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'to invoice'})
 
-
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
         partner_so = self.env['res.partner'].search([('internal_code', '=', '3000')], limit=1)
@@ -652,6 +651,7 @@ class PurchaseOrder(models.Model):
         if (new_line_count > old_line_count) and self.custom_state == "approved":
             raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái phê duyệt')
         return super(PurchaseOrder, self).write(vals)
+
     @api.onchange('company_id', 'currency_id')
     def onchange_currency_id(self):
         if self.company_id or self.currency_id:
@@ -1893,7 +1893,7 @@ class StockPicking(models.Model):
         if invoice_line_npls and list_line_xk:
             account_nl = self.create_account_move(po, invoice_line_npls, record)
             if record.state == 'done':
-                master_xk = self.create_xk_picking(po, record, list_line_xk)
+                master_xk = self.create_xk_picking(po, record, list_line_xk, account_nl)
         return True
 
     def create_xk_picking(self, po, record, list_line_xk, account_move=None):
