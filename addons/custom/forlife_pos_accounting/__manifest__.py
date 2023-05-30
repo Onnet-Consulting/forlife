@@ -14,7 +14,6 @@
     'category': 'Forlife POS Accounting',
     'depends': [
         'account',
-        'pos_loyalty',
         'point_of_sale',
         'forlife_promotion',
         'forlife_pos_promotion',
