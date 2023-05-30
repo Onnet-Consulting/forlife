@@ -45,13 +45,13 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
         // FIXME: group promotion by program
 
         receipt_group_order_lines_by_promotion() {
-            let promotion_lines_data = [];
+            let promotion_lines = [];
             let lines_by_promotion_programs = {};
             let normal_lines = []
             for (const line of this.get_orderlines()) {
                 let {promotion_usage_ids} = line;
                 if (!promotion_usage_ids || promotion_usage_ids.length === 0) {
-                    normal_lines.push(line);
+                    normal_lines.push(line.export_for_printing());
                     continue;
                 }
                 let promotion_program_ids = _.sortBy(_.map(promotion_usage_ids, pro => pro.program_id), num => num);
@@ -65,13 +65,13 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
 
             for (const [program_ids, lines] of Object.entries(lines_by_promotion_programs)) {
                 let raw_program_ids = JSON.parse(program_ids);
-                promotion_lines_data.push({
+                promotion_lines.push({
                     "promotion_names": _.map(raw_program_ids, program_id => this.pos.promotion_program_by_id[program_id].name),
                     "lines": _.map(lines, line => line.export_for_printing())
                 })
             }
 
-            return [normal_lines, promotion_lines_data];
+            return [normal_lines, promotion_lines];
 
         }
 
@@ -83,6 +83,10 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             json.footer = markup(this.pos.pos_brand_info.pos_receipt_footer);
             json.note = this.get_note();
             json.mobile_app_url_qr_code = this.get_install_app_barcode_data();
+            let normal_lines, promotion_lines;
+            [normal_lines, promotion_lines] = this.receipt_group_order_lines_by_promotion();
+            json.normal_lines = normal_lines;
+            json.promotion_lines = promotion_lines;
             return json;
         }
     }
@@ -127,6 +131,8 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
 
             return _.extend(json, {
                 product_default_code: this.get_product().default_code || '',
+                discount_amount: this.get_line_receipt_total_discount(),
+                discount_percent: this.get_line_receipt_total_percent_discount()
             });
         }
     }
