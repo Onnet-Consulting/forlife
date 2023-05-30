@@ -32,7 +32,7 @@ class ResPartnerGroup(models.Model):
                     'prefix': code,
                     'padding': 10 - len(code),
                     'company_id': False,
-                    'implementation': 'no_gap',
+                    'implementation': 'no_gap' if code != 'C' else 'standard',
                 })
                 value.update({'sequence_id': sequence.id})
         res = super(ResPartnerGroup, self).create(vals_list)
