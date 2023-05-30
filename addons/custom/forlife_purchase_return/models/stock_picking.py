@@ -2,6 +2,8 @@ import datetime
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class StockPicking(models.Model):
@@ -12,7 +14,8 @@ class StockPicking(models.Model):
         if self._context.get('endloop'):
             return res
         for picking in self:
-            if picking.move_ids and picking.move_ids[0]._is_purchase_return():
+            if (picking.purchase_id and picking.purchase_id.is_return) or\
+                    (picking.move_ids and picking.move_ids[0]._is_purchase_return()):
                 picking.create_return_valuation_npl()
         return res
 
@@ -77,7 +80,7 @@ class StockPicking(models.Model):
                         'name': production_line.product_id.name,
                         'debit': debit,
                         'credit': 0,
-                        'is_uncheck': True,
+                        # 'is_uncheck': True,
                     })
                     invoice_line_npls.append(debit_npl)
                     credit += debit
@@ -89,7 +92,7 @@ class StockPicking(models.Model):
                     'name': move.product_id.name,
                     'debit': 0,
                     'credit': credit,
-                    'is_uncheck': True,
+                    # 'is_uncheck': True,
 
                 })
                 invoice_line_npls.append(credit_npl)

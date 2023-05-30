@@ -3,6 +3,9 @@ from collections import defaultdict
 from odoo.exceptions import UserError
 from odoo import models, fields, api, _
 
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class StockReturnPicking(models.TransientModel):
     _inherit = 'stock.return.picking'
@@ -18,6 +21,14 @@ class StockReturnPicking(models.TransientModel):
                 res.update({'picking_id': picking.id})
         return res
 
+    # @api.onchange('picking_id')
+    # def _onchange_picking_id(self):
+    #     res = super(StockReturnPicking, self)._onchange_picking_id()
+    #     for return_line in self.product_return_moves:
+    #         if return_line.quantity_remain <= 0:
+    #             return_line.unlink()
+    #     return res
+
     @api.model
     def _prepare_stock_return_picking_line_vals_from_move(self, stock_move):
         res = super(StockReturnPicking, self)._prepare_stock_return_picking_line_vals_from_move(stock_move)
@@ -32,9 +43,12 @@ class StockReturnPicking(models.TransientModel):
 
         res.update({
             'quantity_init': stock_move.product_qty,
-            'quantity_returned': quantity_returned
+            'quantity_returned': quantity_returned,
+            'quantity_remain': stock_move.product_qty - quantity_returned,
+            'quantity': 0
         })
-
+        if res.get('quantity_remain') <= 0:
+            res = {}
         return res
 
 
@@ -43,8 +57,9 @@ class StockReturnPickingLine(models.TransientModel):
 
     quantity_init = fields.Float("Quantity Init", digits='Product Unit of Measure')
     quantity_returned = fields.Float("Quantity Returned", digits='Product Unit of Measure')
+    quantity_remain = fields.Float("Quantity Remain", digits='Product Unit of Measure')
 
     @api.onchange('quantity')
     def _onchange_quantity(self):
-        if self.quantity > (self.quantity_init - self.quantity_returned):
+        if self.quantity > self.quantity_remain:
             raise UserError("Số lượng trả lại vượt quá số lượng cho phép. Vui lòng thiết lập lại.")
