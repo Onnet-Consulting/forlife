@@ -126,6 +126,10 @@
     font-weight: bold;
 }
 
+.pos-receipt .orderlines .lines-detail .point-header {
+    font-weight: bold;
+}
+
 .pos-receipt .orderlines .lines-detail .num_1 {
     width: 35%;
 }

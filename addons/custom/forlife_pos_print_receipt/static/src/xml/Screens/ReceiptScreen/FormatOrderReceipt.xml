@@ -94,71 +94,70 @@
 
             <table class="lines-detail">
                 <tbody>
-                    <t t-foreach='receipt.normal_lines' t-as='line' t-key="line.id">
-                        <tr>
+                    <t t-if="receipt.normal_lines.length > 0">
+                        <t t-foreach='receipt.normal_lines' t-as='line' t-key="line.id">
+                            <t t-call="FormatOrderLinesDetailReceipt"/>
+                        </t>
+                    </t>
+
+                    <t t-if="receipt.promotion_lines.length > 0">
+                        <t t-foreach='receipt.promotion_lines' t-as='promotion_data'
+                           t-key="promotion_data['lines'][0].id">
+                            <t t-set="promotion_names" t-value="promotion_data['promotion_names']"/>
+                            <t t-set="lines" t-value="promotion_data['lines']"/>
+                            <t t-foreach="promotion_names" t-as="promotion_name" t-key="promotion_name">
+                                <tr class="promotion-program-name">
+                                    <td colspan="5">
+                                        -
+                                        <t t-esc="promotion_name"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-foreach="lines" t-as="line" t-key="line.id">
+                                <t t-call="FormatOrderLinesDetailReceipt"/>
+                            </t>
+                        </t>
+                    </t>
+
+                    <t t-if="receipt.applied_point_lines.length > 0">
+                        <tr class="point-header">
                             <td colspan="5">
-                                <t t-esc="line.product_name_wrapped[0]"/>
+                                Tiêu tích lũy
                             </td>
                         </tr>
-                        <tr class="product-price-qty-detail">
-                            <td class="num_1 text">
-                                <t t-esc="line.product_default_code || ''"/>
-                            </td>
-                            <td class="num_2 number">
-                                <t t-esc="line.quantity"/>
-                            </td>
-                            <td class="num_3 number">
-                                <t t-esc="env.pos.format_currency_no_symbol(line.price)"/>
-                            </td>
-                            <td class="num_4 number">
-                                <t t-esc="line.discount_percent"/>%
-                            </td>
-                            <td class="num_5 number">
-                                <t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/>
-                            </td>
-                        </tr>
-                    </t>
-                    <t t-debug="pdb"/>
-                    <t t-foreach='receipt.promotion_lines' t-as='promotion_data' t-key="promotion_data['lines']" >
-
-                        <t t-set="promotion_names" t-value="promotion_data['promotion_names']"/>
-                        <t t-set="lines" t-value="promotion_data['lines']"/>
-                        <t t-foreach="promotion_names" t-as="promotion_name" t-key="promotion_name">
-                            <tr class="promotion-program-name">
-                                <td colspan="5">
-                                    - <t t-esc="promotion_name"/>
-                                </td>
-                            </tr>
+                        <t t-foreach="receipt.applied_point_lines" t-as="line" t-key="line.id">
+                            <t t-call="FormatOrderLinesDetailReceipt"/>
                         </t>
-                        <t t-foreach="lines" t-as="line" t-key="line.id">
-                            <tr>
-                                <td colspan="5">
-                                    <t t-esc="line.product_name_wrapped[0]"/>
-                                </td>
-                            </tr>
-                            <tr class="product-price-qty-detail">
-                                <td class="num_1 text">
-                                    <t t-esc="line.product_default_code || ''"/>
-                                </td>
-                                <td class="num_2 number">
-                                    <t t-esc="line.quantity"/>
-                                </td>
-                                <td class="num_3 number">
-                                    <t t-esc="env.pos.format_currency_no_symbol(line.price)"/>
-                                </td>
-                                <td class="num_4 number">
-                                    <t t-esc="line.discount_percent"/>%
-                                </td>
-                                <td class="num_5 number">
-                                    <t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/>
-                                </td>
-                            </tr>
-                        </t>
-
                     </t>
+
                 </tbody>
             </table>
         </div>
+    </t>
+
+    <t t-name="FormatOrderLinesDetailReceipt" owl="1">
+        <tr>
+            <td colspan="5">
+                <t t-esc="line.product_name_wrapped[0]"/>
+            </td>
+        </tr>
+        <tr class="product-price-qty-detail">
+            <td class="num_1 text">
+                <t t-esc="line.product_default_code || ''"/>
+            </td>
+            <td class="num_2 number">
+                <t t-esc="line.quantity"/>
+            </td>
+            <td class="num_3 number">
+                <t t-esc="env.pos.format_currency_no_symbol(line.price)"/>
+            </td>
+            <td class="num_4 number">
+                <t t-esc="line.discount_percent"/>%
+            </td>
+            <td class="num_5 number">
+                <t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/>
+            </td>
+        </tr>
     </t>
 
     <t t-name="FormatOrderPaymentLinesReceipt" owl="1">
