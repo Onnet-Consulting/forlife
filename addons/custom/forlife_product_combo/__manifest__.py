@@ -14,6 +14,7 @@
     'auto_install': True,
     'depends': [
         'point_of_sale',
+        'forlife_stock',
     ],
     'assets': {
         'point_of_sale.assets': [

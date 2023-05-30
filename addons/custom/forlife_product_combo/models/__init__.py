@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from . import stock_transfer_request
 from . import product_combo
 from . import product_combo_line
 from . import pos_session
