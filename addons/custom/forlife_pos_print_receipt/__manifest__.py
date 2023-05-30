@@ -17,6 +17,11 @@
     'depends': [
         'web_map',
         'forlife_point_of_sale',
+        'forlife_pos_point_order',
+        'forlife_customer_card_rank',
+        'forlife_pos_promotion',
+        'forlife_pos_product_change_refund',
+
     ],
     'auto_install': True,
 

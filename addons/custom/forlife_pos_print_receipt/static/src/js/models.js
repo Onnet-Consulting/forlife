@@ -45,18 +45,34 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
         // FIXME: group promotion by program
 
         receipt_group_order_lines_by_promotion() {
-            let promotion_lines_by_line_cid = {};
+            let promotion_lines_data = [];
+            let lines_by_promotion_programs = {};
             let normal_lines = []
             for (const line of this.get_orderlines()) {
-                let {promotion_usage_ids, cid} = line;
+                let {promotion_usage_ids} = line;
                 if (!promotion_usage_ids || promotion_usage_ids.length === 0) {
                     normal_lines.push(line);
                     continue;
                 }
-                promotion_lines_by_line_cid[cid] = _.sortBy(_.map(promotion_usage_ids, pro => pro.program_id), num => num);
+                let promotion_program_ids = _.sortBy(_.map(promotion_usage_ids, pro => pro.program_id), num => num);
+                let key_promotion_program_ids = JSON.stringify(promotion_program_ids);
+                if (key_promotion_program_ids in lines_by_promotion_programs) {
+                    lines_by_promotion_programs[key_promotion_program_ids].push(line)
+                } else {
+                    lines_by_promotion_programs[key_promotion_program_ids] = [line];
+                }
             }
-            // group line with same promotion lines from most -> least
-            return [normal_lines, promotion_lines_by_line_cid]
+
+            for (const [program_ids, lines] of Object.entries(lines_by_promotion_programs)) {
+                let raw_program_ids = JSON.parse(program_ids);
+                promotion_lines_data.push({
+                    "promotion_names": _.map(raw_program_ids, program_id => this.pos.promotion_program_by_id[program_id].name),
+                    "lines": _.map(lines, line => line.export_for_printing())
+                })
+            }
+
+            return [normal_lines, promotion_lines_data];
+
         }
 
         export_for_printing() {
@@ -72,6 +88,40 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
     }
 
     const ReceiptOrderLine = (Orderline) => class ReceiptOrderLine extends Orderline {
+
+        get_line_receipt_total_discount() {
+            let total = 0;
+            // used point
+            if (this.point) {
+                total += Math.abs(this.point);
+            }
+            // card rank
+            total += this.get_card_rank_discount();
+            if (this.money_reduce_from_product_defective > 0) {
+                total += this.money_reduce_from_product_defective
+            }
+            // promotion
+            const applied_promotions = this.get_applied_promotion_str();
+            for (const applied_promotion of applied_promotions) {
+                if (applied_promotion) {
+                    total += applied_promotion.discount_amount;
+                }
+            }
+
+            return total;
+        }
+
+        get_line_receipt_total_percent_discount() {
+            let percent_discount = 0;
+            let discount = this.get_line_receipt_total_discount();
+            let unit_price = this.get_unit_display_price();
+            let quantity = this.get_quantity();
+            if (unit_price !== 0 && quantity !== 0) {
+                percent_discount = ((discount / quantity) / unit_price) * 100;
+            }
+            return Math.round(percent_discount * 100) / 100;
+        }
+
         export_for_printing() {
             let json = super.export_for_printing(...arguments);
 
