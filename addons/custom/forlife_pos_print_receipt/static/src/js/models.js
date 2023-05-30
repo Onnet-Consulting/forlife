@@ -42,17 +42,30 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             }
         }
 
+        receipt_order_get_activated_code_by_id() {
+            let order_activated_codes_arr = this.activatedInputCodes;
+            if (!order_activated_codes_arr || order_activated_codes_arr.length === 0) return {};
+            return order_activated_codes_arr.reduce((acc, obj) => {
+                acc[obj.id] = obj.code;
+                return acc;
+            }, {})
+        }
+
+
         receipt_group_order_lines_by_promotion() {
             let promotion_lines = [];
             let lines_by_promotion_programs = {};
             let normal_lines = [];
             let applied_point_lines = [];
+            let order_activated_code_by_id = this.receipt_order_get_activated_code_by_id();
+            let applied_code_value = {};
             let order_total_discount = 0;
             let order_total = 0;
             for (const line of this.get_orderlines()) {
                 let {promotion_usage_ids, point, original_price} = line;
+                let line_quantity = line.get_quantity();
                 order_total_discount += line.get_line_receipt_total_discount()
-                order_total += original_price * line.get_quantity();
+                order_total += original_price * line_quantity;
                 if (point && point !== 0) {
                     applied_point_lines.push(line.export_for_printing());
                     continue;
@@ -61,7 +74,29 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                     normal_lines.push(line.export_for_printing());
                     continue;
                 }
-                let promotion_program_ids = _.sortBy(_.map(promotion_usage_ids, pro => pro.program_id), num => num);
+                let promotion_program_ids = [];
+                for (const pro_line of promotion_usage_ids) {
+                    let program_id = pro_line.program_id;
+                    let program = this.pos.promotion_program_by_id[program_id];
+                    promotion_program_ids.push(pro_line.program_id);
+                    let code_id = pro_line.code_id;
+                    if (code_id && order_activated_code_by_id[code_id]) {
+                        let code = order_activated_code_by_id[code_id];
+                        let code_amount = 0;
+                        if (program.promotion_type === 'code'){
+                            code_amount = pro_line.discount_amount * line_quantity;
+                        }
+
+                        if (!applied_code_value[code]){
+                            applied_code_value[code] = code_amount
+                        }
+                        else {
+                            applied_code_value[code] += code_amount
+                        }
+                    }
+
+                }
+                promotion_program_ids = _.sortBy(promotion_program_ids, num => num);
                 let key_promotion_program_ids = JSON.stringify(promotion_program_ids);
                 if (key_promotion_program_ids in lines_by_promotion_programs) {
                     lines_by_promotion_programs[key_promotion_program_ids].push(line)
@@ -78,7 +113,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 })
             }
 
-            return [normal_lines, promotion_lines, applied_point_lines, order_total, order_total_discount];
+            return [normal_lines, promotion_lines, applied_point_lines, applied_code_value, order_total, order_total_discount];
         }
 
         export_for_printing() {
@@ -89,13 +124,14 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             json.footer = markup(this.pos.pos_brand_info.pos_receipt_footer);
             json.note = this.get_note();
             json.mobile_app_url_qr_code = this.get_install_app_barcode_data();
-            let normal_lines, promotion_lines, applied_point_lines, order_total, order_total_discount;
-            [normal_lines, promotion_lines, applied_point_lines, order_total, order_total_discount] = this.receipt_group_order_lines_by_promotion();
+            let normal_lines, promotion_lines, applied_point_lines, applied_code_value, order_total, order_total_discount;
+            [normal_lines, promotion_lines, applied_point_lines, applied_code_value, order_total, order_total_discount] = this.receipt_group_order_lines_by_promotion();
             json.normal_lines = normal_lines;
             json.promotion_lines = promotion_lines;
             json.applied_point_lines = applied_point_lines;
             json.order_total_discount = order_total_discount;
             json.order_total = order_total;
+            json.applied_code_value = applied_code_value;
             return json;
         }
     }

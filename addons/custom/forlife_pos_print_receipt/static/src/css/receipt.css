@@ -184,6 +184,10 @@
     text-align: right;
 }
 
+.pos-receipt .payment_lines .payment-detail .promotion-code{
+    font-weight: bold;
+}
+
 .pos-receipt .payment_lines .payment-line-detail {
     width: 100%;
     table-layout: fixed;
