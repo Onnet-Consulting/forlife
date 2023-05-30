@@ -59,8 +59,6 @@ class PosOrder(models.Model):
                     HistoryPoint.sudo().create(history_values)
                     pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
                     pos.action_point_addition()
-                    if pos.lines.filtered(lambda line: line.point != 0):
-                        pos.action_point_subtraction()
         return pos_id
 
     def btn_compensate_points_all(self, reason):
@@ -392,7 +390,6 @@ class PosOrder(models.Model):
         move = self.env['account.move'].create(move_vals)._post()
         self.point_addition_move_ids |= move
         return True
-
 
     def _export_for_ui(self, order):
         result = super(PosOrder, self)._export_for_ui(order)
