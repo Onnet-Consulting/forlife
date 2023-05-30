@@ -47,9 +47,13 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             let lines_by_promotion_programs = {};
             let normal_lines = [];
             let applied_point_lines = [];
+            let order_total_discount = 0;
+            let order_total = 0;
             for (const line of this.get_orderlines()) {
-                let {promotion_usage_ids, point} = line;
-                if (point && point !== 0){
+                let {promotion_usage_ids, point, original_price} = line;
+                order_total_discount += line.get_line_receipt_total_discount()
+                order_total += original_price * line.get_quantity();
+                if (point && point !== 0) {
                     applied_point_lines.push(line.export_for_printing());
                     continue;
                 }
@@ -74,8 +78,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 })
             }
 
-            return [normal_lines, promotion_lines, applied_point_lines];
-
+            return [normal_lines, promotion_lines, applied_point_lines, order_total, order_total_discount];
         }
 
         export_for_printing() {
@@ -86,11 +89,13 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             json.footer = markup(this.pos.pos_brand_info.pos_receipt_footer);
             json.note = this.get_note();
             json.mobile_app_url_qr_code = this.get_install_app_barcode_data();
-            let normal_lines, promotion_lines, applied_point_lines;
-            [normal_lines, promotion_lines, applied_point_lines] = this.receipt_group_order_lines_by_promotion();
+            let normal_lines, promotion_lines, applied_point_lines, order_total, order_total_discount;
+            [normal_lines, promotion_lines, applied_point_lines, order_total, order_total_discount] = this.receipt_group_order_lines_by_promotion();
             json.normal_lines = normal_lines;
             json.promotion_lines = promotion_lines;
             json.applied_point_lines = applied_point_lines;
+            json.order_total_discount = order_total_discount;
+            json.order_total = order_total;
             return json;
         }
     }
@@ -122,12 +127,12 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
         get_line_receipt_total_percent_discount() {
             let percent_discount = 0;
             let discount = this.get_line_receipt_total_discount();
-            let unit_price = this.get_unit_display_price();
+            let unit_price = this.original_price;
             let quantity = this.get_quantity();
             if (unit_price !== 0 && quantity !== 0) {
                 percent_discount = ((discount / quantity) / unit_price) * 100;
             }
-            return parseInt(Math.round(percent_discount * 100) / 100);
+            return parseInt(percent_discount);
         }
 
         export_for_printing() {
@@ -135,8 +140,10 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
 
             return _.extend(json, {
                 product_default_code: this.get_product().default_code || '',
+                original_price: this.original_price,
                 discount_amount: this.get_line_receipt_total_discount(),
-                discount_percent: this.get_line_receipt_total_percent_discount()
+                discount_percent: this.get_line_receipt_total_percent_discount(),
+                total_amount: this.get_display_price_after_discount()
             });
         }
     }

@@ -158,13 +158,13 @@
                 <t t-esc="line.quantity"/>
             </td>
             <td class="num_3 number">
-                <t t-esc="env.pos.format_currency_no_symbol(line.price)"/>
+                <t t-esc="env.pos.format_currency_no_symbol(line.original_price)"/>
             </td>
             <td class="num_4 number">
-                0
+                <t t-esc="line.discount_percent"/>%
             </td>
             <td class="num_5 number">
-                <t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/>
+                <t t-esc="env.pos.format_currency_no_symbol(line.total_amount)"/>
             </td>
         </tr>
     </t>
@@ -188,13 +188,13 @@
                             <t t-esc="receipt.total_line_qty"/>
                         </td>
                         <td class="number" colspan="3">
-                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_rounded)"/>
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.order_total)"/>
                         </td>
                     </tr>
                     <tr>
                         <td class="col1">Chiết khấu:</td>
                         <td colspan="4" class="text-right">
-                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_discount)"/>
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.order_total_discount)"/>
                         </td>
                     </tr>
                 </tbody>
