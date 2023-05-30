@@ -591,9 +591,11 @@ class InventoryLine(models.Model):
             if float_is_zero(line.difference_qty, precision_rounding=rounding):
                 continue
             if line.difference_qty > 0:  # found more than expected
+                print(line.difference_qty)
                 vals = line._get_move_values(line.difference_qty, virtual_location.id, line.location_id.id, False)
                 line.create_import_export_other(vals, type_picking='import')
             else:
+                print(line.difference_qty)
                 vals = line._get_move_values(abs(line.difference_qty), line.location_id.id, virtual_location.id, True)
                 line.create_import_export_other(vals, type_picking='export')
             vals_list.append(vals)
