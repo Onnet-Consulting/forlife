@@ -11,7 +11,9 @@
     ],
     "data": [
         'security/ir.model.access.csv',
+        'data/purchase_data.xml',
         'wizard/stock_return_picking.xml',
+        'wizard/purchase_return_wizard.xml',
         'views/purchase_order_views.xml',
     ],
     "assets": {

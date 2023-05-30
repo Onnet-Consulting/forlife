@@ -1526,7 +1526,8 @@ class StockPicking(models.Model):
             account_cost = self.create_account_move(po, cost_labor_internal_costs, record)
         if invoice_line_npls and list_line_xk:
             account_nl = self.create_account_move(po, invoice_line_npls, record)
-            master_xk = self.create_xk_picking(po, record, list_line_xk, account_nl)
+            if record.state == 'done':
+                master_xk = self.create_xk_picking(po, record, list_line_xk, account_nl)
         return True
 
     def create_xk_picking(self, po, record, list_line_xk, account_move=None):

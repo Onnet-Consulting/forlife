@@ -44,6 +44,7 @@
             <field name="code">1381000006</field>
             <field name="type_other">incoming</field>
             <field name="reason_type_id" ref="forlife_stock.reason_type_7"/>
+            <field name="company_id" eval="False"/>
         </record>
 
         <!-- create xml ids for demo data that are widely used in tests or in other codes, for more convenience -->

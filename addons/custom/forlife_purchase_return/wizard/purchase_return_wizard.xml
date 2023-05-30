@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_wizard_purchase_order_return" model="ir.actions.act_window">
+        <field name="name">Purchase Return</field>
+        <field name="res_model">purchase.return.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="view_purchase_order_return_form" model="ir.ui.view">
+        <field name="name">Return lines</field>
+        <field name="model">purchase.return.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="purchase_id" invisible="1" force_save="1"/>
+                <!-- <field name="original_location_id" invisible="1"/> -->
+                <field name="company_id" invisible="1"/>
+                <field name="purchase_return_lines">
+                    <tree editable="top" create="0">
+                        <field name="wizard_id" invisible="1"/>
+                        <field name="product_id"  options="{'no_create': True, 'no_open': True}" force_save="1"/>
+                        <field name="exchange_quantity" readonly="1" force_save="1"/>
+                        <field name="purchase_received" readonly="1" force_save="1"/>
+                        <field name="purchase_returned" readonly="1" force_save="1"/>
+                        <field name="purchase_remain" readonly="1" force_save="1"/>
+                        <field name="quantity"/>
+                        <field name="uom_id" groups="uom.group_uom"/>
+                        <field name="vendor_price" invisible="1"/>
+                        <field name="purchase_line_id" invisible="1"/>
+                    </tree>
+                </field>
+                <group>
+                    <field name="location_id" options="{'no_create': True, 'no_open': True}" groups="stock.group_stock_multi_locations" required="1"/>
+                </group>
+                <footer>
+                    <button name="create_returns" string="Return" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
