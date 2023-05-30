@@ -224,18 +224,27 @@ class AccountMove(models.Model):
                                 raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
     def write(self, vals):
+        context_invoice = self._context
+        old_line_count = len(self.invoice_line_ids)
+        new_line_count = len(vals.get('invoice_line_ids', []))
         res = super(AccountMove, self).write(vals)
         for rec in self:
             if rec.is_check_cost_view:
                 for line in rec.invoice_line_ids:
                     if line.product_id and line.display_type == 'product':
                         line.write({
-                            'account_id': line.product_id.categ_id.with_company(
-                                line.company_id).property_stock_account_input_categ_id.id,
-                            'name': line.product_id.name
-                        })
+                                    'account_id': line.product_id.categ_id.with_company(
+                                        line.company_id).property_stock_account_input_categ_id.id,
+                                    'name': line.product_id.name
+                                    })
+        for key, value in context_invoice.items():
+            print(key, value)
+            if value == "purchase.order":
+                if (new_line_count > old_line_count) and self.state == "draft":
+                    raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái dự thảo')
+                else:
+                    return rec
         return res
-
     # @api.onchange('purchase_type')
     # def onchange_purchase_type(self):
     #     order_invoice_line_ids = []
