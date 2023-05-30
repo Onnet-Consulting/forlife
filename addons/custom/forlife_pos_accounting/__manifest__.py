@@ -14,13 +14,16 @@
     'category': 'Forlife POS Accounting',
     'depends': [
         'account',
+        'pos_loyalty',
         'point_of_sale',
         'forlife_promotion',
-        'forlife_pos_promotion'
+        'forlife_pos_promotion',
+        'forlife_customer_card_rank'
     ],
 
     'data': [
         'views/product_views.xml',
+        'views/member_card_views.xml',
         'views/points_promotion_views.xml',
         'views/promotion_program_views.xml',
         'views/pos_order_views.xml'

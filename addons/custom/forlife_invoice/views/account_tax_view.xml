@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="inherit_account_tax_repartition_line_form_view" model="ir.ui.view">
+            <field name="name">inherit.account.tax.repartition.line.tree</field>
+            <field name="model">account.tax.repartition.line</field>
+            <field name="inherit_id" ref="account.tax_repartition_line_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='repartition_type']" position="before">
+                    <field name="product_id" attrs="{'invisible': [('repartition_type', '=', 'base')]}"/>
+                </xpath>
+            </field>
+        </record>
+<!--        <record id="inherit_account_tax_form_view_action" model="ir.actions.act_window">-->
+<!--            <field name="name">Thuế</field>-->
+<!--            <field name="res_model">account.tax</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--            <field name="view_ids" eval="[(5, 0, 0),-->
+<!--            (0, 0, {'view_mode': 'tree', 'view_id': ref('account.view_tax_tree')}),-->
+<!--            (0, 0, {'view_mode': 'form', 'view_id': ref('account_move.inherit_account_tax_form_view')})]"/>-->
+<!--            <field name="context">{}</field>-->
+<!--        </record>-->
+    </data>
+</odoo>
