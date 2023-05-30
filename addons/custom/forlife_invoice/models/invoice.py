@@ -78,7 +78,7 @@ class AccountMove(models.Model):
     ], string='Phân loại nguồn')
 
     # product_not_is_passersby = fields.Many2many('product.product')
-    ###tạo data lấy từ bkav về tab e-invoice
+    # tạo data lấy từ bkav về tab e-invoice
 
     @api.onchange('exists_bkav')
     def onchange_exitsts_bakv_e_invoice(self):
@@ -230,10 +230,10 @@ class AccountMove(models.Model):
                 for line in rec.invoice_line_ids:
                     if line.product_id and line.display_type == 'product':
                         line.write({
-                                    'account_id': line.product_id.categ_id.with_company(
-                                        line.company_id).property_stock_account_input_categ_id.id,
-                                    'name': line.product_id.name
-                                    })
+                            'account_id': line.product_id.categ_id.with_company(
+                                line.company_id).property_stock_account_input_categ_id.id,
+                            'name': line.product_id.name
+                        })
         return res
 
     # @api.onchange('purchase_type')
