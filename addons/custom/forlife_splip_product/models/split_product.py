@@ -7,6 +7,8 @@ class SplitProduct(models.Model):
     _name = 'split.product'
     _description = 'Nghiệp vụ phân tách mã'
 
+    name = fields.Char(default='New')
+
     user_create_id = fields.Many2one('res.users', 'Người tạo', default=lambda self: self.env.user, readonly=True)
     date_create = fields.Datetime('Ngày tạo', readonly=True, default=lambda self: fields.datetime.now())
     user_approve_id = fields.Many2one('res.users', 'Người xác nhận', readonly=True)
@@ -18,7 +20,21 @@ class SplitProduct(models.Model):
     split_product_line_sub_ids = fields.One2many('split.product.line.sub', 'split_product_id', string='Sản phẩm phân rã')
     note = fields.Text()
     account_intermediary_id = fields.Many2one('account.account', 'Tài khoản trung gian')
+    count_picking = fields.Integer(compute='compute_count_picking', string='Các phiếu nhập xuất')
 
+    def compute_count_picking(self):
+        for rec in self:
+            pickings = self.env['stock.picking'].sudo().search_count([('split_product_id','=',rec.id)])
+            rec.count_picking = pickings
+
+    def name_get(self):
+        return [(rec.id, f"Phiếu phân tách {rec.id}") for rec in self]
+
+    @api.model
+    def create(self, vals_list):
+        res = super(SplitProduct, self).create(vals_list)
+        res.name = f"Phiếu phân tách {res.id}"
+        return res
     # @api.model
     # def create(self, vals_list):
     # if 'split_product_line_ids' in vals_list and not vals_list['split_product_line_ids']:
@@ -51,7 +67,6 @@ class SplitProduct(models.Model):
             'uom_po_id': rec.product_id.uom_po_id.id,
             'taxes_id': [(6, 0, rec.product_id.taxes_id.ids)],
             'categ_id': rec.product_id.categ_id.id,
-            'split_product_id': self.id
         }
 
         product = self.env['product.product'].create(vals)
@@ -67,10 +82,15 @@ class SplitProduct(models.Model):
                 product = self._create_product(r)
                 r.product_new_id = product.id
         company_id = self.env.company
-        pk_type = self.env['stock.picking.type'].sudo().search(
-            [('company_id', '=', company_id.id), ('code', '=', 'internal')], limit=1)
+        pk_type = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'internal')], limit=1)
+        # pk_type_import = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming'), ('sequence_code','=','IN_OTHER')], limit=1)
+        # pk_type_export = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'outgoing'),('sequence_code','=','EX_OTHER')], limit=1)
+        # if not pk_type_import or pk_type_export:
+        #     raise ValidationError(_('Không tìm thấy kiểu giao nhận Orther Ex'))
         self.create_orther_import(pk_type, company_id)
-        # self.create_orther_export(pk_type)
+        self.create_orther_export(pk_type, company_id)
+        self.user_approve_id = self.env.user
+        self.date_approved = datetime.now()
         self.state = 'done'
 
 
@@ -111,46 +131,41 @@ class SplitProduct(models.Model):
                         'product_uom': rec.product_uom_split.id,
                         'product_uom_qty': rec.quantity,
                         'quantity_done': rec.quantity,
-                        'location_id': self.env.ref('forlife_splip_product.import_product_division').id,
+                        'location_id': self.env.ref('forlife_splip_product.import_product_division', raise_if_not_found=False).id,
                         'location_dest_id': rec.warehouse_in_id.lot_stock_id.id
                     }))
             pickings |= self.env['stock.picking'].with_company(company).create({
                 'other_import': True,
                 'picking_type_id': pk_type.id,
-                'location_id': self.env.ref('forlife_splip_product.import_product_division').id,
+                'location_id': self.env.ref('forlife_splip_product.import_product_division', raise_if_not_found=False).id,
                 'location_dest_id': record.warehouse_in_id.lot_stock_id.id,
                 'split_product_id': self.id,
                 'move_ids_without_package': data
             })
-        for pick in pickings:
-            pick.button_validate()
-        # picking.button_validate()
-        # return picking
+        return pickings
 
-
-    def create_orther_export(self, pk_type):
-        # data = []
-        # for rec in self.split_product_line_ids:
-        #     data.append((0, 0, {
-        #         'product_id': rec.product_id.id,
-        #         'name': rec.product_id.name_get()[0][1],
-        #         'date': datetime.now(),
-        #         'product_uom': rec.product_uom.id,
-        #         'product_uom_qty': rec.product_quantity_out,
-        #         'quantity_done': rec.product_quantity_out,
-        #         'location_id': self.split_product_line_ids[0].warehouse_out_id.lot_stock_id.id,
-        #         'location_dest_id': self.env.ref('forlife_splip_product.export_product_division').id,
-        #     }))
-        # picking = self.env['stock.picking'].create({
-        #     'other_export': True,
-        #     'picking_type_id': pk_type.id,
-        #     'location_id': self.split_product_line_ids[0].warehouse_out_id.lot_stock_id.id,
-        #     'location_dest_id': self.env.ref('forlife_splip_product.export_product_division').id,
-        #     'split_product_id': self.id,
-        #     'move_ids_without_package': data
-        # })
-        # picking.button_validate()
-        # return picking
+    def create_orther_export(self, pk_type, company):
+        pickings = self.env['stock.picking']
+        for record in self.split_product_line_ids:
+            data = [(0, 0, {
+                'product_id': record.product_id.id,
+                'name': record.product_id.name_get()[0][1],
+                'date': datetime.now(),
+                'product_uom': record.product_id.uom_id.id,
+                'product_uom_qty': record.product_quantity_out,
+                'quantity_done': record.product_quantity_out,
+                'location_id': record.warehouse_out_id.lot_stock_id.id,
+                'location_dest_id': self.env.ref('forlife_splip_product.export_product_division', raise_if_not_found=False).id
+            })]
+            pickings |= self.env['stock.picking'].with_company(company).create({
+                'other_export': True,
+                'picking_type_id': pk_type.id,
+                'location_id': record.warehouse_out_id.lot_stock_id.id,
+                'location_dest_id': self.env.ref('forlife_splip_product.export_product_division', raise_if_not_found=False).id,
+                'split_product_id': self.id,
+                'move_ids_without_package': data
+            })
+        return pickings
 
 
 class SpilitProductLine(models.Model):

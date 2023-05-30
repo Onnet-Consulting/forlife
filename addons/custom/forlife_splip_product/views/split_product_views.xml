@@ -16,6 +16,7 @@
                     <sheet>
                          <div class="oe_button_box" name="button_box">
                             <button name="action_view_picking" string="Các phiếu nhập xuất" type="object" class="oe_stat_button" icon="fa-bars">
+                                <field name="count_picking" string="Các phiếu nhập xuất" widget="statinfo"/>
                             </button>
                         </div>
                         <group>
@@ -54,7 +55,6 @@
                                 <tree editable="bottom" create="0">
                                     <field name="state" invisible="1"/>
                                     <field name="product_id" optional="show"/>
-                                    <field name="product_new_id" string="Sản phẩm" optional="show"/>
                                     <field name="product_split"/>
                                     <field name="warehouse_in_id"/>
                                     <field name="quantity"/>
