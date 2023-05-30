@@ -41,7 +41,7 @@
                     <button string="Approve" name="action_approve" type="object"
                             attrs="{'invisible':[ ('state', '!=', 'wait_approve')]}"/>
                     <button string="Out Approve" name="action_out_approve" type="object"
-                            attrs="{'invisible':[ ('state', '!=', 'approved')]}"/>
+                            attrs="{'invisible':[ ('state', 'not in', ('approved', 'in_approve'))]}"/>
                     <button string="In Approve" name="action_in_approve" type="object"
                             attrs="{'invisible':[ ('state', '!=', 'out_approve')]}"/>
                     <button string="Done" name="action_done" type="object"
@@ -91,6 +91,7 @@
                                 <tree editable="bottom" class="width-hh">
                                     <field name="is_from_button" invisible="1"/>
                                     <field name="product_str_id" invisible="1"/>
+                                    <field name="qty_start" invisible="1"/>
                                     <field name="product_id"  domain="[('product_type', '=', 'product')]" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', '!=', 'draft')]}"/>
                                     <field name="qty_plan" attrs="{'readonly': ['|', '|',('product_str_id', '!=', False), ('parent.state', 'in', ('wait_approve')), ('parent.is_diff_transfer', '=', True)]}"/>
                                     <field name="uom_id" force_save="1" attrs="{'readonly': ['|', ('product_str_id', '!=', False), ('parent.state', '!=', 'draft')]}"/>
