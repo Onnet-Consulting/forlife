@@ -123,7 +123,7 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             if (unit_price !== 0 && quantity !== 0) {
                 percent_discount = ((discount / quantity) / unit_price) * 100;
             }
-            return Math.round(percent_discount * 100) / 100;
+            return parseInt(Math.round(percent_discount * 100) / 100);
         }
 
         export_for_printing() {
