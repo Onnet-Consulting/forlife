@@ -527,33 +527,28 @@ class AccountMove(models.Model):
         invoice_vat.action_post()
 
     def create_trade_discount(self):
-        trade_product_id = self.env['product.template'].search([('detailed_type', '=', 'service'), ('is_trade_discount', '=', True)], limit=1)
-
-        if not trade_product_id:
-            raise ValidationError("Không tìm thấy sản phẩm thiết lập CKTM. Vui lòng thiết lập trước khi xác nhận.")
-
         for rec in self:
             account_ck = []
             for item in rec.invoice_line_ids:
-                account_income = (0, 0, {
+                account_331 = (0, 0, {
                     'product_id': item.product_id.id,
                     'display_type': 'tax',
-                    'account_id': trade_product_id.property_account_income_id.id,
-                    'name': trade_product_id.property_account_income_id.name,
+                    'account_id': rec.partner_id.property_account_receivable_id.id,
+                    'name': rec.partner_id.property_account_receivable_id.name,
                     'debit': rec.total_trade_discount,
                     'credit': 0,
                     'is_uncheck': True,
                 })
-                account_expense = (0, 0, {
+                account_771 = (0, 0, {
                     'product_id': item.product_id.id,
                     'display_type': 'tax',
-                    'account_id': trade_product_id.property_account_expense_id.id,
-                    'name': trade_product_id.property_account_expense_id.name,
+                    'account_id': item.product_id.property_account_expense_id.id,
+                    'name': item.product_id.property_account_expense_id.name,
                     'debit': 0,
                     'credit': rec.total_trade_discount,
                     'is_uncheck': True,
                 })
-                lines_ck = [account_income, account_expense]
+                lines_ck = [account_331, account_771]
                 account_ck.extend(lines_ck)
 
         invoice_ck = self.env['account.move'].create({
