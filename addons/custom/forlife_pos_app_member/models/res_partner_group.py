@@ -31,7 +31,8 @@ class ResPartnerGroup(models.Model):
                     'name': value.get('name'),
                     'prefix': code,
                     'padding': 10 - len(code),
-                    'company_id': False
+                    'company_id': False,
+                    'implementation': 'no_gap',
                 })
                 value.update({'sequence_id': sequence.id})
         res = super(ResPartnerGroup, self).create(vals_list)
