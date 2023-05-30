@@ -104,9 +104,8 @@ class PurchaseOrder(models.Model):
                               "request (e.g. a sales order)", compute='compute_origin')
     type_po_cost = fields.Selection([('tax', 'Tax'), ('cost', 'Cost')])
 
-
     show_check_availability = fields.Boolean(
-        compute='_compute_show_check_availability', invisible = True ,
+        compute='_compute_show_check_availability', invisible=True,
         help='Technical field used to compute whether the button "Check Availability" should be displayed.')
 
     # Lấy của base về phục vụ import
@@ -865,18 +864,18 @@ class PurchaseOrder(models.Model):
                     # Invoice line values (keep only necessary sections).
                     for line in order.order_line:
                         wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
-                                                                                           and w.product_id.id == line.product_id.id
-                                                                                           and w.picking_type_id.code == 'incoming'
-                                                                                           and w.picking_id.x_is_check_return == False
-                                                                                           and w.ware_check_line == False)
+                                                                                 and w.product_id.id == line.product_id.id
+                                                                                 and w.picking_type_id.code == 'incoming'
+                                                                                 and w.picking_id.x_is_check_return == False
+                                                                                 and w.ware_check_line == False)
                         if wave:
                             for wave_item in wave:
                                 purchase_return = picking_in_return.move_line_ids_without_package.filtered(
                                     lambda r: str(r.po_id) == str(wave_item.po_id)
-                                              and r.product_id.id == wave_item.product_id.id
-                                              and r.picking_id.relation_return == wave_item.picking_id.name
-                                              and r.picking_id.x_is_check_return == True
-                                              and r.ware_check_line == False)
+                                    and r.product_id.id == wave_item.product_id.id
+                                    and r.picking_id.relation_return == wave_item.picking_id.name
+                                    and r.picking_id.x_is_check_return == True
+                                    and r.ware_check_line == False)
                                 if purchase_return:
                                     for x_return in purchase_return:
                                         if wave_item.picking_id.name == x_return.picking_id.relation_return:
@@ -967,10 +966,10 @@ class PurchaseOrder(models.Model):
                 # 2) group by (company_id, partner_id, currency_id) for batch creation
                 new_invoice_vals_list = []
                 picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
-                                                                 and r.state == 'done'
-                                                                 and r.picking_type_id.code == 'incoming'
-                                                                 and r.ware_check == True
-                                                                 and r.x_is_check_return == False)
+                                                       and r.state == 'done'
+                                                       and r.picking_type_id.code == 'incoming'
+                                                       and r.ware_check == True
+                                                       and r.x_is_check_return == False)
                 for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
                         x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
                     origins = set()
@@ -1160,6 +1159,7 @@ class PurchaseOrder(models.Model):
     #             else:
     #                 data_product_is_passersby = self.env['product.product'].search([])
     #                 rec.product_not_is_passersby = [(6, 0, data_product_is_passersby.ids)]
+
 
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
@@ -1684,8 +1684,9 @@ class StockPicking(models.Model):
             'restrict_mode_hash_table': False
         }
         account_obj = self.env['account.move']
-        account = account_obj.create(master_data_ac).action_post()
-        return True
+        account = account_obj.create(master_data_ac)
+        account.action_post()
+        return account
 
     # Xử lý bút toán po nội bộ
     def create_invoice_po_cost(self, po, record):
@@ -1883,7 +1884,7 @@ class StockPicking(models.Model):
                 master_xk = self.create_xk_picking(po, record, list_line_xk)
         return True
 
-    def create_xk_picking(self, po, record, list_line_xk):
+    def create_xk_picking(self, po, record, list_line_xk, account_move=None):
         company_id = self.env.company.id
         picking_type_out = self.env['stock.picking.type'].search([
             ('code', '=', 'outgoing'),
@@ -1901,8 +1902,9 @@ class StockPicking(models.Model):
             'picking_type_id': picking_type_out.id,
             'move_ids_without_package': list_line_xk
         }
-        result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(
-            master_xk).button_validate()
-        return result
-
-
+        xk_picking = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(master_xk)
+        xk_picking.button_validate()
+        if account_move:
+            xk_picking.write({'account_xk_id': account_move.id})
+        record.write({'picking_xk_id': xk_picking.id})
+        return xk_picking
