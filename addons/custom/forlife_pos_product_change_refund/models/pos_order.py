@@ -73,9 +73,8 @@ class PosOrder(models.Model):
                 if pos_order_id.brand_id.id != brand_id.id:
                     pos_order_id.brand_id = brand_id
             for p in pos.lines:
-                product_defective = self.env['product.defective'].sudo().search([('id','=',p.product_defective_id.id)])
-                quantity_can_be_sale = product_defective.quantity_can_be_sale - p.qty
-                product_defective.quantity_can_be_sale = quantity_can_be_sale
+                if p.product_defective_id:
+                    p.product_defective_id.quantity_can_be_sale = p.product_defective_id.quantity_can_be_sale - p.qty
             # update history back order
             if pos.refund_point > 0 or pos.pay_point > 0:
                 if pos.partner_id.is_member_app_format or pos.partner_id.is_member_app_forlife:
