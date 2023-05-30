@@ -4,6 +4,7 @@ from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
 from odoo.tools.safe_eval import safe_eval
+import ast
 
 TITLES = [
     'STT', 'Trạng thái', 'Ngày HĐ', 'Số HĐ', 'Mã kho xuất', 'Kho xuất', 'Mã kho nhận', 'Kho nhận', 'Đơn vị tính', 'Mã vạch',
@@ -41,6 +42,7 @@ class ReportNum21(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
+        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
 
         status = []
         if self.is_all or (not self.is_all and not self.is_delivery and not self.is_receive and not self.is_done):
@@ -82,6 +84,19 @@ account_by_categ_id as (
     from acc_whs
     full outer join acc_cost on acc_whs.cate_id = acc_cost.cate_id
 ),
+attribute_data as (
+    select 
+        pp.id                                                                                   as product_id,
+        pa.attrs_code                                                                           as attrs_code,
+        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+    from product_template_attribute_line ptal
+    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+    left join product_attribute pa on ptal.attribute_id = pa.id
+    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+    where pp.id = any (array{product_ids})
+    group by pp.id, pa.attrs_code
+),
 prepare_data_tb as (
     select '{{"out_approve":"Xác nhận xuất","in_approve":"Xác nhận nhập","done":"Hoàn thành"}}'::json as status
 )
@@ -104,11 +119,11 @@ select
     case when pc.name ilike '%hàng hóa%' then 'Nhập mua'
         when pc.name ilike '%thành phẩm%' then 'Sản xuất' else ''
     end                                                                         as quy_uoc_dong_hang,
-    ''                                                                          as mau_sac,
-    ''                                                                          as kich_co,
+    ad_color.value                                                              as mau_sac,
+    ad_size.value                                                               as kich_co,
     ''                                                                          as dien_giai,
     pt.collection                                                               as bo_suu_tap,
-    ''                                                                          as kieu_dang,
+    kieu_dang.value                                                             as kieu_dang,
     case when st.state = 'out_approve' then stl.qty_out
         when st.state in ('in_approve', 'done') then stl.qty_in
         else 0 end                                                              as so_luong,
@@ -118,8 +133,8 @@ select
     to_char(pp.create_date + interval '{tz_offset} hours', 'DD/MM/YYYY')        as ngay_tao,
     substr(st.name, 0, 4)                                                       as ma_phieu,
     'Phiếu xuất nội bộ'                                                         as ten_phieu,
-    ''                                                                          as doi_tuong,
-    ''                                                                          as nam_sx
+    doi_tuong.value                                                             as doi_tuong,
+    nam_sx.value                                                                as nam_sx
 from stock_transfer st
     join stock_transfer_line stl on stl.stock_transfer_id = st.id
     left join stock_location s_loc on s_loc.id = st.location_id
@@ -129,6 +144,11 @@ from stock_transfer st
     left join product_template pt on pt.id = product_tmpl_id
     left join product_category pc on pc.id = pt.categ_id
     left join account_by_categ_id acc on acc.cate_id = pc.id
+    left join attribute_data ad_size on ad_size.product_id = stl.product_id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+    left join attribute_data ad_color on ad_color.product_id = stl.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
+    left join attribute_data kieu_dang on kieu_dang.product_id = stl.product_id and kieu_dang.attrs_code = '{attr_value.get('subclass1', '')}'
+    left join attribute_data doi_tuong on doi_tuong.product_id = stl.product_id and doi_tuong.attrs_code = '{attr_value.get('doi_tuong', '')}'
+    left join attribute_data nam_sx on nam_sx.product_id = stl.product_id and nam_sx.attrs_code = '{attr_value.get('nam_sx', '')}'
 where {format_date_query("st.create_date", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and stl.product_id = any (array{product_ids})
     and (s_loc.warehouse_id = any (array{warehouse_ids}) or d_loc.warehouse_id = any (array{warehouse_ids}))
@@ -185,11 +205,11 @@ order by num
             sheet.write(row, 13, value.get('dong_hang'), formats.get('normal_format'))
             sheet.write(row, 14, value.get('ket_cau'), formats.get('normal_format'))
             sheet.write(row, 15, value.get('quy_uoc_dong_hang'), formats.get('normal_format'))
-            sheet.write(row, 16, value.get('mau_sac'), formats.get('normal_format'))
-            sheet.write(row, 17, value.get('kich_co'), formats.get('normal_format'))
+            sheet.write(row, 16, ', '.join(value.get('mau_sac') or []), formats.get('normal_format'))
+            sheet.write(row, 17, ', '.join(value.get('kich_co') or []), formats.get('normal_format'))
             sheet.write(row, 18, value.get('dien_giai'), formats.get('normal_format'))
             sheet.write(row, 19, value.get('bo_suu_tap'), formats.get('normal_format'))
-            sheet.write(row, 20, value.get('kieu_dang'), formats.get('normal_format'))
+            sheet.write(row, 20, ', '.join(value.get('kieu_dang') or []), formats.get('normal_format'))
             sheet.write(row, 21, value.get('so_luong') or 0, formats.get('int_number_format'))
             sheet.write(row, 22, value.get('gia') or 0, formats.get('int_number_format'))
             sheet.write(row, 23, value.get('so_luong', 0) * value.get('gia', 0), formats.get('int_number_format'))
@@ -198,6 +218,6 @@ order by num
             sheet.write(row, 26, value.get('ngay_tao'), formats.get('center_format'))
             sheet.write(row, 27, value.get('ma_phieu'), formats.get('normal_format'))
             sheet.write(row, 28, value.get('ten_phieu'), formats.get('normal_format'))
-            sheet.write(row, 29, value.get('doi_tuong'), formats.get('normal_format'))
-            sheet.write(row, 30, value.get('nam_sx'), formats.get('normal_format'))
+            sheet.write(row, 29, ', '.join(value.get('doi_tuong') or []), formats.get('normal_format'))
+            sheet.write(row, 30, ', '.join(value.get('nam_sx') or []), formats.get('normal_format'))
             row += 1
