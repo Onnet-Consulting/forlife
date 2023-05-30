@@ -454,7 +454,13 @@ class PurchaseOrder(models.Model):
                     }
                     invoice_line_ids.append((0, 0, invoice_line))
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
-            record.write({'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'to invoice'})
+            if record.purchase_type == "service":
+                record.write(
+                    {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
+            else:
+                record.write(
+                    {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'to invoice'})
+
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
@@ -639,6 +645,12 @@ class PurchaseOrder(models.Model):
     #         })
     #     return result
 
+    def write(self, vals):
+        old_line_count = len(self.order_line)
+        new_line_count = len(vals.get('order_line', []))
+        if (new_line_count > old_line_count) and self.custom_state == "approved":
+            raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái phê duyệt')
+        return super(PurchaseOrder, self).write(vals)
     @api.onchange('company_id', 'currency_id')
     def onchange_currency_id(self):
         if self.company_id or self.currency_id:
