@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+    	<record id="inherit_purchase_order_form_view" model="ir.ui.view">
+            <field name="name">purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="forlife_purchase.inherit_purchase_order_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@class='oe_title']/span[1]" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',('state','not in',('draft','sent')), ('is_return', '=', True)]}</attribute>
+                </xpath>
+                <xpath expr="//div[@class='oe_title']/span[2]" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',('state','in',('draft','sent')), ('is_return', '=', True)]}</attribute>
+                </xpath>
+                <xpath expr="//div[@class='oe_title']/span[2]" position="after">
+                    <span class="o_form_label" attrs="{'invisible': [('is_return', '=', False)]}">Đơn trả hàng mua</span>
+                </xpath>
+            	<xpath expr="//header" position="inside">
+                    <field name="is_return" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree/field[@name='received']" position="after">
+                    <field name="qty_returned" attrs="{'column_invisible': ['|',('qty_returned', '=', False),('parent.purchase_type', '!=', 'product')]}"/>
+                </xpath>
+                <button name="action_close" position="before">
+                    <button string="Tạo đơn trả hàng" name="%(forlife_purchase_return.action_wizard_purchase_order_return)d" type="action" attrs="{'invisible': ['|',('custom_state', '!=', 'approved'), ('is_return', '=', True)]}"/>
+                </button>
+
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button name="action_view_purchase_return" type="object" class="oe_stat_button" icon="fa-file" attrs="{'invisible':[('count_return_purchase', '=', 0)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_value">
+                                <field name="count_return_purchase"/>
+                            </span>
+                            <span class="o_stat_text">Đơn trả hàng</span>
+                        </div>
+                    </button>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="action_purchase_order_return" model="ir.actions.act_window">
+            <field name="name">Purchase Return Order</field>
+            <field name="res_model">purchase.order</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('is_return', '=', True)]</field>
+            <field name="context">{'default_is_return':True}
+            </field>
+        </record>
+
+        <menuitem id="menu_purchase_order_return_item" parent="purchase.menu_procurement_management"
+                  action="action_purchase_order_return" name="Purchase Return Order" sequence="3"/>
+    </data>
+</odoo>

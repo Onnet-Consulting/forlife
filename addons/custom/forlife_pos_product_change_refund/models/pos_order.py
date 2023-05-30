@@ -51,12 +51,16 @@ class PosOrder(models.Model):
     # Update brand in POS Order
     @api.model
     def _process_order(self, order, draft, existing_order):
-        if order['data']['is_refund_product']:
-            for l in order['data']['lines']:
-                if l[2]['price_subtotal_incl_refund']:
-                    l[2]['price_subtotal_incl'] = l[2]['price_subtotal_incl_refund']
-                if l[2]['price_subtotal_incl_refund']:
-                    l[2]['price_unit'] = l[2]['price_unit_refund']
+        # if order['data']['is_refund_product']:
+        #     for l in order['data']['lines']:
+        #         if l[2]['price_subtotal_incl_refund']:
+        #             l[2]['price_subtotal_incl'] = l[2]['price_subtotal_incl_refund']
+        #         if l[2]['price_subtotal_incl_refund']:
+        #             l[2]['price_unit'] = l[2]['price_unit_refund']
+        for l in order['data']['lines']:
+            if l[2]['money_reduce_from_product_defective'] >0:
+                l[2]['price_subtotal'] = l[2]['price_subtotal'] - l[2]['money_reduce_from_product_defective']
+                l[2]['price_unit'] = l[2]['price_unit'] - l[2]['money_reduce_from_product_defective']
         pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
         HistoryPoint = self.env['partner.history.point']
         Voucher = self.env['voucher.voucher']
@@ -73,9 +77,8 @@ class PosOrder(models.Model):
                 if pos_order_id.brand_id.id != brand_id.id:
                     pos_order_id.brand_id = brand_id
             for p in pos.lines:
-                product_defective = self.env['product.defective'].sudo().search([('id','=',p.product_defective_id.id)])
-                quantity_can_be_sale = product_defective.quantity_can_be_sale - p.qty
-                product_defective.quantity_can_be_sale = quantity_can_be_sale
+                if p.product_defective_id:
+                    p.product_defective_id.quantity_can_be_sale =p.product_defective_id.quantity_can_be_sale -p.qty
             # update history back order
             if pos.refund_point > 0 or pos.pay_point > 0:
                 if pos.partner_id.is_member_app_format or pos.partner_id.is_member_app_forlife:

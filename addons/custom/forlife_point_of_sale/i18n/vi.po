@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-26 09:50+0000\n"
-"PO-Revision-Date: 2023-04-26 09:50+0000\n"
+"POT-Creation-Date: 2023-05-29 02:30+0000\n"
+"PO-Revision-Date: 2023-05-29 02:30+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -187,6 +187,35 @@ msgid "ID"
 msgstr ""
 
 #. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_account_bank_statement_line__invoice_info_address
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_account_move__invoice_info_address
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_account_payment__invoice_info_address
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_pos_order__invoice_info_address
+msgid "Invoice Info Address"
+msgstr "Địa chỉ xuất HĐ"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_account_bank_statement_line__invoice_info_company_name
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_account_move__invoice_info_company_name
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_account_payment__invoice_info_company_name
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_pos_order__invoice_info_company_name
+msgid "Invoice Info Company Name"
+msgstr "Tên công ty xuất HĐ"
+
+#. module: forlife_point_of_sale
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_account_bank_statement_line__invoice_info_tax_number
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_account_move__invoice_info_tax_number
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_account_payment__invoice_info_tax_number
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_pos_order__invoice_info_tax_number
+msgid "Invoice Info VAT"
+msgstr "Mã số thuế xuất HĐ"
+
+#. module: forlife_point_of_sale
+#: model:ir.model,name:forlife_point_of_sale.model_account_move
+msgid "Journal Entry"
+msgstr "Bút toán "
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_res_brand____last_update
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store____last_update
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order____last_update
@@ -213,6 +242,13 @@ msgstr ""
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_ir_cron__mail_template_id
 #, python-format
 msgid "Mail Template"
+msgstr ""
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/PaymentScreen.xml:0
+#, python-format
+msgid "Mã số thuế"
 msgstr ""
 
 #. module: forlife_point_of_sale
@@ -296,6 +332,7 @@ msgstr "Thời gian bắt đầu"
 #: model:ir.actions.act_window,name:forlife_point_of_sale.store_action
 #: model:ir.model,name:forlife_point_of_sale.model_store
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_pos_config__store_id
+#: model:ir.model.fields,field_description:forlife_point_of_sale.field_pos_order__store_id
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store_first_order__store_id
 #: model:ir.ui.menu,name:forlife_point_of_sale.store_menu
 msgid "Store"
@@ -336,6 +373,20 @@ msgid "Thông báo chưa đóng phiên"
 msgstr ""
 
 #. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/PaymentScreen.xml:0
+#, python-format
+msgid "Thông tin xuất hóa đơn"
+msgstr ""
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/PaymentScreen.xml:0
+#, python-format
+msgid "Tên công ty"
+msgstr ""
+
+#. module: forlife_point_of_sale
 #: model:ir.model.fields,field_description:forlife_point_of_sale.field_store__warehouse_id
 msgid "Warehouse"
 msgstr "Kho"
@@ -361,3 +412,10 @@ msgstr "Chi tiết cửa hàng"
 #: model_terms:ir.ui.view,arch_db:forlife_point_of_sale.store_view_tree
 msgid "store_tree"
 msgstr "Danh sách cửa hàng"
+
+#. module: forlife_point_of_sale
+#. odoo-javascript
+#: code:addons/forlife_point_of_sale/static/src/xml/PaymentScreen.xml:0
+#, python-format
+msgid "Địa chỉ"
+msgstr ""

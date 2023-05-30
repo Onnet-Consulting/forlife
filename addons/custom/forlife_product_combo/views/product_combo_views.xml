@@ -22,13 +22,13 @@
                             <field name="to_date"/>
                         </group>
                         <group>
-                            <label for="size_deviation_allowed"/>
+                            <label for="size_attribute_id"/>
                             <div>
-                                <field name="size_deviation_allowed" class="oe_inline"/>
+                                <field name="size_attribute_id" class="oe_inline"/>
                             </div>
-                            <label for="color_deviation_allowed"/>
+                            <label for="color_attribute_id"/>
                             <div>
-                                <field name="color_deviation_allowed" class="oe_inline"/>
+                                <field name="color_attribute_id" class="oe_inline"/>
                             </div>
                         </group>
                     </group>

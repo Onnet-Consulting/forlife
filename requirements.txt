@@ -1,6 +1,7 @@
-cryptography==2.8
+cryptography
 phonenumbers
 redis
+boto3
 pandas
 xlrd==1.2.0
 pycryptodome

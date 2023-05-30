@@ -25,7 +25,8 @@ class Inventory(models.Model):
     state = fields.Selection(string='Trạng thái', selection=[
         ('draft', 'Nháp'),
         ('cancel', 'Hủy'),
-        ('progress', 'Thực hiện'),
+        ('first_inv', 'Kiểm kê bước 1'),
+        ('second_inv', 'Kiểm kê bước 2'),
         ('confirm', 'Xác nhận'),
         ('done', 'Hoàn thành'),
     ],
@@ -94,7 +95,7 @@ class Inventory(models.Model):
         if self.state == 'confirm':
             self.action_validate()
         else:
-            self.state = 'confirm'
+            self.state = 'second_inv'
 
     def action_validate(self):
         if not self.exists():
@@ -102,7 +103,7 @@ class Inventory(models.Model):
         self.ensure_one()
         if not self.user_has_groups('stock.group_stock_manager'):
             raise UserError(_("Only a stock manager can validate an inventory adjustment."))
-        if self.state != 'confirm':
+        if self.state != 'second_inv':
             raise UserError(_(
                 "You can't validate the inventory '%s', maybe this inventory "
                 "has been already validated or isn't ready.", self.name))
@@ -162,7 +163,7 @@ class Inventory(models.Model):
         self.ensure_one()
         self._action_start()
         self._check_company()
-        return self.action_open_inventory_lines()
+        # return self.action_open_inventory_lines()
 
     def _action_start(self):
         """ Confirms the Inventory Adjustment and generates its inventory lines
@@ -173,7 +174,7 @@ class Inventory(models.Model):
             if inventory.state != 'draft':
                 continue
             vals = {
-                'state': 'progress',
+                'state': 'first_inv',
                 'date': fields.Datetime.now()
             }
             if not inventory.line_ids and not inventory.start_empty:
@@ -328,6 +329,7 @@ class Inventory(models.Model):
                 'inventory_id': self.id,
                 'product_qty': 0 if self.prefill_counted_quantity == "zero" else quantity,
                 'theoretical_qty': quantity,
+                'x_first_qty': quantity,
                 'prod_lot_id': lot_id,
                 'partner_id': owner_id,
                 'product_id': product_id,
@@ -387,6 +389,9 @@ class InventoryLine(models.Model):
     theoretical_qty = fields.Float(
         'Tồn hiện có',
         digits='Product Unit of Measure', readonly=True)
+    x_first_qty = fields.Float(
+        'Đã đếm',
+        digits='Product Unit of Measure')
     difference_qty = fields.Float('Chênh lệch', compute='_compute_difference',
                                   readonly=True, digits='Product Unit of Measure', search="_search_difference_qty")
     inventory_date = fields.Datetime('Ngày kiểm kho', readonly=True, default=fields.Datetime.now)
@@ -412,6 +417,26 @@ class InventoryLine(models.Model):
     # def _compute_total_difference(self):
     #     for rec in self:
     #         rec.total_difference = (rec.unit_price * rec.product_qty) -  (rec.unit_price * rec.theoretical_qty)
+
+    @api.onchange('product_id')
+    def get_line_default(self):
+        if self.inventory_id.location_ids:
+            return {'domain': {'location_id': [('id', 'in', self.inventory_id.location_ids.ids)]}}
+        elif self.inventory_id.warehourse_id:
+            return {'domain': {'location_id': [('warehourse_id', '=', self.inventory_id.warehourse_id.id)]}}
+        else:
+            return False
+
+    @api.onchange('theoretical_qty')
+    def set_x_first_qty(self):
+        if self.theoretical_qty:
+            self.x_first_qty = self.theoretical_qty
+
+    @api.onchange('x_first_qty')
+    def set_product_qty(self):
+        if self.x_first_qty:
+            self.product_qty = self.x_first_qty
+
 
     @api.depends('product_qty', 'theoretical_qty')
     def _compute_difference(self):
@@ -443,14 +468,17 @@ class InventoryLine(models.Model):
         if self.product_id:
             self.product_uom_id = self.product_id.uom_id
         if self.product_id and self.location_id and self.product_id.uom_id.category_id == self.product_uom_id.category_id:  # TDE FIXME: last part added because crash
-            theoretical_qty = self.product_id.get_theoretical_quantity(
-                self.product_id.id,
-                self.location_id.id,
-                lot_id=self.prod_lot_id.id,
-                package_id=self.package_id.id,
-                owner_id=self.partner_id.id,
-                to_uom=self.product_uom_id.id,
-            )
+            # theoretical_qty = self.product_id.get_theoretical_quantity(
+            #     self.product_id.id,
+            #     self.location_id.id,
+            #     lot_id=self.prod_lot_id.id,
+            #     package_id=self.package_id.id,
+            #     owner_id=self.partner_id.id,
+            #     to_uom=self.product_uom_id.id,
+            # )
+            check_quant = self.env['stock.quant'].search(
+                [('product_id', '=', self.product_id.id), ('location_id', '=', self.location_id.id)])
+            theoretical_qty = check_quant.quantity if check_quant else 0
         else:
             theoretical_qty = 0
         # Sanity check on the lot.
@@ -564,8 +592,10 @@ class InventoryLine(models.Model):
                 continue
             if line.difference_qty > 0:  # found more than expected
                 vals = line._get_move_values(line.difference_qty, virtual_location.id, line.location_id.id, False)
+                line.create_import_export_other(vals, type_picking='import')
             else:
                 vals = line._get_move_values(abs(line.difference_qty), line.location_id.id, virtual_location.id, True)
+                line.create_import_export_other(vals, type_picking='export')
             vals_list.append(vals)
         return self.env['stock.move'].create(vals_list)
 
