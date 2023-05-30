@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="handle_change_refund_form_view_permission" model="ir.ui.view">
+            <field name="name">handle_change_refund_form_view_permission</field>
+            <field name="model">handle.change.refund</field>
+            <field name="inherit_id" ref="forlife_pos_product_change_refund.handle_change_refund_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_refund_approve_refuse</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_refuse']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_refund_approve_refuse</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

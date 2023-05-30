@@ -123,4 +123,10 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum20Template',
         'reportPager': True,
     },
+    'report.num21': {
+        'module': 'Kho',
+        'name': 'Chi tiết hàng hóa luân chuyển',
+        'reportTemplate': 'ReportNum21Template',
+        'reportPager': True,
+    },
 }

@@ -182,10 +182,16 @@ class PosOrder(models.Model):
               f"'product' and (lot_id is null or lot_id in (SELECT id FROM stock_lot WHERE name in {seri_list}) )"
         self._cr.execute(sql)
         data = self._cr.dictfetchall()
+        list_product_exits = []
         for rec in order_lines[0]:
-            for r in data:
-                if rec['count'] > 0 and rec['product_id'] == r['product_id'] and (r['quantity'] - r['reserved_quantity']) < rec['count']:
-                    product_not_availabel.append(rec['product_name'])
+            if data:
+                for r in data:
+                    list_product_exits.append(r['product_id'])
+                    if rec['count'] > 0 and rec['product_id'] == r['product_id'] and (r['quantity'] - r['reserved_quantity']) < rec['count']:
+                        product_not_availabel.append(rec['product_name'])
+        for rec in order_lines[0]:
+            if rec['product_id'] not in list_product_exits:
+                product_not_availabel.append(rec['product_name'])
         if len(product_not_availabel) > 0:
             message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {stock_location.name} kho {stock_location.warehouse_id.name}"
             return message

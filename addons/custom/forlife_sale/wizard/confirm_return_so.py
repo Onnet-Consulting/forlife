@@ -1,12 +1,13 @@
 from odoo import api, fields, models, _
 from datetime import date, datetime
 from odoo.exceptions import UserError
-
+from odoo.tests import Form
 
 class ConfirmReturnSo(models.Model):
     _name = 'confirm.return.so'
 
     name = fields.Char('Xác nhận trả hàng', default='Xác nhận trả hàng')
+    origin = fields.Many2one('sale.order')
     line_ids = fields.One2many('confirm.return.so.line', 'master_id', string='Chọn phiếu trả hàng', copy=False)
 
 
@@ -16,21 +17,26 @@ class ConfirmReturnSoLine(models.Model):
     master_id = fields.Many2one('confirm.return.so', 'Master data')
     picking_id = fields.Many2one('stock.picking', 'Phiếu kho')
     picking_name = fields.Char('Phiếu kho')
-    state = fields.Char('Trạng thái')
+    state = fields.Char('Trạng thái phiếu kho')
 
-    def action_refuse(self):
-        if self.picking_id.state != 'done':
-            raise UserError(_('Đơn giao hàng chưa hoàn thành'))
-        if self.picking_id.state == 'done':
-            self.picking_id = 1
+    def action_return(self):
+        stock_return_picking_form = Form(
+            self.env['stock.return.picking'].with_context(active_ids=self.picking_id.ids, active_id=self.picking_id.id,
+                                                          active_model='stock.picking'))
+        return_wiz = stock_return_picking_form.save()
+        ctx = {
+            'x_return': True,
+            'so_return': self.master_id.origin.id,
+            'picking_id': self.picking_id.id
+        }
         self.state = 'Đã trả'
-        print(111111111)
-        # return {
-        #     'name': _('Xác nhận trả hàng'),
-        #     'view_mode': 'form',
-        #     'res_model': 'confirm.return.so',
-        #     'type': 'ir.actions.act_window',
-        #     'views': [(False, 'form')],
-        #     'res_id': self.master_id.id,
-        #     'target': 'current'
-        # }
+        return {
+            'name': _('Trả hàng phiếu %s' % (self.picking_id.name)),
+            'view_mode': 'form',
+            'res_model': 'stock.return.picking',
+            'type': 'ir.actions.act_window',
+            'views': [(False, 'form')],
+            'res_id': return_wiz.id,
+            'context': ctx,
+            'target': 'new'
+        }
