@@ -43,7 +43,8 @@ class ResPartner(models.Model):
 
     # FIXME: add readonly=True to ref field
     ref = fields.Char(copy=False, string='Mã')
-    barcode = fields.Char(readonly=True, company_dependent=False)  # a partner has only one barcode
+    # FIXME: add readonly=True to barcode field
+    barcode = fields.Char(company_dependent=False)  # a partner has only one barcode
     phone = fields.Char(copy=False, string='Phone #1')
     mobile = fields.Char(string='Phone #2')
     parsed_phone = fields.Char(compute="_compute_parsed_phone", string='Parsed phone')
