@@ -68,6 +68,7 @@
                             <field name="location_dest_id" domain="[('usage', '=', 'internal')]" string="Whs To" required="1" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="reference_document" attrs="{'invisible':[('reference_document', '=', False)], 'readonly': [('state', '!=', 'draft')]}" string="Tài liệu gốc"/>
                             <field name="type" attrs="{'invisible':[('type', '=', False)]}"/>
+                            <field name ="date_transfer"  attrs="{'invisible':[('state', '!=', ('draft','wait_approve','approved'))]}" readonly="1"  />
                         </group>
                         <group>
                             <field name="create_date" options='{"date_format": "dd/MM/yyyy"}' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
@@ -78,6 +79,9 @@
                             <field name="work_to" string="Đến LSX" required="0" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="total_package" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="total_weight" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        </group>
+                            <group string="Note">
+                            <field colspan="2" name="note" nolabel="1"/>
                         </group>
                     </group>
                     <notebook>
