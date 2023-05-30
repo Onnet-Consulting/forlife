@@ -27,9 +27,9 @@ class ConfirmReturnSoLine(models.Model):
         ctx = {
             'x_return': True,
             'so_return': self.master_id.origin.id,
-            'picking_id': self.picking_id.id
+            'picking_id': self.picking_id.id,
+            'wizard_line_id': self.id
         }
-        self.state = 'Đã trả'
         return {
             'name': _('Trả hàng phiếu %s' % (self.picking_id.name)),
             'view_mode': 'form',
