@@ -20,6 +20,9 @@ class StockPicking(models.Model):
         return res
 
     def create_return_xk_picking(self, po, record, list_line_xk, account_move=None):
+        picking_type_in = self.env['stock.picking.type'].search([
+            ('code', '=', 'incoming'),
+            ('company_id', '=', company_id)], limit=1)
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
@@ -30,7 +33,7 @@ class StockPicking(models.Model):
             'origin': po.name,
             'other_export': True,
             'state': 'assigned',
-            'picking_type_id': self.env.ref('stock.picking_type_in').id,
+            'picking_type_id': picking_type_in.id,
             'move_ids_without_package': list_line_xk
         }
         xk_picking = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(master_xk)
