@@ -52,7 +52,7 @@ class StockTransfer(models.Model):
     total_weight = fields.Float(string='Total Weight (Kg)')
     reference_document = fields.Char()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
-    note = fields.Text("Ghi chú")
+    note = fields.Char("Ghi chú")
     date_transfer = fields.Date("Ngày xác nhận xuất", default=date.today())
     @api.onchange('work_from')
     def _onchange_work_from(self):
