@@ -41,7 +41,7 @@ class PosOrder(models.Model):
                                     'name': attr.product_attribute_value_id.name or None,
                                     'code': attr.product_attribute_value_id.code or None
                                 }
-                            } for attr in order_line.product_id.product_template_variant_value_ids
+                            } for attr in order_line.product_id.product_template_attribute_value_ids
                         ],
                         'weight': f'{order_line.product_id.weight} {order_line.product_id.weight_uom_name}',
                         'volume': f'{order_line.product_id.volume} {order_line.product_id.volume_uom_name}',
