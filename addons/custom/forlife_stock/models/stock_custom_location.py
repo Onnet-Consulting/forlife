@@ -32,6 +32,15 @@ class Location(models.Model):
 
     is_price_unit = fields.Boolean(default=False)
     is_work_order = fields.Boolean(default=False)
+    is_assets = fields.Boolean('Bắt buộc chọn thẻ tài sản')
+
+    @api.constrains('code')
+    def contrainst_code(self):
+        for rec in self:
+            if rec.code:
+                check_code_if_exist = self.env['stock.location'].search([('code','=',rec.code),('company_id','=',rec.company_id.id)], limit=2)
+                if len(check_code_if_exist) > 1:
+                    raise ValidationError(_('Mã địa điểm phải là duy nhất trong công ty này!'))
 
     @api.onchange('type_other')
     def _onchange_type_other(self):
@@ -67,6 +76,9 @@ class StockMove(models.Model):
 
         # the standard_price of the product may be in another decimal precision, or not compatible with the coinage of
         # the company currency... so we need to use round() before creating the accounting entries.
+        if self.purchase_line_id and self.purchase_line_id.order_id.type_po_cost == 'tax' \
+                and self.purchase_line_id.order_id.currency_id != self.env.company.currency_id:
+            cost = cost * self.purchase_line_id.order_id.exchange_rate
         debit_value = self.company_id.currency_id.round(cost)
         credit_value = debit_value
 

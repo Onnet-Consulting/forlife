@@ -33,7 +33,7 @@ class PosConfig(models.Model):
             value_programs[usage.program_id.id] += usage.order_line_id.qty
         for (program_id, qty) in value_programs.items():
             program = self.env['promotion.program'].browse(program_id)
-            if program.promotion_type == 'code':
+            if program.promotion_type in ['code', 'cart']:
                 applied_number = len(usages.filtered(lambda u: u.program_id.id == program_id).mapped('order_id'))
             else:
                 applied_number = qty / program.qty_per_combo if program.qty_per_combo > 0 else qty
@@ -41,7 +41,7 @@ class PosConfig(models.Model):
 
         # Get history limit qty per program
         combo_program_ids = input_program_ids.filtered(
-            lambda p: p.limit_usage_per_program and p.promotion_type in ('combo', 'code'))
+            lambda p: p.limit_usage_per_program and p.promotion_type in ('combo', 'code', 'cart'))
         limited_program_usages = self.env['promotion.usage.line'].search([('program_id', 'in', combo_program_ids.ids)])
         all_usage_promotions = {}
         for program in combo_program_ids:
@@ -62,7 +62,8 @@ class PosConfig(models.Model):
             return []
         partner = self.env['res.partner'].sudo().browse(partner_id)
         result = []
-        self.env.cr.execute("SELECT id,customer_domain FROM promotion_program WHERE id IN {}".format(tuple(promotion_programs)))
+        self.env.cr.execute("SELECT id,customer_domain FROM promotion_program WHERE id IN %(promotion_programs)s",
+                            {'promotion_programs': tuple(promotion_programs)})
         existed = self.env.cr.dictfetchall()
         existed_customer_domain = {str(p['id']): p['customer_domain'] for p in existed}
         for program_id in promotion_programs:

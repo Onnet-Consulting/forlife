@@ -18,6 +18,7 @@ class StockTransfer(models.Model):
     work_to = fields.Many2one('forlife.production',string="LSX To")
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
     employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id, required=1)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     department_id = fields.Many2one('hr.department', string="Phòng ban", related='employee_id.department_id')
     reference_document_id = fields.Many2one('stock.transfer.request', string="Transfer Request")
     production_order_id = fields.Many2one('production.order', string="Production Order")
@@ -235,9 +236,12 @@ class StockTransfer(models.Model):
         stock_picking_from_ho.button_validate()
 
     def _action_in_approve_in_process(self):
+        company_id = self.env.company.id
+        pk_type = self.env['stock.picking.type'].sudo().search(
+            [('company_id', '=', company_id), ('code', '=', 'internal')], limit=1)
         location_id = self.location_id
         location_dest_id = self.location_dest_id
-        stock_picking_type = self.env.ref('stock.picking_type_internal')
+        stock_picking_type = pk_type
         data = []
         diff_transfer = self.env['stock.transfer']
         for line in self.stock_transfer_line:
@@ -287,6 +291,7 @@ class StockTransfer(models.Model):
             self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type)
         else:
             self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type)
+        self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)
         if diff_transfer:
             return {
                 'type': 'ir.actions.client',

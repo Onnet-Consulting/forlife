@@ -8,7 +8,7 @@
             </header>
             <p style="margin: 10px 0 10px 0"><strong style="font-size: 20px;">Tổng giảm đã trên đơn: &nbsp;<t t-esc="this.env.pos.format_currency(state.discount_amount_order)"/></strong></p>
             <p t-if="props.programs.some(p=>p.need_of_reward_selection)" style="margin: 10px 0 10px 0;">
-                <strong style="font-size: 20px;color: coral;">Vui lòng chọn thêm sản phẩm tặng</strong>
+                <strong style="font-size: 20px;color: coral;">Thêm SP tặng vào đơn hàng để nhận ưu đãi</strong>
             </p>
             <hr/>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
@@ -36,20 +36,20 @@
                                 </t>
                             </label>
                             <p t-if="program.reward_type == 'code_buy_x_get_y' and program.need_of_reward_selection" >
-                                <label>Chọn sản phẩm tặng kèm: </label>
+<!--                                <label>Chọn sản phẩm tặng kèm: </label>-->
                                 <div style="background-color: beige;">
-                                    <div style="display: inline-block;">Tặng thêm <strong t-esc="program.remaining_reward_qty"/> SP</div>
-                                    <select t-att-id="'reward_product_selected_'+program.id"
-                                            t-on-click="(ev) => this.selectRewardProduct(ev.target.value, program.id)"
-                                            style="margin-left: 0.5em;width: 70%;cursor: pointer;background-color: transparent;padding: 0.5em;color: #666666;font-size: 18px;margin-bottom: 0.5em;">
-                                        <option t-att-value="0">--Chọn sản phẩm--</option>
-                                        <option t-foreach="this.env.pos.get_valid_reward_code_promotion(program.program)"
-                                                t-as="product_id" t-key="product_id" t-att-value="product_id"
-                                                t-att-selected="program.program.reward_product_id_selected == product_id and 'selected' or ''">
-                                            <t t-set="product" t-value="this.env.pos.db.get_product_by_id(product_id)"/>
-                                            <t t-out="product.display_name"/>
-                                        </option>
-                                    </select>
+                                    <div style="display: inline-block;">Thêm SP tặng để được tặng thêm <strong t-esc="program.remaining_reward_qty"/> SP</div>
+<!--                                    <select t-att-id="'reward_product_selected_'+program.id"-->
+<!--                                            t-on-click="(ev) => this.selectRewardProduct(ev.target.value, program.id)"-->
+<!--                                            style="margin-left: 0.5em;width: 70%;cursor: pointer;background-color: transparent;padding: 0.5em;color: #666666;font-size: 18px;margin-bottom: 0.5em;">-->
+<!--                                        <option t-att-value="0">&#45;&#45;Chọn sản phẩm&#45;&#45;</option>-->
+<!--                                        <option t-foreach="this.env.pos.get_valid_reward_code_promotion(program.program)"-->
+<!--                                                t-as="product_id" t-key="product_id" t-att-value="product_id"-->
+<!--                                                t-att-selected="program.program.reward_product_id_selected == product_id and 'selected' or ''">-->
+<!--                                            <t t-set="product" t-value="this.env.pos.db.get_product_by_id(product_id)"/>-->
+<!--                                            <t t-out="product.display_name"/>-->
+<!--                                        </option>-->
+<!--                                    </select>-->
                                 </div>
                             </p>
                             <p>

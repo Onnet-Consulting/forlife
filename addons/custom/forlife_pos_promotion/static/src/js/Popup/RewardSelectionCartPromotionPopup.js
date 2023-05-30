@@ -24,7 +24,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
                 additional_reward_remaining_qty: 0,
             });
             this.error_msg = '';
-            this.state.additional_reward_remaining_qty = this.state.program.program.reward_quantity - this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
+            this.state.additional_reward_remaining_qty = this.state.program.max_reward_quantity - this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
 
             onWillUnmount(() => {
                 this.state.reward_line_vals.forEach(line => {
@@ -44,12 +44,12 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 
         selectedQtyOnProgram() {
             let result = this.state.reward_line_vals.filter(l => l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
-            if (this.state.program.additional_reward_product_id) {
-                let qty = this.state.program.additional_reward_product_qty || this.state.additional_reward_remaining_qty;
-                if (qty > 0) {
-                    result += qty;
-                };
-            };
+//            if (this.state.program.additional_reward_product_id) {
+//                let qty = this.state.program.additional_reward_product_qty || this.state.additional_reward_remaining_qty;
+//                if (qty > 0) {
+//                    result += qty;
+//                };
+//            };
             return result;
         }
 
@@ -72,7 +72,11 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             let program = this.state.program.program;
             let newPrice;
             if (program.reward_type == 'cart_discount_percent') {
-                newPrice = reward.line.price * (1 - program.disc_percent/100);
+                let discAmount = reward.line.price * program.disc_percent/100;
+                if (program.disc_max_amount > 0) {
+                    discAmount = discAmount < program.disc_max_amount ? discAmount : program.disc_max_amount;
+                };
+                newPrice = reward.line.price - discAmount;
             } else if (program.reward_type == 'cart_discount_fixed_price') {
                 newPrice = program.disc_fixed_price;
             } else if (program.reward_type == 'cart_get_x_free') {
@@ -133,7 +137,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             let valid = true;
             let result = {};
             for (let program of selected_programs) {
-                if (program.incl_reward_in_order_type != 'unit_price' && program.order_amount_min > 0 && program.order_amount_min > amount_total_after_discount) {
+                if (program.incl_reward_in_order_type != 'unit_price' && program.order_amount_min > 0 && this.state.program.required_order_amount_min > amount_total_after_discount) {
                     result[program.id] = false;
                 } else {
                     result[program.id] = true;
@@ -147,7 +151,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
 
             let current_selected_qty = this.state.reward_line_vals.filter(l => l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0)
 
-            if (current_selected_qty > program.reward_quantity) {
+            if (current_selected_qty > this.state.program.max_reward_quantity) {
                 valid = false;
             }
             return valid;
@@ -174,8 +178,8 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             })
 
             let qty_remaining = currentLine.line.quantity - selected_qty_of_line;
-            if (qty_remaining > program.reward_quantity) {
-                qty_remaining = program.reward_quantity;
+            if (qty_remaining > this.state.program.max_reward_quantity) {
+                qty_remaining = this.state.program.max_reward_quantity;
             };
 
             // Set maximum qty of input
@@ -191,7 +195,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             }
             // Compute remaining qty of reward product
             let selectedQty_on_program = this.state.reward_line_vals.filter(l=>l.isSelected && l.quantity > 0).reduce((tmp, l) => tmp + l.quantity, 0);
-            this.state.additional_reward_remaining_qty = program.reward_quantity - selectedQty_on_program;
+            this.state.additional_reward_remaining_qty = this.state.program.max_reward_quantity - selectedQty_on_program;
             this.state.program.additional_reward_product_qty = this.state.additional_reward_remaining_qty;
         }
 
@@ -202,23 +206,23 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             this._computeOnchangeQty(reward, quantity_input);
         }
 
-        onChangeAdditionalRewardProduct(target) {
-            let input = parse.integer(target.value);
-            let product = this.env.pos.db.get_product_by_id(input);
-            if (product) {
-                this.state.program.additional_reward_product_id = product.id
-            } else {
-                this.state.program.additional_reward_product_id = null;
-            }
-        }
+//        onChangeAdditionalRewardProduct(target) {
+//            let input = parse.integer(target.value);
+//            let product = this.env.pos.db.get_product_by_id(input);
+//            if (product) {
+//                this.state.program.additional_reward_product_id = product.id
+//            } else {
+//                this.state.program.additional_reward_product_id = null;
+//            }
+//        }
 
-        onChangeAdditionalRewardQty(target) {
-            let input = parse.float(target.value);
-            if (input > this.state.additional_reward_remaining_qty) {
-                target.value = this.state.additional_reward_remaining_qty;
-            };
-            this.state.program.additional_reward_product_qty = parse.float(target.value);
-        }
+//        onChangeAdditionalRewardQty(target) {
+//            let input = parse.float(target.value);
+//            if (input > this.state.additional_reward_remaining_qty) {
+//                target.value = this.state.additional_reward_remaining_qty;
+//            };
+//            this.state.program.additional_reward_product_qty = parse.float(target.value);
+//        }
 
         selectItem(cid) {
             let order = this.env.pos.get_order();
@@ -253,14 +257,14 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
             }
         }
 
-        getPayload() {
-            if (this._currentProgram().reward_type == 'cart_get_x_free' && this.state.program.additional_reward_product_id) {
-                if (!this.state.program.additional_reward_product_qty) {
-                    this.state.program.additional_reward_product_qty = this.state.additional_reward_remaining_qty;
-                }
-            }
-            super.getPayload()
-        }
+//        getPayload() {
+//            if (this._currentProgram().reward_type == 'cart_get_x_free' && this.state.program.additional_reward_product_id) {
+//                if (!this.state.program.additional_reward_product_qty) {
+//                    this.state.program.additional_reward_product_qty = this.state.additional_reward_remaining_qty;
+//                }
+//            }
+//            super.getPayload()
+//        }
 
         cancel() {
             const valid = this._check_valid_rewards()

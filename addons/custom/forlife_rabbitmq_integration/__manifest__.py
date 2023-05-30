@@ -29,6 +29,7 @@
         'security/ir.model.access.csv',
         'data/rabbitmq_connection_data.xml',
         'data/rabbitmq_queue_data.xml',
+        'data/queue_job_data.xml',
         'views/rabbitmq_connection_views.xml',
         'views/rabbitmq_queue_views.xml',
         'views/menuitem.xml',

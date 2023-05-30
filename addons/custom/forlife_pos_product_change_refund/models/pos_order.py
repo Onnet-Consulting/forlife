@@ -51,12 +51,16 @@ class PosOrder(models.Model):
     # Update brand in POS Order
     @api.model
     def _process_order(self, order, draft, existing_order):
-        if order['data']['is_refund_product']:
-            for l in order['data']['lines']:
-                if l[2]['price_subtotal_incl_refund']:
-                    l[2]['price_subtotal_incl'] = l[2]['price_subtotal_incl_refund']
-                if l[2]['price_subtotal_incl_refund']:
-                    l[2]['price_unit'] = l[2]['price_unit_refund']
+        # if order['data']['is_refund_product']:
+        #     for l in order['data']['lines']:
+        #         if l[2]['price_subtotal_incl_refund']:
+        #             l[2]['price_subtotal_incl'] = l[2]['price_subtotal_incl_refund']
+        #         if l[2]['price_subtotal_incl_refund']:
+        #             l[2]['price_unit'] = l[2]['price_unit_refund']
+        for l in order['data']['lines']:
+            if l[2]['money_reduce_from_product_defective'] >0:
+                l[2]['price_subtotal'] = l[2]['price_subtotal'] - l[2]['money_reduce_from_product_defective']
+                l[2]['price_unit'] = l[2]['price_unit'] - l[2]['money_reduce_from_product_defective']
         pos_id = super(PosOrder, self)._process_order(order, draft, existing_order)
         HistoryPoint = self.env['partner.history.point']
         Voucher = self.env['voucher.voucher']

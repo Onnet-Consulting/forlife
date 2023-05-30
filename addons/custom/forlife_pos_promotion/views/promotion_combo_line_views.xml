@@ -15,6 +15,10 @@
                     class="oe_stat_button"
                     attrs="{'invisible':[('product_count','=',0)]}">
                 </button>
+                <button name="action_open_combo_line_product"
+                    type="object" string="Import Products"
+                    class="oe_stat_button">
+                </button>
             </tree>
         </field>
     </record>
@@ -38,6 +42,11 @@
                             class="oe_stat_button"
                             attrs="{'invisible':[('product_count','=',0)]}">
                         <field name="product_count" />
+                        </button>
+                        <button name="action_open_combo_line_product"
+                            type="object" string="Products"
+                            class="oe_stat_button">
+                            <span>Import Product</span>
                         </button>
                     </group>
                 </group>

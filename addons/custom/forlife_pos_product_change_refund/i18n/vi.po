@@ -92,6 +92,7 @@ msgstr "Duyệt"
 #: code:addons/forlife_pos_product_change_refund/models/handle_change_refund.py:0
 #: model:ir.model.fields,field_description:forlife_pos_product_change_refund.field_pos_order__approved
 #: model:ir.model.fields.selection,name:forlife_pos_product_change_refund.selection__handle_change_refund__state__approved
+#: model:ir.model.fields.selection,name:forlife_pos_product_change_refund.selection__product_defective__state__approved
 #, python-format
 msgid "Approved"
 msgstr "Đã duyệt"
@@ -669,6 +670,7 @@ msgstr "Điểm hoàn"
 #. odoo-python
 #: code:addons/forlife_pos_product_change_refund/models/handle_change_refund.py:0
 #: model:ir.model.fields.selection,name:forlife_pos_product_change_refund.selection__handle_change_refund__state__refuse
+#: model:ir.model.fields.selection,name:forlife_pos_product_change_refund.selection__product_defective__state__refuse
 #: model_terms:ir.ui.view,arch_db:forlife_pos_product_change_refund.handle_change_refund_form_view
 #, python-format
 msgid "Refuse"
@@ -877,3 +879,13 @@ msgstr ""
 #, python-format
 msgid "Đổi hàng"
 msgstr ""
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields.selection,name:forlife_pos_product_change_refund.selection__product_defective__state__waiting_approve
+msgid "Waiting Approve"
+msgstr "Đợi duyệt"
+
+#. module: forlife_pos_product_change_refund
+#: model:ir.model.fields.selection,name:forlife_pos_product_change_refund.selection__product_defective__state__new
+msgid "New"
+msgstr "Mới"
