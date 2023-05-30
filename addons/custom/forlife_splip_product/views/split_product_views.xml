@@ -51,9 +51,10 @@
                         </page>
                         <page string="Sản phẩm phân tách">
                             <field name="split_product_line_sub_ids" mode="tree">
-                                <tree editable="bottom">
+                                <tree editable="bottom" create="0">
                                     <field name="state" invisible="1"/>
-                                    <field name="product_id" attrs="{'readonly': [('state','=','canceled')]}"/>
+                                    <field name="product_id" optional="show"/>
+                                    <field name="product_new_id" string="Sản phẩm" optional="show"/>
                                     <field name="product_split"/>
                                     <field name="warehouse_in_id"/>
                                     <field name="quantity"/>
