@@ -139,6 +139,64 @@ class StockTransfer(models.Model):
             })
         self._action_out_approve()
 
+    def _create_move_import_int(self, pickking, location_id, location_dest_id):
+        warehouse_type_id_ec = self.env['stock.warehouse.type'].sudo().search([('code', '=', 5)])
+        warehouse_type_master = self.env.ref('forlife_base.stock_warehouse_type_01', raise_if_not_found=False).id
+        s_location_pos = self.env.ref('forlife_stock.warehouse_for_pos', raise_if_not_found=False).id
+        s_location_sell_ecommerce = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
+        warehouse_id = location_id.warehouse_id.whs_type.id
+        warehouse_dest_id = location_dest_id.warehouse_id.whs_type.id
+        if location_dest_id in [s_location_pos] and warehouse_id in [warehouse_type_master] and location_dest_id.id_deposit and location_dest_id.account_stock_give:
+            return self._create_move_given(pickking, location_dest_id, type_create='in')
+        elif location_id in [s_location_pos] and warehouse_dest_id in [warehouse_type_master] and location_id.id_deposit and location_id.account_stock_give:
+            return self._create_move_given(pickking, location_id, type_create='out')
+        elif location_id in [s_location_sell_ecommerce, s_location_pos] and location_dest_id in [s_location_sell_ecommerce, s_location_pos]:
+            loc = location_id if location_id.id_deposit and location_id.account_stock_give else False
+            loc_dest = location_dest_id if location_dest_id.id_deposit and location_dest_id.account_stock_give else False
+            if not loc and not loc_dest:
+                return False
+            elif not loc and loc_dest:
+                return self._create_move_given(pickking, loc_dest, type_create='out')
+            elif loc and not loc_dest:
+                return self._create_move_given(pickking, loc, type_create='out')
+            return self._create_move_given(pickking, location_id, type_create='out')
+
+        return True
+
+    def _create_move_given(self, picking, location, type_create):
+        for d in picking.move_ids_without_package:
+            if type_create == 'out':
+                account_id_debit = d.product_id.categ_id.property_account_expense_categ_id.id
+                account_id_credit = location.account_stock_give.id
+            else:
+                account_id_debit = location.account_stock_give.id
+                account_id_credit = d.product_id.categ_id.property_account_expense_categ_id.id
+            accounts_data = d.product_id.product_tmpl_id.get_product_accounts()
+            move_vals = {
+                'journal_id': accounts_data['stock_journal'].id,
+                'date': datetime.now(),
+                'ref': pickking.name,
+                'move_type': 'entry',
+                'stock_move_id': d.id,
+                'line_ids': [
+                    (0, 0, {
+                        'name': pickking.name,
+                        'account_id': account_id_debit,
+                        'debit': d.product_id.standard_price,
+                        'credit': 0.0,
+                    }),
+                    (0, 0, {
+                        'name': pickking.name,
+                        'account_id': account_id_credit,
+                        'debit': 0.0,
+                        'credit': d.product_id.standard_price,
+                    })
+                ]
+            }
+            move = self.env['account.move'].create(move_vals)
+            move.action_post()
+        return True
+
     def _out_approve_less_quantity(self, stock_transfer_line_less):
         self.ensure_one()
         for line in stock_transfer_line_less:
@@ -207,8 +265,10 @@ class StockTransfer(models.Model):
             'location_id': location_id.id,
             'location_dest_id': location_dest_id.id,
             'move_ids_without_package': data,
-        })
+            }
+        )
         stock_picking.button_validate()
+        return stock_picking
 
     def _create_stock_picking_with_ho(self, data, location_id, location_dest_id, stock_picking_type):
         location_ho = self.env.ref('forlife_stock.ho_location_stock')
@@ -289,7 +349,9 @@ class StockTransfer(models.Model):
                     'qty_in': product_quantity,
                 })
         if location_id.warehouse_id.state_id.id == location_dest_id.warehouse_id.state_id.id:
-            self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type)
+            picking = self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type)
+            # if picking.location_dest_id.id_deposit and picking.location_dest_id.account_stock_give:
+            self._create_move_import_int(picking,location_id, location_dest_id)
         else:
             self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type)
         self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)

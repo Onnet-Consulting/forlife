@@ -99,14 +99,14 @@
             <field name="code">Thuế GTGT hàng nhập khẩu</field>
             <field name="company_id">3</field>
         </record>
-<!--        <record id="account_gtgt_tax_1331_4" model="account.tax">-->
-<!--            <field name="name">Thuế GTGT hàng nhập khẩu</field>-->
-<!--            <field name="amount_type">percent</field>-->
-<!--            <field name="active">True</field>-->
-<!--            <field name="type_tax_use">purchase</field>-->
-<!--            <field name="code">Thuế GTGT hàng nhập khẩu</field>-->
-<!--            <field name="company_id">4</field>-->
-<!--        </record>-->
+        <record id="account_gtgt_tax_1331_8" model="account.tax">
+            <field name="name">Thuế GTGT hàng nhập khẩu</field>
+            <field name="amount_type">percent</field>
+            <field name="active">True</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="code">Thuế GTGT hàng nhập khẩu</field>
+            <field name="company_id">4</field>
+        </record>
         <record id="account_gtgt_tax_1331_5" model="account.tax">
             <field name="name">Thuế GTGT hàng nhập khẩu</field>
             <field name="amount_type">percent</field>
@@ -115,10 +115,5 @@
             <field name="code">Thuế GTGT hàng nhập khẩu</field>
             <field name="company_id">5</field>
         </record>
-<!--         <record id="forlife_code_account_1" model="account.account">-->
-<!--            <field name="name">Thuế VAT (10%)</field>-->
-<!--            <field name="code">1331000001</field>-->
-<!--            <field name="account_type">off_balance</field>-->
-<!--        </record>-->
     </data>
 </odoo>

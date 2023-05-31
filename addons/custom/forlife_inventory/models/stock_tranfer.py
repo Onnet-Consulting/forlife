@@ -23,8 +23,7 @@ class StockTranfer(models.Model):
         if location_id.company_id.code == '1300' or location_dest_id.company_id.code == '1300':
             if warehouse_dest_id in [warehouse_type_id_tl, warehouse_type_id_fm] and warehouse_id in [
                 warehouse_type_master, warehouse_type_id_ec] \
-                    and (
-                    s_location_dest_type_id == s_location_pos or s_location_dest_type_id == s_location_sell_ecommerce):
+                    and (s_location_dest_type_id == s_location_pos or s_location_dest_type_id == s_location_sell_ecommerce):
                 location_mapping = self.env['stock.location.mapping'].sudo().search(
                     [('location_id', '=', location_dest_id.id)])
 

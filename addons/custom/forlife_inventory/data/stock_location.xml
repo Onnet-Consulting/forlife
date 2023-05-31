@@ -9,7 +9,7 @@
             <field name="company_id" eval="False"/>
         </record>
         <record model="stock.location" id="xuat_ki_gui_tu_dong">
-            <field name="name">Xuất kí gửi tự dộng</field>
+            <field name="name">Xuất kí gửi tự động</field>
             <field name="code">X1101</field>
             <field name="type_other">outcoming</field>
             <field name="company_id" eval="False"/>
