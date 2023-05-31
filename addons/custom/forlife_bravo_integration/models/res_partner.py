@@ -42,7 +42,11 @@ class ResPartnerGroup(models.Model):
                        self.env.ref("forlife_pos_app_member.partner_group_3") + \
                        self.env.ref("forlife_pos_app_member.partner_group_4") + \
                        self.env.ref("forlife_pos_app_member.partner_group_5") + \
-                       self.env.ref("forlife_pos_app_member.partner_group_c") + \
-                       self.env.ref("forlife_pos_app_member.partner_group_system")
+                       self.env.ref("forlife_pos_app_member.partner_group_6")
         exist_groups.sudo().with_delay(channel="root.Bravo").bravo_insert_with_check_existing()
         return True
+
+    def bravo_get_filter_domain(self):
+        partner_group_c = self.env.ref('forlife_pos_app_member.partner_group_c').id
+        partner_group_system = self.env.ref('forlife_pos_app_member.partner_group_system').id
+        return [('id', 'not in', [partner_group_c, partner_group_system])]
