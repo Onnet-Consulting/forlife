@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
-# import pyodbc
+import pyodbc
 from typing import Dict, List, Optional, Tuple, Union
 
 
@@ -20,9 +20,9 @@ class MssqlServer(models.AbstractModel):
         database = ir_config.get_param("mssql.database")
         username = ir_config.get_param("mssql.username")
         password = ir_config.get_param("mssql.password")
-        # return pyodbc.connect(
-        #     f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};'
-        #     f'ENCRYPT={encrypt};CHARSET=UTF8;', autocommit=autocommit)
+        return pyodbc.connect(
+            f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};'
+            f'ENCRYPT={encrypt};CHARSET=UTF8;', autocommit=autocommit)
 
     @api.model
     def _execute(self, query, params, autocommit=True):

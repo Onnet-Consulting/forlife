@@ -46,10 +46,11 @@ class CreateWarehousePartner(models.TransientModel):
     def prepare_partner_value(self):
         self.ensure_one()
         warehouse = self.warehouse_id
+        partner_group = self.env.ref('forlife_pos_app_member.partner_group_5')
         return {
             "company_type": "person",
-            "group_id": self.env.ref('forlife_pos_app_member.partner_group_5').id,
+            "group_id": partner_group.id,
             "name": warehouse.name,
-            "ref": warehouse.code,
+            "ref": str(partner_group.code or '') + str(warehouse.code or ''),
             "phone": self.phone
         }

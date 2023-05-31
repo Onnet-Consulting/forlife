@@ -39,11 +39,14 @@ class ResPartner(models.Model):
                 'score': {
                     'TKL': {
                         'used': sum([x.points_used for x in record.history_points_forlife_ids]),
-                        'remaining': sum([x.points_store for x in record.history_points_forlife_ids])
+                        'remaining': record.total_points_available_forlife or 0,
+                        'expired_at': record.reset_day_of_point_forlife and record.reset_day_of_point_forlife.strftime('%Y-%m-%d %H:%M:%S') or None,
                     },
                     'FMT': {
                         'used': sum([x.points_used for x in record.history_points_format_ids]),
-                        'remaining': sum([x.points_store for x in record.history_points_format_ids])}
+                        'remaining': record.total_points_available_format or 0,
+                        'expired_at': record.reset_day_of_point_format and record.reset_day_of_point_format.strftime('%Y-%m-%d %H:%M:%S') or None,
+                    },
                 },
                 'rank': {
                     'TKL': {

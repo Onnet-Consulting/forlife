@@ -74,7 +74,7 @@ order_line_data as (
         to_char(po.date_order + interval '{tz_offset} hours', 'DD/MM/YYYY')                         as by_day,
         to_char(po.date_order + interval '{tz_offset} hours', 'MM/YYYY')		                    as by_month,
         pol.qty 																		 	        as qty,
-        pol.price_unit 																	 		    as lst_price,
+        coalesce(pol.original_price, 0)    												 		    as lst_price,
         coalesce((select sum(
             case when type = 'point' then recipe * 1000
                 when type = 'card' then recipe
@@ -82,8 +82,8 @@ order_line_data as (
                 else 0
             end
         ) from pos_order_line_discount_details where pos_order_line_id = pol.id), 0)
-        + (pol.discount * pol.price_unit * pol.qty / 100)									        as money_reduced,
-        pol.qty * pol.price_unit	            								 		 		    as price_subtotal,
+        + (pol.discount * pol.original_price * pol.qty / 100)								        as money_reduced,
+        coalesce(pol.qty * pol.original_price, 0)       							 	 		    as price_subtotal,
         po.note 																 		 		    as note
     from pos_order_line pol
         join pos_order po on po.id = pol.order_id and po.state in ('paid', 'done', 'invoiced')
@@ -107,7 +107,7 @@ select key_invoice,
     sum(qty) as qty,
     uom_name,
     lst_price,
-    sum(money_reduced) as money_reduced,
+    coalesce(sum(money_reduced), 0) as money_reduced,
     sum(price_subtotal) as price_subtotal
 from order_line_data
 group by key_invoice,
@@ -204,7 +204,7 @@ from employee_list employee
             detail_invoice_by_order_key.update(value.pop('detail_invoice'))
             total_amount = 0
             for c in column_add:
-                amount = qty_by_time.get(c, 0)
+                amount = qty_by_time.get(c, 0) or 0
                 value[c] = amount
                 total_amount += amount
             value['total_amount'] = total_amount
