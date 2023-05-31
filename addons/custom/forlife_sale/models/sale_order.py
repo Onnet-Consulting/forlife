@@ -38,10 +38,42 @@ class SaleOrder(models.Model):
     x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)
     x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
     x_is_return = fields.Boolean('Đơn trả hàng', copy=False)
-    x_origin = fields.Many2one('sale.order', 'Tài liệu gốc')
+    x_origin = fields.Many2one('sale.order', 'Tài liệu gốc', copy=False)
     x_order_punish_count = fields.Integer('Số đơn phạt', compute='_compute_order_punish_count')
     x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
+    x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
+
+    @api.onchange('x_process_punish', 'partner_id')
+    def _compute_domain_pricelist(self):
+        for r in self:
+            if not r.x_process_punish:
+                pricelist = self.env['product.pricelist'].search(
+                    ['|', ('company_id', '=', False), ('company_id', '=', r.company_id.id)]).ids
+            else:
+                pricelist = r.get_pricelist()
+            r.x_domain_pricelist = [(6, 0, pricelist)]
+
+    def get_pricelist(self):
+        sql = f"""            
+                select pp.id from product_pricelist pp 
+                left join product_pricelist_item ppi on ppi.pricelist_id = pp.id
+                where 1=1
+                and pp.x_punish is True
+                and pp.x_partner_id = {self.partner_id.id}
+                and '{str(self.date_order)}'::date between ppi.date_start and ppi.date_end
+                order by pp.id desc
+            """
+        self._cr.execute(sql)
+        result = self._cr.fetchall()
+        if result:
+            return [rec[0] for rec in result]
+        else:
+            return []
+    @api.onchange('x_process_punish')
+    def onchange_x_process_punish(self):
+        for line in self.order_line:
+            line._compute_price_unit()
 
     def copy(self, default=None):
         default = dict(default or {})
