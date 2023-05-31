@@ -453,7 +453,13 @@ class PurchaseOrder(models.Model):
                     }
                     invoice_line_ids.append((0, 0, invoice_line))
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
-            record.write({'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'to invoice'})
+            if record.purchase_type == "service":
+                record.write(
+                    {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
+            else:
+                record.write(
+                    {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'to invoice'})
+
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
@@ -610,6 +616,41 @@ class PurchaseOrder(models.Model):
             else:
                 rec.active_manual_currency_rate = False
 
+    #             order.invoice_status = 'no'
+
+    # def _prepare_invoice(self):
+    #     result = super(PurchaseOrder, self)._prepare_invoice()
+    #     result.update({
+    #         'manual_currency_exchange_rate': self.manual_currency_exchange_rate,
+    #         'active_manual_currency_rate': self.active_manual_currency_rate
+    #     })
+    #     return result
+
+    # def _prepare_picking(self):
+    #     result = super(PurchaseOrder, self)._prepare_picking()
+    #     diff_currency = False
+    #     if self.company_id or self.currency_id:
+    #         if self.company_id.currency_id != self.currency_id:
+    #             diff_currency = True
+    #         else:
+    #             diff_currency = False
+    #     else:
+    #         diff_currency = False
+    #     if diff_currency:
+    #         result.update({
+    #             'apply_manual_currency_exchange': self.apply_manual_currency_exchange,
+    #             'manual_currency_exchange_rate': self.manual_currency_exchange_rate,
+    #             'active_manual_currency_rate': diff_currency
+    #         })
+    #     return result
+
+    def write(self, vals):
+        old_line_count = len(self.order_line)
+        new_line_count = len(vals.get('order_line', []))
+        if (new_line_count > old_line_count) and self.custom_state == "approved":
+            raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái phê duyệt')
+        return super(PurchaseOrder, self).write(vals)
+        
     @api.onchange('company_id', 'currency_id')
     def onchange_currency_id(self):
         if self.company_id or self.currency_id:
@@ -1816,7 +1857,7 @@ class StockPicking(models.Model):
                             'Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
                     finished_qty = (material_line.product_plan_qty / r.previous_qty) * r.quantity_done
                     list_line_xk.append((0, 0, {
-                        'product_id': r.product_id.id,
+                        'product_id': material_line.product_id.id,
                         'product_uom': material_line.uom.id,
                         'price_unit': material_line.price_unit,
                         'location_id': record.location_dest_id.id,
@@ -1890,7 +1931,6 @@ class Synthetic(models.Model):
 
     synthetic_id = fields.Many2one('purchase.order')
 
-    # sequence = fields.Integer(string='STT', default=1)
     description = fields.Char(string='Mã hàng')
     product_id = fields.Many2one('product.product', string='Tên hàng')
     product_uom = fields.Many2one(related='product_id.uom_id', string='ĐVT')
@@ -1926,19 +1966,6 @@ class Synthetic(models.Model):
                 rec.after_tax = total_cost_false
             else:
                 pass
-
-    # @api.depends('synthetic_id.cost_line.is_check_pre_tax_costs')
-    # def _compute_after_tax(self):
-    #     for record in self:
-    #         cost_line_false = record.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
-    #         total_cost_false = 0
-    #         if cost_line_false:
-    #             for item in cost_line_false:
-    #                 record.after_tax = ((record.price_subtotal / sum(self.mapped('price_subtotal'))) * 100 / 100) * item.vnd_amount
-    #                 total_cost_false += cost_host
-    #             rec.before_tax = total_cost_true
-    #         else:
-    #             pass
 
     @api.depends('price_unit', 'quantity')
     def _compute_price_subtotal(self):
