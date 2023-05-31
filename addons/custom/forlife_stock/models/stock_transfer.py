@@ -268,7 +268,6 @@ class StockTransfer(models.Model):
             }
         )
         stock_picking.button_validate()
-        print(stock_picking)
         return stock_picking
 
     def _create_stock_picking_with_ho(self, data, location_id, location_dest_id, stock_picking_type):
