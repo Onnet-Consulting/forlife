@@ -19,6 +19,7 @@ NHANH_BASE_URL = 'https://open.nhanh.vn/api'
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
+
     nhanh_status = fields.Char(string='Nhanh order status')
     nhanh_shipping_fee = fields.Float(string='Shipping fee')
     nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
@@ -131,12 +132,13 @@ class SaleOrder(models.Model):
                             'responsible_id': None
                         })
                     product_product = self.env['product.product'].search([('product_tmpl_id', '=', product.id)], limit=1)
+                    location_id = self.env['stock.location'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
                     order_line.append((
                         0, 0,
                         {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
                          'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
                          'product_uom': product.uom_id.id if product.uom_id else uom,
-                         'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
+                         'customer_lead': 0, 'sequence': 10, 'is_downpayment': False, 'x_location_id': location_id.id if location_id else None,
                          'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get('discount') else 0,
                          'x_cart_discount_fixed_price': float(item.get('discount')) * float(item.get('quantity')) if item.get('discount') else 0}))
                 # Add orders  to odoo
