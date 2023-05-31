@@ -175,18 +175,18 @@ class StockTransfer(models.Model):
             move_vals = {
                 'journal_id': accounts_data['stock_journal'].id,
                 'date': datetime.now(),
-                'ref': pickking.name,
+                'ref': picking.name,
                 'move_type': 'entry',
                 'stock_move_id': d.id,
                 'line_ids': [
                     (0, 0, {
-                        'name': pickking.name,
+                        'name': picking.name,
                         'account_id': account_id_debit,
                         'debit': d.product_id.standard_price,
                         'credit': 0.0,
                     }),
                     (0, 0, {
-                        'name': pickking.name,
+                        'name': picking.name,
                         'account_id': account_id_credit,
                         'debit': 0.0,
                         'credit': d.product_id.standard_price,
