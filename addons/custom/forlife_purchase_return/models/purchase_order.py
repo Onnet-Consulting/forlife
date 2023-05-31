@@ -18,7 +18,7 @@ class PurchaseOrder(models.Model):
             company_id = vals.get('company_id', self.default_get(['company_id'])['company_id'])
             # Ensures default picking type and currency are taken from the right company.
             self_comp = self.with_company(company_id)
-            if vals.get('name', 'New') == 'New':
+            if vals.get('name', 'New') == 'New' and vals.get('is_return', False):
                 seq_date = None
                 if 'date_order' in vals:
                     seq_date = fields.Datetime.context_timestamp(self, fields.Datetime.to_datetime(vals['date_order']))
