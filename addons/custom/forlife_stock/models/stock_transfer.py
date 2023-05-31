@@ -52,7 +52,7 @@ class StockTransfer(models.Model):
     total_weight = fields.Float(string='Total Weight (Kg)')
     reference_document = fields.Char()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
-    note = fields.Text("Ghi chú")
+    note = fields.Char("Ghi chú")
     date_transfer = fields.Date("Ngày xác nhận xuất", default=date.today())
     @api.onchange('work_from')
     def _onchange_work_from(self):
@@ -161,7 +161,7 @@ class StockTransfer(models.Model):
                     'work_from': line.work_from.id,
                     'work_to': line.work_to.id,
                     'check_id': line.id,
-                    'qty_start': line.qty_plan
+                    # 'qty_start': line.qty_plan
                 })]
             })
             line.write({
@@ -388,7 +388,7 @@ class StockTransferLine(models.Model):
     qty_plan = fields.Integer(string='Quantity Plan')
     qty_out = fields.Integer(string='Quantity Out')
     qty_in = fields.Integer(string='Quantity In')
-    qty_start = fields.Integer(string='')
+    qty_start = fields.Integer(string='', compute='compute_qty_start', store=1)
     quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
 
@@ -420,6 +420,12 @@ class StockTransferLine(models.Model):
     def compute_quantity_remaining(self):
         for item in self:
             item.quantity_remaining = max(item.qty_plan - item.qty_in, 0)
+
+    @api.depends('qty_plan', 'stock_transfer_id.state')
+    def compute_qty_start(self):
+        for item in self:
+            if item.stock_transfer_id.state in ('draft', 'wait_approve'):
+                item.qty_start = item.qty_plan
 
     @api.constrains('qty_plan', 'is_from_button', 'qty_plan_tsq')
     def constrains_qty_plan(self):
@@ -455,11 +461,14 @@ class StockTransferLine(models.Model):
             if quantity > self.qty_plan * (1 + (tolerance / 100)):
                 raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
         else:
-            quantity_old = self.env['stock.transfer.line'].search([('id', '=', self.check_id)])
-            quantity_out_old = quantity_old.qty_out
-            quantity = self.qty_out + quantity_out_old if type == 'out' else self.qty_in
-            if quantity > self.qty_start * (1 + (tolerance / 100)):
-                raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
+            start_transfer = self.env['stock.transfer'].search([('name', '=', self.stock_transfer_id.reference_document)])
+            other_transfer = self.env['stock.transfer'].search([('reference_document', '=', start_transfer.name)])
+            quantity_old = sum([line.qty_out if type == 'out' else line.qty_in for line in other_transfer.stock_transfer_line.filtered(
+                lambda r: r.product_id == self.product_id)])
+            if start_transfer.stock_transfer_line.product_id == self.product_id:
+                quantity = quantity_old + start_transfer.stock_transfer_line.qty_out if type == 'out' else quantity_old + start_transfer.stock_transfer_line.qty_in
+                if quantity > start_transfer.stock_transfer_line.qty_start * (1 + (tolerance / 100)):
+                    raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
 
     @api.depends('stock_transfer_id', 'stock_transfer_id.state')
     def compute_is_parent_done(self):

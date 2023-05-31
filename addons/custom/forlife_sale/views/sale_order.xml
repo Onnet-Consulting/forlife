@@ -75,6 +75,10 @@
                     <field name="x_is_return" force_save="1" readonly="1" attrs="{'invisible': [('x_is_return', '=', False)]}"/>
                     <field name="x_is_exchange" force_save="1" readonly="1" attrs="{'invisible': [('x_is_exchange', '=', False)]}"/>
                     <field name="x_origin"/>
+                    <field name="x_domain_pricelist" force_save="1" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='pricelist_id']" position="attributes">
+                    <attribute name="domain">[('id', 'in', x_domain_pricelist)]</attribute>
                 </xpath>
             </field>
         </record>

@@ -339,6 +339,7 @@ class PurchaseOrder(models.Model):
             record.write({'custom_state': 'confirm'})
 
     def action_approved(self):
+        self.check_purchase_tool_and_equipment()
         for record in self:
             if not record.is_inter_company:
                 super(PurchaseOrder, self).button_confirm()
@@ -462,6 +463,29 @@ class PurchaseOrder(models.Model):
             else:
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'to invoice'})
+
+    def check_purchase_tool_and_equipment(self):
+        # Kiểm tra xem có phải sp CCDC không (có category đc cấu hình trường tài khoản định giá tồn kho là 153)
+        # kiểm tra Đơn Giá mua trên PO + Giá trị chi phí được phân bổ  <> giá trung bình kho của sản phẩm, thì thông báo Hiển thị thông báo cho người dùng: Giá của sản phẩm CCDC này # giá nhập vào đợt trước.Yêu cầu người dùng tạo sản phẩm mới.
+        # Nếu Tồn kho = 0 : cho phép nhập giá mới trên line, xác nhận PO và tiến hành nhập kho.
+        for rec in self:
+            if rec.order_line:
+                cost_total = 0
+                count_ccdc_product = 0
+                if rec.cost_line:
+                    cost_total = rec.cost_total
+                for line in rec.order_line:
+                    if line.product_id.categ_id and line.product_id.categ_id.property_stock_valuation_account_id and line.product_id.categ_id.property_stock_valuation_account_id.code in ['1531000001', '1531']:
+                        count_ccdc_product = count_ccdc_product + line.product_qty
+                if count_ccdc_product > 0:
+                    for line in rec.order_line:
+                        if line.product_id.categ_id and line.product_id.categ_id.property_stock_valuation_account_id and line.product_id.categ_id.property_stock_valuation_account_id.code in ['1531000001', '1531']:
+                            # kiểm tra tồn kho
+                            number_product = self.env['stock.quant'].search(
+                                [('location_id', '=', line.location_id.id), ('product_id', '=', line.product_id.id)])
+                            if number_product and sum(number_product.mapped('quantity')) > 0:
+                                if line.product_id.standard_price != line.price_unit + cost_total / count_ccdc_product:
+                                    raise UserError("Giá của sản phẩm công cụ dụng cụ này này khác giá nhập vào đợt trước. Yêu cầu người dùng tạo sản phẩm mới.")
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
@@ -1258,6 +1282,43 @@ class PurchaseOrderLine(models.Model):
     #                 'price_unit': data.price / line.exchange_quantity if line.exchange_quantity else False
     #             })
     #     return line
+    @api.model
+    def create(self, vals):
+        line = super(PurchaseOrderLine, self).create(vals)
+        if not line.product_uom or not line.name:
+            line.product_uom = line.product_id.uom_id.id
+            line.name = line.product_id.name
+        if not line.vendor_price and all((line.product_id, line.supplier_id, line.purchase_uom, not line.is_red_color)):
+            data = self.env['product.supplierinfo'].search([
+                ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
+                ('partner_id', '=', line.supplier_id.id),
+                ('product_uom', '=', line.purchase_uom.id),
+                ('amount_conversion', '=', line.exchange_quantity)
+            ], limit=1)
+            if data:
+                line.update({
+                    'vendor_price': data.price,
+                    'price_unit': data.price / line.exchange_quantity if line.exchange_quantity else False
+                })
+        return line
+
+    @api.depends('exchange_quantity')
+    def compute_is_red_color(self):
+        date_item = datetime.datetime.now().date()
+        for item in self:
+            if not (item.product_id and item.supplier_id and item.purchase_uom and item.currency_id):
+                item.is_red_color = False
+                continue
+            supplier_info = self.search_product_sup(
+                [('product_uom', '=', item.purchase_uom.id),
+                 ('product_id', '=', item.product_id.id),
+                 ('partner_id', '=', item.supplier_id.id),
+                 ('date_start', '<', date_item),
+                 ('date_end', '>', date_item),
+                 ('currency_id', '>', item.currency_id.id),
+                 ])
+            item.is_red_color = True if item.exchange_quantity not in supplier_info.mapped(
+                'amount_conversion') else False
 
     @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):
@@ -1701,7 +1762,7 @@ class StockPicking(models.Model):
         account.action_post()
         return account
 
-    # Xử lý bút toán po nội bộ
+    # Xử lý bút toán po nội bộphí
     def create_invoice_po_cost(self, po, record):
         data_in_line = po.order_line
         invoice_line_cost_in_tax = []
@@ -1850,7 +1911,7 @@ class StockPicking(models.Model):
                             'Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
                     finished_qty = (material_line.product_plan_qty / r.previous_qty) * r.quantity_done
                     list_line_xk.append((0, 0, {
-                        'product_id': r.product_id.id,
+                        'product_id': material_line.product_id.id,
                         'product_uom': material_line.uom.id,
                         'price_unit': material_line.price_unit,
                         'location_id': record.location_dest_id.id,

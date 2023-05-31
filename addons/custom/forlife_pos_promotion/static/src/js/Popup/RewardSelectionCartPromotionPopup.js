@@ -95,7 +95,6 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
         }
 
         _prepareRewardData(programOptions) {
-            let orderlines = this.env.pos.get_order().get_orderlines();
             let reward_data = {}
             for (let option of programOptions) {
                 if (option.isSelected && option.reward_line_vals.some(l => l.isSelected && l.quantity > 0)) {
@@ -109,7 +108,7 @@ odoo.define('forlife_pos_promotion.RewardSelectionCartPromotionPopup', function 
         _check_valid_rewards() {
             let program = this._currentProgram()
             let order = this.env.pos.get_order();
-            let orderLines = order._get_clone_order_lines(order.get_orderlines());
+            let orderLines = order._get_clone_order_lines(order.get_orderlines_to_check());
             let selections = this._prepareRewardData(this.state.programOptions);
             let [to_apply_lines, remaining] = order.computeForListOfCartProgram(orderLines, selections);
 

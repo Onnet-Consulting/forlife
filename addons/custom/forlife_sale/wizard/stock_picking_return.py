@@ -40,6 +40,9 @@ class ReturnPicking(models.TransientModel):
                     where id = {new_picking_id}
                 """
             self._cr.execute(sql)
+            wizard_line_id = self.env['confirm.return.so.line'].search(
+                [('id', '=', self._context.get('wizard_line_id'))])
+            wizard_line_id.state = 'Đã trả'
         return res
 
     def x_return(self):
