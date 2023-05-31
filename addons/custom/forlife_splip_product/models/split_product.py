@@ -82,7 +82,7 @@ class SplitProduct(models.Model):
                 product = self._create_product(r)
                 r.product_new_id = product.id
         company_id = self.env.company
-        pk_type = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'internal')], limit=1)
+        pk_type = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming')], limit=1)
         # pk_type_import = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming'), ('sequence_code','=','IN_OTHER')], limit=1)
         # pk_type_export = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'outgoing'),('sequence_code','=','EX_OTHER')], limit=1)
         # if not pk_type_import or pk_type_export:
@@ -142,6 +142,8 @@ class SplitProduct(models.Model):
                 'split_product_id': self.id,
                 'move_ids_without_package': data
             })
+        for p in pickings:
+            p.button_validate()
         return pickings
 
     def create_orther_export(self, pk_type, company):
@@ -165,6 +167,8 @@ class SplitProduct(models.Model):
                 'split_product_id': self.id,
                 'move_ids_without_package': data
             })
+        for p in pickings:
+            p.button_validate()
         return pickings
 
 
