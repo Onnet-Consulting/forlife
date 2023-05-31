@@ -102,5 +102,5 @@ class StockPicking(models.Model):
 
         if invoice_line_npls and lines_xk:
             account_nl = self.create_account_move(self.purchase_id, invoice_line_npls, self)
-            # master_xk = self.create_return_xk_picking(self.purchase_id, self, lines_xk, account_nl)
+            master_xk = self.create_return_xk_picking(self.purchase_id, self, lines_xk, account_nl)
         return True
