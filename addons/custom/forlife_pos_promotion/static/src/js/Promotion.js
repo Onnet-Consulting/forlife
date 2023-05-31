@@ -200,7 +200,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         // Sản phẩm tặng phải có đơn giá nhỏ hơn sản phẩm điều kiện trong giỏ hàng có đơn giá lớn nhất
         // @return Array(product_id: int,...)
         let available_products = this.get_reward_product_ids(program);
-        let valid_products_in_order = this.env.pos.get_order().get_orderlines().filter(line => program.valid_product_ids.has(line.product.id)).map(l => l.product);
+        let valid_products_in_order = this.env.pos.get_order().get_orderlines_to_check().filter(line => program.valid_product_ids.has(line.product.id)).map(l => l.product);
         let ref_product = valid_products_in_order.sort((a,b) => b.lst_price - a.lst_price).at(0);
         let valid_rewards = available_products.filter(p => this.env.pos.db.get_product_by_id(p).lst_price < ref_product.lst_price);
         return valid_rewards
@@ -657,7 +657,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     _isAppliedCartPromotion() {
-        for (let line of this.get_orderlines()) {
+        for (let line of this.get_orderlines_to_check()) {
             if (line.promotion_usage_ids.some(usage => this.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')) {
                 return true;
             };
@@ -719,7 +719,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         result.push(...Array.from(this.activatedCodePrograms).map(proID => this.pos.promotion_program_by_id[proID]));
 //        result.push(...Array.from(this.activatedPricelistItem).map(proID => this.pos.pro_pricelist_item_by_id[proID]));
         if (this.validOnOrderPricelistItem) {
-            let products = new Set(this.get_orderlines().filter(l=>l.quantity > 0).map(l => l.product.id));
+            let products = new Set(this.get_orderlines_to_check().filter(l=>l.quantity > 0).map(l => l.product.id));
             let validPricelistItems = this.validOnOrderPricelistItem.filter(str_id => {
                     let pro = this.pos.pro_pricelist_item_by_id[str_id];
                     return pro && products.has(pro.product_id)
@@ -782,7 +782,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     get_orderlines_to_check() {
         return this.get_orderlines().filter(line => {
-            if (line.is_reward_line) {
+            if (line.is_reward_line || line.point || line.is_product_defective || line.discount) {
                 return false;
             };
             if (line.promotion_usage_ids) {
@@ -792,6 +792,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     line.reset_unit_price();
                     return true;
                 };
+            };
+            return true;
+        });
+    }
+
+    _filterToApplyPro(ols) {
+        return ols.filter(line => {
+            if (line.is_reward_line || line.point || line.is_product_defective || line.discount) {
+                return false;
             };
             return true;
         });
@@ -1408,7 +1417,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 };
             }
             else if (program.promotion_type == 'pricelist') {
-                const inOrderProductsList = new Set(this.get_orderlines()
+                const inOrderProductsList = new Set(this.get_orderlines_to_check()
                             .filter(l => l.quantity > 0)
                             .filter(l => !l.promotion_usage_ids || l.promotion_usage_ids.length == 0 ? true : false)
                             .reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []));
@@ -2237,7 +2246,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
         };
         if (!new_ol) {
-            let to_check_orderlines = this.get_orderlines().filter(l => l.quantity > 0 && !l.is_applied_promotion() && l.pricelist_item);
+            let to_check_orderlines = this.get_orderlines_to_check().filter(l => l.quantity > 0 && !l.is_applied_promotion() && l.pricelist_item);
             for (let line of to_check_orderlines) {
                 if (this._programIsApplicableAutomatically(line.pricelist_item)) {
                     this.applyAPricelistProgramToLineVales(line.pricelist_item, [line]);
