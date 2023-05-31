@@ -116,7 +116,7 @@ class PurchaseOrder(models.Model):
                         [('product_id', '=', item.product_id.id), ('partner_id', '=', self.partner_id.id),
                          ('date_start', '<', date_item),
                          ('date_end', '>', date_item),
-                         ('currency_id', '=',  self.currency_id.id)
+                         ('currency_id', '=', self.currency_id.id)
                          ])
                     if supplier_info:
                         item.purchase_uom = supplier_info[-1].product_uom
@@ -302,6 +302,7 @@ class PurchaseOrder(models.Model):
             record.write({'custom_state': 'confirm'})
 
     def action_approved(self):
+        self.check_purchase_tool_and_equipment()
         for record in self:
             if not record.is_inter_company:
                 super(PurchaseOrder, self).button_confirm()
@@ -404,6 +405,29 @@ class PurchaseOrder(models.Model):
                     invoice_line_ids.append((0, 0, invoice_line))
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
             record.write({'custom_state': 'approved', 'inventory_status': 'done', 'invoice_status': 'invoiced'})
+
+    def check_purchase_tool_and_equipment(self):
+        # Kiểm tra xem có phải sp CCDC không (có category đc cấu hình trường tài khoản định giá tồn kho là 153)
+        # kiểm tra Đơn Giá mua trên PO + Giá trị chi phí được phân bổ  <> giá trung bình kho của sản phẩm, thì thông báo Hiển thị thông báo cho người dùng: Giá của sản phẩm CCDC này # giá nhập vào đợt trước.Yêu cầu người dùng tạo sản phẩm mới.
+        # Nếu Tồn kho = 0 : cho phép nhập giá mới trên line, xác nhận PO và tiến hành nhập kho.
+        for rec in self:
+            if rec.order_line:
+                cost_total = 0
+                count_ccdc_product = 0
+                if rec.cost_line:
+                    cost_total = rec.cost_total
+                for line in rec.order_line:
+                    if line.product_id.categ_id and line.product_id.categ_id.property_stock_valuation_account_id and line.product_id.categ_id.property_stock_valuation_account_id.code in ['1531000001', '1531']:
+                        count_ccdc_product = count_ccdc_product + line.product_qty
+                if count_ccdc_product > 0:
+                    for line in rec.order_line:
+                        if line.product_id.categ_id and line.product_id.categ_id.property_stock_valuation_account_id and line.product_id.categ_id.property_stock_valuation_account_id.code in ['1531000001', '1531']:
+                            # kiểm tra tồn kho
+                            number_product = self.env['stock.quant'].search(
+                                [('location_id', '=', line.location_id.id), ('product_id', '=', line.product_id.id)])
+                            if number_product and sum(number_product.mapped('quantity')) > 0:
+                                if line.product_id.standard_price != line.price_unit + cost_total / count_ccdc_product:
+                                    raise UserError("Giá của sản phẩm công cụ dụng cụ này này khác giá nhập vào đợt trước. Yêu cầu người dùng tạo sản phẩm mới.")
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
@@ -884,7 +908,6 @@ class PurchaseOrderLine(models.Model):
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
     is_change_vendor = fields.Integer()
 
-
     @api.model
     def create(self, vals):
         line = super(PurchaseOrderLine, self).create(vals)
@@ -918,7 +941,7 @@ class PurchaseOrderLine(models.Model):
                  ('partner_id', '=', item.supplier_id.id),
                  ('date_start', '<', date_item),
                  ('date_end', '>', date_item),
-                 ('currency_id', '>',  item.currency_id.id),
+                 ('currency_id', '>', item.currency_id.id),
                  ])
             item.is_red_color = True if item.exchange_quantity not in supplier_info.mapped(
                 'amount_conversion') else False
@@ -1319,7 +1342,7 @@ class StockPicking(models.Model):
         account.action_post()
         return True
 
-    # Xử lý bút toán po nội bộ
+    # Xử lý bút toán po nội bộphí
     def create_invoice_po_cost(self, po, record):
         data_in_line = po.order_line
         invoice_line_cost_in_tax = []
