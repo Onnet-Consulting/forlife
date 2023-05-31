@@ -26,6 +26,7 @@
     'data': [
         'data/account.xml',
         'security/ir.model.access.csv',
+        'wizard/check_promotion_wizard.xml',
         'views/sale_order.xml',
         'views/product_view.xml',
         'views/account_move.xml',
