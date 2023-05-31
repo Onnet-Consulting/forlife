@@ -161,7 +161,7 @@
                 <t t-esc="env.pos.format_currency_no_symbol(line.original_price)"/>
             </td>
             <td class="num_4 number">
-                <t t-esc="line.discount_percent"/>%
+                <t t-esc="env.pos.format_currency_no_symbol(line.discount_amount)"/>
             </td>
             <td class="num_5 number">
                 <t t-esc="env.pos.format_currency_no_symbol(line.total_amount)"/>
@@ -245,10 +245,20 @@
                     <t t-foreach='receipt.paymentlines' t-as='line' t-key="line_index">
                         <tr>
                             <td>
-                                <t t-esc="line.name"/>:
+                                <t t-esc="line.name"/>
                             </td>
                             <td class="text-right">
                                 <t t-esc="env.pos.format_currency_no_symbol(line.amount)"/>
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-if="receipt.total_applied_points">
+                        <tr>
+                            <td>
+                                Tiêu tích lũy
+                            </td>
+                            <td class="text-right">
+                                <t t-esc="env.pos.format_currency_no_symbol(receipt.total_applied_points)"/>
                             </td>
                         </tr>
                     </t>
