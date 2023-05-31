@@ -288,6 +288,18 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
         super.init_from_JSON(...arguments);
     }
 
+    set_point(point) {
+        let old_point = this.point;
+        super.set_point(point);
+        if (!old_point && this.point) {
+            if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length > 0) {
+                this.promotion_usage_ids = [];
+                this.reset_unit_price();
+                this.order._resetPromotionPrograms(false);
+            };
+        };
+    }
+
     set_quantity(quantity, keep_price) {
         let result = super.set_quantity(...arguments);
         let reset = false;
