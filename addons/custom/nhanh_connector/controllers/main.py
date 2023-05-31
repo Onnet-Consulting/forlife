@@ -66,10 +66,10 @@ class MainController(http.Controller):
                 }
                 partner = self.partner_model().sudo().create(partner_value)
             order_line = []
+            location_id = self.env['stock.location'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
             for item in data['products']:
                 product = self.product_template_model().sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
                 product_product = self.product_product_model().sudo().search([('product_tmpl_id', '=', product.id)], limit=1)
-                location_id = self.env['stock.location'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
                 order_line.append((
                     0, 0, {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
                            'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),

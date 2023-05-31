@@ -111,6 +111,7 @@ class SaleOrder(models.Model):
                     partner = partner_model.sudo().create(partner_value)
                 order_line = []
                 uom = self.env.ref('uom.product_uom_unit').id
+                location_id = self.env['stock.location'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
 
                 for item in v['products']:
                     product = self.search_product(('nhanh_id', '=', item.get('productId')))
@@ -132,7 +133,6 @@ class SaleOrder(models.Model):
                             'responsible_id': None
                         })
                     product_product = self.env['product.product'].search([('product_tmpl_id', '=', product.id)], limit=1)
-                    location_id = self.env['stock.location'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
                     order_line.append((
                         0, 0,
                         {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
