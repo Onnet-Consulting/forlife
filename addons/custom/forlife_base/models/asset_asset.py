@@ -4,7 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 class AssetsAssets(models.Model):
     _name = 'assets.assets'
 
-    type = fields.Selection([('CCDC', '0'), ('TSCD', '1'), ('XDCB', '2')], string='Type')
+    type = fields.Selection([('CCDC', 'CCDC'), ('TSCD', 'TSCD'), ('XDCB', 'XDCB')], string='Type')
     code = fields.Char('Code', size=24, required=True)
     state = fields.Selection([('using','Đang sử dụng'),('paid','Đã thanh lí')], string='Trạng thái')
     card_no = fields.Char('CardNo', size=24)
