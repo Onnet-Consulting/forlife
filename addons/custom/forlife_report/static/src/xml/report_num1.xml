@@ -22,7 +22,7 @@
                         <td style="text-align: right;"><t t-esc="format_decimal(line.price_unit, 0)"/></td>
                         <td style="text-align: center;"><t t-esc="format_decimal(line.qty, 0)"/></td>
                         <td style="text-align: right;"><t t-esc="format_decimal(line.discount, 0)"/></td>
-                        <td style="text-align: right;"><t t-esc="format_decimal(line.total_amount, 0)"/></td>
+                        <td style="text-align: right;"><t t-esc="format_decimal(line.total_amount - line.discount, 0)"/></td>
                         <td><t t-esc="line.product_group"/></td>
                         <td><t t-esc="line.product_line"/></td>
                         <td><t t-esc="line.texture_name"/></td>
