@@ -446,9 +446,14 @@ msgid "Stock Valuation Account ID"
 msgstr "ID Tài khoản kho"
 
 #. module: forlife_stock_report
-#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report__period
-msgid "Period"
-msgstr "Kỳ"
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report__period_start
+msgid "Period Start"
+msgstr "Ngày bắt đầu"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report__period_end
+msgid "Period End"
+msgstr "Ngày kết thúc"
 
 #. module: forlife_stock_report
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_account_move__product_id
@@ -550,3 +555,13 @@ msgstr "Tạo bút toán"
 #, python-format
 msgid "Stock Balance Difference Report %s"
 msgstr "Bảng kê bút toán số phát sinh tài khoản theo Items %s"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "Period"
+msgstr "Kỳ"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "to"
+msgstr "đến"

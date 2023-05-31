@@ -11,10 +11,10 @@
                         Stock Balance Difference Report
                     </h1>
                     <separator/>
+                    <label for="period_start" string="Period"/>
+                    <field name="period_start" style="padding-left: 15px"/> to <field name="period_end" style="padding-left: 15px"/>
                     <group>
                         <group>
-                            <field name="period_start"/>
-                            <field name="period_end"/>
                             <field name="account_id"/>
                         </group>
                     </group>
