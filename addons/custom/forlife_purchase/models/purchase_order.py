@@ -1911,7 +1911,7 @@ class StockPicking(models.Model):
                             'Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
                     finished_qty = (material_line.product_plan_qty / r.previous_qty) * r.quantity_done
                     list_line_xk.append((0, 0, {
-                        'product_id': r.product_id.id,
+                        'product_id': material_line.product_id.id,
                         'product_uom': material_line.uom.id,
                         'price_unit': material_line.price_unit,
                         'location_id': record.location_dest_id.id,
