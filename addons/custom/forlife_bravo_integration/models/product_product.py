@@ -34,8 +34,8 @@ class ProductProduct(models.Model):
 
     def bravo_get_product_category_hierarchy(self, product):
         category_object = self.env['product.category']
-        accounting_category = product.categ_id
-        category_ids = [x for x in accounting_category.parent_path.split('/') if x]
+        accounting_category = (product.categ_id and product.categ_id.is_accounting_category) or category_object
+        category_ids = [x for x in product.categ_id.parent_path.split('/') if x]
         category_level = [int(x) for x in category_ids]
         len_category = len(category_level)
         category_level_1 = category_object.browse(category_level[0]) if len_category > 0 else category_object

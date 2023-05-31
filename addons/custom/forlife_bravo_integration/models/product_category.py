@@ -14,12 +14,12 @@ class ProductCategory(models.Model):
 
     is_accounting_category = fields.Boolean(string='Là nhóm hạch toán', default=False)
 
-    def bravo_get_category_code(self):
+    def bravo_get_category_code(self, **kwargs):
         if not self:
             return None
         self.ensure_one()
         category_code = self.category_code or ''
-        if self.is_accounting_category:
+        if self.is_accounting_category and kwargs.get(CONTEXT_CATEGORY_ACCOUNT_KEY):
             return category_code[-4:]
         return category_code
 
@@ -43,11 +43,11 @@ class ProductCategory(models.Model):
             raise ValidationError(_('%s is not a valid Bravo table name' % bravo_table))
         return bravo_table
 
-    def bravo_get_identity_key_values(self):
+    def bravo_get_identity_key_values(self, **kwargs):
         records = self.bravo_filter_records()
         res = []
         for record in records:
-            value = {'Code': record.bravo_get_category_code()}
+            value = {'Code': record.bravo_get_category_code(**kwargs)}
             res.append(value)
         return res
 
@@ -79,7 +79,7 @@ class ProductCategory(models.Model):
                 value = {"Name": record.name}
                 if not to_update:
                     value.update({
-                        "Code": record.bravo_get_category_code()
+                        "Code": record.bravo_get_category_code(**kwargs)
                     })
 
                 record_1300 = record.with_company(company_by_code['1300']).sudo()
@@ -123,7 +123,7 @@ class ProductCategory(models.Model):
                 value = {"Name": record.name}
                 if not to_update:
                     value.update({
-                        "Code": record.bravo_get_category_code()
+                        "Code": record.bravo_get_category_code(**kwargs)
                     })
                 values.append(value)
 

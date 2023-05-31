@@ -51,7 +51,7 @@ class BravoModelCore(models.AbstractModel):
         bravo_fields = self.bravo_fields_get()
         return list(filter(lambda bfield: bfield.identity, bravo_fields))
 
-    def bravo_get_identity_key_values(self):
+    def bravo_get_identity_key_values(self, **kwargs):
         values = []
         records = self.bravo_filter_records()
         identity_fields = self.bravo_identity_fields_get()
@@ -154,7 +154,7 @@ class BravoModelUpdateAction(models.AbstractModel):
             'Active': 1,
         }
 
-    def bravo_get_update_values(self, values):
+    def bravo_get_update_values(self, values, **kwargs):
         updated_fields = list(values.keys())
         bravo_fields = self.bravo_fields_get(allfields=updated_fields)
         bravo_values = {}
@@ -169,8 +169,8 @@ class BravoModelUpdateAction(models.AbstractModel):
         """
         @param dict values: odoo updated value (or bravo updated value)
         """
-        updated_values = self.bravo_get_update_values(values)
-        identity_key_values = self.bravo_get_identity_key_values()
+        updated_values = self.bravo_get_update_values(values, **kwargs)
+        identity_key_values = self.bravo_get_identity_key_values(**kwargs)
 
         if not updated_values or not identity_key_values:
             return []
@@ -239,7 +239,7 @@ class BravoModelDeleteAction(models.AbstractModel):
         }
 
     def bravo_get_delete_sql(self, **kwargs):
-        identity_key_values = self.bravo_get_identity_key_values()
+        identity_key_values = self.bravo_get_identity_key_values(**kwargs)
 
         if not identity_key_values:
             return []
@@ -301,7 +301,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
         return [bfield.bravo_name for bfield in identity_keys]
 
     def bravo_get_existing_records_sql_and_identity_keys(self, **kwargs):
-        identity_key_values = self.bravo_get_identity_key_values()
+        identity_key_values = self.bravo_get_identity_key_values(**kwargs)
         if not identity_key_values:
             return [], []
 
@@ -336,11 +336,11 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
 
         return identity_key_names, queries
 
-    def bravo_separate_records_by_identity_values(self, identity_values):
+    def bravo_separate_records_by_identity_values(self, identity_values, **kwargs):
         existing_records = self.env[self._name]
         newly_records = self.env[self._name]
         for rec in self:
-            record_identity_value = rec.bravo_get_identity_key_values()
+            record_identity_value = rec.bravo_get_identity_key_values(**kwargs)
             if record_identity_value and record_identity_value[0] in identity_values:
                 existing_records += rec
             else:
@@ -353,7 +353,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
         if queries:
             for data in self._execute_many_read(queries):
                 identity_values.extend([dict(zip(identity_keys, row)) for row in data])
-        return self.bravo_separate_records_by_identity_values(identity_values)
+        return self.bravo_separate_records_by_identity_values(identity_values, **kwargs)
 
     def bravo_get_update_value_for_existing_record(self, **kwargs):
         self.ensure_one()
@@ -364,9 +364,9 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
             bravo_value.update(bfield.compute_value(self))
         return bravo_value
 
-    def bravo_get_identity_key_values_single_record(self):
+    def bravo_get_identity_key_values_single_record(self, **kwargs):
         self.ensure_one()
-        values = self.bravo_get_identity_key_values()
+        values = self.bravo_get_identity_key_values(**kwargs)
         if not values:
             return False
         return values[0]
@@ -375,7 +375,7 @@ class BravoModelInsertCheckExistAction(models.AbstractModel):
         self.ensure_one()
         updated_value = self.bravo_get_update_value_for_existing_record(**kwargs)
         default_update_value = self.bravo_get_default_insert_value()
-        identity_key_value = self.bravo_get_identity_key_values_single_record()
+        identity_key_value = self.bravo_get_identity_key_values_single_record(**kwargs)
         bravo_table = self.bravo_get_table(**kwargs)
         set_query_placeholder = []
         where_query_placeholder = []
