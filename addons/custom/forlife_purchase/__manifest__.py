@@ -34,6 +34,7 @@
         'views/product_view.xml',
         'views/res_partner_view.xml',
         'views/stock_warehouse_view.xml',
+        'views/synthetic_view.xml',
         # 'wizard/account_payment_register_view.xml',
         'report/purchase_order_templates.xml',
         'views/product_supplierinfo_views.xml',
