@@ -131,7 +131,7 @@
 }
 
 .pos-receipt .orderlines .lines-detail .num_1 {
-    width: 35%;
+    width: 25%;
 }
 
 .pos-receipt .orderlines .lines-detail .num_2 {
@@ -139,11 +139,11 @@
 }
 
 .pos-receipt .orderlines .lines-detail .num_3 {
-    width: 20%;
+    width: 25%;
 }
 
 .pos-receipt .orderlines .lines-detail .num_4 {
-    width: 13%;
+    width: 18%;
 }
 
 .pos-receipt .orderlines .lines-detail .num_5 {
@@ -161,7 +161,7 @@
 }
 
 .pos-receipt .payment_lines .payment-detail .col1 {
-    width: 35%;
+    width: 25%;
 }
 
 .pos-receipt .payment_lines .payment-detail .col2 {
@@ -169,11 +169,11 @@
 }
 
 .pos-receipt .payment_lines .payment-detail .col3 {
-    width: 20%;
+    width: 25%;
 }
 
 .pos-receipt .payment_lines .payment-detail .col4 {
-    width: 13%;
+    width: 18%;
 }
 
 .pos-receipt .payment_lines .payment-detail .col5 {
