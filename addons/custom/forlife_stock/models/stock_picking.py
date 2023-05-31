@@ -47,8 +47,8 @@ class StockPicking(models.Model):
         for picking in self:
             for line in picking.move_ids:
                 account = line.ref_asset.asset_account.id
-                if (picking.other_export and account != picking.location_dest_id.valuation_out_account_id.id) or (
-                        picking.other_import and account != picking.location_id.valuation_in_account_id.id):
+                if (picking.other_export and account != picking.location_dest_id.x_property_valuation_out_account_id.id) or (
+                        picking.other_import and account != picking.location_id.x_property_valuation_in_account_id.id):
                     raise ValidationError(
                         _('Tài khoản cấu hình trong thẻ tài sản không khớp với tài khoản trong lý do xuất khác'))
         res = super().action_confirm()
