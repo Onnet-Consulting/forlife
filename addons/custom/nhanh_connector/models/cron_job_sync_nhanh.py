@@ -19,6 +19,7 @@ NHANH_BASE_URL = 'https://open.nhanh.vn/api'
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
+
     nhanh_status = fields.Char(string='Nhanh order status')
     nhanh_shipping_fee = fields.Float(string='Shipping fee')
     nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
@@ -110,6 +111,7 @@ class SaleOrder(models.Model):
                     partner = partner_model.sudo().create(partner_value)
                 order_line = []
                 uom = self.env.ref('uom.product_uom_unit').id
+                location_id = self.env['stock.location'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
 
                 for item in v['products']:
                     product = self.search_product(('nhanh_id', '=', item.get('productId')))
@@ -136,7 +138,7 @@ class SaleOrder(models.Model):
                         {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
                          'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
                          'product_uom': product.uom_id.id if product.uom_id else uom,
-                         'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
+                         'customer_lead': 0, 'sequence': 10, 'is_downpayment': False, 'x_location_id': location_id.id if location_id else None,
                          'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get('discount') else 0,
                          'x_cart_discount_fixed_price': float(item.get('discount')) * float(item.get('quantity')) if item.get('discount') else 0}))
                 # Add orders  to odoo
@@ -157,7 +159,11 @@ class SaleOrder(models.Model):
                 user_id = self.env['res.users'].search([('partner_id.name', '=', v['saleName'])], limit=1)
                 # đội ngũ bán hàng
                 team_id = self.env['crm.team'].search([('name', '=', v['trafficSourceName'])], limit=1)
+                default_company_id = self.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
                 warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
+                if not warehouse_id:
+                    warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)],
+                                                                      limit=1)
                 value = {
                     'nhanh_id': v['id'],
                     'nhanh_status': v['statusCode'],
@@ -176,6 +182,7 @@ class SaleOrder(models.Model):
                     'carrier_name': v['carrierName'],
                     'user_id': user_id.id if user_id else None,
                     'team_id': team_id.id if team_id else None,
+                    'company_id': default_company_id.id if default_company_id else None,
                     'warehouse_id': warehouse_id.id if warehouse_id else None,
                     'order_line': order_line
                 }
