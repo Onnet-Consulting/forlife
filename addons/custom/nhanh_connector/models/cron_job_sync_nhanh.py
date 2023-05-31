@@ -178,7 +178,7 @@ class SaleOrder(models.Model):
                     'carrier_name': v['carrierName'],
                     'user_id': user_id.id if user_id else None,
                     'team_id': team_id.id if team_id else None,
-                    'warehouse_id': warehouse_id.id if warehouse_id else None,
+                    'warehouse_id': warehouse_id.id if warehouse_id else self.env.user._get_default_warehouse_id(),
                     'order_line': order_line
                 }
                 order_model.sudo().create(value)

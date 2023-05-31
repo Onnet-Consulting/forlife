@@ -111,7 +111,7 @@ class MainController(http.Controller):
                 'carrier_name': data['carrierName'],
                 'user_id': user_id.id if user_id else None,
                 'team_id': team_id.id if team_id else None,
-                'warehouse_id': warehouse_id.id if warehouse_id else None,
+                'warehouse_id': warehouse_id.id if warehouse_id else request.env.user._get_default_warehouse_id(),
                 'order_line': order_line
             }
             self.sale_order_model().sudo().create(value)
