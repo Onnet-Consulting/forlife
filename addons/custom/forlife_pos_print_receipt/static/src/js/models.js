@@ -51,6 +51,10 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             }, {})
         }
 
+        receipt_order_get_applied_voucher_values(){
+
+        }
+
 
         receipt_group_order_lines_by_promotion() {
             let promotion_lines = [];
