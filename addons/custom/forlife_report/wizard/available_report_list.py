@@ -133,5 +133,6 @@ AVAILABLE_REPORT = {
         'module': 'Bán hàng',
         'name': 'Báo cáo thu chi tiền mặt tại cửa hàng',
         'reportTemplate': 'ReportNum22Template',
+        'tag': 'report_num22_action',
     },
 }

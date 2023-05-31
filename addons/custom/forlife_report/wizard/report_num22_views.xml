@@ -21,7 +21,7 @@
                             <field name="store_ids" domain="[('brand_id', '=', brand_id)]" widget="many2many_tags"/>
                         </group>
                         <group>
-                            <field name="type" class="oe_inline"/>
+                            <field name="type" widget="radio" options="{'horizontal': True}"/>
                             <field name="so_ct"/>
                         </group>
                     </group>

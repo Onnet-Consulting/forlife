@@ -1,4 +1,4 @@
-odoo.define('forlife_report.report_num12', function (require) {
+odoo.define('forlife_report.report_num22', function (require) {
     'use strict';
 
     const core = require('web.core');
@@ -6,7 +6,7 @@ odoo.define('forlife_report.report_num12', function (require) {
     const QWeb = core.qweb;
 
 
-    let ReportNum12Action = ReportBaseAction.extend({
+    let ReportNum22Action = ReportBaseAction.extend({
         events: _.extend({}, ReportBaseAction.prototype.events, {
             'click .show-detail': 'show_detail',
         }),
@@ -17,13 +17,11 @@ odoo.define('forlife_report.report_num12', function (require) {
         },
 
         show_detail: function (e) {
-            this.key_data = e.currentTarget.id;
-            let data = this.data[this.key_data].value_detail;
-            this.$('#value-detail').html(QWeb.render("ReportValueDetailTemplate", {
+            this.$('#transaction-detail').html(QWeb.render("ReportTransactionDetailTemplate", {
                 "titles": this.title_layer2,
-                "data": data,
+                "data": this.data[e.currentTarget.id].transaction_detail || [],
                 "report_type_id": 'data_detail',
-                "report_filename": 'Chi tiết.xls',
+                "report_filename": 'Chi tiết giao dịch.xls',
                 "format_decimal": this.func.format_decimal,
             }));
             let element_rm = document.getElementsByClassName("show-detail");
@@ -32,14 +30,14 @@ odoo.define('forlife_report.report_num12', function (require) {
                     line.classList.remove("active_line")
                 }
             }
-            let element = document.getElementById(this.key_data);
+            let element = document.getElementById(e.currentTarget.id);
             element.classList.add('active_line');
         },
 
     })
 
-    core.action_registry.add('report_num12_action', ReportNum12Action)
+    core.action_registry.add('report_num22_action', ReportNum22Action)
 
-    return ReportNum12Action;
+    return ReportNum22Action;
 
 })

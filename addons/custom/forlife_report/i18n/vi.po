@@ -185,6 +185,7 @@ msgid "Company"
 msgstr "Công ty"
 
 #. module: forlife_report
+#: model:ir.model.fields,field_description:forlife_report.field_attribute_code_config__create_uid
 #: model:ir.model.fields,field_description:forlife_report.field_report_num10__create_uid
 #: model:ir.model.fields,field_description:forlife_report.field_report_num11__create_uid
 #: model:ir.model.fields,field_description:forlife_report.field_report_num12__create_uid
@@ -1164,6 +1165,13 @@ msgid "To rank"
 msgstr "Đến hạng"
 
 #. module: forlife_report
+#. odoo-javascript
+#: code:addons/forlife_report/static/src/xml/report_num22.xml:0
+#, python-format
+msgid "Transaction Detail"
+msgstr "Chi tiết giao dịch"
+
+#. module: forlife_report
 #: model:ir.model.fields,field_description:forlife_report.field_report_num22__type
 msgid "Type"
 msgstr "Khoản mục"
@@ -1264,6 +1272,9 @@ msgstr "Đến kho"
 #: code:addons/forlife_report/static/src/xml/report_num12.xml:0
 #: code:addons/forlife_report/static/src/xml/report_num12.xml:0
 #: code:addons/forlife_report/static/src/xml/report_num12.xml:0
+#: code:addons/forlife_report/static/src/xml/report_num22.xml:0
+#: code:addons/forlife_report/static/src/xml/report_num22.xml:0
+#: code:addons/forlife_report/static/src/xml/report_num22.xml:0
 #: code:addons/forlife_report/static/src/xml/report_num5.xml:0
 #: code:addons/forlife_report/static/src/xml/report_num5.xml:0
 #: code:addons/forlife_report/static/src/xml/report_num5.xml:0
