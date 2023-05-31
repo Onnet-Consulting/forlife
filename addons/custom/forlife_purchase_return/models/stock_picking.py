@@ -22,7 +22,7 @@ class StockPicking(models.Model):
     def create_return_xk_picking(self, po, record, list_line_xk, account_move=None):
         picking_type_in = self.env['stock.picking.type'].search([
             ('code', '=', 'incoming'),
-            ('company_id', '=', company_id)], limit=1)
+            ('company_id', '=', self.env.company.id)], limit=1)
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
