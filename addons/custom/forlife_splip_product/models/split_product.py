@@ -82,13 +82,14 @@ class SplitProduct(models.Model):
                 product = self._create_product(r)
                 r.product_new_id = product.id
         company_id = self.env.company
-        pk_type = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming')], limit=1)
+        pk_type_in = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming'),('sequence_code','=','IN_OTHER')], limit=1)
+        pk_type_out = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'outgoing'),('sequence_code','=','EX_OTHER')], limit=1)
         # pk_type_import = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming'), ('sequence_code','=','IN_OTHER')], limit=1)
         # pk_type_export = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'outgoing'),('sequence_code','=','EX_OTHER')], limit=1)
         # if not pk_type_import or pk_type_export:
         #     raise ValidationError(_('Không tìm thấy kiểu giao nhận Orther Ex'))
-        self.create_orther_import(pk_type, company_id)
-        self.create_orther_export(pk_type, company_id)
+        self.create_orther_import(pk_type_in, company_id)
+        self.create_orther_export(pk_type_out, company_id)
         self.user_approve_id = self.env.user
         self.date_approved = datetime.now()
         self.state = 'done'
