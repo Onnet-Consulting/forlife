@@ -264,9 +264,9 @@ class SaleOrder(models.Model):
                 'date_deadline': datetime.now(),
                 'description_picking': line.name,
                 'sale_line_id': line.id,
-                # 'occasion_code_id': line.x_occasion_code_id,
-                # 'work_production': line.x_manufacture_order_code_id,
-                # 'account_analytic_id': line.x_account_analytic_id,
+                'occasion_code_id': line.x_occasion_code_id,
+                'work_production': line.x_manufacture_order_code_id,
+                'account_analytic_id': line.x_account_analytic_id,
                 'group_id': group_id.id
             }
             line_x_scheduled_date.append((line.id, str(date)))
