@@ -145,21 +145,20 @@
                         </div>
                     </page>
                     <page string="Tổng hợp" name="synthetic">
-                        <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree">
+                        <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
                             <tree editable="bottom" class="width-hh">
-<!--                                <field name="sequence"/>-->
                                 <field name="description"/>
                                 <field name="product_id"/>
                                 <field name="product_uom"/>
                                 <field name="price_unit"/>
                                 <field name="quantity"/>
-                                <field name="price_subtotal"/>
+                                <field name="price_subtotal" sum="discounted subtotal" force_save="1"/>
                                 <field name="discount"/>
                                 <field name="before_tax"/>
                                 <field name="tnk_tax"/>
                                 <field name="db_tax"/>
                                 <field name="after_tax"/>
-                                <field name="total_product"/>
+                                <field name="total_product" sum="discounted subtotal" force_save="1"/>
                             </tree>
                         </field>
                         <div class="xl-12 d-flex" style="justify-content: end;">
