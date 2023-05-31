@@ -88,34 +88,4 @@ class StockPicking(models.Model):
                     'move_ids_without_package': data,
                 })
                 pickking_ortherimport.button_validate()
-                loc = location_mapping.location_id
-                self._create_move_return_pos(pickking_ortherimport, company, loc)
         return picking
-
-    def _create_move_return_pos(self, pickking_ortherimport, company, location_id):
-        for d in pickking_ortherimport.move_ids_without_package:
-            accounts_data = d.product_id.product_tmpl_id.get_product_accounts()
-            move_vals = {
-                'journal_id': accounts_data['stock_journal'].id,
-                'date': datetime.now(),
-                'ref': pickking_ortherimport.name,
-                'move_type': 'entry',
-                'stock_move_id': d.id,
-                'line_ids': [
-                    (0, 0, {
-                        'name': pickking_ortherimport.name,
-                        'account_id': location_id.account_stock_give.id,
-                        'debit': d.product_id.standard_price,
-                        'credit': 0.0,
-                    }),
-                    (0, 0, {
-                        'name': pickking_ortherimport.name,
-                        'account_id': d.product_id.categ_id.property_account_expense_categ_id.id,
-                        'debit': 0.0,
-                        'credit': d.product_id.standard_price,
-                    })
-                ]
-            }
-            move = self.env['account.move'].with_company(company).create(move_vals)
-            move.action_post()
-        return True
