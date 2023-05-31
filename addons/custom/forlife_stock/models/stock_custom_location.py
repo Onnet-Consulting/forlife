@@ -99,14 +99,14 @@ class StockMove(models.Model):
         credit_value = debit_value
         valuation_partner_id = self._get_partner_id_for_valuation_lines()
         if self.picking_id.location_dest_id.type_other == 'outcoming':
-            debit_account_id = self.picking_id.location_dest_id.x_property_valuation_in_account_id.id
-            credit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
+            debit_account_id = self.picking_id.location_dest_id.with_company(self.picking_id.company_id).x_property_valuation_in_account_id.id
+            credit_account_id = self.product_id.categ_id.with_company(self.picking_id.company_id).property_stock_valuation_account_id.id
         if self.picking_id.location_id.type_other == 'incoming':
             if self.picking_id.location_dest_id.id_deposit and self.picking_id.location_dest_id.account_stock_give and self.picking_id.pos_order_id:
                 debit_account_id = self.picking_id.location_dest_id.account_stock_give.id
             else:
-                credit_account_id = self.picking_id.location_id.x_property_valuation_out_account_id.id
-                debit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
+                credit_account_id = self.picking_id.location_id.with_company(self.picking_id.company_id).x_property_valuation_out_account_id.id
+                debit_account_id = self.product_id.categ_id.with_company(self.picking_id.company_id).property_stock_valuation_account_id.id
                 debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
                     if not self.picking_id.location_id.is_price_unit else (self.amount_total/self.previous_qty) * self.quantity_done
                 # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
