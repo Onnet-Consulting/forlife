@@ -51,8 +51,20 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             }, {})
         }
 
-        receipt_order_get_applied_voucher_values(){
-
+        receipt_order_get_applied_voucher_values() {
+            let vouchers = this.data_voucher;
+            if (vouchers && vouchers.length > 0) {
+                let voucher_data = [];
+                for (const voucher of vouchers) {
+                    if (!voucher || !voucher.value) continue;
+                    voucher_data.push({
+                        "code": voucher.value.voucher_name,
+                        "value": voucher.value.price_residual_no_compute
+                    })
+                }
+                return voucher_data;
+            }
+            return false;
         }
 
 
@@ -87,14 +99,13 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                     if (code_id && order_activated_code_by_id[code_id]) {
                         let code = order_activated_code_by_id[code_id];
                         let code_amount = 0;
-                        if (program.promotion_type === 'code'){
+                        if (program.promotion_type === 'code') {
                             code_amount = pro_line.discount_amount * line_quantity;
                         }
 
-                        if (!applied_code_value[code]){
+                        if (!applied_code_value[code]) {
                             applied_code_value[code] = code_amount
-                        }
-                        else {
+                        } else {
                             applied_code_value[code] += code_amount
                         }
                     }
@@ -117,7 +128,9 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
                 })
             }
 
-            return [normal_lines, promotion_lines, applied_point_lines, applied_code_value, order_total, order_total_discount];
+            let voucher_data = this.receipt_order_get_applied_voucher_values();
+
+            return [normal_lines, promotion_lines, applied_point_lines, applied_code_value, order_total, order_total_discount, voucher_data];
         }
 
         export_for_printing() {
@@ -128,14 +141,16 @@ odoo.define('forlife_pos_print_receipt.models', function (require) {
             json.footer = markup(this.pos.pos_brand_info.pos_receipt_footer);
             json.note = this.get_note();
             json.mobile_app_url_qr_code = this.get_install_app_barcode_data();
-            let normal_lines, promotion_lines, applied_point_lines, applied_code_value, order_total, order_total_discount;
-            [normal_lines, promotion_lines, applied_point_lines, applied_code_value, order_total, order_total_discount] = this.receipt_group_order_lines_by_promotion();
+            let normal_lines, promotion_lines, applied_point_lines, applied_code_value, order_total,
+                order_total_discount, voucher_data;
+            [normal_lines, promotion_lines, applied_point_lines, applied_code_value, order_total, order_total_discount, voucher_data] = this.receipt_group_order_lines_by_promotion();
             json.normal_lines = normal_lines;
             json.promotion_lines = promotion_lines;
             json.applied_point_lines = applied_point_lines;
             json.order_total_discount = order_total_discount;
             json.order_total = order_total;
             json.applied_code_value = applied_code_value;
+            json.voucher_data = voucher_data;
             return json;
         }
     }

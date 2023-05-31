@@ -211,6 +211,19 @@
                             </tr>
                         </t>
                     </t>
+
+                    <t t-if="receipt.voucher_data">
+                        <t t-foreach="receipt.voucher_data" t-as="voucher" t-key="voucher.code">
+                            <tr>
+                                <td class="col1 promotion-code">
+                                    <t t-esc="voucher.code"/>
+                                </td>
+                                <td colspan="4" class="text-right">
+                                    <t t-esc="env.pos.format_currency_no_symbol(voucher.value)"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </t>
                 </tbody>
             </table>
 
