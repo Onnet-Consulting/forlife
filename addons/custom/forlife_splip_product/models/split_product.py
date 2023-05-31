@@ -187,6 +187,12 @@ class SpilitProductLine(models.Model):
     unit_price = fields.Float('Đơn giá', readonly=True)
     value = fields.Float('Giá trị', readonly=True)
 
+    @api.constrains('product_quantity_split')
+    def constrains_quantity(self):
+        for rec in self:
+            if rec.product_quantity_split < 0:
+                raise ValidationError(_('Không được phép nhập giá trị âm!'))
+
 
 class SpilitProductLineSub(models.Model):
     _name = 'split.product.line.sub'
