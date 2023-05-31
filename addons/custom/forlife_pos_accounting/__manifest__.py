@@ -21,6 +21,7 @@
     ],
 
     'data': [
+        'views/journal_views.xml',
         'views/product_views.xml',
         'views/member_card_views.xml',
         'views/points_promotion_views.xml',

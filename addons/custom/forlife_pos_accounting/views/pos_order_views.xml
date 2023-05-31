@@ -13,23 +13,31 @@
             </xpath>
 
             <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='qty']" position="attributes">
-                <attribute name="attrs">{'invisible': [('product_src_id', '!=', False)]}</attribute>
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='product_uom_id']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
             </xpath>
 
             <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='price_unit']" position="attributes">
-                <attribute name="attrs">{'invisible': [('product_src_id', '!=', False)]}</attribute>
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='original_price']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
             </xpath>
 
             <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='discount']" position="attributes">
-                <attribute name="attrs">{'invisible': [('product_src_id', '!=', False)]}</attribute>
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
             </xpath>
 
-            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='tax_ids_after_fiscal_position']" position="attributes">
-                <attribute name="attrs">{'invisible': [('product_src_id', '!=', False)]}</attribute>
-            </xpath>
+<!--            <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='tax_ids_after_fiscal_position']" position="attributes">-->
+<!--                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>-->
+<!--            </xpath>-->
 
             <xpath expr="//page[@name='products']/field[@name='lines']/tree/field[@name='price_subtotal']" position="attributes">
-                <attribute name="attrs">{'invisible': [('product_src_id', '!=', False)]}</attribute>
+                <attribute name="attrs">{'invisible': [('is_promotion', '=', True)]}</attribute>
             </xpath>
 
         </field>
