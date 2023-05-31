@@ -1504,6 +1504,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 quantity: qty_taken,
                 price: line.product.lst_price,
                 isNew: true,
+                is_reward_line: program.reward_type == 'cart_get_x_free',
                 promotion_usage_ids: [...line.promotion_usage_ids]
             });
         }
