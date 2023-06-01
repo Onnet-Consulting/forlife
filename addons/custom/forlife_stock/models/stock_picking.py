@@ -129,6 +129,15 @@ class StockPicking(models.Model):
         'stock.picking.type', 'Operation Type',
         required=False, readonly=False, index=True,
         states={'draft': [('readonly', False)]})
+    display_asset = fields.Char(string='Display', compute="compute_display_asset")
+
+    @api.depends('location_id', 'location_dest_id')
+    def compute_display_asset(self):
+        for r in self:
+            if (r.location_id and r.location_id.is_assets and r.other_import) or (r.location_dest_id and r.location_dest_id.is_assets and r.other_export):
+                r.display_asset = 'show'
+            else:
+                r.display_asset = 'hide'
 
     def _action_done(self):
         old_date_done = {
