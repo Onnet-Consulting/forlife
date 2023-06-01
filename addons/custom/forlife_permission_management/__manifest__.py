@@ -10,6 +10,7 @@
     'depends': [
         'base',
         'product',
+        'hr',
         'purchase',
         'analytic',
         'stock_account',
@@ -29,6 +30,7 @@
         'security/ir.model.access.csv',
         'security/forlife_permission_rule.xml',
         'data/menu.xml',
+        'data/groups.xml',
         'views/product_product_views.xml',
         'views/res_users_views.xml',
         'views/hr_team_views.xml',
@@ -45,5 +47,6 @@
         'views/purchase_request_views.xml',
         'views/sale_order_views.xml',
         'views/stock_picking_views.xml',
+        'views/hr_team_views.xml',
     ],
 }
