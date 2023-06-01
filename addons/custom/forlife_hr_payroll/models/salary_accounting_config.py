@@ -12,9 +12,9 @@ class SalaryAccountingConfig(models.Model):
     entry_id = fields.Many2one('salary.entry', string='Entry', required=True, ondelete="restrict")
     purpose_id = fields.Many2one('salary.record.purpose', string='Purpose', required=True, ondelete="restrict")
     debit_account_id = fields.Many2one('account.account', string='Debit account', required=True,
-                                       domain=[('deprecated', '=', False)])
+                                       domain=[('deprecated', '=', False)], check_company=True)
     credit_account_id = fields.Many2one('account.account', string='Credit account', required=True,
-                                        domain=[('deprecated', '=', False)])
+                                        domain=[('deprecated', '=', False)], check_company=True)
     debit_partner_id = fields.Many2one('res.partner', string='Debit partner')
     credit_partner_id = fields.Many2one('res.partner', string='Credit partner')
     debit_partner_by_employee = fields.Boolean(string='Debit partner by employee', default='False')

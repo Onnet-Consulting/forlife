@@ -22,7 +22,7 @@ class SalaryAccounting(models.Model):
     asset_id = fields.Many2one('assets.assets', compute="_compute_record_fields", store=True)
     production_id = fields.Many2one('forlife.production', compute="_compute_record_fields", store=True)
     occasion_code_id = fields.Many2one('occasion.code', compute="_compute_record_fields", store=True)
-    # FIXME: delete project_code, manufacture_order_code, internal_order_code
+    # FIXME: delete project_code, manufacture_order_code, internal_order_code fields below
     manufacture_order_code = fields.Char(store=True)
     project_code = fields.Char(store=True)
     internal_order_code = fields.Char(store=True)
@@ -38,6 +38,7 @@ class SalaryAccounting(models.Model):
 
     move_id = fields.Many2one('account.move', string='Odoo FI')
     reverse_move_id = fields.Many2one('account.move', string='Reverse Odoo FI')
+    is_tc_entry = fields.Boolean(string='TC Entry')
 
     @api.depends('record')
     def _compute_record_fields(self):

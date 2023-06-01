@@ -233,8 +233,11 @@ class SalaryRecord(models.Model):
                 accounting_values_by_entry[entry_id] = new_entry_data
         return accounting_values_by_entry
 
+
     def generate_account_moves(self):
         self.ensure_one()
+        # fixme:continue here
+        tc_entries = self.env['salary.tc.entry'].search([('')])
         accounting_values_by_entry = {}
         accounting_line_by_entry = {}
         entry_by_id = {}
@@ -245,9 +248,9 @@ class SalaryRecord(models.Model):
                 debit=line.debit,
                 credit=line.credit,
                 analytic_account_id=line.analytic_account_id.id,
-                project_code=line.project_code,
-                manufacture_order_code=line.manufacture_order_code,
-                internal_order_code=line.internal_order_code
+                asset_id=line.asset_id.id,
+                work_order=line.production_id.id,
+                occasion_code_id=line.occasion_code_id.id
             )
             entry = line.entry_id
             entry_id = entry.id
