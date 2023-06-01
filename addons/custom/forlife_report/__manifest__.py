@@ -26,6 +26,11 @@
 
     'data': [
         'security/ir.model.access.csv',
+
+        'data/attribute_code_config_data.xml',
+
+        'views/attribute_code_config_views.xml',
+
         'wizard/report_base_actions.xml',
         'wizard/report_base_views.xml',
         'wizard/report_num1_views.xml',
@@ -49,6 +54,7 @@
         'wizard/report_num19_views.xml',
         'wizard/report_num20_views.xml',
         'wizard/report_num21_views.xml',
+        'wizard/report_num22_views.xml',
     ],
     'assets': {
         'web.assets_backend': [

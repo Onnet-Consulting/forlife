@@ -25,7 +25,7 @@ class BravoSyncAccountWizard(models.TransientModel):
             self = self.with_company(company).sudo()
             self.install_coa()
             self.insert_accounts(bravo_accounts)
-            self.archive_vn_template_accounts()
+            # self.archive_vn_template_accounts()
         return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def install_coa(self):

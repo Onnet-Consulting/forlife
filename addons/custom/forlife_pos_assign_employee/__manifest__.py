@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "forlife_pos_assign_employee",
-
+    "license": "LGPL-3",
     'summary': """""",
 
     'description': """

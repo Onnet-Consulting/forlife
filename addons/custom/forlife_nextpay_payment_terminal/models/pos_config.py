@@ -16,11 +16,9 @@ class PosConfig(models.Model):
     nextpay_url = fields.Char(string='NextPay Endpoint')
     nextpay_secret_key = fields.Char(string='NextPay Secret Key', help='Each PoS has an unique merchant ID')
     nextpay_merchant_id = fields.Char(string='NextPay Merchant ID')
-    nextpay_pos_id = fields.Char(compute='_compute_nextpay_pos_id', store=True, string="ID POS")
-
-    _sql_constraints = [
-        ('nextpay_merchant_id_unique', 'unique (nextpay_merchant_id)', 'The NextPay Merchant ID must be unique!')
-    ]
+    nextpay_pos_id = fields.Char(string="POS ID", help="IP POS must have at least 3 characters, "
+                                                       "this is the ID you enter to MPos app\n"
+                                                       "You can have multiple POS with the same POS ID")
 
     @api.depends('payment_method_ids')
     def _compute_show_nextpay_config(self):
@@ -29,11 +27,6 @@ class PosConfig(models.Model):
                 config.payment_method_ids.filtered(
                     lambda payment: not payment.hide_use_payment_terminal
                                     and payment.use_payment_terminal == 'nextpay'))
-
-    @api.depends('nextpay_merchant_id')
-    def _compute_nextpay_pos_id(self):
-        for config in self:
-            config.nextpay_pos_id = str(config.id).zfill(6)
 
     def _get_nextpay_channel_name(self):
         self.ensure_one()
