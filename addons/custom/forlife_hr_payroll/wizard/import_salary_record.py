@@ -285,22 +285,38 @@ class ImportSalaryRecord(models.TransientModel):
                 error_by_code[code] = _('Mã cost center %s không tồn tại') % code
         return analytic_by_code, error_by_code
 
-    def map_project_data(self, asset_codes):
-        # FIXME: chờ chốt giải pháp cho Mã dự án
-        asset_code_by_code = {code: code for code in asset_codes}
+    def map_project_data(self, data):
+        assets_assets = self.env['assets.assets'].search(
+            [('code', 'in', data), ('company_id', '=', self.company_id.id)]
+        )
+        asset_by_code = {a.code: a.id for a in assets_assets}
         error_by_code = {}
-        return asset_code_by_code, error_by_code
+        for code in data:
+            if code and not asset_by_code.get(code):
+                error_by_code[code] = _('Mã dự án %s không tồn tại') % code
+        return asset_by_code, error_by_code
 
     def map_manufacturing_data(self, data):
-        # FIXME: chờ đối tác chốt giải pháp cho lệnh sản xuất mới làm phần này
-        manufacturing_code_by_code = {code: code for code in data}
-        return manufacturing_code_by_code, {}
-
-    def map_internal_order_data(self, io_codes):
-        # FIXME: chờ chốt giải pháp cho Mã chương trình sự kiện
-        io_code_by_code = {code: code for code in io_codes}
+        productions = self.env['forlife.production'].search([
+            ('code', 'in', data), ('company_id', '=', self.company_id.id)
+        ])
+        production_by_code = {p.code: p.id for p in productions}
         error_by_code = {}
-        return io_code_by_code, error_by_code
+        for code in data:
+            if code and not production_by_code.get(code):
+                error_by_code[code] = _("Mã lệnh sản xuất %s không tồn tại") % code
+        return production_by_code, error_by_code
+
+    def map_internal_order_data(self, data):
+        occasions = self.env['occasion.code'].search([
+            ('code', 'in', data), ('company_id', '=', self.company_id.id)
+        ])
+        occasion_by_code = {oc.code: oc.id for oc in occasions}
+        error_by_code = {}
+        for code in data:
+            if code and not occasion_by_code.get(code):
+                error_by_code[code] = _("Mã vụ việc %s không tồn tại") % code
+        return occasion_by_code, error_by_code
 
     def map_data(self, **kwargs):
         """

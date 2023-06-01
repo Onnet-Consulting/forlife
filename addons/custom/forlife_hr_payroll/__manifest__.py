@@ -22,6 +22,7 @@
         'report_xlsx',
         'l10n_vn',
         'forlife_pos_app_member',
+        'forlife_purchase',
     ],
 
     'data': [

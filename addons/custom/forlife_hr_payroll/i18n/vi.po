@@ -514,7 +514,7 @@ msgstr "Nhập bảng lương"
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_supplementary__internal_order_code
 #: model:ir.model.fields,field_description:forlife_hr_payroll.field_salary_total_income__internal_order_code
 msgid "Internal Order Code"
-msgstr "Mã chương trình SK"
+msgstr "Mã vụ việc"
 
 #. module: forlife_hr_payroll
 #. odoo-python
