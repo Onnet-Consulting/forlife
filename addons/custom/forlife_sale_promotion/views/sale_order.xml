@@ -16,7 +16,9 @@
 
 
                 <xpath expr="//button[@name='action_confirm']" position="after">
-                    <button name="action_confirm" data-hotkey="v" string="Confirm" type="object" context="{'validate_analytic': True}" attrs="{'invisible': [('state', 'not in', ['check_promotion', 'done_sale'])]}"/>
+                    <button name="action_create_picking"
+                        string="Xác nhận" type="object" context="{'validate_analytic': True}"
+                        attrs="{'invisible': [('state', 'not in', ['check_promotion', 'done_sale'])]}"/>
                 </xpath>
 
                 <!--Them tam thoi đê test đơn hang nhanh-->
