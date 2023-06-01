@@ -1804,7 +1804,7 @@ class StockPicking(models.Model):
                          ('product_id', '=', material_line.product_id.id)])
                     # if not number_product or sum(number_product.mapped('quantity')) < material_line.product_plan_qty:
                     #     raise ValidationError('Số lượng sản phẩm trong kho không đủ')
-                    if not self.env.ref('forlife_stock.export_production_order').valuation_in_account_id:
+                    if not self.env.ref('forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id:
                         raise ValidationError(
                             'Tài khoản định giá tồn kho trong lý do xuất nguyên phụ liệu không tồn tại')
                     finished_qty = (material_line.product_plan_qty / r.previous_qty) * r.quantity_done
@@ -1823,7 +1823,7 @@ class StockPicking(models.Model):
                     # Tạo bút toán cho nguyên phụ liệu
                     credit_npl = (0, 0, {
                         'account_id': self.env.ref(
-                            'forlife_stock.export_production_order').valuation_in_account_id.id,
+                            'forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id.id,
                         'name': material_line.product_id.name,
                         'debit': 0,
                         'credit': credit,
