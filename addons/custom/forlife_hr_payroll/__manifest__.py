@@ -50,6 +50,7 @@
         'views/salary_record_views.xml',
         'views/save_change_log_views.xml',
         'views/account_move_views.xml',
+        'views/salary_tc_entry_views.xml',
 
         # wizard
         'wizard/import_salary_record_view.xml',
