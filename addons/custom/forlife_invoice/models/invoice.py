@@ -24,7 +24,7 @@ class AccountMove(models.Model):
         ('asset', 'Asset'),
         ('service', 'Service'),
     ], string='PO Type', default='product', required=1)
-    number_bills = fields.Char(string='Number bills', copy=False, required=1)
+    number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8), default=1)
     accounting_date = fields.Datetime(string='Accounting Date')

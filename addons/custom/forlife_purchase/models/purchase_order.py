@@ -1011,13 +1011,14 @@ class PurchaseOrder(models.Model):
             # 3.1) ẩn nút trả hàng khi hóa đơn của pnk đã tồn tại
             if moves:
                 for item in moves:
-                    picking_in_return = self.env['stock.picking'].search([('origin', '=', self.name),
-                                                                          ('x_is_check_return', '=', True)
-                                                                          ])
-                    for nine in item.receiving_warehouse_id:
-                        nine.x_hide_return = True
-                    for line in picking_in_return:
-                        line.x_hide_return = True
+                    if item.state == 'posted':
+                        picking_in_return = self.env['stock.picking'].search([('origin', '=', self.name),
+                                                                              ('x_is_check_return', '=', True)
+                                                                              ])
+                        for nine in item.receiving_warehouse_id:
+                            nine.x_hide_return = True
+                        for line in picking_in_return:
+                            line.x_hide_return = True
 
             for line in moves.invoice_line_ids:
                 if line.product_id:
