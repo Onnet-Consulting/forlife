@@ -682,37 +682,31 @@ class AccountMoveLine(models.Model):
 
     @api.depends('quantity', 'price_unit', 'taxes_id', 'promotions', 'discount', 'discount_percent')
     def _compute_amount(self):
-        if self.move_type == 'in_invoice':
-            for line in self:
-                tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
-                totals = list(tax_results['totals'].values())[0]
-                amount_untaxed = totals['amount_untaxed']
-                amount_tax = totals['amount_tax']
+        for line in self:
+            tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
+            totals = list(tax_results['totals'].values())[0]
+            amount_untaxed = totals['amount_untaxed']
+            amount_tax = totals['amount_tax']
 
-                line.update({
-                    'price_subtotal': amount_untaxed,
-                    'tax_amount': amount_tax,
-                    'price_total': amount_untaxed + amount_tax,
-                })
-        else:
-            pass
+            line.update({
+                'price_subtotal': amount_untaxed,
+                'tax_amount': amount_tax,
+                'price_total': amount_untaxed + amount_tax,
+            })
 
     def _convert_to_tax_base_line_dict(self):
         self.ensure_one()
-        if self.move_type == 'in_invoice':
-            return self.env['account.tax']._convert_to_tax_base_line_dict(
-                self,
-                partner=self.move_id.partner_id,
-                currency=self.move_id.currency_id,
-                product=self.product_id,
-                taxes=self.taxes_id,
-                price_unit=self.price_unit,
-                quantity=self.quantity,
-                discount=self.discount_percent,
-                price_subtotal=self.price_subtotal,
-            )
-        else:
-            pass
+        return self.env['account.tax']._convert_to_tax_base_line_dict(
+            self,
+            partner=self.move_id.partner_id,
+            currency=self.move_id.currency_id,
+            product=self.product_id,
+            taxes=self.taxes_id,
+            price_unit=self.price_unit,
+            quantity=self.quantity,
+            discount=self.discount_percent,
+            price_subtotal=self.price_subtotal,
+        )
 
     def _get_discounted_price_unit(self):
         self.ensure_one()
