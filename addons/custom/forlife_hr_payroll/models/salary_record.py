@@ -272,7 +272,7 @@ class SalaryRecord(models.Model):
             'invoice_date': accounting_date,
             'narration': self.note,
             'ref': self.name,
-            'x_asset_fin': 'TC' if is_tc_entry else 'QC'
+            'x_asset_fin': 'TC' if is_tc_entry else 'QT'
         }
 
         accounting_values_by_entry = self.group_accounting_data_by_entry_and_account(accounting_values_by_entry)

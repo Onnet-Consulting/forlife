@@ -11,7 +11,7 @@ class AccountMove(models.Model):
     # FIXME: after add 'forlife_invoice' module to depends section in manifest file of this module, remove x_asset_fin field  below
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),
-        ('QC', 'QC'),
+        ('QT', 'QT'),
     ], string='Phân loại tài chính')
 
 
