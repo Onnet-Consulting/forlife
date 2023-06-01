@@ -79,10 +79,10 @@ class PurchaseReturnWizard(models.TransientModel):
             # self.move_dest_exists = move_dest_exists
             # self.parent_location_id = self.purchase_id.picking_type_id.warehouse_id and self.purchase_id.picking_type_id.warehouse_id.view_location_id.id or self.purchase_id.location_id.location_id.id
             # self.original_location_id = self.purchase_id.location_id.id
-            location_id = self.purchase_id.partner_id.property_stock_supplier.id
-            if self.purchase_id.picking_type_id.return_picking_type_id.default_location_dest_id.return_location:
-                location_id = self.purchase_id.picking_type_id.return_picking_type_id.default_location_dest_id.id
-            self.location_id = location_id
+            # location_id = self.purchase_id.partner_id.property_stock_supplier.id
+            # if self.purchase_id.picking_type_id.return_picking_type_id.default_location_dest_id.return_location:
+            #     location_id = self.purchase_id.picking_type_id.return_picking_type_id.default_location_dest_id.id
+            self.location_id = self.purchase_id.location_id.id
 
     @api.model
     def _prepare_stock_return_purchase_line_vals(self, purchase_line):
@@ -108,6 +108,7 @@ class PurchaseReturnWizard(models.TransientModel):
             'is_return': True,
             'origin_purchase_id': self.purchase_id.id,
             'order_line': line_vals,
+            'location_id': self.purchase_id.location_id.id,
             'picking_type_id': self.purchase_id.picking_type_id.return_picking_type_id.id or self.purchase_id.picking_type_id.id,
             'state': 'draft',
             'custom_state': 'draft',
