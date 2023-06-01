@@ -82,7 +82,7 @@ class ForlifeProductionFinishedProduct(models.Model):
     unit_price = fields.Float(readonly=1, string='Unit Price')
     stock_qty = fields.Float(string='Stock Quantity')
     remaining_qty = fields.Float(string='Remaining Quantity')
-    description = fields.Char(String='Description', related='product_id.name')
+    description = fields.Char(string='Description', related='product_id.name')
     forlife_bom_ids = fields.Many2many('forlife.bom', string='Declare BOM')
     implementation_department = fields.Selection(related='forlife_production_id.implementation_department')
     management_department = fields.Selection(related='forlife_production_id.management_department')
@@ -117,13 +117,13 @@ class ForlifeProductionFinishedProduct(models.Model):
         for record in self:
             record.write({'write_date': fields.Datetime.now(),
                           'unit_price': sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_material_ids) / record.produce_qty
-                                         + sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_ingredients_ids) / record.produce_qty
-                                         + sum(rec.rated_level for rec in record.forlife_bom_service_cost_ids) / record.produce_qty})
+                          + sum(rec.total * rec.product_id.standard_price for rec in record.forlife_bom_ingredients_ids) / record.produce_qty
+                          + sum(rec.rated_level for rec in record.forlife_bom_service_cost_ids) / record.produce_qty})
 
     @api.onchange('forlife_bom_material_ids', 'forlife_bom_material_ids.total', 'forlife_bom_ingredients_ids', 'forlife_bom_ingredients_ids.total', 'forlife_bom_service_cost_ids', 'forlife_bom_service_cost_ids.rated_level')
     def _onchange_forlife_bom_material_ids(self):
-        self.unit_price = (sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_material_ids) / self.produce_qty \
-                          + sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_ingredients_ids) / self.produce_qty \
+        self.unit_price = (sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_material_ids) / self.produce_qty
+                          + sum(rec.total * rec.product_id.standard_price for rec in self.forlife_bom_ingredients_ids) / self.produce_qty
                           + sum(rec.rated_level for rec in self.forlife_bom_service_cost_ids) / self.produce_qty) if self.produce_qty else 0
 
     @api.constrains('produce_qty', 'stock_qty')
