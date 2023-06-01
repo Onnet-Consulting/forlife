@@ -79,7 +79,7 @@ class StockPicking(models.Model):
                     # Bút toán cho nguyên phụ liệu
                     debit_npl = (0, 0, {
                         'account_id': self.env.ref(
-                            'forlife_stock.import_production_order').valuation_out_account_id.id,
+                            'forlife_stock.import_production_order').with_company(self.company_id).x_property_valuation_out_account_id.id,
                         'name': production_line.product_id.name,
                         'debit': debit,
                         'credit': 0,
