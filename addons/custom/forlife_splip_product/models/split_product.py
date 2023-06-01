@@ -144,8 +144,6 @@ class SplitProduct(models.Model):
                 'split_product_id': self.id,
                 'move_ids_without_package': data
             })
-        for p in pickings:
-            p.button_validate()
         return pickings
 
     def create_orther_export(self, pk_type, company):
@@ -169,8 +167,6 @@ class SplitProduct(models.Model):
                 'split_product_id': self.id,
                 'move_ids_without_package': data
             })
-        for p in pickings:
-            p.button_validate()
         return pickings
 
 
@@ -206,12 +202,14 @@ class SpilitProductLineSub(models.Model):
 
     @api.model
     def create(self, vals_list):
+        if vals_list.get('name', 'New') == 'New':
+            vals_list['name'] = self.env['ir.sequence'].next_by_code('split.product.line.sub.name') or 'New'
         res = super(SpilitProductLineSub, self).create(vals_list)
         if res.product_split == 'New':
             sequence = self.env['ir.sequence'].next_by_code('split.product.line.sub')
             res.product_split = f"{res.product_id.name_get()[0][1]} {sequence}"
         return res
-
+    name = fields.Char('Sản phẩm phân tách', default="New", readonly=True, required=True)
     state = fields.Selection(
         [('new', 'New'), ('in_progress', 'In Progress'), ('done', 'Done'), ('canceled', 'Canceled')],
         related='split_product_id.state',
