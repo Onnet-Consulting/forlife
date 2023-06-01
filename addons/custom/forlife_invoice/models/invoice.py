@@ -225,9 +225,9 @@ class AccountMove(models.Model):
                                 raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
     def write(self, vals):
-        context_invoice = self._context
-        old_line_count = len(self.invoice_line_ids)
-        new_line_count = len(vals.get('invoice_line_ids', []))
+        # context_invoice = self._context
+        # old_line_count = len(self.invoice_line_ids)
+        # new_line_count = len(vals.get('invoice_line_ids', []))
         res = super(AccountMove, self).write(vals)
         for rec in self:
             if rec.is_check_cost_view:
@@ -238,13 +238,13 @@ class AccountMove(models.Model):
                                 line.company_id).property_stock_account_input_categ_id.id,
                             'name': line.product_id.name
                         })
-        for key, value in context_invoice.items():
-            print(key, value)
-            if value == "purchase.order":
-                if (new_line_count > old_line_count) and self.state == "draft":
-                    raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái dự thảo')
-                else:
-                    return rec
+        # for key, value in context_invoice.items():
+        #     print(key, value)
+        #     if value == "purchase.order":
+        #         if (new_line_count > old_line_count) and self.state == "draft":
+        #             raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái dự thảo')
+        #         else:
+        #             return rec
         return res
 
     @api.depends('partner_id.is_passersby', 'partner_id')
@@ -509,7 +509,6 @@ class AccountMove(models.Model):
                 rec.create_trade_discount()
         res = super(AccountMove, self).action_post()
         return res
-
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"

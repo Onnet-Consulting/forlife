@@ -1227,25 +1227,10 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             rec.total_vnd_amount = (rec.price_subtotal * rec.order_id.exchange_rate)
 
-
-
-    @api.depends('exchange_quantity')
-    def compute_is_red_color(self):
-        date_item = datetime.datetime.now().date()
-        for item in self:
-            if not (item.product_id and item.supplier_id and item.purchase_uom and item.currency_id):
-                item.is_red_color = False
-                continue
-            supplier_info = self.search_product_sup(
-                [('product_uom', '=', item.purchase_uom.id),
-                 ('product_id', '=', item.product_id.id),
-                 ('partner_id', '=', item.supplier_id.id),
-                 ('date_start', '<', date_item),
-                 ('date_end', '>', date_item),
-                 ('currency_id', '>', item.currency_id.id),
-                 ])
-            item.is_red_color = True if item.exchange_quantity not in supplier_info.mapped(
-                'amount_conversion') else False
+    @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id')
+    def _compute_total_vnd_amount(self):
+        for rec in self:
+            rec.total_vnd_amount = (rec.price_subtotal * rec.order_id.exchange_rate)
 
     @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):
