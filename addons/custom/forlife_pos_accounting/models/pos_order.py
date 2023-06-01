@@ -77,7 +77,7 @@ class InheritPosOrder(models.Model):
             if not line.product_src_id:
                 continue
             promotion = self.env[line.promotion_model].sudo().browse(line.promotion_id)
-            if line.promotion_model == 'promotion.program' and promotion.reeard_type not in REWARD_TYPE:
+            if line.promotion_model == 'promotion.program' and promotion.reward_type not in REWARD_TYPE:
                 continue
             journal = promotion[PROMOTION_JOURNAL_FIELD[line.promotion_model]]
             if not journal:
