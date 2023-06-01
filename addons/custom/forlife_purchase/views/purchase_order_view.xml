@@ -298,7 +298,7 @@
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
-                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
+                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
                         <field name="location_id"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="taxes_id" widget="many2many_tags"
