@@ -146,11 +146,11 @@ class StockTransfer(models.Model):
         s_location_sell_ecommerce = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
         warehouse_id = location_id.warehouse_id.whs_type.id
         warehouse_dest_id = location_dest_id.warehouse_id.whs_type.id
-        if location_dest_id in [s_location_pos] and warehouse_id in [warehouse_type_master] and location_dest_id.id_deposit and location_dest_id.account_stock_give:
+        if location_dest_id.stock_location_type_id.id in [s_location_pos] and warehouse_id in [warehouse_type_master] and location_dest_id.id_deposit and location_dest_id.account_stock_give:
             return self._create_move_given(pickking, location_dest_id, type_create='in')
-        elif location_id in [s_location_pos] and warehouse_dest_id in [warehouse_type_master] and location_id.id_deposit and location_id.account_stock_give:
+        elif location_id.stock_location_type_id.id in [s_location_pos] and warehouse_dest_id in [warehouse_type_master] and location_id.id_deposit and location_id.account_stock_give:
             return self._create_move_given(pickking, location_id, type_create='out')
-        elif location_id in [s_location_sell_ecommerce, s_location_pos] and location_dest_id in [s_location_sell_ecommerce, s_location_pos]:
+        elif location_id.stock_location_type_id.id in [s_location_sell_ecommerce, s_location_pos] and location_dest_id in [s_location_sell_ecommerce, s_location_pos]:
             loc = location_id if location_id.id_deposit and location_id.account_stock_give else False
             loc_dest = location_dest_id if location_dest_id.id_deposit and location_dest_id.account_stock_give else False
             if not loc and not loc_dest:
@@ -175,18 +175,18 @@ class StockTransfer(models.Model):
             move_vals = {
                 'journal_id': accounts_data['stock_journal'].id,
                 'date': datetime.now(),
-                'ref': pickking.name,
+                'ref': picking.name,
                 'move_type': 'entry',
                 'stock_move_id': d.id,
                 'line_ids': [
                     (0, 0, {
-                        'name': pickking.name,
+                        'name': picking.name,
                         'account_id': account_id_debit,
                         'debit': d.product_id.standard_price,
                         'credit': 0.0,
                     }),
                     (0, 0, {
-                        'name': pickking.name,
+                        'name': picking.name,
                         'account_id': account_id_credit,
                         'debit': 0.0,
                         'credit': d.product_id.standard_price,
