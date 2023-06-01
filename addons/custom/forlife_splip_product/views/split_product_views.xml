@@ -53,6 +53,7 @@
                         <page string="Sản phẩm phân tách">
                             <field name="split_product_line_sub_ids" mode="tree">
                                 <tree editable="bottom" create="0">
+                                    <field name="name"/>
                                     <field name="state" invisible="1"/>
                                     <field name="product_id" optional="show"/>
                                     <field name="product_split"/>
