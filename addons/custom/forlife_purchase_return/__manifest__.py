@@ -6,6 +6,7 @@
     "description": """Forlife Purchase Return""",
     "depends": [
         'forlife_purchase',
+        'forlife_stock',
         'purchase_request',
         'stock'
     ],
