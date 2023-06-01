@@ -1,5 +1,7 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import AccessError, ValidationError
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class Location(models.Model):
@@ -42,8 +44,6 @@ class Location(models.Model):
                 r.usage = 'import/export'
 
 
-
-
 class StockMove(models.Model):
     """Stock Valuation Layer"""
 
@@ -78,8 +78,8 @@ class StockMove(models.Model):
             credit_account_id = self.picking_id.location_id.valuation_out_account_id.id
             debit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
             debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
-                if not self.picking_id.location_id.is_price_unit else (self.amount_total/self.previous_qty) * self.quantity_done
-                # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
+                if not self.picking_id.location_id.is_price_unit else (self.amount_total / self.previous_qty) * self.quantity_done
+            # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
         res = [(0, 0, line_vals) for line_vals in self._generate_valuation_lines_data(valuation_partner_id, qty, debit_value, credit_value,
                                                                                       debit_account_id, credit_account_id, svl_id, description).values()]
         return res
@@ -97,7 +97,7 @@ class StockMove(models.Model):
             if move.product_id.cost_method != 'standard':
                 unit_cost = abs(move._get_price_unit())  # May be negative (i.e. decrease an out move).
             if move.picking_id.other_import and move.picking_id.location_id.is_price_unit:
-                unit_cost = move.amount_total/move.previous_qty if move.previous_qty != 0 else 0
+                unit_cost = move.amount_total / move.previous_qty if move.previous_qty != 0 else 0
             svl_vals = move.product_id._prepare_in_svl_vals(forced_quantity or valued_quantity, unit_cost)
             svl_vals.update(move._prepare_common_svl_vals())
             if forced_quantity:
