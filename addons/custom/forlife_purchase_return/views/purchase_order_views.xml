@@ -72,6 +72,16 @@
             </field>
         </record>
 
+        <record id="forlife_purchase.action_purchase_order_is_inter_company" model="ir.actions.act_window">
+            <field name="domain">[('is_inter_company', '=', True), ('is_return', '=', False)]</field>
+        </record>
+        <record id="forlife_purchase.action_purchase_order_not_inter_company_cost" model="ir.actions.act_window">
+            <field name="domain">[('is_inter_company', '=', False), ('type_po_cost', '=', 'cost'), ('is_return', '=', False)]</field>
+        </record>
+        <record id="forlife_purchase.action_purchase_order_not_inter_company_tax" model="ir.actions.act_window">
+            <field name="domain">[('is_inter_company', '=', False), ('type_po_cost', '=', 'tax'), ('is_return', '=', False)]</field>
+        </record>
+
         <menuitem id="menu_purchase_order_return_item" parent="purchase.menu_procurement_management"
                   action="action_purchase_order_return" name="Purchase Return Order" sequence="3"/>
     </data>
