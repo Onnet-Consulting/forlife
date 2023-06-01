@@ -68,6 +68,9 @@ export class CartPromotionButton extends PosComponent {
                 line.set_quantity(line.get_quantity());
             };
         });
+        if (order._checkHasNotExistedLineOnOldData()) {
+            order.resetPointOrder();
+        };
         this.env.pos.no_reset_program = false;
     }
 

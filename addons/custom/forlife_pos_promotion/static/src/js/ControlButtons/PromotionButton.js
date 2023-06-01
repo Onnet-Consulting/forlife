@@ -47,6 +47,9 @@ export class PromotionButton extends PosComponent {
                 order.referred_code_id = codeObj;
             }
         }
+        if (order._checkHasNotExistedLineOnOldData()) {
+            order.resetPointOrder();
+        };
         order._updateActivatedPromotionPrograms();
 //        for (let newLine of newLines) {
 //            if (newLine.hasOwnProperty('reward_products')) {
