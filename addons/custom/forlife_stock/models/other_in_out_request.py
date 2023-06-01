@@ -34,8 +34,8 @@ class ForlifeOtherInOutRequest(models.Model):
     @api.depends('other_import_export_ids', 'other_import_export_ids.state')
     def compute_qty_match(self):
         for rec in self:
-            rec.quantity_match = all(x == 'done' for x in rec.other_import_export_ids.mapped(
-                'state')) if rec.other_import_export_ids else False
+            rec.quantity_match = all(x == 'done' for x in rec.other_import_export_ids.mapped('state')) \
+                if rec.other_import_export_ids else False
 
     @api.constrains('other_in_out_request_line_ids')
     def _constrains_other_in_out_request_line_ids(self):
