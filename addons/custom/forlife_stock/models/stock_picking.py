@@ -43,6 +43,18 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
     _order = 'create_date desc'
 
+    def action_confirm(self):
+        for picking in self:
+            for line in picking.move_ids:
+                account = line.ref_asset.asset_account.id
+                if (picking.other_export and account != picking.location_dest_id.with_company(picking.company_id).x_property_valuation_in_account_id.id) or (
+                        picking.other_import and account != picking.location_id.with_company(picking.company_id).x_property_valuation_out_account_id.id):
+                    raise ValidationError(
+                        _('Tài khoản cấu hình trong thẻ tài sản không khớp với tài khoản trong lý do xuất khác'))
+        res = super().action_confirm()
+        return res
+
+
     def _domain_location_id(self):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"

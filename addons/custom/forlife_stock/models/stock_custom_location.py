@@ -28,6 +28,22 @@ class Location(models.Model):
              "and into an internal location, instead of the generic Stock Output Account set on the product. "
              "This has no effect for internal locations.")
 
+    x_property_valuation_in_account_id = fields.Many2one(
+        'account.account', 'Stock Valuation Account (Incoming)',
+        domain=[], company_dependent=True,
+        help="Used for real-time inventory valuation. When set on a virtual location (non internal type), "
+             "this account will be used to hold the value of products being moved from an internal location "
+             "into this location, instead of the generic Stock Output Account set on the product. "
+             "This has no effect for internal locations.")
+
+    x_property_valuation_out_account_id = fields.Many2one(
+        'account.account', 'Stock Valuation Account (Outgoing)',
+        domain=[], company_dependent=True,
+        help="Used for real-time inventory valuation. When set on a virtual location (non internal type), "
+             "this account will be used to hold the value of products being moved out of this location "
+             "and into an internal location, instead of the generic Stock Output Account set on the product. "
+             "This has no effect for internal locations.")
+
     stock_custom_picking_id = fields.Many2one('stock.picking')
 
     is_price_unit = fields.Boolean(default=False)
@@ -72,13 +88,16 @@ class StockMove(models.Model):
 
         valuation_partner_id = self._get_partner_id_for_valuation_lines()
         if self.picking_id.location_dest_id.type_other == 'outcoming':
-            debit_account_id = self.picking_id.location_dest_id.valuation_in_account_id.id
-            credit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
+            debit_account_id = self.picking_id.location_dest_id.with_company(self.picking_id.company_id).x_property_valuation_in_account_id.id
+            credit_account_id = self.product_id.categ_id.with_company(self.picking_id.company_id).property_stock_valuation_account_id.id
         if self.picking_id.location_id.type_other == 'incoming':
-            credit_account_id = self.picking_id.location_id.valuation_out_account_id.id
-            debit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
-            debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
-                if not self.picking_id.location_id.is_price_unit else (self.amount_total/self.previous_qty) * self.quantity_done
+            if self.picking_id.location_dest_id.id_deposit and self.picking_id.location_dest_id.account_stock_give and self.picking_id.pos_order_id:
+                debit_account_id = self.picking_id.location_dest_id.account_stock_give.id
+            else:
+                credit_account_id = self.picking_id.location_id.with_company(self.picking_id.company_id).x_property_valuation_out_account_id.id
+                debit_account_id = self.product_id.categ_id.with_company(self.picking_id.company_id).property_stock_valuation_account_id.id
+                debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
+                    if not self.picking_id.location_id.is_price_unit else (self.amount_total/self.previous_qty) * self.quantity_done
                 # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
         res = [(0, 0, line_vals) for line_vals in self._generate_valuation_lines_data(valuation_partner_id, qty, debit_value, credit_value,
                                                                                       debit_account_id, credit_account_id, svl_id, description).values()]
