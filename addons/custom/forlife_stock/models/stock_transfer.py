@@ -385,9 +385,9 @@ class StockTransferLine(models.Model):
     product_id = fields.Many2one('product.product', string="Product", required=True)
     uom_id = fields.Many2one('uom.uom', string='Unit', store=True)
     qty_plan = fields.Integer(string='Quantity Plan')
-    qty_out = fields.Integer(string='Quantity Out')
-    qty_in = fields.Integer(string='Quantity In')
-    qty_start = fields.Integer(string='', compute='compute_qty_start', store=1)
+    qty_out = fields.Integer(string='Quantity Out', copy=False)
+    qty_in = fields.Integer(string='Quantity In', copy=False)
+    qty_start = fields.Integer(string='')
     quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
 
