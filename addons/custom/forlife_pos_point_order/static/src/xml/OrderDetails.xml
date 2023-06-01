@@ -4,6 +4,7 @@
         <div>
             <span>
                 <table style="border: 1px solid black;width:100%">
+                    <!-- row 1 -->
                     <tr style="border: 1px solid black; text-align:left">
                         <th style="border: 1px solid black; width:25%">Điểm có</th>
                         <th>
@@ -24,6 +25,8 @@
                             <t t-esc="_totalQuantity" />
                         </th>
                     </tr>
+
+                    <!-- row 2 -->
                     <tr style="border: 1px solid black; text-align:left">
                         <th style="border: 1px solid black;width:25%">Tiêu điểm</th>
                         <th>
@@ -41,6 +44,7 @@
                         </th>
                     </tr>
 
+                    <!-- row 3 -->
                     <t t-set="_totalPriceNotFormat" t-value="getTotalNotFormat()" />
                     <t t-set="_getTotalDiscountCustomDefective" t-value="getTotalDiscountCustomDefective()" />
                     <tr style="border: 1px solid black; text-align:left">
@@ -59,6 +63,8 @@
 
                         </th>
                     </tr>
+
+                    <!-- row 4 -->
                     <tr style="border: 1px solid black; text-align:left" id="amount_total_row">
                         <th></th>
                         <th></th>
