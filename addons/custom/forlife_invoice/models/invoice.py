@@ -45,13 +45,13 @@ class AccountMove(models.Model):
     trade_discount = fields.Integer(string='Chiết khấu thương mại(%)')
     total_trade_discount = fields.Integer(string='Tổng chiết khấu thương mại')
 
-    ## field domain cho 2 field đơn mua hàng và phiếu nhập kho
+    # field domain cho 2 field đơn mua hàng và phiếu nhập kho
     receiving_warehouse_id = fields.Many2many('stock.picking', string='Receiving Warehouse')
     purchase_order_product_id = fields.Many2many('purchase.order', string='Purchase Order')
     partner_domain = fields.Char(compute='_compute_partner_domain')
     partner_domain_2 = fields.Char(compute='_compute_partner_domain_2')
 
-    ## field chi phí và thuế nhập khẩu
+    # field chi phí và thuế nhập khẩu
     exchange_rate_line = fields.One2many('invoice.exchange.rate', 'invoice_rate_id',
                                          string='Invoice Exchange Rate',
                                          compute='_compute_exchange_rate_line_and_cost_line',
@@ -65,7 +65,7 @@ class AccountMove(models.Model):
     # Field check page ncc vãng lại
     is_check_vendor_page = fields.Boolean(default=False, compute='_compute_is_check_vendor_page')
 
-    ##tab e-invoice-bkav
+    # tab e-invoice-bkav
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
 
     x_asset_fin = fields.Selection([
@@ -79,16 +79,15 @@ class AccountMove(models.Model):
     ], string='Phân loại nguồn')
 
     # product_not_is_passersby = fields.Many2many('product.product')
+    # tạo data lấy từ bkav về tab e-invoice
 
-
-    ###tạo data lấy từ bkav về tab e-invoice
     @api.onchange('exists_bkav')
     def onchange_exitsts_bakv_e_invoice(self):
         for rec in self:
             if rec.exists_bkav:
                 data_e_invoice = self.env['e.invoice'].search(
                     [('e_invoice_id', '=', rec.id), ('number_e_invoice', '=', rec.invoice_no),
-                     ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)],limit=1)
+                     ('date_start_e_invoice', '=', rec.create_date), ('state_e_invoice', '=', rec.invoice_state_e)], limit=1)
                 if not data_e_invoice:
                     self.env['e.invoice'].create({
                         'number_e_invoice': rec.invoice_no,
@@ -226,26 +225,26 @@ class AccountMove(models.Model):
                                 raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
     def write(self, vals):
-        context_invoice = self._context
-        old_line_count = len(self.invoice_line_ids)
-        new_line_count = len(vals.get('invoice_line_ids', []))
+        # context_invoice = self._context
+        # old_line_count = len(self.invoice_line_ids)
+        # new_line_count = len(vals.get('invoice_line_ids', []))
         res = super(AccountMove, self).write(vals)
         for rec in self:
             if rec.is_check_cost_view:
                 for line in rec.invoice_line_ids:
                     if line.product_id and line.display_type == 'product':
                         line.write({
-                                    'account_id': line.product_id.categ_id.with_company(
-                                        line.company_id).property_stock_account_input_categ_id.id,
-                                    'name': line.product_id.name
-                                    })
-        for key, value in context_invoice.items():
-            print(key, value)
-            if value == "purchase.order":
-                if (new_line_count > old_line_count) and self.state == "draft":
-                    raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái dự thảo')
-                else:
-                    return rec
+                            'account_id': line.product_id.categ_id.with_company(
+                                line.company_id).property_stock_account_input_categ_id.id,
+                            'name': line.product_id.name
+                        })
+        # for key, value in context_invoice.items():
+        #     print(key, value)
+        #     if value == "purchase.order":
+        #         if (new_line_count > old_line_count) and self.state == "draft":
+        #             raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái dự thảo')
+        #         else:
+        #             return rec
         return res
 
     @api.depends('partner_id.is_passersby', 'partner_id')
@@ -531,14 +530,14 @@ class AccountMoveLine(models.Model):
     price_unit = fields.Float(string='Unit Price',
                               digits='Product Price')
 
-    ## fields common !!
+    # fields common !!
     readonly_discount = fields.Boolean(default=False)
     readonly_discount_percent = fields.Boolean(default=False)
     production_order = fields.Many2one('forlife.production', string='Production order')
     event_id = fields.Many2one('forlife.event', string='Program of events')
     account_analytic_id = fields.Many2one('account.analytic.account', string="Cost Center")
 
-    ## goods invoice!!
+    # goods invoice!!
     promotions = fields.Boolean(string='Promotions', default=False)
     quantity_purchased = fields.Integer(string='Quantity Purchased', default=1)
     exchange_quantity = fields.Float(string='Exchange Quantity')
@@ -551,7 +550,7 @@ class AccountMoveLine(models.Model):
                             compute='_compute_quantity', store=1)
     total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
 
-    ## asset invoice!!
+    # asset invoice!!
     asset_code = fields.Char('Mã tài sản cố định')
     asset_name = fields.Char('Mô tả tài sản cố định')
     code_tax = fields.Char(string='Mã số thuế')
@@ -812,7 +811,6 @@ class InvoiceExchangeRate(models.Model):
     invoice_rate_id = fields.Many2one('account.move', string='Invoice Exchange Rate')
     qty_product = fields.Float(copy=True, string="Số lượng đặt mua")
 
-
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
     def constrains_per(self):
         for item in self:
@@ -892,4 +890,3 @@ class eInvoice(models.Model):
     number_e_invoice = fields.Char('Số HĐĐT')
     date_start_e_invoice = fields.Char('Ngày phát hành HĐĐT')
     state_e_invoice = fields.Char('Trạng thái HĐĐT', related='e_invoice_id.invoice_state_e')
-
