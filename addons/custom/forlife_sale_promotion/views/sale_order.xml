@@ -10,8 +10,8 @@
                     <button type="object" name="check_sale_promotion" string="Check Promotion"
                             attrs="{'invisible': [('state', 'not in', ['sale', 'check_promotion'])]}"/>
                 </xpath>
-                <xpath expr="//button[@name='action_quotation_send']" position="attributes">
-                    <attribute name="states">sent,sale,check_promotion,done</attribute>
+                <xpath expr="//button[@name='action_quotation_send']" position="after">
+                    <button name="action_quotation_send" string="Send by Email" type="object" states="check_promotion,done_sale" class="btn-primary" data-hotkey="g" context="{'validate_analytic': True}"/>
                 </xpath>
 
                 <!--Them tam thoi đê test đơn hang nhanh-->
@@ -20,11 +20,11 @@
                 </xpath>
 
                 <xpath expr="//button[@name='action_cancel']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale','check_promotion','done']), ('id', '=', False)]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale','check_promotion','done_sale']), ('id', '=', False)]}</attribute>
                 </xpath>
 
-                <xpath expr="//button[@id='create_invoice_percentage']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', 'not in', ['sale','check_promotion','done'])]}</attribute>
+                <xpath expr="//button[@id='create_invoice']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('invoice_status', '!=', 'to invoice'), ('state', 'not in', ['check_promotion', 'sale', 'done_sale'])]}</attribute>
                 </xpath>
 
                  <xpath expr="//notebook/page[@name='customer_signature']" position="after">
@@ -44,14 +44,14 @@
 
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="after">
 <!--                    <field name="ghn_price_unit_discount" optional="show"/>-->
-                    <field name="prm_price_discount" optional="show"/>
+<!--                    <field name="prm_price_discount" optional="show"/>-->
                     <field name="prm_price_total_discount" optional="show"/>
 <!--                    <field name="product_gift" optional="show"/>-->
 
                 </xpath>
 
                 <xpath expr="//field[@name='state']" position="attributes">
-                    <attribute name="statusbar_visible">draft,sent,sale,check_promotion,done</attribute>
+                    <attribute name="statusbar_visible">draft,sent,sale,check_promotion,done_sale</attribute>
                 </xpath>
 
             </field>

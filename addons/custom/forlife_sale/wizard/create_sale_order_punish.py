@@ -9,7 +9,9 @@ class CreateSaleOrderPunish(models.Model):
     x_partner_id = fields.Many2one('res.partner', string='Khách hàng')
 
     def create_invoice_punish(self):
-        order_punish_id = self.env['sale.order'].browse(self._context.get('active_id')).copy()
+        origin = self.env['sale.order'].browse(self._context.get('active_id'))
+        origin.x_shipping_punish = True
+        order_punish_id = origin.copy()
         order_punish_id.partner_id = self.x_partner_id
         order_punish_id.update(
             {'state': 'draft',

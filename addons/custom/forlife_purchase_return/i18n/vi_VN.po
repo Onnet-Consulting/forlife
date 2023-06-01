@@ -1,0 +1,139 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* forlife_purchase_return
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-05-29 02:28+0000\n"
+"PO-Revision-Date: 2023-05-29 02:28+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: forlife_purchase_return
+#. odoo-python
+#: code:addons/forlife_purchase_return/models/purchase_order.py:0
+#: code:addons/forlife_purchase_return/models/purchase_order.py:0
+#, python-format
+msgid " Return"
+msgstr " đơn trả hàng mua"
+
+#. module: forlife_purchase_return
+#: model_terms:ir.ui.view,arch_db:forlife_purchase_return.view_purchase_order_return_form
+msgid "Cancel"
+msgstr "Hủy"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard_line__exchange_quantity
+msgid "Exchange"
+msgstr "SL quy đổi"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard_line__product_id
+msgid "Product"
+msgstr "Sản phẩm"
+
+#. module: forlife_purchase_return
+#. odoo-python
+#: code:addons/forlife_purchase_return/models/purchase_order.py:0
+#: model:ir.actions.act_window,name:forlife_purchase_return.action_wizard_purchase_order_return
+#: model_terms:ir.ui.view,arch_db:forlife_purchase_return.inherit_purchase_order_form_view
+#, python-format
+msgid "Purchase Return"
+msgstr "Đơn trả hàng mua"
+
+#. module: forlife_purchase_return
+#: model:ir.actions.act_window,name:forlife_purchase_return.action_purchase_order_return
+#: model:ir.ui.menu,name:forlife_purchase_return.menu_purchase_order_return_item
+msgid "Purchase Return Order"
+msgstr "Trả lại hàng mua"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard_line__quantity
+msgid "Quantity"
+msgstr "Số lượng"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_order__is_return
+msgid "Is return?"
+msgstr "Là đơn hàng trả?"
+
+#. module: forlife_purchase_return
+#: model:ir.actions.act_window,name:forlife_purchase_return.action_purchase_order_return
+#: model:ir.ui.menu,name:forlife_purchase_return.menu_purchase_order_return_item
+msgid "Purchase Return Order"
+msgstr "Trả lại hàng mua"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_stock_return_picking_line__quantity_init
+msgid "Quantity Init"
+msgstr "SL ban đầu"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_stock_return_picking_line__quantity_returned
+msgid "Quantity Returned"
+msgstr "SL đã trả"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_order_line__qty_returned
+msgid "Returned Qty"
+msgstr "SL đã trả"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard_line__purchase_received
+msgid "Received Quantity"
+msgstr "SL đã nhận"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard_line__purchase_remain
+msgid "Remain Quantity"
+msgstr "SL còn lại"
+
+#. module: forlife_purchase_return
+#: model_terms:ir.ui.view,arch_db:forlife_purchase_return.view_purchase_order_return_form
+msgid "Return"
+msgstr "Xác nhận"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard__location_id
+msgid "Return Location"
+msgstr "Địa điểm trả hàng"
+
+#. module: forlife_purchase_return
+#. odoo-python
+#: code:addons/forlife_purchase_return/wizard/purchase_return_wizard.py:0
+#, python-format
+msgid "Return of %s"
+msgstr "Trả hàng của %S"
+
+#. module: forlife_purchase_return
+#. odoo-python
+#: code:addons/forlife_purchase_return/wizard/purchase_return_wizard.py:0
+#, python-format
+msgid "Returned Purchase"
+msgstr "Đơn trả hàng mua"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_order_line__qty_returned
+msgid "Returned Qty"
+msgstr "SL đã trả"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard_line__purchase_returned
+msgid "Returned Quantity"
+msgstr "SL đã trả"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_purchase_return_wizard_line__vendor_price
+msgid "Vendor Price"
+msgstr "Giá NCC"
+
+#. module: forlife_purchase_return
+#: model:ir.model.fields,field_description:forlife_purchase_return.field_stock_return_picking_line__quantity_remain
+msgid "Quantity Remain"
+msgstr "SL còn lại"

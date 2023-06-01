@@ -109,7 +109,7 @@
                 <xpath expr="//notebook/page[@name='invoice_tab']" position="after">
                     <field name="invoice_line_ids" widget="section_and_note_one2many"
                            context="{'default_company_id': company_id}"
-                           attrs="{'readonly': ['|',('state', '=', 'posted'), ('is_check', '=', True)]}" force_save="1">
+                           attrs="{'readonly': ['|',('state', 'in', ('draft', 'posted')), ('is_check', '=', True)]}" force_save="1">
                         <tree editable="bottom" class="width-hh">
                             <control>
                                 <create name="add_line_control" id="hide" string="Thêm 1 dòng"/>
@@ -235,10 +235,10 @@
                                 <field name="company_id"/>
                                 <field name="invoice_reference"/>
                                 <field name="invoice_description"/>
-                                <field name="price_subtotal_back"/>
-                                <field name="tax_back"/>
-                                <field name="tax_percent_back"/>
-                                <field name="totals_back"/>
+                                <field name="price_subtotal_back" force_save="1"/>
+                                <field name="tax_back" force_save="1"/>
+                                <field name="tax_percent_back" force_save="1"/>
+                                <field name="totals_back" force_save="1"/>
                             </tree>
                         </field>
                     </page>

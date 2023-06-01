@@ -1,3 +1,4 @@
+from . import journal
 from . import product
 from . import point_promotion
 from . import promotion_program

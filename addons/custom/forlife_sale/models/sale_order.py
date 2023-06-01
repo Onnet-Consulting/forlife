@@ -7,13 +7,23 @@ from datetime import date, datetime
 from odoo.exceptions import UserError
 import pyodbc
 from datetime import date, datetime
+from odoo.tests import Form
 
+list_state = {
+    'draft': 'Dự thảo',
+    'waiting': 'Đang chờ hoạt động khác',
+    'confirmed': 'Chờ',
+    'assigned': 'Sẵn sàng',
+    'done': 'Hoàn thành',
+    'cancel': 'Đã hủy'
+}
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     x_sale_type = fields.Selection(
         [('product', 'Hàng hóa'),
-         ('service', 'Dịnh vụ/Tài sản')],
+         ('service', 'Dịch vụ'),
+         ('asset', 'Tài sản')],
         string='Loại bán hàng', default='product')
     x_sale_chanel = fields.Selection(
         [('pos', 'Đơn bán hàng POS'),
@@ -27,22 +37,86 @@ class SaleOrder(models.Model):
     x_shipping_punish = fields.Boolean(string='Đơn phạt đơn vị vận chuyển', copy=False)
     x_is_exchange = fields.Boolean(string='Đơn đổi', copy=False)
     x_manufacture_order_code_id = fields.Many2one('forlife.production', string='Mã lệnh sản xuất')
-    x_is_return = fields.Boolean('Đơn trả hàng')
-    x_origin = fields.Many2one('sale.order', 'Tài liệu gốc')
+    x_is_return = fields.Boolean('Đơn trả hàng', copy=False)
+    x_origin = fields.Many2one('sale.order', 'Tài liệu gốc', copy=False)
     x_order_punish_count = fields.Integer('Số đơn phạt', compute='_compute_order_punish_count')
     x_order_return_count = fields.Integer('Số đơn trả lại', compute='_compute_order_return_count')
     x_is_exchange_count = fields.Integer('Số đơn đổi', compute='_compute_exchange_count')
+    x_domain_pricelist = fields.Many2many('product.pricelist', compute='_compute_domain_pricelist', store=False)
+
+    @api.onchange('x_process_punish', 'partner_id')
+    def _compute_domain_pricelist(self):
+        for r in self:
+            if not r.x_process_punish:
+                pricelist = self.env['product.pricelist'].search(
+                    ['|', ('company_id', '=', False), ('company_id', '=', r.company_id.id)]).ids
+            else:
+                pricelist = r.get_pricelist()
+            r.x_domain_pricelist = [(6, 0, pricelist)]
+
+    def get_pricelist(self):
+        sql = f"""            
+                select pp.id from product_pricelist pp 
+                left join product_pricelist_item ppi on ppi.pricelist_id = pp.id
+                where 1=1
+                and pp.x_punish is True
+                and pp.x_partner_id = {self.partner_id.id}
+                and '{str(self.date_order)}'::date between ppi.date_start and ppi.date_end
+                order by pp.id desc
+            """
+        self._cr.execute(sql)
+        result = self._cr.fetchall()
+        if result:
+            return [rec[0] for rec in result]
+        else:
+            return []
+    @api.onchange('x_process_punish')
+    def onchange_x_process_punish(self):
+        for line in self.order_line:
+            line._compute_price_unit()
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        res = super().copy(default)
+        for line in res.order_line:
+            line._compute_price_unit()
+        return res
 
     def confirm_return_so(self):
         so_id = self.x_origin
+        picking_ids = so_id.picking_ids.filtered(lambda p: p.state == 'done')
+        if picking_ids and len(picking_ids) == 1:
+            stock_return_picking_form = Form(
+                self.env['stock.return.picking'].with_context(active_ids=picking_ids.ids,
+                                                              active_id=picking_ids[0].id,
+                                                              active_model='stock.picking'))
+            ctx = {
+                'so_return': self.id,
+                'x_return': True,
+                'picking_id': picking_ids.id
+            }
+            return_wiz = stock_return_picking_form.save()
+            return {
+                'name': _('Trả hàng phiếu %s' % (picking_ids[0].name)),
+                'view_mode': 'form',
+                'res_model': 'stock.return.picking',
+                'type': 'ir.actions.act_window',
+                'views': [(False, 'form')],
+                'res_id': return_wiz.id,
+                'context': ctx,
+                'target': 'new'
+            }
+
         line = []
-        for picking in so_id.picking_ids:
+        for picking in picking_ids:
             line.append((0, 0, {'picking_name': picking.name,
-                                'state': 'Chưa trả',
+                                'state': list_state.get(picking.state),
                                 'picking_id': picking.id,
                                 }))
 
-        comfirm = self.env['confirm.return.so'].create({'line_ids': line})
+        comfirm = self.env['confirm.return.so'].create({
+            'origin': self.id,
+            'line_ids': line})
         return {
             'view_mode': 'form',
             'res_model': 'confirm.return.so',
@@ -190,9 +264,9 @@ class SaleOrder(models.Model):
                 'date_deadline': datetime.now(),
                 'description_picking': line.name,
                 'sale_line_id': line.id,
-                # 'occasion_code_id': line.x_occasion_code_id,
-                # 'work_production': line.x_manufacture_order_code_id,
-                # 'account_analytic_id': line.x_account_analytic_id,
+                'occasion_code_id': line.x_occasion_code_id,
+                'work_production': line.x_manufacture_order_code_id,
+                'account_analytic_id': line.x_account_analytic_id,
                 'group_id': group_id.id
             }
             line_x_scheduled_date.append((line.id, str(date)))
@@ -279,14 +353,14 @@ class SaleOrder(models.Model):
             picking_location_list[picking.location_id.id] = picking.name
         so_return.update({
             'x_is_return': True,
-            'x_origin': self.id
+            'x_origin': self.id,
+            'state': 'sale'
         })
         for line in so_return.order_line:
             if picking_location_list.get(line.x_location_id.id):
                 line.x_origin = picking_location_list.get(line.x_location_id.id)
 
     def action_punish(self):
-        self.x_shipping_punish = True
         return {
             'name': _('Tạo hóa đơn phạt'),
             'view_mode': 'form',
@@ -324,7 +398,7 @@ class SaleOrderLine(models.Model):
         self.x_account_analytic_id = self.order_id.x_account_analytic_ids[0]._origin if self.order_id.x_account_analytic_ids else None
         self.x_occasion_code_id = self.order_id.x_occasion_code_ids[0]._origin if self.order_id.x_occasion_code_ids else None
         self.x_manufacture_order_code_id = self.order_id.x_manufacture_order_code_id
-        if self.order_id.x_sale_type and self.order_id.x_sale_type in ('product', 'service'):
+        if self.order_id.x_sale_type:
             domain = [('detailed_type', '=', self.order_id.x_sale_type)]
             return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                               ('company_id', '=', self.order_id.company_id)] + domain}}
@@ -340,6 +414,8 @@ class SaleOrderLine(models.Model):
                 domain = [('id', 'in', product_id.ids)]
                 return {'domain': {'product_id': [('sale_ok', '=', True), '|', ('company_id', '=', False),
                                                   ('company_id', '=', self.order_id.company_id)] + domain}}
+            else:
+                return {'domain': {'product_id': [('id', '=', 0)]}}
 
     @api.onchange('price_unit', 'discount', 'product_uom_qty')
     def compute_cart_discount_fixed_price(self):

@@ -47,8 +47,8 @@ class StockPicking(models.Model):
         for picking in self:
             for line in picking.move_ids:
                 account = line.ref_asset.asset_account.id
-                if (picking.other_export and account != picking.location_dest_id.valuation_out_account_id.id) or (
-                        picking.other_import and account != picking.location_id.valuation_in_account_id.id):
+                if (picking.other_export and account != picking.location_dest_id.with_company(picking.company_id).x_property_valuation_in_account_id.id) or (
+                        picking.other_import and account != picking.location_id.with_company(picking.company_id).x_property_valuation_out_account_id.id):
                     raise ValidationError(
                         _('Tài khoản cấu hình trong thẻ tài sản không khớp với tài khoản trong lý do xuất khác'))
         res = super().action_confirm()
@@ -102,6 +102,7 @@ class StockPicking(models.Model):
 
     #field check phiếu trả hàng:
     x_is_check_return = fields.Boolean('', default=False)
+    x_hide_return = fields.Boolean('', default=False)
 
     relation_return = fields.Char(string='Phiếu trả lại liên quan')
     move_ids_without_package = fields.One2many(
@@ -317,7 +318,6 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     po_id = fields.Char('')
-    ware_check_line = fields.Boolean('')
 
     @api.constrains('qty_done', 'picking_id.move_ids_without_package')
     def constrains_qty_done(self):

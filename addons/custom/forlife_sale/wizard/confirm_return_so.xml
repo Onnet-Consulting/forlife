@@ -12,7 +12,7 @@
                                 <tree create="0" delete="0" edit="0">
                                     <field name="picking_name"/>
                                     <field name="state"/>
-                                    <button name="action_refuse" type="object" class="oe_highlight" string="Trả hàng"/>
+                                    <button name="action_return" type="object" class="oe_highlight" string="Trả hàng"/>
                                 </tree>
                             </field>
                         </group>
