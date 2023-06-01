@@ -42,7 +42,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def get_key_by_record(self, record):
-        keys = [record.purpose_id.id, record.department_id.id, record.analytic_account_id.id, record.project_code or '']
+        keys = [record.purpose_id.id, record.department_id.id, record.analytic_account_id.id, record.asset_id.id]
         keys = [str(x) for x in keys]
         return '_'.join(keys)
 
@@ -522,9 +522,9 @@ class ImportSalaryRecord(models.TransientModel):
                     'purpose_id': purpose_by_code.get(purpose_code),
                     'department_id': department_by_code.get(department_code),
                     'analytic_account_id': analytic_by_code.get(analytic_code),
-                    'project_code': project_by_code.get(project_code) or False,
-                    'manufacture_order_code': manufacturing_by_code.get(manufacturing_code) or False,
-                    'internal_order_code': internal_order_by_code.get(internal_order_code) or False,
+                    'asset_id': project_by_code.get(project_code) or False,
+                    'production_id': manufacturing_by_code.get(manufacturing_code) or False,
+                    'occasion_code_id': internal_order_by_code.get(internal_order_code) or False,
                     'x_ttn': float(row[7]) if row[7] else False,
                     'note': row[8],
                 }
@@ -591,9 +591,9 @@ class ImportSalaryRecord(models.TransientModel):
                     'purpose_id': purpose_by_code.get(purpose_code),
                     'department_id': department_by_code.get(department_code),
                     'analytic_account_id': analytic_by_code.get(analytic_code),
-                    'project_code': project_by_code.get(project_code) or False,
-                    'manufacture_order_code': manufacturing_by_code.get(manufacturing_code) or False,
-                    'internal_order_code': internal_order_by_code.get(internal_order_code) or False,
+                    'asset_id': project_by_code.get(project_code) or False,
+                    'production_id': manufacturing_by_code.get(manufacturing_code) or False,
+                    'occasion_code_id': internal_order_by_code.get(internal_order_code) or False,
                     'x_bhxh_level': float(row[7]),
                     'x_bhxh_nld': float(row[8]),
                     'x_bhyt_nld': float(row[9]),
@@ -678,9 +678,9 @@ class ImportSalaryRecord(models.TransientModel):
                     'employee_id': employee_by_code.get(employee_code),
                     'department_id': department_by_code.get(department_code),
                     'analytic_account_id': analytic_by_code.get(analytic_code),
-                    'project_code': project_by_code.get(project_code) or False,
-                    'manufacture_order_code': manufacturing_by_code.get(manufacturing_code) or False,
-                    'internal_order_code': internal_order_by_code.get(internal_order_code) or False,
+                    'asset_id': project_by_code.get(project_code) or False,
+                    'production_id': manufacturing_by_code.get(manufacturing_code) or False,
+                    'occasion_code_id': internal_order_by_code.get(internal_order_code) or False,
                     'x_kq': float(row[9]),
                     'x_tkdp': float(row[10]),
                     'x_pvp': float(row[11]),

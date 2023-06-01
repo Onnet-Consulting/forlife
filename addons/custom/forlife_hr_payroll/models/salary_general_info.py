@@ -28,7 +28,8 @@ class SalaryGeneralInfo(models.AbstractModel):
     _sql_constraints = [
         (
             'unique_value',
-            'UNIQUE(salary_record_id, purpose_id, department_id, analytic_account_id, asset_id, production_id, occasion_code_id)',
+            'UNIQUE(salary_record_id, purpose_id, department_id, analytic_account_id, '
+            'asset_id, production_id, occasion_code_id)',
             'The combination of Reference, Salary calculation purpose, Department, Cost Center, '
             'Project Code, Manufacture Order Code and Internal Order Code must be unique !'
         )
