@@ -67,6 +67,7 @@ class SplitProduct(models.Model):
             'uom_po_id': rec.product_id.uom_po_id.id,
             'taxes_id': [(6, 0, rec.product_id.taxes_id.ids)],
             'categ_id': rec.product_id.categ_id.id,
+            'standard_price': rec.product_id.standard_price
         }
 
         product = self.env['product.product'].create(vals)
@@ -189,7 +190,7 @@ class SpilitProductLine(models.Model):
     product_quantity_split = fields.Integer('Số lượng phân tách', required=True)
     product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', required=True, related='product_id.uom_id')
     warehouse_in_id = fields.Many2one('stock.warehouse', 'Kho nhập', required=True)
-    unit_price = fields.Float('Đơn giá', readonly=True)
+    unit_price = fields.Float('Đơn giá', readonly=True, related='product_id.standard_price')
     value = fields.Float('Giá trị', readonly=True)
 
     @api.constrains('product_quantity_split')
@@ -222,7 +223,7 @@ class SpilitProductLineSub(models.Model):
     warehouse_in_id = fields.Many2one('stock.warehouse', 'Kho nhập', readonly=True, required=True)
     quantity = fields.Integer('Số lượng', required=True)
     product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', readonly=True)
-    unit_price = fields.Float('Đơn giá', readonly=True)
+    unit_price = fields.Float('Đơn giá', readonly=True, related='product_new_id.standard_price')
     value = fields.Float('Giá trị', readonly=True)
 
     @api.constrains('quantity')
