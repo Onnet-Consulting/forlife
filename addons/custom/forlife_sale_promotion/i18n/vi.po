@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-31 19:00+0000\n"
-"PO-Revision-Date: 2023-05-31 19:00+0000\n"
+"POT-Creation-Date: 2023-06-01 10:53+0000\n"
+"PO-Revision-Date: 2023-06-01 10:53+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -56,6 +56,11 @@ msgstr "Kiểm tra khuyến mãi"
 #: model:ir.model.fields.selection,name:forlife_sale_promotion.selection__sale_order__state__check_promotion
 msgid "Check promotion"
 msgstr "Kiểm tra khuyến mãi"
+
+#. module: forlife_sale_promotion
+#: model_terms:ir.ui.view,arch_db:forlife_sale_promotion.sale_order_form_sale_promotion
+msgid "Confirm"
+msgstr "Xác nhận"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__create_uid
@@ -170,7 +175,7 @@ msgstr ""
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_check_promotion_wizard__message
 msgid "Message"
-msgstr ""
+msgstr "Tin nhắn"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move__move_id
@@ -292,7 +297,7 @@ msgstr "Trạng thái"
 #. module: forlife_sale_promotion
 #: model:ir.model,name:forlife_sale_promotion.model_stock_move
 msgid "Stock Move"
-msgstr ""
+msgstr "Dịch chuyển kho"
 
 #. module: forlife_sale_promotion
 #: model:ir.model.fields,field_description:forlife_sale_promotion.field_account_move_promotion__value
