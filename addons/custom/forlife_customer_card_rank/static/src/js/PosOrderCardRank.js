@@ -128,8 +128,9 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         let oldQty = this.quantity;
         let result = super.set_quantity(...arguments);
         if (oldQty !== this.quantity) {
-            this.order.action_reset_card_rank_program();
+            this.action_reset_card_rank();
         }
+        this._recompute_card_rank_disc();
         return result;
     }
 
@@ -137,9 +138,20 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         let oldDiscount = this.get_discount();
         let result = super.set_discount(...arguments);
         if (oldDiscount !== this.discount) {
-            this.order.action_reset_card_rank_program();
+            this.action_reset_card_rank();
         }
         return result;
+    }
+
+    // Một số trường hợp quantity thay đổi nhưng giá trị 'card_rank_discount' chưa recompute theo quantity tương ứng,
+    // do đó, recompute card_rank_discount trên orderline mỗi khi gọi method set_quantity
+    _recompute_card_rank_disc() {
+        if (this.card_rank_applied && this.order.card_rank_program) {
+            let line_data = this.get_discount_detail(this.order.card_rank_program);
+            if (line_data.card_rank_disc > 0) {
+                this.action_apply_card_rank(line_data);
+            };
+        };
     }
 
     action_apply_card_rank(line_data) {
