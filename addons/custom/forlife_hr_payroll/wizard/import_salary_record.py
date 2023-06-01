@@ -455,7 +455,7 @@ class ImportSalaryRecord(models.TransientModel):
                     'purpose_id': purpose_by_code.get(purpose_code),
                     'department_id': department_by_code.get(department_code),
                     'analytic_account_id': analytic_by_code.get(analytic_code),
-                    'project_code': project_by_code.get(project_code) or False,
+                    'asset_id': project_by_code.get(project_code) or False,
                     'x_slns': float(row[5]) if row[5] else False,
                 }
                 res.append(value)

@@ -13,9 +13,16 @@ class SalaryRecordMain(models.Model):
     purpose_id = fields.Many2one('salary.record.purpose', string='Purpose', required=True, ondelete='restrict')
     department_id = fields.Many2one('hr.department', string='Department', required=True, ondelete="restrict")
     analytic_account_id = fields.Many2one('account.analytic.account', string='Cost Center', required=True, ondelete="restrict")
+
+    asset_id = fields.Many2one('assets.assets', string='Project Code', ondelete="restrict")
+    production_id = fields.Many2one('forlife.production', string='Manufacture Order Code', ondelete="restrict")
+    occasion_code_id = fields.Many2one('occasion.code', string='Internal Order Code', ondelete="restrict")
+
+    # FIXME: delete project_code, manufacture_order_code, internal_order_code
     project_code = fields.Char(string='Project Code')
     manufacture_order_code = fields.Char(string='Manufacture Order Code')
     internal_order_code = fields.Char(string='Internal Order Code')
+    # =========================================
     x_ttn = fields.Float(string="Tổng thu nhập", required=True, compute="_compute_values")
     x_kq = fields.Float(string="Ký quỹ", compute="_compute_values")
     x_tkdp = fields.Float(string="TKDP", compute="_compute_values")
@@ -120,8 +127,8 @@ class SalaryRecordMain(models.Model):
 
     _sql_constraints = [
         (
-            'unique_combination',
-            'UNIQUE(salary_record_id,purpose_id,department_id,analytic_account_id,project_code)',
+            'unique_combination_value',
+            'UNIQUE(salary_record_id,purpose_id,department_id,analytic_account_id,asset_id)',
             'The combination of Reference, Purpose, Department, Cost Center and Project Code must be unique !'
         )
     ]
