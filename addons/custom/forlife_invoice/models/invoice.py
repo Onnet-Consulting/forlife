@@ -694,6 +694,8 @@ class AccountMoveLine(models.Model):
                     'tax_amount': amount_tax,
                     'price_total': amount_untaxed + amount_tax,
                 })
+        else:
+            pass
 
     def _convert_to_tax_base_line_dict(self):
         self.ensure_one()
@@ -709,6 +711,8 @@ class AccountMoveLine(models.Model):
                 discount=self.discount_percent,
                 price_subtotal=self.price_subtotal,
             )
+        else:
+            pass
 
     def _get_discounted_price_unit(self):
         self.ensure_one()

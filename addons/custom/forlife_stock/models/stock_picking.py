@@ -318,6 +318,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     po_id = fields.Char('')
+    ref_asset = fields.Many2one('assets.assets', 'Thẻ tài sản')
 
     @api.constrains('qty_done', 'picking_id.move_ids_without_package')
     def constrains_qty_done(self):
