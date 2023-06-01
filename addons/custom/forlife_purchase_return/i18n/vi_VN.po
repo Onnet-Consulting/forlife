@@ -109,7 +109,7 @@ msgstr "Địa điểm trả hàng"
 #: code:addons/forlife_purchase_return/wizard/purchase_return_wizard.py:0
 #, python-format
 msgid "Return of %s"
-msgstr "Trả hàng của %S"
+msgstr "Trả hàng của %s"
 
 #. module: forlife_purchase_return
 #. odoo-python
