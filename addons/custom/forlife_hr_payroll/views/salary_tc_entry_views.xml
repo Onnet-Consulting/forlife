@@ -11,7 +11,7 @@
                             <field name="entry_type"/>
                             <field name="analytic_account_id"
                                    attrs="{'invisible':[('entry_type', '!=', 'analytic')], 'required': [('entry_type', '=', 'analytic')]}"/>
-                            <field name="assets_id"
+                            <field name="asset_id"
                                    attrs="{'invisible':[('entry_type', '!=', 'asset')], 'required': [('entry_type', '=', 'asset')]}"/>
                             <field name="from_date"/>
                             <field name="to_date"/>
@@ -30,7 +30,7 @@
             <tree>
                 <field name="entry_type"/>
                 <field name="analytic_account_id"/>
-                <field name="assets_id"/>
+                <field name="asset_id"/>
                 <field name="from_date"/>
                 <field name="to_date"/>
                 <field name="company_id"/>

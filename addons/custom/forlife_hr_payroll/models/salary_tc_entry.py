@@ -10,6 +10,7 @@ class SalaryTcEntry(models.Model):
     entry_type = fields.Selection([('analytic', 'CC'), ('asset', 'AUC')], string='Type',
                                   default='analytic', required=True)
     analytic_account_id = fields.Many2one('account.analytic.account', string='Cost Center', check_company=True)
+    asset_id = fields.Many2one('assets.assets', string='Project Code', check_company=True)
     assets_id = fields.Many2one('assets.assets', string='Project Code', check_company=True)
     from_date = fields.Date(string='From Date', required=True)
     to_date = fields.Date(string='To Date', required=True)
