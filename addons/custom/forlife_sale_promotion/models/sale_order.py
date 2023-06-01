@@ -21,7 +21,7 @@ class SaleOrder(models.Model):
 
     def check_sale_promotion(self):
         for rec in self:
-            if rec.order_line and rec.state in ["sale", "check_promotion"]:
+            if rec.order_line and rec.state in ["draft", 'sent', "check_promotion"]:
                 rec.promotion_ids = [Command.clear()]
                 if rec.x_sale_chanel == "online":
                     rec.write({"state": "check_promotion"})
@@ -30,13 +30,13 @@ class SaleOrder(models.Model):
                     # note = BeautifulSoup(rec.note, "lxml").text.replace('&nbsp;', '').strip()
                     # đơn hàng có tôn tại Lấy 3 ký tự đầu tiên của note thỏa với '#mn'
 
-                    line_gift_mn = []
+                    has_vip = False
                     if note and note.lower().find('#mn') >= 0:
                         barcode_str = note[note.lower().find('#mn') + 3:].strip()
                         barcode = re.split(' |,', barcode_str)[0]
                         if len(rec.order_line) == 1 and rec.order_line[0].product_uom_qty == 1 and not rec.order_line[0].is_reward_line:
                             # if rec.order_line[0].product_uom_qty == 1:
-                            rec.order_line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
+                            rec.order_line.write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
                             # elif rec.order_line[0].product_uom_qty > 1:
                             #     rec.order_line[0].write({'product_uom_qty': rec.order_line[0].product_uom_qty - 1})
                             #     rec.order_line[0].copy(
@@ -56,12 +56,12 @@ class SaleOrder(models.Model):
                                 action['context'] = {'default_message': _("Order note '#MN' invalid!")}
                                 return action
                             elif line.product_uom_qty == 1:
-                                line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
+                                line.write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
                             elif line.product_uom_qty > 1:
                                 line.write({'product_uom_qty': line.product_uom_qty - 1})
                                 line.copy(
                                     {'x_free_good': True, 'order_id': line.order_id.id,
-                                     'product_uom_qty': 1, 'price_unit': 0, 'x_cart_discount_fixed_price': 0}
+                                     'product_uom_qty': 1, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0}
                                 )
                     if note and note.lower().find('#vip') >= 0:
                         vip_text = note[note.lower().find('#vip') + 4:]
@@ -75,6 +75,8 @@ class SaleOrder(models.Model):
                                 ghn_price_unit = ln.price_unit
                                 price_percent = int(vip_number) / 100 * ghn_price_unit * ln.product_uom_qty
                                 gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                has_vip = True
                                 if not ln.x_free_good and not ln.is_reward_line and price_percent > 0:
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': ln.product_id.id,
@@ -87,7 +89,7 @@ class SaleOrder(models.Model):
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': ln.product_id.id,
                                         'value': ln.x_cart_discount_fixed_price - price_percent,
-                                        'account_id': gift_account_id and gift_account_id.id,
+                                        'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu hạng thẻ"
                                     })]
@@ -104,8 +106,10 @@ class SaleOrder(models.Model):
                         odoo_price_unit = ln.odoo_price_unit
                         diff_price_unit = odoo_price_unit - ln.price_unit  # thay 0 thanhf don gia Nhanh khi co truong
                         diff_price = diff_price_unit * ln.product_uom_qty
+                        gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
                         discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
-                        if ln.x_cart_discount_fixed_price > 0 and not ln.x_free_good and not ln.is_reward_line:
+
+                        if not has_vip and ln.x_cart_discount_fixed_price > 0 and not ln.x_free_good and not ln.is_reward_line:
                             rec.promotion_ids = [(0, 0, {
                                 'product_id': ln.product_id.id,
                                 'value': ln.x_cart_discount_fixed_price,
@@ -117,7 +121,7 @@ class SaleOrder(models.Model):
                             rec.promotion_ids = [(0, 0, {
                                 'product_id': ln.product_id.id,
                                 'value': diff_price,
-                                'account_id': discount_account_id and discount_account_id.id,
+                                'account_id': gift_account_id and gift_account_id.id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                 'description': "Chiết khấu khuyến mãi"
                             })]
@@ -154,7 +158,7 @@ class SaleOrder(models.Model):
             for line in rec.order_line:
                 if line.is_reward_line:
                     if line.reward_id.reward_type == "product":
-                        line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
+                        line.write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
             return res
 
 class SaleOrderLine(models.Model):

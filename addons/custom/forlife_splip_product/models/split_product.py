@@ -53,6 +53,7 @@ class SplitProduct(models.Model):
                         'warehouse_in_id': rec.warehouse_in_id.id,
                         'quantity': 1,
                         'product_uom_split': rec.product_uom_split.id,
+                        'parent_id': rec.id
                     })
         self.env['split.product.line.sub'].create(vals_list)
         self.state = 'in_progress'
@@ -78,7 +79,7 @@ class SplitProduct(models.Model):
         self.ensure_one()
         for rec in self.split_product_line_ids:
             for r in self.split_product_line_sub_ids:
-                if r.product_id == rec.product_id:
+                if r.product_id == rec.product_id and r.parent_id.id == rec.id:
                     rec.product_quantity_out += r.quantity
                 product = self._create_product(r)
                 r.product_new_id = product.id
@@ -144,8 +145,6 @@ class SplitProduct(models.Model):
                 'split_product_id': self.id,
                 'move_ids_without_package': data
             })
-        for p in pickings:
-            p.button_validate()
         return pickings
 
     def create_orther_export(self, pk_type, company):
@@ -169,8 +168,6 @@ class SplitProduct(models.Model):
                 'split_product_id': self.id,
                 'move_ids_without_package': data
             })
-        for p in pickings:
-            p.button_validate()
         return pickings
 
 
@@ -206,12 +203,14 @@ class SpilitProductLineSub(models.Model):
 
     @api.model
     def create(self, vals_list):
+        if vals_list.get('name', 'New') == 'New':
+            vals_list['name'] = self.env['ir.sequence'].next_by_code('split.product.line.sub.name') or 'New'
         res = super(SpilitProductLineSub, self).create(vals_list)
         if res.product_split == 'New':
             sequence = self.env['ir.sequence'].next_by_code('split.product.line.sub')
             res.product_split = f"{res.product_id.name_get()[0][1]} {sequence}"
         return res
-
+    name = fields.Char('Sản phẩm phân tách', default="New", readonly=True, required=True)
     state = fields.Selection(
         [('new', 'New'), ('in_progress', 'In Progress'), ('done', 'Done'), ('canceled', 'Canceled')],
         related='split_product_id.state',
@@ -225,6 +224,7 @@ class SpilitProductLineSub(models.Model):
     product_uom_split = fields.Many2one('uom.uom', 'DVT SL phân tách', readonly=True)
     unit_price = fields.Float('Đơn giá', readonly=True, related='product_new_id.standard_price')
     value = fields.Float('Giá trị', readonly=True)
+    parent_id = fields.Many2one('split.product.line')
 
     @api.constrains('quantity')
     def constrains_quantity(self):
