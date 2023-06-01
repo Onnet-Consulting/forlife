@@ -15,6 +15,7 @@
     'depends': [
         'point_of_sale',
         'forlife_stock',
+        'mail'
     ],
     'assets': {
         'point_of_sale.assets': [
@@ -27,5 +28,6 @@
         'views/product_combo_views.xml',
         'security/ir.model.access.csv',
         'data/ir_sequence.xml',
+        'data/mail_template_data.xml'
     ],
 }
