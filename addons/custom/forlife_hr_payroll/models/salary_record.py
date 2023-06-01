@@ -235,11 +235,14 @@ class SalaryRecord(models.Model):
         return accounting_values_by_entry
 
     def generate_account_moves(self):
+        # FIXME: re-check create moves with and without tc
         self.ensure_one()
         accounting_values_by_entry = {}
         accounting_line_by_entry = {}
+        accounting_line_by_entry_with_tc = {}
         entry_by_id = {}
         for line in self.salary_accounting_ids:
+            is_tc_entry_line = line.is_tc_entry
             line_value = dict(
                 partner_id=line.partner_id.id,
                 account_id=line.account_id.id,
@@ -249,16 +252,25 @@ class SalaryRecord(models.Model):
                 asset_id=line.asset_id.id,
                 work_order=line.production_id.id,
                 occasion_code_id=line.occasion_code_id.id,
+                is_tc_entry=is_tc_entry_line
             )
             entry = line.entry_id
             entry_id = entry.id
             entry_by_id[entry_id] = entry
             if entry_id not in accounting_values_by_entry:
                 accounting_values_by_entry[entry_id] = [line_value]
-                accounting_line_by_entry[entry_id] = line
+                if is_tc_entry_line:
+                    accounting_line_by_entry_with_tc[entry_id] = line
+                else:
+                    accounting_line_by_entry[entry_id] = line
+
             else:
                 accounting_values_by_entry[entry_id].append(line_value)
-                accounting_line_by_entry[entry_id] |= line
+                if is_tc_entry_line:
+                    accounting_line_by_entry_with_tc[entry_id] |= line
+                else:
+                    accounting_line_by_entry[entry_id] |= line
+
 
         account_move = self.env['account.move']
         accounting_date = self.get_accounting_date()
@@ -273,15 +285,37 @@ class SalaryRecord(models.Model):
 
         for entry_id, move_lines in accounting_values_by_entry.items():
             entry = entry_by_id[entry_id]
-            move_value = account_move_value.copy()
-            move_value.update({
-                'ref2': entry.show_name,
-                'line_ids': [(0, 0, line_value) for line_value in move_lines]
-            })
-            move = account_move.create(move_value)
-            move.action_post()
-            accounting_lines = accounting_line_by_entry[entry_id]
-            accounting_lines.write({'move_id': move.id})
+            move_lines_is_not_tc = []
+            move_lines_is_tc = []
+            for line_value in move_lines:
+                is_tc = line_value.pop('is_tc_entry')
+                if is_tc:
+                    move_lines_is_tc.append(line_value)
+                else:
+                    move_lines_is_not_tc.append(line_value)
+            # create move tc
+            if move_lines_is_tc:
+                move_value = account_move_value.copy()
+                move_value.update({
+                    'ref2': entry.show_name,
+                    'line_ids': [(0, 0, line_value) for line_value in move_lines_is_tc]
+                })
+                move = account_move.create(move_value)
+                move.action_post()
+                accounting_lines = accounting_line_by_entry_with_tc[entry_id]
+                accounting_lines.write({'move_id': move.id})
+
+            # create move without tc
+            if move_lines_is_not_tc:
+                move_value = account_move_value.copy()
+                move_value.update({
+                    'ref2': entry.show_name,
+                    'line_ids': [(0, 0, line_value) for line_value in move_lines_is_not_tc]
+                })
+                move = account_move.create(move_value)
+                move.action_post()
+                accounting_lines = accounting_line_by_entry[entry_id]
+                accounting_lines.write({'move_id': move.id})
         return True
 
     def reverse_account_moves(self):
