@@ -1009,16 +1009,16 @@ class PurchaseOrder(models.Model):
                     account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
                     line.account_id = account_id
             # 3.1) ẩn nút trả hàng khi hóa đơn của pnk đã tồn tại
-            if moves:
-                for item in moves:
-                    if item.state == 'posted':
-                        picking_in_return = self.env['stock.picking'].search([('origin', '=', self.name),
-                                                                              ('x_is_check_return', '=', True)
-                                                                              ])
-                        for nine in item.receiving_warehouse_id:
-                            nine.x_hide_return = True
-                        for line in picking_in_return:
-                            line.x_hide_return = True
+            # if moves:
+            #     for item in moves:
+            #         if item.state == 'posted':
+            #             picking_in_return = self.env['stock.picking'].search([('origin', '=', self.name),
+            #                                                                   ('x_is_check_return', '=', True)
+            #                                                                   ])
+            #             for nine in item.receiving_warehouse_id:
+            #                 nine.x_hide_return = True
+            #             for line in picking_in_return:
+            #                 line.x_hide_return = True
 
             for line in moves.invoice_line_ids:
                 if line.product_id:
