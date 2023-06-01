@@ -17,6 +17,7 @@
                     <field name="asset_id"/>
                     <field name="production_id"/>
                     <field name="occasion_code_id"/>
+                    <field name="is_tc_entry"/>
                     <field name="move_id" options='{"no_open": True, "no_create": True}'/>
                     <field name="reverse_move_id"/>
                 </tree>

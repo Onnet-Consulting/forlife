@@ -182,6 +182,7 @@ class SalaryRecord(models.Model):
         self.env['save.change.log'].create_log(records=self, message=_('Posted'))
 
     def get_accounting_date(self):
+        self.ensure_one()
         start_of_month = datetime.strptime('%s-%s-01' % (self.year, self.month), DF).date()
         end_of_month = date_utils.end_of(start_of_month, 'month')
         return end_of_month

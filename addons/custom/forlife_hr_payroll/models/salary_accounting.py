@@ -40,16 +40,20 @@ class SalaryAccounting(models.Model):
     reverse_move_id = fields.Many2one('account.move', string='Reverse Odoo FI')
     is_tc_entry = fields.Boolean(string='TC Entry', compute='_compute_is_tc_entry', store=True)
 
-    @api.depends('analytic_account_id', 'asset_id')
+    @api.depends('analytic_account_id', 'asset_id', 'salary_record_id')
     def _compute_is_tc_entry(self):
         for rec in self:
+            accounting_date = rec.salary_record_id.get_accounting_date()
             rec.is_tc_entry = bool(self.env['salary.tc.entry'].search([
-                '|', '&',
+                '&', '|', '&',
                 ('entry_type', '=', 'analytic'),
                 ('analytic_account_id', '=', rec.analytic_account_id.id),
                 '&',
                 ('entry_type', '=', 'asset'),
-                ('asset_id', '=', rec.asset_id.id)
+                ('asset_id', '=', rec.asset_id.id),
+                '&',
+                ('from_date', '<=', accounting_date),
+                ('to_date', '>=', accounting_date)
             ], limit=1))
 
     @api.depends('record')
