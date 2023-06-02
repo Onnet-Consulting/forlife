@@ -15,8 +15,6 @@
 
     'category': 'Human Resources/Payroll',
 
-    # FIXME: uncomment 'forlife_invoice' module in depends section
-    # I cannot add it now because this module contains a lot of bugs
     'depends': [
         'forlife_base',
         'account',
@@ -25,7 +23,7 @@
         'l10n_vn',
         'forlife_pos_app_member',
         'forlife_purchase',
-        # 'forlife_invoice',
+        'forlife_invoice',
     ],
 
     'data': [

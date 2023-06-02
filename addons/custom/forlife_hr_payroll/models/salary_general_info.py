@@ -20,11 +20,6 @@ class SalaryGeneralInfo(models.AbstractModel):
     production_id = fields.Many2one('forlife.production', string='Manufacture Order Code')
     occasion_code_id = fields.Many2one('occasion.code', string='Internal Order Code')
 
-    # FIXME: delete project_code, manufacture_order_code, internal_order_code fields below
-    project_code = fields.Char(string='Project Code')
-    manufacture_order_code = fields.Char(string='Manufacture Order Code')
-    internal_order_code = fields.Char(string='Internal Order Code')
-
     _sql_constraints = [
         (
             'unique_value',

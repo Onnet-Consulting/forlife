@@ -8,20 +8,19 @@ class SalaryRecordMain(models.Model):
     _name = 'salary.record.main'
     _description = 'Salary Record Main'  # LƯƠNG
 
-    salary_record_id = fields.Many2one('salary.record', string='Reference', ondelete="cascade", required=True, copy=False)
-    company_id = fields.Many2one('res.company', related='salary_record_id.company_id', string='Company', store=True, readonly=True)
+    salary_record_id = fields.Many2one('salary.record', string='Reference', ondelete="cascade", required=True,
+                                       copy=False)
+    company_id = fields.Many2one('res.company', related='salary_record_id.company_id', string='Company', store=True,
+                                 readonly=True)
     purpose_id = fields.Many2one('salary.record.purpose', string='Purpose', required=True, ondelete='restrict')
     department_id = fields.Many2one('hr.department', string='Department', required=True, ondelete="restrict")
-    analytic_account_id = fields.Many2one('account.analytic.account', string='Cost Center', required=True, ondelete="restrict")
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Cost Center', required=True,
+                                          ondelete="restrict")
 
     asset_id = fields.Many2one('assets.assets', string='Project Code', ondelete="restrict")
     production_id = fields.Many2one('forlife.production', string='Manufacture Order Code', ondelete="restrict")
     occasion_code_id = fields.Many2one('occasion.code', string='Internal Order Code', ondelete="restrict")
 
-    # FIXME: delete project_code, manufacture_order_code, internal_order_code fields below
-    project_code = fields.Char(string='Project Code')
-    manufacture_order_code = fields.Char(string='Manufacture Order Code')
-    internal_order_code = fields.Char(string='Internal Order Code')
     # =========================================
     x_ttn = fields.Float(string="Tổng thu nhập", required=True, compute="_compute_values")
     x_kq = fields.Float(string="Ký quỹ", compute="_compute_values")
@@ -119,7 +118,8 @@ class SalaryRecordMain(models.Model):
             record.x_tk = x_tk
 
             x_ttn = sum(record.total_income_ids.mapped('x_ttn'))
-            x_tt = sum([x_kq, x_tkdp, x_pvp, x_tthh, x_thl, x_dpfm, x_pds, x_ttl, x_ttpc, x_tu, x_ttbh, x_tk, x_tbh_nld, x_cdp_nld, x_tncn])
+            x_tt = sum([x_kq, x_tkdp, x_pvp, x_tthh, x_thl, x_dpfm, x_pds, x_ttl, x_ttpc, x_tu, x_ttbh, x_tk, x_tbh_nld,
+                        x_cdp_nld, x_tncn])
             x_tl = x_ttn - x_tt
             record.x_ttn = x_ttn
             record.x_tt = x_tt
