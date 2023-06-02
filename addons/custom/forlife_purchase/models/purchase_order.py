@@ -1584,11 +1584,6 @@ class PurchaseOrderLine(models.Model):
             'sequence': self.sequence,
         }
 
-    def _prepare_account_move_line(self):
-        if self.product_id.product_tmpl_id.is_trade_discount and self.price_unit > 0:
-            raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
-        return super(PurchaseOrderLine, self)._prepare_account_move_line()
-
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
