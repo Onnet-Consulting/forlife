@@ -1,0 +1,23 @@
+<odoo>
+        <record id="check_promotion_wizard_form" model="ir.ui.view">
+            <field name="name">check.promotion.wizard.form</field>
+            <field name="model">check.promotion.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Reason">
+                        <field name="message" readonly="True" nolabel="1" style="color:Red;font-size: 20px"/>
+                    <footer>
+                        <button name="action_ok" string="ok" type="object" class="btn-primary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_check_promotion_wizard" model="ir.actions.act_window">
+            <field name="name">Check promotion</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">check.promotion.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="check_promotion_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+</odoo>
