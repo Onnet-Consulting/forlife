@@ -43,9 +43,9 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 for (let usage of line.promotion_usage_ids) {
                     let pro_str_id = usage.str_id;
                     if (result.hasOwnProperty(usage.str_id)) {
-                        result[usage.str_id].push([line.quantity, usage, line.product.id, line.selectedReward]);
+                        result[usage.str_id].push([line.quantity, usage, line.product.id, line.is_reward_line]);
                     } else {
-                        result[usage.str_id] = [[line.quantity, usage, line.product.id, line.selectedReward]];
+                        result[usage.str_id] = [[line.quantity, usage, line.product.id, line.is_reward_line]];
                     };
                 };
             };
@@ -181,14 +181,11 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                 option.applied_qty = 0;
                 let reward_products = new Set(this.env.pos.get_valid_reward_code_promotion(option.program));
                 if (this.combo_details[option.id]) {
-                    let applied_reward_qty = this.combo_details[option.id].filter(l => reward_products.has(l[2])).reduce((tmp, line) => tmp + line[0], 0);
+                    let applied_reward_qty = this.combo_details[option.id].filter(l => reward_products.has(l[2]) && l[3]).reduce((tmp, line) => tmp + line[0], 0);
                     option.applied_qty = applied_reward_qty;
                     let max_reward_qty = option.program.reward_quantity * (option.isSelected && option.numberCombo || option.forecastedNumber);
-                    let applied_reward_qty_added = this.combo_details[option.id]
-                                                        .filter(l => reward_products.has(l[2]) && !l[3])
-                                                        .reduce((tmp, line) => tmp + line[0], 0);
-                    option.remaining_reward_qty = max_reward_qty - applied_reward_qty_added;
-                    if (max_reward_qty > applied_reward_qty_added) {
+                    option.remaining_reward_qty = max_reward_qty - applied_reward_qty;
+                    if (max_reward_qty > applied_reward_qty) {
                         option.need_of_reward_selection = true;
                     };
                 } else {
