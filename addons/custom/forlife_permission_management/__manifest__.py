@@ -14,7 +14,6 @@
         'forlife_stock',
         'forlife_pos_product_change_refund',
         'point_of_sale',
-        'forlife_pos_product_change_refund',
     ],
     'installable': True,
     'auto_install': True,
