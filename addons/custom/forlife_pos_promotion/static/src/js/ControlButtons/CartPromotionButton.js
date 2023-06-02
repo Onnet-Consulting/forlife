@@ -14,7 +14,6 @@ export class CartPromotionButton extends PosComponent {
     }
 
     _prepareRewardData(programOptions) {
-        let orderlines = this.env.pos.get_order().get_orderlines();
         let reward_data = {}
         for (let option of programOptions) {
             if (option.program.reward_type != 'cart_get_voucher' && option.isSelected && option.reward_line_vals.some(l => l.isSelected && l.quantity > 0)) {
@@ -27,7 +26,7 @@ export class CartPromotionButton extends PosComponent {
 
     _applyCartPromotion(optionPrograms) {
         const order = this.env.pos.get_order();
-        let orderLines = order.get_orderlines();
+        let orderLines = order.get_orderlines_to_check();
         let selections = this._prepareRewardData(optionPrograms);
         let [newLines, remainingOrderLines] = order.computeForListOfCartProgram(orderLines, selections);
 
@@ -40,22 +39,23 @@ export class CartPromotionButton extends PosComponent {
         };
 
         for (let optionPro of optionPrograms) {
-            if (optionPro.program.reward_type == 'cart_get_x_free' && optionPro.additional_reward_product_id && optionPro.additional_reward_product_qty > 0) {
-                let product = this.env.pos.db.get_product_by_id(optionPro.additional_reward_product_id)
-                let line = order._createLineFromVals({
-                    product: product,
-                    quantity: optionPro.additional_reward_product_qty,
-                    tax_ids: product.tax_ids,
-                    merge: false,
-                    price: round_decimals(product.lst_price, this.env.pos.currency.decimal_places)
-                });
-                let to_apply_lines = order._apply_cart_program_to_orderline(optionPro.program, [line]);
-                to_apply_lines.forEach( newLine => {
-                    let options = order._getNewLineValuesAfterDiscount(newLine);
-                    options['is_reward_line'] = true;
-                    order.orderlines.add(order._createLineFromVals(options));
-                });
-            } else if (optionPro.program.reward_type == 'cart_get_voucher' && optionPro.voucher_program_id) {
+//            if (optionPro.program.reward_type == 'cart_get_x_free' && optionPro.additional_reward_product_id && optionPro.additional_reward_product_qty > 0) {
+//                let product = this.env.pos.db.get_product_by_id(optionPro.additional_reward_product_id)
+//                let line = order._createLineFromVals({
+//                    product: product,
+//                    quantity: optionPro.additional_reward_product_qty,
+//                    tax_ids: product.tax_ids,
+//                    merge: false,
+//                    price: round_decimals(product.lst_price, this.env.pos.currency.decimal_places)
+//                });
+//                let to_apply_lines = order._apply_cart_program_to_orderline(optionPro.program, [line]);
+//                to_apply_lines.forEach( newLine => {
+//                    let options = order._getNewLineValuesAfterDiscount(newLine);
+//                    options['is_reward_line'] = true;
+//                    order.orderlines.add(order._createLineFromVals(options));
+//                });
+//            } else
+            if (optionPro.program.reward_type == 'cart_get_voucher' && optionPro.voucher_program_id) {
                 order.reward_voucher_program_id = optionPro.voucher_program_id[0];
                 order.cart_promotion_program_id = optionPro.program.id;
             }
@@ -68,6 +68,9 @@ export class CartPromotionButton extends PosComponent {
                 line.set_quantity(line.get_quantity());
             };
         });
+        if (order._checkHasNotExistedLineOnOldData()) {
+            order.resetPointOrder();
+        };
         this.env.pos.no_reset_program = false;
     }
 
@@ -75,7 +78,7 @@ export class CartPromotionButton extends PosComponent {
         const order = this.env.pos.get_order();
         // Reset Cart Program
         order._resetCartPromotionPrograms();
-        let orderLines = order.get_orderlines();
+        let orderLines = order.get_orderlines_to_check();
         let programs = order.verifyCardProgramOnOrder(orderLines);
         const { confirmed, payload } = await this.showPopup('CartPromotionPopup', {
             title: this.env._t('Please select some program'),
@@ -94,7 +97,7 @@ ProductScreen.addControlButton({
     component: CartPromotionButton,
     condition: function() {
         let order = this.env.pos.get_order()
-        return order.verifyCardProgramOnOrder(order.get_orderlines()).length > 0;
+        return order.verifyCardProgramOnOrder(order.get_orderlines_to_check()).length > 0;
     }
 });
 
