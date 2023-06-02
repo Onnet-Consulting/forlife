@@ -53,7 +53,7 @@
                 <field name="location_id" position="replace">
                     <field name="location_id" string="Kho nhận" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', True),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
                     <field name="location_id" string="Trả từ kho" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', False),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
-                    <field name="warehouse_material" domain="[('type_other', '!=', False), ('company_id', '=', company_id)]"  attrs="{'invisible': [('is_return', '=', False)], 'required' : [('is_return', '=', True), ('order_line_production_order', '!=', [])]}"/>
+                    <field name="warehouse_material" domain="[('type_other', '!=', None)]"  attrs="{'invisible': [('is_return', '=', False)], 'required' : [('is_return', '=', True), ('order_line_production_order', '!=', [])]}"/>
                 </field>
 
 
