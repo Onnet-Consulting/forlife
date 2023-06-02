@@ -100,6 +100,14 @@ odoo.define('forlife_pos_product_change_refund.Orderline', function(require) {
 			}
 
             async sendApprove(event) {
+                if (this.props.line.reason_refund_id === 0 || this.props.line.get_quantity() === 0) {
+                    await this.showPopup('ErrorPopup', {
+                        title: this.env._t('Warning'),
+                        body: this.env._t("Please select reason refund and set quantity!")
+                    });
+                    return;
+                }
+
                 var obj = {};
                 var line = {};
                 var order = this.env.pos.get_order();

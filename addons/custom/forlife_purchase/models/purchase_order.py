@@ -332,6 +332,9 @@ class PurchaseOrder(models.Model):
 
     def action_confirm(self):
         for record in self:
+            product_discount_tax = self.env.ref('forlife_purchase.product_discount_tax', raise_if_not_found=False)
+            if product_discount_tax and any(line.product_id.id == product_discount_tax.id and line.price_unit > 0 for line in record.order_line):
+                raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
             record.write({'custom_state': 'confirm'})
 
     def action_approved(self):
@@ -458,7 +461,6 @@ class PurchaseOrder(models.Model):
             else:
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'to invoice'})
-
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
         company_partner = self.env['res.partner'].search([('internal_code', '=', '3001')], limit=1)
@@ -869,16 +871,16 @@ class PurchaseOrder(models.Model):
                     # Invoice line values (keep only necessary sections).
                     for line in order.order_line:
                         wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
-                                                                                           and w.product_id.id == line.product_id.id
-                                                                                           and w.picking_type_id.code == 'incoming'
-                                                                                           and w.picking_id.x_is_check_return == False)
+                                                                                 and w.product_id.id == line.product_id.id
+                                                                                 and w.picking_type_id.code == 'incoming'
+                                                                                 and w.picking_id.x_is_check_return == False)
                         if wave:
                             for wave_item in wave:
                                 purchase_return = picking_in_return.move_line_ids_without_package.filtered(
                                     lambda r: str(r.po_id) == str(wave_item.po_id)
-                                              and r.product_id.id == wave_item.product_id.id
-                                              and r.picking_id.relation_return == wave_item.picking_id.name
-                                              and r.picking_id.x_is_check_return == True)
+                                    and r.product_id.id == wave_item.product_id.id
+                                    and r.picking_id.relation_return == wave_item.picking_id.name
+                                    and r.picking_id.x_is_check_return == True)
                                 if purchase_return:
                                     for x_return in purchase_return:
                                         if wave_item.picking_id.name == x_return.picking_id.relation_return:
@@ -1159,9 +1161,6 @@ class PurchaseOrder(models.Model):
     # @api.onchange('exc
 
 
-
-
-
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
@@ -1219,9 +1218,8 @@ class PurchaseOrderLine(models.Model):
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
     is_change_vendor = fields.Integer()
 
-    total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount' ,store=1)
+    total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
     total_value = fields.Float()
-
 
     @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id')
     def _compute_total_vnd_amount(self):
@@ -1863,10 +1861,10 @@ class StockPicking(models.Model):
         if invoice_line_npls and list_line_xk:
             account_nl = self.create_account_move(po, invoice_line_npls, record)
             if record.state == 'done':
-                master_xk = self.create_xk_picking(po, record, list_line_xk)
+                master_xk = self.create_xk_picking(po, record, list_line_xk, account_nl)
         return True
 
-    def create_xk_picking(self, po, record, list_line_xk):
+    def create_xk_picking(self, po, record, list_line_xk, account_move=None):
         company_id = self.env.company.id
         picking_type_out = self.env['stock.picking.type'].search([
             ('code', '=', 'outgoing'),
@@ -1884,9 +1882,14 @@ class StockPicking(models.Model):
             'picking_type_id': picking_type_out.id,
             'move_ids_without_package': list_line_xk
         }
-        result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(
-            master_xk).button_validate()
-        return result
+        xk_picking = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(master_xk)
+        xk_picking.button_validate()
+        if account_move:
+            xk_picking.write({'account_xk_id': account_move.id})
+        record.write({'picking_xk_id': xk_picking.id})
+        return xk_picking
+
+
 
 class Synthetic(models.Model):
     _name = 'forlife.synthetic'
@@ -1956,7 +1959,6 @@ class Synthetic(models.Model):
                 if record.product_id.id == item.product_id.id:
                     db_tax_total += item.special_consumption_tax_amount
             record.db_tax = db_tax_total
-
 
     # Các trường khác của model
 

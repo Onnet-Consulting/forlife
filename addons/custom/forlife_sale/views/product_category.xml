@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="product_category_form_view_sale_inherit">
+            <field name="name">product.category.form.view.sale</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='default_account_manufacture']" position="after">
+                    <field name="x_property_account_return_id"/>
+                </xpath>
+            </field>
+        </record>
+        <menuitem
+                action="product.product_category_action_form"
+                id="menu_product_category_config_sale"
+                parent="sale.menu_sale_config"
+                name="Nhóm sản phẩm"
+                sequence="3"/>
+    </data>
+</odoo>
