@@ -12,15 +12,11 @@ odoo.define('forlife_pos_app_member.PartnerLine', function (require) {
                for(let i=0; i< self.env.pos.partner_types.length;i++){
                     for(let j=0;j< self.props.partner.retail_type_ids.length;j++){
                         if(self.props.partner.retail_type_ids[j] == self.env.pos.partner_types[i].id){
-                            if(j == self.props.partner.retail_type_ids.length - 1 ){
-                                string += `${self.env.pos.partner_types[i].name} `
-                            }else{
-                                string += `${self.env.pos.partner_types[i].name}, `
-                            }
+                           string += `${self.env.pos.partner_types[i].name}, `
                         }
                     }
                }
-               return string
+               return string.replace(/, *$/, '');
             }
         };
 
