@@ -29,14 +29,53 @@ class AccountMove(models.Model):
     @api.onchange('invoice_type')
     def onchange_view_invoice_type(self):
         for rec in self:
-            rec.invoice_line_ids = [(5, 0)]
+            if rec.invoice_type == 'increase':
+                abc = 'tang gia tri'
+
+            if rec.invoice_type == 'decrease':
+                abc = 'giam gia tri'
             if rec.line_ids:
                 for line in rec.line_ids:
-                    id  = line.id
-                    line.unlink()
-            # if rec.partner_id:
-            #     receiving_warehouse = []
-            #     invoice_line_ids = rec.invoice_line_ids.filtered(lambda line: line.product_id)
-            #     rec.is_check_cost_view = True
+                    #  code trung gian nhap kho
+                    account = self.env['account.account'].search([('code', '=', '3319000001'), ('company_id', '=', line.company_id.id)])
+                    # code Thuế GTGT được khấu trừ của hàng hoá
+                    account_tax = self.env['account.account'].search(
+                        [('code', '=', '1331000001'), ('company_id', '=', line.company_id.id)])
+                    # Phải trả người bán mua hàng hóa trong nước
+                    account_pay = self.env['account.account'].search(
+                        [('code', '=', '3311100001'), ('company_id', '=', line.company_id.id)])
+                    #thay the ban ghi
+                    if line.product_id and line.display_type == 'product':
+                        if rec.invoice_type == 'increase':
+                            price = line.price_total
+                            credit = 0
+                        if rec.invoice_type == 'decrease':
+                            price = 0
+                            credit = line.price_total
 
-                # unlink()
+                        line.write({
+                            'account_id': account.id,
+                            'name': line.product_id.name,
+                            'debit': price,
+                            'credit': credit
+                        })
+
+                    # if line.display_type == 'tax':
+                    #     line.write({
+                    #         'account_id': account_tax.id
+                    #     })
+
+                    # if line.display_type == 'payment_term':
+                    #     if rec.invoice_type == 'increase':
+                    #         price_payment_term = line.debit
+                    #         credit_payment_term = line.credit
+                    #     if rec.invoice_type == 'decrease':
+                    #         price_payment_term = line.credit
+                    #         credit_payment_term = line.debit
+                    #
+                    #     line.write({
+                    #         'account_id': account_pay.id,
+                    #         'debit': price_payment_term,
+                    #         'credit': credit_payment_term
+                    #     })
+
