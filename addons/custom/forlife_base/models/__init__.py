@@ -20,3 +20,4 @@ from . import account_analytic_account
 from . import product_config
 from . import base_import
 from . import res_ward
+from . import forlife_app_api_link
