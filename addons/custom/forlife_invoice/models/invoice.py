@@ -23,7 +23,7 @@ class AccountMove(models.Model):
         ('product', 'Goods'),
         ('asset', 'Asset'),
         ('service', 'Service'),
-    ], string='PO Type', default='product', required=1)
+    ], string='PO Type', default='product')
     number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8), default=1)
