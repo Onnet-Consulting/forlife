@@ -3,7 +3,8 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
-NUMBER_FIELDS = ["x_kq", "x_tkdp", "x_pvp", "x_tthh", "x_thl", "x_dpfm", "x_pds", "x_ttl", "x_ttpc", "x_tu", "x_tk", "x_bhxh_cn", "x_bhyt_cn", "x_bhxh_bhbnn_tnld_cn", "x_ttbh"]
+NUMBER_FIELDS = ["x_kq", "x_tkdp", "x_pvp", "x_tthh", "x_thl", "x_dpfm", "x_pds", "x_ttl", "x_ttpc", "x_tu", "x_tk",
+                 "x_bhxh_cn", "x_bhyt_cn", "x_bhxh_bhbnn_tnld_cn", "x_ttbh"]
 
 
 class SalaryArrears(models.Model):
@@ -35,12 +36,14 @@ class SalaryArrears(models.Model):
         for rec in self:
             for num_field in NUMBER_FIELDS:
                 if rec[num_field] < 0:
-                    raise ValidationError(_("Field '%s' value in the table '%s' must be >= 0") % (fields_desc[num_field]['string'], self._description))
+                    raise ValidationError(_("Field '%s' value in the table '%s' must be >= 0") % (
+                    fields_desc[num_field]['string'], self._description))
 
     _sql_constraints = [
         (
-            'unique_info',
-            'UNIQUE(salary_record_id,purpose_id,department_id,analytic_account_id,project_code,manufacture_order_code,internal_order_code, employee_id)',
+            'unique_info_with_employee',
+            'UNIQUE(salary_record_id, purpose_id, department_id, analytic_account_id,'
+            'asset_id, production_id, occasion_code_id, employee_id)',
             'The combination of Reference, Salary calculation purpose, Department, Cost Center, '
             'Project Code, Manufacture Order Code, Internal Order Code and Employee must be unique !'
         )

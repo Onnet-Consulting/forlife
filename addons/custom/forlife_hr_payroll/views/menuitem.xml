@@ -23,6 +23,9 @@
         <menuitem id="menu_salary_entry" name="Salary Entry" parent="menu_payroll_entries" action="salary_entry_action"
                   sequence="40"/>
 
+        <menuitem id="salary_tc_entry_menu" action="salary_tc_entry_action" parent="menu_payroll_entries"
+                  sequence="41"/>
+
         <menuitem id="menu_salary_accounting_config" name="Salary Accounting Configuration"
                   parent="menu_payroll_entries" action="salary_accounting_config_action" sequence="50"/>
 

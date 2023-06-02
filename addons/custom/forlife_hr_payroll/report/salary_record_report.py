@@ -58,7 +58,7 @@ class ForlifeHrPayrollXlsx(models.AbstractModel):
             sh_luong.write(row, 1, value.department_id.code)
             sh_luong.write(row, 2, value.department_id.name)
             sh_luong.write(row, 3, value.analytic_account_id.code)
-            sh_luong.write(row, 4, value.project_code or '')
+            sh_luong.write(row, 4, value.asset_id.code or '')
             sh_luong.write(row, 5, value.x_ttn or 0)
             sh_luong.write(row, 6, value.x_kq or 0)
             sh_luong.write(row, 7, value.x_tkdp or 0)
@@ -89,7 +89,7 @@ class ForlifeHrPayrollXlsx(models.AbstractModel):
             sh_luong.write(row, 32, value.x_slns or 0)
 
     def write_sheet_ttn(self, sh_ttn, salary_total_income, _format):
-        header = [' Mục đích tính lương', 'Mã phòng/bp', 'Tên phòng/bộ phận', 'Mã cost center', 'Mã Dự án', 'Mã lệnh sản xuất', 'Mã chương trình SK', 'Tổng thu nhập', 'Ghi chú']
+        header = [' Mục đích tính lương', 'Mã phòng/bp', 'Tên phòng/bộ phận', 'Mã cost center', 'Mã Dự án', 'Mã lệnh sản xuất', 'Mã vụ việc', 'Tổng thu nhập', 'Ghi chú']
         for i, name in enumerate(header):
             sh_ttn.write(0, i, name, _format)
         sh_ttn.set_row(0, 40)
@@ -99,14 +99,14 @@ class ForlifeHrPayrollXlsx(models.AbstractModel):
             sh_ttn.write(row, 1, value.department_id.code)
             sh_ttn.write(row, 2, value.department_id.name)
             sh_ttn.write(row, 3, value.analytic_account_id.code)
-            sh_ttn.write(row, 4, value.project_code or '')
-            sh_ttn.write(row, 5, value.manufacture_order_code or '')
-            sh_ttn.write(row, 6, value.internal_order_code or '')
+            sh_ttn.write(row, 4, value.asset_id.code or '')
+            sh_ttn.write(row, 5, value.production_id.code or '')
+            sh_ttn.write(row, 6, value.occasion_code_id.code or '')
             sh_ttn.write(row, 7, value.x_ttn or 0)
             sh_ttn.write(row, 8, value.note or '')
 
     def write_sheet_bh(self, sh_bh, salary_supplementary, _format):
-        header = ['Mục đích tính lương', 'Mã phòng/bp', 'Tên phòng/bộ phận', 'Mã cost center', 'Mã dự án', 'Mã lệnh sản xuất', 'Mã chương trình SK', 'Mức BHXH',
+        header = ['Mục đích tính lương', 'Mã phòng/bp', 'Tên phòng/bộ phận', 'Mã cost center', 'Mã dự án', 'Mã lệnh sản xuất', 'Mã vụ việc', 'Mức BHXH',
                   'BHXH NLĐ chi trả', 'BHYT NLĐ chi trả', 'BHTN NLĐ chi trả', 'TỔNG CHI PHÍ BH NLĐ chi trả', 'BHXH+BHBNN-TNLĐ Công ty chi trả', 'BHYT Công ty chi trả',
                   'BHTN Công ty chi trả', 'TỔNG CHI PHÍ BH Công ty chi trả', 'Công đoàn phí công ty nộp', 'Công đoàn phí NLĐ nộp', 'Thuế TNCN NLĐ nộp', 'Ghi chú']
         for i, name in enumerate(header):
@@ -118,9 +118,9 @@ class ForlifeHrPayrollXlsx(models.AbstractModel):
             sh_bh.write(row, 1, value.department_id.code)
             sh_bh.write(row, 2, value.department_id.name)
             sh_bh.write(row, 3, value.analytic_account_id.code)
-            sh_bh.write(row, 4, value.project_code or '')
-            sh_bh.write(row, 5, value.manufacture_order_code or '')
-            sh_bh.write(row, 6, value.internal_order_code or '')
+            sh_bh.write(row, 4, value.asset_id.code or '')
+            sh_bh.write(row, 5, value.production_id.code or '')
+            sh_bh.write(row, 6, value.occasion_code_id.code or '')
             sh_bh.write(row, 7, value.x_bhxh_level or 0)
             sh_bh.write(row, 8, value.x_bhxh_nld or 0)
             sh_bh.write(row, 9, value.x_bhyt_nld or 0)
@@ -136,7 +136,7 @@ class ForlifeHrPayrollXlsx(models.AbstractModel):
             sh_bh.write(row, 19, value.note or '')
 
     def write_sheet_tt(self, sh_tt, salary_arrears, _format):
-        header = ['Mục đích tính lương', 'Mã NV', 'Họ tên', 'Mã phòng/bp', 'Tên phòng/bộ phận', 'Mã cost center', 'Mã Dự án', 'Mã lệnh sản xuất', 'Mã chương trình SK',
+        header = ['Mục đích tính lương', 'Mã NV', 'Họ tên', 'Mã phòng/bp', 'Tên phòng/bộ phận', 'Mã cost center', 'Mã Dự án', 'Mã lệnh sản xuất', 'Mã vụ việc',
                   'Ký quỹ', 'TKDP', 'Phạt vi phạm', 'Trừ TTHH', 'Trừ hàng lỗi', 'Trừ đồng phục', 'Phạt doanh số', 'Truy thu lương', 'Truy thu phụ cấp',
                   'Tạm ứng', 'Trừ khác', 'Công nợ BHXH NLĐ chi trả', 'Công nợ BHYT NLĐ chi trả', 'Công nợ BHTN NLĐ chi trả', 'Truy thu BH vào lương', 'Ghi chú ']
         for i, name in enumerate(header):
@@ -150,9 +150,9 @@ class ForlifeHrPayrollXlsx(models.AbstractModel):
             sh_tt.write(row, 3, value.department_id.code)
             sh_tt.write(row, 4, value.department_id.name)
             sh_tt.write(row, 5, value.analytic_account_id.code)
-            sh_tt.write(row, 6, value.project_code or '')
-            sh_tt.write(row, 7, value.manufacture_order_code or '')
-            sh_tt.write(row, 8, value.internal_order_code or '')
+            sh_tt.write(row, 6, value.asset_id.code or '')
+            sh_tt.write(row, 7, value.production_id.code or '')
+            sh_tt.write(row, 8, value.occasion_code_id.code or '')
             sh_tt.write(row, 9, value.x_kq or 0)
             sh_tt.write(row, 10, value.x_tkdp or 0)
             sh_tt.write(row, 11, value.x_pvp or 0)
