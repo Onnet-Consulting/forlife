@@ -144,6 +144,15 @@ class PromotionCampaign(models.Model):
         }
         return action
 
+    def auto_close_promotion_campaign(self):
+        to_check_campaigns = self.env['promotion.campaign'].search([('state', '=', 'in_progress')])
+        to_close = self.env['promotion.campaign'].browse()
+        for campaign in to_check_campaigns:
+            if campaign.to_date < fields.Datetime.now():
+                to_close |= campaign
+        if to_close:
+            to_close.sudo().write({'state': 'finished'})
+
 
 class SurprisingRewardProduct(models.Model):
     _name = 'surprising.reward.product.line'

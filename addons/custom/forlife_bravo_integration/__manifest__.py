@@ -29,16 +29,21 @@
         'forlife_purchase',
         'forlife_stock',
         'forlife_voucher',
+        'forlife_product',
+        'forlife_invoice',
     ],
     'auto_install': True,
 
     'data': [
         'security/ir.model.access.csv',
+        'data/res_partner_group_data.xml',
         'data/queue_job_data.xml',
         'data/ir_cron_data.xml',
         'views/res_config_settings.xml',
         'wizard/bravo_sync_account_wizard_views.xml',
         'wizard/bravo_sync_tax_wizard_views.xml',
+        'views/product_category_views.xml',
+        'wizard/bravo_sync_asset_wizard_views.xml',
     ],
     'external_dependencies': {
         'python': ['pyodbc'],

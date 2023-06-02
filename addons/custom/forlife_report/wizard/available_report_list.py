@@ -117,4 +117,22 @@ AVAILABLE_REPORT = {
         'reportTemplate': 'ReportNum19Template',
         'reportPager': True,
     },
+    'report.num20': {
+        'module': 'Bán hàng',
+        'name': 'Bảng kê chi tiết hóa đơn bán - đổi - trả',
+        'reportTemplate': 'ReportNum20Template',
+        'reportPager': True,
+    },
+    'report.num21': {
+        'module': 'Kho',
+        'name': 'Chi tiết hàng hóa luân chuyển',
+        'reportTemplate': 'ReportNum21Template',
+        'reportPager': True,
+    },
+    'report.num22': {
+        'module': 'Bán hàng',
+        'name': 'Báo cáo thu chi tiền mặt tại cửa hàng',
+        'reportTemplate': 'ReportNum22Template',
+        'tag': 'report_num22_action',
+    },
 }

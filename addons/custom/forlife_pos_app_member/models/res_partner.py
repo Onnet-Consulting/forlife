@@ -41,8 +41,10 @@ class ResPartner(models.Model):
         ('other', 'Other')
     ], string='Gender')
 
-    ref = fields.Char(readonly=True, copy=False, string='Mã')
-    barcode = fields.Char(readonly=True, company_dependent=False)  # a partner has only one barcode
+    # FIXME: add readonly=True to ref field
+    ref = fields.Char(copy=False, string='Mã')
+    # FIXME: add readonly=True to barcode field
+    barcode = fields.Char(company_dependent=False)  # a partner has only one barcode
     phone = fields.Char(copy=False, string='Phone #1')
     mobile = fields.Char(string='Phone #2')
     parsed_phone = fields.Char(compute="_compute_parsed_phone", string='Parsed phone')
@@ -52,6 +54,7 @@ class ResPartner(models.Model):
         ('unique_barcode', 'UNIQUE(barcode)', 'Only one barcode occurrence by partner'),
         ('phone_number_group_uniq', 'unique(phone, group_id)',
          'The phone number must be unique in each Partner Group !'),
+        ('unique_ref', 'UNIQUE(ref)', 'A Partner with the same "ref" already exists!')
     ]
 
     @api.depends('phone', 'create_uid')
@@ -77,6 +80,7 @@ class ResPartner(models.Model):
         for rec in self:
             if not rec.phone and rec.group_id == retail_customer_group:
                 raise ValidationError(_("Phone number is required for group %s") % retail_customer_group.name)
+
     #
     # @api.constrains('mobile')
     # def _check_mobile(self):
@@ -109,7 +113,6 @@ class ResPartner(models.Model):
             app_retail_type_id = False
         return app_retail_type_id
 
-
     @api.model_create_multi
     def create(self, vals_list):
         env_context = self.env.context
@@ -129,12 +132,11 @@ class ResPartner(models.Model):
             if env_context.get('from_create_company'):
                 group_id = self.env.ref('forlife_pos_app_member.partner_group_3').id
             if group_id:
-                partner_group = self.env['res.partner.group'].browse(group_id)
-                if partner_group.sequence_id:
-                    value['ref'] = partner_group.sequence_id.next_by_id()
-                else:
-                    value['ref'] = (partner_group.code or '') + (value.get('ref') or '')
                 value['group_id'] = group_id
+                partner_group = self.env['res.partner.group'].browse(group_id)
+                if value.get('ref') or not partner_group.sequence_id:
+                    continue
+                value['ref'] = partner_group.sequence_id.next_by_id()
 
         return super().create(vals_list)
 

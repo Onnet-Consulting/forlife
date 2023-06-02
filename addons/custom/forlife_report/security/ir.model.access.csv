@@ -1,4 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+base_group_user_model_attribute_code_config,base.group.attribute_code_config,model_attribute_code_config,base.group_user,1,1,0,0
 base_group_user_model_report_num1,base.group.user_report_num1,model_report_num1,base.group_user,1,1,1,1
 base_group_user_model_report_num2,base.group.user_report_num2,model_report_num2,base.group_user,1,1,1,1
 base_group_user_model_report_num3,base.group.user_report_num3,model_report_num3,base.group_user,1,1,1,1
@@ -18,3 +19,6 @@ base_group_user_model_report_num16,base.group.user_report_num16,model_report_num
 base_group_user_model_report_num17,base.group.user_report_num17,model_report_num17,base.group_user,1,1,1,1
 base_group_user_model_report_num18,base.group.user_report_num18,model_report_num18,base.group_user,1,1,1,1
 base_group_user_model_report_num19,base.group.user_report_num19,model_report_num19,base.group_user,1,1,1,1
+base_group_user_model_report_num20,base.group.user_report_num20,model_report_num20,base.group_user,1,1,1,1
+base_group_user_model_report_num21,base.group.user_report_num21,model_report_num21,base.group_user,1,1,1,1
+base_group_user_model_report_num22,base.group.user_report_num22,model_report_num22,base.group_user,1,1,1,1
