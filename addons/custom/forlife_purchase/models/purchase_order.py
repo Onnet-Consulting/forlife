@@ -1020,10 +1020,6 @@ class PurchaseOrder(models.Model):
             #             for line in picking_in_return:
             #                 line.x_hide_return = True
 
-            for line in moves.invoice_line_ids:
-                if line.product_id:
-                    account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
-                    line.account_id = account_id
             # 4) Some moves might actually be refunds: convert them if the total amount is negative
             # We do this after the moves have been created since we need taxes, etc. to know if the total
             # is actually negative or not
@@ -1080,10 +1076,10 @@ class PurchaseOrder(models.Model):
                              'uom_id': line.product_uom.id,
                              'price_unit': line.price_unit}
                 sequence += 1
-                key = order.purchase_type
+                key = order.purchase_type, order.partner_id.id, order.company_id.id
                 invoice_vals = order._prepare_invoice()
                 invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.now(),
-                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id})
+                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
                 order = order.with_company(order.company_id)
                 line_vals = line._prepare_account_move_line()
                 line_vals.update(data_line)
@@ -1094,10 +1090,24 @@ class PurchaseOrder(models.Model):
                     vals_all_invoice.update({
                         key: invoice_vals
                     })
-        moves = self.env['account.move']
+        moves = self.env['account.move'].with_context(default_move_type='in_invoice')
         for data in vals_all_invoice:
-            move = moves.create(vals_all_invoice.get(data)).action_post()
-        return True
+            move = moves.create(vals_all_invoice.get(data))
+            if move:
+                for line in move.invoice_line_ids:
+                    if line.product_id:
+                        account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
+                        line.account_id = account_id
+            move.filtered(
+                lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
+        return {
+            'name': 'Hóa đơn nhà cung cấp',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_id': False,
+            'view_mode': 'tree',
+            'domain': [('id', 'in', move.ids)],
+        }
 
     def _prepare_picking(self):
         if not self.group_id:
@@ -1142,25 +1152,6 @@ class PurchaseOrder(models.Model):
             'total_trade_discount': self.total_trade_discount
         })
         return values
-
-    # @api.onchange('cost_line', 'cost_line.is_check_pre_tax_costs')
-    # def onchange_is_check_pre_tax_costs(self):
-    #     for rec in self:
-    #         cost_line_true = rec.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
-    #         if rec.cost_line and rec.order_line:
-    #             for line in rec.order_line:
-    #                 total_cost_true = 0
-    #                 if cost_line_true:
-    #                     for item in cost_line_true:
-    #                         cost_host = ((line.total_vnd_amount / sum(rec.order_line.mapped('total_vnd_amount'))) * 100 / 100) * item.vnd_amount
-    #                         total_cost_true += cost_host
-    #                     line.total_value = total_cost_true + (line.total_vnd_amount * rec.exchange_rate)
-
-    # @api.onchange('exc
-
-
-
-
 
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
@@ -1922,9 +1913,11 @@ class Synthetic(models.Model):
                 pass
             if cost_line_false:
                 for item in cost_line_false:
-                    cost_host = (((rec.price_subtotal + rec.before_tax) / (sum(self.mapped('price_subtotal')) + sum(
-                        self.mapped('before_tax')))) * 100 / 100) * item.vnd_amount
-                    total_cost_false += cost_host
+                    for line in rec.synthetic_id.exchange_rate_line:
+                        line.vnd_amount = rec.price_subtotal + rec.before_tax
+                        cost_host = (((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(
+                            self.mapped('before_tax')))) * 100 / 100) * item.vnd_amount
+                        total_cost_false += cost_host
                 rec.after_tax = total_cost_false
             else:
                 pass
