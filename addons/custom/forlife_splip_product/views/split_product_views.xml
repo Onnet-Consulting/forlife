@@ -39,7 +39,7 @@
                     </group>
                     <notebook>
                         <page string="Sản phẩm chính">
-                            <field name="split_product_line_ids" mode="tree">
+                            <field name="split_product_line_ids" mode="tree" attrs="{'readonly':[('state','in',['done','canceled'])]}">
                                 <tree editable="bottom">
                                     <field name="state" invisible="1"/>
                                     <field name="product_id" attrs="{'readonly': [('state','=','canceled')]}"/>
@@ -56,7 +56,7 @@
                             </field>
                         </page>
                         <page string="Sản phẩm phân tách">
-                            <field name="split_product_line_sub_ids" mode="tree">
+                            <field name="split_product_line_sub_ids" mode="tree" attrs="{'readonly':[('state','in',['done','canceled'])]}">
                                 <tree editable="bottom" create="0">
                                     <field name="state" invisible="1"/>
                                     <field name="product_id" optional="show"/>
