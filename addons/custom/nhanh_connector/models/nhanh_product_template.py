@@ -48,11 +48,11 @@ class ProductNhanh(models.Model):
                     res_json = res_server.json()
                     if status_nhanh == 1:
                         if res_json['code'] == 0:
-                            res.write(
-                                {
-                                    'description': f'Sync Product error {res["messages"]}'
-                                }
-                            )
+                            # res.write(
+                            #     {
+                            #         'description': f'Sync Product error {res["messages"]}'
+                            #     }
+                            # )
                             _logger.info(f'Sync Product error {res["messages"]}')
                             return False
                         else:
@@ -65,11 +65,11 @@ class ProductNhanh(models.Model):
                                 }
                             )
                 except Exception as ex:
-                    res.write(
-                        {
-                            'description': f'Sync Product error {ex}'
-                        }
-                    )
+                    # res.write(
+                    #     {
+                    #         'description': f'Sync Product error {ex}'
+                    #     }
+                    # )
                     _logger.info(f'Sync Product from NhanhVn error {ex}')
         return True
 
