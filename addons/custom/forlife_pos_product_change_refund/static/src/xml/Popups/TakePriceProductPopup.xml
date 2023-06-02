@@ -20,15 +20,21 @@
                     <t t-else="">
                         <t t-set="checkproduct" t-value="0"/>
                     </t>
+                    <t t-if="props.product_defective_id">
+                        <t t-set="product_defective_id" t-value="props.line_product_defective"/>
+                    </t>
+                    <t t-else="">
+                        <t t-set="product_defective_id" t-value="0"/>
+                    </t>
                     <t t-foreach="props.response" t-as="res" t-key="res.id">
                         <tr style="width:100%;">
                             <td style="border:1px solid black; text-align: center;font-size: 13px;"><t t-esc="res.store_name"/> </td>
                             <td style="border:1px solid black;text-align: center;font-size: 13px;"><t t-esc="res.product_name"/> </td>
                             <td style="border:1px solid black;text-align: center;font-size: 13px;"><t t-esc="res.quantity"/> </td>
-                            <td style="border:1px solid black;text-align: center;font-size: 13px;"><t t-esc="res.total_reduce"/> </td>
+                            <td style="border:1px solid black;text-align: center;font-size: 13px;"><t t-esc="env.pos.format_currency(res.total_reduce)"/> </td>
                             <td style="border:1px solid black;text-align: center;font-size: 13px;"><t t-esc="res.type_defective"/> </td>
                             <td style="border:1px solid black;text-align: center;font-size: 13px;"><t t-esc="res.detail_defective"/> </td>
-                            <td style="border:1px solid black;text-align: center;font-size: 13px;"><input style="min-height: 22px;width: 40%;" type="checkbox" t-att-checked="res.product_id == checkproduct" t-on-click="onclickCheckbox" class="o_check" t-att-value="res.product_id"/> </td>
+                            <td style="border:1px solid black;text-align: center;font-size: 13px;"><input style="min-height: 22px;width: 40%;" type="checkbox" t-att-checked="res.product_defective_id == props.product_defective_id" t-on-click="onclickCheckbox" class="o_check" t-att-value="res.product_defective_id"/> </td>
                         </tr>
                     </t>
 <!--                    </t>-->
