@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="promotion_condition_product_tree_view" model="ir.ui.view">
+        <field name="name">promotion.condition.product.view.tree</field>
+        <field name="model">promotion.condition.product</field>
+        <field name="arch" type="xml">
+            <tree editable="top" create="1">
+                <field name="promotion_program_id" optional="hide"/>
+                <field name="product_product_id"/>
+            </tree>
+        </field>
+    </record>
+    <record id="promotion_discount_product_tree_view" model="ir.ui.view">
+        <field name="name">promotion.discount.product.view.tree</field>
+        <field name="model">promotion.discount.product</field>
+        <field name="arch" type="xml">
+            <tree editable="top" create="1">
+                <field name="promotion_program_id" optional="hide"/>
+                <field name="product_product_id"/>
+            </tree>
+        </field>
+    </record>
+    <record id="promotion_reward_product_tree_view" model="ir.ui.view">
+        <field name="name">promotion.reward.product.view.tree</field>
+        <field name="model">promotion.reward.product</field>
+        <field name="arch" type="xml">
+            <tree editable="top" create="1">
+                <field name="promotion_program_id" optional="hide"/>
+                <field name="product_product_id"/>
+            </tree>
+        </field>
+    </record>
+    <record id="promotion_combo_line_product_tree_view" model="ir.ui.view">
+        <field name="name">promotion.combo.line.product.view.tree</field>
+        <field name="model">promotion.combo.line.product</field>
+        <field name="arch" type="xml">
+            <tree editable="top" create="1">
+                <field name="promotion_combo_line_id" optional="hide"/>
+                <field name="product_product_id"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

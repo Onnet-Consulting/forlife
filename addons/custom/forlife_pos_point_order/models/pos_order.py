@@ -59,8 +59,6 @@ class PosOrder(models.Model):
                     HistoryPoint.sudo().create(history_values)
                     pos.partner_id._compute_reset_day(pos.date_order, pos.program_store_point_id.point_expiration, store)
                     pos.action_point_addition()
-                    if pos.lines.filtered(lambda line: line.point != 0):
-                        pos.action_point_subtraction()
         return pos_id
 
     def btn_compensate_points_all(self, reason):
@@ -213,6 +211,14 @@ class PosOrder(models.Model):
                 rec.point_event_order = 0
             else:
                 branch_id = rec.program_store_point_id.brand_id.id
+                brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
+                brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
+                if branch_id == brand_format:
+                    is_purchased = self.partner_id.is_purchased_of_format or False
+                elif branch_id == brand_tokyolife:
+                    is_purchased = self.partner_id.is_purchased_of_forlife or False
+                else:
+                    is_purchased = False
                 valid_method_ids = rec.program_store_point_id.payment_method_ids.ids
                 valid_product_ids = rec.program_store_point_id.points_product_ids.filtered(
                     lambda x: x.state == 'effective' and x.from_date < rec.date_order < x.to_date).product_ids.ids
@@ -229,7 +235,7 @@ class PosOrder(models.Model):
                     if money_value < 0:
                         money_value = 0
                     # is_purchased_of_format, is_purchased_of_forlife = rec.partner_id._check_is_purchased()
-                    rec.point_order = rec.get_point_order(money_value, branch_id)
+                    rec.point_order = rec.get_point_order(money_value, branch_id, is_purchased)
                     if event_valid:
                         domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
                         partner_condition = self.env['res.partner'].search(domain)
@@ -245,7 +251,7 @@ class PosOrder(models.Model):
                     total_price_product_auto = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is True).mapped('price_subtotal_incl'))  # X2
                     total_product_change = sum(rec.lines.filtered(lambda x: x.product_id.is_product_auto is False and x.price_subtotal_incl > 0).mapped('price_subtotal_incl'))  # Y
                     money_value = valid_money_payment_method - total_price_refund_product - total_price_product_auto - total_product_change
-                    rec.point_order = rec.get_point_order(money_value, branch_id)
+                    rec.point_order = rec.get_point_order(money_value, branch_id, is_purchased)
                     if event_valid:
                         domain = [('id', 'in', [x.partner_id.id for x in self.env['contact.event.follow'].sudo().search([('event_id', '=', event_valid.id)])])]
                         partner_condition = self.env['res.partner'].search(domain)
@@ -256,14 +262,10 @@ class PosOrder(models.Model):
                     else:
                         rec.point_event_order = 0
     # Tách hàm này để cộng thêm điểm tích lũy theo hạng thẻ khách hàng
-    def get_point_order(self, money_value, brand_id):
+    def get_point_order(self, money_value, brand_id, is_purchased):
         if self.program_store_point_id.value_conversion <= 0:
             return 0
-        brand_format = self.env.ref('forlife_point_of_sale.brand_format', raise_if_not_found=False).id
-        brand_tokyolife = self.env.ref('forlife_point_of_sale.brand_tokyolife', raise_if_not_found=False).id
-        if self.partner_id.is_purchased_of_forlife and brand_id == brand_tokyolife:
-            return int(money_value / self.program_store_point_id.value_conversion) * self.program_store_point_id.point_addition
-        elif self.partner_id.is_purchased_of_format and brand_id == brand_format:
+        if is_purchased:
             return int(money_value / self.program_store_point_id.value_conversion) * self.program_store_point_id.point_addition
         else:
             return int(money_value / self.program_store_point_id.value_conversion) * self.program_store_point_id.point_addition * self.program_store_point_id.first_order
@@ -387,59 +389,6 @@ class PosOrder(models.Model):
         }
         move = self.env['account.move'].create(move_vals)._post()
         self.point_addition_move_ids |= move
-        return True
-
-    def get_value_entry_reduced_point(self):
-        vl = 0
-        for rec in self.lines:
-            vl += self.get_number_tax(rec.product_id, rec.point)
-        return vl
-
-    def get_number_tax(self, product, point):
-        number_tax = 0
-        for tax in product.taxes_id.filtered(lambda t: t.type_tax_use == 'sale'):
-            number_tax += tax.amount
-        total_tax = 1 + number_tax / 100
-        point_tax = abs(point) / total_tax
-        return round(point_tax)
-
-    def get_total_point_reduced(self):
-        return abs(sum([line.point for line in self.lines]))
-
-    def get_fee_tax_reduced_line(self):
-        return self.get_total_point_reduced() - self.get_value_entry_reduced_point()
-
-    def action_point_subtraction(self):
-        move_vals = {
-            'ref': self.name,
-            'pos_order_id': self.id,
-            'move_type': 'entry',
-            'date': self.date_order,
-            'journal_id': self.program_store_point_id.account_journal_id.id,
-            'company_id': self.company_id.id,
-            'line_ids': [
-                # debit line
-                (0, 0, {
-                    'account_id': self.program_store_point_id.acc_reduce_accumulated_points_id.id,
-                    'debit': self.get_value_entry_reduced_point(),
-                    'credit': 0.0,
-                }),
-                # tax line
-                (0, 0, {
-                    'account_id': self.program_store_point_id.acc_tax_reduce_accumulated_points_id.id,
-                    'debit': self.get_fee_tax_reduced_line(),
-                    'credit': 0.0
-                }),
-                # credit line
-                (0, 0, {
-                    'account_id': self.program_store_point_id.acc_accumulate_points_id.id,
-                    'debit': 0.0,
-                    'credit': self.get_total_point_reduced(),
-                }),
-            ]
-
-        }
-        move = self.env['account.move'].create(move_vals)._post()
         return True
 
     def _export_for_ui(self, order):

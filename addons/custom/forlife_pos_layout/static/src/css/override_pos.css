@@ -8,6 +8,9 @@
     color: #fff;
     position: relative;
 }
+.pos-content {
+    border-top: 4px solid #FFFFFF;
+}
 
 div.list-order {
     flex: 1;

@@ -40,6 +40,12 @@ odoo.define('forlife_pos_point_order.PointsConsumptionPopup', function (require)
             return this.push_value()
         }
 
+        _is_applied_promotion(id) {
+            let line = this.env.pos.get_order().get_orderlines().find(l => l.id == id);
+            if (!line) {return false};
+            return line.is_applied_promotion() || line.discount > 0;
+        }
+
         push_value(){
             var promotion = this.props.program_promotion;
             var product_valid = this.props.product_valid;

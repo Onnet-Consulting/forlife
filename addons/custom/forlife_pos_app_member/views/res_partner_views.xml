@@ -14,7 +14,7 @@
                 <field name="show_customer_type" invisible="1"/>
             </field>
             <field name="company_registry" position="before">
-                <field name="job_ids" widget="many2many_tags"/>
+                <field name="job_id"/>
             </field>
 
         </field>

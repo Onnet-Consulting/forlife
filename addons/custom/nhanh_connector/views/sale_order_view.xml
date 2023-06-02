@@ -10,18 +10,35 @@
             </xpath>
         </field>
     </record>
-     <record id="form_view_sale_order" model="ir.ui.view">
+    <record id="form_view_sale_order" model="ir.ui.view">
         <field name="name">sale.order.tree.inherit</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='payment_term_id']" position="after">
-                <field name="source_record" invisible="1"/>
-                   <field name="code_coupon" attrs="{'invisible': [('source_record', '=', False)]}"/>
+            <xpath expr="//notebook" position="inside">
+                <page string="Thông tin Nhanh.vn" name="nhanh_information"
+                      attrs="{'invisible': [('source_record', '=', False)]}">
+                    <field name="source_record" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="order_partner_id" readonly="1"/>
+                            <field name="name_customer" readonly="1"/>
+                            <field name="note_customer" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="carrier_name" readonly="1"/>
+                            <field name="code_coupon" readonly="1"/>
+                            <field name="nhanh_shipping_fee"
+                                   attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
+                            <field name="nhanh_customer_shipping_fee"
+                                   attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
+                        </group>
+                    </group>
+                </page>
             </xpath>
-            <xpath expr="//field[@name='partner_id']" position="after">
-                <field name="source_record" invisible="1"/>
-                <field name="name_customer" attrs="{'invisible': [('name_customer', '=', False)]}"/>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                <field name="odoo_price_unit" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
+                <field name="discount_price_unit" attrs="{'column_invisible': [('parent.source_record', '=', False)]}"/>
             </xpath>
         </field>
     </record>

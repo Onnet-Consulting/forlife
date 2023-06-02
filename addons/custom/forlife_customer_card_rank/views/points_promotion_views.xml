@@ -12,14 +12,14 @@
                     <page name="card_rank_accumulate" string="Card Rank Accumulate">
                         <group>
                             <group>
-                                <field name="card_rank_value_convert" attrs="{'readonly': [('state', '!=', 'new')]}"/>
-                                <field name="card_rank_active" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="card_rank_value_convert" attrs="{'readonly': [('state', 'not in', ('new', 'in_progress'))]}"/>
+                                <field name="card_rank_active" attrs="{'readonly': [('state', 'not in', ('new', 'in_progress'))]}"/>
                             </group>
                             <group>
-                                <field name="card_rank_point_addition" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                                <field name="card_rank_point_addition" attrs="{'readonly': [('state', 'not in', ('new', 'in_progress'))]}"/>
                             </group>
                         </group>
-                        <field name="accumulate_by_rank_ids" nolabel="1" attrs="{'readonly': [('state', '!=', 'new')]}"/>
+                        <field name="accumulate_by_rank_ids" nolabel="1" attrs="{'readonly': [('state', 'not in', ('new', 'in_progress'))]}"/>
                     </page>
                 </xpath>
 

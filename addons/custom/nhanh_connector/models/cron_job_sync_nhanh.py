@@ -19,8 +19,10 @@ NHANH_BASE_URL = 'https://open.nhanh.vn/api'
 
 class SaleOrder(models.Model):
     _inherit = "sale.order"
+
     nhanh_status = fields.Char(string='Nhanh order status')
     nhanh_shipping_fee = fields.Float(string='Shipping fee')
+    nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
     nhanh_sale_channel_id = fields.Integer(string='Sale channel id')
 
     def get_nhanh_configs(self):
@@ -56,7 +58,7 @@ class SaleOrder(models.Model):
               # f"&data={query_params['data']}"
         # Get all orders from previous day to today from Nhanh.vn
         try:
-            res_server = requests.post(url, json= json.dumps(data))
+            res_server = requests.post(url, json=json.dumps(data))
             res = res_server.json()
         except Exception as ex:
             _logger.info(f'Get orders from NhanhVn error {ex}')
@@ -85,6 +87,14 @@ class SaleOrder(models.Model):
             for k, v in nhanh_orders.items():
                 name_customer = False
                 # Add customer if not existed
+                nhanh_partner = partner_model.sudo().search(
+                    [('code_current_customers', '=', 'code_current_customers_nhanhvn')], limit=1)
+                if not nhanh_partner:
+                    nhanh_partner = partner_model.sudo().create({
+                        'code_current_customers': 'code_current_customers_nhanhvn',
+                        'name': 'Nhanh.Vn',
+                        'customer_rank': 1
+                    })
                 partner = partner_model.sudo().search(
                     ['|', ('mobile', '=', v['customerMobile']), ('phone', '=', v['customerMobile'])], limit=1)
                 if partner:
@@ -96,10 +106,12 @@ class SaleOrder(models.Model):
                         'name': v['customerName'],
                         'email': v['customerEmail'],
                         'contact_address_complete': v['customerAddress'],
+                        'customer_nhanh_id': v['customerId'],
                     }
                     partner = partner_model.sudo().create(partner_value)
                 order_line = []
                 uom = self.env.ref('uom.product_uom_unit').id
+                location_id = self.env['stock.location'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
 
                 for item in v['products']:
                     product = self.search_product(('nhanh_id', '=', item.get('productId')))
@@ -108,7 +120,7 @@ class SaleOrder(models.Model):
                     if not product and item.get('productCode'):
                         product = self.search_product(('code_product', '=', item.get('productCode')))
                     if not product:
-                         product = self.env['product.template'].create({
+                        product = self.env['product.template'].create({
                             'detailed_type': 'asset',
                             'nhanh_id': item.get('productId'),
                             'check_data_odoo': False,
@@ -118,7 +130,7 @@ class SaleOrder(models.Model):
                             'list_price': item.get('price'),
                             'uom_id': uom,
                             'weight': item.get('shippingWeight', 0),
-
+                            'responsible_id': None
                         })
                     product_product = self.env['product.product'].search([('product_tmpl_id', '=', product.id)], limit=1)
                     order_line.append((
@@ -126,8 +138,9 @@ class SaleOrder(models.Model):
                         {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
                          'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
                          'product_uom': product.uom_id.id if product.uom_id else uom,
-                         'customer_lead': 0, 'sequence': 10, 'is_downpayment': False,
-                         'discount': item.get('discount')}))
+                         'customer_lead': 0, 'sequence': 10, 'is_downpayment': False, 'x_location_id': location_id.id if location_id else None,
+                         'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get('discount') else 0,
+                         'x_cart_discount_fixed_price': float(item.get('discount')) * float(item.get('quantity')) if item.get('discount') else 0}))
                 # Add orders  to odoo
                 _logger.info(v)
                 status = 'draft'
@@ -142,17 +155,35 @@ class SaleOrder(models.Model):
                 elif v['statusCode'] == 'canceled':
                     status = 'cancel'
 
+                # nhân viên kinh doanh
+                user_id = self.env['res.users'].search([('partner_id.name', '=', v['saleName'])], limit=1)
+                # đội ngũ bán hàng
+                team_id = self.env['crm.team'].search([('name', '=', v['trafficSourceName'])], limit=1)
+                default_company_id = self.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
+                warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(v['depotId']))], limit=1)
+                if not warehouse_id:
+                    warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)],
+                                                                      limit=1)
                 value = {
                     'nhanh_id': v['id'],
                     'nhanh_status': v['statusCode'],
-                    'partner_id': partner.id,
+                    'partner_id': nhanh_partner.id,
+                    'order_partner_id': partner.id,
                     'nhanh_shipping_fee': v['shipFee'],
+                    'nhanh_customer_shipping_fee': v['customerShipFee'],
                     'nhanh_sale_channel_id': v['saleChannel'],
                     'source_record': True,
                     'state': status,
                     'code_coupon': v['couponCode'],
                     'name_customer': name_customer,
                     'note': v['privateDescription'],
+                    'note_customer': v['description'],
+                    'x_sale_chanel': 'online',
+                    'carrier_name': v['carrierName'],
+                    'user_id': user_id.id if user_id else None,
+                    'team_id': team_id.id if team_id else None,
+                    'company_id': default_company_id.id if default_company_id else None,
+                    'warehouse_id': warehouse_id.id if warehouse_id else None,
                     'order_line': order_line
                 }
                 order_model.sudo().create(value)
@@ -178,7 +209,13 @@ class SaleOrder(models.Model):
             "toDate": today,
         }
 
-        list_number_phone = list(self.env['res.partner'].search([]).mapped('phone'))
+        # list_number_phone = list(self.env['res.partner'].search([]).mapped('phone'))
+        # self.env.cr.execute("""
+        #             SELECT DISTINCT rp.phone
+        #             FROM res_partner rp
+        #             WHERE rp.active = True
+        #             AND rp.phone IS NOT NULL""")
+        # list_number_phone = self.env.cr.fetchall()
         url = self.get_link_nhanh('customer', 'search', data)
         if url:
             status_post = 1
@@ -195,24 +232,29 @@ class SaleOrder(models.Model):
                     return False
                 else:
                     for item in res.get('data').get('customers'):
-                        if res.get('data').get('customers').get(item).get('mobile') not in list_number_phone:
-                            value_data = res.get('data').get('customers').get(item)
+                        if not res.get('data').get('customers').get(item).get('mobile'):
+                            continue
+                        exist_partner = self.env['res.partner'].search_count([('phone','=',res.get('data').get('customers').get(item).get('mobile'))])
+                        if exist_partner:
+                            continue
+                        value_data = res.get('data').get('customers').get(item)
 
-                            self.env['res.partner'].create({
-                                'source_record': True,
-                                'name': value_data.get('name'),
-                                'phone': value_data.get('mobile'),
-                                'mobile': value_data.get('mobile'),
-                                'email': value_data.get('email'),
-                                'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get('gender') == '2' else False,
-                                'contact_address_complete': value_data.get('address'),
-                                'street': value_data.get('address'),
-                                'vat': value_data.get('taxCode'),
-                                'birthday': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else False,
-                                'type_customer': 'retail_customers' if value_data.get(
-                                    'type') == 1 else 'wholesalers' if value_data.get(
-                                    'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
-                            })
+                        self.env['res.partner'].create({
+                            'source_record': True,
+                            'customer_nhanh_id': int(res.get('data').get('customers').get(item).get('id')),
+                            'name': value_data.get('name'),
+                            'phone': value_data.get('mobile'),
+                            'mobile': value_data.get('mobile'),
+                            'email': value_data.get('email'),
+                            'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get('gender') == '2' else 'other',
+                            'contact_address_complete': value_data.get('address'),
+                            'street': value_data.get('address'),
+                            'vat': value_data.get('taxCode'),
+                            'birthday': datetime.datetime.strptime(value_data.get('birthday'), "%Y-%m-%d").date() if value_data.get('birthday') else None,
+                            'type_customer': 'retail_customers' if value_data.get(
+                                'type') == 1 else 'wholesalers' if value_data.get(
+                                'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
+                        })
         ## End
 
     @api.model

@@ -35,6 +35,10 @@ class PurchaseOrder(models.Model):
     def _inverse_order_line_production_order(self):
         pass
 
+    @api.onchange('order_line_production_order')
+    def _onchange_order_line_production_order(self):
+        pass
+
     def action_approved(self):
         for rec in self:
             for line in rec.order_line:
@@ -105,7 +109,7 @@ class PurchaseOrderLine(models.Model):
                 production_data.append((0, 0, {
                     'product_id': production_line.product_id.id,
                     'uom': production_line.uom_id.id,
-                    'product_qty': product_plan_qty,
+                    # 'product_qty': product_plan_qty,
                     'production_order_product_qty': production_order.product_qty,
                     'production_line_product_qty': production_line.product_qty,
                     'price_unit': production_line.price,
@@ -153,9 +157,12 @@ class PurchaseOrderLineMaterialLine(models.Model):
     def _compute_product_plan_qty(self):
         for rec in self:
             if rec.production_order_product_qty > 0:
-                rec.product_plan_qty = self.purchase_order_line_id.product_qty / rec.production_order_product_qty * rec.production_line_product_qty
+                # rec.product_plan_qty = rec.purchase_order_line_id.product_qty / rec.production_order_product_qty * rec.production_line_product_qty
+                rec.product_plan_qty = rec.purchase_order_line_id.product_qty / rec.production_order_product_qty * rec.purchase_order_line_id.purchase_quantity
+                rec.product_qty = rec.product_plan_qty
             else:
                 rec.product_plan_qty = 0
+                rec.product_qty = 0
 
     def _inverse_product_plan_qty(self):
         pass

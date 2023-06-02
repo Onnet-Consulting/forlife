@@ -24,6 +24,7 @@ class HrAssetTransfer(models.Model):
     reject_reason = fields.Text()
     validate_date = fields.Datetime(string='Validate Date')
     cancel_date = fields.Datetime(string='Cancel Date')
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
 
     @api.model
     def default_get(self, default_fields):
@@ -72,7 +73,7 @@ class HrAssetTransferLine(models.Model):
     _name = 'hr.asset.transfer.line'
     _description = 'Hr Asset Transfer Line'
 
-    asset_code = fields.Many2one('assets.assets', string='Asset Code')
+    asset_code = fields.Many2one('assets.assets', string='Tài sản')
     employee_from_id = fields.Many2one('hr.employee', string="Employee From")
     employee_to_id = fields.Many2one('hr.employee', string="Employee To")
     account_analytic_from_id = fields.Many2one('account.analytic.account', string="Cost Center From")
@@ -80,6 +81,15 @@ class HrAssetTransferLine(models.Model):
     asset_location_from_id = fields.Many2one('asset.location', string="Asset Location From")
     asset_location_to_id = fields.Many2one('asset.location', string="Asset Location To")
     hr_asset_transfer_id = fields.Many2one('hr.asset.transfer', ondelete='cascade', required=True)
+    check_required = fields.Boolean(compute='compute_check_required')
+
+    @api.depends('employee_to_id', 'account_analytic_to_id', 'asset_location_to_id')
+    def compute_check_required(self):
+        for item in self:
+            if item.employee_to_id or item.account_analytic_to_id or item.asset_location_to_id:
+                item.check_required = True
+            else:
+                item.check_required = False
 
     @api.onchange('asset_code')
     def onchange_asset_code(self):
@@ -92,13 +102,15 @@ class HrAssetTransferLine(models.Model):
         for rec in self:
             if rec.employee_from_id.id != rec.asset_code.employee.id:
                 raise ValidationError(_('Wrong value for employee. Please check again!'))
-            if not rec.employee_to_id:
-                raise ValidationError(_('Employee to is empty. Please check again!'))
+            # if not rec.employee_to_id:
+            #     raise ValidationError(_('Employee to is empty. Please check again!'))
             if rec.account_analytic_from_id.id != rec.asset_code.dept_code.id:
                 raise ValidationError(_('Wrong value for account analytic. Please check again!'))
-            if not rec.account_analytic_to_id:
-                raise ValidationError(_('Account analytic to is empty. Please check again!'))
+            # if not rec.account_analytic_to_id:
+            #     raise ValidationError(_('Account analytic to is empty. Please check again!'))
             if rec.asset_location_from_id.id != rec.asset_code.location.id:
                 raise ValidationError(_('Wrong value for asset location. Please check again!'))
-            if not rec.asset_location_to_id:
-                raise ValidationError(_('Asset location to is empty. Please check again!'))
+            # if not rec.asset_location_to_id:
+            #     raise ValidationError(_('Asset location to is empty. Please check again!'))
+            if not rec.check_required:
+                raise ValidationError(_('Chưa nhập 1 trong 3 trường!'))
