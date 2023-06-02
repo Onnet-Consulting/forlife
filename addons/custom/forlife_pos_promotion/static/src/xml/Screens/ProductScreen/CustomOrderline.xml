@@ -2,23 +2,34 @@
 <templates id="template" xml:space="preserve">
     <t t-name="forlife_pos_promotion.CustomOrderline" t-inherit="forlife_pos_layout.CustomOrderline" t-inherit-mode="extension" owl="1">
         <xpath expr="//ul[hasclass('custom-info-list')]//li[hasclass('line-unit-price')]" position="replace">
-                <li class="line-unit-price">
-                    <t t-if="props.line.is_applied_promotion()">
-                        <t t-esc="env.pos.format_currency(props.line.original_price)"/>
-                    </t>
-                    <t t-else="">
-                        <t t-if="props.line.display_discount_policy() == 'without_discount' and
-                            env.pos.round_decimals_currency(props.line.get_unit_display_price()) &lt; env.pos.round_decimals_currency(props.line.get_taxed_lst_unit_price())">
-                            <s>
-                                <t t-esc="env.pos.format_currency(props.line.get_taxed_lst_unit_price())" />
-                            </s>
-                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price())" />
+            <t t-set="_totalDiscountSinglemanual" t-value="getTotalDiscountSingleManual()" />
+            <li class="line-unit-price">
+                <t t-if="props.line.is_applied_promotion()">
+                    <t t-esc="env.pos.format_currency(props.line.original_price)"/>
+                </t>
+                <t t-else="">
+                    <t t-if="props.line.display_discount_policy() == 'without_discount' and
+                        env.pos.round_decimals_currency(props.line.get_unit_display_price()) &lt; env.pos.round_decimals_currency(props.line.get_taxed_lst_unit_price())">
+                        <s>
+                            <t t-esc="env.pos.format_currency(props.line.get_taxed_lst_unit_price())" />
+                        </s>
+                        <t t-if="env.pos.config.iface_tax_included === 'total'">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price() + _totalDiscountSinglemanual)" />
                         </t>
                         <t t-else="">
                             <t t-esc="env.pos.format_currency(props.line.get_unit_display_price())" />
                         </t>
                     </t>
-                </li>
+                    <t t-else="">
+                        <t t-if="env.pos.config.iface_tax_included === 'total'">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price() + _totalDiscountSinglemanual)" />
+                        </t>
+                        <t t-else="">
+                            <t t-esc="env.pos.format_currency(props.line.get_unit_display_price())" />
+                        </t>
+                    </t>
+                </t>
+            </li>
         </xpath>
 
         <xpath expr="//ul[hasclass('custom-info-list')]" position="inside">
