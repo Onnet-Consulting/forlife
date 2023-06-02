@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_category_property_form_sale_promotion" model="ir.ui.view">
+            <field name="name">product.category.property.sale.promotion</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="account.view_category_property_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='property_stock_account_output_categ_id']" position="after">
+                    <field name="promotion_account_id" />
+                    <field name="product_gift_account_id" />
+                    <field name="discount_account_id" />
+                </xpath>
+                <xpath expr="//field[@name='property_account_expense_categ_id']" position="after">
+                    <field name="expense_online_account_id" />
+                    <field name="expense_sale_account_id" />
+                    <field name="income_online_account_id" />
+                    <field name="income_sale_account_id" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
