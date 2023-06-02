@@ -256,7 +256,7 @@ class AccountMove(models.Model):
                                                               ('company_id', '=', rec.company_id.id),
                                                               ('code_tax', '=', rec.partner_id.vat),
                                                               ('street_ven', '=', rec.partner_id.street),
-                                                              ])
+                                                              ], limit=1)
                 rec.is_check_vendor_page = True
                 if not vendor_back:
                     self.env['vendor.back'].create({'vendor': rec.partner_id.name,
