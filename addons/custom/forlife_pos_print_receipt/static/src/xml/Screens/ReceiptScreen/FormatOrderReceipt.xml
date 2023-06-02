@@ -91,35 +91,73 @@
                 </tbody>
             </table>
             <t t-call="SeparateLine"/>
+
             <table class="lines-detail">
                 <tbody>
-                    <t t-foreach='receipt.orderlines' t-as='line' t-key="line.id">
-                        <tr>
-                            <td colspan="5">
-                                <t t-esc="line.product_name_wrapped[0]"/>
-                            </td>
-                        </tr>
-                        <tr class="product-price-qty-detail">
-                            <td class="num_1 text">
-                                <t t-esc="line.product_default_code || ''"/>
-                            </td>
-                            <td class="num_2 number">
-                                <t t-esc="line.quantity"/>
-                            </td>
-                            <td class="num_3 number">
-                                <t t-esc="env.pos.format_currency_no_symbol(line.price)"/>
-                            </td>
-                            <td class="num_4 number">
-                                0
-                            </td>
-                            <td class="num_5 number">
-                                <t t-esc="env.pos.format_currency_no_symbol(line.price_with_tax)"/>
-                            </td>
-                        </tr>
+                    <t t-if="receipt.normal_lines.length > 0">
+                        <t t-foreach='receipt.normal_lines' t-as='line' t-key="line.id">
+                            <t t-call="FormatOrderLinesDetailReceipt"/>
+                        </t>
                     </t>
+
+                    <t t-if="receipt.promotion_lines.length > 0">
+                        <t t-foreach='receipt.promotion_lines' t-as='promotion_data'
+                           t-key="promotion_data['lines'][0].id">
+                            <t t-set="promotion_names" t-value="promotion_data['promotion_names']"/>
+                            <t t-set="lines" t-value="promotion_data['lines']"/>
+                            <t t-foreach="promotion_names" t-as="promotion_name" t-key="promotion_name">
+                                <tr class="promotion-program-name">
+                                    <td colspan="5">
+                                        -
+                                        <t t-esc="promotion_name"/>
+                                    </td>
+                                </tr>
+                            </t>
+                            <t t-foreach="lines" t-as="line" t-key="line.id">
+                                <t t-call="FormatOrderLinesDetailReceipt"/>
+                            </t>
+                        </t>
+                    </t>
+
+                    <t t-if="receipt.applied_point_lines.length > 0">
+                        <tr class="point-header">
+                            <td colspan="5">
+                                Tiêu tích lũy
+                            </td>
+                        </tr>
+                        <t t-foreach="receipt.applied_point_lines" t-as="line" t-key="line.id">
+                            <t t-call="FormatOrderLinesDetailReceipt"/>
+                        </t>
+                    </t>
+
                 </tbody>
             </table>
         </div>
+    </t>
+
+    <t t-name="FormatOrderLinesDetailReceipt" owl="1">
+        <tr>
+            <td colspan="5">
+                <t t-esc="line.product_name_wrapped[0]"/>
+            </td>
+        </tr>
+        <tr class="product-price-qty-detail">
+            <td class="num_1 text">
+                <t t-esc="line.product_default_code || ''"/>
+            </td>
+            <td class="num_2 number">
+                <t t-esc="line.quantity"/>
+            </td>
+            <td class="num_3 number">
+                <t t-esc="env.pos.format_currency_no_symbol(line.original_price)"/>
+            </td>
+            <td class="num_4 number">
+                <t t-esc="line.discount_percent"/>%
+            </td>
+            <td class="num_5 number">
+                <t t-esc="env.pos.format_currency_no_symbol(line.total_amount)"/>
+            </td>
+        </tr>
     </t>
 
     <t t-name="FormatOrderPaymentLinesReceipt" owl="1">
@@ -141,15 +179,41 @@
                             <t t-esc="receipt.total_line_qty"/>
                         </td>
                         <td class="number" colspan="3">
-                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_rounded)"/>
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.order_total)"/>
                         </td>
                     </tr>
                     <tr>
                         <td class="col1">Chiết khấu:</td>
                         <td colspan="4" class="text-right">
-                            <t t-esc="env.pos.format_currency_no_symbol(receipt.total_discount)"/>
+                            <t t-esc="env.pos.format_currency_no_symbol(receipt.order_total_discount)"/>
                         </td>
                     </tr>
+                    <t t-if="Object.keys(receipt.applied_code_value).length > 0">
+                        <t t-foreach="Object.entries(receipt.applied_code_value)" t-as="code_value"
+                           t-key="code_value[0]">
+                            <tr>
+                                <td class="col1 promotion-code">
+                                    <t t-esc="code_value[0]"/>
+                                </td>
+                                <td colspan="4" class="text-right">
+                                    <t t-esc="env.pos.format_currency_no_symbol(code_value[1])"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </t>
+
+                    <t t-if="receipt.voucher_data">
+                        <t t-foreach="receipt.voucher_data" t-as="voucher" t-key="voucher.code">
+                            <tr>
+                                <td class="col1 promotion-code">
+                                    <t t-esc="voucher.code"/>
+                                </td>
+                                <td colspan="4" class="text-right">
+                                    <t t-esc="env.pos.format_currency_no_symbol(voucher.value)"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </t>
                 </tbody>
             </table>
 
@@ -171,10 +235,20 @@
                     <t t-foreach='receipt.paymentlines' t-as='line' t-key="line_index">
                         <tr>
                             <td>
-                                <t t-esc="line.name"/>:
+                                <t t-esc="line.name"/>
                             </td>
                             <td class="text-right">
                                 <t t-esc="env.pos.format_currency_no_symbol(line.amount)"/>
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-if="receipt.total_applied_points">
+                        <tr>
+                            <td>
+                                Tiêu tích lũy
+                            </td>
+                            <td class="text-right">
+                                <t t-esc="env.pos.format_currency_no_symbol(receipt.total_applied_points)"/>
                             </td>
                         </tr>
                     </t>

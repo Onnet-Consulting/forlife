@@ -9,7 +9,7 @@ class PurchaseOrderExchangeRate(models.Model):
     product_id = fields.Many2one('product.product', string='Mã sản phẩm')
 
     usd_amount = fields.Float(string='Thành tiền USF')  # đây chính là cột Thành tiền bên tab Sản phầm, a Trung đã viết trước
-    vnd_amount = fields.Float(string='Thành tiền', compute='compute_vnd_amount', store=1)
+    vnd_amount = fields.Float(string='Thành tiền')
 
     import_tax = fields.Float(string='% Thuế nhập khẩu')
     tax_amount = fields.Float(string='Tax Amount', compute='_compute_tax_amount', store=1)
@@ -25,6 +25,7 @@ class PurchaseOrderExchangeRate(models.Model):
     purchase_order_id = fields.Many2one('purchase.order', string='Purchase Order')
     qty_product = fields.Float(copy=True, string="Số lượng đặt mua")
 
+
     @api.constrains('import_tax', 'special_consumption_tax', 'vat_tax')
     def constrains_per(self):
         for item in self:
@@ -34,11 +35,6 @@ class PurchaseOrderExchangeRate(models.Model):
                 raise ValidationError('% thuế tiêu thụ đặc biệt phải >= 0 !')
             if item.import_tax < 0:
                 raise ValidationError('% thuế GTGT >= 0 !')
-
-    @api.depends('usd_amount', 'purchase_order_id.exchange_rate')
-    def compute_vnd_amount(self):
-        for rec in self:
-            rec.vnd_amount = rec.usd_amount * rec.purchase_order_id.exchange_rate
 
     @api.depends('vnd_amount', 'import_tax')
     def _compute_tax_amount(self):

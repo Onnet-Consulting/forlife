@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template xml:space="preserve">
+    <t t-name="ReportNum22Template" t-inherit="ReportBase" t-inherit-mode="primary">
+        <xpath expr="//div[@id='main-content']" position="inside">
+            <t t-call="ReportNum22MainTemplate"/>
+        </xpath>
+    </t>
+
+    <t t-name="ReportNum22MainTemplate">
+        <div class="oe_max_height_500">
+            <table t-att-id="widget.report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="ReportTitle"/>
+                <tbody>
+                    <t t-set="format_decimal" t-value="widget.func.format_decimal"/>
+                    <t t-foreach="options.data" t-as="line">
+                        <tr class="show-detail" t-att-id="line.num - 1">
+                            <td><t t-esc="line.num"/></td>
+                            <td><t t-esc="line.chi_nhanh"/></td>
+                            <td><t t-esc="line.ngay"/></td>
+                            <td><t t-esc="line.phien_bh"/></td>
+                            <td><t t-esc="line.pos"/></td>
+                            <td><t t-esc="format_decimal(line.tong_tien_thu, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.tong_tien_chi, 0)"/></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+        <br/>
+        <div id="transaction-detail">
+        </div>
+    </t>
+
+    <t t-name="ReportTransactionDetailTemplate">
+        <button class="oe_tab">Transaction Detail</button>
+        <button type="button" class="button_export_right export_data" aria-label="Xuất Excel" title="Xuất Excel" t-att-button-id="report_type_id" t-att-filename="report_filename">Xuất Excel</button>
+        <div class="oe_max_height_500">
+            <table t-att-id="report_type_id" class="o_list_table table table-sm table-hover mb-0 o_list_table_ungrouped table-striped report_table">
+                <t t-call="DetailReportTitle"/>
+                <tbody>
+                    <t t-foreach="data" t-as="line">
+                        <tr>
+                            <td><t t-esc="line.num"/></td>
+                            <td><t t-esc="line.ngay"/></td>
+                            <td><t t-esc="line.phien_bh"/></td>
+                            <td><t t-esc="line.so_ct"/></td>
+                            <td><t t-esc="line.noi_dung"/></td>
+                            <td><t t-esc="line.khoan_muc"/></td>
+                            <td><t t-esc="line.tk_no"/></td>
+                            <td><t t-esc="line.tk_co"/></td>
+                            <td><t t-esc="format_decimal(line.tien_thu, 0)"/></td>
+                            <td><t t-esc="format_decimal(line.tien_chi, 0)"/></td>
+                            <td><t t-esc="line.ten_nv"/></td>
+                            <td><t t-esc="line.ma_nv"/></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+    </t>
+</template>

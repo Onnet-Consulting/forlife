@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from odoo.tools.float_utils import float_round
 from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 
 
 class StockPicking(models.Model):
