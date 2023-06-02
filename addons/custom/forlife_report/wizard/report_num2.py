@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.tools.safe_eval import safe_eval
+import ast
 
 TITLES = ['Mã SP', 'Tên SP', 'Size', 'Màu', 'Tồn', 'Giá niêm yết', 'Giá khuyến mãi']
 COLUMN_WIDTHS = [20, 30, 20, 20, 20, 25, 25]
@@ -19,6 +20,7 @@ class ReportNum2(models.TransientModel):
         allowed_company = allowed_company or [-1]
         self.ensure_one()
         user_lang_code = self.env.user.lang
+        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
 
         where_query = f"sqt.company_id = any (array{allowed_company}) and sw.id notnull\n"
         if warehouse_ids:
@@ -28,33 +30,48 @@ class ReportNum2(models.TransientModel):
             where_query += f" and sqt.product_id = any (array{product_ids})\n"
 
         query = f"""
-with stock_product as
-    (select
+with attribute_data as (
+    select 
+        pp.id                                                                                   as product_id,
+        pa.attrs_code                                                                           as attrs_code,
+        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+    from product_template_attribute_line ptal
+    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+    left join product_attribute pa on ptal.attribute_id = pa.id
+    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+    where pp.id = any (array{product_ids}) 
+    group by pp.id, pa.attrs_code
+), 
+stock_product as (
+    select
         sqt.product_id    as product_id,
         sw.id             as warehouse_id,
         sum(sqt.quantity) as quantity
     from stock_quant sqt
-           left join product_product pp on sqt.product_id = pp.id
-           left join stock_location sl on sqt.location_id = sl.id
-           left join stock_warehouse sw on sl.parent_path like concat('%%/', sw.view_location_id, '/%%')
+        left join product_product pp on sqt.product_id = pp.id
+        left join stock_location sl on sqt.location_id = sl.id
+        left join stock_warehouse sw on sl.parent_path like concat('%%/', sw.view_location_id, '/%%')
     where {where_query}
     group by sqt.product_id, sw.id
-    )
+)
 select  pp.id                                                                   as product_id,
         pp.barcode                                                              as product_barcode,
         coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US') as product_name,
         sw.id                                                                   as warehouse_id,
         sw.name                                                                 as warehouse_name,
         stp.quantity                                                            as quantity,
-        ''                                                                      as product_size,
-        ''                                                                      as product_color,
-        ''                                                                      as list_price,
+        ad_size.value                                                           as product_size,
+        ad_color.value                                                          as product_color,
+        pt.list_price                                                           as list_price,
         ''                                                                      as discount_price
 from stock_product stp
-        left join product_product pp on pp.id = stp.product_id
-        left join product_template pt on pp.product_tmpl_id = pt.id
-        left join stock_warehouse sw on sw.id = stp.warehouse_id
-        """
+    left join product_product pp on pp.id = stp.product_id
+    left join product_template pt on pp.product_tmpl_id = pt.id
+    left join stock_warehouse sw on sw.id = stp.warehouse_id
+    left join attribute_data ad_size on ad_size.product_id = stp.product_id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+    left join attribute_data ad_color on ad_color.product_id = stp.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
+"""
 
         return query
 
@@ -86,7 +103,8 @@ from stock_product stp
         values.update({
             'titles': TITLES,
             "data": list(data_by_product_id.values()),
-            "detail_data_by_product_id": detail_data_by_product_id
+            "detail_data_by_product_id": detail_data_by_product_id,
+            "recordPerPage": 25,
         })
         return values
 
@@ -103,8 +121,8 @@ from stock_product stp
         for value in data['data']:
             sheet.write(row, 0, value.get('product_barcode'), formats.get('normal_format'))
             sheet.write(row, 1, value.get('product_name'), formats.get('normal_format'))
-            sheet.write(row, 2, value.get('product_size'), formats.get('normal_format'))
-            sheet.write(row, 3, value.get('product_color'), formats.get('normal_format'))
+            sheet.write(row, 2, ', '.join(value.get('product_size') or []), formats.get('normal_format'))
+            sheet.write(row, 3, ', '.join(value.get('product_color') or []), formats.get('normal_format'))
             sheet.write(row, 4, value.get('quantity'), formats.get('center_format'))
             sheet.write(row, 5, value.get('list_price'), formats.get('normal_format'))
             sheet.write(row, 6, value.get('discount_price'), formats.get('normal_format'))

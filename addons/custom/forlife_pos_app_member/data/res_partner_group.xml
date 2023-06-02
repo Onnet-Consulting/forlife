@@ -30,6 +30,12 @@
         <field name="partner_type">customer</field>
         <field name="auto_generate" eval="False"/>
     </record>
+    <record id="partner_group_6" model="res.partner.group">
+        <field name="name">Nhóm đối tượng NB khác cấp công ty</field>
+        <field name="code">6000</field>
+        <field name="partner_type">customer</field>
+        <field name="auto_generate" eval="True"/>
+    </record>
     <record id="partner_group_c" model="res.partner.group">
         <field name="name">Nhóm Khách hàng lẻ</field>
         <field name="code">C</field>

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="ir_cron_synchronize_bravo_assets" model="ir.cron">
-        <field name="name">Bravo: synchronize assets.assets</field>
-        <field name="interval_number">5</field>
-        <field name="interval_type">minutes</field>
+    <record id="ir_cron_synchronize_bravo_liquidation_assets" model="ir.cron">
+        <field name="name">Bravo: synchronize liquidation assets.assets</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
         <field name="numbercall">-1</field>
         <field name="doall" eval="False"/>
-        <field name="model_id" ref="model_bravo_sync_asset_wizard"/>
+        <field name="model_id" ref="model_bravo_sync_liquidation_asset_wizard"/>
         <field name="code">model.sync()</field>
         <field name="state">code</field>
         <field name="run_as_queue_job" eval="True"/>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="forlife_point_of_sale.PaymentScreen" t-inherit-mode="extension" t-inherit="point_of_sale.PaymentScreen" owl="1">
+        <xpath expr="//div[hasclass('payment-controls')]" position="inside">
+            <div t-if="currentOrder.is_to_invoice()" style="display: flex; flex-direction: column; margin: 5px; border: outset;">
+                <h2 class="text-center">Thông tin xuất hóa đơn</h2>
+                <textarea t-on-change="(ev) => this.onInputInvoiceInfo(ev.target)"
+                       style="display: block; margin: 2px" name="invoice_info_company_name" placeholder="Tên công ty"/>
+                <textarea t-on-change="(ev) => this.onInputInvoiceInfo(ev.target)"
+                       style="display: block; margin: 2px" name="invoice_info_address" placeholder="Địa chỉ"/>
+                <input type="text" t-on-change="(ev) => this.onInputInvoiceInfo(ev.target)"
+                       style="display: block; margin: 2px" name="invoice_info_tax_number" placeholder="Mã số thuế"/>
+            </div>
+        </xpath>
+    </t>
+</templates>

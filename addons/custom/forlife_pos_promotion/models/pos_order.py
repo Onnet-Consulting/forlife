@@ -45,7 +45,7 @@ class PosOrder(models.Model):
             for line in order['data']['lines']:
                 code_ids += [usage[2].get('code_id') for usage in line[2]['promotion_usage_ids']]
             if len(code_ids) > 0:
-                codes = self.env['promotion.code'].browse(code_ids)
+                codes = self.env['promotion.code'].sudo().browse(code_ids)
                 codes.used_partner_ids |= partner
         # Kiểm tra và tạo mã Voucher cho khách hàng từ CTKM
         reward_voucher_program_id = order['data'].get('reward_voucher_program_id', 0)
@@ -66,7 +66,7 @@ class PosOrder(models.Model):
             })
             code_create_vals = [gen_code_wizard._get_coupon_values(customer, force_partner=True)
                                 for customer in [referring_partner_id, partner]]
-            new_codes = self.env['promotion.code'].create(code_create_vals)
+            new_codes = self.env['promotion.code'].sudo().create(code_create_vals)
             new_codes.write({
                 'original_program_id': code.program_id.id,
                 'original_order_id': order_id,
@@ -83,7 +83,7 @@ class PosOrder(models.Model):
                     'program_id': surprise_program.id,
                     'max_usage': surprise_program.max_usage
                 })
-                new_code = self.env['promotion.code'].create(gen_code_wizard._get_coupon_values(partner, force_partner=True))
+                new_code = self.env['promotion.code'].sudo().create(gen_code_wizard._get_coupon_values(partner, force_partner=True))
                 new_code.original_order_id = order_id
                 new_code.surprising_reward_line_id = surprising_reward_line_id
         # Kiểm tra và tạo Mã KM cho chương trình mua Voucher tặng code giảm giá
@@ -93,11 +93,11 @@ class PosOrder(models.Model):
                 line_id = reward.get('surprising_reward_line_id', 0)
                 code_program = self.env['promotion.program'].browse(code_program_id)
                 if code_program.exists():
-                    gen_code_wizard = self.env['promotion.generate.code'].create({
+                    gen_code_wizard = self.env['promotion.generate.code'].sudo().create({
                         'program_id': code_program.id,
                         'max_usage': code_program.max_usage
                     })
-                    new_code = self.env['promotion.code'].create(gen_code_wizard._get_coupon_values(partner, force_partner=True))
+                    new_code = self.env['promotion.code'].sudo().create(gen_code_wizard._get_coupon_values(partner, force_partner=True))
                     new_code.original_order_id = order_id
                     new_code.surprising_reward_line_id = line_id
 

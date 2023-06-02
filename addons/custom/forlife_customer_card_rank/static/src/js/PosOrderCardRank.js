@@ -128,8 +128,9 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         let oldQty = this.quantity;
         let result = super.set_quantity(...arguments);
         if (oldQty !== this.quantity) {
-            this.order.action_reset_card_rank_program();
+            this.action_reset_card_rank();
         }
+        this._recompute_card_rank_disc();
         return result;
     }
 
@@ -137,9 +138,20 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         let oldDiscount = this.get_discount();
         let result = super.set_discount(...arguments);
         if (oldDiscount !== this.discount) {
-            this.order.action_reset_card_rank_program();
+            this.action_reset_card_rank();
         }
         return result;
+    }
+
+    // Một số trường hợp quantity thay đổi nhưng giá trị 'card_rank_discount' chưa recompute theo quantity tương ứng,
+    // do đó, recompute card_rank_discount trên orderline mỗi khi gọi method set_quantity
+    _recompute_card_rank_disc() {
+        if (this.card_rank_applied && this.order.card_rank_program) {
+            let line_data = this.get_discount_detail(this.order.card_rank_program);
+            if (line_data.card_rank_disc > 0) {
+                this.action_apply_card_rank(line_data);
+            };
+        };
     }
 
     action_apply_card_rank(line_data) {
@@ -179,8 +191,8 @@ const PosOrderLineCardRank = (Orderline) => class extends Orderline {
         let original_price = this.get_original_price();
         let card_rank_disc = 0;
         let extra_card_rank_disc = 0;
-        let check_skip_cr = false;
-        if (this.promotion_usage_ids.length > 0) {
+        let check_skip_cr = this.is_product_defective || false;
+        if (this.promotion_usage_ids.length > 0 && check_skip_cr !== true) {
             for (let promotion of this.promotion_usage_ids) {
                 if (this.pos.promotion_program_by_id[promotion.program_id].skip_card_rank === true) {
                     check_skip_cr = true;

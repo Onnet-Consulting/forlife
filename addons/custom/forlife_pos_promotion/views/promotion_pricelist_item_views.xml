@@ -10,6 +10,7 @@
                 <field name="barcode"/>
                 <field name="fixed_price"/>
                 <field name="qty_available" optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
             </tree>
         </field>
     </record>
