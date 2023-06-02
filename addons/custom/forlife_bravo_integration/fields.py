@@ -42,6 +42,8 @@ class BravoField(fields.Field):
         if self.bravo_default is not None:
             value = self.bravo_default
         else:
+            if len(model) > 1:
+                model = model[0]
             value = model[self.odoo_name]
         return {self.bravo_name: value or NONE_VALUE}
 

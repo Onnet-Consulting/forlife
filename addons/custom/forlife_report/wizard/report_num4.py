@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.tools.safe_eval import safe_eval
+import ast
 
 TITLES = ['STT', 'Mã Hàng', 'Tên Hàng', 'Nhóm hàng', 'Màu', 'Size', 'Bộ sưu tập', 'Kết cấu', 'Dòng hàng', 'SL cuối kỳ']
 COLUMN_WIDTHS = [8, 20, 30, 20, 15, 10, 30, 20, 20, 20]
@@ -21,6 +22,7 @@ class ReportNum4(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
+        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
 
         where_query = f"""
             sm.company_id = any (array{allowed_company})
@@ -31,16 +33,33 @@ class ReportNum4(models.TransientModel):
         """
 
         query = f"""
-with product_cate_info as
+with attribute_data as (
+    select 
+        pp.id                                                                                   as product_id,
+        pa.attrs_code                                                                           as attrs_code,
+        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+    from product_template_attribute_line ptal
+    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+    left join product_attribute pa on ptal.attribute_id = pa.id
+    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+    where pp.id = any (array{product_ids}) 
+    group by pp.id, pa.attrs_code
+), 
+product_cate_info as
     (select 
         pp.id     		                                                          as product_id,
         cate.complete_name                                                        as complete_name,
         pp.barcode                                                                as product_barcode,
         coalesce(pt.name::json -> '{user_lang_code}', pt.name::json -> 'en_US')   as product_name,
-        pt.collection                                                             as collection
+        pt.collection                                                             as collection,
+        ad_size.value                                                             as size,
+        ad_color.value                                                            as color
     from product_product pp 
         left join product_template pt on pt.id = pp.product_tmpl_id
         join product_category cate on cate.id = pt.categ_id
+        left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+        left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
     where pp.id = any (array{product_ids})
     ),
 stock as 
@@ -64,8 +83,8 @@ select row_number() over ()                     as num,
        split_part(pci.complete_name, ' / ', 3)  as product_line,
        split_part(pci.complete_name, ' / ', 4)  as texture,
        pci.collection                           as collection,
-       ''                                       as color,
-       ''                                       as size,
+       pci.color                                as color,
+       pci.size                                 as size,
        stock.qty                                as total_qty
 from stock
     left join product_cate_info pci on pci.product_id = stock.product_id
@@ -104,8 +123,8 @@ order by num
             sheet.write(row, 1, value.get('product_barcode'), formats.get('normal_format'))
             sheet.write(row, 2, value.get('product_name'), formats.get('normal_format'))
             sheet.write(row, 3, value.get('product_group'), formats.get('normal_format'))
-            sheet.write(row, 4, value.get('color'), formats.get('normal_format'))
-            sheet.write(row, 5, value.get('size'), formats.get('normal_format'))
+            sheet.write(row, 4, ', '.join(value.get('color') or []), formats.get('normal_format'))
+            sheet.write(row, 5, ', '.join(value.get('size') or []), formats.get('normal_format'))
             sheet.write(row, 6, value.get('collection'), formats.get('normal_format'))
             sheet.write(row, 7, value.get('texture'), formats.get('normal_format'))
             sheet.write(row, 8, value.get('product_line'), formats.get('normal_format'))

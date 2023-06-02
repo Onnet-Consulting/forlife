@@ -9,6 +9,12 @@
                 <field name="reward_voucher_id" attrs="{'invisible': [('reward_voucher_id', '=', False)]}"/>
                 <field name="ref_reward_code_ids" widget="many2many_tags" attrs="{'invisible': [('ref_reward_code_ids', 'in', [False, []])]}"/>
             </xpath>
+            <xpath expr="//field[@name='lines']//tree//field[@name='price_unit']" position="before">
+                <field name="original_price" widget="monetary"/>
+            </xpath>
+            <xpath expr="//field[@name='lines']/form//field[@name='price_unit']" position="before">
+                <field name="original_price" widget="monetary"/>
+            </xpath>
             <xpath expr="//field[@name='lines']/form/group" position="after">
                 <div name="promotion_usage_ids">
                     <label for="promotion_usage_ids"/>

@@ -14,5 +14,10 @@ from . import asset_location
 from . import hr_asset_transfer
 from . import assets_assets
 from . import res_currency_rate
-from . import account_move
-# from . import product_product
+from . import stock_warehouse
+from . import product_product
+from . import product_attribute_value
+from . import stock_location
+from . import forlife_production
+from . import documents
+from . import warehouse_group

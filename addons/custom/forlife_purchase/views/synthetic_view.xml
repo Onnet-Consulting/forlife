@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--        <record model="ir.sequence" id="your_model_sequence">-->
+<!--            <field name="name">forlife Synthetic Sequence</field>-->
+<!--            <field name="code">forlife.synthetic.sequence</field>-->
+<!--            <field name="prefix">YourModel/</field>-->
+<!--            <field name="padding">1</field>-->
+<!--        </record>-->
+<!--        <record model="ir.ui.view" id="your_model_tree_view">-->
+<!--            <field name="name">forlife Synthetic Tree View</field>-->
+<!--            <field name="model">forlife.synthetic</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <tree>-->
+<!--&lt;!&ndash;                    <field name="sequence"/>&ndash;&gt;-->
+<!--                    &lt;!&ndash; Các trường khác của model &ndash;&gt;-->
+<!--                </tree>-->
+<!--            </field>-->
+<!--        </record>-->
+    </data>
+</odoo>

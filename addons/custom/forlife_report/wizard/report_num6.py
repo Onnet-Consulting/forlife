@@ -6,6 +6,7 @@ from odoo.exceptions import ValidationError
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from odoo.tools.safe_eval import safe_eval
+import ast
 
 TITLES = ['STT', 'Nhóm hàng', 'Dòng hàng', 'Mã SP', 'Tên SP', 'Size', 'Màu', 'Giới tính', 'Tổng bán', 'Tổng tồn', 'Nhân viên']
 COLUMN_WIDTHS = [10, 20, 20, 15, 30, 20, 20, 20, 20, 20, 20]
@@ -32,6 +33,8 @@ class ReportNum6(models.TransientModel):
         self.ensure_one()
         user_lang_code = self.env.user.lang
         tz_offset = self.tz_offset
+        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+
         start_time = datetime.strptime('{} {:02d}:{:02d}:00'.format(
             self.date, int(self.start_time // 1), int(self.start_time % 1 * 60)), '%Y-%m-%d %H:%S:%M') + relativedelta(hours=-tz_offset)
         end_time = datetime.strptime('{} {:02d}:{:02d}:00'.format(
@@ -92,6 +95,19 @@ product_info as (
         join product_template pt on pp.product_tmpl_id = pt.id
         left join product_category pc on pc.id = pt.categ_id
     where pp.id in (select product_id from products)
+),
+attribute_data as (
+    select 
+        pp.id                                                                                   as product_id,
+        pa.attrs_code                                                                           as attrs_code,
+        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+    from product_template_attribute_line ptal
+    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+    left join product_attribute pa on ptal.attribute_id = pa.id
+    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+    where pp.id in (select product_id from products)
+    group by pp.id, pa.attrs_code
 )
 select row_number() over ()                                                       as num,
         pr.product_id                                                             as product_id,
@@ -99,17 +115,21 @@ select row_number() over ()                                                     
         COALESCE(sa.employee_id, 0)                                               as employee_id,
         emp.name                                                                  as employee_name,
         COALESCE(st.qty, 0)                                                       as stock_qty,
-        (select barcode from product_info where product_id = pr.product_id)       as product_barcode,
-        (select product_name from product_info where product_id = pr.product_id)  as product_name,
-        (select product_group from product_info where product_id = pr.product_id) as product_group,
-        (select product_line from product_info where product_id = pr.product_id)  as product_line,
-        ''                                                                        as product_size,
-        ''                                                                        as product_color,
-        ''                                                                        as gender
+        pi.barcode                                                                as product_barcode,
+        pi.product_name                                                           as product_name,
+        pi.product_group                                                          as product_group,
+        pi.product_line                                                           as product_line,
+        ad_size.value                                                             as product_size,
+        ad_color.value                                                            as product_color,
+        ad_gender.value                                                           as gender
 from products pr
     left join sales sa on sa.product_id = pr.product_id
     left join stocks st on st.product_id = pr.product_id
     left join hr_employee emp on emp.id = sa.employee_id
+    left join product_info pi on pi.product_id = pr.product_id
+    left join attribute_data ad_size on ad_size.product_id = pr.product_id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+    left join attribute_data ad_color on ad_color.product_id = pr.product_id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
+    left join attribute_data ad_gender on ad_gender.product_id = pr.product_id and ad_gender.attrs_code = '{attr_value.get('gioi_tinh', '')}'
 order by num
 """
         return query
@@ -150,9 +170,9 @@ order by num
             sheet.write(row, 2, value.get('product_line'), formats.get('normal_format'))
             sheet.write(row, 3, value.get('product_barcode'), formats.get('normal_format'))
             sheet.write(row, 4, value.get('product_name'), formats.get('normal_format'))
-            sheet.write(row, 5, value.get('product_size'), formats.get('normal_format'))
-            sheet.write(row, 6, value.get('product_color'), formats.get('normal_format'))
-            sheet.write(row, 7, value.get('gender'), formats.get('normal_format'))
+            sheet.write(row, 5, ', '.join(value.get('product_size') or []), formats.get('normal_format'))
+            sheet.write(row, 6, ', '.join(value.get('product_color') or []), formats.get('normal_format'))
+            sheet.write(row, 7, ', '.join(value.get('gender') or []), formats.get('normal_format'))
             sheet.write(row, 8, value.get('sale_qty'), formats.get('int_number_format'))
             sheet.write(row, 9, value.get('stock_qty'), formats.get('int_number_format'))
             sheet.write(row, 10, value.get('employee_name'), formats.get('normal_format'))

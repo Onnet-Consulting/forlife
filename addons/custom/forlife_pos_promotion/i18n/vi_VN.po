@@ -1391,6 +1391,7 @@ msgid "Original POS Order"
 msgstr "Đơn hàng gốc"
 
 #. module: forlife_pos_promotion
+#: model:ir.model.fields,field_description:forlife_pos_promotion.field_pos_order_line__original_price
 #: model:ir.model.fields,field_description:forlife_pos_promotion.field_promotion_usage_line__original_price
 msgid "Original Price"
 msgstr "Đơn giá ban đầu"

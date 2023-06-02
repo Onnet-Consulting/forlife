@@ -56,7 +56,7 @@ class SyncInfoRabbitmqCreate(models.AbstractModel):
         res = super().create(vals_list)
         record = res.domain_record_sync_info()
         if record:
-            record.sudo().with_delay(description="Create '%s'" % self._name).action_create_record()
+            record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ').action_create_record()
         return res
 
 
@@ -81,7 +81,7 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
         res = super().write(values)
         field_update = self.check_update_info(values)
         if field_update:
-            self.sudo().with_delay(description="Update '%s'" % self._name).action_update_record(field_update, values)
+            self.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ').action_update_record(field_update, values)
         return res
 
 
@@ -100,7 +100,7 @@ class SyncInfoRabbitmqDelete(models.AbstractModel):
         record_ids = self.domain_record_sync_info().ids
         res = super().unlink()
         if record_ids:
-            self.sudo().with_delay(description="Delete '%s'" % self._name).action_delete_record(record_ids)
+            self.sudo().with_delay(description="Delete '%s'" % self._name, channel='root.RabbitMQ').action_delete_record(record_ids)
         return res
 
 
