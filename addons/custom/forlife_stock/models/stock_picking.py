@@ -43,6 +43,18 @@ class StockPicking(models.Model):
     _inherit = 'stock.picking'
     _order = 'create_date desc'
 
+    def action_confirm(self):
+        for picking in self:
+            for line in picking.move_ids:
+                account = line.ref_asset.asset_account.id
+                if (picking.other_export and account != picking.location_dest_id.with_company(picking.company_id).x_property_valuation_in_account_id.id) or (
+                        picking.other_import and account != picking.location_id.with_company(picking.company_id).x_property_valuation_out_account_id.id):
+                    raise ValidationError(
+                        _('Tài khoản cấu hình trong thẻ tài sản không khớp với tài khoản trong lý do xuất khác'))
+        res = super().action_confirm()
+        return res
+
+
     def _domain_location_id(self):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
@@ -117,6 +129,15 @@ class StockPicking(models.Model):
         'stock.picking.type', 'Operation Type',
         required=False, readonly=False, index=True,
         states={'draft': [('readonly', False)]})
+    display_asset = fields.Char(string='Display', compute="compute_display_asset")
+
+    @api.depends('location_id', 'location_dest_id')
+    def compute_display_asset(self):
+        for r in self:
+            if (r.location_id and r.location_id.is_assets and r.other_import) or (r.location_dest_id and r.location_dest_id.is_assets and r.other_export):
+                r.display_asset = 'show'
+            else:
+                r.display_asset = 'hide'
 
     def _action_done(self):
         old_date_done = {
@@ -297,6 +318,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     po_id = fields.Char('')
+    ref_asset = fields.Many2one('assets.assets', 'Thẻ tài sản')
 
     @api.constrains('qty_done', 'picking_id.move_ids_without_package')
     def constrains_qty_done(self):
