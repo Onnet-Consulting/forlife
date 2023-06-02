@@ -115,6 +115,31 @@ class PurchaseOrder(models.Model):
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
+
+    # def action_view_PO(self):
+    #     for rec in self:
+    #         list_origin = []
+    #         test = self.env['stock.picking'].search([('origin', '=', rec.name)], limit=1)
+    #         for item in test:
+    #             if item.picking_type_id.code == 'incoming':
+    #                 print('')
+    #     test1 = self.env['account.move'].search([('x_check_entry', 'in', test.name)])
+    #     for item in self:
+    #         context = {'create': True, 'delete': True, 'edit': True}
+    #         return {
+    #             'name': _('Phiếu bút toán phát sinh'),
+    #             'view_mode': 'tree,form',
+    #             'res_model': 'account.move',
+    #             'type': 'ir.actions.act_window',
+    #             'target': 'current',
+    #             'context': context
+    #
+    #         }
+    #
+    # count_PO = fields.Integer(compute="compute_count_PO", copy=False)
+
+    # def compute_count_PO(self):
+
     def action_view_stock(self):
         for item in self:
             context = {'create': True, 'delete': True, 'edit': True}
@@ -452,12 +477,9 @@ class PurchaseOrder(models.Model):
                     }
                     invoice_line_ids.append((0, 0, invoice_line))
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
-            if record.purchase_type == "service":
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
-            else:
-                record.write(
-                    {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'to invoice'})
+
 
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
