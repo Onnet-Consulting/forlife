@@ -363,7 +363,7 @@ class PurchaseOrder(models.Model):
                             if orl.product_id == pk.product_id:
                                 pk.write({
                                     'po_id': orl.id,
-                                    'purchase_uom': orl.purchase_uom,
+                                    'purchase_uom': orl.purchase_uom.id,
                                     'quantity_change': orl.exchange_quantity,
                                     'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
                                 })

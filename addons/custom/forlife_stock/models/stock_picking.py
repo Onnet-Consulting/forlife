@@ -328,3 +328,17 @@ class StockMoveLine(models.Model):
                     if rec.qty_done > line.product_uom_qty:
                         raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 
+
+class StockBackorderConfirmationInherit(models.TransientModel):
+    _inherit = 'stock.backorder.confirmation'
+
+    def process(self):
+        res = super().process()
+        for item in self:
+            for rec in item.pick_ids:
+                data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
+                for pk in data_pk.move_line_ids_without_package:
+                    pk.write({
+                        'qty_done': pk.reserved_qty
+                    })
+        return res
