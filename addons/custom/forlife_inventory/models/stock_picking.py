@@ -13,8 +13,7 @@ class StockPicking(models.Model):
         if self.sale_id.source_record and self.company_id.code == '1300':
             data = []
             if self.company_id.code == '1300':
-                location_mapping = self.env['stock.location.mapping'].sudo().search(
-                    [('location_id', '=', self.location_id.id)])
+                location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_id.id)])
                 if not location_mapping:
                     raise UserError(
                         _(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
