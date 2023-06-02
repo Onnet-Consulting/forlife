@@ -60,7 +60,13 @@ class BravoSyncAccountWizard(models.TransientModel):
         return True
 
     def archive_vn_template_accounts(self):
-        """Set all accounts in l10n_vn module to deprecated"""
+        """Don't archive any accounts"""
+        pass
+
+    def archive_vn_template_accounts_old(self):
+        """Set all accounts in l10n_vn module to deprecated.
+        This method is correct but Onnet don't understand this  correct solution :)
+        so we have to use the archive_vn_template_accounts function"""
         res_ids = self.env['ir.model.data'].sudo().search([
             ('model', '=', 'account.account'), ('module', '=', 'l10n_vn')
         ]).mapped('res_id')
