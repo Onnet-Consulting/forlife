@@ -14,7 +14,7 @@ class PurchaseOrder(models.Model):
     origin_purchase_id = fields.Many2one('purchase.order', string="Origin Purchase", copy=False)
     count_return_purchase = fields.Integer(compute="_compute_count_return_purchase", store=True, copy=False)
 
-    warehouse_material = fields.Many2one('stock.location', string="Lý do nhập NPL")
+    warehouse_material = fields.Many2one('stock.location', string="Lý do nhập/xuất khác")
 
     @api.onchange('partner_id')
     def _onchange_partner_id_return(self):
