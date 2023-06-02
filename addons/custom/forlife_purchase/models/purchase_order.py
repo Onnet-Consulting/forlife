@@ -338,6 +338,7 @@ class PurchaseOrder(models.Model):
             record.write({'custom_state': 'confirm'})
 
     def action_approved(self):
+        self.check_purchase_tool_and_equipment()
         for record in self:
             if not record.is_inter_company:
                 super(PurchaseOrder, self).button_confirm()
