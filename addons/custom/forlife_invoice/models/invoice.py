@@ -238,7 +238,6 @@ class AccountMove(models.Model):
                             'name': line.product_id.name
                         })
         for key, value in context_invoice.items():
-            print(key, value)
             if value == "purchase.order":
                 if (new_line_count > old_line_count) and self.state == "draft":
                     raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái dự thảo')
