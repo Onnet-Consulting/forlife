@@ -12,6 +12,7 @@
     'views/res_partner_customer_view.xml',
     'views/res_config_settings_views.xml',
     'views/stock_location.xml',
+    'views/stock_warehouse.xml',
   ],
   "application":  True,
   "installable":  True,
