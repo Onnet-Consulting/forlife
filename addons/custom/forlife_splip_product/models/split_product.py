@@ -16,7 +16,7 @@ class SplitProduct(models.Model):
     state = fields.Selection([('new', 'New'), ('in_progress', 'In Progress'), ('done', 'Done'), ('canceled', 'Canceled')],
                              default='new',
                              string='Trạng thái')
-    split_product_line_ids = fields.One2many('split.product.line', 'split_product_id', string='Sản phẩm chính')
+    split_product_line_ids = fields.One2many('split.product.line', 'split_product_id', string='Sản phẩm chính', copy=True)
     split_product_line_sub_ids = fields.One2many('split.product.line.sub', 'split_product_id', string='Sản phẩm phân rã')
     note = fields.Text()
     account_intermediary_id = fields.Many2one('account.account', 'Tài khoản trung gian')
@@ -27,13 +27,11 @@ class SplitProduct(models.Model):
             pickings = self.env['stock.picking'].sudo().search_count([('split_product_id','=',rec.id)])
             rec.count_picking = pickings
 
-    def name_get(self):
-        return [(rec.id, f"Phiếu phân tách {rec.id}") for rec in self]
-
     @api.model
     def create(self, vals_list):
+        if vals_list.get('name', 'New') == 'New':
+            vals_list['name'] = self.env['ir.sequence'].next_by_code('split.product.line.sub.name') or 'New'
         res = super(SplitProduct, self).create(vals_list)
-        res.name = f"Phiếu phân tách {res.id}"
         return res
     # @api.model
     # def create(self, vals_list):
@@ -41,20 +39,26 @@ class SplitProduct(models.Model):
     #     raise ValidationError(_('Vui lòng thêm một dòng sản phẩm chính!'))
     # return super(SplitProduct, self).create(vals_list)
 
+    def unlink(self):
+        if self.state == 'new':
+            return super().unlink()
+        raise ValidationError(_('Chỉ được xoá phiếu ở trạng thái Mới!'))
+
     def action_generate(self):
         self.ensure_one()
         vals_list = []
+        if self.split_product_line_sub_ids:
+            self.split_product_line_sub_ids = False
         for rec in self.split_product_line_ids:
-            if rec.product_id.id not in self.split_product_line_sub_ids.product_id.ids:
-                for r in range(rec.product_quantity_split):
-                    vals_list.append({
-                        'split_product_id': self.id,
-                        'product_id': rec.product_id.id,
-                        'warehouse_in_id': rec.warehouse_in_id.id,
-                        'quantity': 1,
-                        'product_uom_split': rec.product_uom_split.id,
-                        'parent_id': rec.id
-                    })
+            for r in range(rec.product_quantity_split):
+                vals_list.append({
+                    'split_product_id': self.id,
+                    'product_id': rec.product_id.id,
+                    'warehouse_in_id': rec.warehouse_in_id.id,
+                    'quantity': 1,
+                    'product_uom_split': rec.product_uom_split.id,
+                    'parent_id': rec.id
+                })
         self.env['split.product.line.sub'].create(vals_list)
         self.state = 'in_progress'
 
@@ -78,11 +82,14 @@ class SplitProduct(models.Model):
     def action_approve(self):
         self.ensure_one()
         for rec in self.split_product_line_ids:
+            product_qty_split = 0
             for r in self.split_product_line_sub_ids:
                 if r.product_id == rec.product_id and r.parent_id.id == rec.id:
-                    rec.product_quantity_out += r.quantity
+                    product_qty_split += r.quantity
                 product = self._create_product(r)
                 r.product_new_id = product.id
+            rec.product_quantity_out = product_qty_split
+            rec.product_quantity_split = product_qty_split
         company_id = self.env.company
         pk_type_in = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'incoming'),('sequence_code','=','IN_OTHER')], limit=1)
         pk_type_out = self.env['stock.picking.type'].sudo().search([('company_id', '=', company_id.id), ('code', '=', 'outgoing'),('sequence_code','=','EX_OTHER')], limit=1)
@@ -203,14 +210,11 @@ class SpilitProductLineSub(models.Model):
 
     @api.model
     def create(self, vals_list):
-        if vals_list.get('name', 'New') == 'New':
-            vals_list['name'] = self.env['ir.sequence'].next_by_code('split.product.line.sub.name') or 'New'
         res = super(SpilitProductLineSub, self).create(vals_list)
         if res.product_split == 'New':
             sequence = self.env['ir.sequence'].next_by_code('split.product.line.sub')
             res.product_split = f"{res.product_id.name_get()[0][1]} {sequence}"
         return res
-    name = fields.Char('Sản phẩm phân tách', default="New", readonly=True, required=True)
     state = fields.Selection(
         [('new', 'New'), ('in_progress', 'In Progress'), ('done', 'Done'), ('canceled', 'Canceled')],
         related='split_product_id.state',

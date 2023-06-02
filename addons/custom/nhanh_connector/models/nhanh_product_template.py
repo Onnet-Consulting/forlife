@@ -23,7 +23,7 @@ class ProductNhanh(models.Model):
     @api.model
     def create(self, vals):
         res = super().create(vals)
-        self.synchronized_create_product(res)
+        # self.synchronized_create_product(res)
         return res
 
     def synchronized_create_product(self, res):
