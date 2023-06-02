@@ -346,6 +346,7 @@ class PurchaseOrder(models.Model):
                     'show_operations': True
                 })
                 picking_in.write({'state': 'assigned'})
+
                 if picking_in:
                     for orl in record.order_line:
                         if orl.price_subtotal <= 0:
@@ -452,12 +453,9 @@ class PurchaseOrder(models.Model):
                     }
                     invoice_line_ids.append((0, 0, invoice_line))
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
-            if record.purchase_type == "service":
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
-            else:
-                record.write(
-                    {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'to invoice'})
+
 
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
@@ -1050,6 +1048,20 @@ class PurchaseOrder(models.Model):
             'view_mode': 'tree,form',
             'domain': [('id', 'in', data_search), ('move_type', '=', 'in_invoice')],
         }
+
+    def action_view_invoice_ref(self):
+        for rec in self:
+            data_search = self.env['account.move'].search([('reference', '=', rec.name), ('move_type', '=', 'in_invoice')]).ids
+            print(data_search)
+        return{
+            "name":"Hóa đơn bút toán",
+            'type':'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'domain': [('id', 'in', data_search), ('move_type', '=', 'in_invoice')],
+        }
+
 
     def create_multi_invoice_vendor(self):
         sequence = 10
