@@ -510,6 +510,7 @@ class AccountMove(models.Model):
         res = super(AccountMove, self).action_post()
         return res
 
+
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
