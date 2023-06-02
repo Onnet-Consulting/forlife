@@ -129,9 +129,9 @@ class PurchaseOrderLine(models.Model):
                     'price_unit': production_line.price,
                     'is_from_po': True,
                 }))
-            self.write({
-                'purchase_order_line_material_line_ids': production_data
-            })
+            # self.write({
+            #     'purchase_order_line_material_line_ids': production_data
+            # })
         view_id = self.env.ref('purchase_request.purchase_order_line_material_form_view').id
         return {
             'type': 'ir.actions.act_window',
