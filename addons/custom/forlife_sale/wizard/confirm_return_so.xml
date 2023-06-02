@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="confirm_return_so_form" model="ir.ui.view">
+            <field name="name">confirm.return.so</field>
+            <field name="model">confirm.return.so</field>
+            <field name="arch" type="xml">
+                <form string="Lost Reason">
+                    <sheet>
+                        <group class="oe_title">
+                            <field name="line_ids">
+                                <tree create="0" delete="0" edit="0">
+                                    <field name="picking_name"/>
+                                    <field name="state"/>
+                                    <button name="action_return" type="object" class="oe_highlight" string="Trả hàng"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                    <footer>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="confirm_return_so_action" model="ir.actions.act_window">
+            <field name="name">Tạo hóa đơn phạt</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">confirm.return.so</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="crete_sale_order_punish_form"/>
+            <field name="target">new</field>
+        </record>
+    </data>
+</odoo>
