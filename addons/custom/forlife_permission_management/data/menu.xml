@@ -3,7 +3,7 @@
     <data>
         <record model="ir.ui.menu" id="stock.menu_stock_root">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_invoice_stock_picking'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="sale.sale_menu_root">
@@ -13,7 +13,7 @@
 
         <record model="ir.ui.menu" id="forlife_stock.stock_transfer">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_invoice_stock_picking'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="forlife_stock.asset_transfer_stock_inventory_menu">
@@ -234,7 +234,12 @@
 
         <record model="ir.ui.menu" id="point_of_sale.menu_point_root">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service')), (4, ref('forlife_permission_management.group_pos_pos_order')), (4, ref('forlife_permission_management.group_pos_product_defective'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="forlife_pos_product_change_refund.product_defective_action_menu_view">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_pos_product_defective'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="point_of_sale.menu_pos_dashboard">
@@ -244,7 +249,7 @@
 
         <record model="ir.ui.menu" id="point_of_sale.menu_point_of_sale">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service')), (4, ref('forlife_permission_management.group_pos_pos_order'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="point_of_sale.menu_point_ofsale">
@@ -284,7 +289,7 @@
 
         <record model="ir.ui.menu" id="forlife_print_stamps_barcode.menu_print_stamps_barcode">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_pos_barcode'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="forlife_pos_product_change_refund.handle_change_refund_menu_view">

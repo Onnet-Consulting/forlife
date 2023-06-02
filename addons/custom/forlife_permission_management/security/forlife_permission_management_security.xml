@@ -119,17 +119,17 @@
         </record>
 
         <record id="group_stock_picking_cancel" model="res.groups">
-            <field name="name">Phiếu xuất khác, Phiếu nhập khác, Điều chuyển hàng Nút Confirm Nút Cancel</field>
+            <field name="name">Phiếu xuất khác + Phiếu nhập khác + Điều chuyển hàng Nút Confirm Nút Cancel</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
         <record id="group_stock_picking_confirm" model="res.groups">
-            <field name="name">Phiếu xuất khác, Phiếu nhập khác, Điều chuyển hàng Nút Confirm</field>
+            <field name="name">Phiếu xuất khác + Phiếu nhập khác + Điều chuyển hàng Nút Confirm</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
         <record id="group_stock_picking_lock_unlock" model="res.groups">
-            <field name="name">Phiếu xuất khác, Phiếu nhập khác, Điều chuyển hàng Nút Lock + Unlock</field>
+            <field name="name">Phiếu xuất khác + Phiếu nhập khác + Điều chuyển hàng Nút Lock + Unlock</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
@@ -159,12 +159,12 @@
         </record>
 
         <record id="group_sale_order_cancel" model="res.groups">
-            <field name="name">Báo giá, Đơn hàng, Chờ hóa đơn Cancel</field>
+            <field name="name">Báo giá + Đơn hàng + Chờ hóa đơn Cancel</field>
             <field name="category_id" ref="forlife_permission_management.module_category_sale"/>
         </record>
 
         <record id="group_sale_order_lock_unlock" model="res.groups">
-            <field name="name">Báo giá, Đơn hàng, Chờ hóa đơn Nút Lock+ Unlock</field>
+            <field name="name">Báo giá + Đơn hàng + Chờ hóa đơn Nút Lock+ Unlock</field>
             <field name="category_id" ref="forlife_permission_management.module_category_sale"/>
         </record>
 
@@ -203,6 +203,37 @@
         <record id="group_request_materials_approve_reject" model="res.groups">
             <field name="name">Yêu cầu nguyên phụ liệu Nút Approve + Reject</field>
             <field name="category_id" ref="forlife_permission_management.module_category_purchase"/>
+        </record>
+
+        <!--Nhóm kiêm nhiệm -->
+        <record model="ir.module.category" id="module_category_concurrently">
+            <field name="name">Function Concurrently</field>
+            <field name="sequence">60</field>
+        </record>
+
+        <record id="group_invoice_stock_picking" model="res.groups">
+            <field name="name">Tồn kho/Hoạt động/Phiếu điều chuyển</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_concurrently"/>
+        </record>
+
+        <record id="group_purchase_purchase_order" model="res.groups">
+            <field name="name">Mua hàng/Đơn hàng/Đơn hàng mua nội địa</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_concurrently"/>
+        </record>
+
+        <record id="group_pos_pos_order" model="res.groups">
+            <field name="name">POS/Hoạt động/Đơn hàng POS</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_concurrently"/>
+        </record>
+
+        <record id="group_pos_product_defective" model="res.groups">
+            <field name="name">POS/Xử lý hàng lỗi</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_concurrently"/>
+        </record>
+
+        <record id="group_pos_barcode" model="res.groups">
+            <field name="name">POS/Sản phẩm/In mã vạch</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_concurrently"/>
         </record>
 
         <!--Group chức năng Sale-->
