@@ -5,6 +5,7 @@ from odoo import _, models, fields, api
 from odoo.exceptions import ValidationError
 import datetime, logging
 import requests
+import json
 
 _logger = logging.getLogger(__name__)
 
@@ -30,10 +31,17 @@ class ProductNhanh(models.Model):
             nhanh_configs = constant.get_nhanh_configs(self)
             if 'nhanh_connector.nhanh_app_id' in nhanh_configs or 'nhanh_connector.nhanh_business_id' in nhanh_configs \
                     or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
-                data = '[{"id": "' + str(res.id) + '","name":"' + str(
-                    res.name) + '", "barcode": "' + str(
-                    res.barcode if res.barcode else '') + '", "price": "' + str(int(res.list_price)) + '", "shippingWeight": "' + str(
-                    int(res.weight)) + '", "status": "' + 'New' + '"}]'
+                data = '[{"id": "' + str(res.id) + '","name":"' + str(res.name) + '","code":"' + str(res.code_product) + '", "barcode": "' + str(res.barcode if res.barcode else '') + '", "price": "' + str(int(res.list_price)) + '", "shippingWeight": "' + str(int(res.weight)) + '", "status": "' + 'New' + '"}]'
+
+                data = {
+                    "id": res.id,
+                    "name": res.name,
+                    "code": res.code_product,
+                    "barcode": res.barcode if res.barcode else '',
+                    "price": int(res.list_price),
+                    "shippingWeight": int(res.weight),
+                    "status": 'New'
+                }
 
                 try:
                     res_server = self.post_data_nhanh(data)
@@ -103,7 +111,8 @@ class ProductNhanh(models.Model):
             'appId': constant.get_params(self)['appId'],
             'businessId': constant.get_params(self)['businessId'],
             'accessToken': constant.get_params(self)['accessToken'],
-            'data': data
+            'data': json.dumps(data)
         }
         res_server = requests.post(url, data=payload)
         return res_server
+
