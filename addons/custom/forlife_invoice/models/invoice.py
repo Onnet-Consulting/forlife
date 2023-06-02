@@ -51,6 +51,7 @@ class AccountMove(models.Model):
     partner_domain = fields.Char(compute='_compute_partner_domain')
     partner_domain_2 = fields.Char(compute='_compute_partner_domain_2')
 
+
     # field chi phí và thuế nhập khẩu
     exchange_rate_line = fields.One2many('invoice.exchange.rate', 'invoice_rate_id',
                                          string='Invoice Exchange Rate',
@@ -78,9 +79,10 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
+    # other_PO = fields.Boolean(default=False)
+    # x_check_entry = fields.Char('x_check',_compute="_compute_check_entry")
     # product_not_is_passersby = fields.Many2many('product.product')
     # tạo data lấy từ bkav về tab e-invoice
-
     @api.onchange('exists_bkav')
     def onchange_exitsts_bakv_e_invoice(self):
         for rec in self:
@@ -256,7 +258,7 @@ class AccountMove(models.Model):
                                                               ('company_id', '=', rec.company_id.id),
                                                               ('code_tax', '=', rec.partner_id.vat),
                                                               ('street_ven', '=', rec.partner_id.street),
-                                                              ])
+                                                              ], limit=1)
                 rec.is_check_vendor_page = True
                 if not vendor_back:
                     self.env['vendor.back'].create({'vendor': rec.partner_id.name,
@@ -718,6 +720,8 @@ class AccountMoveLine(models.Model):
             return self.price_unit
 
 
+
+
 class RespartnerVendor(models.Model):
     _name = "vendor.back"
 
@@ -741,6 +745,8 @@ class RespartnerVendor(models.Model):
     tax_back = fields.Float(string='Tiền thuế', compute='compute_tax_percent_back', store=1)
     tax_percent_back = fields.Float(string='% Thuế')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', store=1)
+
+
 
     @api.constrains('vendor', 'code_tax', 'street_ven', 'company_id', 'invoice_reference', 'invoice_description')
     def constrains_check_duplicate(self):
@@ -846,6 +852,7 @@ class InvoiceExchangeRate(models.Model):
     def compute_tax_amount(self):
         for rec in self:
             rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
+
 
 
 class InvoiceCostLine(models.Model):
