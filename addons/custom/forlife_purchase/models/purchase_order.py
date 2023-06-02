@@ -897,16 +897,16 @@ class PurchaseOrder(models.Model):
                     # Invoice line values (keep only necessary sections).
                     for line in order.order_line:
                         wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
-                                                                                           and w.product_id.id == line.product_id.id
-                                                                                           and w.picking_type_id.code == 'incoming'
-                                                                                           and w.picking_id.x_is_check_return == False)
+                                                                                 and w.product_id.id == line.product_id.id
+                                                                                 and w.picking_type_id.code == 'incoming'
+                                                                                 and w.picking_id.x_is_check_return == False)
                         if wave:
                             for wave_item in wave:
                                 purchase_return = picking_in_return.move_line_ids_without_package.filtered(
                                     lambda r: str(r.po_id) == str(wave_item.po_id)
-                                              and r.product_id.id == wave_item.product_id.id
-                                              and r.picking_id.relation_return == wave_item.picking_id.name
-                                              and r.picking_id.x_is_check_return == True)
+                                    and r.product_id.id == wave_item.product_id.id
+                                    and r.picking_id.relation_return == wave_item.picking_id.name
+                                    and r.picking_id.x_is_check_return == True)
                                 if purchase_return:
                                     for x_return in purchase_return:
                                         if wave_item.picking_id.name == x_return.picking_id.relation_return:
@@ -994,10 +994,10 @@ class PurchaseOrder(models.Model):
                 # 2) group by (company_id, partner_id, currency_id) for batch creation
                 new_invoice_vals_list = []
                 picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
-                                                                 and r.state == 'done'
-                                                                 and r.picking_type_id.code == 'incoming'
-                                                                 and r.ware_check == True
-                                                                 and r.x_is_check_return == False)
+                                                       and r.state == 'done'
+                                                       and r.picking_type_id.code == 'incoming'
+                                                       and r.ware_check == True
+                                                       and r.x_is_check_return == False)
                 for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
                         x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
                     origins = set()
@@ -1292,8 +1292,7 @@ class PurchaseOrderLine(models.Model):
     def constrains_asset_code(self):
         for item in self:
             if item.order_id.purchase_type == 'asset':
-                if item.asset_code and item.asset_code.asset_account.code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.with_company(item.company_id).property_valuation == 'real_time' and item.product_id.categ_id.with_company(
-                        item.company_id).property_stock_valuation_account_id:
+                if item.asset_code and item.asset_code.asset_account.code and item.product_id and item.product_id.categ_id and item.product_id.categ_id.with_company(item.company_id).property_valuation == 'real_time' and item.product_id.categ_id.with_company(item.company_id).property_stock_valuation_account_id:
                     if item.asset_code.asset_account.code != item.product_id.categ_id.with_company(item.company_id).property_stock_valuation_account_id.code:
                         raise ValidationError(
                             'Mã tài sản của bạn khác với mã loại cọc trong tài khoản định giá tồn kho thuộc nhóm sản phẩm')
@@ -1464,7 +1463,7 @@ class PurchaseOrderLine(models.Model):
                 # Avoid updating kit components' stock.move
                 moves = line.move_ids.filtered(
                     lambda s: s.state not in ("cancel", "done")
-                              and s.product_id == line.product_id
+                    and s.product_id == line.product_id
                 )
                 moves.write({"price_unit": line._get_discounted_price_unit()})
         return res
@@ -1581,7 +1580,7 @@ class PurchaseOrderLine(models.Model):
             self.order_id.location_id.id if self.order_id.location_id else False)
         if not location_dest_id:
             location_dest_id = (self.orderpoint_id and not (
-                    self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
+                self.move_ids | self.move_dest_ids)) and self.orderpoint_id.location_id.id or self.order_id._get_destination_location()
         picking_line = picking.filtered(lambda p: p.location_dest_id and p.location_dest_id.id == location_dest_id)
         return {
             # truncate to 2000 to avoid triggering index limit error
@@ -1745,7 +1744,7 @@ class StockPicking(models.Model):
                     })
                 else:
                     vals[key_acc]["credit"] = vals[key_acc]["credit"] + (
-                            total / total_money * rec.vnd_amount)
+                        total / total_money * rec.vnd_amount)
                     vals["1561" + "from" + str(range_product) + str(item.product_id) + key_acc].update({
                         'account_id': account_1561, 'name': item.name,
                         'debit': total / total_money * rec.vnd_amount,
@@ -1778,7 +1777,7 @@ class StockPicking(models.Model):
                 })
             if not self.env.ref(
                     'forlife_purchase.product_import_tax_default').categ_id.property_stock_account_input_categ_id or not self.env.ref(
-                'forlife_purchase.product_excise_tax_default').categ_id.property_stock_account_input_categ_id:
+                    'forlife_purchase.product_excise_tax_default').categ_id.property_stock_account_input_categ_id:
                 raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế")
             invoice_line_3333 = (
                 0, 0,
