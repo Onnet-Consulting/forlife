@@ -58,6 +58,7 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
                     title: 'Lỗi hiển thị',
                     body: 'Không có sản phẩm nào được áp dụng!'
                 });
+                return false;
             };
             let program = this.env.pos.get_program_by_id(program_id);
             let qty_per_combo = program.comboFormula.reduce((total, line) => total + line.quantity, 0) || 1;
@@ -216,20 +217,20 @@ odoo.define('forlife_pos_promotion.PromotionSelectionPopup', function (require) 
          * @override
          */
 
-        selectRewardProduct(value, program_str_id) {
-            let program_by_id = this.env.pos.get_program_by_id.bind(this.env.pos);
-            let program = program_by_id(program_str_id);
-            let reward_product_id = parseInt(value);
-            program.reward_product_id_selected = reward_product_id || null;
-            this.selectItem(undefined);
-        }
+//        selectRewardProduct(value, program_str_id) {
+//            let program_by_id = this.env.pos.get_program_by_id.bind(this.env.pos);
+//            let program = program_by_id(program_str_id);
+//            let reward_product_id = parseInt(value);
+//            program.reward_product_id_selected = reward_product_id || null;
+//            this.selectItem(undefined);
+//        }
 
         getPayload() {
             self = this;
             let computePro = function(p) {
                 var program = self.env.pos.get_program_by_id(p.id);
-                var reward_product_id = jQuery("#reward_product_selected_"+p.id).val();
-                program.reward_product_id_selected = reward_product_id;
+//                var reward_product_id = jQuery("#reward_product_selected_"+p.id).val();
+//                program.reward_product_id_selected = reward_product_id;
                 return program;
             }
             return this.state.programs.filter(p => p.isSelected)
