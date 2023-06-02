@@ -24,6 +24,7 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
         }
 
         async select_reward(programOption) {
+            console.log('select_reward', this);
             let program = this.env.pos.get_program_by_id(String(programOption.id));
             let to_select_reward_lines;
             if (program.reward_type == 'cart_get_voucher') {
@@ -50,11 +51,11 @@ odoo.define('forlife_pos_promotion.CartPromotionPopup', function (require) {
                 programOptions: this.props.programs
             });
             this.state.programs.forEach(option => {
-                if (option.reward_line_vals || option.additional_reward_product_id) {
+                if (option.reward_line_vals) {
                     option.selectedQty = option.reward_line_vals.filter(l => l.isSelected).reduce((tmp, l) => tmp + l.quantity, 0);
-                    if (option.additional_reward_product_id && option.additional_reward_product_qty > 0) {
-                        option.selectedQty += option.additional_reward_product_qty;
-                    }
+//                    if (option.additional_reward_product_id && option.additional_reward_product_qty > 0) {
+//                        option.selectedQty += option.additional_reward_product_qty;
+//                    }
                 } else {
                     option.selectedQty = 0
                 }
