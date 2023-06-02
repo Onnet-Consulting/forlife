@@ -38,8 +38,8 @@ class TransferStockInventory(models.Model):
             sum_in = 0
             sum_out = 0
             for line in r.transfer_stock_inventory_line_ids:
-                sum_out += line.unit_price_from * line.qty_out
-                sum_in += line.unit_price_to * line.qty_in
+                sum_out += line.product_to_id.list_price * line.qty_out
+                sum_in += line.product_from_id.list_price * line.qty_in
             if sum_out == sum_in:
                 r.x_classify = True
             else:

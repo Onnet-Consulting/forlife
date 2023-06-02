@@ -127,7 +127,7 @@
         <record model="ir.rule" id="stock_transfer_read">
             <field name="name">stock_transfer_read</field>
             <field name="model_id" ref="forlife_stock.model_stock_transfer"/>
-            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission')), (4, ref('forlife_permission_management.group_invoice_stock_picking'))]"/>
             <field name="domain_force">['|', ('location_id.warehouse_id','in', user.get_stock()), ('location_dest_id.warehouse_id','in',
                 user.get_stock())]
             </field>
@@ -394,7 +394,7 @@
         <record model="ir.rule" id="pos_order_read">
             <field name="name">pos_order_read</field>
             <field name="model_id" ref="point_of_sale.model_pos_order"/>
-            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
+            <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission')), (4, ref('forlife_permission_management.group_pos_pos_order'))]"/>
             <field name="domain_force">['|', ('store_id','in', user.get_store()), ('store_id','=', False)]
             </field>
             <field name="perm_read" eval="True"/>

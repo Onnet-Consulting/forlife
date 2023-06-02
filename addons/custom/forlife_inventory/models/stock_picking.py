@@ -1,4 +1,4 @@
-from odoo import api, fields, models,_
+from odoo import api, fields, models, _
 from datetime import date, datetime
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 from odoo.exceptions import UserError, ValidationError
@@ -10,11 +10,10 @@ class StockPicking(models.Model):
         res = super(StockPicking, self).button_validate()
         if res is not True:
             return res
-        if self.sale_id.nhanh_id and self.company_id.code == '1300':
+        if self.sale_id.source_record and self.company_id.code == '1300':
             data = []
             if self.company_id.code == '1300':
-                location_mapping = self.env['stock.location.mapping'].sudo().search(
-                    [('location_id', '=', self.location_id.id)])
+                location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_id.id)])
                 if not location_mapping:
                     raise UserError(
                         _(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
@@ -23,7 +22,7 @@ class StockPicking(models.Model):
                     data.append((0, 0, {
                         'product_id': product.id,
                         'location_id': location_mapping.location_map_id.id,
-                        'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong', raise_if_not_found=False).id,
+                        'location_dest_id': self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong',raise_if_not_found=False).id,
                         'name': product.display_name,
                         'date': datetime.now(),
                         'product_uom': line.uom_id.id,
@@ -44,8 +43,6 @@ class StockPicking(models.Model):
                 orther_export.button_validate()
             # orther_export.button_validate()
         return res
-
-
 
     @api.model
     def _create_picking_from_pos_order_lines(self, location_dest_id, lines, picking_type, partner=False):
