@@ -466,7 +466,7 @@ class SaleOrderLine(models.Model):
             and pp.x_punish is True
             and pp.x_partner_id = {self.order_id.partner_id.id}
             and (ppi.product_tmpl_id = {tmpl_id} or ppi.product_tmpl_id is null)
-            and '{str(self.order_id.date_order)}'::date between ppi.date_start and ppi.date_end
+            and '{str(self.order_id.date_order)}' between ppi.date_start and ppi.date_end
             order by pp.id desc
             limit 2 
         """

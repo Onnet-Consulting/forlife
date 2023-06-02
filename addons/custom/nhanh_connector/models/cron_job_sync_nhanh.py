@@ -58,7 +58,7 @@ class SaleOrder(models.Model):
               # f"&data={query_params['data']}"
         # Get all orders from previous day to today from Nhanh.vn
         try:
-            res_server = requests.post(url, json= json.dumps(data))
+            res_server = requests.post(url, json=json.dumps(data))
             res = res_server.json()
         except Exception as ex:
             _logger.info(f'Get orders from NhanhVn error {ex}')

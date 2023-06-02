@@ -624,15 +624,15 @@ class AccountMoveLine(models.Model):
     #             else:
     #                 pass
 
-    @api.depends('quantity', 'price_unit', 'taxes_id')
-    def _compute_tax_amount(self):
-        for line in self:
-            taxes = line.taxes_id.compute_all(**line._prepare_compute_all_values())
-            line.update({
-                'tax_amount': taxes['total_included'] - taxes['total_excluded'],
-                'price_total': taxes['total_included'],
-                'price_subtotal': taxes['total_excluded'],
-            })
+    # @api.depends('quantity', 'price_unit', 'taxes_id')
+    # def _compute_tax_amount(self):
+    #     for line in self:
+    #         taxes = line.taxes_id.compute_all(**line._prepare_compute_all_values())
+    #         line.update({
+    #             'tax_amount': taxes['total_included'] - taxes['total_excluded'],
+    #             'price_total': taxes['total_included'],
+    #             'price_subtotal': taxes['total_excluded'],
+    #         })
 
     def _prepare_compute_all_values(self):
         # Hook method to returns the different argument values for the
@@ -709,6 +709,8 @@ class AccountMoveLine(models.Model):
                 discount=self.discount_percent,
                 price_subtotal=self.price_subtotal,
             )
+        else:
+            return super()._convert_to_tax_base_line_dict()
 
     def _get_discounted_price_unit(self):
         self.ensure_one()
