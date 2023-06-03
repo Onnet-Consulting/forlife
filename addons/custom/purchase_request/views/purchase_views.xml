@@ -121,7 +121,6 @@
                                                string="Đơn vị"/>
                                         <field name="product_qty" string="Số lượng điều chuyển"/>
                                         <field name="product_plan_qty" string="Số lượng kế hoạch"/>
-<!--                                        <field name="product_remain_qty" string="Số lượng còn lại"/>-->
                                     </tree>
                                 </field>
                             </page>

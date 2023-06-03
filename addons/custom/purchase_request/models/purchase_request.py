@@ -12,7 +12,6 @@ class PurchaseRequest(models.Model):
     _description = "Purchase Request"
 
     name = fields.Char(string="Request name", required=True, default='New', copy=False)
-    # wo_code = fields.Char(string="Work Order Code")
     user_id = fields.Many2one('res.users', string="User Requested", required=True, default=lambda self: self.env.user)
     employee_id = fields.Many2one('hr.employee', string='User Request', required=True)
     department_id = fields.Many2one('hr.department', string='Department', required=True)
