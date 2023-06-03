@@ -23,8 +23,8 @@ class AccountMove(models.Model):
         ('product', 'Goods'),
         ('asset', 'Asset'),
         ('service', 'Service'),
-    ], string='PO Type', default='product', required=1)
-    number_bills = fields.Char(string='Number bills', copy=False, required=1)
+    ], string='PO Type', default='product')
+    number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8), default=1)
     accounting_date = fields.Datetime(string='Accounting Date')
@@ -67,6 +67,7 @@ class AccountMove(models.Model):
 
     # tab e-invoice-bkav
     e_invoice_ids = fields.One2many('e.invoice', 'e_invoice_id', string='e Invoice')
+
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),
         ('QC', 'QC'),
@@ -77,9 +78,10 @@ class AccountMove(models.Model):
         ('Winning', 'Winning'),
     ], string='Phân loại nguồn')
 
+    # other_PO = fields.Boolean(default=False)
+    # x_check_entry = fields.Char('x_check',_compute="_compute_check_entry")
     # product_not_is_passersby = fields.Many2many('product.product')
     # tạo data lấy từ bkav về tab e-invoice
-
     @api.onchange('exists_bkav')
     def onchange_exitsts_bakv_e_invoice(self):
         for rec in self:
@@ -224,9 +226,9 @@ class AccountMove(models.Model):
                                 raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
     def write(self, vals):
-        context_invoice = self._context
-        old_line_count = len(self.invoice_line_ids)
-        new_line_count = len(vals.get('invoice_line_ids', []))
+        # context_invoice = self._context
+        # old_line_count = len(self.invoice_line_ids)
+        # new_line_count = len(vals.get('invoice_line_ids', []))
         res = super(AccountMove, self).write(vals)
         for rec in self:
             if rec.is_check_cost_view:
@@ -237,12 +239,13 @@ class AccountMove(models.Model):
                                 line.company_id).property_stock_account_input_categ_id.id,
                             'name': line.product_id.name
                         })
-        for key, value in context_invoice.items():
-            if value == "purchase.order":
-                if (new_line_count > old_line_count) and self.state == "draft":
-                    raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái dự thảo')
-                else:
-                    return rec
+        # for key, value in context_invoice.items():
+        #     print(key, value)
+        #     if value == "purchase.order":
+        #         if (new_line_count > old_line_count) and self.state == "draft":
+        #             raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái dự thảo')
+        #         else:
+        #             return rec
         return res
 
     @api.depends('partner_id.is_passersby', 'partner_id')
@@ -254,7 +257,7 @@ class AccountMove(models.Model):
                                                               ('company_id', '=', rec.company_id.id),
                                                               ('code_tax', '=', rec.partner_id.vat),
                                                               ('street_ven', '=', rec.partner_id.street),
-                                                              ])
+                                                              ], limit=1)
                 rec.is_check_vendor_page = True
                 if not vendor_back:
                     self.env['vendor.back'].create({'vendor': rec.partner_id.name,
@@ -508,7 +511,6 @@ class AccountMove(models.Model):
         res = super(AccountMove, self).action_post()
         return res
 
-
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 
@@ -721,6 +723,8 @@ class AccountMoveLine(models.Model):
             return self.price_unit
 
 
+
+
 class RespartnerVendor(models.Model):
     _name = "vendor.back"
 
@@ -744,6 +748,8 @@ class RespartnerVendor(models.Model):
     tax_back = fields.Float(string='Tiền thuế', compute='compute_tax_percent_back', store=1)
     tax_percent_back = fields.Float(string='% Thuế')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', store=1)
+
+
 
     @api.constrains('vendor', 'code_tax', 'street_ven', 'company_id', 'invoice_reference', 'invoice_description')
     def constrains_check_duplicate(self):
@@ -849,6 +855,7 @@ class InvoiceExchangeRate(models.Model):
     def compute_tax_amount(self):
         for rec in self:
             rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
+
 
 
 class InvoiceCostLine(models.Model):

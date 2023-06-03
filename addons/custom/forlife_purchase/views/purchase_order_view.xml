@@ -113,7 +113,7 @@
                                 <field name="special_consumption_tax"/>
                                 <field name="special_consumption_tax_amount" readonly="1" force_save="1"/>
                                 <field name="vat_tax"/>
-                                <field name="vat_tax_amount" readonly="1" ie="1"/>
+                                <field name="vat_tax_amount" readonly="1"/>
 <!--                                <field name="total_vnd_amount" readonly="1"/>-->
                                 <field name="total_tax_amount" readonly="1"/>
                             </tree>
@@ -145,21 +145,20 @@
                         </div>
                     </page>
                     <page string="Tổng hợp" name="synthetic">
-                        <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree">
+                        <field name="purchase_synthetic_ids" widget="section_and_note_one2many" mode="tree" readonly="1">
                             <tree editable="bottom" class="width-hh">
-<!--                                <field name="sequence"/>-->
                                 <field name="description"/>
                                 <field name="product_id"/>
                                 <field name="product_uom"/>
                                 <field name="price_unit"/>
                                 <field name="quantity"/>
-                                <field name="price_subtotal"/>
+                                <field name="price_subtotal" sum="discounted subtotal" force_save="1"/>
                                 <field name="discount"/>
                                 <field name="before_tax"/>
                                 <field name="tnk_tax"/>
                                 <field name="db_tax"/>
                                 <field name="after_tax"/>
-                                <field name="total_product"/>
+                                <field name="total_product" sum="discounted subtotal" force_save="1"/>
                             </tree>
                         </field>
                         <div class="xl-12 d-flex" style="justify-content: end;">
@@ -299,7 +298,7 @@
                         <field name="price_unit"
                                attrs="{'readonly': ['|', ('qty_invoiced', '!=', 0), ('parent.purchase_type', '=', 'product')]}"
                                force_save="1"/>
-                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
+                        <field name="product_uom" readonly="1" attrs="{'column_invisible': [('parent.purchase_type', '=', 'asset')], 'readonly': [('parent.custom_state', '=', 'approved')]}" force_save="1" string="Đơn vị tính"/>
                         <field name="location_id"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="taxes_id" widget="many2many_tags"

@@ -367,7 +367,7 @@ class PurchaseOrder(models.Model):
                             if orl.product_id == pk.product_id:
                                 pk.write({
                                     'po_id': orl.id,
-                                    'purchase_uom': orl.purchase_uom,
+                                    'purchase_uom': orl.purchase_uom.id,
                                     'quantity_change': orl.exchange_quantity,
                                     'quantity_purchase_done': orl.product_qty / orl.exchange_quantity if orl.exchange_quantity else False
                                 })
@@ -640,34 +640,6 @@ class PurchaseOrder(models.Model):
                     rec.active_manual_currency_rate = False
             else:
                 rec.active_manual_currency_rate = False
-
-    #             order.invoice_status = 'no'
-
-    # def _prepare_invoice(self):
-    #     result = super(PurchaseOrder, self)._prepare_invoice()
-    #     result.update({
-    #         'manual_currency_exchange_rate': self.manual_currency_exchange_rate,
-    #         'active_manual_currency_rate': self.active_manual_currency_rate
-    #     })
-    #     return result
-
-    # def _prepare_picking(self):
-    #     result = super(PurchaseOrder, self)._prepare_picking()
-    #     diff_currency = False
-    #     if self.company_id or self.currency_id:
-    #         if self.company_id.currency_id != self.currency_id:
-    #             diff_currency = True
-    #         else:
-    #             diff_currency = False
-    #     else:
-    #         diff_currency = False
-    #     if diff_currency:
-    #         result.update({
-    #             'apply_manual_currency_exchange': self.apply_manual_currency_exchange,
-    #             'manual_currency_exchange_rate': self.manual_currency_exchange_rate,
-    #             'active_manual_currency_rate': diff_currency
-    #         })
-    #     return result
 
     def write(self, vals):
         old_line_count = len(self.order_line)
@@ -1063,20 +1035,17 @@ class PurchaseOrder(models.Model):
                     account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
                     line.account_id = account_id
             # 3.1) ẩn nút trả hàng khi hóa đơn của pnk đã tồn tại
-            if moves:
-                for item in moves:
-                    picking_in_return = self.env['stock.picking'].search([('origin', '=', self.name),
-                                                                          ('x_is_check_return', '=', True)
-                                                                          ])
-                    for nine in item.receiving_warehouse_id:
-                        nine.x_hide_return = True
-                    for line in picking_in_return:
-                        line.x_hide_return = True
+            # if moves:
+            #     for item in moves:
+            #         if item.state == 'posted':
+            #             picking_in_return = self.env['stock.picking'].search([('origin', '=', self.name),
+            #                                                                   ('x_is_check_return', '=', True)
+            #                                                                   ])
+            #             for nine in item.receiving_warehouse_id:
+            #                 nine.x_hide_return = True
+            #             for line in picking_in_return:
+            #                 line.x_hide_return = True
 
-            for line in moves.invoice_line_ids:
-                if line.product_id:
-                    account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
-                    line.account_id = account_id
             # 4) Some moves might actually be refunds: convert them if the total amount is negative
             # We do this after the moves have been created since we need taxes, etc. to know if the total
             # is actually negative or not
@@ -1133,10 +1102,10 @@ class PurchaseOrder(models.Model):
                              'uom_id': line.product_uom.id,
                              'price_unit': line.price_unit}
                 sequence += 1
-                key = order.purchase_type
+                key = order.purchase_type, order.partner_id.id, order.company_id.id
                 invoice_vals = order._prepare_invoice()
                 invoice_vals.update({'purchase_type': order.purchase_type, 'invoice_date': datetime.now(),
-                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id})
+                                     'exchange_rate': order.exchange_rate, 'currency_id': order.currency_id.id})
                 order = order.with_company(order.company_id)
                 line_vals = line._prepare_account_move_line()
                 line_vals.update(data_line)
@@ -1147,10 +1116,24 @@ class PurchaseOrder(models.Model):
                     vals_all_invoice.update({
                         key: invoice_vals
                     })
-        moves = self.env['account.move']
+        moves = self.env['account.move'].with_context(default_move_type='in_invoice')
         for data in vals_all_invoice:
-            move = moves.create(vals_all_invoice.get(data)).action_post()
-        return True
+            move = moves.create(vals_all_invoice.get(data))
+            if move:
+                for line in move.invoice_line_ids:
+                    if line.product_id:
+                        account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
+                        line.account_id = account_id
+            move.filtered(
+                lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
+        return {
+            'name': 'Hóa đơn nhà cung cấp',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_id': False,
+            'view_mode': 'tree',
+            'domain': [('id', 'in', move.ids)],
+        }
 
     def _prepare_picking(self):
         if not self.group_id:
@@ -1195,25 +1178,6 @@ class PurchaseOrder(models.Model):
             'total_trade_discount': self.total_trade_discount
         })
         return values
-
-    # @api.onchange('cost_line', 'cost_line.is_check_pre_tax_costs')
-    # def onchange_is_check_pre_tax_costs(self):
-    #     for rec in self:
-    #         cost_line_true = rec.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == True)
-    #         if rec.cost_line and rec.order_line:
-    #             for line in rec.order_line:
-    #                 total_cost_true = 0
-    #                 if cost_line_true:
-    #                     for item in cost_line_true:
-    #                         cost_host = ((line.total_vnd_amount / sum(rec.order_line.mapped('total_vnd_amount'))) * 100 / 100) * item.vnd_amount
-    #                         total_cost_true += cost_host
-    #                     line.total_value = total_cost_true + (line.total_vnd_amount * rec.exchange_rate)
-
-    # @api.onchange('exc
-
-
-
-
 
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
@@ -1281,62 +1245,10 @@ class PurchaseOrderLine(models.Model):
         for rec in self:
             rec.total_vnd_amount = (rec.price_subtotal * rec.order_id.exchange_rate)
 
-    # @api.model
-    # def create(self, vals):
-    #     line = super(PurchaseOrderLine, self).create(vals)
-    #     if not line.product_uom or not line.name:
-    #         line.product_uom = line.product_id.uom_id.id
-    #         line.name = line.product_id.name
-    #     if not line.vendor_price and all((line.product_id, line.supplier_id, line.purchase_uom, not line.is_red_color)):
-    #         data = self.env['product.supplierinfo'].search([
-    #             ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
-    #             ('partner_id', '=', line.supplier_id.id),
-    #             ('product_uom', '=', line.purchase_uom.id),
-    #             ('amount_conversion', '=', line.exchange_quantity)
-    #         ], limit=1)
-    #         if data:
-    #             line.update({
-    #                 'vendor_price': data.price,
-    #                 'price_unit': data.price / line.exchange_quantity if line.exchange_quantity else False
-    #             })
-    #     return line
-    @api.model
-    def create(self, vals):
-        line = super(PurchaseOrderLine, self).create(vals)
-        if not line.product_uom or not line.name:
-            line.product_uom = line.product_id.uom_id.id
-            line.name = line.product_id.name
-        if not line.vendor_price and all((line.product_id, line.supplier_id, line.purchase_uom, not line.is_red_color)):
-            data = self.env['product.supplierinfo'].search([
-                ('product_tmpl_id', '=', line.product_id.product_tmpl_id.id),
-                ('partner_id', '=', line.supplier_id.id),
-                ('product_uom', '=', line.purchase_uom.id),
-                ('amount_conversion', '=', line.exchange_quantity)
-            ], limit=1)
-            if data:
-                line.update({
-                    'vendor_price': data.price,
-                    'price_unit': data.price / line.exchange_quantity if line.exchange_quantity else False
-                })
-        return line
-
-    @api.depends('exchange_quantity')
-    def compute_is_red_color(self):
-        date_item = datetime.datetime.now().date()
-        for item in self:
-            if not (item.product_id and item.supplier_id and item.purchase_uom and item.currency_id):
-                item.is_red_color = False
-                continue
-            supplier_info = self.search_product_sup(
-                [('product_uom', '=', item.purchase_uom.id),
-                 ('product_id', '=', item.product_id.id),
-                 ('partner_id', '=', item.supplier_id.id),
-                 ('date_start', '<', date_item),
-                 ('date_end', '>', date_item),
-                 ('currency_id', '>', item.currency_id.id),
-                 ])
-            item.is_red_color = True if item.exchange_quantity not in supplier_info.mapped(
-                'amount_conversion') else False
+    @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id')
+    def _compute_total_vnd_amount(self):
+        for rec in self:
+            rec.total_vnd_amount = (rec.price_subtotal * rec.order_id.exchange_rate)
 
     @api.onchange('product_id', 'is_change_vendor')
     def onchange_product_id(self):
@@ -1780,7 +1692,7 @@ class StockPicking(models.Model):
         account.action_post()
         return account
 
-    # Xử lý bút toán po nội bộphí
+    # Xử lý bút toán po nội bộ phí
     def create_invoice_po_cost(self, po, record):
         data_in_line = po.order_line
         invoice_line_cost_in_tax = []
@@ -2035,9 +1947,11 @@ class Synthetic(models.Model):
                 pass
             if cost_line_false:
                 for item in cost_line_false:
-                    cost_host = (((rec.price_subtotal + rec.before_tax) / (sum(self.mapped('price_subtotal')) + sum(
-                        self.mapped('before_tax')))) * 100 / 100) * item.vnd_amount
-                    total_cost_false += cost_host
+                    for line in rec.synthetic_id.exchange_rate_line:
+                        line.vnd_amount = rec.price_subtotal + rec.before_tax
+                        cost_host = (((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(
+                            self.mapped('before_tax')))) * 100 / 100) * item.vnd_amount
+                        total_cost_false += cost_host
                 rec.after_tax = total_cost_false
             else:
                 pass
