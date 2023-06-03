@@ -133,7 +133,7 @@ class SplitProduct(models.Model):
         for record in self.split_product_line_ids:
             data = []
             for rec in self.split_product_line_sub_ids:
-                if rec.product_id.id == record.product_id.id and r.parent_id.id == rec.id:
+                if rec.product_id.id == record.product_id.id and rec.parent_id.id == record.id:
                     data.append((0, 0, {
                         'product_id': rec.product_new_id.id,
                         'name': rec.product_split,
