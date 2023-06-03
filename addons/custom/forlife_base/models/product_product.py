@@ -116,3 +116,58 @@ class ProcurementGroup(models.Model):
         self.env['product.product']._alert_date_exceeded()
         if use_new_cursor:
             self.env.cr.commit()
+
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
+
+    @api.model
+    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
+        # Only use the product.product heuristics if there is a search term and the domain
+        # does not specify a match on `product.template` IDs.
+        if not name or any(term[0] == 'id' for term in (args or [])):
+            return super(ProductTemplate, self)._name_search(name=name, args=args, operator=operator, limit=limit,
+                                                             name_get_uid=name_get_uid)
+
+        Product = self.env['product.product']
+        templates = self.browse([])
+        while True:
+            domain = templates and [('product_tmpl_id', 'not in', templates.ids)] or []
+            args = args if args is not None else []
+            # Product._name_search has default value limit=100
+            # So, we either use that value or override it to None to fetch all products at once
+            kwargs = {} if limit else {'limit': None}
+            products_ids = Product._name_search(name, args + domain, operator=operator, name_get_uid=name_get_uid,
+                                                **kwargs)
+            products = Product.browse(products_ids)
+            new_templates = products.mapped('product_tmpl_id')
+            if new_templates & templates:
+                """Product._name_search can bypass the domain we passed (search on supplier info).
+                   If this happens, an infinite loop will occur."""
+                break
+            templates |= new_templates
+            if (not products) or (limit and (len(templates) > limit)):
+                break
+
+        searched_ids = set(templates.ids)
+        # some product.templates do not have product.products yet (dynamic variants configuration),
+        # we need to add the base _name_search to the results
+        # FIXME awa: this is really not performant at all but after discussing with the team
+        # we don't see another way to do it
+        tmpl_without_variant_ids = []
+        # if not limit or len(searched_ids) < limit:
+        #     tmpl_without_variant_ids = self.env['product.template'].search(
+        #         [('id', 'not in', self.env['product.template']._search([('product_variant_ids.active', '=', True)]))]
+        #     )
+        if tmpl_without_variant_ids:
+            domain = expression.AND([args or [], [('id', 'in', tmpl_without_variant_ids.ids)]])
+            searched_ids |= set(super(ProductTemplate, self)._name_search(
+                name,
+                args=domain,
+                operator=operator,
+                limit=limit,
+                name_get_uid=name_get_uid))
+
+        # re-apply product.template order + name_get
+        return super(ProductTemplate, self)._name_search(
+            '', args=[('id', 'in', list(searched_ids))],
+            operator='ilike', limit=limit, name_get_uid=name_get_uid)
