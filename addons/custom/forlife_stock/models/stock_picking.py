@@ -45,6 +45,8 @@ class StockPicking(models.Model):
 
     def action_confirm(self):
         for picking in self:
+            if not picking.location_id.asset_account.id:
+                continue
             for line in picking.move_ids:
                 account = line.ref_asset.asset_account.id
                 if (picking.other_export and account != picking.location_dest_id.with_company(picking.company_id).x_property_valuation_in_account_id.id) or (
@@ -318,6 +320,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     po_id = fields.Char('')
+    ref_asset = fields.Many2one('assets.assets', 'Thẻ tài sản')
 
     @api.constrains('qty_done', 'picking_id.move_ids_without_package')
     def constrains_qty_done(self):
@@ -327,3 +330,17 @@ class StockMoveLine(models.Model):
                     if rec.qty_done > line.product_uom_qty:
                         raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 
+
+class StockBackorderConfirmationInherit(models.TransientModel):
+    _inherit = 'stock.backorder.confirmation'
+
+    def process(self):
+        res = super().process()
+        for item in self:
+            for rec in item.pick_ids:
+                data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
+                for pk in data_pk.move_line_ids_without_package:
+                    pk.write({
+                        'qty_done': pk.reserved_qty
+                    })
+        return res
