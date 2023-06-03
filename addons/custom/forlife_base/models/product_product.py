@@ -119,6 +119,7 @@ class ProcurementGroup(models.Model):
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
+    _rec_names_search = ['barcode']
 
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
