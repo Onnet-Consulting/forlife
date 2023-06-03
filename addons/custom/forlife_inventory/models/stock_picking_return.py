@@ -6,7 +6,8 @@ class Return(models.TransientModel):
     _inherit = 'stock.return.picking'
 
     def create_returns(self):
-        if self.picking_id.sale_id.nhanh_id and self.picking_id.company_id.code == '1300':
+        print('222222222')
+        if self.picking_id.sale_id.source_record and self.picking_id.company_id.code == '1300':
             data = []
             if self.company_id.code == '1300':
                 location_mapping = self.env['stock.location.mapping'].sudo().search(
