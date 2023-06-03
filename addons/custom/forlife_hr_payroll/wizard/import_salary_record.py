@@ -42,7 +42,7 @@ class ImportSalaryRecord(models.TransientModel):
 
     @api.model
     def get_key_by_record(self, record):
-        keys = [record.purpose_id.id, record.department_id.id, record.analytic_account_id.id, record.project_code or '']
+        keys = [record.purpose_id.id, record.department_id.id, record.analytic_account_id.id, record.asset_id.id]
         keys = [str(x) for x in keys]
         return '_'.join(keys)
 
@@ -285,22 +285,38 @@ class ImportSalaryRecord(models.TransientModel):
                 error_by_code[code] = _('Mã cost center %s không tồn tại') % code
         return analytic_by_code, error_by_code
 
-    def map_project_data(self, asset_codes):
-        # FIXME: chờ chốt giải pháp cho Mã dự án
-        asset_code_by_code = {code: code for code in asset_codes}
+    def map_project_data(self, data):
+        assets_assets = self.env['assets.assets'].search(
+            [('code', 'in', data), ('company_id', '=', self.company_id.id)]
+        )
+        asset_by_code = {a.code: a.id for a in assets_assets}
         error_by_code = {}
-        return asset_code_by_code, error_by_code
+        for code in data:
+            if code and not asset_by_code.get(code):
+                error_by_code[code] = _('Mã dự án %s không tồn tại') % code
+        return asset_by_code, error_by_code
 
     def map_manufacturing_data(self, data):
-        # FIXME: chờ đối tác chốt giải pháp cho lệnh sản xuất mới làm phần này
-        manufacturing_code_by_code = {code: code for code in data}
-        return manufacturing_code_by_code, {}
-
-    def map_internal_order_data(self, io_codes):
-        # FIXME: chờ chốt giải pháp cho Mã chương trình sự kiện
-        io_code_by_code = {code: code for code in io_codes}
+        productions = self.env['forlife.production'].search([
+            ('code', 'in', data), ('company_id', '=', self.company_id.id)
+        ])
+        production_by_code = {p.code: p.id for p in productions}
         error_by_code = {}
-        return io_code_by_code, error_by_code
+        for code in data:
+            if code and not production_by_code.get(code):
+                error_by_code[code] = _("Mã lệnh sản xuất %s không tồn tại") % code
+        return production_by_code, error_by_code
+
+    def map_internal_order_data(self, data):
+        occasions = self.env['occasion.code'].search([
+            ('code', 'in', data), ('company_id', '=', self.company_id.id)
+        ])
+        occasion_by_code = {oc.code: oc.id for oc in occasions}
+        error_by_code = {}
+        for code in data:
+            if code and not occasion_by_code.get(code):
+                error_by_code[code] = _("Mã vụ việc %s không tồn tại") % code
+        return occasion_by_code, error_by_code
 
     def map_data(self, **kwargs):
         """
@@ -439,7 +455,7 @@ class ImportSalaryRecord(models.TransientModel):
                     'purpose_id': purpose_by_code.get(purpose_code),
                     'department_id': department_by_code.get(department_code),
                     'analytic_account_id': analytic_by_code.get(analytic_code),
-                    'project_code': project_by_code.get(project_code) or False,
+                    'asset_id': project_by_code.get(project_code) or False,
                     'x_slns': float(row[5]) if row[5] else False,
                 }
                 res.append(value)
@@ -506,9 +522,9 @@ class ImportSalaryRecord(models.TransientModel):
                     'purpose_id': purpose_by_code.get(purpose_code),
                     'department_id': department_by_code.get(department_code),
                     'analytic_account_id': analytic_by_code.get(analytic_code),
-                    'project_code': project_by_code.get(project_code) or False,
-                    'manufacture_order_code': manufacturing_by_code.get(manufacturing_code) or False,
-                    'internal_order_code': internal_order_by_code.get(internal_order_code) or False,
+                    'asset_id': project_by_code.get(project_code) or False,
+                    'production_id': manufacturing_by_code.get(manufacturing_code) or False,
+                    'occasion_code_id': internal_order_by_code.get(internal_order_code) or False,
                     'x_ttn': float(row[7]) if row[7] else False,
                     'note': row[8],
                 }
@@ -575,9 +591,9 @@ class ImportSalaryRecord(models.TransientModel):
                     'purpose_id': purpose_by_code.get(purpose_code),
                     'department_id': department_by_code.get(department_code),
                     'analytic_account_id': analytic_by_code.get(analytic_code),
-                    'project_code': project_by_code.get(project_code) or False,
-                    'manufacture_order_code': manufacturing_by_code.get(manufacturing_code) or False,
-                    'internal_order_code': internal_order_by_code.get(internal_order_code) or False,
+                    'asset_id': project_by_code.get(project_code) or False,
+                    'production_id': manufacturing_by_code.get(manufacturing_code) or False,
+                    'occasion_code_id': internal_order_by_code.get(internal_order_code) or False,
                     'x_bhxh_level': float(row[7]),
                     'x_bhxh_nld': float(row[8]),
                     'x_bhyt_nld': float(row[9]),
@@ -662,9 +678,9 @@ class ImportSalaryRecord(models.TransientModel):
                     'employee_id': employee_by_code.get(employee_code),
                     'department_id': department_by_code.get(department_code),
                     'analytic_account_id': analytic_by_code.get(analytic_code),
-                    'project_code': project_by_code.get(project_code) or False,
-                    'manufacture_order_code': manufacturing_by_code.get(manufacturing_code) or False,
-                    'internal_order_code': internal_order_by_code.get(internal_order_code) or False,
+                    'asset_id': project_by_code.get(project_code) or False,
+                    'production_id': manufacturing_by_code.get(manufacturing_code) or False,
+                    'occasion_code_id': internal_order_by_code.get(internal_order_code) or False,
                     'x_kq': float(row[9]),
                     'x_tkdp': float(row[10]),
                     'x_pvp': float(row[11]),
