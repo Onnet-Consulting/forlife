@@ -10,14 +10,34 @@ class SaleOrder(models.Model):
 
     promotion_ids = fields.One2many('sale.order.promotion', 'order_id', string="Promotion")
     state = fields.Selection(
-        selection_add=[('check_promotion', 'Check promotion'), ('done_sale', "Done sale")]
-    )
+        selection=[
+            ('draft', "Quotation"),
+            ('sent', "Quotation Sent"),
+            ('check_promotion', 'Check promotion'), #new item
+            ('done_sale', "Done sale"),#new item
+            ('sale', "Sales Order"),
+            ('done', "Locked"),
+            ('cancel', "Cancelled"),
+        ],
+        string="Status",
+        readonly=True, copy=False, index=True,
+        tracking=3,
+        default='draft')
 
     def get_oder_line_barcode(self, barcode):
+        line_product = []
         for line in self.order_line:
             if line.product_id.barcode == barcode and not line.is_reward_line:
-                return line
-        return False
+                line_product.append(line)
+        return line_product
+
+    def find_mn_index(self, note):
+        if note:
+            index_list = []
+            for m in re.finditer('#mn', note.lower()):
+                index_list.append(m.start())
+            return index_list
+        return []
 
     def check_sale_promotion(self):
         for rec in self:
@@ -31,38 +51,33 @@ class SaleOrder(models.Model):
                     # đơn hàng có tôn tại Lấy 3 ký tự đầu tiên của note thỏa với '#mn'
 
                     has_vip = False
-                    if note and note.lower().find('#mn') >= 0:
-                        barcode_str = note[note.lower().find('#mn') + 3:].strip()
-                        barcode = re.split(' |,', barcode_str)[0]
-                        if len(rec.order_line) == 1 and rec.order_line[0].product_uom_qty == 1 and not rec.order_line[0].is_reward_line:
-                            # if rec.order_line[0].product_uom_qty == 1:
-                            rec.order_line.write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
-                            # elif rec.order_line[0].product_uom_qty > 1:
-                            #     rec.order_line[0].write({'product_uom_qty': rec.order_line[0].product_uom_qty - 1})
-                            #     rec.order_line[0].copy(
-                            #         {'x_free_good': True,
-                            #          'order_id': rec.order_line[0].order_id.id,
-                            #          'product_uom_qty': 1,
-                            #          'price_unit': 0,
-                            #          'x_cart_discount_fixed_price': 0
-                            #          }
-                            #     )
-                        else:
-                            line = self.get_oder_line_barcode(barcode)
-                            if not line or len(line) == 0:
-                                rec.write({"state": "check_promotion"})
-                                action = self.env['ir.actions.actions']._for_xml_id(
-                                    'forlife_sale_promotion.action_check_promotion_wizard')
-                                action['context'] = {'default_message': _("Order note '#MN' invalid!")}
-                                return action
-                            elif line.product_uom_qty == 1:
-                                line.write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
-                            elif line.product_uom_qty > 1:
-                                line.write({'product_uom_qty': line.product_uom_qty - 1})
-                                line.copy(
-                                    {'x_free_good': True, 'order_id': line.order_id.id,
-                                     'product_uom_qty': 1, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0}
-                                )
+                    if len(self.find_mn_index(note)) >= 0:
+                        for mn in self.find_mn_index(note):
+                            barcode_str = note[mn + 3:].strip()
+                            barcode = re.split(' |,', barcode_str)[0]
+
+                            if len(rec.order_line) == 1 and rec.order_line[0].product_uom_qty == 1 and not rec.order_line[0].is_reward_line:
+                                rec.order_line.write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
+
+                            else:
+                                line = self.get_oder_line_barcode(barcode)
+                                if not line or len(line) == 0:
+                                    rec.write({"state": "check_promotion"})
+                                    action = self.env['ir.actions.actions']._for_xml_id(
+                                        'forlife_sale_promotion.action_check_promotion_wizard')
+                                    action['context'] = {'default_message': _("Order note '#MN' invalid!")}
+                                    return action
+                                elif len(line) >= 1:
+                                    if line[0].product_uom_qty == 1:
+                                        line[0].write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
+                                    elif line[0].product_uom_qty > 1:
+                                        line[0].write({'product_uom_qty': line[0].product_uom_qty - 1})
+                                        line[0].copy(
+                                            {'x_free_good': True, 'order_id': line[0].order_id.id,
+                                             'product_uom_qty': 1, 'price_unit': 0, 'odoo_price_unit': 0,
+                                             'x_cart_discount_fixed_price': 0}
+                                        )
+
                     if note and note.lower().find('#vip') >= 0:
                         vip_text = note[note.lower().find('#vip') + 4:]
                         vip_number_text = vip_text.strip()[:2]
@@ -94,6 +109,7 @@ class SaleOrder(models.Model):
                                         'description': "Chiết khấu hạng thẻ"
                                     })]
                         else:
+                            self.env.cr.rollback()
                             rec.write({"state": "check_promotion"})
                             action = self.env['ir.actions.actions']._for_xml_id(
                                 'forlife_sale_promotion.action_check_promotion_wizard')
