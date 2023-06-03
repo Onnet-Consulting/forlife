@@ -109,11 +109,17 @@ class TransferStockInventory(models.Model):
 
     def action_approve(self):
         picking_type_in = self.env['stock.picking.type'].search([
-            ('code', '=', 'incoming'),
+            ('import_or_export', '=', 'other_import'),
             ('company_id', '=', self.env.user.company_id.id)], limit=1)
+        if not picking_type_in:
+            raise ValidationError(
+                'Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác' % (self.env.user.company_id.name))
         picking_type_out = self.env['stock.picking.type'].search([
-            ('code', '=', 'outgoing'),
+            ('import_or_export', '=', 'other_export'),
             ('company_id', '=', self.env.user.company_id.id)], limit=1)
+        if not picking_type_out:
+            raise ValidationError(
+                'Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Xuất khác' % (self.env.user.company_id.name))
         for rec in self:
             data_ex_other = {}
             if not self.env.ref('forlife_stock.export_inventory_balance').x_property_valuation_in_account_id and not self.env.ref(
