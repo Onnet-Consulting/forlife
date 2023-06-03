@@ -6,7 +6,6 @@ class Return(models.TransientModel):
     _inherit = 'stock.return.picking'
 
     def create_returns(self):
-        print('222222222')
         if self.picking_id.sale_id.source_record and self.picking_id.company_id.code == '1300':
             data = []
             if self.company_id.code == '1300':
