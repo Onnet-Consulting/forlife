@@ -36,7 +36,7 @@ class StockPicking(models.Model):
             'location_dest_id': record.location_id.id,
             'scheduled_date': datetime.datetime.now(),
             'origin': po.name + " nhập trả NPL" if po else record.name + " nhập trả NPL",
-            'other_export': True,
+            # 'other_export': True,
             'state': 'assigned',
             'picking_type_id': picking_type_id,
             'move_ids_without_package': list_line_xk,

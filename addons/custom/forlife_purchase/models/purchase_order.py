@@ -1890,7 +1890,6 @@ class StockPicking(models.Model):
         return xk_picking
 
 
-
 class Synthetic(models.Model):
     _name = 'forlife.synthetic'
 
