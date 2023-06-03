@@ -48,28 +48,28 @@ class ProductNhanh(models.Model):
                     res_json = res_server.json()
                     if status_nhanh == 1:
                         if res_json['code'] == 0:
-                            res.write(
-                                {
-                                    'description': f'Sync Product error {res["messages"]}'
-                                }
-                            )
+                            # res.write(
+                            #     {
+                            #         'description': f'Sync Product error {res["messages"]}'
+                            #     }
+                            # )
                             _logger.info(f'Sync Product error {res["messages"]}')
                             return False
                         else:
                             value = []
                             for item in res_json['data']['ids']:
                                 value.append(res_json['data']['ids'].get(item))
-                            res.write(
-                                {
-                                    'nhanh_id': int(value[0])
-                                }
-                            )
+                            # res.write(
+                            #     {
+                            #         'nhanh_id': int(value[0])
+                            #     }
+                            # )
                 except Exception as ex:
-                    res.write(
-                        {
-                            'description': f'Sync Product error {ex}'
-                        }
-                    )
+                    # res.write(
+                    #     {
+                    #         'description': f'Sync Product error {ex}'
+                    #     }
+                    # )
                     _logger.info(f'Sync Product from NhanhVn error {ex}')
         return True
 
