@@ -187,8 +187,7 @@ class PosOrder(models.Model):
             if data:
                 for r in data:
                     list_product_exits.append(r['product_id'])
-                    if rec['count'] > 0 and rec['product_id'] == r['product_id'] and (
-                            r['quantity'] - r['reserved_quantity']) < rec['count']:
+                    if rec['count'] > 0 and rec['product_id'] == r['product_id'] and (r['quantity'] - r['reserved_quantity']) < rec['count']:
                         product_not_availabel.append(rec['product_name'])
         sql_product_id = f"SELECT pp.id, pt.detailed_type FROM product_product as pp JOIN product_template as pt ON pp.product_tm" \
                          f"pl_id = pt.id WHERE pp.id in {product_ids}"

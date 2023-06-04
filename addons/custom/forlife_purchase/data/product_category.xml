@@ -81,30 +81,39 @@
             <field name="active">True</field>
             <field name="type_tax_use">purchase</field>
             <field name="code">Thuế GTGT hàng nhập khẩu</field>
+            <field name="company_id">1</field>
         </record>
-<!--        <record id="account_gtgt_tax_1331_2" model="account.tax">-->
-<!--            <field name="name">Thuế GTGT hàng nhập khẩu</field>-->
-<!--            <field name="amount_type">percent</field>-->
-<!--            <field name="active">True</field>-->
-<!--            <field name="type_tax_use">purchase</field>-->
-<!--            <field name="code">Thuế GTGT hàng nhập khẩu</field>-->
-<!--        </record>-->
-<!--        <record id="account_gtgt_tax_1331_3" model="account.tax">-->
-<!--            <field name="name">Thuế GTGT hàng nhập khẩu</field>-->
-<!--            <field name="amount_type">percent</field>-->
-<!--            <field name="active">True</field>-->
-<!--            <field name="type_tax_use">purchase</field>-->
-<!--            <field name="code">Thuế GTGT hàng nhập khẩu</field>-->
-<!--&lt;!&ndash;            <field name="company_id">3</field>&ndash;&gt;-->
-<!--        </record>-->
-<!--        <record id="account_gtgt_tax_1331_8" model="account.tax">-->
-<!--            <field name="name">Thuế GTGT hàng nhập khẩu</field>-->
-<!--            <field name="amount_type">percent</field>-->
-<!--            <field name="active">True</field>-->
-<!--            <field name="type_tax_use">purchase</field>-->
-<!--            <field name="code">Thuế GTGT hàng nhập khẩu</field>-->
-<!--&lt;!&ndash;            <field name="company_id" eval="False"/>&ndash;&gt;-->
-<!--&lt;!&ndash;            <field name="company_id">4</field>&ndash;&gt;-->
-<!--        </record>-->
+        <record id="account_gtgt_tax_1331_2" model="account.tax">
+            <field name="name">Thuế GTGT hàng nhập khẩu</field>
+            <field name="amount_type">percent</field>
+            <field name="active">True</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="code">Thuế GTGT hàng nhập khẩu</field>
+            <field name="company_id">2</field>
+        </record>
+        <record id="account_gtgt_tax_1331_3" model="account.tax">
+            <field name="name">Thuế GTGT hàng nhập khẩu</field>
+            <field name="amount_type">percent</field>
+            <field name="active">True</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="code">Thuế GTGT hàng nhập khẩu</field>
+            <field name="company_id">3</field>
+        </record>
+        <record id="account_gtgt_tax_1331_8" model="account.tax">
+            <field name="name">Thuế GTGT hàng nhập khẩu</field>
+            <field name="amount_type">percent</field>
+            <field name="active">True</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="code">Thuế GTGT hàng nhập khẩu</field>
+            <field name="company_id">4</field>
+        </record>
+        <record id="account_gtgt_tax_1331_5" model="account.tax">
+            <field name="name">Thuế GTGT hàng nhập khẩu</field>
+            <field name="amount_type">percent</field>
+            <field name="active">True</field>
+            <field name="type_tax_use">purchase</field>
+            <field name="code">Thuế GTGT hàng nhập khẩu</field>
+            <field name="company_id">5</field>
+        </record>
     </data>
 </odoo>

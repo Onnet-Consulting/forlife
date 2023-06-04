@@ -26,6 +26,9 @@ odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
             const orderlines = this.props.order.orderlines;
             for (const orderline of orderlines) {
                 total += orderline.get_price_with_tax();
+                if(orderline.money_reduce_from_product_defective >0){
+                    total += orderline.money_reduce_from_product_defective;
+                }
                 totalDiscount += round_pr(orderline.get_unit_price() * orderline.get_quantity() * (orderline.get_discount()/100), rounding);
             }
             return total + totalDiscount;
@@ -33,6 +36,16 @@ odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
         getTotalNotFormat() {
             return this.props.order.get_total_with_tax();
         }
+
+        getTotalDiscountCustomDefective() {
+            var total = 0;
+            const orderlines = this.props.order.orderlines;
+            for (const orderline of orderlines) {
+                total += orderline.getTotalDiscountLineDefective();
+            }
+            return total;
+        }
+
     }
     CustomOrderSummary.template = 'CustomOrderSummary';
 

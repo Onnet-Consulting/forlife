@@ -43,6 +43,8 @@ class ProductTemplate(models.Model):
             ('labor_costs', 'Chi phí nhân công'),
         ], string="Sản phẩn là chi phí")
 
+    is_trade_discount = fields.Boolean(string="CKTM", default=False)
+
     @api.model
     def default_get(self, default_fields):
         res = super().default_get(default_fields)

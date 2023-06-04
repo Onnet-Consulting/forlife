@@ -1,9 +1,8 @@
-import base64
-import urllib
+# -*- coding: utf-8 -*-
+
 from odoo.addons.nhanh_connector.models import constant
 from odoo import _, models, fields, api
-from odoo.exceptions import ValidationError
-import datetime, logging
+import logging
 import requests
 import json
 
@@ -23,12 +22,14 @@ class ProductNhanh(models.Model):
     @api.model
     def create(self, vals):
         res = super().create(vals)
+        if not res.brand_id.id:
+            return res
         self.synchronized_create_product(res)
         return res
 
     def synchronized_create_product(self, res):
-        if res.check_data_odoo == True:
-            nhanh_configs = constant.get_nhanh_configs(self)
+        if res.check_data_odoo:
+            nhanh_configs = constant.get_nhanh_configs(self, brand_ids=[res.brand_id.id]).get(res.brand_id.id)
             if 'nhanh_connector.nhanh_app_id' in nhanh_configs or 'nhanh_connector.nhanh_business_id' in nhanh_configs \
                     or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
 
@@ -43,7 +44,7 @@ class ProductNhanh(models.Model):
                 }]
 
                 try:
-                    res_server = self.post_data_nhanh(data)
+                    res_server = self.post_data_nhanh(nhanh_configs, data)
                     status_nhanh = 1
                     res_json = res_server.json()
                     if status_nhanh == 1:
@@ -76,10 +77,15 @@ class ProductNhanh(models.Model):
     def write(self, vals):
         res = super().write(vals)
         for item in self:
-            data = '[{"id": "' + str(item.id) + '","idNhanh":"' + str(item.nhanh_id) + '", "price": "' + str(int(
-                item.list_price)) + '", "name": "' + str(item.name) + '", "shippingWeight": "' + str(
-                int(item.weight)) + '", "status": "' + 'Active' + '", "barcode": "' + str(
-                    item.barcode if item.barcode else '') + '"}]'
+            data = [{
+                'id': str(item.id),
+                'idNhanh': str(item.nhanh_id),
+                'price': str(int(item.list_price)),
+                'name': item.name,
+                'shippingWeight': str(int(item.weight)),
+                'status': 'Active',
+                'barcode': item.barcode if item.barcode else '',
+            }]
             self.synchronized_price_nhanh(data)
         return res
 
@@ -95,12 +101,12 @@ class ProductNhanh(models.Model):
         return res
 
     def synchronized_price_nhanh(self, data):
-        nhanh_configs = constant.get_nhanh_configs(self)
+        nhanh_configs = constant.get_nhanh_configs(self, brand_ids=[self.brand_id.id])
         if 'nhanh_connector.nhanh_app_id' in nhanh_configs or 'nhanh_connector.nhanh_business_id' in nhanh_configs \
                 or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
             status_nhanh = 1
             try:
-                res_server = self.post_data_nhanh(data)
+                res_server = self.post_data_nhanh(nhanh_configs, data)
                 res_json = res_server.json()
             except Exception as ex:
                 status_nhanh = 0
@@ -113,15 +119,14 @@ class ProductNhanh(models.Model):
                     pass
         return True
 
-    def post_data_nhanh(self, data):
+    def post_data_nhanh(self, configs, data):
         url = f"{constant.base_url()}/product/add"
         payload = {
-            'version': constant.get_params(self)['version'],
-            'appId': constant.get_params(self)['appId'],
-            'businessId': constant.get_params(self)['businessId'],
-            'accessToken': constant.get_params(self)['accessToken'],
+            'version': '2.0',
+            'appId': configs.get('nhanh_connector.nhanh_app_id', ''),
+            'businessId': configs.get('nhanh_connector.nhanh_business_id', ''),
+            'accessToken': configs.get('nhanh_connector.nhanh_access_token', ''),
             'data': json.dumps(data)
         }
         res_server = requests.post(url, data=payload)
         return res_server
-
