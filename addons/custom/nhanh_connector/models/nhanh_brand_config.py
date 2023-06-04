@@ -94,7 +94,7 @@ class NhanhBrandConfig(models.Model):
 
         # show success message
         url = f"{NHANH_BASE_AUTH_URL}/access_token?version=2.0&appId={self.nhanh_app_id}" \
-              f"&businessId={self.nhanh_business_id}&accessCode={self.nhanh_access_token}" \
+              f"&businessId={self.nhanh_business_id}&accessCode={self.nhanh_access_code}" \
               f"&secretKey={self.nhanh_secret_key}"
         # Setup proxies
         # Get all orders from previous day to today from Nhanh.vn
@@ -121,12 +121,11 @@ class NhanhBrandConfig(models.Model):
                 get_token_status = 0
                 _logger.info(f'Get access_token error {res["message"]}')
             else:
-                self.env['ir.config_parameter'].set_param('nhanh_connector.nhanh_access_token', res['accessToken'])
-                self.env['ir.config_parameter'].set_param('nhanh_connector.nhanh_business_id', res['businessId'])
-                self.env['ir.config_parameter'].set_param('nhanh_connector.nhanh_access_token_expired', res['expiredDateTime'])
-                self.env['ir.config_parameter'].get_param('nhanh_connector.nhanh_access_token', False)
-                self.env['ir.config_parameter'].get_param('nhanh_connector.nhanh_business_id', False)
-                self.env['ir.config_parameter'].get_param('nhanh_connector.nhanh_access_token_expired', False)
+                self.update({
+                    'nhanh_access_token': res['accessToken'],
+                    'nhanh_business_id': res['businessId'],
+                    'nhanh_access_token_expired': res['expiredDateTime'],
+                })
 
         title = _("Successfully!") if get_token_status else _("Failed")
         message = _('Get access_token from NhanhVn successfully!') if get_token_status else _(
@@ -138,7 +137,6 @@ class NhanhBrandConfig(models.Model):
                 'title': title,
                 'message': message,
                 'sticky': False,
-                'next': {'type': 'ir.actions.client', 'tag': 'reload'},
             }
         }
 

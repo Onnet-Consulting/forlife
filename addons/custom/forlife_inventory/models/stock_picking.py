@@ -10,7 +10,7 @@ class StockPicking(models.Model):
         res = super(StockPicking, self).button_validate()
         if res is not True:
             return res
-        if self.sale_id.source_record and self.company_id.code == '1300':
+        if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'outgoing' and not self.x_is_check_return and self.location_id.id_deposit:
             data = []
             if self.company_id.code == '1300':
                 location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_id.id)])
@@ -28,7 +28,7 @@ class StockPicking(models.Model):
                         'product_uom': line.uom_id.id,
                         'product_uom_qty': line.product_uom_qty,
                         'quantity_done': line.quantity_done,
-                        'amount_total': line.quantity_done * line.product_id.standard_price,
+                        'amount_total': 0,
                         'company_id': location_mapping.location_map_id.company_id.id
                     }))
                 # if self.sale_id.nhanh_id and self.company_id.code == '1300':
@@ -41,7 +41,37 @@ class StockPicking(models.Model):
                     'move_ids_without_package': data,
                 })
                 orther_export.button_validate()
-            # orther_export.button_validate()
+        if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.id_deposit:
+            data = []
+            location_mapping = self.env['stock.location.mapping'].sudo().search(
+                [('location_id', '=', self.location_dest_id.id)])
+            if not location_mapping:
+                raise UserError(
+                    _(f"Vui lòng cấu hình liên kết cho địa điểm {self.location_dest_id.name_get()[0][1]} Cấu hình -> Location Mapping!"))
+            for line in self.move_line_ids_without_package:
+                product = line.product_id
+                data.append((0, 0, {
+                    'product_id': product.id,
+                    'location_id': self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong', raise_if_not_found=False).id,
+                    'location_dest_id': location_mapping.location_map_id.id,
+                    'name': product.display_name,
+                    'date': datetime.now(),
+                    'product_uom': line.product_uom_id.id,
+                    'product_uom_qty': line.qty_done,
+                    'quantity_done': line.qty_done,
+                    'amount_total': 0,
+                    'company_id': location_mapping.location_map_id.company_id.id
+                }))
+            # if self.sale_id.nhanh_id and self.company_id.code == '1300':
+            other_import = self.env['stock.picking'].with_company(location_mapping.location_map_id.company_id).create({
+                'reason_type_id': self.env.ref('forlife_inventory.reason_type_import_auto', raise_if_not_found=False).id,
+                'picking_type_id': location_mapping.location_map_id.warehouse_id.int_type_id.id,
+                'location_id': self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong', raise_if_not_found=False).id,
+                'location_dest_id': location_mapping.location_map_id.id,
+                'other_import': True,
+                'move_ids_without_package': data,
+            })
+            other_import.button_validate()
         return res
 
     @api.model

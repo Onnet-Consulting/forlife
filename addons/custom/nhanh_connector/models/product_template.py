@@ -22,12 +22,14 @@ class ProductNhanh(models.Model):
     @api.model
     def create(self, vals):
         res = super().create(vals)
+        if not res.brand_id.id:
+            return res
         self.synchronized_create_product(res)
         return res
 
     def synchronized_create_product(self, res):
-        if res.check_data_odoo == True:
-            nhanh_configs = constant.get_nhanh_configs(self, brand_ids=[self.brand_id.id])
+        if res.check_data_odoo:
+            nhanh_configs = constant.get_nhanh_configs(self, brand_ids=[res.brand_id.id]).get(res.brand_id.id)
             if 'nhanh_connector.nhanh_app_id' in nhanh_configs or 'nhanh_connector.nhanh_business_id' in nhanh_configs \
                     or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
 
@@ -36,23 +38,24 @@ class ProductNhanh(models.Model):
                     "name": res.name,
                     "code": res.code_product,
                     "barcode": res.barcode if res.barcode else '',
-                    "price": int(res.list_price),
-                    "shippingWeight": int(res.weight),
+                    "importPrice": res.list_price,
+                    "price": 0,
+                    "shippingWeight": res.weight * 1000,
                     "status": 'New'
                 }]
 
                 try:
-                    res_server = self.post_data_nhanh(data)
+                    res_server = self.post_data_nhanh(nhanh_configs, data)
                     status_nhanh = 1
                     res_json = res_server.json()
                     if status_nhanh == 1:
                         if res_json['code'] == 0:
                             res.write(
                                 {
-                                    'description': f'Sync Product error {res["messages"]}'
+                                    'description': f'Sync Product error {res_json["messages"]}'
                                 }
                             )
-                            _logger.info(f'Sync Product error {res["messages"]}')
+                            _logger.info(f'Sync Product error {res_json["messages"]}')
                             return False
                         else:
                             value = []
@@ -104,7 +107,7 @@ class ProductNhanh(models.Model):
                 or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
             status_nhanh = 1
             try:
-                res_server = self.post_data_nhanh(data)
+                res_server = self.post_data_nhanh(nhanh_configs, data)
                 res_json = res_server.json()
             except Exception as ex:
                 status_nhanh = 0
@@ -117,12 +120,14 @@ class ProductNhanh(models.Model):
                     pass
         return True
 
-    def post_data_nhanh(self, data):
+    def post_data_nhanh(self, configs, data):
         url = f"{constant.base_url()}/product/add"
-        payload = constant.get_params(self, brand_id=self.brand_id.id)
-        payload.update({
+        payload = {
+            'version': '2.0',
+            'appId': configs.get('nhanh_connector.nhanh_app_id', ''),
+            'businessId': configs.get('nhanh_connector.nhanh_business_id', ''),
+            'accessToken': configs.get('nhanh_connector.nhanh_access_token', ''),
             'data': json.dumps(data)
-        })
+        }
         res_server = requests.post(url, data=payload)
         return res_server
-
