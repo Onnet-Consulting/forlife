@@ -3,7 +3,7 @@
     'name': "forlife_pos_app_member",
 
     'summary': """""",
-
+    "license": "LGPL-3",
     'description': """
     """,
 

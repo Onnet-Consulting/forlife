@@ -4,6 +4,7 @@ odoo.define('forlife_pos_promotion.CodeInputPopup', function(require) {
     const AbstractAwaitablePopup = require('point_of_sale.AbstractAwaitablePopup');
     const Registries = require('point_of_sale.Registries');
     const { _lt } = require('@web/core/l10n/translation');
+    const { useListener } = require("@web/core/utils/hooks");
 
     const { onMounted, useRef, useState } = owl;
 
@@ -13,6 +14,8 @@ odoo.define('forlife_pos_promotion.CodeInputPopup', function(require) {
             super.setup();
             this.state = useState({ inputValue: this.props.startingValue });
             this.inputRef = useRef('input');
+            useListener('confirm-code', () => this.confirm());
+            useListener('cancel-code', () => this.cancel());
             onMounted(this.onMounted);
         }
         onMounted() {
@@ -22,15 +25,21 @@ odoo.define('forlife_pos_promotion.CodeInputPopup', function(require) {
             return this.state.inputValue;
         }
         onInputKeyDownUp(ev) {
-            const pattern = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789-'
-            let value = ev.target.value.toUpperCase();
-            let newValue = ''
-            for (var i = 0; i < value.length; i++) {
-                if (pattern.includes(value.charAt(i))) {
-                    newValue += value.charAt(i)
-                }
-            }
-            ev.target.value = newValue
+            if (ev.key === "Enter" && ev.target.value.trim() !== '') {
+                this.trigger('confirm-code');
+            } else if  (ev.key === "Escape" && ev.target.value.trim() !== '') {
+                this.trigger('cancel-code');
+            } else {
+                const pattern = 'ABCDEFGHIJKLMNPQRSTUVWXYZ0123456789-'
+                let value = ev.target.value.toUpperCase();
+                let newValue = ''
+                for (var i = 0; i < value.length; i++) {
+                    if (pattern.includes(value.charAt(i))) {
+                        newValue += value.charAt(i);
+                    };
+                };
+                ev.target.value = newValue;
+            };
         }
     }
     CodeInputPopup.template = 'CodeInputPopup';

@@ -28,5 +28,10 @@
             <field name="code">06</field>
             <field name="name">Xuất nguyên phụ liệu</field>
         </record>
+
+        <record id="reason_type_7" model="forlife.reason.type">
+            <field name="code">07</field>
+            <field name="name">Nhập trả nguyên phụ liệu</field>
+        </record>
     </data>
 </odoo>

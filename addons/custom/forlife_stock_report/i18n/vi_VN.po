@@ -21,7 +21,8 @@ msgstr ""
 msgid "<span class=\"o_stat_text\">Quantity Period</span>"
 msgstr "<span class=\"o_stat_text\">Tồn kho theo kỳ</span>"
 
-#. module: forlife_stock_report
+#. module: forlife_stock_reportA
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report__account_id
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__account_id
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__account_id
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__x_studio_many2one_field_GPG2X
@@ -102,6 +103,7 @@ msgid "Date to must be the last day of month"
 msgstr ""
 
 #. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report__detail_ids
 #: model_terms:ir.ui.view,arch_db:forlife_stock_report.outgoing_value_diff_report_view_form
 #: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_incoming_outgoing_report_view_form
@@ -262,6 +264,8 @@ msgstr "Đơn giá"
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_quant_period__product_id
 #: model:ir.model.fields,field_description:forlife_stock_report.field_stock_value_report_detail__product_id
 #: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_quant_period_view_search
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_account_move__product_name
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_line__product_name
 msgid "Product"
 msgstr "Sản phẩm"
 
@@ -409,3 +413,155 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:forlife_stock_report.outgoing_value_diff_report_view_form
 msgid "Total Real Outgoing Value"
 msgstr ""
+
+#. module: forlife_stock_report
+#. odoo-python
+#: code:addons/forlife_stock_report/reports/stock_balance_difference_report.py:0
+#: model:ir.actions.act_window,name:forlife_stock_report.stock_balance_difference_report_action
+#: model:ir.model,name:forlife_stock_report.model_stock_balance_difference_report
+#: model:ir.ui.menu,name:forlife_stock_report.stock_balance_difference_report_menu
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+#, python-format
+msgid "Stock Balance Difference Report"
+msgstr "Bảng kê số phát sinh tài khoản theo Items"
+
+#. module: forlife_stock_report
+#: model:ir.model,name:forlife_stock_report.model_stock_balance_difference_report_account_move
+msgid "Stock Balance Difference Report Account Move"
+msgstr "Bảng kê bút toán số phát sinh tài khoản theo Items"
+
+#. module: forlife_stock_report
+#: model:ir.model,name:forlife_stock_report.model_stock_balance_difference_report_line
+msgid "Stock Balance Difference Report Line"
+msgstr "Chi tiết bảng kê số phát sinh tài khoản theo Items"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_line__account_code
+msgid "Stock Valuation Account"
+msgstr "Tài khoản kho"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_line__account_id
+msgid "Stock Valuation Account ID"
+msgstr "ID Tài khoản kho"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report__period_start
+msgid "Period Start"
+msgstr "Ngày bắt đầu"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report__period_end
+msgid "Period End"
+msgstr "Ngày kết thúc"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_account_move__product_id
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_line__product_id
+msgid "Product ID"
+msgstr "ID sản phẩm"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_line__debit
+msgid "Debit"
+msgstr "Phát sinh Nợ"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_account_move__debit_account_code
+msgid "Debit Account"
+msgstr "Tài khoản Nợ"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_account_move__debit_account_id
+msgid "Debit Account ID"
+msgstr "ID Tài khoản Nợ"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "Debit Total"
+msgstr "Tổng phát sinh Nợ"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_line__difference
+msgid "Difference"
+msgstr "Giá trị lệch"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "Difference Total"
+msgstr "Tổng giá trị lệch"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "Generate"
+msgstr "Tổng hợp dữ liệu"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report__line_ids
+msgid "Line"
+msgstr "Chi tiết"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_account_move__product_code
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_line__product_code
+msgid "Product Code"
+msgstr "Mã sản phẩm"
+
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_line__credit
+msgid "Credit"
+msgstr "Phát sinh Có"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_account_move__credit_account_code
+msgid "Credit Account"
+msgstr "Tài khoản Có"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_account_move__credit_account_id
+msgid "Credit Account ID"
+msgstr "ID tài khoản Có"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "Credit Total"
+msgstr "Tổng phát sinh Có"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report__account_move_ids
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "Account Move"
+msgstr "Bút toán"
+
+#. module: forlife_stock_report
+#: model:ir.model.fields,field_description:forlife_stock_report.field_stock_balance_difference_report_account_move__amount_total
+msgid "Amount Total"
+msgstr "Số tiền"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "Amount Total"
+msgstr "Tổng tiền"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "Create Account Move"
+msgstr "Tạo bút toán"
+
+#. module: forlife_stock_report
+#. odoo-python
+#: code:addons/forlife_stock_report/reports/stock_balance_difference_report.py:0
+#, python-format
+msgid "Stock Balance Difference Report %s"
+msgstr "Bảng kê bút toán số phát sinh tài khoản theo Items %s"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "Period"
+msgstr "Kỳ"
+
+#. module: forlife_stock_report
+#: model_terms:ir.ui.view,arch_db:forlife_stock_report.stock_balance_difference_report_form
+msgid "to"
+msgstr "đến"

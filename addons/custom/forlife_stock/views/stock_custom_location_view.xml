@@ -10,8 +10,8 @@
                         <field name="name"/>
                         <field name="code"/>
                         <field name="type_other"/>
-                        <field name="valuation_out_account_id" attrs="{'required': [('type_other', '=', 'incoming')], 'invisible': [('type_other', '!=', 'incoming')]}"/>
-                        <field name="valuation_in_account_id" attrs="{'required': [('type_other', '=', 'outcoming')], 'invisible': [('type_other', '!=', 'outcoming')]}"/>
+                        <field name="x_property_valuation_out_account_id" attrs="{'required': [('type_other', '=', 'incoming')], 'invisible': [('type_other', '!=', 'incoming')]}"/>
+                        <field name="x_property_valuation_in_account_id" attrs="{'required': [('type_other', '=', 'outcoming')], 'invisible': [('type_other', '!=', 'outcoming')]}"/>
                 </tree>
             </field>
         </record>
@@ -36,14 +36,15 @@
                                 <field name="reason_type_id"/>
                                 <field name="is_price_unit" attrs="{'invisible': [('type_other', '!=', 'incoming')]}"/>
                                 <field name="is_work_order"/>
+                                <field name="is_assets"/>
 <!--                                <field name="work_order" attrs="{'required': [('is_work_order', '=', True)],'invisible': [('is_work_order', '=', False)]}"/>-->
                             </group>
                         </group>
                         <group string="Thông tin kế toán">
                             <group>
-                                <field name="valuation_out_account_id"
+                                <field name="x_property_valuation_out_account_id"
                                        attrs="{'required': [('type_other', '=', 'incoming')], 'invisible': [('type_other', '!=', 'incoming')]}"/>
-                                <field name="valuation_in_account_id"
+                                <field name="x_property_valuation_in_account_id"
                                        attrs="{'required': [('type_other', '=', 'outcoming')], 'invisible': [('type_other', '!=', 'outcoming')]}"/>
                             </group>
                         </group>

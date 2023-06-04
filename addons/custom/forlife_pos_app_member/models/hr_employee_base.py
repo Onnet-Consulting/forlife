@@ -33,12 +33,12 @@ class HrEmployeeBase(models.AbstractModel):
         pass
 
     def _create_employee_partner(self):
-        partner_group_id = self.env.ref('forlife_pos_app_member.partner_group_4').id
+        partner_group_id = self.env.ref('forlife_pos_app_member.partner_group_4')
         for employee in self:
             employee.partner_id = self.env['res.partner'].sudo().create({
                 "company_type": "person",
-                "group_id": partner_group_id,
-                "ref": employee.code,
+                "group_id": partner_group_id.id,
+                "ref": str(partner_group_id.code or '') + str(employee.code or ''),
                 'name': employee.name,
                 'image_1920': employee.image_1920,
                 'company_id': employee.company_id.id,

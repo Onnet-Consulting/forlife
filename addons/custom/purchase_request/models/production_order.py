@@ -18,7 +18,12 @@ class ProductionOrder(models.Model):
     production_uom = fields.Many2one('uom.uom', string='Đơn vị', related='product_id.uom_id')
     order_line_ids = fields.One2many('production.order.line', 'order_id', 'Production Order Lines', copy=True)
     product_qty = fields.Float('Quantity', default=1.0, digits='Unit of Measure', required=True)
-    domain_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')
+    invoice_status_fake = fields.Selection([
+        ('no', 'Chưa nhận'),
+        ('to invoice', 'Dở dang'),
+        ('invoiced', 'Hoàn thành'),
+    ], string='Trạng thái hóa đơn', readonly=True, copy=False, default='no')
+
 
     @api.constrains('product_id')
     def _constraint_product_id(self):
@@ -34,19 +39,9 @@ class ProductionOrder(models.Model):
             'template': '/purchase_request/static/src/xlsx/file import npl.xlsx?download=true'
         }]
 
-    @api.depends('type')
-    def compute_product_id(self):
-        data_search = self.data_search([('detailed_type', '=', 'product')])
-        for rec in self:
-            if rec.type == 'phantom':
-                self.domain_product_ids = [
-                    (6, 0, [item.id for item in data_search])]
-            else:
-                self.domain_product_ids = [
-                    (6, 0, [item.id for item in self.data_search([])])]
-
     def data_search(self, domain):
         return self.env['product.product'].search(domain)
+
 
 
 class ProductionOrderLine(models.Model):
