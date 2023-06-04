@@ -83,6 +83,7 @@
 <!--            <field name="code">Thuế GTGT hàng nhập khẩu</field>-->
 <!--            <field name="company_id">1</field>-->
 <!--        </record>-->
+
 <!--        <record id="account_gtgt_tax_1331_2" model="account.tax">-->
 <!--            <field name="name">Thuế GTGT hàng nhập khẩu</field>-->
 <!--            <field name="amount_type">percent</field>-->

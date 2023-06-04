@@ -338,7 +338,6 @@ class PurchaseOrder(models.Model):
             record.write({'custom_state': 'confirm'})
 
     def action_approved(self):
-        self.check_purchase_tool_and_equipment()
         for record in self:
             if not record.is_inter_company:
                 super(PurchaseOrder, self).button_confirm()
@@ -1989,7 +1988,6 @@ class Synthetic(models.Model):
                 if record.product_id.id == item.product_id.id:
                     db_tax_total += item.special_consumption_tax_amount
             record.db_tax = db_tax_total
-
 
     # Các trường khác của model
 

@@ -1,5 +1,7 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import AccessError, ValidationError
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class Location(models.Model):

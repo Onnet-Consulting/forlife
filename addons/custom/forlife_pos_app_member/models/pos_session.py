@@ -22,6 +22,7 @@ class PosSession(models.Model):
         })
         return loaded_data
 
+
     def _pos_data_process(self, loaded_data):
         super()._pos_data_process(loaded_data)
         loaded_data['default_partner_group'] = self.env.ref('forlife_pos_app_member.partner_group_c').read(['name'])[0]

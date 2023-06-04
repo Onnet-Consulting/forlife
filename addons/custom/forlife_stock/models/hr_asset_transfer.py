@@ -24,7 +24,6 @@ class HrAssetTransfer(models.Model):
     reject_reason = fields.Text()
     validate_date = fields.Datetime(string='Validate Date')
     cancel_date = fields.Datetime(string='Cancel Date')
-    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company)
 
     @api.model
     def default_get(self, default_fields):

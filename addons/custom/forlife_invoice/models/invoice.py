@@ -70,7 +70,7 @@ class AccountMove(models.Model):
 
     x_asset_fin = fields.Selection([
         ('TC', 'TC'),
-        ('QC', 'QC'),
+        ('QT', 'QT'),
     ], string='Phân loại tài chính')
 
     x_root = fields.Selection([

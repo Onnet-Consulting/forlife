@@ -359,10 +359,13 @@
                     <attribute name="attrs">{'readonly': [('state', 'in', ('done', 'approved'))]}</attribute>
                 </xpath>
 
+<<<<<<< HEAD
                 <xpath expr="//field[@name='order_line']" position="attributes">
                     <attribute name="attrs">{'readonly': [('custom_state', 'in', ('close', 'cancel','reject', 'approved', 'confirm'))]}</attribute>
                 </xpath>
 
+=======
+>>>>>>> alpha
             </field>
         </record>
         <!-- Inherit purchase order tree view -->
