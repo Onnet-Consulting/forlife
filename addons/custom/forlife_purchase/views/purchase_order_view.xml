@@ -349,7 +349,9 @@
                 <xpath expr="//field[@name='notes']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', 'in', ('done', 'approved'))]}</attribute>
                 </xpath>
-
+                <xpath expr="//field[@name='order_line']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('custom_state', 'in', ('close', 'cancel','reject', 'approved', 'confirm'))]}</attribute>
+                </xpath>
             </field>
         </record>
         <!-- Inherit purchase order tree view -->

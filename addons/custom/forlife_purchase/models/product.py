@@ -3,11 +3,13 @@ from odoo.exceptions import UserError
 import datetime
 
 list = [
-        ('product', 'Sản phẩm lưu kho'),
-        ('service', 'Dịch vụ'),
-        ('asset', 'Tài sản'),
-        ('event', 'Vé sự kiện')
-        ]
+    ('product', 'Sản phẩm lưu kho'),
+    ('service', 'Dịch vụ'),
+    ('asset', 'Tài sản'),
+    ('event', 'Vé sự kiện')
+]
+
+
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 

@@ -288,6 +288,11 @@
                         </div>
                     </page>
                 </xpath>
+
+                 <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('is_check', '=', True)]}</attribute>
+                </xpath>
+
             </field>
         </record>
     </data>
