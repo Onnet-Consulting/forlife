@@ -22,6 +22,8 @@ class ProductNhanh(models.Model):
     @api.model
     def create(self, vals):
         res = super().create(vals)
+        if not res.brand_id.id:
+            return res
         self.synchronized_create_product(res)
         return res
 
