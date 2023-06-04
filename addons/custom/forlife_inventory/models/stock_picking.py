@@ -104,7 +104,7 @@ class StockPicking(models.Model):
                         'product_uom': line.uom_id.id,
                         'product_uom_qty': line.product_uom_qty,
                         'quantity_done': line.quantity_done,
-                        'amount_total': line.quantity_done * line.product_id.standard_price
+                        'amount_total': line.quantity_done * line.product_id.with_company(company).standard_price
                     }))
                 pickking_ortherimport = Picking.with_company(company).create({
                     'reason_type_id': self.env.ref('forlife_inventory.reason_type_import_return_product', raise_if_not_found=False).id,
