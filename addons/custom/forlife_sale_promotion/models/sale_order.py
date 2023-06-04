@@ -80,7 +80,6 @@ class SaleOrder(models.Model):
                                              'product_uom_qty': 1, 'price_unit': 0, 'odoo_price_unit': 0,
                                              'x_cart_discount_fixed_price': 0}
                                         )
-
                     if note and note.lower().find('#vip') >= 0:
                         vip_text = note[note.lower().find('#vip') + 4:]
                         vip_number_text = vip_text.strip()[:2]

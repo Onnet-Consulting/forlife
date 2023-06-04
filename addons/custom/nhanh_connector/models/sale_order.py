@@ -16,6 +16,7 @@ class SaleOrderNhanh(models.Model):
     _inherit = 'sale.order'
 
     nhanh_id = fields.Integer(string='Id Nhanh.vn')
+    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn')
     numb_action_confirm = fields.Integer(default=0)
     source_record = fields.Boolean(string="Đơn hàng từ nhanh", default=False)
     code_coupon = fields.Char(string="Mã coupon")
@@ -221,6 +222,17 @@ class SaleOrderNhanh(models.Model):
                     'warehouse_id': warehouse_id.id if warehouse_id else None,
                     'order_line': order_line
                 }
+                # đổi trả hàng
+                if v.get('returnFromOrderId', 0):
+                    origin_order_id = self.env['sale.order'].sudo().search(
+                        [('nhanh_id', '=', v.get('returnFromOrderId', 0))], limit=1)
+                    value.update({
+                        # hiện đang bắt theo typeID 14 là khách trả lại hàng, chưa có định nghĩa các typeID
+                        'x_is_exchange': v['typeId'] != 14,
+                        'x_is_return': v['typeId'] == 14,
+                        'x_origin': origin_order_id.id if origin_order_id else None,
+                        'nhanh_origin_id': v.get('returnFromOrderId', 0)
+                    })
                 order_model.sudo().create(value)
                 _logger.info("----------------Sync orders from NhanhVn done--------------------")
 
