@@ -28,7 +28,7 @@ class StockPicking(models.Model):
                         'product_uom': line.uom_id.id,
                         'product_uom_qty': line.product_uom_qty,
                         'quantity_done': line.quantity_done,
-                        'amount_total': line.quantity_done * line.product_id.standard_price,
+                        'amount_total': 0,
                         'company_id': location_mapping.location_map_id.company_id.id
                     }))
                 # if self.sale_id.nhanh_id and self.company_id.code == '1300':
@@ -59,7 +59,7 @@ class StockPicking(models.Model):
                     'product_uom': line.product_uom_id.id,
                     'product_uom_qty': line.qty_done,
                     'quantity_done': line.qty_done,
-                    'amount_total': line.qty_done * line.product_id.standard_price,
+                    'amount_total': 0,
                     'company_id': location_mapping.location_map_id.company_id.id
                 }))
             # if self.sale_id.nhanh_id and self.company_id.code == '1300':
