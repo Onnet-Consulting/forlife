@@ -173,7 +173,7 @@ class StockTransfer(models.Model):
                 account_id_credit = d.product_id.categ_id.property_stock_valuation_account_id.id
             accounts_data = d.product_id.product_tmpl_id.get_product_accounts()
             if not accounts_data['stock_journal']:
-                raise ValidationError(_('Chưa cấu hình sổ nhật kí của danh mục sản phẩm này!'))
+                raise ValidationError(_('Chưa cấu hình sổ nhật kí kho của danh mục sản phẩm này!'))
             move_vals = {
                 'journal_id': accounts_data['stock_journal'].id,
                 'date': datetime.now(),
