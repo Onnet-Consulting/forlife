@@ -4,7 +4,7 @@ services:
     build: ./dockerfiles/odoo/${ODOO_VERSION}
     volumes:
       - ./requirements.txt:/opt/requirements.txt
-      - ./odoo.conf:/etc/odoo/odoo.conf
+      - ./odoo.conf.template:/etc/odoo/odoo.conf
       - ./addons:/mnt/extra-addons
       - ./odoo_storage:/var/lib/odoo
     command: /bin/bash -c "pip3 install -r /opt/requirements.txt && odoo"

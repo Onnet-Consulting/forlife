@@ -1,6 +1,11 @@
 #!/bin/bash
 
 set -e
+set -o errexit
+set -o pipefail
+set -o nounset
+
+exec echo "Starting entrypoint"
 
 if [ -v PASSWORD_FILE ]; then
     PASSWORD="$(< $PASSWORD_FILE)"
