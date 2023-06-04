@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import _, api, fields, models
+from odoo.exceptions import UserError, ValidationError
 
 
 class CheckPromotion(models.TransientModel):
@@ -19,6 +20,7 @@ class CheckPromotion(models.TransientModel):
         return super(CheckPromotion, self).default_get(fields_list)
 
     def action_ok(self):
+        # raise UserError(123)
         pass
 
 
