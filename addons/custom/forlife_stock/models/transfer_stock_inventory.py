@@ -196,56 +196,55 @@ class TransferStockInventory(models.Model):
 
                         })
             for item in data_ex_other:
-                self.create_picking_and_move(item,  data_ex_other)
-                # picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
-                #     data_ex_other.get(item))
-                # picking_id.button_validate()
+                # self.create_picking_and_move(item,  data_ex_other)
+                picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
+                    data_ex_other.get(item))
+                picking_id.button_validate()
             rec.write({'state': 'approved', 'is_nk_xk': True})
 
     def create_picking_and_move(self, item, data_ex_other):
-        if item[1] == 'export':
-            picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
-                    data_ex_other.get(item))
-            picking_id.button_validate()
-        else:
-            picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
+        picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
                 data_ex_other.get(item))
-            for line in picking_id.move_ids:
-                journal_id = line._get_accounting_data_for_valuation()[0]
-                credit = {
-                    'product_id': line.product_id.id,
-                    'name': picking_id.name + ': ' + line.product_id.name,
-                    'ref': line.reference,
-                    'quantity': line.product_qty,
-                    'price_unit': line.price_unit,
-                    'product_uom_id': line.product_id.uom_id.id,
-                    'account_id': picking_id.location_id.x_property_valuation_out_account_id.id,
-                    'balance': - line.product_qty*line.price_unit
-                }
-                account_debit = line.product_id.categ_id.property_stock_valuation_account_id
-                if not account_debit:
-                    raise ValidationError(
-                        'Sản phẩm: %s chưa được cấu tài khoản định giá tồn kho trong Danh mục sản phẩm' % (line.product_id.name))
-                debit = {
-                    'product_id': line.product_id.id,
-                    'name': picking_id.name + ': ' + line.product_id.name,
-                    'ref': line.reference,
-                    'quantity': line.product_qty,
-                    'price_unit': line.price_unit,
-                    'product_uom_id': line.product_id.uom_id.id,
-                    'account_id': account_debit.id,
-                    'balance': line.product_qty*line.price_unit
-                }
-                vals = {
-                    'journal_id': journal_id,
-                    'ref': picking_id.name + ' - ' + line.product_id.name,
-                    'partner_id': picking_id.partner_id.id,
-                    'move_type': 'entry',
-                    'stock_move_id': line.id,
-                    'line_ids': [(0, 0, credit), (0, 0, debit)],
-                }
-                invoice_id = self.env['account.move'].create(vals)
-                invoice_id.action_post()
+        picking_id.button_validate()
+        # else:
+        #     picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
+        #         data_ex_other.get(item))
+        #     for line in picking_id.move_ids:
+        #         journal_id = line._get_accounting_data_for_valuation()[0]
+        #         credit = {
+        #             'product_id': line.product_id.id,
+        #             'name': picking_id.name + ': ' + line.product_id.name,
+        #             'ref': line.reference,
+        #             'quantity': line.product_qty,
+        #             'price_unit': line.price_unit,
+        #             'product_uom_id': line.product_id.uom_id.id,
+        #             'account_id': picking_id.location_id.x_property_valuation_out_account_id.id,
+        #             'balance': - line.product_qty*line.price_unit
+        #         }
+        #         account_debit = line.product_id.categ_id.property_stock_valuation_account_id
+        #         if not account_debit:
+        #             raise ValidationError(
+        #                 'Sản phẩm: %s chưa được cấu tài khoản định giá tồn kho trong Danh mục sản phẩm' % (line.product_id.name))
+        #         debit = {
+        #             'product_id': line.product_id.id,
+        #             'name': picking_id.name + ': ' + line.product_id.name,
+        #             'ref': line.reference,
+        #             'quantity': line.product_qty,
+        #             'price_unit': line.price_unit,
+        #             'product_uom_id': line.product_id.uom_id.id,
+        #             'account_id': account_debit.id,
+        #             'balance': line.product_qty*line.price_unit
+        #         }
+        #         vals = {
+        #             'journal_id': journal_id,
+        #             'ref': picking_id.name + ' - ' + line.product_id.name,
+        #             'partner_id': picking_id.partner_id.id,
+        #             'move_type': 'entry',
+        #             'stock_move_id': line.id,
+        #             'line_ids': [(0, 0, credit), (0, 0, debit)],
+        #         }
+        #         invoice_id = self.env['account.move'].create(vals)
+        #         invoice_id.action_post()
     def action_cancel(self):
         for rec in self:
             rec.write({'state': 'cancel'})
