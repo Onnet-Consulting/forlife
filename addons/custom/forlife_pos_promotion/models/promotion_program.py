@@ -56,7 +56,7 @@ class PromotionProgram(models.Model):
         precompute=True)
     currency_symbol = fields.Char(related='currency_id.symbol')
 
-    brand_id = fields.Many2one(related='campaign_id.brand_id', string='Brand', store=True)
+    brand_id = fields.Many2one(related='campaign_id.brand_id', string='Brand', store=True, required=False)
     store_ids = fields.Many2many(related='campaign_id.store_ids', string='Stores')
     from_date = fields.Datetime(related='campaign_id.from_date', string='From Date', default=fields.Datetime.now)
     to_date = fields.Datetime(related='campaign_id.to_date', string='To Date')

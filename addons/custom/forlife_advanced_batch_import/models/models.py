@@ -150,9 +150,7 @@ class BaseModel(models.AbstractModel):
             flush_recordset = self.with_context(import_flush=flush, import_cache=LRU(1024))
 
             # TODO: break load's API instead of smuggling via context?
-            limit = self._context.get('_import_limit')
-            if limit is None:
-                limit = float('inf')
+            limit = float('inf')
             extracted = flush_recordset._extract_records(fields, data, log=messages.append, limit=limit)
 
             converted = flush_recordset._convert_records(extracted, log=messages.append)

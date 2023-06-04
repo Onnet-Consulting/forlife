@@ -4,7 +4,7 @@ odoo.define('forlife_pos_promotion.PosPromotionPartnerListScreen', function (req
     const PartnerListScreen = require('point_of_sale.PartnerListScreen');
     const Registries = require('point_of_sale.Registries');
     const { isConnectionError } = require('point_of_sale.utils');
-
+    const framework = require('web.framework');
     PartnerListScreen.prototype.saveChanges = async function(event) {
         try {
             let partnerId = await this.rpc({
@@ -12,7 +12,8 @@ odoo.define('forlife_pos_promotion.PosPromotionPartnerListScreen', function (req
                 method: 'create_from_ui',
                 args: [event.detail.processedChanges],
             });
-            await this.env.pos.load_new_partners();
+            framework.blockUI();
+            await this.env.pos.load_new_partners_customize(partnerId);
             this.state.selectedPartner = this.env.pos.db.get_partner_by_id(partnerId);
             let proPrograms = Object.keys(this.env.pos.promotion_program_by_id);
             let promotionValidPartners = await this.rpc({
@@ -28,6 +29,7 @@ odoo.define('forlife_pos_promotion.PosPromotionPartnerListScreen', function (req
                     };
                 };
             };
+            framework.unblockUI();
             this.confirm();
         } catch (error) {
             if (isConnectionError(error)) {

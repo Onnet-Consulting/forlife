@@ -130,11 +130,13 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             program.display_name = program.name
         };
         for (const item of this.promotionComboLines) {
-            let cl_valid_product_ids = JSON.parse(atob(item.json_valid_product_ids));
-            item.valid_product_ids = new Set(cl_valid_product_ids);
-            item.program_id = item.program_id[0];
-            item.program = this.promotion_program_by_id[item.program_id];
-            item.program.comboFormula.push(item);
+            if(item.json_valid_product_ids){
+                let cl_valid_product_ids = JSON.parse(atob(item.json_valid_product_ids));
+                item.valid_product_ids = new Set(cl_valid_product_ids);
+                item.program_id = item.program_id[0];
+                item.program = this.promotion_program_by_id[item.program_id];
+                item.program.comboFormula.push(item);
+            }
         };
         for (const reward of this.rewardLines) {
             this.reward_line_by_id[reward.id] = reward;
