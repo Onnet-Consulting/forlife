@@ -47,7 +47,7 @@ class StockPicking(models.Model):
         for picking in self:
             if (not picking.other_import and not picking.other_export):
                 continue
-            if (picking.other_import and not picking.location_id.is_assets) and (picking.other_import and not picking.location_dest_id.is_assets):
+            if (picking.other_import and not picking.location_id.is_assets) or (picking.other_export and not picking.location_dest_id.is_assets):
                 continue
             for line in picking.move_ids:
                 account = line.ref_asset.asset_account.id

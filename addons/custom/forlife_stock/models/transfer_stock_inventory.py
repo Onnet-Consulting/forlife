@@ -98,13 +98,13 @@ class TransferStockInventory(models.Model):
     def action_approve(self):
         picking_type_in = self.env['stock.picking.type'].search([
             ('import_or_export', '=', 'other_import'),
-            ('company_id', '=', self.env.user.company_id.id)], limit=1)
+            ('company_id', '=', self.env.company.id)], limit=1)
         if not picking_type_in:
             raise ValidationError(
                 'Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Nhập khác' % (self.env.user.company_id.name))
         picking_type_out = self.env['stock.picking.type'].search([
             ('import_or_export', '=', 'other_export'),
-            ('company_id', '=', self.env.user.company_id.id)], limit=1)
+            ('company_id', '=', self.env.company.id)], limit=1)
         if not picking_type_out:
             raise ValidationError(
                 'Công ty: %s chưa được cấu hình kiểu giao nhận cho phiếu Xuất khác' % (self.env.user.company_id.name))
