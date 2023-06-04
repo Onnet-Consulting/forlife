@@ -27,20 +27,20 @@ class InheritProductTemplate(models.Model):
 
     is_promotion = fields.Boolean(string='Is Promotion', index=True)
 
-    def get_product_promotion_expense_account(self):
+    def get_product_gift_account(self):
         self.ensure_one()
-        return self.property_account_promotion_expense_id
+        return self.categ_id.product_gift_account_id
 
     def check_is_promotion(self):
         self.ensure_one()
-        return self.is_promotion
+        return self.is_promotion or False
 
 
 class InheritProductProduct(models.Model):
     _inherit = 'product.product'
 
-    def get_product_promotion_expense_account(self):
-        return self.product_tmpl_id.get_product_promotion_expense_account()
+    def get_product_gift_account(self):
+        return self.product_tmpl_id.get_product_gift_account()
 
     def check_is_promotion(self):
         return self.product_tmpl_id.check_is_promotion()
