@@ -7,7 +7,14 @@ from odoo.addons.nhanh_connector.models import constant
 import datetime
 import requests
 
+event_type_mapping = {
+    'orderAdd': 'order_add',
+    'orderUpdate': 'order_update',
+    'orderDelete': 'order_delete'
+}
+
 _logger = logging.getLogger(__name__)
+
 
 class MainController(http.Controller):
     def __init__(self):
@@ -22,24 +29,34 @@ class MainController(http.Controller):
     def nhanh_webhook_handler(self, **post):
         value = json.loads(request.httprequest.data)
         event_type = value.get('event')
+        webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
+            'event_type': event_type_mapping.get('event_type', ''),
+            'event_value': value,
+        })
         handler = self.event_handlers.get(event_type)
         result_requests = self.result_request(200, 0, _('Webhook to system odoo'))
         try:
             if handler:
                 data = value.get('data')
                 result_requests = handler(event_type, data)
-
+                webhook_value_id.update({
+                    'state': 'done'
+                })
             else:
                 result_requests = self.result_requests(404, 0, _('Webhook to system odoo false'))
         except Exception as ex:
             _logger.info(f'Webhook to system odoo false{ex}')
+            webhook_value_id.update({
+                'error': ex
+            })
             result_requests = self.result_request(404, 0, _('Webhook to system odoo false'))
         return request.make_response(json.dumps(result_requests),
-                                  headers={'Content-Type': 'application/json'})
+                                     headers={'Content-Type': 'application/json'})
 
     def handle_order(self, event_type, data):
         order_id = data.get('orderId') if event_type != 'orderDelete' else False
-        order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)], limit=1) if event_type != 'orderDelete' else False
+        order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)],
+                                                      limit=1) if event_type != 'orderDelete' else False
         if event_type == 'orderAdd':
             name_customer = False
             # Add customer if not existed
@@ -69,14 +86,17 @@ class MainController(http.Controller):
             location_id = self.env['stock.location'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
             for item in data['products']:
                 product = self.product_template_model().sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
-                product_product = self.product_product_model().sudo().search([('product_tmpl_id', '=', product.id)], limit=1)
+                product_product = self.product_product_model().sudo().search([('product_tmpl_id', '=', product.id)],
+                                                                             limit=1)
                 order_line.append((
                     0, 0, {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
                            'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
                            'product_uom': product.uom_id.id if product.uom_id else self.uom_unit(),
                            'customer_lead': 0, 'sequence': 10, 'is_downpayment': False, 'x_location_id': location_id.id,
-                           'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get('discount') else 0,
-                           'x_cart_discount_fixed_price': float(item.get('discount')) * float(item.get('quantity')) if item.get('discount') else 0}))
+                           'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
+                               'discount') else 0,
+                           'x_cart_discount_fixed_price': float(item.get('discount')) * float(
+                               item.get('quantity')) if item.get('discount') else 0}))
 
             status = 'draft'
             if data['status'] == 'confirmed':
@@ -107,6 +127,7 @@ class MainController(http.Controller):
                 'source_record': True,
                 'code_coupon': data['couponCode'],
                 'state': status,
+                'nhanh_order_status': data['status'].lower(),
                 'name_customer': name_customer,
                 'note': data['privateDescription'],
                 'note_customer': data['description'],
@@ -118,6 +139,17 @@ class MainController(http.Controller):
                 'warehouse_id': warehouse_id.id if warehouse_id else None,
                 'order_line': order_line
             }
+            # đổi trả hàng
+            if data.get('returnFromOrderId', 0):
+                origin_order_id = self.env['sale.order'].sudo().search(
+                    [('nhanh_id', '=', data.get('returnFromOrderId', 0))], limit=1)
+                value.update({
+                    # hiện đang bắt theo typeID 14 là khách trả lại hàng, chưa có định nghĩa các typeID
+                    'x_is_exchange': data['typeId'] != 14,
+                    'x_is_return': data['typeId'] == 14,
+                    'x_origin': origin_order_id.id if origin_order_id else None,
+                    'nhanh_origin_id': data.get('returnFromOrderId', 0)
+                })
             self.sale_order_model().sudo().create(value)
             return self.result_request(200, 0, _('Create sale order success'))
         elif event_type == 'orderUpdate':
@@ -134,48 +166,29 @@ class MainController(http.Controller):
                 elif data['status'] == 'canceled':
                     status = 'cancel'
                 order.sudo().write({
-                    'state': status
+                    'state': status,
+                    'nhanh_order_status': data['status'].lower(),
                 })
+                if status == 'cancel' and order.picking_ids and 'done' in order.picking_ids.mapped('state'):
+                    order.picking_ids.unlink()
                 return self.result_request(200, 0, _('Update sale order success'))
             else:
                 return self.result_request(404, 1, _('Update sale order false'))
         elif event_type == 'orderDelete':
             for item in data:
-                order_unlink = self.sale_order_model().sudo().search([('nhanh_id', '=', int(item))]).sudo().write({
-                    'state': 'cancel'
+                order_ids = self.sale_order_model().sudo().search([('nhanh_id', '=', int(item))]).sudo()
+                order_ids.write({
+                    'state': 'cancel',
+                    'nhanh_order_status': 'canceled',
                 })
+                for order_id in order_ids:
+                    if not order_id.picking_ids:
+                        continue
+                    if 'done' in order_id.picking_ids.mapped('state'):
+                        continue
+                    order_id.picking_ids.unlink()
             return self.result_request(200, 0, _('Delete sale order success'))
 
-    def get_nhanh_configs(self):
-        '''
-        Get nhanh config from ir_config_parameter table
-        '''
-        params = request.env['ir.config_parameter'].sudo().search([('key', 'ilike', 'nhanh_connector.nhanh_')]).read(['key', 'value'])
-        nhanh_configs = {}
-        for param in params:
-            nhanh_configs[param['key']] = param['value']
-        return nhanh_configs
-
-    def get_link_nhanh(self, category, type_get, data):
-        nhanh_configs = self.get_nhanh_configs()
-        if 'nhanh_connector.nhanh_app_id' not in nhanh_configs or 'nhanh_connector.nhanh_business_id' not in nhanh_configs \
-                or 'nhanh_connector.nhanh_access_token' not in nhanh_configs:
-            _logger.info(f'Nhanh configuration does not set')
-            return False
-        url = f"{constant.base_url()}/{category}/{type_get}?version={self.get_params()['version']}&appId={self.get_params()['appId']}" \
-              f"&businessId={self.get_params()['businessId']}&accessToken={self.get_params()['accessToken']}" \
-              f"&data={data}"
-        return url
-
-    def get_params(self):
-        nhanh_configs = self.get_nhanh_configs()
-        query_params = {
-            'version': '2.0',
-            'appId': f"{nhanh_configs['nhanh_connector.nhanh_app_id']}",
-            'businessId': f"{nhanh_configs['nhanh_connector.nhanh_business_id']}",
-            'accessToken': f"{nhanh_configs['nhanh_connector.nhanh_access_token']}",
-        }
-        return query_params
     # End Create Category
 
     def webhook_enable(self, event_type, data):
