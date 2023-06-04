@@ -144,9 +144,7 @@ class MainController(http.Controller):
                 origin_order_id = self.env['sale.order'].sudo().search(
                     [('nhanh_id', '=', data.get('returnFromOrderId', 0))], limit=1)
                 value.update({
-                    # hiện đang bắt theo typeID 14 là khách trả lại hàng, chưa có định nghĩa các typeID
-                    'x_is_exchange': data['typeId'] != 14,
-                    'x_is_return': data['typeId'] == 14,
+                    'x_is_return': True,
                     'x_origin': origin_order_id.id if origin_order_id else None,
                     'nhanh_origin_id': data.get('returnFromOrderId', 0)
                 })
