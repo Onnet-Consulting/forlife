@@ -113,6 +113,8 @@ class StockMove(models.Model):
             if self.picking_id.location_dest_id.id_deposit and self.picking_id.location_dest_id.account_stock_give:
                 debit_account_id = self.picking_id.location_dest_id.account_stock_give.id
                 credit_account_id = self.picking_id.location_id.x_property_valuation_out_account_id.id
+                if not credit_account_id or not debit_account_id:
+                    raise ValidationError (_('Vui lòng cấu hình tài khoản kho kí gửi của địa điểm này hoặc trường Stock Valuation Account (Outgoing) tại địa điểm Nhập trả lại hàng kí gửi!'))
             else:
                 debit_account_id = self.product_id.categ_id.with_company(self.picking_id.company_id).property_stock_valuation_account_id.id
                 credit_account_id = self.picking_id.location_id.with_company(self.picking_id.company_id).x_property_valuation_out_account_id.id
