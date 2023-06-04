@@ -55,9 +55,6 @@
                     <field name="location_id" string="Trả từ kho" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))], 'invisible': ['|',('is_return', '=', False),('purchase_type', '!=', 'product')], 'required': [('purchase_type', '=', 'product')]}"/>
                     <field name="warehouse_material" domain="[('type_other', '!=', None)]"  attrs="{'invisible': [('is_return', '=', False)], 'required' : [('is_return', '=', True), ('order_line_production_order', '!=', [])]}"/>
                 </field>
-
-
-                 
             </field>
         </record>
 
