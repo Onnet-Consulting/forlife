@@ -161,7 +161,7 @@ class PosOrder(models.Model):
         if product_ids:
             if len(product_ids) == 1:
                 product_ids = str(tuple(product_ids))
-                product_ids = product_ids.replace(',','')
+                product_ids = product_ids.replace(',', '')
             else:
                 product_ids = tuple(product_ids)
         else:
@@ -169,7 +169,7 @@ class PosOrder(models.Model):
         if seri_list:
             if len(seri_list) == 1:
                 seri_list = str(tuple(seri_list))
-                seri_list = seri_list.replace(',','')
+                seri_list = seri_list.replace(',', '')
             else:
                 seri_list = tuple(seri_list)
         else:

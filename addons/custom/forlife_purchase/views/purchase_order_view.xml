@@ -161,15 +161,6 @@
                                 <field name="total_product" sum="discounted subtotal" force_save="1"/>
                             </tree>
                         </field>
-                        <div class="xl-12 d-flex" style="justify-content: end;">
-                            <group class="xl-4">
-                            </group>
-                              <group class="xl-4">
-                            </group>
-                              <group class="xl-4">
-                                <field name="cost_total"/>
-                            </group>
-                        </div>
                     </page>
                 </xpath>
                 <xpath expr="//field[@name='partner_id']" position="attributes">
@@ -358,11 +349,9 @@
                 <xpath expr="//field[@name='notes']" position="attributes">
                     <attribute name="attrs">{'readonly': [('state', 'in', ('done', 'approved'))]}</attribute>
                 </xpath>
-
                 <xpath expr="//field[@name='order_line']" position="attributes">
                     <attribute name="attrs">{'readonly': [('custom_state', 'in', ('close', 'cancel','reject', 'approved', 'confirm'))]}</attribute>
                 </xpath>
-
             </field>
         </record>
         <!-- Inherit purchase order tree view -->
