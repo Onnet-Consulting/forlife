@@ -386,8 +386,8 @@ class StockTransferLine(models.Model):
     product_id = fields.Many2one('product.product', string="Product", required=True)
     uom_id = fields.Many2one('uom.uom', string='Unit', store=True)
     qty_plan = fields.Integer(string='Quantity Plan')
-    qty_out = fields.Integer(string='Quantity Out')
-    qty_in = fields.Integer(string='Quantity In')
+    qty_out = fields.Integer(string='Quantity Out', copy=False)
+    qty_in = fields.Integer(string='Quantity In', copy=False)
     qty_start = fields.Integer(string='', compute='compute_qty_start', store=1)
     quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
@@ -534,3 +534,13 @@ class ForlifeProductionFinishedProduct(models.Model):
                 lambda r: r.stock_transfer_id.state in 'done')])
             rec.stock_qty = qty_done
             rec.remaining_qty = rec.produce_qty - qty_done
+
+
+class HREmployee(models.Model):
+    _inherit = 'hr.employee'
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        args = args or []
+        recs = self.search([('name', operator, name)] + args, limit=limit)
+        return recs.name_get()
