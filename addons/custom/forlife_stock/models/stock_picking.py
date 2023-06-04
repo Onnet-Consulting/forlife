@@ -45,7 +45,9 @@ class StockPicking(models.Model):
 
     def action_confirm(self):
         for picking in self:
-            if not picking.location_id.asset_account.id:
+            if (not picking.other_import and not picking.other_export):
+                continue
+            if (picking.other_import and not picking.location_id.is_assets) or (picking.other_export and not picking.location_dest_id.is_assets):
                 continue
             for line in picking.move_ids:
                 account = line.ref_asset.asset_account.id
