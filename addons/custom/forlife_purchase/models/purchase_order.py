@@ -54,7 +54,7 @@ class PurchaseOrder(models.Model):
                    ('close', 'Close'),
                    ])
     exchange_rate_line = fields.One2many('purchase.order.exchange.rate', 'purchase_order_id', copy=True,
-                                         string="Thuế nhập khẩu")
+                                         string="Thuế nhập khẩu", compute='_compute_exchange_rate_line_and_cost_line', store=1)
     cost_line = fields.One2many('purchase.order.cost.line', 'purchase_order_id', copy=True, string="Chi phí")
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
     location_id = fields.Many2one('stock.location', string="Kho nhận", check_company=True)
@@ -103,7 +103,7 @@ class PurchaseOrder(models.Model):
                          help="Reference of the document that generated this purchase order "
                               "request (e.g. a sales order)", compute='compute_origin')
     type_po_cost = fields.Selection([('tax', 'Tax'), ('cost', 'Cost')])
-    purchase_synthetic_ids = fields.One2many('forlife.synthetic', 'synthetic_id')
+    purchase_synthetic_ids = fields.One2many('forlife.synthetic', 'synthetic_id', compute='_compute_exchange_rate_line_and_cost_line', store=1)
 
     show_check_availability = fields.Boolean(
         compute='_compute_show_check_availability', invisible=True,
@@ -654,40 +654,41 @@ class PurchaseOrder(models.Model):
         else:
             self.active_manual_currency_rate = False
 
-    @api.onchange('order_line')
-    def onchange_order_line(self):
-        self.exchange_rate_line = [(5, 0)]
-        self.purchase_synthetic_ids = [(5, 0)]
-        for line in self.order_line:
-            exchange_rate_line = self.env['purchase.order.exchange.rate'].create({
-                'product_id': line.product_id.id,
-                'name': line.name,
-                'vnd_amount': line.total_vnd_amount,
-                'purchase_order_id': self.id,
-                'qty_product': line.product_qty,
-            })
-            synthetic_line = self.env['forlife.synthetic'].create({
-                'product_id': line.product_id.id,
-                'description': line.name,
-                'price_unit': line.price_unit,
-                # 'price_subtotal': line.price_subtotal,
-                'quantity': line.product_qty,
-                'before_tax': line.total_value,
-                'discount': line.discount,
-                'synthetic_id': self.id,
-            })
-            if exchange_rate_line:
-                exchange_rate_line.update({
+    @api.depends('order_line')
+    def _compute_exchange_rate_line_and_cost_line(self):
+        for rec in self:
+            rec.exchange_rate_line = [(5, 0)]
+            rec.purchase_synthetic_ids = [(5, 0)]
+            for line in rec.order_line:
+                exchange_rate_line = self.env['purchase.order.exchange.rate'].create({
+                    'product_id': line.product_id.id,
+                    'name': line.name,
                     'vnd_amount': line.total_vnd_amount,
+                    'purchase_order_id': rec.id,
                     'qty_product': line.product_qty,
                 })
-            if synthetic_line:
-                synthetic_line.update({
-                    'quantity': line.product_qty,
-                    'discount': line.discount,
+                synthetic_line = self.env['forlife.synthetic'].create({
+                    'product_id': line.product_id.id,
+                    'description': line.name,
                     'price_unit': line.price_unit,
                     # 'price_subtotal': line.price_subtotal,
+                    'quantity': line.product_qty,
+                    'before_tax': line.total_value,
+                    'discount': line.discount,
+                    'synthetic_id': rec.id,
                 })
+                if exchange_rate_line:
+                    exchange_rate_line.update({
+                        'vnd_amount': line.total_vnd_amount,
+                        'qty_product': line.product_qty,
+                    })
+                if synthetic_line:
+                    synthetic_line.update({
+                        'quantity': line.product_qty,
+                        'discount': line.discount,
+                        'price_unit': line.price_unit,
+                        # 'price_subtotal': line.price_subtotal,
+                    })
 
     def action_update_import(self):
         for item in self:
