@@ -59,7 +59,7 @@ class SaleOrderLineNhanh(models.Model):
             if not item.product_uom_qty:
                 item.discount_price_unit = 0
             else:
-                item.discount_price_unit = item.x_cart_discount_fixed_price > 0 and item.x_cart_discount_fixed_price / item.product_uom_qty
+                item.discount_price_unit = item.x_cart_discount_fixed_price > 0 and item.x_cart_discount_fixed_price / item.product_uom_qty  or 0
 
     def _compute_odoo_price_unit(self):
         for line in self:
