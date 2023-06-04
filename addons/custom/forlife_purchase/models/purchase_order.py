@@ -357,6 +357,9 @@ class PurchaseOrder(models.Model):
 
     def action_confirm(self):
         for record in self:
+            product_discount_tax = self.env.ref('forlife_purchase.product_discount_tax', raise_if_not_found=False)
+            if product_discount_tax and any(line.product_id.id == product_discount_tax.id and line.price_unit > 0 for line in record.order_line):
+                raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
             record.write({'custom_state': 'confirm'})
 
     def action_approved(self):
@@ -479,7 +482,6 @@ class PurchaseOrder(models.Model):
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
-
 
 
     def supplier_sales_order(self, data, order_line, invoice_line_ids):
@@ -1232,9 +1234,8 @@ class PurchaseOrderLine(models.Model):
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
     is_change_vendor = fields.Integer()
 
-    total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount' ,store=1)
+    total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
     total_value = fields.Float()
-
 
     @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id')
     def _compute_total_vnd_amount(self):
@@ -1876,10 +1877,10 @@ class StockPicking(models.Model):
         if invoice_line_npls and list_line_xk:
             account_nl = self.create_account_move(po, invoice_line_npls, record)
             if record.state == 'done':
-                master_xk = self.create_xk_picking(po, record, list_line_xk)
+                master_xk = self.create_xk_picking(po, record, list_line_xk, account_nl)
         return True
 
-    def create_xk_picking(self, po, record, list_line_xk):
+    def create_xk_picking(self, po, record, list_line_xk, account_move=None):
         company_id = self.env.company.id
         picking_type_out = self.env['stock.picking.type'].search([
             ('code', '=', 'outgoing'),
@@ -1897,9 +1898,13 @@ class StockPicking(models.Model):
             'picking_type_id': picking_type_out.id,
             'move_ids_without_package': list_line_xk
         }
-        result = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(
-            master_xk).button_validate()
-        return result
+        xk_picking = self.env['stock.picking'].with_context({'skip_immediate': True, 'endloop': True}).create(master_xk)
+        xk_picking.button_validate()
+        if account_move:
+            xk_picking.write({'account_xk_id': account_move.id})
+        record.write({'picking_xk_id': xk_picking.id})
+        return xk_picking
+
 
 class Synthetic(models.Model):
     _name = 'forlife.synthetic'

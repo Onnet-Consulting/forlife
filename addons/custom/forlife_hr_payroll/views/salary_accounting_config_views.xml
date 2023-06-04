@@ -28,7 +28,7 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="company_id"/>
+                                <field name="company_id" readonly="1"/>
                                 <field name="entry_id"/>
                                 <field name="purpose_id"/>
                             </group>
@@ -53,13 +53,13 @@
             <field name="model">salary.accounting.config</field>
             <field name="arch" type="xml">
                 <search string="Search">
-                    <field name="company_id"/>
                     <field name="entry_id"/>
                     <field name="purpose_id"/>
                     <field name="debit_account_id"/>
                     <field name="credit_account_id"/>
                     <field name="debit_partner_id"/>
                     <field name="credit_partner_id"/>
+                    <field name="company_id"/>
                 </search>
             </field>
         </record>

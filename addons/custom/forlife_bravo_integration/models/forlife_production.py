@@ -7,6 +7,7 @@ from ..fields import BravoCharField, BravoDatetimeField, BravoDateField, BravoMa
 class ForLifeProduction(models.Model):
     _name = 'forlife.production'
     _inherit = ['forlife.production', 'bravo.model']
+    _bravo_table = 'B30StatsDoc'
 
     br1 = BravoMany2oneField("res.company", odoo_name="company_id", bravo_name="CompanyCode",
                              field_detail="code")

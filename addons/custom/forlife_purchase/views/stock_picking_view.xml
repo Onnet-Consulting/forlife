@@ -19,7 +19,6 @@
                             <span class="o_stat_text">Phiếu NPL</span>
                         </div>
                     </button>
-                </xpath>
                  <xpath expr="//header//button[@name='action_assign']" position="attributes">
                      <attribute name="attrs">{'invisible':True}</attribute>
                 </xpath>

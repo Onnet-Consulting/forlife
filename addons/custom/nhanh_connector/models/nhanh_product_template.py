@@ -31,9 +31,8 @@ class ProductNhanh(models.Model):
             nhanh_configs = constant.get_nhanh_configs(self)
             if 'nhanh_connector.nhanh_app_id' in nhanh_configs or 'nhanh_connector.nhanh_business_id' in nhanh_configs \
                     or 'nhanh_connector.nhanh_access_token' in nhanh_configs:
-                data = '[{"id": "' + str(res.id) + '","name":"' + str(res.name) + '","code":"' + str(res.code_product) + '", "barcode": "' + str(res.barcode if res.barcode else '') + '", "price": "' + str(int(res.list_price)) + '", "shippingWeight": "' + str(int(res.weight)) + '", "status": "' + 'New' + '"}]'
 
-                data = {
+                data = [{
                     "id": res.id,
                     "name": res.name,
                     "code": res.code_product,
@@ -41,7 +40,7 @@ class ProductNhanh(models.Model):
                     "price": int(res.list_price),
                     "shippingWeight": int(res.weight),
                     "status": 'New'
-                }
+                }]
 
                 try:
                     res_server = self.post_data_nhanh(data)
@@ -49,7 +48,12 @@ class ProductNhanh(models.Model):
                     res_json = res_server.json()
                     if status_nhanh == 1:
                         if res_json['code'] == 0:
-                            _logger.info(f'Get order error {res["messages"]}')
+                            res.write(
+                                {
+                                    'description': f'Sync Product error {res["messages"]}'
+                                }
+                            )
+                            _logger.info(f'Sync Product error {res["messages"]}')
                             return False
                         else:
                             value = []
@@ -61,7 +65,12 @@ class ProductNhanh(models.Model):
                                 }
                             )
                 except Exception as ex:
-                    _logger.info(f'Get orders from NhanhVn error {ex}')
+                    res.write(
+                        {
+                            'description': f'Sync Product error {ex}'
+                        }
+                    )
+                    _logger.info(f'Sync Product from NhanhVn error {ex}')
         return True
 
     def write(self, vals):
