@@ -166,12 +166,14 @@ class StockTransfer(models.Model):
     def _create_move_given(self, picking, location, type_create):
         for d in picking.move_ids_without_package:
             if type_create == 'out':
-                account_id_debit = d.product_id.categ_id.property_account_expense_categ_id.id
+                account_id_debit = d.product_id.categ_id.property_stock_valuation_account_id.id
                 account_id_credit = location.account_stock_give.id
             else:
                 account_id_debit = location.account_stock_give.id
-                account_id_credit = d.product_id.categ_id.property_account_expense_categ_id.id
+                account_id_credit = d.product_id.categ_id.property_stock_valuation_account_id.id
             accounts_data = d.product_id.product_tmpl_id.get_product_accounts()
+            if not accounts_data['stock_journal']:
+                raise ValidationError(_('Chưa cấu hình sổ nhật kí kho của danh mục sản phẩm này!'))
             move_vals = {
                 'journal_id': accounts_data['stock_journal'].id,
                 'date': datetime.now(),
@@ -182,14 +184,14 @@ class StockTransfer(models.Model):
                     (0, 0, {
                         'name': picking.name,
                         'account_id': account_id_debit,
-                        'debit': d.product_id.standard_price,
+                        'debit': d.quantity_done * d.product_id.standard_price,
                         'credit': 0.0,
                     }),
                     (0, 0, {
                         'name': picking.name,
                         'account_id': account_id_credit,
                         'debit': 0.0,
-                        'credit': d.product_id.standard_price,
+                        'credit': d.quantity_done*d.product_id.standard_price,
                     })
                 ]
             }
