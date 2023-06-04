@@ -238,7 +238,7 @@ class TransferStockInventory(models.Model):
                 }
                 vals = {
                     'journal_id': journal_id,
-                    'ref': picking_id.name + line.product_id.name,
+                    'ref': picking_id.name + ' - ' + line.product_id.name,
                     'partner_id': picking_id.partner_id.id,
                     'move_type': 'entry',
                     'stock_move_id': line.id,
