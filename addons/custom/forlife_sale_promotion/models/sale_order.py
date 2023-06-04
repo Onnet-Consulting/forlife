@@ -71,7 +71,10 @@ class SaleOrder(models.Model):
                                     if line[0].product_uom_qty == 1:
                                         line[0].write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
                                     elif line[0].product_uom_qty > 1:
-                                        line[0].write({'product_uom_qty': line[0].product_uom_qty - 1})
+                                        line[0].write({
+                                            'product_uom_qty': line[0].product_uom_qty - 1,
+                                            'price_unit': line[0].price_unit
+                                        })
                                         line[0].copy(
                                             {'x_free_good': True, 'order_id': line[0].order_id.id,
                                              'product_uom_qty': 1, 'price_unit': 0, 'odoo_price_unit': 0,
