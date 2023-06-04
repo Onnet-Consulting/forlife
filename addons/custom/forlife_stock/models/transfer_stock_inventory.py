@@ -196,10 +196,10 @@ class TransferStockInventory(models.Model):
 
                         })
             for item in data_ex_other:
-                self.create_picking_and_move(item,  data_ex_other)
-                # picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
-                #     data_ex_other.get(item))
-                # picking_id.button_validate()
+                # self.create_picking_and_move(item,  data_ex_other)
+                picking_id = self.env['stock.picking'].with_context({'skip_immediate': True}).create(
+                    data_ex_other.get(item))
+                picking_id.button_validate()
             rec.write({'state': 'approved', 'is_nk_xk': True})
 
     def create_picking_and_move(self, item, data_ex_other):
