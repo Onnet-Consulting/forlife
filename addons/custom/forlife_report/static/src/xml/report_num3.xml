@@ -13,6 +13,7 @@
                 <t t-foreach="options.data" t-as="line">
                     <tr>
                         <td style="text-align: center;"><t t-esc="line.num"/></td>
+                        <td><t t-esc="line.brand"/></td>
                         <td><t t-esc="line.product_group"/></td>
                         <td><t t-esc="line.product_line"/></td>
                         <td><t t-esc="line.texture"/></td>

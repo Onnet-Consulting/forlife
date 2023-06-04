@@ -6,13 +6,29 @@
             <field name="model">stock.picking</field>
             <field name="inherit_id" ref="stock.view_picking_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <field name="picking_xk_id" invisible="1"/>
+                    <field name="account_xk_id" invisible="1"/>
+                    <button name="view_xk_account" type="object" class="oe_stat_button" icon="fa-dollar" attrs="{'invisible':[('account_xk_id', '=', False)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">Bút toán NPL</span>
+                        </div>
+                    </button>
+                    <button name="view_xk_picking" type="object" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':[('picking_xk_id', '=', False)]}">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">Phiếu NPL</span>
+                        </div>
+                    </button>
+                 <xpath expr="//header//button[@name='action_assign']" position="attributes">
+                     <attribute name="attrs">{'invisible':True}</attribute>
+                </xpath>
                 <xpath expr="//field[@name='owner_id']" position="after">
                     <field name="is_pk_purchase" invisible="1"/>
 				</xpath>
                 <xpath expr="//page[@name='detailed_operations']//field[@name='move_line_ids_without_package']"
                        position="replace">
                     <field name="move_line_nosuggest_ids" invisible="1"/>
-                    <field name="move_line_ids_without_package">
+                    <field name="move_line_ids_without_package" attrs="{'readonly': [('state', '=', 'done')]}">
                         <tree editable="bottom" class="width-hh">
                             <field name="product_id"/>
                             <field name="location_dest_id"/>
@@ -25,15 +41,15 @@
                                    attrs="{'column_invisible': [('parent.is_pk_purchase', '=', False)]}"/>
                             <field name="qty_done"
                                    decoration-warning="reserved_uom_qty &lt; qty_done"
-                                   decoration-success="reserved_uom_qty == qty_done" readonly="1" force_save="1"/>
+                                   decoration-success="reserved_uom_qty == qty_done" force_save="1"
+                                   attrs="{'readonly': [('parent.state', '=', 'done')]}"/>
                             <field name="product_uom_id"/>
                             <field name="product_uom_category_id" invisible="1"/>
                             <field name="company_id" invisible="1"/>
-                             <field name="reserved_uom_qty" invisible="1"/>
+                            <field name="reserved_uom_qty" invisible="1"/>
                         </tree>
                     </field>
                 </xpath>
-
             </field>
         </record>
     </data>

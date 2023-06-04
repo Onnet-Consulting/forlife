@@ -5,6 +5,7 @@ odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
     const Registries = require('point_of_sale.Registries');
 
     var utils = require('web.utils');
+    var round_pr = utils.round_precision;
 
     class CustomOrderSummary extends OrderSummary {
         getTotalQuantity() {
@@ -17,12 +18,17 @@ odoo.define('forlife_pos_layout.CustomOrderSummary', function(require) {
         }
 
         getTotalPriceWithTax() {
+            // lấy số tiền ban đầu có
             var total = 0;
+            // lấy số tiền đã giảm thủ công
+            var totalDiscount = 0;
+            var rounding = this.props.order.pos.currency.rounding;
             const orderlines = this.props.order.orderlines;
             for (const orderline of orderlines) {
                 total += orderline.get_price_with_tax();
+                totalDiscount += round_pr(orderline.get_unit_price() * orderline.get_quantity() * (orderline.get_discount()/100), rounding);
             }
-            return total;
+            return total + totalDiscount;
         }
         getTotalNotFormat() {
             return this.props.order.get_total_with_tax();

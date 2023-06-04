@@ -27,9 +27,12 @@
             # 'forlife_pos_layout/static/src/js/Screens/ProductScreen/OrderSummary.js',
             'forlife_pos_layout/static/src/js/Screens/ProductScreen/CustomOrderSummary.js',
             'forlife_pos_layout/static/src/xml/Screens/ProductScreen/CustomOrderSummary.xml',
+            'forlife_pos_layout/static/src/xml/Screens/ReceiptScreen/ReceiptScreen.xml',
             'forlife_pos_layout/static/src/xml/Chrome.xml',
             'forlife_pos_layout/static/src/js/Chrome.js',
             'forlife_pos_layout/static/src/js/models.js',
+            ('replace', 'point_of_sale/static/src/js/Screens/ProductScreen/ControlButtons/ProductInfoButton.js',
+             'forlife_pos_layout/static/src/js/Screens/ProductScreen/ControlButtons/ProductInfoButton.js'),
         ],
     }
 }

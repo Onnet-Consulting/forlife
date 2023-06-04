@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from odoo.addons.forlife_report.wizard.report_base import format_date_query
 from odoo.exceptions import ValidationError
+import ast
 
 TITLES = [
     'STT', 'Mã CN', 'Ngày lập phiếu', 'Ngày HĐ', 'Số HĐ', 'Mã Khách', 'Tên Khách', 'Mã hàng', 'Tên hàng', 'Nhóm hàng', 'Nhãn hiệu',
@@ -41,7 +42,8 @@ class ReportNum20(models.TransientModel):
         self.ensure_one()
         tz_offset = self.tz_offset
         user_lang_code = self.env.user.lang
-        store_key = 'format' if self.brand_id.code == 'FMT' else 'forlife'
+        attr_value = ast.literal_eval(self.env.ref('forlife_report.attr_code_default').attr_code or '{}')
+
         customer_condition = f"and (rp.ref ilike '%{self.customer}%' or rp.phone ilike '%{self.customer}%')" if self.customer else ''
         order_filter_condition = f"""and (po.pos_reference ilike '%{self.order_filter}%'
              or po.id in (select order_id from pos_order_line where product_id in (
@@ -58,6 +60,18 @@ WITH account_by_categ_id as ( -- lấy mã tài khoản định giá tồn kho b
         left join account_account aa on concat('account.account,',aa.id) = ir.value_reference
     where  ir.name='property_stock_valuation_account_id' and ir.company_id = any(array{allowed_company})
     order by cate.id 
+),
+attribute_data as (
+    select 
+        pp.id                                                                                   as product_id,
+        pa.attrs_code                                                                           as attrs_code,
+        array_agg(coalesce(pav.name::json -> '{user_lang_code}', pav.name::json -> 'en_US'))    as value
+    from product_template_attribute_line ptal
+    left join product_product pp on pp.product_tmpl_id = ptal.product_tmpl_id
+    left join product_attribute_value_product_template_attribute_line_rel rel on rel.product_template_attribute_line_id = ptal.id
+    left join product_attribute pa on ptal.attribute_id = pa.id
+    left join product_attribute_value pav on pav.id = rel.product_attribute_value_id
+    group by pp.id, pa.attrs_code
 )
 select
     row_number() over (order by po.id)                                          as num,
@@ -70,16 +84,16 @@ select
     pp.barcode                                                                  as ma_hang,
     pol.full_product_name                                                       as ten_hang,
     split_part(pc.complete_name, ' / ', 2)                                      as nhom_hang,
-    ''                                                                          as nhan_hieu,
-    ''                                                                          as kich_co,
-    ''                                                                          as mau_sac,
+    nhan_hieu.value                                                             as nhan_hieu,
+    ad_size.value                                                               as kich_co,
+    ad_color.value                                                              as mau_sac,
     coalesce(uom.name::json -> '{user_lang_code}', uom.name::json -> 'en_US')   as don_vi,
     split_part(pc.complete_name, ' / ', 3)                                      as dong_hang,
     split_part(pc.complete_name, ' / ', 4)                                      as ket_cau,
     pt.collection                                                               as bo_suu_tap,
     greatest(pol.qty, 0)                                                        as sl_ban,
     - least(pol.qty, 0)                                                         as sl_tra,
-    coalesce(pol.price_unit, 0)                                                 as gia,
+    coalesce(pol.original_price, 0)                                             as gia,
     coalesce((select sum(
             case when type = 'point' then recipe * 1000
                 when type = 'card' then recipe
@@ -122,6 +136,9 @@ from pos_order po
     left join card_rank cr on cr.id = pcr.card_rank_id
     left join hr_employee emp on emp.id = pol.employee_id
     left join account_by_categ_id acc on acc.cate_id = pc.id
+    left join attribute_data ad_size on ad_size.product_id = pp.id and ad_size.attrs_code = '{attr_value.get('kich_thuoc', '')}'
+    left join attribute_data ad_color on ad_color.product_id = pp.id and ad_color.attrs_code = '{attr_value.get('mau_sac', '')}'
+    left join attribute_data nhan_hieu on nhan_hieu.product_id = pp.id and nhan_hieu.attrs_code = '{attr_value.get('nhan_hieu', '')}'
 where po.brand_id = {self.brand_id.id} and po.company_id = any( array{allowed_company})
     and {format_date_query("po.date_order", tz_offset)} between '{self.from_date}' and '{self.to_date}'
     and po.session_id in (select id from pos_session where config_id in (select id from pos_config where store_id = any(array{store_ids})))
@@ -168,9 +185,9 @@ order by num
             sheet.write(row, 7, value.get('ma_hang'), formats.get('normal_format'))
             sheet.write(row, 8, value.get('ten_hang'), formats.get('normal_format'))
             sheet.write(row, 9, value.get('nhom_hang'), formats.get('normal_format'))
-            sheet.write(row, 10, value.get('nhan_hieu'), formats.get('normal_format'))
-            sheet.write(row, 11, value.get('kich_co'), formats.get('normal_format'))
-            sheet.write(row, 12, value.get('mau_sac'), formats.get('normal_format'))
+            sheet.write(row, 10, ', '.join(value.get('nhan_hieu') or []), formats.get('normal_format'))
+            sheet.write(row, 11, ', '.join(value.get('kich_co') or []), formats.get('normal_format'))
+            sheet.write(row, 12, ', '.join(value.get('mau_sac') or []), formats.get('normal_format'))
             sheet.write(row, 13, value.get('don_vi'), formats.get('normal_format'))
             sheet.write(row, 14, value.get('dong_hang'), formats.get('normal_format'))
             sheet.write(row, 15, value.get('ket_cau'), formats.get('normal_format'))

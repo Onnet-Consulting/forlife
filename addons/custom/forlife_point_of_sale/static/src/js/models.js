@@ -1,7 +1,7 @@
 odoo.define('forlife_point_of_sale.models', function (require) {
     "use strict";
 
-    var {PosGlobalState} = require('point_of_sale.models');
+    var {PosGlobalState, Order} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
 
 
@@ -12,5 +12,25 @@ odoo.define('forlife_point_of_sale.models', function (require) {
         }
     }
     Registries.Model.extend(PosGlobalState, CustomPosGlobalState);
+
+    const CustomPosOrder = (Order) => class extends Order {
+
+        export_as_JSON() {
+            const json = super.export_as_JSON(...arguments);
+            json.invoice_info_company_name = this.invoice_info_company_name;
+            json.invoice_info_address = this.invoice_info_address;
+            json.invoice_info_tax_number = this.invoice_info_tax_number;
+            return json;
+        }
+
+        init_from_JSON(json) {
+            super.init_from_JSON(...arguments);
+            this.invoice_info_company_name = json.invoice_info_company_name;
+            this.invoice_info_address = json.invoice_info_address;
+            this.invoice_info_tax_number = json.invoice_info_tax_number;
+
+        }
+    }
+    Registries.Model.extend(Order, CustomPosOrder);
 
 });

@@ -4,13 +4,14 @@
     <t t-name="SurpriseRewardPopup" owl="1">
         <div class="popup popup-text popup-med-custom product-configurator-popup">
             <header class="title">
-                <span>Bạn được tặng code của chương trình bất ngờ</span><br/>
+                <span>Bạn được tặng code của chương trình quà tặng</span><br/>
             </header>
             <hr/>
             <main class="body product_configurator_attributes col-lg-4 col-md-6 col-sm-12">
-                <ul>
+                <div t-if="props.validSurprisingPrograms.length > 0" style="font-weight: bold; margin: 10px 0px 10px 40px;">CT Quà tặng bất ngờ</div>
+                <ul style="margin-bottom: 20px;">
                     <t t-foreach="props.validSurprisingPrograms" t-as="option" t-key="option.program_id">
-                        <li class="program-item"  style="height: 100px; margin: 0px 0 10px 0">
+                        <li class="program-item"  style="height: 40px; margin: 0px 0 10px 0">
                             <input type="checkbox" name="programs"
                                    t-att-id="option.program_id"
                                    t-att-checked="'checked' ? option.isSelected : ''"
@@ -25,10 +26,10 @@
                         </li>
                     </t>
                 </ul>
-                <strong style="text-align: center; font-weight: bold; margin-bottom: 10px;">CT mua Voucher tặng Code giảm giá</strong>
-                <ul>
+                <div t-if="props.validBuyVoucherGetCodePrograms.length > 0" style="font-weight: bold; margin: 10px 0px 10px 40px;">CT mua Voucher tặng Code giảm giá</div>
+                <ul style="margin-bottom: 20px;">
                     <t t-foreach="props.validBuyVoucherGetCodePrograms" t-as="option" t-key="option.program_id">
-                        <li class="program-item"  style="height: 100px; margin: 0px 0 10px 0">
+                        <li class="program-item"  style="height: 40px; margin: 0px 0 10px 0">
                             <input type="checkbox" name="programs"
                                    t-att-id="option.program_id"
                                    t-att-checked="'checked' ? option.isSelected : ''"

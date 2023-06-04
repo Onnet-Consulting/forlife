@@ -17,6 +17,7 @@ class StockTransferRequest(models.Model):
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
     request_employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
     department_id = fields.Many2one('hr.department', string="Department", required=True)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     state = fields.Selection(
         tracking=True,
         string="Status",
@@ -82,6 +83,7 @@ class StockTransferRequest(models.Model):
                                'product_str_id': item.id, 'qty_out': 0, 'qty_in': 0, 'is_from_button': True,
                                'qty_plan_tsq': item.quantity_remaining, 'stock_request_id': record.id})
                     dic_data = {'state': 'draft',
+                                'employee_id': record.request_employee_id.id,
                                 'stock_request_id': record.id, 'location_id': item.location_id.id,
                                 'location_dest_id': item.location_dest_id.id,
                                 'stock_transfer_line': [data_stock_transfer_line]

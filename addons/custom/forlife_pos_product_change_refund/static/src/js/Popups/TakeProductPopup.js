@@ -2,7 +2,7 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
     "use strict";
 
     const { _t } = require('web.core');
-
+    const { Orderline } = require('point_of_sale.models');
     const AbstractAwaitablePopup = require('point_of_sale.AbstractAwaitablePopup');
     const PosComponent = require('point_of_sale.PosComponent');
     const Registries = require('point_of_sale.Registries');
@@ -30,19 +30,21 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
         }
 
         confirm(){
-            var product_id_checked;
+            var product_defective_id;
             var products_defective = this.props.response
             var orderlines = this.env.pos.selectedOrder.orderlines
+            var OrderCurrent = this.env.pos.get_order()
             $('.o_check').each(function(index) {
                 if($(this).is(":checked")){
-                   product_id_checked = parseInt($(this).attr('value'))
+                   product_defective_id = parseInt($(this).attr('value'))
                 }
             });
-            for(let i =0; i< orderlines.length; i++){
-                for(let j=0; j< products_defective.length; j++){
-                    if(product_id_checked == orderlines[i].product.id && products_defective[j].product_id == product_id_checked){
-                        if(orderlines[i].quantity > products_defective[j].quantity){
-                            this.showPopup('ErrorPopup', {
+            if(product_defective_id){
+                for(let i =0; i< products_defective.length; i++){
+                    if(product_defective_id == products_defective[i].product_defective_id){
+                        for(const line of orderlines) {
+                            if(line.quantity > products_defective[i].quantity){
+                                this.showPopup('ErrorPopup', {
                                 title: this.env._t("Warning"),
                                 body: _.str.sprintf(
                                     this.env._t(
@@ -50,28 +52,32 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
                                     ),
                                     ''
                                 ),
-                            });
-                            return;
-                        }
-                        if(!orderlines[i].is_product_defective){
-                            orderlines[i].money_reduce_from_product_defective = parseInt(products_defective[j].total_reduce)*orderlines[i].quantity
-                            orderlines[i].is_product_defective = true
-                            orderlines[i].product_defective_id = products_defective[j].product_defective_id
-                        }else{
-                            this.showPopup('ErrorPopup', {
-                                title: this.env._t("Warning"),
-                                body: _.str.sprintf(
-                                    this.env._t(
-                                        "Đã áp dụng cho sản phẩm này!"
-                                    ),
-                                    ''
-                                ),
-                            });
-                            return;
+                                });
+                                return;
+                            }else if(line.product.id == products_defective[i].product_id && line.quantity == 1){
+                               line.money_reduce_from_product_defective = parseInt(products_defective[i].total_reduce)
+                               line.is_product_defective = true
+                               line.product_defective_id = products_defective[i].product_defective_id
+                            }else if(line.product.id == products_defective[i].product_id && line.quantity > 1){
+                                let line_new = Orderline.create({}, {pos: this.env.pos, order: OrderCurrent, product: line.product});
+                                OrderCurrent.fix_tax_included_price(line_new);
+                                let options_line_new = {
+                                    money_reduce_from_product_defective:parseInt(products_defective[i].total_reduce),
+                                    is_product_defective: true,
+                                    product_defective_id: products_defective[i].product_defective_id
+                                }
+                                let options_old_line = {
+                                    quantity: line.quantity -1
+                                }
+                                OrderCurrent.set_orderline_options(line_new, options_line_new);
+                                OrderCurrent.set_orderline_options(line, options_old_line);
+                                OrderCurrent.add_orderline(line_new);
+                            }
                         }
                     }
                 }
             }
+            this.env.pos.selectedOrder.product_defective_id = product_defective_id
             this.env.posbus.trigger('close-popup', {
                 popupId: this.props.id,
                 response: {confirmed: false, payload: false},
