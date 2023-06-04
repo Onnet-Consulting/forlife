@@ -38,8 +38,9 @@ class ProductNhanh(models.Model):
                     "name": res.name,
                     "code": res.code_product,
                     "barcode": res.barcode if res.barcode else '',
-                    "price": int(res.list_price),
-                    "shippingWeight": int(res.weight),
+                    "importPrice": res.list_price,
+                    "price": 0,
+                    "shippingWeight": res.weight * 1000,
                     "status": 'New'
                 }]
 
@@ -51,10 +52,10 @@ class ProductNhanh(models.Model):
                         if res_json['code'] == 0:
                             res.write(
                                 {
-                                    'description': f'Sync Product error {res["messages"]}'
+                                    'description': f'Sync Product error {res_json["messages"]}'
                                 }
                             )
-                            _logger.info(f'Sync Product error {res["messages"]}')
+                            _logger.info(f'Sync Product error {res_json["messages"]}')
                             return False
                         else:
                             value = []
