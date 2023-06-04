@@ -39,7 +39,7 @@ class ProductNhanh(models.Model):
                     "code": res.code_product,
                     "barcode": res.barcode if res.barcode else '',
                     "importPrice": res.list_price,
-                    "price": 0,
+                    "price": res.list_price,
                     "shippingWeight": res.weight * 1000,
                     "status": 'New'
                 }]
@@ -77,15 +77,19 @@ class ProductNhanh(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
+        if 'name' not in vals and 'code_product' not in vals and 'barcode' not in vals and 'list_price' not in vals and 'weight' not in vals:
+            return res
         for item in self:
             data = [{
-                'id': str(item.id),
-                'idNhanh': str(item.nhanh_id),
-                'price': str(int(item.list_price)),
-                'name': item.name,
-                'shippingWeight': str(int(item.weight)),
-                'status': 'Active',
-                'barcode': item.barcode if item.barcode else '',
+                "id": item.id,
+                "idNhanh": item.nhanh_id,
+                "name": item.name,
+                "code": item.code_product,
+                "barcode": item.barcode if item.barcode else '',
+                "importPrice": item.list_price,
+                "price": item.list_price,
+                "shippingWeight": item.weight * 1000,
+                "status": 'New'
             }]
             self.synchronized_price_nhanh(data)
         return res

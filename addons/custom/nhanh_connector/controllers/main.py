@@ -139,6 +139,17 @@ class MainController(http.Controller):
                 'warehouse_id': warehouse_id.id if warehouse_id else None,
                 'order_line': order_line
             }
+            # đổi trả hàng
+            if data.get('returnFromOrderId', 0):
+                origin_order_id = self.env['sale.order'].sudo().search(
+                    [('nhanh_id', '=', data.get('returnFromOrderId', 0))], limit=1)
+                value.update({
+                    # hiện đang bắt theo typeID 14 là khách trả lại hàng, chưa có định nghĩa các typeID
+                    'x_is_exchange': data['typeId'] != 14,
+                    'x_is_return': data['typeId'] == 14,
+                    'x_origin': origin_order_id.id if origin_order_id else None,
+                    'nhanh_origin_id': data.get('returnFromOrderId', 0)
+                })
             self.sale_order_model().sudo().create(value)
             return self.result_request(200, 0, _('Create sale order success'))
         elif event_type == 'orderUpdate':
