@@ -222,14 +222,12 @@ class SaleOrderNhanh(models.Model):
                     'warehouse_id': warehouse_id.id if warehouse_id else None,
                     'order_line': order_line
                 }
-                # đổi trả hàng
+                # đổi hàng
                 if v.get('returnFromOrderId', 0):
                     origin_order_id = self.env['sale.order'].sudo().search(
                         [('nhanh_id', '=', v.get('returnFromOrderId', 0))], limit=1)
                     value.update({
-                        # hiện đang bắt theo typeID 14 là khách trả lại hàng, chưa có định nghĩa các typeID
-                        'x_is_exchange': v['typeId'] != 14,
-                        'x_is_return': v['typeId'] == 14,
+                        'x_is_return': True,
                         'x_origin': origin_order_id.id if origin_order_id else None,
                         'nhanh_origin_id': v.get('returnFromOrderId', 0)
                     })
