@@ -60,6 +60,7 @@ def get_nhanh_configs(self, brand_ids=None):
             'nhanh_connector.nhanh_app_id': config_id.nhanh_app_id,
             'nhanh_connector.nhanh_secret_key': config_id.nhanh_secret_key,
             'nhanh_connector.nhanh_access_code': config_id.nhanh_access_code,
+            'nhanh_connector.nhanh_access_token': config_id.nhanh_access_token,
             'nhanh_connector.nhanh_access_token_expired': config_id.nhanh_access_token_expired,
             'nhanh_connector.nhanh_return_link': config_id.nhanh_return_link,
         }
