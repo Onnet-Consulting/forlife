@@ -16,7 +16,7 @@ class StockTransferRequest(models.Model):
     request_date = fields.Datetime(string="Request Date", default=lambda self: fields.datetime.now(), required=True)
     date_planned = fields.Datetime(string='Expected Arrival', required=True)
     request_employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
-    department_id = fields.Many2one('hr.department', string="Department", required=True)
+    department_id = fields.Many2one('hr.department', string="Department", related='request_employee_id.department_id', required=True)
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     state = fields.Selection(
         tracking=True,
