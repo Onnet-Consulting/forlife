@@ -199,8 +199,17 @@ class StockPicking(models.Model):
         line = super(StockPicking, self).create(vals)
         if self.env.context.get('default_other_import') or self.env.context.get('default_other_export'):
             for rec in line.move_ids_without_package:
+                '''
                 rec.location_id = vals['location_id']
                 rec.location_dest_id = vals['location_dest_id']
+                '''
+                #todo: handle above source, raise exception when import picking (business unknown)
+                location_values = {}
+                if rec.location_id != line.location_id:
+                    location_values['location_id'] = line.location_id.id
+                if rec.location_dest_id != line.location_dest_id.id:
+                    location_values['location_dest_id'] = line.location_dest_id.id
+                rec.update(location_values)
         return line
 
     @api.model
