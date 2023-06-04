@@ -20,7 +20,6 @@ class StockMove(models.Model):
         self.ensure_one()
         self = self.with_company(self.company_id)
         accounts_data = self.product_id.product_tmpl_id.get_product_accounts()
-
         acc_src = self._get_src_account(accounts_data)
         acc_dest = self._get_dest_account(accounts_data)
 

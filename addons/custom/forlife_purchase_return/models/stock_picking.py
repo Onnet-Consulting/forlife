@@ -27,7 +27,6 @@ class StockPicking(models.Model):
             picking_type_id = po.picking_type_id.return_picking_type_id.id
         else:
             picking_type_id = picking_type_in.id
-
         master_xk = {
             "is_locked": True,
             "immediate_transfer": False,
@@ -56,7 +55,6 @@ class StockPicking(models.Model):
         npl_location_id = self.env.ref('forlife_stock.import_production_order')
         if self.purchase_id and self.purchase_id.is_return and self.purchase_id.warehouse_material:
             npl_location_id = self.purchase_id.warehouse_material
-
         for move in self.move_ids:
             production_order = self.env['production.order'].search(
                 [('product_id', '=', move.product_id.id), ('type', '=', 'normal')], limit=1)
