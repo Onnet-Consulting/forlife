@@ -6,6 +6,9 @@ import random
 from datetime import datetime
 from odoo.exceptions import ValidationError
 import pytz
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class Voucher(models.Model):
@@ -52,6 +55,8 @@ class Voucher(models.Model):
     store_ids = fields.Many2many('store', string='Cửa hàng áp dụng', related='program_voucher_id.store_ids')
     is_full_price_applies = fields.Boolean('Áp dụng nguyên giá', related='program_voucher_id.is_full_price_applies')
     using_limit = fields.Integer('Giới hạn sử dụng', default=0, related='program_voucher_id.using_limit')
+
+    has_accounted = fields.Boolean(default=False)
 
 
     @api.depends('price_used', 'price')
@@ -194,6 +199,48 @@ class Voucher(models.Model):
                 if rec.end_date and rec.end_date < now:
                     rec.status_latest = rec.state
                     rec.state = 'expired'
+
+    def generate_account_move_voucher(self):
+        print(self.env.company.name)
+        departments = self.env['hr.department'].search([('company_id','=',self.env.company.id)])
+        print(departments)
+        now = datetime.now()
+        payment_mothod = self.env['pos.payment.method'].search([('is_voucher', '=', True),('company_id','=',self.env.company.id)], limit=1)
+        if payment_mothod and payment_mothod.account_other_income and payment_mothod.account_general:
+            for d in departments:
+                vouchers = self.search([('id', 'in', [65245, 65246, 65247, 65248, 152689, 152690, 152691, 152692]), ('derpartment_id', '=', d.id)])
+                vouchers = vouchers.filtered(lambda v: v.price > v.price_residual > 0 and v.purpose_id.purpose_voucher == 'pay' and v.order_pos)
+                move_vals = {
+                    'ref': 'Voucher bán hết giá trị/ hết hạn ngày {90 ngày trước}',
+                    'date': now,
+                    'journal_id': payment_mothod.journal_id.id,
+                    'company_id': payment_mothod.company_id.id,
+                    'move_type': 'entry',
+                    'line_ids': [
+                        (0, 0, {
+                            'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
+                            'display_type': 'product',
+                            'account_id': payment_mothod.account_other_income.id,
+                            'debit': 0.0,
+                            'credit': sum(vouchers.mapped('price_residual')),
+                            'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id.id else {}
+                        }),
+                        # credit line
+                        (0, 0, {
+                            'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
+                            'display_type': 'product',
+                            'account_id': payment_mothod.account_general.id,
+                            'debit': sum(vouchers.mapped('price_residual')),
+                            'credit': 0.0,
+                            'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id else {}
+                        }),
+                    ]
+                }
+                print(move_vals)
+                self.env['account.move'].create(move_vals)._post()
+        else:
+            _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
+        return True
 
     @api.model
     def create(self, vals_list):
