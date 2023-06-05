@@ -238,7 +238,7 @@ class StockMove(models.Model):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
-    name = fields.Char('Description', required=False)
+    name = fields.Char('Description', required=False, compute='compute_product_id')
     company_id = fields.Many2one(
         'res.company', 'Company',
         default=lambda self: self.env.company,
@@ -273,7 +273,7 @@ class StockMove(models.Model):
         index=True, required=False,
         states={'done': [('readonly', True)]})
     uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
-    amount_total = fields.Float(string='Thành tiền')
+    amount_total = fields.Float(string='Thành tiền', compute='compute_product_id', store=1)
     reason_type_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
@@ -302,6 +302,13 @@ class StockMove(models.Model):
         for rec in self:
             rec.is_production_order = rec.reason_id.is_work_order
             rec.is_amount_total = rec.reason_id.is_price_unit
+
+    @api.depends('product_id')
+    def compute_product_id(self):
+        for rec in self:
+            if not rec.reason_id.is_price_unit:
+                rec.amount_total = rec.product_id.standard_price
+            rec.name = rec.product_id.name
 
     @api.depends('product_uom_qty', 'picking_id.state')
     def compute_previous_qty(self):
