@@ -23,19 +23,20 @@ class InheritPosOrder(models.Model):
             rec.invoice_count = len(rec.invoice_ids)
 
     @staticmethod
-    def _create_promotion_account_move(order_line, partner_id):
+    def _create_promotion_account_move(order_line, partner_id, credit_account_id):
         display_name = order_line.product_id.get_product_multiline_description_sale()
         name = order_line.product_id.default_code + " " + display_name if order_line.product_id.default_code else display_name
-        if order_line.is_reward_line:
-            account_id = order_line.product_id.product_tmpl_id.categ_id.product_gift_account_id.id
-        else:
-            credit_account = order_line.product_id.product_tmpl_id._get_product_accounts()
-            account_id = (credit_account['income'] or credit_account['expense']).id
+        if not credit_account_id:
+            if order_line.is_reward_line:
+                credit_account_id = order_line.product_id.product_tmpl_id.categ_id.product_gift_account_id.id
+            else:
+                credit_account = order_line.product_id.product_tmpl_id._get_product_accounts()
+                credit_account_id = (credit_account['income'] or credit_account['expense']).id
 
         return [
             (0, 0, {
                 'partner_id': partner_id,
-                'analytic_account_id': order_line.order_id.session_id.store_id.analytic_account_id.id or None,
+                'analytic_account_id': order_line.order_id.session_id.config_id.store_id.analytic_account_id.id or None,
                 'is_state_registration': order_line.is_state_registration,
                 'pos_order_line_id': order_line.id,
                 'product_id': order_line.product_id.id,
@@ -46,7 +47,7 @@ class InheritPosOrder(models.Model):
                 'tax_ids': [(6, 0, order_line.tax_ids_after_fiscal_position.ids)],
                 'product_uom_id': order_line.product_uom_id.id,
                 'display_type': 'product',
-                'account_id': account_id or None,
+                'account_id': credit_account_id or None,
                 'credit': 0,
                 'debit': order_line.price_unit if order_line.price_unit >= 0 else -order_line.price_unit,
             }), (0, 0, {
@@ -77,15 +78,16 @@ class InheritPosOrder(models.Model):
             if not line.product_src_id:
                 continue
             promotion = self.env[line.promotion_model].sudo().browse(line.promotion_id)
-            if line.promotion_model == 'promotion.program' and promotion.reeard_type not in REWARD_TYPE:
+            if line.promotion_model == 'promotion.program' and promotion.reward_type not in REWARD_TYPE:
                 continue
             journal = promotion[PROMOTION_JOURNAL_FIELD[line.promotion_model]]
             if not journal:
                 raise ValidationError(_("Cannot found journal promotion's product %s") % line.product_id.name)
             partner_id = journal.company_consignment_id.id or self.partner_id.id
+            credit_account_id = journal.default_account_id.id
             _key = ','.join((line.promotion_model, str(line.promotion_id)))
             if _key in values:
-                values[_key]['line_ids'] += self._create_promotion_account_move(line, partner_id)
+                values[_key]['line_ids'] += self._create_promotion_account_move(line, partner_id, credit_account_id)
             else:
                 values[_key] = {
                     'invoice_origin': self.name,
@@ -100,7 +102,7 @@ class InheritPosOrder(models.Model):
                     'invoice_user_id': self.user_id.id,
                     'invoice_date': invoice_date.astimezone(timezone).date(),
                     'fiscal_position_id': self.fiscal_position_id.id,
-                    'line_ids': self._create_promotion_account_move(line, partner_id),
+                    'line_ids': self._create_promotion_account_move(line, partner_id, credit_account_id),
                     'invoice_payment_term_id': self.partner_id.property_payment_term_id.id or False,
                     'invoice_cash_rounding_id': self.config_id.rounding_method.id
                     if self.config_id.cash_rounding and (not self.config_id.only_round_cash_method or any(
@@ -133,8 +135,14 @@ class InheritPosOrder(models.Model):
         invoice_line.update({
             'pos_order_line_id': order_line.id,
             'account_analytic_id': self.session_id.config_id.store_id.analytic_account_id.id,
-            'partner_id': self.session_id.config_id.invoice_journal_id.company_consignment_id.id or order_line.order_id.partner_id.id
+            'partner_id': order_line.order_id.partner_id.id
         })
+        journal = self.session_id.config_id.invoice_journal_id
+        if journal.company_consignment_id:
+            invoice_line.update({
+                'partner_id': journal.company_consignment_id.id,
+                'account_id': journal.default_account_id.id
+            })
         return invoice_line
 
     def _prepare_invoice_lines(self):
@@ -275,6 +283,8 @@ class InheritPosOrderLine(models.Model):
         pols = super(InheritPosOrderLine, self).create(values)
         pols_promotion_values = []
         for pol in pols:
+            if pol.is_reward_line:
+                continue
             pols_promotion_values += pol.prepare_pol_promotion_lines()
         if pols_promotion_values:
             self.create(pols_promotion_values)

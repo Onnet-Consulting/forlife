@@ -2,6 +2,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
+import re
 
 
 class BravoSyncAssetWizard(models.TransientModel):
@@ -45,6 +46,7 @@ class BravoSyncAssetWizard(models.TransientModel):
 
     @api.model
     def get_asset_last_create_date_by_company(self, company_data):
+        """return newest asset record"""
         cr = self.env.cr
         query = """
             SELECT max(bravo_create_date)
@@ -82,6 +84,7 @@ class BravoSyncAssetWizard(models.TransientModel):
         asset_location_codes = []
         employee_codes = []
         category_codes = []
+        account_codes = []
         for records in data:
             for rec in records:
                 rec_value = dict(zip(bravo_assets_columns, rec))
@@ -97,6 +100,12 @@ class BravoSyncAssetWizard(models.TransientModel):
                 bravo_category_code = rec_value.get('ElavationGroup3')
                 if bravo_category_code:
                     category_codes.append(bravo_category_code)
+                account_account_codes = [
+                    rec_value.get('AssetAccount'),
+                    rec_value.get('DeprDebitAccount'),
+                    rec_value.get('DeprCreditAccount')
+                ]
+                account_codes = [x for x in account_account_codes if x]
                 res.append(rec_value)
         if not res:
             return False
@@ -105,6 +114,7 @@ class BravoSyncAssetWizard(models.TransientModel):
         asset_location_id_by_code = self.generate_asset_location_id_by_code(asset_location_codes)
         employee_id_by_code = self.generate_hr_employee_id_by_code(company_data, employee_codes)
         category_id_by_code = self.generate_product_category_id_by_code(category_codes)
+        account_account_id_by_code = self.generate_account_account_id_by_code(company_data, account_codes)
 
         for record_value in res:
             record_value['Type'] = str(record_value['Type'])
@@ -113,6 +123,9 @@ class BravoSyncAssetWizard(models.TransientModel):
             record_value['EmployeeCode'] = employee_id_by_code.get(record_value['EmployeeCode'])
             record_value['ElavationGroup3'] = category_id_by_code.get(record_value['ElavationGroup3'])
             record_value['CompanyCode'] = company_id
+            record_value['AssetAccount'] = account_account_id_by_code.get(record_value['AssetAccount'])
+            record_value['DeprDebitAccount'] = account_account_id_by_code.get(record_value['DeprDebitAccount'])
+            record_value['DeprCreditAccount'] = account_account_id_by_code.get(record_value['DeprCreditAccount'])
 
         return res
 
@@ -120,8 +133,23 @@ class BravoSyncAssetWizard(models.TransientModel):
         companies = self.env['res.company'].search([('code', '!=', False)])
         return {comp.code: comp.id for comp in companies}
 
+    def generate_account_account_id_by_code(self, company_data, codes):
+        accounts = self.env['account.account'].search([
+            ('code', 'in', codes),
+            ('company_id', '=', company_data['id'])
+        ])
+        res = {}
+        for acc in accounts:
+            res[acc.code] = acc.id
+        missing_codes = list(set(codes) - set(res.keys()))
+        if missing_codes:
+            raise ValidationError(
+                _("Missing account account codes in company %s: %r") % (company_data.get('code'), missing_codes))
+        return res
+
     def generate_product_category_id_by_code(self, codes):
-        product_categories = self.env['product.category'].search([('code', 'in', codes)])
+        product_categories = self.env['product.category'].search([('code', 'in', codes)]). \
+            filtered(lambda category: re.match('\d+/\d+/\d+', category.parent_path))
         res = {}
         for pc in product_categories:
             res[pc.category_code] = pc.id
@@ -179,6 +207,9 @@ class BravoSyncAssetWizard(models.TransientModel):
             value = {}
             for bravo_column, odoo_column in mapping_bravo_odoo_fields.items():
                 value.update({odoo_column: rec.get(bravo_column)})
+                value.update({
+                    "state": "using"
+                })
             odoo_values.append(value)
         return odoo_values
 

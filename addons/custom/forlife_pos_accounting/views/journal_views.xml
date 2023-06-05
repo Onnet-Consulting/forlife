@@ -8,6 +8,10 @@
             <xpath expr="//sheet/group/group[last()]" position="inside">
                 <field name="company_consignment_id"/>
             </xpath>
+
+            <xpath expr="//form" position="inside">
+                <field name="account_consignment_tmpl_ids" invisible="1"/>
+            </xpath>
         </field>
     </record>
 </odoo>

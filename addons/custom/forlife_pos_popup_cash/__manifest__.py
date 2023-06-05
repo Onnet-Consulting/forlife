@@ -33,6 +33,7 @@
             'forlife_pos_popup_cash/static/src/js/popup.js',
             'forlife_pos_popup_cash/static/src/js/onchange_selection.js',
             'forlife_pos_popup_cash/static/src/js/CashMoveButton.js',
+            'forlife_pos_popup_cash/static/src/js/CashMovePopup.js',
             'forlife_pos_popup_cash/static/src/xml/Popups/CashMovePopup.xml',
         ]
     }

@@ -1,34 +1,39 @@
 odoo.define('forlife_voucher.voucher', function (require) {
-"use strict";
+    "use strict";
 
-    const { PosGlobalState, Order, Orderline} = require('point_of_sale.models');
+    const {PosGlobalState, Order, Orderline} = require('point_of_sale.models');
     const Registries = require('point_of_sale.Registries');
 
     class PosCollection extends Array {
         getByCID(cid) {
             return this.find(item => item.cid == cid);
         }
+
         add(item) {
             this.push(item);
         }
+
         remove(item) {
             const index = this.findIndex(_item => item.cid == _item.cid);
             if (index < 0) return index;
             this.splice(index, 1);
             return index;
         }
+
         reset() {
             this.length = 0;
         }
+
         at(index) {
             return this[index];
         }
     }
+
     const VoucherOrder = (Order) =>
         class extends Order {
             constructor(obj, options) {
                 super(...arguments);
-                this.voucherlines  = this.voucherlines || [];
+                this.voucherlines = this.voucherlines || [];
             }
 
             init_from_JSON(json) {
@@ -47,21 +52,28 @@ odoo.define('forlife_voucher.voucher', function (require) {
                 for (let index = 0; index < data.length; index++) {
                     if (data[index].value != false) {
                         data[index].value.store_ids = false
-                        voucherLines.push([0,0,data[index].value])
+                        voucherLines.push([0, 0, data[index].value])
                     }
                 }
                 this.voucherlines = voucherLines
             }
 
-            remove_all_paymentlines(){
-                var self = this;
-                for(let index = 0; index<2; index ++){
-                    var lines = self.paymentlines;
-                        for(let i = 0; i< lines.length; i++){
-                            self.paymentlines.remove(lines[i])
-                        }
-                    }
+            get_payment_lines_to_delete() {
+                const self = this;
+                return _.filter(self.paymentlines, payment_line => {
+                    return !payment_line.payment_method.use_payment_terminal;
+                })
             }
+
+            remove_all_paymentlines() {
+                let order = this;
+                let lines = order.get_payment_lines_to_delete();
+                let lines_length = lines.length;
+                for (let i = lines_length - 1; i >= 0; i--) {
+                    order.remove_paymentline(lines[i]);
+                }
+            }
+
             set_partner(partner) {
                 const oldPartner = this.get_partner();
                 super.set_partner(partner);
@@ -69,13 +81,14 @@ odoo.define('forlife_voucher.voucher', function (require) {
                     this.remove_all_paymentlines()
                 }
             };
-            add_product(product, options){
+
+            add_product(product, options) {
                 this.remove_all_paymentlines()
-                return super.add_product(product,options)
+                return super.add_product(product, options)
             }
 
 
-    };
+        };
     const PointsOrderLine = (Orderline) =>
         class extends Orderline {
             constructor(obj, options) {
@@ -98,21 +111,17 @@ odoo.define('forlife_voucher.voucher', function (require) {
                 json.is_voucher_conditional = this.is_voucher_conditional;
                 return json;
             }
-            remove_all_paymentlines(){
-                var self = this;
-                for(let index = 0; index<2; index ++){
-                    var lines = self.order.paymentlines;
-                        for(let i = 0; i< lines.length; i++){
-                            self.order.paymentlines.remove(lines[i])
-                        }
-                    }
+
+            remove_all_paymentlines() {
+                this.order.remove_all_paymentlines();
             }
-            set_quantity(quantity, keep_price){
+
+            set_quantity(quantity, keep_price) {
                 this.remove_all_paymentlines()
                 return super.set_quantity(quantity, keep_price)
             }
 
         };
-Registries.Model.extend(Orderline, PointsOrderLine);
-Registries.Model.extend(Order, VoucherOrder);
+    Registries.Model.extend(Orderline, PointsOrderLine);
+    Registries.Model.extend(Order, VoucherOrder);
 });

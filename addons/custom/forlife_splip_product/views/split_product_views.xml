@@ -7,10 +7,10 @@
             <field name="arch" type="xml">
                 <form string="Phân rã hàng hoá">
                     <header>
-                        <button string="Generate" type="object" name="action_generate" class="btn btn-primary" states="new"/>
-                        <button string="Approve" type="object" name="action_approve" class="btn btn-primary" states="in_progress"/>
-                        <button string="Cancel" type="object" name="action_cancel" states="new,in_progress"/>
-                        <button string="Back to draft" type="object" name="action_draft" states="canceled"/>
+                        <button string="Tạo phân tách" type="object" name="action_generate" class="btn btn-primary" states="new"/>
+                        <button string="Xác nhận" type="object" name="action_approve" class="btn btn-primary" states="in_progress"/>
+                        <button string="Huỷ" type="object" name="action_cancel" states="new,in_progress"/>
+                        <button string="Đưa về dự thảo" type="object" name="action_draft" states="canceled"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -18,6 +18,11 @@
                             <button name="action_view_picking" string="Các phiếu nhập xuất" type="object" class="oe_stat_button" icon="fa-bars">
                                 <field name="count_picking" string="Các phiếu nhập xuất" widget="statinfo"/>
                             </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1 class="d-flex">
+                                <field name="name"/>
+                            </h1>
                         </div>
                         <group>
                             <group>
@@ -34,7 +39,7 @@
                     </group>
                     <notebook>
                         <page string="Sản phẩm chính">
-                            <field name="split_product_line_ids" mode="tree">
+                            <field name="split_product_line_ids" mode="tree" attrs="{'readonly':[('state','in',['done','canceled'])]}">
                                 <tree editable="bottom">
                                     <field name="state" invisible="1"/>
                                     <field name="product_id" attrs="{'readonly': [('state','=','canceled')]}"/>
@@ -51,7 +56,7 @@
                             </field>
                         </page>
                         <page string="Sản phẩm phân tách">
-                            <field name="split_product_line_sub_ids" mode="tree">
+                            <field name="split_product_line_sub_ids" mode="tree" attrs="{'readonly':[('state','in',['done','canceled'])]}">
                                 <tree editable="bottom" create="0">
                                     <field name="state" invisible="1"/>
                                     <field name="product_id" optional="show"/>
@@ -63,13 +68,6 @@
                                     <field name="value" invisible="True"/>
                                 </tree>
                             </field>
-                        </page>
-                        <page string="Tài khoản trung gian">
-                            <group>
-                                <group>
-                                <field name="account_intermediary_id"/>
-                                </group>
-                            </group>
                         </page>
                     </notebook>
                     </sheet>

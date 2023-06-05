@@ -10,7 +10,7 @@
                     <attribute name="groups">forlife_permission_management.group_purchase_order_lock_unlock</attribute>
                 </xpath>
                 <xpath expr="//button[@name='button_unlock']" position="attributes">
-                    <attribute name="groups">forlife_permission_management.group_purchase_order_lock_unlock</attribute>
+                    <attribute name="groups">forlife_permission_management.group_purchase_order_lock_unlock,purchase.group_purchase_manager</attribute>
                 </xpath>
             </field>
         </record>

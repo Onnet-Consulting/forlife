@@ -5,7 +5,7 @@ from odoo import api, fields,models,_
 from odoo.osv import expression
 from datetime import date, datetime
 from odoo.exceptions import UserError
-import pyodbc
+# import pyodbc
 from datetime import date, datetime
 from odoo.tests import Form
 
@@ -315,9 +315,9 @@ class SaleOrder(models.Model):
         database = ir_config.get_param("mssql.database")
         username = ir_config.get_param("mssql.username")
         password = ir_config.get_param("mssql.password")
-        return pyodbc.connect(
-            f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};'
-            f'ENCRYPT={encrypt};CHARSET=UTF8;', autocommit=autocommit)
+        # return pyodbc.connect(
+        #     f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};'
+        #     f'ENCRYPT={encrypt};CHARSET=UTF8;', autocommit=autocommit)
 
     def get_DebtBalance(self):
         cnxn = self._conn(True, "no")
@@ -466,7 +466,7 @@ class SaleOrderLine(models.Model):
             and pp.x_punish is True
             and pp.x_partner_id = {self.order_id.partner_id.id}
             and (ppi.product_tmpl_id = {tmpl_id} or ppi.product_tmpl_id is null)
-            and '{str(self.order_id.date_order)}'::date between ppi.date_start and ppi.date_end
+            and '{str(self.order_id.date_order)}' between ppi.date_start and ppi.date_end
             order by pp.id desc
             limit 2 
         """

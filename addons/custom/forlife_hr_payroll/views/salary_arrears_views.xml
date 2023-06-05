@@ -12,9 +12,9 @@
                     <field name="employee_id"/>
                     <field name="department_id"/>
                     <field name="analytic_account_id"/>
-                    <field name="project_code"/>
-                    <field name="manufacture_order_code"/>
-                    <field name="internal_order_code"/>
+                    <field name="asset_id"/>
+                    <field name="production_id"/>
+                    <field name="occasion_code_id"/>
                     <field name="x_kq" optional="show" sum="Total"/>
                     <field name="x_tkdp" optional="show" sum="Total"/>
                     <field name="x_pvp" optional="show" sum="Total"/>
