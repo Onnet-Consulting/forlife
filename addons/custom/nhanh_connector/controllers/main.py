@@ -10,7 +10,8 @@ import requests
 event_type_mapping = {
     'orderAdd': 'order_add',
     'orderUpdate': 'order_update',
-    'orderDelete': 'order_delete'
+    'orderDelete': 'order_delete',
+    'webhooksEnabled': 'webhook_enabled'
 }
 
 _logger = logging.getLogger(__name__)
@@ -29,10 +30,11 @@ class MainController(http.Controller):
     def nhanh_webhook_handler(self, **post):
         value = json.loads(request.httprequest.data)
         event_type = value.get('event')
-        webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
-            'event_type': event_type_mapping.get('event_type', ''),
-            'event_value': value,
-        })
+        if event_type not in ['orderAdd', 'orderUpdate', 'orderDelete']:
+            webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
+                'event_type': event_type_mapping.get('event_type', ''),
+                'event_value': value,
+            })
         handler = self.event_handlers.get(event_type)
         result_requests = self.result_request(200, 0, _('Webhook to system odoo'))
         try:
@@ -115,9 +117,9 @@ class MainController(http.Controller):
             # đội ngũ bán hàng
             team_id = self.env['crm.team'].search([('name', '=', data['trafficSourceName'])], limit=1)
             default_company_id = self.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
-            warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
-            if not warehouse_id:
-                warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
+            # warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
+            # if not warehouse_id:
+            #     warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
             value = {
                 'nhanh_id': data['orderId'],
                 'nhanh_status': data['status'],
@@ -136,7 +138,7 @@ class MainController(http.Controller):
                 'user_id': user_id.id if user_id else None,
                 'team_id': team_id.id if team_id else None,
                 'company_id': default_company_id.id if default_company_id else None,
-                'warehouse_id': warehouse_id.id if warehouse_id else None,
+                'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
                 'order_line': order_line
             }
             # đổi trả hàng
@@ -144,9 +146,7 @@ class MainController(http.Controller):
                 origin_order_id = self.env['sale.order'].sudo().search(
                     [('nhanh_id', '=', data.get('returnFromOrderId', 0))], limit=1)
                 value.update({
-                    # hiện đang bắt theo typeID 14 là khách trả lại hàng, chưa có định nghĩa các typeID
-                    'x_is_exchange': data['typeId'] != 14,
-                    'x_is_return': data['typeId'] == 14,
+                    'x_is_return': True,
                     'x_origin': origin_order_id.id if origin_order_id else None,
                     'nhanh_origin_id': data.get('returnFromOrderId', 0)
                 })
