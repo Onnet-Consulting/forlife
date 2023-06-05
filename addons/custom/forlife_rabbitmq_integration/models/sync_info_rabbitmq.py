@@ -9,6 +9,8 @@ import copy
 class SyncInfoRabbitmqCore(models.AbstractModel):
     _name = 'sync.info.rabbitmq.core'
     _description = 'Sync Info RabbitMQ Core'
+    _exchange = ''
+    _routing_key = ''
 
     def domain_record_sync_info(self):
         return self
@@ -27,13 +29,16 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
         connection = pika.BlockingConnection(parameter)
         channel = connection.channel()
         channel.queue_declare(queue=rabbitmq_queue.queue_name, durable=True)
+        if self._exchange:
+            channel.exchange_declare(exchange=self._exchange, durable=True)
         message = {
             'action': action,
             'target': rabbitmq_queue.target,
             'data': data
         }
         message = json.dumps(message).encode('utf-8')
-        channel.basic_publish(exchange='', routing_key=rabbitmq_queue.queue_name, body=message)
+        channel.basic_publish(exchange=(self._exchange or ''), routing_key=(self._routing_key or rabbitmq_queue.queue_name),
+                              body=message, properties=pika.BasicProperties(delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE))
         connection.close()
 
 
