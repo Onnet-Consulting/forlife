@@ -28,17 +28,20 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
         parameter = pika.ConnectionParameters(host=rabbitmq_connection.host, port=rabbitmq_connection.port, credentials=credentials)
         connection = pika.BlockingConnection(parameter)
         channel = connection.channel()
-        channel.queue_declare(queue=rabbitmq_queue.queue_name, durable=True)
-        if self._exchange:
-            channel.exchange_declare(exchange=self._exchange, durable=True)
         message = {
             'action': action,
             'target': rabbitmq_queue.target,
             'data': data
         }
         message = json.dumps(message).encode('utf-8')
-        channel.basic_publish(exchange=(self._exchange or ''), routing_key=(self._routing_key or rabbitmq_queue.queue_name),
-                              body=message, properties=pika.BasicProperties(delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE))
+        channel.queue_declare(queue=rabbitmq_queue.queue_name, durable=True)
+        if self._exchange:
+            channel.exchange_declare(exchange=self._exchange, durable=True, arguments={'x-delayed-type': 'direct'})
+            channel.queue_bind(queue=rabbitmq_queue.queue_name, exchange=self._exchange, routing_key=self._routing_key)
+            properties = pika.BasicProperties(headers={'x-delay': 5000}, delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE)
+            channel.basic_publish(exchange=self._exchange, routing_key=self._routing_key, body=message, properties=properties)
+        else:
+            channel.basic_publish(exchange='', routing_key=rabbitmq_queue.queue_name, body=message)
         connection.close()
 
 
