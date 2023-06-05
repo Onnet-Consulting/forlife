@@ -20,7 +20,7 @@ class ResPartner(models.Model):
     br_8 = BravoMany2oneField('res.partner.group', odoo_name='group_id', bravo_name='ParentCode', field_detail='code')
     br_9 = BravoDecimalField(odoo_name='credit_limit', bravo_name='CreditLimit')
     br_10 = BravoMany2oneField('res.currency', odoo_name='property_purchase_currency_id',
-                               bravo_name='CurrentCode', field_detail='name')
+                               bravo_name='CurrencyCode', field_detail='name')
 
     def bravo_get_filter_domain(self):
         partner_group_c = self.env.ref('forlife_pos_app_member.partner_group_c').id
