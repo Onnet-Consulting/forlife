@@ -176,6 +176,11 @@
             <field name="category_id" ref="forlife_permission_management.module_category_pos"/>
         </record>
 
+        <record id="group_print_stamps_barcode_approve" model="res.groups">
+            <field name="name">In mã vạch nút Duyệt</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_pos"/>
+        </record>
+
         <!--Group chức năng Sale-->
 
         <record model="ir.module.category" id="module_category_sale">

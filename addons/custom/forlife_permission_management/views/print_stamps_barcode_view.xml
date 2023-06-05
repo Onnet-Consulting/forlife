@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_print_stamps_barcode_form_custom" model="ir.ui.view">
+            <field name="name">view_print_stamps_barcode_form_custom</field>
+            <field name="model">print.stamps.barcode</field>
+            <field name="inherit_id" ref="forlife_print_stamps_barcode.view_print_stamps_barcode_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='btn_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_print_stamps_barcode_approve</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
