@@ -19,7 +19,6 @@ class SplitProduct(models.Model):
     split_product_line_ids = fields.One2many('split.product.line', 'split_product_id', string='Sản phẩm chính', copy=True)
     split_product_line_sub_ids = fields.One2many('split.product.line.sub', 'split_product_id', string='Sản phẩm phân rã')
     note = fields.Text()
-    account_intermediary_id = fields.Many2one('account.account', 'Tài khoản trung gian')
     count_picking = fields.Integer(compute='compute_count_picking', string='Các phiếu nhập xuất')
 
     def compute_count_picking(self):
@@ -133,7 +132,7 @@ class SplitProduct(models.Model):
         for record in self.split_product_line_ids:
             data = []
             for rec in self.split_product_line_sub_ids:
-                if rec.product_id.id == record.product_id.id:
+                if rec.product_id.id == record.product_id.id and rec.parent_id.id == record.id:
                     data.append((0, 0, {
                         'product_id': rec.product_new_id.id,
                         'name': rec.product_split,

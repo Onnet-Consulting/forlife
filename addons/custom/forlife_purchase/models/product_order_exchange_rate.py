@@ -36,11 +36,6 @@ class PurchaseOrderExchangeRate(models.Model):
             if item.import_tax < 0:
                 raise ValidationError('% thuế GTGT >= 0 !')
 
-    # @api.depends('usd_amount', 'purchase_order_id.exchange_rate')
-    # def compute_vnd_amount(self):
-    #     for rec in self:
-    #         rec.vnd_amount = rec.usd_amount * rec.purchase_order_id.exchange_rate
-
     @api.depends('vnd_amount', 'import_tax')
     def _compute_tax_amount(self):
         for rec in self:

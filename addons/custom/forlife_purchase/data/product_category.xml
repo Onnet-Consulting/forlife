@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="0">
+    <data noupdate="1">
         <record id="category_product_import_tax" model="product.category">
             <field name="name">Danh mục thuế nhập khẩu</field>
             <field name="category_code">3333000002</field>

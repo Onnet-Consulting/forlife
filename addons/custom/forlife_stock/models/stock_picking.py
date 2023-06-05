@@ -45,6 +45,10 @@ class StockPicking(models.Model):
 
     def action_confirm(self):
         for picking in self:
+            if (not picking.other_import and not picking.other_export):
+                continue
+            if (picking.other_import and not picking.location_id.is_assets) or (picking.other_export and not picking.location_dest_id.is_assets):
+                continue
             for line in picking.move_ids:
                 account = line.ref_asset.asset_account.id
                 if (picking.other_export and account != picking.location_dest_id.with_company(picking.company_id).x_property_valuation_in_account_id.id) or (
@@ -195,8 +199,17 @@ class StockPicking(models.Model):
         line = super(StockPicking, self).create(vals)
         if self.env.context.get('default_other_import') or self.env.context.get('default_other_export'):
             for rec in line.move_ids_without_package:
+                '''
                 rec.location_id = vals['location_id']
                 rec.location_dest_id = vals['location_dest_id']
+                '''
+                #todo: handle above source, raise exception when import picking (business unknown)
+                location_values = {}
+                if rec.location_id != line.location_id:
+                    location_values['location_id'] = line.location_id.id
+                if rec.location_dest_id != line.location_dest_id.id:
+                    location_values['location_dest_id'] = line.location_dest_id.id
+                rec.update(location_values)
         return line
 
     @api.model
@@ -318,6 +331,7 @@ class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
     po_id = fields.Char('')
+    ref_asset = fields.Many2one('assets.assets', 'Thẻ tài sản')
 
     @api.constrains('qty_done', 'picking_id.move_ids_without_package')
     def constrains_qty_done(self):
@@ -327,3 +341,17 @@ class StockMoveLine(models.Model):
                     if rec.qty_done > line.product_uom_qty:
                         raise ValidationError(_("Số lượng hoàn thành không được lớn hơn số lượng nhu cầu"))
 
+
+class StockBackorderConfirmationInherit(models.TransientModel):
+    _inherit = 'stock.backorder.confirmation'
+
+    def process(self):
+        res = super().process()
+        for item in self:
+            for rec in item.pick_ids:
+                data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
+                for pk in data_pk.move_line_ids_without_package:
+                    pk.write({
+                        'qty_done': pk.reserved_qty
+                    })
+        return res

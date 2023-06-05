@@ -69,13 +69,6 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Tài khoản trung gian">
-                            <group>
-                                <group>
-                                <field name="account_intermediary_id"/>
-                                </group>
-                            </group>
-                        </page>
                     </notebook>
                     </sheet>
                 </form>

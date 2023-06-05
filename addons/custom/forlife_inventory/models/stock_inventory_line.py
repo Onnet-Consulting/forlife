@@ -39,7 +39,7 @@ class StockInventoryLine(models.Model):
                     })
                 else:
                     picking = self.env['stock.picking'].with_company(company).sudo().create({
-                        'reason_type_id': self.env.ref('forlife_stock.reason_type_5', raise_if_not_found=False).id,
+                        'reason_type_id': self.env.ref('forlife_stock.reason_type_4', raise_if_not_found=False).id,
                         'picking_type_id': type_id,
                         'location_id': location_id.id,
                         'location_dest_id': self.env.ref('forlife_stock.export_inventory_balance_auto',
