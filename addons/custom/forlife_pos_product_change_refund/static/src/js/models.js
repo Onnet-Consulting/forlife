@@ -4,7 +4,9 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
 
     const Registries = require('point_of_sale.Registries');
     var {Order, Orderline, PosGlobalState} = require('point_of_sale.models');
-
+    var core = require('web.core');
+    const _t = core._t;
+    var { Gui } = require('point_of_sale.Gui');
     const OrderGetPhone = (Order) => class extends Order {
 
         constructor(obj, options) {
@@ -222,14 +224,16 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             return res - total
         }
 
-        // get_display_price() {
-        //     var res = super.get_display_price()
-        //     var total = 0;
-        //     if (this.quantity_canbe_refund > 0) {
-        //         total += (this.money_is_reduced * Math.abs(this.get_quantity())) / this.quantity_canbe_refund;
-        //     }
-        //     return res + total
-        // }
+        set_quantity(quantity, keep_price){
+            if(this.is_product_defective && quantity > 1){
+                    Gui.showPopup('ErrorPopup', {
+                        title: _t('Warning'),
+                        body: _t('Hành động sửa số lượng trên sản phẩm này bị cấm !')
+                    });
+                    return;
+            }
+            return super.set_quantity(quantity, keep_price)
+        }
 
         get_price_with_tax() {
             var reduced = 0;
