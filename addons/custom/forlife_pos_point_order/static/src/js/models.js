@@ -159,6 +159,27 @@ odoo.define('forlife_pos_point_order.models', function (require) {
                   this.add_orderline(line);
                   return line
             }
+
+            resetPointOrder() {
+                this.old_data = false;
+                let to_reset_ols = this.get_orderlines();
+                for (let line of to_reset_ols.filter(l => l.point)) {
+                    line.point = 0;
+                    line.is_new_line_point = false;
+                };
+            }
+
+            _checkHasNotExistedLineOnOldData() {
+                if (this.old_data) {
+                    for (let line_id of this.old_data) {
+                        if (!this.get_orderlines().find(l => l.id == line_id.id)) {
+                            return true;
+                        };
+                    };
+                    return false;
+                };
+                return false;
+            }
         }
     Registries.Model.extend(Orderline, PointsOrderLine);
     Registries.Model.extend(Order, PointsOrder);

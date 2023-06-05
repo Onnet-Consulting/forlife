@@ -169,14 +169,15 @@
             <form string="Inventory">
             <header>
                 <button name="action_start" states="draft" string="Bắt đầu kiểm kê" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
-                <button name="action_open_inventory_lines" string="Tiếp tục kiểm kê" attrs="{'invisible': [('state', 'in', ['done', 'draft'])]}" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
+                <button name="action_approved_first" string="Xác nhận lần 1" type="object" attrs="{'invisible': [('state', '!=', 'first_inv')]}" class="oe_highlight"/>
+<!--                <button name="action_open_inventory_lines" string="Tiếp tục kiểm kê" attrs="{'invisible': [('state', 'in', ['done', 'draft'])]}" type="object" class="oe_highlight" groups="stock.group_stock_user"/>-->
                 <button name="action_approved_first" string="Xác nhận lần 1" type="object" attrs="{'invisible': ['|', ('state', '!=', 'progress'), ('line_ids', '!=', [])]}" class="oe_highlight"/>
 <!--                <button name="action_validate" string="Xác nhận lần 2" type="object" attrs="{'invisible': ['|', ('state', '!=', 'confirm'), ('line_ids', '!=', [])]}" groups="stock.group_stock_manager"/>-->
-                <button name="action_validate" string="Xác nhận lần 2" type="object" attrs="{'invisible': ['|', ('state', '!=', 'confirm'), ('line_ids', '=', [])]}" class="oe_highlight" groups="stock.group_stock_manager"/>
+                <button name="action_validate" string="Xác nhận lần 2" type="object" attrs="{'invisible': [('state', '!=', 'second_inv')]}" class="oe_highlight" groups="stock.group_stock_manager"/>
                 <button name="action_cancel_draft" states="cancel" string="Đưa về nháp" type="object"/>
                 <button name="action_cancel_draft" attrs="{'invisible': [('state', 'in', ['done', 'draft'])]}" string="Hủy kiểm kê" type="object"
                     confirm="Nếu bạn hủy phiếu kiểm kê này, tất cả chi tiết kiểm kê của phiếu này sẽ bị xóa. Bạn có chắc chắn muốn hủy phiếu??"/>
-                <field name="state" widget="statusbar" statusbar_visible="draft,progress,confirm,done"/>
+                <field name="state" widget="statusbar" statusbar_visible="draft,first_inv,second_inv,done"/>
             </header>
             <sheet>
                 <field name="view_location_id" invisible="1"/>
@@ -197,6 +198,7 @@
                         <field name="warehouse_id" options="{'no_create': True}"/>
                         <field name="location_ids" options="{'no_create': True}"
                                widget="many2many_tags"
+                               domain="[('warehouse_id', '=', warehouse_id)]"
                                force_save="1"/>
 <!--                        <field name="filter_by" widget="radio" />-->
                         <field name="product_ids"
@@ -204,34 +206,37 @@
                                widget="many2many_tags"/>
 <!--                        <field name="categ_ids" widget="many2many_tags" attrs="{'invisible': [('filter_by', '!=', '2')]}"/>-->
 <!--                        <field name="marque_ids" widget="many2many_tags" attrs="{'invisible': [('filter_by', '!=', '3')]}"/>-->
-                        <field name="exhausted"/>
+                        <field name="exhausted" invisible="1"/>
                     </group>
                     <group>
-                        <field name="date"/>
-                        <field name="accounting_date"/>
+<!--                        <field name="date"/>-->
+                        <field name="date" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
+                        <field name="accounting_date" invisible="1"/>
                         <field name="company_id" options="{'no_create': True}"/>
-                        <field name="prefill_counted_quantity" widget="radio"
+                        <field name="prefill_counted_quantity" widget="radio" invisible="1"
                                attrs="{'invisible': [('state', '!=', 'draft')]}"/>
                     </group>
                 </group>
-<!--                <notebook>-->
-<!--                    <page string="Chi tiết kiểm kê" name="page_line_ids">-->
-<!--                        <field name="line_ids" nolabel="1" readonly="1" attrs="{'invisible': [('state', '=', 'draft')]}">-->
-<!--                            <tree>-->
-<!--                                <field name="product_id"/>-->
-<!--                                <field name="location_id"/>-->
-<!--                                <field name="inventory_date" optional="hide" width="0.8"/>-->
-<!--                                <field name="prod_lot_id" groups="stock.group_production_lot"  optional="show"/>-->
-<!--                                <field name="package_id" groups="stock.group_tracking_lot" optional="show"/>-->
-<!--                                <field name="theoretical_qty" force_save="1" readonly="1" optional="show"/>-->
-<!--                                <field name="product_qty"/>-->
-<!--                                <field name="difference_qty" optional="show"/>-->
-<!--                                <field name="product_uom_id" groups="uom.group_uom" force_save="1"/>-->
-<!--                                <field name="state" invisible="1"/>-->
-<!--                            </tree>-->
-<!--                        </field>-->
-<!--                    </page>-->
-<!--                </notebook>-->
+                <notebook>
+                    <page string="Chi tiết kiểm kê" name="page_line_ids">
+                        <field name="line_ids" nolabel="1" attrs="{'invisible': [('state', '=', 'draft')]}">
+                            <tree editable="bottom">
+                                <field name="product_id"/>
+                                <field name="location_id"/>
+                                <field name="inventory_date" optional="hide" width="0.8"/>
+                                <!--                                <field name="prod_lot_id" groups="stock.group_production_lot"  optional="show"/>-->
+                                <field name="package_id" groups="stock.group_tracking_lot" optional="show"/>
+                                <field name="theoretical_qty" force_save="1" readonly="1" optional="show" string="Thực tế"/>
+                                <field name="x_first_qty" string="Đã đếm"
+                                       attrs="{'readonly': [('state','!=','first_inv')]}"/>
+                                <field name="product_qty" string="SL xác nhận"/>
+                                <field name="difference_qty" optional="show"/>
+                                <field name="product_uom_id" groups="uom.group_uom" force_save="1"/>
+                                <field name="state" invisible="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
             </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>

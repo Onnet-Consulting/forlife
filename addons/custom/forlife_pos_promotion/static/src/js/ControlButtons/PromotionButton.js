@@ -30,7 +30,7 @@ export class PromotionButton extends PosComponent {
             };
         });
 
-        order.orderlines = order.orderlines.filter(line => line.quantity > 0)
+        order.orderlines = order.orderlines.filter(line => line.quantity > 0 || !line.is_new_line === false);
         newLines = Object.values(newLines).reduce((list, line) => {list.push(...Object.values(line)); return list}, []);
         for (let newLine of newLines) {
             let options = order._getNewLineValuesAfterDiscount(newLine);
@@ -47,6 +47,9 @@ export class PromotionButton extends PosComponent {
                 order.referred_code_id = codeObj;
             }
         }
+        if (order._checkHasNotExistedLineOnOldData()) {
+            order.resetPointOrder();
+        };
         order._updateActivatedPromotionPrograms();
 //        for (let newLine of newLines) {
 //            if (newLine.hasOwnProperty('reward_products')) {

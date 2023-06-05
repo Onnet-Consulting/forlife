@@ -6,25 +6,27 @@
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.vpicktree"/>
         <field name="arch" type="xml">
-
             <xpath expr="//field[@name='scheduled_date']" position="after">
                 <field name="date_done"/>
             </xpath>
-
         </field>
     </record>
-
     <record id="forlife_stock_stock_picking_form_view" model="ir.ui.view">
         <field name="name">forlife.stock.stock.picking.form.view</field>
         <field name="model">stock.picking</field>
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
-
+            <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="attributes">
+                   <attribute name="attrs">{'invisible':[('x_hide_return', '=', True)]}</attribute>
+                </xpath>
             <xpath expr="//field[@name='date_done']" position="replace">
                 <field name="date_done" string="Ngày hoàn thành"/>
             </xpath>
-
+            <xpath expr="//field[@name='origin']" position="before">
+                <field name="relation_return" attrs="{'invisible': [('x_is_check_return', '=', False)]}"/>
+                <field name="x_hide_return" invisible="1"/>
+                <field name="x_is_check_return" invisible="1"/>
+            </xpath>
         </field>
     </record>
-
 </odoo>

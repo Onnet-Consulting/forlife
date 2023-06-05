@@ -18,6 +18,7 @@ class StockTransfer(models.Model):
     work_to = fields.Many2one('forlife.production',string="LSX To")
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
     employee_id = fields.Many2one('hr.employee', string="User", default=lambda self: self.env.user.employee_id.id, required=1)
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     department_id = fields.Many2one('hr.department', string="Phòng ban", related='employee_id.department_id')
     reference_document_id = fields.Many2one('stock.transfer.request', string="Transfer Request")
     production_order_id = fields.Many2one('production.order', string="Production Order")
@@ -51,7 +52,8 @@ class StockTransfer(models.Model):
     total_weight = fields.Float(string='Total Weight (Kg)')
     reference_document = fields.Char()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
-
+    note = fields.Char("Ghi chú")
+    date_transfer = fields.Date("Ngày xác nhận xuất", default=date.today())
     @api.onchange('work_from')
     def _onchange_work_from(self):
         self.stock_transfer_line.write({
@@ -219,7 +221,7 @@ class StockTransfer(models.Model):
                     'work_from': line.work_from.id,
                     'work_to': line.work_to.id,
                     'check_id': line.id,
-                    'qty_start': line.qty_plan
+                    # 'qty_start': line.qty_plan
                 })]
             })
             line.write({
@@ -296,9 +298,12 @@ class StockTransfer(models.Model):
         stock_picking_from_ho.button_validate()
 
     def _action_in_approve_in_process(self):
+        company_id = self.env.company.id
+        pk_type = self.env['stock.picking.type'].sudo().search(
+            [('company_id', '=', company_id), ('code', '=', 'internal')], limit=1)
         location_id = self.location_id
         location_dest_id = self.location_dest_id
-        stock_picking_type = self.env.ref('stock.picking_type_internal')
+        stock_picking_type = pk_type
         data = []
         diff_transfer = self.env['stock.transfer']
         for line in self.stock_transfer_line:
@@ -413,7 +418,8 @@ class StockTransfer(models.Model):
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             warehouse = self.env['stock.location'].browse(vals.get('location_id')).code
-            vals['name'] = self.env['ir.sequence'].next_by_code('stock.transfer.sequence') + (warehouse if warehouse else '' + str(datetime.now().year)) or 'PXB'
+            vals['name'] = (self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'PXB') + str(
+                datetime.now().year)
         return super(StockTransfer, self).create(vals)
 
     def unlink(self):
@@ -443,9 +449,9 @@ class StockTransferLine(models.Model):
     product_id = fields.Many2one('product.product', string="Product", required=True)
     uom_id = fields.Many2one('uom.uom', string='Unit', store=True)
     qty_plan = fields.Integer(string='Quantity Plan')
-    qty_out = fields.Integer(string='Quantity Out')
-    qty_in = fields.Integer(string='Quantity In')
-    qty_start = fields.Integer(string='')
+    qty_out = fields.Integer(string='Quantity Out', copy=False)
+    qty_in = fields.Integer(string='Quantity In', copy=False)
+    qty_start = fields.Integer(string='', compute='compute_qty_start', store=1)
     quantity_remaining = fields.Integer(string="Quantity remaining", compute='compute_quantity_remaining')
     stock_request_id = fields.Many2one('stock.transfer.request', string="Stock Request")
 
@@ -477,6 +483,12 @@ class StockTransferLine(models.Model):
     def compute_quantity_remaining(self):
         for item in self:
             item.quantity_remaining = max(item.qty_plan - item.qty_in, 0)
+
+    @api.depends('qty_plan', 'stock_transfer_id.state')
+    def compute_qty_start(self):
+        for item in self:
+            if item.stock_transfer_id.state in ('draft', 'wait_approve'):
+                item.qty_start = item.qty_plan
 
     @api.constrains('qty_plan', 'is_from_button', 'qty_plan_tsq')
     def constrains_qty_plan(self):
@@ -512,11 +524,14 @@ class StockTransferLine(models.Model):
             if quantity > self.qty_plan * (1 + (tolerance / 100)):
                 raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
         else:
-            quantity_old = self.env['stock.transfer.line'].search([('id', '=', self.check_id)])
-            quantity_out_old = quantity_old.qty_out
-            quantity = self.qty_out + quantity_out_old if type == 'out' else self.qty_in
-            if quantity > self.qty_start * (1 + (tolerance / 100)):
-                raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
+            start_transfer = self.env['stock.transfer'].search([('name', '=', self.stock_transfer_id.reference_document)])
+            other_transfer = self.env['stock.transfer'].search([('reference_document', '=', start_transfer.name)])
+            quantity_old = sum([line.qty_out if type == 'out' else line.qty_in for line in other_transfer.stock_transfer_line.filtered(
+                lambda r: r.product_id == self.product_id)])
+            if start_transfer.stock_transfer_line.product_id == self.product_id:
+                quantity = quantity_old + start_transfer.stock_transfer_line.qty_out if type == 'out' else quantity_old + start_transfer.stock_transfer_line.qty_in
+                if quantity > start_transfer.stock_transfer_line.qty_start * (1 + (tolerance / 100)):
+                    raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
 
     @api.depends('stock_transfer_id', 'stock_transfer_id.state')
     def compute_is_parent_done(self):
@@ -582,3 +597,13 @@ class ForlifeProductionFinishedProduct(models.Model):
                 lambda r: r.stock_transfer_id.state in 'done')])
             rec.stock_qty = qty_done
             rec.remaining_qty = rec.produce_qty - qty_done
+
+
+class HREmployee(models.Model):
+    _inherit = 'hr.employee'
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        args = args or []
+        recs = self.search([('name', operator, name)] + args, limit=limit)
+        return recs.name_get()

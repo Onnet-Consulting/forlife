@@ -6,6 +6,14 @@ from odoo.addons.base.models.ir_model import MODULE_UNINSTALL_FLAG
 from odoo.exceptions import UserError, ValidationError
 from odoo.osv import expression
 from odoo.tools import float_compare, float_is_zero
+from odoo import api, fields, models, _, tools
+
+
+def read_sql_file(file_path):
+    fd = tools.file_open(file_path, 'r')
+    sqlFile = fd.read()
+    fd.close()
+    return sqlFile
 
 
 class Inventory(models.Model):
@@ -16,7 +24,7 @@ class Inventory(models.Model):
 
     name = fields.Char('Mã phiếu', default="Phiếu kiểm kê", readonly=True, required=True,
                        states={'draft': [('readonly', False)]})
-    date = fields.Datetime('Ngày kiểm kho', readonly=True, required=True, default=fields.Datetime.now)
+    date = fields.Datetime('Ngày kiểm kho', required=True, default=fields.Datetime.now)
     accounting_date = fields.Date('Ngày kế toán')
     line_ids = fields.One2many('stock.inventory.line', 'inventory_id', string='Chi tiết tồn kho',
                                copy=False, readonly=False, states={'done': [('readonly', True)]})
@@ -25,7 +33,8 @@ class Inventory(models.Model):
     state = fields.Selection(string='Trạng thái', selection=[
         ('draft', 'Nháp'),
         ('cancel', 'Hủy'),
-        ('progress', 'Thực hiện'),
+        ('first_inv', 'Kiểm kê bước 1'),
+        ('second_inv', 'Kiểm kê bước 2'),
         ('confirm', 'Xác nhận'),
         ('done', 'Hoàn thành'),
     ],
@@ -94,7 +103,7 @@ class Inventory(models.Model):
         if self.state == 'confirm':
             self.action_validate()
         else:
-            self.state = 'confirm'
+            self.state = 'second_inv'
 
     def action_validate(self):
         if not self.exists():
@@ -102,7 +111,7 @@ class Inventory(models.Model):
         self.ensure_one()
         if not self.user_has_groups('stock.group_stock_manager'):
             raise UserError(_("Only a stock manager can validate an inventory adjustment."))
-        if self.state != 'confirm':
+        if self.state != 'second_inv':
             raise UserError(_(
                 "You can't validate the inventory '%s', maybe this inventory "
                 "has been already validated or isn't ready.", self.name))
@@ -134,7 +143,7 @@ class Inventory(models.Model):
                 negative.product_qty
             ))
         self.action_check()
-        self.write({'state': 'done', 'date': fields.Datetime.now()})
+        self.write({'state': 'done'})
         self.post_inventory()
         return True
 
@@ -162,7 +171,7 @@ class Inventory(models.Model):
         self.ensure_one()
         self._action_start()
         self._check_company()
-        return self.action_open_inventory_lines()
+        # return self.action_open_inventory_lines()
 
     def _action_start(self):
         """ Confirms the Inventory Adjustment and generates its inventory lines
@@ -173,8 +182,8 @@ class Inventory(models.Model):
             if inventory.state != 'draft':
                 continue
             vals = {
-                'state': 'progress',
-                'date': fields.Datetime.now()
+                'state': 'first_inv',
+                # 'date': fields.Datetime.now()
             }
             if not inventory.line_ids and not inventory.start_empty:
                 self.env['stock.inventory.line'].create(inventory._get_inventory_lines_values())
@@ -230,7 +239,9 @@ class Inventory(models.Model):
             'domain': domain,
         }
         return action
-
+    def init(self):
+        get_quantity_inventory = read_sql_file('./stock_inventory/sql_functions/get_quantity_inventory.sql')
+        self.env.cr.execute(get_quantity_inventory)
     def action_print(self):
         return self.env.ref('stock_inventory.action_report_inventory').report_action(self)
 
@@ -250,11 +261,15 @@ class Inventory(models.Model):
             domain_loc = [('company_id', '=', self.company_id.id), ('usage', 'in', ['internal', 'transit'])]
         locations_ids = [l['id'] for l in self.env['stock.location'].search_read(domain_loc, ['id'])]
 
-        domain = [('company_id', '=', self.company_id.id),
-                  ('quantity', '!=', '0'),
-                  ('location_id', 'in', locations_ids)]
-        if self.prefill_counted_quantity == 'zero':
-            domain.append(('product_id.active', '=', True))
+        sql = f"""select * from get_quantity_inventory('{str(self.date)}', array{locations_ids}::integer[] ,array{self.product_ids.ids}::integer[])"""
+        self._cr.execute(sql)
+        data = self._cr.dictfetchall()
+        return data
+        # domain = [('company_id', '=', self.company_id.id),
+        #           ('quantity', '!=', '0'),
+        #           ('location_id', 'in', locations_ids)]
+        # if self.prefill_counted_quantity == 'zero':
+        #     domain.append(('product_id.active', '=', True))
 
         # if self.product_ids and self.filter_by == "1":
         #     domain = expression.AND([domain, [('product_id', 'in', self.product_ids.ids)]])
@@ -265,18 +280,18 @@ class Inventory(models.Model):
         # if self.marque_ids and self.filter_by == "3":
         #     domain = expression.AND([domain, [('product_id.product_brand_id', 'in', self.marque_ids.ids)]])
 
-        fields = ['product_id', 'location_id', 'lot_id', 'package_id', 'owner_id', 'quantity:sum']
-        group_by = ['product_id', 'location_id', 'lot_id', 'package_id', 'owner_id']
+        # fields = ['product_id', 'location_id', 'lot_id', 'package_id', 'owner_id', 'quantity:sum']
+        # group_by = ['product_id', 'location_id', 'lot_id', 'package_id', 'owner_id']
 
-        quants = self.env['stock.quant'].read_group(domain, fields, group_by, lazy=False)
-        return {(
-            quant['product_id'] and quant['product_id'][0] or False,
-            quant['location_id'] and quant['location_id'][0] or False,
-            quant['lot_id'] and quant['lot_id'][0] or False,
-            quant['package_id'] and quant['package_id'][0] or False,
-            quant['owner_id'] and quant['owner_id'][0] or False):
-            quant['quantity'] for quant in quants
-        }
+        # quants = self.env['stock.quant'].read_group(domain, fields, group_by, lazy=False)
+        # return {(
+        #     quant['product_id'] and quant['product_id'][0] or False,
+        #     quant['location_id'] and quant['location_id'][0] or False,
+        #     quant['lot_id'] and quant['lot_id'][0] or False,
+        #     quant['package_id'] and quant['package_id'][0] or False,
+        #     quant['owner_id'] and quant['owner_id'][0] or False):
+        #     quant['quantity'] for quant in quants
+        # }
 
     def _get_exhausted_inventory_lines_vals(self, non_exhausted_set):
         """Return the values of the inventory lines to create if the user
@@ -323,19 +338,17 @@ class Inventory(models.Model):
         self.ensure_one()
         quants_groups = self._get_quantities()
         vals = []
-        for (product_id, location_id, lot_id, package_id, owner_id), quantity in quants_groups.items():
-            line_values = {
+        for data in quants_groups:
+            line = {
                 'inventory_id': self.id,
-                'product_qty': 0 if self.prefill_counted_quantity == "zero" else quantity,
-                'theoretical_qty': quantity,
-                'prod_lot_id': lot_id,
-                'partner_id': owner_id,
-                'product_id': product_id,
-                'location_id': location_id,
-                'package_id': package_id
+                'product_qty': 0 if self.prefill_counted_quantity == "zero" else data.get('quanty'),
+                'theoretical_qty': data.get('quanty'),
+                'x_first_qty': data.get('quanty'),
+                'product_id': data.get('product_id'),
+                'location_id': data.get('location_id'),
+                'product_uom_id': self.env['product.product'].browse(data.get('product_id')).uom_id.id
             }
-            line_values['product_uom_id'] = self.env['product.product'].browse(product_id).uom_id.id
-            vals.append(line_values)
+            vals.append(line)
         if self.exhausted:
             vals += self._get_exhausted_inventory_lines_vals({(l['product_id'], l['location_id']) for l in vals})
         return vals
@@ -387,6 +400,9 @@ class InventoryLine(models.Model):
     theoretical_qty = fields.Float(
         'Tồn hiện có',
         digits='Product Unit of Measure', readonly=True)
+    x_first_qty = fields.Float(
+        'Đã đếm',
+        digits='Product Unit of Measure')
     difference_qty = fields.Float('Chênh lệch', compute='_compute_difference',
                                   readonly=True, digits='Product Unit of Measure', search="_search_difference_qty")
     inventory_date = fields.Datetime('Ngày kiểm kho', readonly=True, default=fields.Datetime.now)
@@ -412,6 +428,26 @@ class InventoryLine(models.Model):
     # def _compute_total_difference(self):
     #     for rec in self:
     #         rec.total_difference = (rec.unit_price * rec.product_qty) -  (rec.unit_price * rec.theoretical_qty)
+
+    @api.onchange('product_id')
+    def get_line_default(self):
+        if self.inventory_id.location_ids:
+            return {'domain': {'location_id': [('id', 'in', self.inventory_id.location_ids.ids)]}}
+        elif self.inventory_id.warehourse_id:
+            return {'domain': {'location_id': [('warehourse_id', '=', self.inventory_id.warehourse_id.id)]}}
+        else:
+            return False
+
+    @api.onchange('theoretical_qty')
+    def set_x_first_qty(self):
+        if self.theoretical_qty:
+            self.x_first_qty = self.theoretical_qty
+
+    @api.onchange('x_first_qty')
+    def set_product_qty(self):
+        if self.x_first_qty:
+            self.product_qty = self.x_first_qty
+
 
     @api.depends('product_qty', 'theoretical_qty')
     def _compute_difference(self):
@@ -443,14 +479,17 @@ class InventoryLine(models.Model):
         if self.product_id:
             self.product_uom_id = self.product_id.uom_id
         if self.product_id and self.location_id and self.product_id.uom_id.category_id == self.product_uom_id.category_id:  # TDE FIXME: last part added because crash
-            theoretical_qty = self.product_id.get_theoretical_quantity(
-                self.product_id.id,
-                self.location_id.id,
-                lot_id=self.prod_lot_id.id,
-                package_id=self.package_id.id,
-                owner_id=self.partner_id.id,
-                to_uom=self.product_uom_id.id,
-            )
+            # theoretical_qty = self.product_id.get_theoretical_quantity(
+            #     self.product_id.id,
+            #     self.location_id.id,
+            #     lot_id=self.prod_lot_id.id,
+            #     package_id=self.package_id.id,
+            #     owner_id=self.partner_id.id,
+            #     to_uom=self.product_uom_id.id,
+            # )
+            check_quant = self.env['stock.quant'].search(
+                [('product_id', '=', self.product_id.id), ('location_id', '=', self.location_id.id)])
+            theoretical_qty = check_quant.quantity if check_quant else 0
         else:
             theoretical_qty = 0
         # Sanity check on the lot.
