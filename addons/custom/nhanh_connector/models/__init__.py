@@ -1,11 +1,9 @@
-from . import sale_order
-from . import sale_order_line
-from . import res_partner
-from . import product_template
-from . import product_category
+from . import nhanh_sale_order
+from . import nhanh_res_partner
+from . import nhanh_product_template
+from . import nhanh_product_category
+from . import cron_job_sync_nhanh
 from . import constant
-from . import nhanh_brand_config
-from . import nhanh_webhook_value
-# from . import res_config_settings
+from . import res_config_settings
 from . import stock_warehouse
 from . import stock_location

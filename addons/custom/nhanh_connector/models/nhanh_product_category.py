@@ -1,7 +1,10 @@
-# -*- coding: utf-8 -*-
-
+import base64
+import urllib
+from odoo.addons.nhanh_connector.models import constant
 from odoo import _, models, fields, api
-import logging
+from odoo.exceptions import ValidationError
+import datetime, logging
+import requests
 
 _logger = logging.getLogger(__name__)
 

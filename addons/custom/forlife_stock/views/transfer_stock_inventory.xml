@@ -139,6 +139,6 @@
         <field name="res_model">transfer.stock.inventory</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('x_classify', '=', True)]</field>
-        <field name="context">{'x_classify':1, 'default_x_classify':1}</field>
+        <field name="context">{"x_classify":1}</field>
     </record>
 </odoo>

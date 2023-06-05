@@ -28,7 +28,6 @@
         'security/ir.model.access.csv',
         'data/base_automation.xml',
         'views/stock_transfer_request_view.xml',
-        'views/stock_picking_type.xml',
         'views/stock_transfer_view.xml',
         'views/stock_location_type_view.xml',
         'views/stock_location_view.xml',
