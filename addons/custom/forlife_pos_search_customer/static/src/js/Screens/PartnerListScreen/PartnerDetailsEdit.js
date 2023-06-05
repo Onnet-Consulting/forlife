@@ -6,7 +6,6 @@ odoo.define('forlife_pos_search_customer.CustomPartnerDetailsEdit', function (re
         setup() {
             super.setup();
             let new_fields = ['phone', 'name', 'email'];
-            this.intFields.push.apply(this.intFields, new_fields);
             new_fields.forEach((field, i) => {
                 if(this.props.partner[field]){
                     this.changes[field] = this.props.partner[field];
