@@ -16,7 +16,8 @@ class SalaryEntry(models.Model):
                                       domain="[('model_id', '=', salary_table_id)]", ondelete="cascade")
     title = fields.Char(string='Title', required=True)
     show_name = fields.Char(compute='_compute_show_name', store=True, string='Name')
-    groupable_account_ids = fields.Many2many('account.account', string='Groupable Accounts')
+    groupable_account_ids = fields.Many2many('account.account', string='Groupable Accounts', check_company=True)
+    company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company, required=True)
 
     @api.depends('salary_table_id', 'salary_field_id')
     def _compute_show_name(self):
@@ -31,8 +32,10 @@ class SalaryEntry(models.Model):
     def _check_field_and_table(self):
         for record in self:
             if record.salary_field_id.model_id != record.salary_table_id:
-                raise ValidationError(_("Field %s must belong to the Table %s") % (record.salary_field_id.name, record.salary_table_id.name))
+                raise ValidationError(_("Field %s must belong to the Table %s") % (
+                record.salary_field_id.name, record.salary_table_id.name))
 
     _sql_constraints = [
-        ('unique_combination', 'UNIQUE(salary_field_id, salary_table_id)', 'The combination of Field and Table must be unique !')
+        ('unique_combination', 'UNIQUE(salary_field_id, salary_table_id, company_id)',
+         'The combination of Field and Table must be unique !')
     ]

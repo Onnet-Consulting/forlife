@@ -12,7 +12,7 @@ class ProductDefective(models.Model):
     product_id = fields.Many2one('product.product', 'Sản phẩm')
     quantity_defective_approved = fields.Integer('Số lượng lỗi đã duyệt')
     quantity_inventory_store = fields.Integer('Số lượng tồn theo cửa hàng', readonly=True, store=True, compute='compute_quantity_inventory_store')
-    quantity_can_be_sale = fields.Integer('Số lượng lỗi có thể bán')
+    quantity_can_be_sale = fields.Integer('Số lượng lỗi có thể bán', tracking=True)
     price = fields.Float('Nguyên giá', related='product_id.lst_price')
     money_reduce = fields.Monetary('Số tiền giảm')
     percent_reduce = fields.Monetary('Phần trăm giảm')

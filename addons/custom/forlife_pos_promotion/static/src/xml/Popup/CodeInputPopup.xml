@@ -13,7 +13,6 @@
                     <input type="text"
                            t-model="state.inputValue"
                            pattern="[A-Z]*"
-                           t-on-keydown="(ev) => this.onInputKeyDownUp(ev)"
                            t-on-keyup="(ev) => this.onInputKeyDownUp(ev)"
                            t-ref="input" t-att-placeholder="props.placeholder"/>
                 </div>

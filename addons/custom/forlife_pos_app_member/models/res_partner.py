@@ -31,7 +31,7 @@ class ResPartner(models.Model):
             self.env.ref('forlife_pos_app_member.partner_group_system').id,
         ])]
     )
-    job_ids = fields.Many2many('res.partner.job', string='Jobs')
+    job_id = fields.Many2one('res.partner.job', string='Jobs')
     retail_type_ids = fields.Many2many('res.partner.retail', string='Retail types', copy=False, ondelete='restrict')
     show_customer_type = fields.Boolean(compute='_compute_show_retail_types')
     birthday = fields.Date(string='Birthday')
