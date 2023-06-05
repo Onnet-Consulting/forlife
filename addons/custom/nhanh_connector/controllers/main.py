@@ -115,9 +115,9 @@ class MainController(http.Controller):
             # đội ngũ bán hàng
             team_id = self.env['crm.team'].search([('name', '=', data['trafficSourceName'])], limit=1)
             default_company_id = self.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
-            warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
-            if not warehouse_id:
-                warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
+            # warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
+            # if not warehouse_id:
+            #     warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
             value = {
                 'nhanh_id': data['orderId'],
                 'nhanh_status': data['status'],
@@ -136,7 +136,7 @@ class MainController(http.Controller):
                 'user_id': user_id.id if user_id else None,
                 'team_id': team_id.id if team_id else None,
                 'company_id': default_company_id.id if default_company_id else None,
-                'warehouse_id': warehouse_id.id if warehouse_id else None,
+                'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
                 'order_line': order_line
             }
             # đổi trả hàng
