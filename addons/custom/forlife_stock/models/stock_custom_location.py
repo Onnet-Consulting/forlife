@@ -102,6 +102,7 @@ class StockMove(models.Model):
 
         valuation_partner_id = self._get_partner_id_for_valuation_lines()
         if self.picking_id.location_dest_id.type_other == 'outcoming':
+            # xử lí tài khoản khi là kiểm kê kho location kí gửi
             if self.picking_id.location_id.id_deposit and self.picking_id.location_id.account_stock_give:
                 credit_account_id = self.picking_id.location_id.account_stock_give.id
                 debit_account_id = self.picking_id.location_dest_id.with_company(self.picking_id.company_id).x_property_valuation_in_account_id.id
@@ -109,6 +110,7 @@ class StockMove(models.Model):
                 debit_account_id = self.picking_id.location_dest_id.valuation_in_account_id.id
                 credit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
         if self.picking_id.location_id.type_other == 'incoming':
+            # xử lí tài khoản khi là đơn đổi trả từ pos
             if self.picking_id.location_dest_id.id_deposit and self.picking_id.location_dest_id.account_stock_give:
                 debit_account_id = self.picking_id.location_dest_id.account_stock_give.id
                 credit_account_id = self.picking_id.location_id.x_property_valuation_out_account_id.id
