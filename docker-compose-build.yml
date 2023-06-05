@@ -1,0 +1,19 @@
+version: '3'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: /bin/bash -c "pip3 install -r /opt/requirements.txt && odoo"
+    restart: always
+    ports:
+      - "8069:8069"
+      - "8072:8072"
+      - "8071:8071"
+    networks:
+      - default
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
