@@ -46,5 +46,8 @@
         'views/purchase_request_views.xml',
         'views/sale_order_views.xml',
         'views/stock_picking_views.xml',
+        'views/product_defective_views.xml',
+        'views/stock_inventory_views.xml',
+        'views/print_stamps_barcode_view.xml',
     ],
 }
