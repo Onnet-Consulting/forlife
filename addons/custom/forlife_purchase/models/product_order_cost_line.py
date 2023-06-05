@@ -23,7 +23,12 @@ class PurchaseOrderCostLine(models.Model):
     @api.depends('exchange_rate', 'foreign_amount')
     def compute_vnd_amount(self):
         for rec in self:
-            rec.vnd_amount = rec.exchange_rate * rec.foreign_amount
+            if rec.exchange_rate == 1:
+                pass
+            else:
+                rec.vnd_amount = rec.exchange_rate * rec.foreign_amount
+
+
 
 
 
