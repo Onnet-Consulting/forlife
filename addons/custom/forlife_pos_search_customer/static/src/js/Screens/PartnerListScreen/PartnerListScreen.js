@@ -103,17 +103,17 @@ odoo.define('forlife_pos_search_customer.PartnerListScreen', function(require) {
           // OVERRIDE
           createPartner() {
             // initialize the edit screen with default details about country & state
-            this.state.editModeProps.partner = {
+            let partner = {
                 country_id: this.env.pos.company.country_id,
                 state_id: this.env.pos.company.state_id,
             }
             // Default customer search value as input in customer creation form
             if(this.state.fieldName){
-                this.state.editModeProps.partner[this.state.fieldName] = this.state.query;
+                partner[this.state.fieldName] = this.state.query;
             }
+            this.state.editModeProps.partner = partner;
             this.activateEditMode();
         }
-
     }
 
     Registries.Component.extend(PartnerListScreen, SearchPartnerListScreen);
