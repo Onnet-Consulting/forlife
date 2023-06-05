@@ -224,7 +224,7 @@ class SaleOrderNhanh(models.Model):
                     'user_id': user_id.id if user_id else None,
                     'team_id': team_id.id if team_id else None,
                     'company_id': default_company_id.id if default_company_id else None,
-                    'warehouse_id': warehouse_id.id if warehouse_id else None,
+                    'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id  else None,
                     'order_line': order_line
                 }
                 # đổi hàng
