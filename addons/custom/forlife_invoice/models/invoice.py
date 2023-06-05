@@ -868,7 +868,7 @@ class InvoiceCostLine(models.Model):
 
     product_id = fields.Many2one('product.product', string='Sản phẩm', domain=[('detailed_type', '=', 'service')])
     name = fields.Char(string='Mô tả', related='product_id.name')
-    currency_id = fields.Many2one('res.currency', string='Tiền tệ')
+    currency_id = fields.Many2one('res.currency', string='Tiền tệ', required=1)
     exchange_rate = fields.Float(string='Tỷ giá')
     foreign_amount = fields.Float(string='Tổng tiền ngoại tệ̣')
     vnd_amount = fields.Float(string='Tổng tiền VNĐ', compute='compute_vnd_amount', store=1, readonly=False)
@@ -881,17 +881,10 @@ class InvoiceCostLine(models.Model):
         if self.currency_id:
             self.exchange_rate = self.currency_id.rate
 
-    is_check_foreign_amount = fields.Boolean('',default=False)
-
     @api.depends('exchange_rate', 'foreign_amount')
     def compute_vnd_amount(self):
         for rec in self:
-            if rec.exchange_rate == 1:
-                rec.foreign_amount = False
-                rec.is_check_foreign_amount = True
-            else:
-                rec.is_check_foreign_amount = False
-                rec.vnd_amount = rec.exchange_rate * rec.foreign_amount
+            rec.vnd_amount = rec.exchange_rate * rec.foreign_amount
 
 
 class eInvoice(models.Model):
@@ -930,25 +923,30 @@ class SyntheticInvoice(models.Model):
             cost_line_false = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
             total_cost_true = 0
             total_cost_false = 0
-            if cost_line_true:
-                for item in cost_line_true:
-                    if item.vnd_amount and rec.price_subtotal:
-                        cost_host = ((rec.price_subtotal / sum(self.mapped('price_subtotal'))) * 100 / 100) * item.vnd_amount
-                        total_cost_true += cost_host
-                rec.before_tax = total_cost_true
-            else:
-                pass
-            if cost_line_false:
-                for item in cost_line_false:
-                    for line in rec.synthetic_id.exchange_rate_line:
-                        if rec.price_subtotal and rec.before_tax and item.vnd_amount:
-                            line.vnd_amount = rec.price_subtotal + rec.before_tax
-                            cost_host = (((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(
-                                self.mapped('before_tax')))) * 100 / 100) * item.vnd_amount
-                            total_cost_false += cost_host
-                rec.after_tax = total_cost_false
-            else:
-                pass
+            for line in rec.synthetic_id.exchange_rate_line:
+                if rec.synthetic_id.type_inv == 'tax':
+                    if cost_line_true:
+                        for item in cost_line_true:
+                            if item.vnd_amount and rec.price_subtotal:
+                                cost_host = ((rec.price_subtotal / sum(self.mapped('price_subtotal'))) * 100 / 100) * item.vnd_amount
+                                total_cost_true += cost_host
+                        rec.before_tax = total_cost_true
+                    if cost_line_false:
+                        for item in cost_line_false:
+                            if rec.price_subtotal and rec.before_tax and item.vnd_amount:
+                                cost_host = (((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * 100 / 100) * item.vnd_amount
+                                total_cost_false += cost_host
+                        rec.after_tax = total_cost_false
+                    if rec.product_id.id == line.product_id.id:
+                        line.vnd_amount = rec.price_subtotal + rec.before_tax
+                if rec.synthetic_id.type_inv == 'cost':
+                    if rec.synthetic_id.cost_line:
+                        for item in rec.synthetic_id.cost_line:
+                            if item.vnd_amount and rec.price_subtotal:
+                                cost_host = ((rec.price_subtotal / sum(self.mapped('price_subtotal'))) * 100 / 100) * item.vnd_amount
+                                total_cost_true += cost_host
+                        rec.before_tax = total_cost_true
+                        rec.after_tax = rec.before_tax
 
     @api.depends('price_unit', 'quantity')
     def _compute_price_subtotal(self):
