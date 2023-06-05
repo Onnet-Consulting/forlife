@@ -72,11 +72,21 @@ class StockMove(models.Model):
 
         valuation_partner_id = self._get_partner_id_for_valuation_lines()
         if self.picking_id.location_dest_id.type_other == 'outcoming':
-            debit_account_id = self.picking_id.location_dest_id.valuation_in_account_id.id
-            credit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
+            if self.picking_id.location_id.id_deposit and self.picking_id.location_id.account_stock_give:
+                credit_account_id = self.picking_id.location_id.account_stock_give.id
+                debit_account_id = self.picking_id.location_dest_id.with_company(self.picking_id.company_id).x_property_valuation_in_account_id.id
+            else:
+                debit_account_id = self.picking_id.location_dest_id.valuation_in_account_id.id
+                credit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
         if self.picking_id.location_id.type_other == 'incoming':
-            credit_account_id = self.picking_id.location_id.valuation_out_account_id.id
-            debit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
+            if self.picking_id.location_dest_id.id_deposit and self.picking_id.location_dest_id.account_stock_give:
+                debit_account_id = self.picking_id.location_dest_id.account_stock_give.id
+                credit_account_id = self.picking_id.location_id.x_property_valuation_out_account_id.id
+                if not credit_account_id or not debit_account_id:
+                    raise ValidationError (_('Vui lòng cấu hình tài khoản kho kí gửi của địa điểm này hoặc trường Stock Valuation Account (Outgoing) tại địa điểm Nhập trả lại hàng kí gửi!'))
+            else:
+                credit_account_id = self.picking_id.location_id.valuation_out_account_id.id
+                debit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
             debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
                 if not self.picking_id.location_id.is_price_unit else (self.amount_total/self.previous_qty) * self.quantity_done
                 # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
