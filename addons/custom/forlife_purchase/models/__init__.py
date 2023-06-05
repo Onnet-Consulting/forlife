@@ -12,3 +12,4 @@ from . import stock_warehouse
 from . import product_supplierinfo
 from . import hr_employee
 from . import stock_move
+from . import production_history
