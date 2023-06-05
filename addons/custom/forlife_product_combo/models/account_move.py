@@ -28,54 +28,84 @@ class AccountMove(models.Model):
 
     @api.onchange('invoice_type')
     def onchange_view_invoice_type(self):
-        for rec in self:
-            if rec.invoice_type == 'increase':
-                abc = 'tang gia tri'
 
-            if rec.invoice_type == 'decrease':
-                abc = 'giam gia tri'
+        for rec in self:
             if rec.line_ids:
+                update_vals = []
                 for line in rec.line_ids:
-                    #  code trung gian nhap kho
-                    account = self.env['account.account'].search([('code', '=', '3319000001'), ('company_id', '=', line.company_id.id)])
+
                     # code Thuế GTGT được khấu trừ của hàng hoá
-                    account_tax = self.env['account.account'].search(
-                        [('code', '=', '1331000001'), ('company_id', '=', line.company_id.id)])
-                    # Phải trả người bán mua hàng hóa trong nước
-                    account_pay = self.env['account.account'].search(
-                        [('code', '=', '3311100001'), ('company_id', '=', line.company_id.id)])
+                    # account_tax = self.env['account.account'].search(
+                    #     [('code', '=', '1331000001'), ('company_id', '=', line.company_id.id)])
+                    # # Phải trả người bán mua hàng hóa trong nước
+                    # account_pay = self.env['account.account'].search(
+                    #     [('code', '=', '3311100001'), ('company_id', '=', line.company_id.id)])
                     #thay the ban ghi
                     if line.product_id and line.display_type == 'product':
+                        #  code trung gian nhap kho
+                        account = self.env['account.account'].search(
+                            [('code', '=', '3319000001'), ('company_id', '=', line.company_id.id)])
+
                         if rec.invoice_type == 'increase':
-                            price = line.price_total
-                            credit = 0
-                        if rec.invoice_type == 'decrease':
-                            price = 0
+                            debit = line.price_total
+                            credit = int(0)
+                        elif rec.invoice_type == 'decrease':
+                            debit = int(0)
                             credit = line.price_total
+                        # sql = f"update account_move_line set account_id = {account.id}, name = '{line.product_id.name}', debit = {price}, credit = {credit} where id = {line.id.origin}"
+                        # self._cr.execute(sql)
 
-                        line.write({
-                            'account_id': account.id,
-                            'name': line.product_id.name,
-                            'debit': price,
-                            'credit': credit
-                        })
+                        # update_vals.append((
+                        #     1, line.id.origin, {
+                        #         'account_id': account.id,
+                        #         'name': line.product_id.name,
+                        #         'debit': price,
+                        #         'credit': credit
+                        #     }
+                        # ))
+                        # line.update({
+                        #     'account_id': account.id,
+                        #     'name': line.product_id.name,
+                        #     'debit': debit,
+                        #     'credit': credit
+                        # })
 
-                    # if line.display_type == 'tax':
-                    #     line.write({
-                    #         'account_id': account_tax.id
-                    #     })
+                    elif line.display_type == 'payment_term':
+                        if rec.invoice_type == 'increase':
+                            debit = int(0)
+                            credit = abs(line.amount_currency)
+                            balance = -abs(line.balance)
+                            amount_currency = -line.amount_currency
+                            amount_residual = -line.amount_residual
+                            amount_residual_currency = -line.amount_residual_currency
+                        elif rec.invoice_type == 'decrease':
+                            debit = abs(line.amount_currency)
+                            credit = int(0),
+                            balance = abs(line.balance)
+                            amount_currency = abs(line.amount_currency)
+                            amount_residual = abs(line.amount_residual)
+                            amount_residual_currency = abs(line.amount_residual_currency)
 
-                    # if line.display_type == 'payment_term':
-                    #     if rec.invoice_type == 'increase':
-                    #         price_payment_term = line.debit
-                    #         credit_payment_term = line.credit
-                    #     if rec.invoice_type == 'decrease':
-                    #         price_payment_term = line.credit
-                    #         credit_payment_term = line.debit
-                    #
-                    #     line.write({
-                    #         'account_id': account_pay.id,
-                    #         'debit': price_payment_term,
-                    #         'credit': credit_payment_term
-                    #     })
+                        # line.update({
+                            # 'debit': debit,
+                            # 'credit': credit
+                            # 'balance': int(balance),
+                            # 'amount_currency': int(amount_currency),
+                            # 'amount_residual': int(amount_residual),
+                            # 'amount_residual_currency': int(amount_residual_currency)
+                        # })
+                    #     sql = f"update account_move_line set debit = {price}, credit = {credit} where id = {line.id.origin}"
+                    #     self._cr.execute(sql)
+
+                        # update_vals.append((
+                        #     1, line.id.origin, {
+                        #         'name': line.product_id.name,
+                        #         # 'debit': price,
+                        #         # 'credit': credit
+                        #     }
+                        # ))
+
+                # rec.write({
+                #     'line_ids': update_vals
+                # })
 
