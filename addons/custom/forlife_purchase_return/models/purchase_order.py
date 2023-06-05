@@ -439,7 +439,7 @@ class PurchaseOrder(models.Model):
                 'res_model': 'account.move',
                 'view_id': False,
                 'view_mode': 'tree,form',
-                'domain': [('id', 'in', moves.ids), ('move_type', '=', 'out_invoice')],
+                'domain': [('id', 'in', moves.ids)],
             }
 
     def compute_count_invoice_inter_fix(self):
