@@ -101,20 +101,25 @@ class SaleOrderNhanh(models.Model):
                 continue
             order_model = self.env['sale.order']
             partner_model = self.env['res.partner']
-            nhanh_orders = res['data']['orders']
-            nhanh_order_keys = list(nhanh_orders.keys())
-            _logger.info(f'List order id from NhanhVN: {nhanh_order_keys}')
-            # Get all odoo orders which don't exist in nhanhvn
-            odoo_orders = order_model.sudo().search([('nhanh_id', 'in', nhanh_order_keys)]).read(
-                ['nhanh_id'])
-            odoo_order_ids = [str(x['nhanh_id']) for x in odoo_orders if x['nhanh_id'] != 0]
-            # odoo_order_ids = ['217639118', '217639271', '217652613', '218324611']
-            _logger.info(f'List order id from Odoo: {odoo_order_ids}')
-            # Delete in nhanh_orders if it existed in odoo_orders
-            for item in odoo_order_ids:
-                if item in nhanh_orders:
-                    nhanh_orders.pop(item)
-            list(nhanh_orders)
+            data = res.get('data')
+            for page in range(1, data.get('totalRecords') + 1):
+                data['page'] = page
+                res_server = requests.post(url, json=json.dumps(data))
+                res = res_server.json()
+                nhanh_orders = res['data']['orders']
+                nhanh_order_keys = list(nhanh_orders.keys())
+                _logger.info(f'List order id from NhanhVN: {nhanh_order_keys}')
+                # Get all odoo orders which don't exist in nhanhvn
+                odoo_orders = order_model.sudo().search([('nhanh_id', 'in', nhanh_order_keys)]).read(
+                    ['nhanh_id'])
+                odoo_order_ids = [str(x['nhanh_id']) for x in odoo_orders if x['nhanh_id'] != 0]
+                # odoo_order_ids = ['217639118', '217639271', '217652613', '218324611']
+                _logger.info(f'List order id from Odoo: {odoo_order_ids}')
+                # Delete in nhanh_orders if it existed in odoo_orders
+                for item in odoo_order_ids:
+                    if item in nhanh_orders:
+                        nhanh_orders.pop(item)
+                list(nhanh_orders)
             # _logger.info(nhanh_orders)
             for k, v in nhanh_orders.items():
                 name_customer = False
@@ -219,7 +224,7 @@ class SaleOrderNhanh(models.Model):
                     'user_id': user_id.id if user_id else None,
                     'team_id': team_id.id if team_id else None,
                     'company_id': default_company_id.id if default_company_id else None,
-                    'warehouse_id': warehouse_id.id if warehouse_id else None,
+                    'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id  else None,
                     'order_line': order_line
                 }
                 # đổi hàng
@@ -272,34 +277,40 @@ class SaleOrderNhanh(models.Model):
                     _logger.info(f'Get customer error {res["messages"]}')
                     continue
                 else:
-                    for item in res.get('data').get('customers'):
-                        if not res.get('data').get('customers').get(item).get('mobile'):
-                            continue
-                        exist_partner = self.env['res.partner'].search_count(
-                            [('phone', '=', res.get('data').get('customers').get(item).get('mobile'))])
-                        if exist_partner:
-                            continue
-                        value_data = res.get('data').get('customers').get(item)
+                    data = res.get('data')
+                    for page in range(1, data.get('totalPages') + 1):
+                        data['page'] = page
+                        res_server = requests.post(url, json=json.dumps(data))
+                        res = res_server.json()
+                        customers = res.get('data').get('customers')
+                        for item in customers:
+                            if not customers.get(item).get('mobile'):
+                                continue
+                            exist_partner = self.env['res.partner'].search_count(
+                                [('phone', '=', customers.get(item).get('mobile'))])
+                            if exist_partner:
+                                continue
+                            value_data = customers.get(item)
 
-                        self.env['res.partner'].create({
-                            'source_record': True,
-                            'customer_nhanh_id': int(res.get('data').get('customers').get(item).get('id')),
-                            'name': value_data.get('name'),
-                            'phone': value_data.get('mobile'),
-                            'mobile': value_data.get('mobile'),
-                            'email': value_data.get('email'),
-                            'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get(
-                                'gender') == '2' else 'other',
-                            'contact_address_complete': value_data.get('address'),
-                            'street': value_data.get('address'),
-                            'vat': value_data.get('taxCode'),
-                            'birthday': datetime.datetime.strptime(value_data.get('birthday'),
-                                                                   "%Y-%m-%d").date() if value_data.get(
-                                'birthday') else None,
-                            'type_customer': 'retail_customers' if value_data.get(
-                                'type') == 1 else 'wholesalers' if value_data.get(
-                                'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
-                        })
+                            self.env['res.partner'].create({
+                                'source_record': True,
+                                'customer_nhanh_id': int(customers.get(item).get('id')),
+                                'name': value_data.get('name'),
+                                'phone': value_data.get('mobile'),
+                                'mobile': value_data.get('mobile'),
+                                'email': value_data.get('email'),
+                                'gender': 'male' if value_data.get('gender') == '1' else 'female' if value_data.get(
+                                    'gender') == '2' else 'other',
+                                'contact_address_complete': value_data.get('address'),
+                                'street': value_data.get('address'),
+                                'vat': value_data.get('taxCode'),
+                                'birthday': datetime.datetime.strptime(value_data.get('birthday'),
+                                                                       "%Y-%m-%d").date() if value_data.get(
+                                    'birthday') else None,
+                                'type_customer': 'retail_customers' if value_data.get(
+                                    'type') == 1 else 'wholesalers' if value_data.get(
+                                    'type') == 2 else 'agents' if value_data.get('type') == 2 else False,
+                            })
         ## End
 
     @api.model
