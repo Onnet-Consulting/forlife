@@ -43,18 +43,7 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
                 for(let i =0; i< products_defective.length; i++){
                     if(product_defective_id == products_defective[i].product_defective_id){
                         for(const line of orderlines) {
-                            if(line.quantity > products_defective[i].quantity){
-                                this.showPopup('ErrorPopup', {
-                                title: this.env._t("Warning"),
-                                body: _.str.sprintf(
-                                    this.env._t(
-                                        "Số luợng sản phẩm trên đơn lớn hơn số luợng sản phẩm đã chọn!"
-                                    ),
-                                    ''
-                                ),
-                                });
-                                return;
-                            }else if(line.product.id == products_defective[i].product_id && line.quantity == 1){
+                            if(line.product.id == products_defective[i].product_id && line.quantity == 1){
                                line.money_reduce_from_product_defective = parseInt(products_defective[i].total_reduce)
                                line.is_product_defective = true
                                line.product_defective_id = products_defective[i].product_defective_id
