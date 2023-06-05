@@ -11,6 +11,9 @@ class ProductProduct(models.Model):
     _update_action = 'update'
     _delete_action = 'delete'
 
+    def domain_record_sync_info(self):
+        return self.filtered(lambda f: f.detailed_type == 'product')
+
     def get_sync_create_data(self):
         data = []
         for product in self:
@@ -23,6 +26,8 @@ class ProductProduct(models.Model):
                 'name': product.name or None,
                 'unit': product.uom_id.name or None,
                 'price': product.lst_price or None,
+                'active': product.active,
+                'sale_ok': product.sale_ok,
                 'category': {
                     'id': product.categ_id.id,
                     'parent_id': product.categ_id.parent_id.id or None,
@@ -46,12 +51,13 @@ class ProductProduct(models.Model):
         return data
 
     def check_update_info(self, values):
-        field_check_update = ['sku_code', 'barcode']
+        field_check_update = ['sku_code', 'barcode', 'active']
         return [item for item in field_check_update if item in values]
 
     def get_sync_update_data(self, field_update, values):
         map_key_rabbitmq = {
             'barcode': 'sku',
+            'active': 'active',
             'sku_code': 'product_code',
         }
         vals = {}

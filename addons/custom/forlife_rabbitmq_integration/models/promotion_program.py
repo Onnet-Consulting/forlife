@@ -54,6 +54,8 @@ class PromotionProgram(models.Model):
                 'discount_based_on': program.discount_based_on or None,
                 'product_domain': program.product_domain or None,
                 'reward_type': program.reward_type or None,
+                'apply_online': program.apply_online or False,
+                'for_new_customer': program.for_new_customer or False,
             }
             data.append(vals)
         return data
@@ -63,8 +65,8 @@ class PromotionProgram(models.Model):
             'campaign_id', 'active', 'max_usage', 'limit_usage_per_order', 'limit_usage_per_customer', 'registering_tax',
             'incl_reward_in_order', 'voucher_program_id', 'voucher_product_variant_id', 'skip_card_rank', 'limit_usage',
             'with_code', 'voucher_price', 'max_usage_per_program', 'min_quantity', 'order_amount_min', 'reward_quantity',
-            'disc_amount', 'disc_percent', 'disc_fixed_price', 'disc_max_amount', 'max_usage_per_order', 'name',
-            'max_usage_per_customer', 'tax_from_date', 'tax_to_date', 'code', 'applicability', 'discount_apply_on',
+            'disc_amount', 'disc_percent', 'disc_fixed_price', 'disc_max_amount', 'max_usage_per_order', 'name', 'apply_online',
+            'max_usage_per_customer', 'tax_from_date', 'tax_to_date', 'code', 'applicability', 'discount_apply_on', 'for_new_customer',
             'state', 'promotion_type', 'combo_code', 'combo_name', 'discount_based_on', 'product_domain', 'reward_type'
         ]
         return [item for item in field_check_update if item in values]

@@ -9,16 +9,20 @@ class ProductTemplate(models.Model):
     _inherit = ['product.template', 'sync.info.rabbitmq.update']
     _update_action = 'update'
 
+    def domain_record_sync_info(self):
+        return self.filtered(lambda f: f.detailed_type == 'product')
+
     def check_update_info(self, values):
         if not self.mapped('product_variant_ids'):
             return False
-        field_check_update = ['name', 'uom_id', 'categ_id', 'list_price']
+        field_check_update = ['name', 'uom_id', 'categ_id', 'list_price', 'sale_ok']
         return [item for item in field_check_update if item in values]
 
     def get_sync_update_data(self, field_update, values):
         map_key_rabbitmq = {
             'list_price': 'price',
             'name': 'name',
+            'sale_ok': 'sale_ok',
         }
         vals = {}
         for odoo_key in field_update:
