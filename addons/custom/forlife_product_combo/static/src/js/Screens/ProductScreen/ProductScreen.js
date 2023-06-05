@@ -66,10 +66,10 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
                     var message = '';
                     // danh sach don hang cu
                     if(order_old_lines){
-                        if(order_new_lines.length == 0){
-                            message = "Bạn cần mua sản phẩm " + orderOldLine.product.display_name + " để đổi trả!";
-                        }
-                         if(combo_ids) {
+                        // if(order_new_lines.length == 0){
+                        //     message = "Bạn cần mua sản phẩm để đổi trả!";
+                        // }
+                         if(combo_ids.length > 0) {
                              _.each(combo_ids, function (combo) {
                                  var list_count = []
                                  var list_product_ids = []
@@ -134,18 +134,18 @@ odoo.define('forlife_product_combo.ProductScreen', function (require) {
 
                              })
                          }
-                    }
 
-                    if(message.length > 0) {
-                        this.showPopup('ErrorPopup', {
-                            title: this.env._t('Warning'),
-                            body: this.env._t(
-                                message
-                            ),
-                        });
-                        return false;
-                    }else{
-                        return await super._onClickPay(...arguments);
+                         if(message.length > 0) {
+                            this.showPopup('ErrorPopup', {
+                                title: this.env._t('Warning'),
+                                body: this.env._t(
+                                    message
+                                ),
+                            });
+                            return false;
+                        }else{
+                            return await super._onClickPay(...arguments);
+                        }
                     }
                 }catch(error){
                     console.log(error)
