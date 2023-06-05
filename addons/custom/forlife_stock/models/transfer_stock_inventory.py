@@ -32,6 +32,18 @@ class TransferStockInventory(models.Model):
     reason_cancel = fields.Text('Reason Cancel')
     is_nk_xk = fields.Boolean(default=False, copy=False)
 
+    @api.depends('transfer_stock_inventory_line_ids')
+    def check_classify(self):
+        for r in self:
+            sum_in = 0
+            sum_out = 0
+            for line in r.transfer_stock_inventory_line_ids:
+                sum_out += line.product_to_id.list_price * line.qty_out
+                sum_in += line.product_from_id.list_price * line.qty_in
+            if sum_out == sum_in:
+                r.x_classify = True
+            else:
+                r.x_classify = False
 
     def action_import_other(self):
         for item in self:

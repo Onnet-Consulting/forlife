@@ -603,8 +603,10 @@ class InventoryLine(models.Model):
                 continue
             if line.difference_qty > 0:  # found more than expected
                 vals = line._get_move_values(line.difference_qty, virtual_location.id, line.location_id.id, False)
+                line.create_import_export_other(vals, type_picking='import')
             else:
                 vals = line._get_move_values(abs(line.difference_qty), line.location_id.id, virtual_location.id, True)
+                line.create_import_export_other(vals, type_picking='export')
             vals_list.append(vals)
         return self.env['stock.move'].create(vals_list)
 
