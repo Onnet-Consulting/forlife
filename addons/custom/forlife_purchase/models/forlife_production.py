@@ -46,6 +46,18 @@ class ForlifeProduction(models.Model):
 
     selected_product_ids = fields.Many2many('product.product', string='Selected Products', compute='compute_product_id')
 
+    def action_open_history(self):
+        return {
+            'name': 'Version',
+            'type': 'ir.actions.act_window',
+            'res_model': 'production.history',
+            'views': [(self.env.ref('forlife_purchase.production_history_tree').id, 'tree'),
+                      (self.env.ref('forlife_purchase.production_history_form').id, 'form')],
+            'view_mode': 'tree,form',
+            'domain': [('relationship_forlife_production_id', '=', self.id)],
+            'target': 'current',
+        }
+
     @api.depends('forlife_production_finished_product_ids')
     def compute_product_id(self):
         for rec in self:
@@ -143,6 +155,58 @@ class ForlifeProductionFinishedProduct(models.Model):
         current_order.unlink()
         line = super(ForlifeProductionFinishedProduct, self).create(vals)
         return line
+
+    def write(self, vals):
+        res = super(ForlifeProductionFinishedProduct, self).write(vals)
+        for item in self:
+            value = {
+                'code': self.forlife_production_id.code,
+                'name': self.forlife_production_id.name,
+                'user_id': self.forlife_production_id.user_id.id,
+                'company_id': self.forlife_production_id.company_id.id,
+                'created_date': self.forlife_production_id.created_date,
+                'implementation_department': self.forlife_production_id.implementation_department,
+                'management_department': self.forlife_production_id.management_department,
+                'production_department': self.forlife_production_id.production_department,
+                'to_date': self.forlife_production_id.to_date,
+                'state': self.forlife_production_id.state,
+                'relationship_forlife_production_id': self.forlife_production_id.id,
+                'forlife_production_finished_product_ids': []
+            }
+            for record in item.forlife_production_id.forlife_production_finished_product_ids:
+                value['forlife_production_finished_product_ids'].append((
+                    0, 0, {'forlife_production_id': record.forlife_production_id.id,
+                           'product_id': record.product_id.id,
+                           'forlife_production_name': record.forlife_production_name,
+                           'description': record.description,
+                           'produce_qty': record.produce_qty,
+                           'uom_id': record.uom_id.id,
+                           'unit_price': record.unit_price,
+                           'stock_qty': record.stock_qty,
+                           'remaining_qty': record.remaining_qty,
+                           'implementation_department': record.implementation_department,
+                           'management_department': record.management_department,
+                           'production_department': record.production_department,
+                           'forlife_bom_material_ids': [(
+                               0, 0, {'forlife_production_id': line.forlife_production_id.id,
+                                      'product_id': line.product_id.id,
+                                      'description': line.description,
+                                      'quantity': line.quantity,
+                                      'uom_id': line.uom_id.id,
+                                      'production_uom_id': line.production_uom_id.id,
+                                      'conversion_coefficient': line.conversion_coefficient,
+                                      'rated_level': line.rated_level,
+                                      'loss': line.loss,
+                                      'total': line.total,
+                                      }) for line in record.forlife_bom_material_ids],
+                           'forlife_bom_service_cost_ids': [(
+                               0, 0, {'forlife_production_id': line.forlife_bom_id.id,
+                                      'product_id': line.product_id.id,
+                                      'rated_level': line.rated_level
+                                      }) for line in record.forlife_bom_service_cost_ids]
+                           }))
+            history = self.env['production.history'].create(value)
+        return res
 
     @api.model
     def get_import_templates(self):
