@@ -25,3 +25,10 @@ class Location(models.Model):
         res = super().default_get(default_fields)
         res['usage'] = 'inventory'
         return res
+
+    @api.model
+    def get_import_templates(self):
+        return [{
+            'label': _('Tải xuống mẫu lý do'),
+            'template': '/forlife_stock/static/src/xlsx/lý_do_nk_xk.xlsx?download=true'
+        }]
