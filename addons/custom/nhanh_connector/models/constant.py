@@ -55,7 +55,7 @@ def get_nhanh_configs(self, brand_ids=None):
     for config_id in config_ids:
         if nhanh_configs.get(config_id.id):
             continue
-        nhanh_configs[config_id.id] = {
+        nhanh_configs[config_id.brand_id.id] = {
             'nhanh_connector.nhanh_business_id': config_id.nhanh_business_id,
             'nhanh_connector.nhanh_app_id': config_id.nhanh_app_id,
             'nhanh_connector.nhanh_secret_key': config_id.nhanh_secret_key,
