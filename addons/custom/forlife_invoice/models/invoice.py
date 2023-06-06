@@ -24,6 +24,7 @@ class AccountMove(models.Model):
         ('asset', 'Asset'),
         ('service', 'Service'),
     ], string='PO Type', default='product')
+    type_inv = fields.Selection([('tax', 'Nhập khẩu'), ('cost', 'Nội địa')], string='Loại hóa đơn')
     number_bills = fields.Char(string='Number bills', copy=False)
     reference = fields.Char(string='Source Material')
     exchange_rate = fields.Float(string='Exchange Rate', digits=(12, 8), default=1)
@@ -31,18 +32,24 @@ class AccountMove(models.Model):
     payment_status = fields.Char(string='Payment onchange_purchase_typestatus')
     is_passersby = fields.Boolean(related='partner_id.is_passersby')
     is_check_cost_view = fields.Boolean(default=False, string='Hóa đơn chi phí')
+    is_check_cost_out_source = fields.Boolean(default=False, string='Hóa đơn chi phí thuê ngoài')
     is_check_invoice_tnk = fields.Boolean(default=False)
-    invoice_synthetic_ids = fields.One2many('forlife.invoice.synthetic', 'synthetic_id', compute='_compute_exchange_rate_line_and_cost_line',store=1)
+
+    @api.onchange('is_check_cost_view')
+    def _onchange_is_check_cost_view(self):
+        if self.is_check_cost_view and self.is_check_cost_out_source:
+            self.is_check_cost_out_source = False
+
+    @api.onchange('is_check_cost_out_source')
+    def _onchange_is_check_cost_out_source(self):
+        if self.is_check_cost_view and self.is_check_cost_out_source:
+            self.is_check_cost_view = False
 
 
     transportation_total = fields.Float(string='Tổng chi phí vận chuyển')
     loading_total = fields.Float(string='Tổng chi phí bốc dỡ')
     custom_total = fields.Float(string='Tổng chi phí thông quan')
-
-    vendor_back_ids = fields.One2many('vendor.back', 'vendor_back_id', string='Vendor Back',
-                                      compute='_compute_is_check_vendor_page', readonly=False)
     payment_term_invoice = fields.Many2one('account.payment.term', string='Chính sách thanh toán')
-    type_inv = fields.Selection([('tax', 'Tax'), ('cost', 'Cost')])
 
     trade_discount = fields.Integer(string='Chiết khấu thương mại(%)')
     total_trade_discount = fields.Integer(string='Tổng chiết khấu thương mại')
@@ -60,7 +67,16 @@ class AccountMove(models.Model):
                                          compute='_compute_exchange_rate_line_and_cost_line',
                                          store=1)
     cost_line = fields.One2many('invoice.cost.line', 'invoice_cost_id',
-                                string='Invoice Cost Line', compute='_compute_exchange_rate_line_and_cost_line', store=1)
+                                string='Invoice Cost Line',
+                                compute='_compute_exchange_rate_line_and_cost_line',
+                                store=1)
+    invoice_synthetic_ids = fields.One2many('forlife.invoice.synthetic', 'synthetic_id',
+                                            compute='_compute_exchange_rate_line_and_cost_line',
+                                            store=1)
+    vendor_back_ids = fields.One2many('vendor.back', 'vendor_back_id',
+                                      string='Vendor Back',
+                                      compute='_compute_is_check_vendor_page',
+                                      readonly=False)
 
     # Field check k cho tạo addline khi hóa đơn đã có PO
     is_check = fields.Boolean(default=False)
@@ -135,7 +151,7 @@ class AccountMove(models.Model):
                     [('state', '=', 'done')])
                 rec.partner_domain_2 = json.dumps([('id', 'in', receiving_warehouse_id.ids)])
 
-    @api.onchange('is_check_cost_view', 'purchase_order_product_id', 'partner_id', 'partner_id.group_id')
+    @api.onchange('is_check_cost_view', 'is_check_cost_out_source', 'purchase_order_product_id', 'partner_id', 'partner_id.group_id')
     def onchange_view_product_cost_and_receiving_warehouse_id(self):
         for rec in self:
             rec.invoice_line_ids = [(5, 0)]
@@ -157,7 +173,7 @@ class AccountMove(models.Model):
                         rec.purchase_type = 'service'
                         for cost in product_cost.cost_line:
                             if not cost.product_id.categ_id and cost.product_id.categ_id.with_company(rec.company_id).property_stock_account_input_categ_id:
-                                raise ValidationError("Chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm!!")
+                                raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % cost.product_id)
                             else:
                                 existing_line = invoice_line_ids.filtered(lambda line: line.product_id.id == cost.product_id.id)
                                 if not existing_line:
@@ -171,6 +187,27 @@ class AccountMove(models.Model):
                                 else:
                                     existing_line.price_unit += cost.vnd_amount
                             rec.invoice_line_ids = invoice_line_ids
+                    elif rec.is_check_cost_out_source:
+                        rec.purchase_type = 'service'
+                        for out_source in product_cost.order_line_production_order:
+                            for out_source_line in out_source.purchase_order_line_material_line_ids:
+                                if out_source_line.product_id.product_tmpl_id.x_type_cost_product == 'labor_costs':
+                                    if not out_source_line.product_id.categ_id and out_source_line.product_id.categ_id.with_company(
+                                            rec.company_id).property_stock_account_input_categ_id:
+                                        raise ValidationError(_("Bạn chưa cấu hình tài khoản nhập kho ở danh mục sản phẩm của sản phẩm %s!!") % out_source_line.product_id.name)
+                                    else:
+                                        existing_line = invoice_line_ids.filtered(lambda line: line.product_id.id == out_source_line.product_id.id)
+                                        if not existing_line:
+                                            invoice_line_ids += self.env['account.move.line'].new({
+                                                'product_id': out_source_line.product_id.id,
+                                                'description': out_source_line.name,
+                                                'price_unit': out_source_line.product_id.standard_price,
+                                                'cost_type': out_source_line.product_id.detailed_type,
+                                                'cost_id': out_source_line.id,
+                                            })
+                                        else:
+                                            existing_line.price_unit += out_source_line.product_id.standard_price
+                                    rec.invoice_line_ids = invoice_line_ids
                     else:
                         rec.purchase_type = 'product'
                         for product in product_cost.order_line:
@@ -202,7 +239,7 @@ class AccountMove(models.Model):
                         rec.invoice_line_ids = invoice_line_ids
                 else:
                     rec.receiving_warehouse_id = False
-                    if rec.is_check_cost_view:
+                    if rec.is_check_cost_view or rec.is_check_cost_out_source:
                         rec.purchase_type = 'service'
                     else:
                         rec.purchase_type = 'product'
@@ -228,12 +265,9 @@ class AccountMove(models.Model):
                                 raise UserError(_("Không thể tạo hóa đơn với số lượng lớn hơn phiếu nhập kho %s liên quan ") % nine.name)
 
     def write(self, vals):
-        # context_invoice = self._context
-        # old_line_count = len(self.invoice_line_ids)
-        # new_line_count = len(vals.get('invoice_line_ids', []))
         res = super(AccountMove, self).write(vals)
         for rec in self:
-            if rec.is_check_cost_view:
+            if rec.is_check_cost_view or rec.is_check_cost_out_source:
                 for line in rec.invoice_line_ids:
                     if line.product_id and line.display_type == 'product':
                         line.write({
@@ -241,6 +275,7 @@ class AccountMove(models.Model):
                                 line.company_id).property_stock_account_input_categ_id.id,
                             'name': line.product_id.name
                         })
+            ### ghi key search bút toán liên quan cho invocie:
             entry_relation_ship_id = self.search([('move_type', '=', 'entry'),
                                                   ('e_in_check', '=', str(rec.id)),
                                                   ])
@@ -251,14 +286,6 @@ class AccountMove(models.Model):
                     line.write({
                         'ref': f"{str(rec.name)} - {str(line.invoice_description)}",
                     })
-
-        # for key, value in context_invoice.items():
-        #     print(key, value)
-        #     if value == "purchase.order":
-        #         if (new_line_count > old_line_count) and self.state == "draft":
-        #             raise ValidationError('Không thể thêm sản phẩm khi ở trạng thái dự thảo')
-        #         else:
-        #             return rec
         return res
 
     @api.depends('partner_id.is_passersby', 'partner_id')
@@ -586,7 +613,7 @@ class AccountMoveLine(models.Model):
     warehouse = fields.Many2one('stock.location', string='Whs')
     discount_percent = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
     discount = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
-    tax_amount = fields.Monetary(string='Tiền thuế', compute='_compute_tax_amount', store=1)
+    tax_amount = fields.Monetary(string='Tiền thuế')
     taxes_id = fields.Many2one('account.tax',
                                string='Thuế %',
                                domain=[('active', '=', True)])
@@ -739,8 +766,6 @@ class AccountMoveLine(models.Model):
     #     return self.price_unit
 
 
-
-
 class RespartnerVendor(models.Model):
     _name = "vendor.back"
 
@@ -872,7 +897,6 @@ class InvoiceExchangeRate(models.Model):
     def compute_tax_amount(self):
         for rec in self:
             rec.total_tax_amount = rec.tax_amount + rec.special_consumption_tax_amount + rec.vat_tax_amount
-
 
 
 class InvoiceCostLine(models.Model):
