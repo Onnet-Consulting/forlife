@@ -13,6 +13,7 @@
             <field name="code">1381000001</field>
             <field name="type_other">incoming</field>
             <field name="reason_type_id" ref="forlife_stock.reason_type_5"/>
+            <field name="company_id" eval="False"/>
         </record>
         <record id="enter_inventory_balance_auto" model="stock.location">
             <field name="name">Nhập cân đối tồn kho - kiểm kê định kỳ</field>
