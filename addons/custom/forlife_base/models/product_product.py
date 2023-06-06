@@ -16,6 +16,17 @@ class ProducAttributeValue(models.Model):
         ('value_code_uniq', 'unique (code, attribute_id)', "Bạn không thể tạo hai mã có cùng giá trị cho cùng một thuộc tính.")
     ]
 
+class ProductTemplate(models.Model):
+    _inherit = 'product.template'
+
+    def _get_brand_default(self):
+        user_id = self.env['res.users'].browse(self._uid)
+        if not user_id:
+            return
+        return user_id.brand_default_id
+
+    brand_id = fields.Many2one('res.brand', string='Brand', default=_get_brand_default)
+
 
 class ProducProduct(models.Model):
     _inherit = "product.product"
@@ -25,6 +36,7 @@ class ProducProduct(models.Model):
     days_before_alert = fields.Integer(string="Warning before (day)", copy=False, default=0)
     alert_date = fields.Datetime(string='Alert Date', compute='_compute_dates', store=True, readonly=False)
     product_expiry_reminded = fields.Boolean(string="Expiry has been reminded", default=False)
+    brand_id = fields.Many2one('res.brand', related='product_tmpl_id.brand_id', string='Brand', readonly=1)
 
     @api.depends('expiration_date', 'days_before_alert')
     def _compute_dates(self):
