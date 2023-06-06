@@ -77,7 +77,7 @@
 
         <record model="ir.ui.menu" id="stock.stock_picking_type_menu">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="stock.menu_stock_warehouse_mgmt">
@@ -87,7 +87,7 @@
 
         <record model="ir.ui.menu" id="stock.menu_stock_inventory_control">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="account_accountant.menu_accounting">
