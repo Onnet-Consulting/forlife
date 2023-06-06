@@ -33,6 +33,16 @@
             <field name="sequence">20</field>
         </record>
 
+        <record id="group_stock" model="res.groups">
+            <field name="name">Kho</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
+        <record id="group_mer" model="res.groups">
+            <field name="name">MER</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
         <record id="group_request_stock_transfer_cancel" model="res.groups">
             <field name="name">Phiếu yêu cầu điều chuyển Nút Cancel</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
