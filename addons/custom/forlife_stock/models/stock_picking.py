@@ -199,6 +199,7 @@ class StockPicking(models.Model):
         line = super(StockPicking, self).create(vals)
         if self.env.context.get('default_other_import') or self.env.context.get('default_other_export'):
             for rec in line.move_ids_without_package:
+                rec._onchange_product_id()
                 '''
                 rec.location_id = vals['location_id']
                 rec.location_dest_id = vals['location_dest_id']
@@ -238,7 +239,7 @@ class StockMove(models.Model):
         if self.env.context.get('default_other_import'):
             return "[('reason_type_id', '=', reason_type_id)]"
 
-    name = fields.Char('Description', required=False, compute='compute_product_id')
+    name = fields.Char('Description', required=False)
     company_id = fields.Many2one(
         'res.company', 'Company',
         default=lambda self: self.env.company,
@@ -273,7 +274,7 @@ class StockMove(models.Model):
         index=True, required=False,
         states={'done': [('readonly', True)]})
     uom_id = fields.Many2one(related="product_id.uom_id", string='Đơn vị')
-    amount_total = fields.Float(string='Thành tiền', compute='compute_product_id', store=1)
+    amount_total = fields.Float(string='Thành tiền')
     reason_type_id = fields.Many2one('forlife.reason.type', string='Loại lý do')
     reason_id = fields.Many2one('stock.location', domain=_domain_reason_id)
     occasion_code_id = fields.Many2one('occasion.code', 'Occasion Code')
@@ -325,13 +326,13 @@ class StockMove(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
-        for r in self:
-            if r.product_id:
-                r.reason_id = r.picking_id.location_id.id \
-                    if r.picking_id.other_import else r.picking_id.location_dest_id.id
-                r.reason_type_id = r.picking_id.reason_type_id.id
-                r.name = r.product_id.name
-                r.amount_total = r.product_id.standard_price if not r.reason_id.is_price_unit else 0
+        self.name = self.product_id.name
+        self.amount_total = self.product_id.standard_price if not self.reason_id.is_price_unit else 0
+        if not self.reason_id:
+            self.reason_id = self.picking_id.location_id.id \
+                if self.picking_id.other_import else self.picking_id.location_dest_id.id
+        if not self.reason_type_id:
+            self.reason_type_id = self.picking_id.reason_type_id.id
 
 
 class StockMoveLine(models.Model):
