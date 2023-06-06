@@ -104,13 +104,15 @@ class ProductProduct(models.Model):
                 bravo_column_names[9]: product_type
             })
 
-            attribute_values = record.product_template_variant_value_ids or record.product_template_attribute_value_ids
             attribute_values = record.product_tmpl_id.valid_product_template_attribute_line_ids
             product_attribute_code_value_mapping = {}
             for attr_value in attribute_values:
+                if attr_value.value_count < 1:
+                    continue
+                # get only one value from attribute values
                 attribute_code = attr_value.attribute_id.attrs_code
                 product_attribute_code_value_mapping.update({
-                    attribute_code: attr_value.name
+                    attribute_code: attr_value.value_ids[0].name
                 })
 
             for attribute_name_column in attribute_column_names:
