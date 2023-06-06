@@ -1138,34 +1138,72 @@ class PurchaseOrder(models.Model):
         sequence = 10
         vals_all_invoice = {}
         for order in self:
-            if order.inventory_status != 'done' and order.purchase_type == 'product':
-                raise ValidationError(
-                    'Phiếu nhận hàng của đơn mua hàng %s có thể chưa hoàn thành/chưa có!' % (order.name))
-            if order.custom_state != 'approved':
-                raise UserError(
-                    _('Tạo hóa đơn không hợp lệ!'))
-            picking_in = self.env['stock.picking'].search([('origin', '=', order.name),
-                                                           ('state', '=', 'done'),
-                                                           ('ware_check', '=', False),
-                                                           ('x_is_check_return', '=', False),
-                                                           ('picking_type_id.code', '=', 'incoming')
-                                                           ])
-            for line in order.order_line:
-                wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
-                                                                                   and w.product_id.id == line.product_id.id
-                                                                                   and w.picking_type_id.code == 'incoming'
-                                                                                   and w.picking_id.x_is_check_return == False)
-                if wave:
-                    for wave_item in wave:
+            if order.purchase_type in ('service', 'asset'):
+                if order.custom_state != 'approved':
+                    raise UserError(_('Tạo hóa đơn không hợp lệ cho đơn mua %s!') % order.name)
+                invoi_relationship = self.env['account.move'].search([('reference', '=', order.name),
+                                                                      ('partner_id', '=', order.partner_id.id)])
+                if invoi_relationship:
+                    if sum(invoi_relationship.invoice_line_ids.mapped('price_subtotal')) == sum(
+                            order.order_line.mapped('price_subtotal')):
+                        raise UserError(_('Hóa đơn đã được khống chế theo đơn mua hàng %s!') % order.name)
+                    else:
+                        for line in order.order_line:
+                            quantity = 0
+                            wave = invoi_relationship.invoice_line_ids.filtered(lambda w: str(w.po_id) == str(line.id) and w.product_id.id == line.product_id.id)
+                            for nine in wave:
+                                quantity += nine.quantity
+                                data_line = {
+                                    'po_id': line.id,
+                                    'product_id': line.product_id.id,
+                                    'sequence': sequence,
+                                    'promotions': line.free_good,
+                                    'exchange_quantity': line.exchange_quantity,
+                                    'quantity': line.product_qty - quantity,
+                                    'vendor_price': line.vendor_price,
+                                    'warehouse': line.location_id.id,
+                                    'discount': line.discount_percent,
+                                    'event_id': line.event_id.id,
+                                    'work_order': line.production_id.id,
+                                    'account_analytic_id': line.account_analytic_id.id,
+                                    'request_code': line.request_purchases,
+                                    'quantity_purchased': line.purchase_quantity - nine.quantity_purchased,
+                                    'discount_percent': line.discount,
+                                    'taxes_id': line.taxes_id.id,
+                                    'tax_amount': line.price_tax,
+                                    'uom_id': line.product_uom.id,
+                                    'price_unit': line.price_unit,
+                                    'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                                }
+                            sequence += 1
+                            key = order.purchase_type, order.partner_id.id, order.company_id.id
+                            invoice_vals = order._prepare_invoice()
+                            invoice_vals.update({'purchase_type': order.purchase_type,
+                                                 'invoice_date': datetime.now(),
+                                                 'exchange_rate': order.exchange_rate,
+                                                 'currency_id': order.currency_id.id,
+                                                 'reference': order.name,
+                                                 })
+                            order = order.with_company(order.company_id)
+                            line_vals = line._prepare_account_move_line()
+                            line_vals.update(data_line)
+                            invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                            if vals_all_invoice.get(key):
+                                vals_all_invoice.get(key)['invoice_line_ids'].append((0, 0, line_vals))
+                            else:
+                                vals_all_invoice.update({
+                                    key: invoice_vals
+                                })
+                else:
+                    for line in order.order_line:
                         data_line = {
-                            'ware_name': wave_item.picking_id.name,
                             'po_id': line.id,
                             'product_id': line.product_id.id,
                             'sequence': sequence,
                             'price_subtotal': line.price_subtotal,
                             'promotions': line.free_good,
-                            'exchange_quantity': wave_item.quantity_change,
-                            'quantity': wave_item.qty_done,
+                            'exchange_quantity': line.exchange_quantity,
+                            'quantity': line.product_qty,
                             'vendor_price': line.vendor_price,
                             'warehouse': line.location_id.id,
                             'discount': line.discount_percent,
@@ -1173,7 +1211,7 @@ class PurchaseOrder(models.Model):
                             'work_order': line.production_id.id,
                             'account_analytic_id': line.account_analytic_id.id,
                             'request_code': line.request_purchases,
-                            'quantity_purchased': wave_item.quantity_purchase_done,
+                            'quantity_purchased': line.purchase_quantity,
                             'discount_percent': line.discount,
                             'taxes_id': line.taxes_id.id,
                             'tax_amount': line.price_tax,
@@ -1181,34 +1219,97 @@ class PurchaseOrder(models.Model):
                             'price_unit': line.price_unit,
                             'total_vnd_amount': line.price_subtotal * order.exchange_rate,
                         }
-                        wave.picking_id.ware_check = True
-                else:
-                    raise UserError(_('Đơn mua có mã phiếu là %s đã có hóa đơn liên quan tương ứng với phiếu nhập kho!') % order.name)
-                sequence += 1
-                key = order.purchase_type, order.partner_id.id, order.company_id.id
-                invoice_vals = order._prepare_invoice()
-                picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
-                                                                 and r.state == 'done'
-                                                                 and r.picking_type_id.code == 'incoming'
-                                                                 and r.ware_check == True
-                                                                 and r.x_is_check_return == False)
-                invoice_vals.update({'purchase_type': order.purchase_type,
-                                     'invoice_date': datetime.now(),
-                                     'exchange_rate': order.exchange_rate,
-                                     'currency_id': order.currency_id.id,
-                                     'reference': order.name,
-                                     'receiving_warehouse_id': [(6, 0, picking_incoming.ids)],
-                                     })
-                order = order.with_company(order.company_id)
-                line_vals = line._prepare_account_move_line()
-                line_vals.update(data_line)
-                invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
-                if vals_all_invoice.get(key):
-                    vals_all_invoice.get(key)['invoice_line_ids'].append((0, 0, line_vals))
-                else:
-                    vals_all_invoice.update({
-                        key: invoice_vals
-                    })
+                        sequence += 1
+                        key = order.purchase_type, order.partner_id.id, order.company_id.id
+                        invoice_vals = order._prepare_invoice()
+                        invoice_vals.update({'purchase_type': order.purchase_type,
+                                             'invoice_date': datetime.now(),
+                                             'exchange_rate': order.exchange_rate,
+                                             'currency_id': order.currency_id.id,
+                                             'reference': order.name,
+                                             })
+                        order = order.with_company(order.company_id)
+                        line_vals = line._prepare_account_move_line()
+                        line_vals.update(data_line)
+                        invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                        if vals_all_invoice.get(key):
+                            vals_all_invoice.get(key)['invoice_line_ids'].append((0, 0, line_vals))
+                        else:
+                            vals_all_invoice.update({
+                            key: invoice_vals
+                        })
+            else:
+                if order.inventory_status != 'done' and order.purchase_type == 'product':
+                    raise ValidationError(
+                        'Phiếu nhận hàng của đơn mua hàng %s có thể chưa hoàn thành/chưa có!' % (order.name))
+                if order.custom_state != 'approved':
+                    raise UserError(
+                        _('Tạo hóa đơn không hợp lệ!'))
+                picking_in = self.env['stock.picking'].search([('origin', '=', order.name),
+                                                               ('state', '=', 'done'),
+                                                               ('ware_check', '=', False),
+                                                               ('x_is_check_return', '=', False),
+                                                               ('picking_type_id.code', '=', 'incoming')
+                                                               ])
+                for line in order.order_line:
+                    wave = picking_in.move_line_ids_without_package.filtered(lambda w: str(w.po_id) == str(line.id)
+                                                                                       and w.product_id.id == line.product_id.id
+                                                                                       and w.picking_type_id.code == 'incoming'
+                                                                                       and w.picking_id.x_is_check_return == False)
+                    if wave:
+                        for wave_item in wave:
+                            data_line = {
+                                'ware_name': wave_item.picking_id.name,
+                                'po_id': line.id,
+                                'product_id': line.product_id.id,
+                                'sequence': sequence,
+                                'price_subtotal': line.price_subtotal,
+                                'promotions': line.free_good,
+                                'exchange_quantity': wave_item.quantity_change,
+                                'quantity': wave_item.qty_done,
+                                'vendor_price': line.vendor_price,
+                                'warehouse': line.location_id.id,
+                                'discount': line.discount_percent,
+                                'event_id': line.event_id.id,
+                                'work_order': line.production_id.id,
+                                'account_analytic_id': line.account_analytic_id.id,
+                                'request_code': line.request_purchases,
+                                'quantity_purchased': wave_item.quantity_purchase_done,
+                                'discount_percent': line.discount,
+                                'taxes_id': line.taxes_id.id,
+                                'tax_amount': line.price_tax,
+                                'uom_id': line.product_uom.id,
+                                'price_unit': line.price_unit,
+                                'total_vnd_amount': line.price_subtotal * order.exchange_rate,
+                            }
+                            wave.picking_id.ware_check = True
+                    else:
+                        raise UserError(_('Đơn mua có mã phiếu là %s đã có hóa đơn liên quan tương ứng với phiếu nhập kho!') % order.name)
+                    sequence += 1
+                    key = order.purchase_type, order.partner_id.id, order.company_id.id
+                    invoice_vals = order._prepare_invoice()
+                    picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
+                                                                     and r.state == 'done'
+                                                                     and r.picking_type_id.code == 'incoming'
+                                                                     and r.ware_check == True
+                                                                     and r.x_is_check_return == False)
+                    invoice_vals.update({'purchase_type': order.purchase_type,
+                                         'invoice_date': datetime.now(),
+                                         'exchange_rate': order.exchange_rate,
+                                         'currency_id': order.currency_id.id,
+                                         'reference': order.name,
+                                         'receiving_warehouse_id': [(6, 0, picking_incoming.ids)],
+                                         })
+                    order = order.with_company(order.company_id)
+                    line_vals = line._prepare_account_move_line()
+                    line_vals.update(data_line)
+                    invoice_vals['invoice_line_ids'].append((0, 0, line_vals))
+                    if vals_all_invoice.get(key):
+                        vals_all_invoice.get(key)['invoice_line_ids'].append((0, 0, line_vals))
+                    else:
+                        vals_all_invoice.update({
+                            key: invoice_vals
+                        })
 
         moves = self.env['account.move'].with_context(default_move_type='in_invoice')
         created_moves = []
