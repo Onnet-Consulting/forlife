@@ -35,8 +35,23 @@ class PosSession(models.Model):
             }
         }
 
-    # def _get_pos_ui_promotion_pricelist_item(self, params):
-    #     return self.env['promotion.pricelist.item'].search_read(**params['search_params'])
+    def _get_pos_ui_promotion_pricelist_item(self, params):
+        items = self.env['promotion.pricelist.item'].search_read(**params['search_params'], order='fixed_price DESC')
+        res_items = self._process_pos_ui_promotion_pricelist_item(items)
+        return res_items
+
+    def _process_pos_ui_promotion_pricelist_item(self, items):
+        res = []
+        product_set = set()
+        product_ids = set(self._get_product_ids_by_store())
+        for item in items:
+            product_id = item.get('product_id') and item.get('product_id')[0] or None
+            if product_id not in product_set and item.get('lst_price') > item.get('fixed_price') \
+                    and product_id in product_ids:
+                res.append(item)
+                product_set.add(product_id)
+        items[:] = res
+
     def get_pos_ui_promotion_price_list_item_by_params(self, custom_search_params):
         """
         :param custom_search_params: a dictionary containing params of a search_read()
