@@ -112,7 +112,7 @@ class ProductProduct(models.Model):
                 # get only one value from attribute values
                 attribute_code = attr_value.attribute_id.attrs_code
                 product_attribute_code_value_mapping.update({
-                    attribute_code: attr_value.value_ids[0].name
+                    attribute_code: attr_value.value_ids[0].code
                 })
 
             for attribute_name_column in attribute_column_names:
