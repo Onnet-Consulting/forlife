@@ -73,7 +73,7 @@ class ProductProduct(models.Model):
             value = {
                 bravo_column_names[0]: record.barcode or None,
                 bravo_column_names[1]: record.name,
-                bravo_column_names[2]: record.sku_code or None,
+                bravo_column_names[2]: record.sku_code or record.product_tmpl_id.sku_code or None,
                 bravo_column_names[3]: record.uom_id.code or None,
                 bravo_column_names[4]: c1.bravo_get_category_code() or None,
                 bravo_column_names[5]: c2.bravo_get_category_code() or None,
