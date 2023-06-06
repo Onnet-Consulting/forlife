@@ -62,7 +62,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.hourData = loadedData['hour.data'] || [];
         this.promotionPricelistItems = [];
         this._loadPromotionData();
-        this.loadPromotionPriceListItemBackground();
+//        this.loadPromotionPriceListItemBackground();
+        this._loadPromotionPriceListItem(loadedData['promotion.pricelist.item']);
     }
     _loadPromotionData() {
         this.promotion_program_by_id = {};
