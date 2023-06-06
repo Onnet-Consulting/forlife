@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from ..fields import BravoCharField, BravoDatetimeField, BravoMany2oneField
+from odoo.addons.forlife_bravo_integration.models.product_category import CONTEXT_CATEGORY_ACCOUNT_KEY
 
 import re
 
@@ -79,7 +80,7 @@ class ProductProduct(models.Model):
                 bravo_column_names[5]: c2.bravo_get_category_code() or None,
                 bravo_column_names[6]: c3.bravo_get_category_code() or None,
                 bravo_column_names[7]: c4.bravo_get_category_code() or None,
-                bravo_column_names[8]: accounting_c.bravo_get_category_code() or None,
+                bravo_column_names[8]: accounting_c.bravo_get_category_code(**{CONTEXT_CATEGORY_ACCOUNT_KEY: True}) or None,
             }
             if record.detailed_type != 'product':
                 product_type = 0
