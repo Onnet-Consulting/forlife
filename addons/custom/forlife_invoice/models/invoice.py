@@ -577,8 +577,8 @@ class AccountMoveLine(models.Model):
     taxes_id = fields.Many2one('account.tax',
                                string='Thuế %',
                                domain=[('active', '=', True)])
-    price_unit = fields.Float(string='Unit Price',
-                              digits='Product Price')
+    # price_unit = fields.Float(string='Unit Price',
+    #                           digits='Product Price')
 
     # fields common !!
     readonly_discount = fields.Boolean(default=False)
@@ -593,11 +593,11 @@ class AccountMoveLine(models.Model):
     exchange_quantity = fields.Float(string='Exchange Quantity')
     request_code = fields.Char('Mã phiếu yêu cầu')
     vendor_price = fields.Float(string='Vendor Price')
-    quantity = fields.Float(string='Quantity',
-                            default=1.0, digits='Product Unit of Measure',
-                            help="The optional quantity expressed by this line, eg: number of product sold. "
-                                 "The quantity is not a legal requirement but is very useful for some reports.",
-                            compute='_compute_quantity', store=1)
+    # quantity = fields.Float(string='Quantity',
+    #                         default=1.0, digits='Product Unit of Measure',
+    #                         help="The optional quantity expressed by this line, eg: number of product sold. "
+    #                              "The quantity is not a legal requirement but is very useful for some reports.",
+    #                         compute='_compute_quantity', store=1)
     total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
 
     # asset invoice!!
@@ -640,90 +640,90 @@ class AccountMoveLine(models.Model):
         for rec in self:
             if rec.price_subtotal and rec.move_id.exchange_rate:
                 rec.total_vnd_amount = rec.price_subtotal * rec.move_id.exchange_rate
-
-    def _prepare_compute_all_values(self):
-        # Hook method to returns the different argument values for the
-        # compute_all method, due to the fact that discounts mechanism
-        # is not implemented yet on the purchase orders.
-        # This method should disappear as soon as this feature is
-        # also introduced like in the sales module.
-        self.ensure_one()
-        return {
-            'price_unit': self.price_unit,
-            'currency': self.move_id.currency_id,
-            'quantity': self.quantity,
-            'product': self.product_id,
-            'partner': self.move_id.partner_id,
-        }
-
-    @api.depends('quantity_purchased', 'exchange_quantity')
-    def _compute_quantity(self):
-        for rec in self:
-            if rec.quantity_purchased and rec.exchange_quantity:
-                rec.quantity = rec.quantity_purchased * rec.exchange_quantity
-            else:
-                rec.quantity = rec.quantity_purchased
-
-    @api.onchange("discount")
-    def _onchange_discount_percent(self):
-        if not self.readonly_discount_percent:
-            if self.discount:
-                self.discount_percent = self.discount * self.price_unit * self.quantity * 0.01
-
-
-    @api.depends('taxes_id')
-    def _compute_tax_amount(self):
-        for rec in self:
-            if rec.taxes_id:
-                rec.tax_amount = (rec.taxes_id.amount / 100) * rec.price_subtotal
-                # self.readonly_discount = True
-            # else:
-                # self.readonly_discount = False
-
-    # @api.onchange("discount_percent")
-    # def _onchange_discount(self):
-    #     if not self.readonly_discount:
-    #         if self.discount_percent:
-    #             self.readonly_discount_percent = True
-    #         else:
-    #             self.readonly_discount_percent = False
-
-    # @api.depends('quantity', 'price_unit', 'taxes_id', 'promotions', 'discount', 'discount_percent')
-    # def _compute_amount(self):
-    #     for line in self:
-    #         tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
-    #         totals = list(tax_results['totals'].values())[0]
-    #         amount_untaxed = totals['amount_untaxed']
-    #         amount_tax = totals['amount_tax']
     #
-    #         line.update({
-    #             'price_subtotal': amount_untaxed,
-    #             'tax_amount': amount_tax,
-    #             'price_total': amount_untaxed + amount_tax,
-    #         })
-
-    def _convert_to_tax_base_line_dict(self):
-        self.ensure_one()
-        return self.env['account.tax']._convert_to_tax_base_line_dict(
-            self,
-            partner=self.move_id.partner_id,
-            currency=self.move_id.currency_id,
-            product=self.product_id,
-            taxes=self.taxes_id,
-            price_unit=self.price_unit,
-            quantity=self.quantity,
-            discount=self.discount,
-            price_subtotal=self.price_subtotal,
-        )
-
-
-    def _get_discounted_price_unit(self):
-        self.ensure_one()
-        if self.discount_percent:
-            return self.price_unit - self.discount_percent
-        else:
-            return self.price_unit * (1 - self.discount / 100)
-        return self.price_unit
+    # def _prepare_compute_all_values(self):
+    #     # Hook method to returns the different argument values for the
+    #     # compute_all method, due to the fact that discounts mechanism
+    #     # is not implemented yet on the purchase orders.
+    #     # This method should disappear as soon as this feature is
+    #     # also introduced like in the sales module.
+    #     self.ensure_one()
+    #     return {
+    #         'price_unit': self.price_unit,
+    #         'currency': self.move_id.currency_id,
+    #         'quantity': self.quantity,
+    #         'product': self.product_id,
+    #         'partner': self.move_id.partner_id,
+    #     }
+    #
+    # @api.depends('quantity_purchased', 'exchange_quantity')
+    # def _compute_quantity(self):
+    #     for rec in self:
+    #         if rec.quantity_purchased and rec.exchange_quantity:
+    #             rec.quantity = rec.quantity_purchased * rec.exchange_quantity
+    #         else:
+    #             rec.quantity = rec.quantity_purchased
+    #
+    # @api.onchange("discount")
+    # def _onchange_discount_percent(self):
+    #     if not self.readonly_discount_percent:
+    #         if self.discount:
+    #             self.discount_percent = self.discount * self.price_unit * self.quantity * 0.01
+    #
+    #
+    # @api.depends('taxes_id')
+    # def _compute_tax_amount(self):
+    #     for rec in self:
+    #         if rec.taxes_id:
+    #             rec.tax_amount = (rec.taxes_id.amount / 100) * rec.price_subtotal
+    #             # self.readonly_discount = True
+    #         # else:
+    #             # self.readonly_discount = False
+    #
+    # # @api.onchange("discount_percent")
+    # # def _onchange_discount(self):
+    # #     if not self.readonly_discount:
+    # #         if self.discount_percent:
+    # #             self.readonly_discount_percent = True
+    # #         else:
+    # #             self.readonly_discount_percent = False
+    #
+    # # @api.depends('quantity', 'price_unit', 'taxes_id', 'promotions', 'discount', 'discount_percent')
+    # # def _compute_amount(self):
+    # #     for line in self:
+    # #         tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
+    # #         totals = list(tax_results['totals'].values())[0]
+    # #         amount_untaxed = totals['amount_untaxed']
+    # #         amount_tax = totals['amount_tax']
+    # #
+    # #         line.update({
+    # #             'price_subtotal': amount_untaxed,
+    # #             'tax_amount': amount_tax,
+    # #             'price_total': amount_untaxed + amount_tax,
+    # #         })
+    #
+    # def _convert_to_tax_base_line_dict(self):
+    #     self.ensure_one()
+    #     return self.env['account.tax']._convert_to_tax_base_line_dict(
+    #         self,
+    #         partner=self.move_id.partner_id,
+    #         currency=self.move_id.currency_id,
+    #         product=self.product_id,
+    #         taxes=self.taxes_id,
+    #         price_unit=self.price_unit,
+    #         quantity=self.quantity,
+    #         discount=self.discount,
+    #         price_subtotal=self.price_subtotal,
+    #     )
+    #
+    #
+    # def _get_discounted_price_unit(self):
+    #     self.ensure_one()
+    #     if self.discount_percent:
+    #         return self.price_unit - self.discount_percent
+    #     else:
+    #         return self.price_unit * (1 - self.discount / 100)
+    #     return self.price_unit
 
 
 
