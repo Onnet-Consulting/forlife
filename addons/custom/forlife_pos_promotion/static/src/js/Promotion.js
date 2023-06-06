@@ -611,6 +611,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         line.promotion_usage_ids = options.promotion_usage_ids || [];
         line.is_cart_discounted = options.is_cart_discounted || false;
         line.is_reward_line = options.is_reward_line || false;
+        line.is_new_line = options.is_new_line || false;
         line.selectedReward = options.selectedReward || false;
         line.is_not_create = options.is_not_create || false;
         line.pricelist_item = options.pricelist_item || false;
@@ -785,6 +786,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 employee_id: l.employee_id,
                 id: l.id,
                 cid: l.cid,
+                is_new_line: l.is_new_line,
                 price: l.price,
                 full_product_name: l.full_product_name,
                 tax_ids: [...(l.tax_ids || [])],
@@ -915,6 +917,19 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         return filtered_orderline.filter(line => line.product.id === pricelistItem.product_id);
     }
 
+    prepare_to_discount_line_val(line) {
+        return {
+            product: line.product,
+            quantity: line.quantity,
+            price: line.product.lst_price,
+            isNew: true,
+            is_new_line: line.is_new_line,
+            pricelist_item: line.pricelist_item,
+            selectedReward: line.selectedReward,
+            promotion_usage_ids: [...line.promotion_usage_ids]
+        }
+    }
+
     _checkNumberOfCode(codeProgram, order_lines, to_discount_line_vals , count, max_count = false, to_apply_lines = {}) {
         let to_check_order_lines = this._filterOrderLinesToCheckCodePro(codeProgram, order_lines);
         count = count || 0;
@@ -957,6 +972,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     quantity:  ol_quantity,
                     price: ol.price,
                     isNew: true,
+                    is_new_line: ol.is_new_line,
                     pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
@@ -997,6 +1013,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     quantity:  ol_quantity,
                     price: ol.price,
                     isNew: true,
+                    is_new_line: ol.is_new_line,
                     pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
@@ -1046,6 +1063,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                         quantity:  quantity,
                         price: ol.price,
                         isNew: true,
+                        is_new_line: ol.is_new_line,
                         pricelist_item: ol.pricelist_item,
                         selectedReward: ol.selectedReward,
                         promotion_usage_ids: [...ol.promotion_usage_ids]
@@ -1080,6 +1098,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     quantity:  ol_quantity,
                     price: ol.price,
                     isNew: true,
+                    is_new_line: ol.is_new_line,
                     pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     promotion_usage_ids: [...ol.promotion_usage_ids]
@@ -1125,6 +1144,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     quantity:  taken_reward_qty,
                     price: ol.price,
                     isNew: true,
+                    is_new_line: ol.is_new_line,
                     pricelist_item: ol.pricelist_item,
                     selectedReward: ol.selectedReward,
                     is_reward_line: true,
@@ -1211,6 +1231,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                         quantity: qty_taken_on_candidate,
                         price: ol.price,
                         isNew: true,
+                        is_new_line: ol.is_new_line,
                         pricelist_item: ol.pricelist_item,
                         selectedReward: ol.selectedReward,
                         promotion_usage_ids: [...ol.promotion_usage_ids]
@@ -1236,6 +1257,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                         quantity: line.quantity,
                         price: line.product.lst_price,
                         isNew: true,
+                        is_new_line: line.is_new_line,
                         pricelist_item: line.pricelist_item,
                         selectedReward: line.selectedReward,
                         promotion_usage_ids: [...line.promotion_usage_ids]
@@ -1461,6 +1483,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 quantity: qty_taken,
                 price: ol.price,
                 isNew: true,
+                is_new_line: ol.is_new_line,
                 pricelist_item: ol.pricelist_item,
                 selectedReward: ol.selectedReward,
                 promotion_usage_ids: [...ol.promotion_usage_ids]
@@ -1527,6 +1550,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 quantity: qty_taken,
                 price: line.product.lst_price,
                 isNew: true,
+                is_new_line: line.is_new_line,
                 is_reward_line: program.reward_type == 'cart_get_x_free',
                 promotion_usage_ids: [...line.promotion_usage_ids]
             });
@@ -1841,6 +1865,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let originalPrice = LineList.product.lst_price ;
                 let discAmountInLine = LineList.product.lst_price
                 LineList.price = 0.0;
+                LineList.is_reward_line = true;
                 let newUsage = new PromotionUsageLine(CodeProgram.id, code, null, originalPrice, 0.0, discAmountInLine, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on)
                 LineList.promotion_usage_ids.push(newUsage);
                 LineList.isCheapest = false;
@@ -2334,6 +2359,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             promotion_usage_ids: arg.promotion_usage_ids,
             quantity: arg['quantity'],
             is_reward_line: arg.is_reward_line,
+            is_new_line: arg.is_new_line || false,
             pricelist_item: arg.pricelist_item,
             selectedReward: arg.selectedReward,
             merge: false,
