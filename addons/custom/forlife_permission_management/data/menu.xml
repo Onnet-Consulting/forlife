@@ -3,17 +3,22 @@
     <data>
         <record model="ir.ui.menu" id="stock.menu_stock_root">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_invoice_stock_picking'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_invoice_stock_picking')),(4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="sale.sale_menu_root">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('sales_team.group_sale_salesman'))]"/>
         </record>
-
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'forlife_stock'), ('name', '=', 'stock_transfer')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
         <record model="ir.ui.menu" id="forlife_stock.stock_transfer">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_invoice_stock_picking')), (4, ref('stock.group_stock_user'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_invoice_stock_picking')), (4, ref('stock.group_stock_user')),(4, ref('forlife_permission_management.group_general_accounting'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="forlife_stock.asset_transfer_stock_inventory_menu">
@@ -21,11 +26,25 @@
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')),(4, ref('forlife_permission_management.group_general_accounting'))]"/>
         </record>
 
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'forlife_stock'), ('name', '=', 'stock_picking_other_export_menu')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
+        ff
+
         <record model="ir.ui.menu" id="forlife_stock.stock_picking_other_export_menu">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')),(4, ref('forlife_permission_management.group_general_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting')), (4, ref('stock.group_stock_user'))]"/>
         </record>
 
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'stock'), ('name', '=', 'all_picking')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
         <record model="ir.ui.menu" id="stock.all_picking">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('stock.group_stock_user'))]"/>
@@ -63,7 +82,7 @@
 
         <record model="ir.ui.menu" id="stock.menu_stock_warehouse_mgmt">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_general_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')),(4, ref('forlife_permission_management.group_general_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="stock.menu_stock_inventory_control">
@@ -71,7 +90,22 @@
                    eval="[(4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
 
+        <record model="ir.ui.menu" id="account_accountant.menu_accounting">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="account.menu_finance_reports">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting'))]"/>
+        </record>
+
         <record model="ir.ui.menu" id="stock_account.menu_valuation">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_general_accounting'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="account.menu_finance_entries_management">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_general_accounting'))]"/>
         </record>
@@ -101,11 +135,6 @@
                    eval="[(4, ref('forlife_permission_management.group_general_accounting'))]"/>
         </record>
 
-        <record model="ir.ui.menu" id="forlife_stock.stock_transfer">
-            <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_general_accounting'))]"/>
-        </record>
-
         <record model="ir.ui.menu" id="forlife_stock.asset_transfer">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_general_accounting'))]"/>
@@ -114,6 +143,11 @@
         <record model="ir.ui.menu" id="forlife_stock.other_in_out_request">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_general_accounting'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="purchase.menu_purchase_root">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="purchase_request.root_purchase_requests_menu">
@@ -169,13 +203,20 @@
 
         <record model="ir.ui.menu" id="stock.menu_warehouse_report">
             <field name="groups_id"
-                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')),(4, ref('forlife_permission_management.group_general_accounting')), (4, ref('forlife_permission_management.group_manufacturing_accounting')),(4, ref('forlife_permission_management.group_liabilities_accounting'))]"/>
         </record>
 
         <record model="ir.ui.menu" id="forlife_stock_report.stock_incoming_outgoing_report_menu">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager'))]"/>
         </record>
+
+        <function name="write" model="ir.model.data">
+            <function name="search" model="ir.model.data">
+                <value eval="[('module', '=', 'forlife_stock'), ('name', '=', 'stock_picking_other_import_menu')]"/>
+            </function>
+            <value eval="{'noupdate': False}"/>
+        </function>
 
         <record model="ir.ui.menu" id="forlife_stock.stock_picking_other_import_menu">
             <field name="groups_id"
@@ -233,6 +274,11 @@
         </record>
 
         <record model="ir.ui.menu" id="point_of_sale.menu_point_root">
+            <field name="groups_id"
+                   eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service')), (4, ref('forlife_permission_management.group_pos_pos_order')), (4, ref('forlife_permission_management.group_pos_product_defective'))]"/>
+        </record>
+
+        <record model="ir.ui.menu" id="forlife_pos_product_change_refund.product_defective_action_menu_view">
             <field name="groups_id"
                    eval="[(4, ref('forlife_permission_management.group_cashier')), (4, ref('forlife_permission_management.group_shop_manager')), (4, ref('forlife_permission_management.group_customer_service')), (4, ref('forlife_permission_management.group_pos_pos_order')), (4, ref('forlife_permission_management.group_pos_product_defective'))]"/>
         </record>

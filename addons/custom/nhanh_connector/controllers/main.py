@@ -10,7 +10,8 @@ import requests
 event_type_mapping = {
     'orderAdd': 'order_add',
     'orderUpdate': 'order_update',
-    'orderDelete': 'order_delete'
+    'orderDelete': 'order_delete',
+    'webhooksEnabled': 'webhook_enabled'
 }
 
 _logger = logging.getLogger(__name__)
@@ -29,10 +30,11 @@ class MainController(http.Controller):
     def nhanh_webhook_handler(self, **post):
         value = json.loads(request.httprequest.data)
         event_type = value.get('event')
-        webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
-            'event_type': event_type_mapping.get('event_type', ''),
-            'event_value': value,
-        })
+        if event_type not in ['orderAdd', 'orderUpdate', 'orderDelete']:
+            webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
+                'event_type': event_type_mapping.get('event_type', ''),
+                'event_value': value,
+            })
         handler = self.event_handlers.get(event_type)
         result_requests = self.result_request(200, 0, _('Webhook to system odoo'))
         try:
