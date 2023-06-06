@@ -167,13 +167,10 @@ class InheritPosOrder(models.Model):
     @api.model
     def _process_order(self, order, draft, existing_order):
         to_invoice = order['data']['to_invoice']
-        if not to_invoice:
-            order['data'].update({'to_invoice': True, 'real_to_invoice': False})
-        else:
-            order['data']['real_to_invoice'] = True
+        order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': False})
         currency_id = self.env['product.pricelist'].browse(order['data']['pricelist_id']).currency_id
         for line in order['data']['lines']:
-            price = line[-1]['original_price'] * (1 - (line[-1]['discount'] or 0.0) / 100.0)
+            price = 0 if line[-1]['is_reward_line'] else line[-1]['original_price'] * (1 - (line[-1]['discount'] or 0.0) / 100.0)
             taxes = self.env['account.tax'].browse(line[-1]['tax_ids'][0][-1])
             if not taxes:
                 price_subtotal = price * line[-1]['qty']
@@ -212,8 +209,8 @@ class InheritPosOrderLine(models.Model):
     subtotal_paid = fields.Monetary(compute='_compute_subtotal_paid')
 
     def _compute_subtotal_paid(self):
-        for rec in self:
-            rec.subtotal_paid = (rec.original_price - rec.money_is_reduced) * rec.qty
+        for pol in self:
+            pol.subtotal_paid = 0 if pol.is_reward_line else (pol.original_price - pol.money_is_reduced) * pol.qty
 
     @api.onchange('product_id')
     def _onchange_is_state_registration(self):
