@@ -1847,20 +1847,23 @@ class StockPicking(models.Model):
             debit = 0
             debit_cost = 0
             for material_line in material:
-                credit = material_line.price_unit * material_line.product_plan_qty
+                credit = material_line.product_id.standard_price * material_line.product_plan_qty
                 if material_line.product_id.product_tmpl_id.x_type_cost_product in ('labor_costs', 'internal_costs'):
                     if not material_line.product_id.categ_id or not material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id:
                         raise ValidationError("Danh mục sản phẩm chưa được cấu hình đúng")
+                    pbo = ((item.price_subtotal / sum(po.order_line_production_order.mapped(
+                        'price_subtotal'))) * 100 / 100) * material_line.product_id.standard_price * material_line.product_plan_qty
+                    rounded_number = int(pbo)
                     account_cost = material_line.product_id.categ_id.with_company(record.company_id).property_stock_account_input_categ_id
                     credit_npl = (0, 0, {
                         'account_id': account_cost.id,
+                        'product_id': item.product_id.id,
                         'name': material_line.product_id.name,
                         'debit': 0,
-                        'credit': credit,
-
+                        'credit': rounded_number,
                     })
                     cost_labor_internal_costs.append(credit_npl)
-                    debit_cost += credit
+                    debit_cost += rounded_number
                 else:
                     number_product = self.env['stock.quant'].search(
                         [('location_id', '=', record.location_dest_id.id),
@@ -1884,35 +1887,34 @@ class StockPicking(models.Model):
                         'reason_id': self.env.ref('forlife_stock.export_production_order').id,
                     }))
                     # Tạo bút toán cho nguyên phụ liệu
-                    credit_npl = (0, 0, {
-                        'account_id': account_1561,
-                        'name': material_line.product_id.name,            ####################1529
-                        'debit': 0,                 ####################1529
-                        'credit': credit,             ####################1529
+                    if item.product_id.id == material_line.purchase_order_line_id.product_id.id:
+                        credit_npl = (0, 0, {
+                            'account_id': self.env.ref(
+                                'forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id.id,
+                            'name': material_line.product_id.name,
+                            'debit': 0,
+                            'credit': credit,
 
-                    })
-                    invoice_line_npls.append(credit_npl)
-                    debit += credit
-                # end
-            if debit_cost > 0:
-                debit_cost_line = (0, 0, {
-                    'account_id': account_1561,
-                    'name': item.product_id.name,
-                    'debit': debit_cost,
-                    'credit': 0,
+                        })
+                        invoice_line_npls.append(credit_npl)
+                        debit += credit
+            debit_npl = (0, 0, {
+                'account_id': account_1561,
+                'name': item.product_id.name,
+                'debit': debit,
+                'credit': 0,
 
-                })
-                cost_labor_internal_costs.append(debit_cost_line)
-            if debit > 0:
-                debit_npl = (0, 0, {
-                    'account_id': self.env.ref(
-                            'forlife_stock.export_production_order').with_company(record.company_id).x_property_valuation_in_account_id.id,
-                    'name': item.product_id.name,
-                    'debit': debit,
-                    'credit': 0,
+            })
+            invoice_line_npls.append(debit_npl)
+            debit_cost_line = (0, 0, {
+                'account_id': account_1561,
+                'product_id': item.product_id.id,
+                'name': item.product_id.name,
+                'debit': debit_cost,
+                'credit': 0,
 
-                })
-                invoice_line_npls.append(debit_npl)
+            })
+            cost_labor_internal_costs.append(debit_cost_line)
         if cost_labor_internal_costs:
             account_cost = self.create_account_move(po, cost_labor_internal_costs, record)
         if invoice_line_npls and list_line_xk:
