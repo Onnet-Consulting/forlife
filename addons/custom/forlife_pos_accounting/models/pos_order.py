@@ -1,6 +1,6 @@
 import pytz
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 PROMOTION_JOURNAL_FIELD = {
     'points.promotion': 'account_journal_id',
@@ -171,6 +171,16 @@ class InheritPosOrder(models.Model):
             order['data'].update({'to_invoice': True, 'real_to_invoice': False})
         else:
             order['data']['real_to_invoice'] = True
+        currency_id = self.env['product.pricelist'].browse(order['data']['pricelist_id']).currency_id
+        for line in order['data']['lines']:
+            price = line[-1]['original_price'] * (1 - (line[-1]['discount'] or 0.0) / 100.0)
+            taxes = self.env['account.tax'].browse(line[-1]['tax_ids'][0][-1])
+            if not taxes:
+                price_subtotal = price * line[-1]['qty']
+                line[-1].update({'price_subtotal': price_subtotal, 'price_subtotal_incl': price_subtotal})
+            else:
+                tax = taxes.compute_all(price, currency_id, line[-1]['qty'], product=self.env['product.product'].browse(line[-1]['product_id']), partner=False)
+                line[-1].update({'price_subtotal': tax['total_excluded'], 'price_subtotal_incl': tax['total_included']})
         result = super(InheritPosOrder, self)._process_order(order, draft, existing_order)
         self.browse(result).create_promotion_account_move()
         return result
