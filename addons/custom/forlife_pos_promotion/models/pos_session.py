@@ -31,7 +31,7 @@ class PosSession(models.Model):
                            ('program_id', 'in', self.config_id._get_promotion_program_ids().ids),
                            ('active', '=', True),
                            '|', ('product_id.id', 'in', product_id), ('product_id.detailed_type', '=', 'service')],
-                'fields': ['id', 'program_id', 'product_id', 'display_name', 'fixed_price']
+                'fields': ['id', 'program_id', 'product_id', 'display_name', 'fixed_price', 'lst_price']
             }
         }
 
