@@ -12,6 +12,14 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
     _exchange = ''
     _routing_key = ''
 
+    def get_sync_info_value(self):
+        ...
+
+    def action_sync_info_data(self, action):
+        data = [line.get_sync_info_value() for line in self]
+        if data:
+            self.push_message_to_rabbitmq(data, action, self._name)
+
     def domain_record_sync_info(self):
         return self
 
@@ -51,20 +59,12 @@ class SyncInfoRabbitmqCreate(models.AbstractModel):
     _description = 'Sync Info RabbitMQ Create'
     _create_action = 'create'
 
-    def get_sync_create_data(self):
-        ...
-
-    def action_create_record(self):
-        data = self.get_sync_create_data()
-        if data:
-            self.push_message_to_rabbitmq(data, self._create_action, self._name)
-
     @api.model_create_multi
     def create(self, vals_list):
         res = super().create(vals_list)
         record = res.domain_record_sync_info()
         if record:
-            record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ').action_create_record()
+            record.sudo().with_delay(description="Create '%s'" % self._name, channel='root.RabbitMQ').action_sync_info_data(action=self._create_action)
         return res
 
 
@@ -74,22 +74,14 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
     _description = 'Sync Info RabbitMQ Update'
     _update_action = 'update'
 
-    def get_sync_update_data(self, field_update, values):
-        ...
-
-    def action_update_record(self, field_update, values):
-        data = self.get_sync_update_data(field_update, values)
-        if data:
-            self.push_message_to_rabbitmq(data, self._update_action, self._name)
-
     def check_update_info(self, values):
-        ...
+        return [False, False]
 
     def write(self, values):
         res = super().write(values)
-        field_update = self.check_update_info(values)
-        if field_update:
-            self.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ').action_update_record(field_update, values)
+        check, record = self.check_update_info(values)
+        if check:
+            record.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ').action_sync_info_data(action=self._update_action)
         return res
 
 
@@ -119,39 +111,22 @@ class SyncAddressInfoRabbitmq(models.AbstractModel):
     _create_action = 'create'
     _update_action = 'update'
 
+    def get_sync_info_value(self):
+        self.ensure_one()
+        return {
+            'id': self.id,
+            'created_at': self.create_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'updated_at': self.write_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'code': self.code,
+            'name': self.name
+        }
+
     def get_sync_create_data(self):
         data = []
         for address in self:
-            vals = {
-                'id': address.id,
-                'created_at': address.create_date.strftime('%Y-%m-%d %H:%M:%S'),
-                'updated_at': address.write_date.strftime('%Y-%m-%d %H:%M:%S'),
-                'code': address.code or None,
-                'name': address.name or None
-            }
-            data.append(vals)
+            data.append(dict(address.get_sync_info_value()))
         return data
 
     def check_update_info(self, values):
         field_check_update = ['code', 'name']
-        return [item for item in field_check_update if item in values]
-
-    def get_sync_update_data(self, field_update, values):
-        map_key_rabbitmq = {
-            'code': 'code',
-            'name': 'name',
-        }
-        vals = {}
-        for odoo_key in field_update:
-            if map_key_rabbitmq.get(odoo_key):
-                vals.update({
-                    map_key_rabbitmq.get(odoo_key): values.get(odoo_key) or None
-                })
-        data = []
-        for address in self:
-            vals.update({
-                'id': address.id,
-                'updated_at': address.write_date.strftime('%Y-%m-%d %H:%M:%S'),
-            })
-            data.extend([copy.copy(vals)])
-        return data
+        return any([field in field_check_update for field in values])
