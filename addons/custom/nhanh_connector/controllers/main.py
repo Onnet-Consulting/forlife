@@ -47,7 +47,7 @@ class MainController(http.Controller):
                         'state': 'done'
                     })
             else:
-                result_requests = self.result_requests(404, 0, _('Webhook to system odoo false'))
+                result_requests = self.result_request(404, 0, _('Webhook to system odoo false'))
         except Exception as ex:
             _logger.info(f'Webhook to system odoo false{ex}')
             if webhook_value_id:
