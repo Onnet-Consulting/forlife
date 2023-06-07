@@ -11,6 +11,7 @@
         'base',
         'product',
         'hr',
+        'quality',
         'purchase',
         'analytic',
         'stock_account',
