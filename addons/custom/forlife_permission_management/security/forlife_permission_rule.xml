@@ -558,7 +558,7 @@
 
         <record model="ir.rule" id="pos_config_read">
             <field name="name">pos_config_read</field>
-            <field name="model_id" ref="forlife_pos_product_change_refund.model_pos_config"/>
+            <field name="model_id" ref="point_of_sale.model_pos_config"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
             <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
             </field>
@@ -570,7 +570,7 @@
 
         <record model="ir.rule" id="pos_config_write_create">
             <field name="name">pos_config_write_create</field>
-            <field name="model_id" ref="forlife_pos_product_change_refund.model_pos_config"/>
+            <field name="model_id" ref="point_of_sale.model_pos_config"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
             <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
             </field>
@@ -582,7 +582,7 @@
 
         <record model="ir.rule" id="pos_config_unlink">
             <field name="name">pos_config_unlink</field>
-            <field name="model_id" ref="forlife_pos_product_change_refund.model_pos_config"/>
+            <field name="model_id" ref="point_of_sale.model_pos_config"/>
             <field name="groups" eval="[(4, ref('forlife_permission_management.group_limit_permission'))]"/>
             <field name="domain_force">['|', ('store_id','in', user.get_brand()), ('store_id','=', False)]
             </field>
