@@ -2,7 +2,7 @@
 # Part of Softhealer Technologies.
 {
     "name": "Popup Message",
-    "author": "minh duc",
+    "author": "minhduc",
     "category": "Tools",
     "license": "OPL-1",
     "summary": "create Success, warnings, alert message box wizard,success popup message app, alert popup module, email popup module odoo",

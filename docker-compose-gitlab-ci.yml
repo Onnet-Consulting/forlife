@@ -1,20 +1,5 @@
 version: '3'
 services:
-  database:
-    container_name: ${CI_PROJECT_NAME}_database_${CI_COMMIT_BRANCH}
-    image: ${DOCKER_USER}/postgres${POSTGRES_VERSION}:latest
-    ports:
-      - ${DB_PORT}:5432
-    volumes:
-      - ${DB_DIR}:/var/lib/postgresql/data/pg_data
-    restart: always
-    networks:
-      - default
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - PGDATA=/var/lib/postgresql/data/pg_data
   web:
     container_name: ${CI_PROJECT_NAME}_web_${CI_COMMIT_BRANCH}
     image: ${DOCKER_USER}/odoo${ODOO_VERSION}:latest
@@ -24,18 +9,15 @@ services:
       - ./addons:/mnt/extra-addons
       - ${LOCAL_FILE_STORE_DIR}:/var/lib/odoo
     command: /bin/bash -c "pip3 install -r /opt/requirements.txt && odoo"
-    links:
-      - "database:database"
     environment:
-      - HOST=database
+      - HOST=${DB_HOST}
+      - POST=${DB_POST}
       - USER=${DB_USER}
       - PASSWORD=${DB_PASSWORD}
     restart: always
     ports:
       - "${WEB_PORT}:8069"
       - "${WEB_LONG_POLLING_PORT}:8072"
-    depends_on:
-      - "database"
     networks:
       - default
 networks:
