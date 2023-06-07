@@ -16,7 +16,7 @@ class NhanhWebhookValue(models.Model):
         ('order_add', 'Add Order'),
         ('order_update', 'Update Order'),
         ('order_delete', 'Delete Order'),
-    ], 'Event Type', required=1)
+    ], 'Event Type')
     event_value = fields.Text('Event Value')
     error = fields.Char('Error')
     state = fields.Selection([('fail', 'Fail'), ('done', 'Done')], 'State', default='fail')
