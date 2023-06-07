@@ -13,7 +13,7 @@ class ProductNhanh(models.Model):
     _inherit = 'product.template'
 
     nhanh_id = fields.Integer(string="Id Nhanh.Vn")
-    code_product = fields.Char(string="Mã sản phẩm")
+    # code_product = fields.Char(string="Mã sản phẩm")
     ## Nếu tạo sản phẩm từ Odoo == True else == False
     check_data_odoo = fields.Boolean(string='Check dữ liệu từ odoo or Nhanh', default=True)
     width_product = fields.Float('Width')
@@ -36,7 +36,7 @@ class ProductNhanh(models.Model):
                 data = [{
                     "id": res.id,
                     "name": res.name,
-                    "code": res.code_product,
+                    "code": res.barcode if res.barcode else '',
                     "barcode": res.barcode if res.barcode else '',
                     "importPrice": res.list_price,
                     "price": res.list_price,
@@ -77,14 +77,14 @@ class ProductNhanh(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if 'name' not in vals and 'code_product' not in vals and 'barcode' not in vals and 'list_price' not in vals and 'weight' not in vals:
+        if 'name' not in vals and 'barcode' not in vals and 'list_price' not in vals and 'weight' not in vals:
             return res
         for item in self:
             data = [{
                 "id": item.id,
                 "idNhanh": item.nhanh_id,
                 "name": item.name,
-                "code": item.code_product,
+                "code": item.barcode if item.barcode else '',
                 "barcode": item.barcode if item.barcode else '',
                 "importPrice": item.list_price,
                 "price": item.list_price,

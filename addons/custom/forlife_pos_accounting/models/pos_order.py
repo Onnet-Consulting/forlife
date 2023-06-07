@@ -1,6 +1,6 @@
 import pytz
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 PROMOTION_JOURNAL_FIELD = {
     'points.promotion': 'account_journal_id',
@@ -167,10 +167,17 @@ class InheritPosOrder(models.Model):
     @api.model
     def _process_order(self, order, draft, existing_order):
         to_invoice = order['data']['to_invoice']
-        if not to_invoice:
-            order['data'].update({'to_invoice': True, 'real_to_invoice': False})
-        else:
-            order['data']['real_to_invoice'] = True
+        order['data'].update(not to_invoice and {'to_invoice': True, 'real_to_invoice': False} or {'real_to_invoice': False})
+        currency_id = self.env['product.pricelist'].browse(order['data']['pricelist_id']).currency_id
+        for line in order['data']['lines']:
+            price = 0 if line[-1]['is_reward_line'] else line[-1]['original_price'] * (1 - (line[-1]['discount'] or 0.0) / 100.0)
+            taxes = self.env['account.tax'].browse(line[-1]['tax_ids'][0][-1])
+            if not taxes:
+                price_subtotal = price * line[-1]['qty']
+                line[-1].update({'price_subtotal': price_subtotal, 'price_subtotal_incl': price_subtotal})
+            else:
+                tax = taxes.compute_all(price, currency_id, line[-1]['qty'], product=self.env['product.product'].browse(line[-1]['product_id']), partner=False)
+                line[-1].update({'price_subtotal': tax['total_excluded'], 'price_subtotal_incl': tax['total_included']})
         result = super(InheritPosOrder, self)._process_order(order, draft, existing_order)
         self.browse(result).create_promotion_account_move()
         return result
@@ -202,8 +209,8 @@ class InheritPosOrderLine(models.Model):
     subtotal_paid = fields.Monetary(compute='_compute_subtotal_paid')
 
     def _compute_subtotal_paid(self):
-        for rec in self:
-            rec.subtotal_paid = (rec.original_price - rec.money_is_reduced) * rec.qty
+        for pol in self:
+            pol.subtotal_paid = 0 if pol.is_reward_line else (pol.original_price - pol.money_is_reduced) * pol.qty
 
     @api.onchange('product_id')
     def _onchange_is_state_registration(self):

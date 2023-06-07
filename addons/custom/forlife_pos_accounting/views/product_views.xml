@@ -1,31 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <odoo>
-<!--    <record model="ir.ui.view" id="inherit_view_category_property_form">-->
-<!--        <field name="name">inherit.view.category.property.form</field>-->
-<!--        <field name="model">product.category</field>-->
-<!--        <field name="inherit_id" ref="account.view_category_property_form"/>-->
-<!--        <field name="arch" type="xml">-->
-<!--            <xpath expr="//group[@name='account_property']" position="inside">-->
-<!--                <group string="Promotion Expense">-->
-<!--                    <field name="property_account_promotion_expense_categ_id" groups="account.group_account_readonly"/>-->
-<!--                </group>-->
-<!--            </xpath>-->
-<!--        </field>-->
-<!--    </record>-->
-
-    <record model="ir.ui.view" id="inherit_product_template_form_view">
-        <field name="name">inherit.product.template.form.view</field>
-        <field name="model">product.template</field>
-        <field name="inherit_id" ref="account.product_template_form_view"/>
-        <field name="arch" type="xml">
-            <xpath expr="//group[@name='properties']" position="inside">
-                <group string="Promotion Expense">
-                    <field name="property_account_promotion_expense_id" groups="account.group_account_readonly"/>
-                </group>
-            </xpath>
-        </field>
-    </record>
-
     <record model="ir.ui.view" id="inherit_product_template_form_view">
         <field name="name">inherit.product.template.form.view</field>
         <field name="model">product.template</field>

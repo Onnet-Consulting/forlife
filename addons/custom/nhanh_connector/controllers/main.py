@@ -30,6 +30,7 @@ class MainController(http.Controller):
     def nhanh_webhook_handler(self, **post):
         value = json.loads(request.httprequest.data)
         event_type = value.get('event')
+        webhook_value_id = None
         if event_type not in ['orderAdd', 'orderUpdate', 'orderDelete']:
             webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
                 'event_type': event_type_mapping.get('event_type', ''),
@@ -41,16 +42,18 @@ class MainController(http.Controller):
             if handler:
                 data = value.get('data')
                 result_requests = handler(event_type, data)
-                webhook_value_id.update({
-                    'state': 'done'
-                })
+                if webhook_value_id:
+                    webhook_value_id.update({
+                        'state': 'done'
+                    })
             else:
                 result_requests = self.result_requests(404, 0, _('Webhook to system odoo false'))
         except Exception as ex:
             _logger.info(f'Webhook to system odoo false{ex}')
-            webhook_value_id.update({
-                'error': ex
-            })
+            if webhook_value_id:
+                webhook_value_id.update({
+                    'error': ex
+                })
             result_requests = self.result_request(404, 0, _('Webhook to system odoo false'))
         return request.make_response(json.dumps(result_requests),
                                      headers={'Content-Type': 'application/json'})
