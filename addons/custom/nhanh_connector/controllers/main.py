@@ -43,7 +43,7 @@ class MainController(http.Controller):
         try:
             if handler:
                 data = value.get('data')
-                result_requests = handler(event_type, data)
+                result_requests = handler(event_type, data, webhook_value_id)
                 if webhook_value_id:
                     webhook_value_id.update({
                         'state': 'done'
@@ -54,18 +54,22 @@ class MainController(http.Controller):
             _logger.info(f'Webhook to system odoo false{ex}')
             if webhook_value_id:
                 webhook_value_id.update({
-                    'error': ex
+                    'error': webhook_value_id.error + ex
                 })
             result_requests = self.result_request(404, 0, _('Webhook to system odoo false'))
         return request.make_response(json.dumps(result_requests),
                                      headers={'Content-Type': 'application/json'})
 
-    def handle_order(self, event_type, data):
+    def handle_order(self, event_type, data, webhook_value_id=None):
         order_id = data.get('orderId') if event_type != 'orderDelete' else False
         order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)],
                                                       limit=1) if event_type != 'orderDelete' else False
         if event_type == 'orderAdd':
             order = self.get_order_from_nhanh(order_id)
+            if webhook_value_id:
+                webhook_value_id.update({
+                    'error': order
+                })
             name_customer = False
             # Add customer if not existed
             nhanh_partner = self.partner_model().sudo().search(
