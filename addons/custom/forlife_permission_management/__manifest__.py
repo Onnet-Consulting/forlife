@@ -16,6 +16,7 @@
         'stock_account',
         'stock_enterprise',
         'purchase_request',
+        'forlife_base',
         'forlife_stock',
         'forlife_purchase',
         'forlife_stock_report',

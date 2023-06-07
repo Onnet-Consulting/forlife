@@ -577,8 +577,8 @@ class AccountMoveLine(models.Model):
     taxes_id = fields.Many2one('account.tax',
                                string='Thuế %',
                                domain=[('active', '=', True)])
-    price_unit = fields.Float(string='Unit Price',
-                              digits='Product Price')
+    # price_unit = fields.Float(string='Unit Price',
+    #                           digits='Product Price')
 
     # fields common !!
     readonly_discount = fields.Boolean(default=False)
@@ -593,11 +593,11 @@ class AccountMoveLine(models.Model):
     exchange_quantity = fields.Float(string='Exchange Quantity')
     request_code = fields.Char('Mã phiếu yêu cầu')
     vendor_price = fields.Float(string='Vendor Price')
-    quantity = fields.Float(string='Quantity',
-                            default=1.0, digits='Product Unit of Measure',
-                            help="The optional quantity expressed by this line, eg: number of product sold. "
-                                 "The quantity is not a legal requirement but is very useful for some reports.",
-                            compute='_compute_quantity', store=1)
+    # quantity = fields.Float(string='Quantity',
+    #                         default=1.0, digits='Product Unit of Measure',
+    #                         help="The optional quantity expressed by this line, eg: number of product sold. "
+    #                              "The quantity is not a legal requirement but is very useful for some reports.",
+    #                         compute='_compute_quantity', store=1)
     total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
 
     # asset invoice!!
@@ -640,90 +640,90 @@ class AccountMoveLine(models.Model):
         for rec in self:
             if rec.price_subtotal and rec.move_id.exchange_rate:
                 rec.total_vnd_amount = rec.price_subtotal * rec.move_id.exchange_rate
-
-    def _prepare_compute_all_values(self):
-        # Hook method to returns the different argument values for the
-        # compute_all method, due to the fact that discounts mechanism
-        # is not implemented yet on the purchase orders.
-        # This method should disappear as soon as this feature is
-        # also introduced like in the sales module.
-        self.ensure_one()
-        return {
-            'price_unit': self.price_unit,
-            'currency': self.move_id.currency_id,
-            'quantity': self.quantity,
-            'product': self.product_id,
-            'partner': self.move_id.partner_id,
-        }
-
-    @api.depends('quantity_purchased', 'exchange_quantity')
-    def _compute_quantity(self):
-        for rec in self:
-            if rec.quantity_purchased and rec.exchange_quantity:
-                rec.quantity = rec.quantity_purchased * rec.exchange_quantity
-            else:
-                rec.quantity = rec.quantity_purchased
-
-    @api.onchange("discount")
-    def _onchange_discount_percent(self):
-        if not self.readonly_discount_percent:
-            if self.discount:
-                self.discount_percent = self.discount * self.price_unit * self.quantity * 0.01
-
-
-    @api.depends('taxes_id')
-    def _compute_tax_amount(self):
-        for rec in self:
-            if rec.taxes_id:
-                rec.tax_amount = (rec.taxes_id.amount / 100) * rec.price_subtotal
-                # self.readonly_discount = True
-            # else:
-                # self.readonly_discount = False
-
-    # @api.onchange("discount_percent")
-    # def _onchange_discount(self):
-    #     if not self.readonly_discount:
-    #         if self.discount_percent:
-    #             self.readonly_discount_percent = True
-    #         else:
-    #             self.readonly_discount_percent = False
-
-    # @api.depends('quantity', 'price_unit', 'taxes_id', 'promotions', 'discount', 'discount_percent')
-    # def _compute_amount(self):
-    #     for line in self:
-    #         tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
-    #         totals = list(tax_results['totals'].values())[0]
-    #         amount_untaxed = totals['amount_untaxed']
-    #         amount_tax = totals['amount_tax']
     #
-    #         line.update({
-    #             'price_subtotal': amount_untaxed,
-    #             'tax_amount': amount_tax,
-    #             'price_total': amount_untaxed + amount_tax,
-    #         })
-
-    def _convert_to_tax_base_line_dict(self):
-        self.ensure_one()
-        return self.env['account.tax']._convert_to_tax_base_line_dict(
-            self,
-            partner=self.move_id.partner_id,
-            currency=self.move_id.currency_id,
-            product=self.product_id,
-            taxes=self.taxes_id,
-            price_unit=self.price_unit,
-            quantity=self.quantity,
-            discount=self.discount,
-            price_subtotal=self.price_subtotal,
-        )
-
-
-    def _get_discounted_price_unit(self):
-        self.ensure_one()
-        if self.discount_percent:
-            return self.price_unit - self.discount_percent
-        else:
-            return self.price_unit * (1 - self.discount / 100)
-        return self.price_unit
+    # def _prepare_compute_all_values(self):
+    #     # Hook method to returns the different argument values for the
+    #     # compute_all method, due to the fact that discounts mechanism
+    #     # is not implemented yet on the purchase orders.
+    #     # This method should disappear as soon as this feature is
+    #     # also introduced like in the sales module.
+    #     self.ensure_one()
+    #     return {
+    #         'price_unit': self.price_unit,
+    #         'currency': self.move_id.currency_id,
+    #         'quantity': self.quantity,
+    #         'product': self.product_id,
+    #         'partner': self.move_id.partner_id,
+    #     }
+    #
+    # @api.depends('quantity_purchased', 'exchange_quantity')
+    # def _compute_quantity(self):
+    #     for rec in self:
+    #         if rec.quantity_purchased and rec.exchange_quantity:
+    #             rec.quantity = rec.quantity_purchased * rec.exchange_quantity
+    #         else:
+    #             rec.quantity = rec.quantity_purchased
+    #
+    # @api.onchange("discount")
+    # def _onchange_discount_percent(self):
+    #     if not self.readonly_discount_percent:
+    #         if self.discount:
+    #             self.discount_percent = self.discount * self.price_unit * self.quantity * 0.01
+    #
+    #
+    # @api.depends('taxes_id')
+    # def _compute_tax_amount(self):
+    #     for rec in self:
+    #         if rec.taxes_id:
+    #             rec.tax_amount = (rec.taxes_id.amount / 100) * rec.price_subtotal
+    #             # self.readonly_discount = True
+    #         # else:
+    #             # self.readonly_discount = False
+    #
+    # # @api.onchange("discount_percent")
+    # # def _onchange_discount(self):
+    # #     if not self.readonly_discount:
+    # #         if self.discount_percent:
+    # #             self.readonly_discount_percent = True
+    # #         else:
+    # #             self.readonly_discount_percent = False
+    #
+    # # @api.depends('quantity', 'price_unit', 'taxes_id', 'promotions', 'discount', 'discount_percent')
+    # # def _compute_amount(self):
+    # #     for line in self:
+    # #         tax_results = self.env['account.tax']._compute_taxes([line._convert_to_tax_base_line_dict()])
+    # #         totals = list(tax_results['totals'].values())[0]
+    # #         amount_untaxed = totals['amount_untaxed']
+    # #         amount_tax = totals['amount_tax']
+    # #
+    # #         line.update({
+    # #             'price_subtotal': amount_untaxed,
+    # #             'tax_amount': amount_tax,
+    # #             'price_total': amount_untaxed + amount_tax,
+    # #         })
+    #
+    # def _convert_to_tax_base_line_dict(self):
+    #     self.ensure_one()
+    #     return self.env['account.tax']._convert_to_tax_base_line_dict(
+    #         self,
+    #         partner=self.move_id.partner_id,
+    #         currency=self.move_id.currency_id,
+    #         product=self.product_id,
+    #         taxes=self.taxes_id,
+    #         price_unit=self.price_unit,
+    #         quantity=self.quantity,
+    #         discount=self.discount,
+    #         price_subtotal=self.price_subtotal,
+    #     )
+    #
+    #
+    # def _get_discounted_price_unit(self):
+    #     self.ensure_one()
+    #     if self.discount_percent:
+    #         return self.price_unit - self.discount_percent
+    #     else:
+    #         return self.price_unit * (1 - self.discount / 100)
+    #     return self.price_unit
 
 
 
@@ -868,7 +868,7 @@ class InvoiceCostLine(models.Model):
 
     product_id = fields.Many2one('product.product', string='Sản phẩm', domain=[('detailed_type', '=', 'service')])
     name = fields.Char(string='Mô tả', related='product_id.name')
-    currency_id = fields.Many2one('res.currency', string='Tiền tệ')
+    currency_id = fields.Many2one('res.currency', string='Tiền tệ', required=1)
     exchange_rate = fields.Float(string='Tỷ giá')
     foreign_amount = fields.Float(string='Tổng tiền ngoại tệ̣')
     vnd_amount = fields.Float(string='Tổng tiền VNĐ', compute='compute_vnd_amount', store=1, readonly=False)
@@ -881,17 +881,10 @@ class InvoiceCostLine(models.Model):
         if self.currency_id:
             self.exchange_rate = self.currency_id.rate
 
-    is_check_foreign_amount = fields.Boolean('',default=False)
-
     @api.depends('exchange_rate', 'foreign_amount')
     def compute_vnd_amount(self):
         for rec in self:
-            if rec.exchange_rate == 1:
-                rec.foreign_amount = False
-                rec.is_check_foreign_amount = True
-            else:
-                rec.is_check_foreign_amount = False
-                rec.vnd_amount = rec.exchange_rate * rec.foreign_amount
+            rec.vnd_amount = rec.exchange_rate * rec.foreign_amount
 
 
 class eInvoice(models.Model):
@@ -930,25 +923,30 @@ class SyntheticInvoice(models.Model):
             cost_line_false = rec.synthetic_id.cost_line.filtered(lambda r: r.is_check_pre_tax_costs == False)
             total_cost_true = 0
             total_cost_false = 0
-            if cost_line_true:
-                for item in cost_line_true:
-                    if item.vnd_amount and rec.price_subtotal:
-                        cost_host = ((rec.price_subtotal / sum(self.mapped('price_subtotal'))) * 100 / 100) * item.vnd_amount
-                        total_cost_true += cost_host
-                rec.before_tax = total_cost_true
-            else:
-                pass
-            if cost_line_false:
-                for item in cost_line_false:
-                    for line in rec.synthetic_id.exchange_rate_line:
-                        if rec.price_subtotal and rec.before_tax and item.vnd_amount:
-                            line.vnd_amount = rec.price_subtotal + rec.before_tax
-                            cost_host = (((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(
-                                self.mapped('before_tax')))) * 100 / 100) * item.vnd_amount
-                            total_cost_false += cost_host
-                rec.after_tax = total_cost_false
-            else:
-                pass
+            for line in rec.synthetic_id.exchange_rate_line:
+                if rec.synthetic_id.type_inv == 'tax':
+                    if cost_line_true:
+                        for item in cost_line_true:
+                            if item.vnd_amount and rec.price_subtotal:
+                                cost_host = ((rec.price_subtotal / sum(self.mapped('price_subtotal'))) * 100 / 100) * item.vnd_amount
+                                total_cost_true += cost_host
+                        rec.before_tax = total_cost_true
+                    if cost_line_false:
+                        for item in cost_line_false:
+                            if rec.price_subtotal and rec.before_tax and item.vnd_amount:
+                                cost_host = (((rec.price_subtotal + rec.before_tax + line.tax_amount + line.special_consumption_tax_amount) / (sum(self.mapped('price_subtotal')) + sum(self.mapped('before_tax')))) * 100 / 100) * item.vnd_amount
+                                total_cost_false += cost_host
+                        rec.after_tax = total_cost_false
+                    if rec.product_id.id == line.product_id.id:
+                        line.vnd_amount = rec.price_subtotal + rec.before_tax
+                if rec.synthetic_id.type_inv == 'cost':
+                    if rec.synthetic_id.cost_line:
+                        for item in rec.synthetic_id.cost_line:
+                            if item.vnd_amount and rec.price_subtotal:
+                                cost_host = ((rec.price_subtotal / sum(self.mapped('price_subtotal'))) * 100 / 100) * item.vnd_amount
+                                total_cost_true += cost_host
+                        rec.before_tax = total_cost_true
+                        rec.after_tax = rec.before_tax
 
     @api.depends('price_unit', 'quantity')
     def _compute_price_subtotal(self):
