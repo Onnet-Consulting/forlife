@@ -1528,7 +1528,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 };
             };
             if (program.limit_usage_per_program) {
-                let historyUsed = (this.historyProgramUsages.all_usage_promotions || {})[program.id] || 0;
+                let historyUsed = ((this.historyProgramUsages || {}).all_usage_promotions || {})[program.id] || 0;
                 if  (historyUsed >= program.max_usage_per_program) {
                     continue;
                 };
