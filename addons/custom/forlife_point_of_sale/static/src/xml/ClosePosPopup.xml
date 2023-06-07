@@ -77,6 +77,13 @@
                     <td>Tổng thu</td>
                     <td><t t-esc="env.pos.format_currency(in_total)"/></td>
                 </tr>
+                <style>
+                    .cash-overview::after {
+                            content: '';
+                            display: block;
+                            height: 15px;
+                    }
+                </style>
             </tbody>
         </xpath>
     </t>
