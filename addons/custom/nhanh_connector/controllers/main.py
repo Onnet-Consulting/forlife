@@ -14,6 +14,8 @@ event_type_mapping = {
     'webhooksEnabled': 'webhook_enabled'
 }
 
+NHANH_BASE_URL = 'https://open.nhanh.vn/api'
+
 _logger = logging.getLogger(__name__)
 
 
@@ -62,6 +64,8 @@ class MainController(http.Controller):
         order_id = data.get('orderId') if event_type != 'orderDelete' else False
         order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)],
                                                       limit=1) if event_type != 'orderDelete' else False
+        if not order:
+            order = self.get_order_from_nhanh(order_id)
         if event_type == 'orderAdd':
             name_customer = False
             # Add customer if not existed
@@ -88,7 +92,7 @@ class MainController(http.Controller):
                 }
                 partner = self.partner_model().sudo().create(partner_value)
             order_line = []
-            location_id = request.env['stock.location'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
+            location_id = request.env['stock.location'].search([('nhanh_id', '=', int(order['depotId']))], limit=1)
             for item in data['products']:
                 product = self.product_template_model().sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
                 product_product = self.product_product_model().sudo().search([('product_tmpl_id', '=', product.id)],
@@ -116,9 +120,9 @@ class MainController(http.Controller):
                 status = 'cancel'
 
             # nhân viên kinh doanh
-            user_id = request.env['res.users'].search([('partner_id.name', '=', data['saleName'])], limit=1)
+            user_id = request.env['res.users'].search([('partner_id.name', '=', order['saleName'])], limit=1)
             # đội ngũ bán hàng
-            team_id = request.env['crm.team'].search([('name', '=', data['trafficSourceName'])], limit=1)
+            team_id = request.env['crm.team'].search([('name', '=', order['trafficSourceName'])], limit=1)
             default_company_id = request.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
             # warehouse_id = request.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
             # if not warehouse_id:
@@ -134,10 +138,10 @@ class MainController(http.Controller):
                 'state': status,
                 'nhanh_order_status': data['status'].lower(),
                 'name_customer': name_customer,
-                'note': data['privateDescription'],
+                'note': order['privateDescription'],
                 'note_customer': data['description'],
                 'x_sale_chanel': 'online',
-                'carrier_name': data['carrierName'],
+                'carrier_name': order['carrierName'],
                 'user_id': user_id.id if user_id else None,
                 'team_id': team_id.id if team_id else None,
                 'company_id': default_company_id.id if default_company_id else None,
@@ -145,13 +149,13 @@ class MainController(http.Controller):
                 'order_line': order_line
             }
             # đổi trả hàng
-            if data.get('returnFromOrderId', 0):
+            if order.get('returnFromOrderId', 0):
                 origin_order_id = request.env['sale.order'].sudo().search(
-                    [('nhanh_id', '=', data.get('returnFromOrderId', 0))], limit=1)
+                    [('nhanh_id', '=', order.get('returnFromOrderId', 0))], limit=1)
                 value.update({
                     'x_is_return': True,
                     'x_origin': origin_order_id.id if origin_order_id else None,
-                    'nhanh_origin_id': data.get('returnFromOrderId', 0)
+                    'nhanh_origin_id': order.get('returnFromOrderId', 0)
                 })
             self.sale_order_model().sudo().create(value)
             return self.result_request(200, 0, _('Create sale order success'))
@@ -219,3 +223,35 @@ class MainController(http.Controller):
             'message': message
         }
         return result
+
+    def get_order_from_nhanh(self, order_id):
+        order_information = None
+        nhanh_configs = constant.get_nhanh_configs(request)
+        data = {
+            "id": order_id
+        }
+        for brand_id in request.env['res.brand'].sudo().search([]):
+            nhanh_config = nhanh_configs.get(brand_id.id, {})
+            if not nhanh_config:
+                continue
+            # Won't run if exist at least one empty param
+            if 'nhanh_connector.nhanh_app_id' not in nhanh_config or 'nhanh_connector.nhanh_business_id' not in nhanh_config \
+                    or 'nhanh_connector.nhanh_access_token' not in nhanh_config:
+                _logger.info(f'Nhanh configuration does not set')
+                continue
+            url = f"{NHANH_BASE_URL}/order/index?version=2.0&appId={nhanh_config.get('nhanh_connector.nhanh_app_id', '')}" \
+                  f"&businessId={nhanh_config.get('nhanh_connector.nhanh_business_id', '')}&accessToken={nhanh_config.get('nhanh_connector.nhanh_access_token', '')}"
+            try:
+                res_server = requests.post(url, json=json.dumps(data))
+                res = res_server.json()
+            except Exception as ex:
+                _logger.info(f'Get orders from NhanhVn error {ex}')
+                continue
+            if res['code'] == 0:
+                _logger.info(f'Get order error {res["messages"]}')
+                continue
+            if not res['data']['orders']:
+                continue
+            order_information = res['data']['orders']
+            break
+        return order_information
