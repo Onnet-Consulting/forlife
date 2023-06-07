@@ -31,7 +31,7 @@ class MainController(http.Controller):
         value = json.loads(request.httprequest.data)
         event_type = value.get('event')
         webhook_value_id = None
-        if event_type not in ['orderAdd', 'orderUpdate', 'orderDelete']:
+        if event_type in ['orderAdd', 'orderUpdate', 'orderDelete']:
             webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
                 'event_type': event_type_mapping.get('event_type', ''),
                 'event_value': value,
