@@ -5,10 +5,8 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <group col="3">
-                        <group col="2">
+                    <group>
                             <field name="name"/>
-                        </group>
                     </group>
                     <footer>
                         <button name="action_confirm" string="Đồng ý" type="object" class="btn-primary"/>
