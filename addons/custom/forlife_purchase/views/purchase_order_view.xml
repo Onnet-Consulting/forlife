@@ -217,9 +217,6 @@
                 </xpath>
                 <xpath expr="//field[@name='currency_id']" position="after">
                     <field name="active_manual_currency_rate" invisible="1"/>
-                    <!--                    <field name="apply_manual_currency_exchange" invisible="1"/>-->
-<!--                    <field name="manual_currency_exchange_rate"-->
-<!--                           attrs="{'invisible': [('active_manual_currency_rate', '=', False)]}"/>-->
                 </xpath>
                 <xpath expr="//field[@name='date_order']" position="before">
                     <field name="has_contract"/>
@@ -230,10 +227,7 @@
                     <field name="receive_date" required="1" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
                 <xpath expr="//field[@name='date_planned']" position="replace">
-                    <field name="date_planned" required="1" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
-                </xpath>
-                <xpath expr="//field[@name='date_planned']" position="replace">
-                    <field name="date_planned" required="1"/>
+                    <field name="date_planned" required="1" string="Hạn xử lý" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
                 </xpath>
                 <xpath expr="//field[@name='date_order']" position="replace">
                     <field name="date_order" string="Order Date" attrs="{'readonly': [('custom_state', 'not in', ('draft', 'confirm'))]}"/>
@@ -307,10 +301,6 @@
                         <field name="discount"
                                attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': ['|',('readonly_discount', '=', True), ('parent.custom_state', '=', 'approved')]}"
                                force_save="1"/>
-                        <!--                    <field name="price_subtotal" string="Discounted Subtotal" widget="monetary"-->
-                        <!--                           sum="discounted subtotal" optional="hide"/>-->
-<!--                        <field name="event_id" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"-->
-                        />
                         <field name="occasion_code_id" string="Mã vụ việc" attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="production_id" string="Manufacturing Order" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
                         <field name="account_analytic_id" string="Cost Center" attrs="{'readonly': [('parent.custom_state', '=', 'approved')]}"/>
