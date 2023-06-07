@@ -37,7 +37,7 @@ class PurchaseOrder(models.Model):
     manual_currency_exchange_rate = fields.Float('Rate', digits=(12, 6))
     active_manual_currency_rate = fields.Boolean('active Manual Currency',
                                                  compute='_compute_active_manual_currency_rate')
-    production_id = fields.Many2one('forlife.production', string='Production Order Code', ondelete='restrict')
+    # production_id = fields.Many2many('forlife.production', string='Production Order Code', ondelete='restrict')
 
     # prod_filter = fields.Boolean(string='Filter Products by Supplier', compute='_compute_')
     # total_discount = fields.Monetary(string='Total Discount', store=True, readonly=True,
@@ -1949,7 +1949,7 @@ class StockPicking(models.Model):
             invoice_line_3332 = (
                 0, 0,
                 {'account_id': self.env.ref(
-                    'forlife_purchase.product_excise_tax').categ_id.property_stock_account_input_categ_id.id,
+                    'forlife_purchase.product_excise_tax_default').categ_id.property_stock_account_input_categ_id.id,
                  'name': r.name,
                  'debit': 0,
                  'credit': credit_332,
