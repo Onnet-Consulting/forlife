@@ -14,6 +14,8 @@
     'auto_install': True,
     'depends': [
         'point_of_sale',
+        'forlife_invoice',
+        'account',
     ],
     'assets': {
         'point_of_sale.assets': [
@@ -26,5 +28,6 @@
         'views/product_combo_views.xml',
         'security/ir.model.access.csv',
         'data/ir_sequence.xml',
+        'views/account_move.xml',
     ],
 }
