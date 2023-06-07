@@ -64,9 +64,8 @@ class MainController(http.Controller):
         order_id = data.get('orderId') if event_type != 'orderDelete' else False
         order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)],
                                                       limit=1) if event_type != 'orderDelete' else False
-        if not order:
-            order = self.get_order_from_nhanh(order_id)
         if event_type == 'orderAdd':
+            order = self.get_order_from_nhanh(order_id)
             name_customer = False
             # Add customer if not existed
             nhanh_partner = self.partner_model().sudo().search(
