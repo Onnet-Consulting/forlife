@@ -33,7 +33,7 @@ class MainController(http.Controller):
         webhook_value_id = None
         if event_type in ['orderAdd', 'orderUpdate', 'orderDelete']:
             webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
-                'event_type': event_type_mapping.get('event_type', ''),
+                'event_type': event_type_mapping.get(event_type, ''),
                 'event_value': value,
             })
         handler = self.event_handlers.get(event_type)
