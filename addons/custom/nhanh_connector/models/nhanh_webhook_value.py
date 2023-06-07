@@ -22,7 +22,7 @@ class NhanhWebhookValue(models.Model):
     state = fields.Selection([('fail', 'Fail'), ('done', 'Done')], 'State', default='fail')
 
     def action_retry(self):
-        data = safe_eval(self.event_value)
+        data = self.event_value
         if self.event_type == 'order_add':
             self.action_order_add(data)
         elif self.event_type == 'order_update':
