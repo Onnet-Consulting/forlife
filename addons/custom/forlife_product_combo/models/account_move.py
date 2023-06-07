@@ -34,7 +34,6 @@ class AccountMove(models.Model):
 
     @api.onchange('invoice_type')
     def onchange_view_invoice_type(self):
-
         for rec in self:
             if rec.line_ids and rec.invoice_type:
                 account = self.env['account.account'].search([('code', '=', '3319000001'), ('company_id', '=', rec.company_id.id)])
