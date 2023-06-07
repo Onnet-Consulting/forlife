@@ -17,8 +17,8 @@ class AccountMove(models.Model):
         return res
 
     @api.model
-    def bravo_get_table(self):
-        journal_data = self.env.context.get(CONTEXT_JOURNAL_ACTION)
+    def bravo_get_table(self, **kwargs):
+        journal_data = kwargs.get(CONTEXT_JOURNAL_ACTION)
         bravo_table = 'DEFAULT'
         if journal_data == 'purchase_asset_service':
             bravo_table = 'B30AccDocPurchase'
