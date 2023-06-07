@@ -33,15 +33,15 @@ class NhanhWebhookValue(models.Model):
     def action_order_add(self, data):
         name_customer = False
         # Add customer if not existed
-        nhanh_partner = self.partner_model().sudo().search(
+        nhanh_partner = self.env['res.partner'].sudo().search(
             [('code_current_customers', '=', 'code_current_customers_nhanhvn')], limit=1)
         if not nhanh_partner:
-            nhanh_partner = self.partner_model().sudo().create({
+            nhanh_partner = self.env['res.partner'].sudo().create({
                 'code_current_customers': 'code_current_customers_nhanhvn',
                 'name': 'Nhanh.Vn',
                 'customer_rank': 1
             })
-        partner = self.partner_model().sudo().search(
+        partner = self.env['res.partner'].sudo().search(
             ['|', ('mobile', '=', data['customerMobile']), ('phone', '=', data['customerMobile'])], limit=1)
         if partner:
             name_customer = data['customerName']
@@ -54,13 +54,13 @@ class NhanhWebhookValue(models.Model):
                 'contact_address_complete': data['customerAddress'],
                 'customer_nhanh_id': data['customerId'],
             }
-            partner = self.partner_model().sudo().create(partner_value)
+            partner = self.env['res.partner'].sudo().create(partner_value)
         order_line = []
         location_id = self.env['stock.location'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
         for item in data['products']:
-            product = self.product_template_model().sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
-            product_product = self.product_product_model().sudo().search([('product_tmpl_id', '=', product.id)],
-                                                                         limit=1)
+            product = self.env['product.template'].sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
+            product_product = self.env['product.product'].sudo().search([('product_tmpl_id', '=', product.id)],
+                                                                        limit=1)
             order_line.append((
                 0, 0, {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
                        'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
@@ -112,8 +112,7 @@ class NhanhWebhookValue(models.Model):
             'warehouse_id': warehouse_id.id if warehouse_id else None,
             'order_line': order_line
         }
-        self.sale_order_model().sudo().create(value)
-        return self.result_request(200, 0, _('Create sale order success'))
+        self.env['sale.order'].sudo().create(value)
 
     def action_order_update(self, data):
         if data.get('status'):
@@ -138,8 +137,8 @@ class NhanhWebhookValue(models.Model):
 
     def action_order_delete(self, data):
         for item in data:
-            order_ids = self.sale_order_model().sudo().search([('nhanh_id', '=', int(item))]).sudo()
-            order_ids.write({
+            order_ids = self.env['sale.order'].sudo().search([('nhanh_id', '=', int(item))])
+            order_ids.sudo().write({
                 'state': 'cancel',
                 'nhanh_order_status': 'canceled',
             })
