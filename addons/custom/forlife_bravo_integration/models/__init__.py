@@ -22,3 +22,4 @@ from . import forlife_production
 from . import documents
 from . import warehouse_group
 from . import expense_item
+from . import res_brand
