@@ -1981,7 +1981,7 @@ class StockPicking(models.Model):
             invoice_line_3332 = (
                 0, 0,
                 {'account_id': self.env.ref(
-                    'forlife_purchase.product_excise_tax').categ_id.property_stock_account_input_categ_id.id,
+                    'forlife_purchase.product_excise_tax_default').categ_id.property_stock_account_input_categ_id.id,
                  'name': r.name,
                  'debit': 0,
                  'credit': credit_332,
