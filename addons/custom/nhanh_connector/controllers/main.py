@@ -30,9 +30,10 @@ class MainController(http.Controller):
     def nhanh_webhook_handler(self, **post):
         value = json.loads(request.httprequest.data)
         event_type = value.get('event')
-        if event_type not in ['orderAdd', 'orderUpdate', 'orderDelete']:
+        webhook_value_id = None
+        if event_type in ['orderAdd', 'orderUpdate', 'orderDelete']:
             webhook_value_id = request.env['nhanh.webhook.value'].sudo().create({
-                'event_type': event_type_mapping.get('event_type', ''),
+                'event_type': event_type_mapping.get(event_type, ''),
                 'event_value': value,
             })
         handler = self.event_handlers.get(event_type)
@@ -41,16 +42,18 @@ class MainController(http.Controller):
             if handler:
                 data = value.get('data')
                 result_requests = handler(event_type, data)
-                webhook_value_id.update({
-                    'state': 'done'
-                })
+                if webhook_value_id:
+                    webhook_value_id.update({
+                        'state': 'done'
+                    })
             else:
-                result_requests = self.result_requests(404, 0, _('Webhook to system odoo false'))
+                result_requests = self.result_request(404, 0, _('Webhook to system odoo false'))
         except Exception as ex:
             _logger.info(f'Webhook to system odoo false{ex}')
-            webhook_value_id.update({
-                'error': ex
-            })
+            if webhook_value_id:
+                webhook_value_id.update({
+                    'error': ex
+                })
             result_requests = self.result_request(404, 0, _('Webhook to system odoo false'))
         return request.make_response(json.dumps(result_requests),
                                      headers={'Content-Type': 'application/json'})
@@ -85,7 +88,7 @@ class MainController(http.Controller):
                 }
                 partner = self.partner_model().sudo().create(partner_value)
             order_line = []
-            location_id = self.env['stock.location'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
+            location_id = request.env['stock.location'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
             for item in data['products']:
                 product = self.product_template_model().sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
                 product_product = self.product_product_model().sudo().search([('product_tmpl_id', '=', product.id)],
@@ -113,13 +116,13 @@ class MainController(http.Controller):
                 status = 'cancel'
 
             # nhân viên kinh doanh
-            user_id = self.env['res.users'].search([('partner_id.name', '=', data['saleName'])], limit=1)
+            user_id = request.env['res.users'].search([('partner_id.name', '=', data['saleName'])], limit=1)
             # đội ngũ bán hàng
-            team_id = self.env['crm.team'].search([('name', '=', data['trafficSourceName'])], limit=1)
-            default_company_id = self.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
-            # warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
+            team_id = request.env['crm.team'].search([('name', '=', data['trafficSourceName'])], limit=1)
+            default_company_id = request.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
+            # warehouse_id = request.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
             # if not warehouse_id:
-            #     warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
+            #     warehouse_id = request.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
             value = {
                 'nhanh_id': data['orderId'],
                 'nhanh_status': data['status'],
@@ -143,7 +146,7 @@ class MainController(http.Controller):
             }
             # đổi trả hàng
             if data.get('returnFromOrderId', 0):
-                origin_order_id = self.env['sale.order'].sudo().search(
+                origin_order_id = request.env['sale.order'].sudo().search(
                     [('nhanh_id', '=', data.get('returnFromOrderId', 0))], limit=1)
                 value.update({
                     'x_is_return': True,
