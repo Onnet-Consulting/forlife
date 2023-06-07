@@ -197,7 +197,7 @@ class PurchaseRequest(models.Model):
                     'occasion_code_ids': [(6, 0, self.mapped('occasion_code_id').ids)],
                     'account_analytic_ids': [(6, 0, self.mapped('account_analytic_id').ids)],
                     'source_document': source_document,
-                    'production_id': self.production_id.id,
+                    'production_id': rec.production_id.id,
                     'date_planned': rec.date_planned,
                 }
                 purchase_order |= purchase_order.create(po_data)
