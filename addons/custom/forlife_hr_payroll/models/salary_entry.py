@@ -18,6 +18,7 @@ class SalaryEntry(models.Model):
     show_name = fields.Char(compute='_compute_show_name', store=True, string='Name')
     groupable_account_ids = fields.Many2many('account.account', string='Groupable Accounts', check_company=True)
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.company, required=True)
+    expense_item_id = fields.Many2one('expense.item', string='Expense Item')
 
     @api.depends('salary_table_id', 'salary_field_id')
     def _compute_show_name(self):
