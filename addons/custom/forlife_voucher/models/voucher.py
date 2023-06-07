@@ -201,43 +201,46 @@ class Voucher(models.Model):
                     rec.state = 'expired'
 
     def generate_account_move_voucher(self):
-        print(self.env.company.name)
-        departments = self.env['hr.department'].search([('company_id','=',self.env.company.id)])
-        print(departments)
+        AccountMove = self.env['account.move']
+        departments = self.env['hr.department'].search([])
         now = datetime.now()
         payment_mothod = self.env['pos.payment.method'].search([('is_voucher', '=', True),('company_id','=',self.env.company.id)], limit=1)
         if payment_mothod and payment_mothod.account_other_income and payment_mothod.account_general:
             for d in departments:
                 vouchers = self.search([('id', 'in', [65245, 65246, 65247, 65248, 152689, 152690, 152691, 152692]), ('derpartment_id', '=', d.id)])
                 vouchers = vouchers.filtered(lambda v: v.price > v.price_residual > 0 and v.purpose_id.purpose_voucher == 'pay' and v.order_pos)
-                move_vals = {
-                    'ref': 'Voucher bán hết giá trị/ hết hạn ngày {90 ngày trước}',
-                    'date': now,
-                    'journal_id': payment_mothod.journal_id.id,
-                    'company_id': payment_mothod.company_id.id,
-                    'move_type': 'entry',
-                    'line_ids': [
-                        (0, 0, {
-                            'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
-                            'display_type': 'product',
-                            'account_id': payment_mothod.account_other_income.id,
-                            'debit': 0.0,
-                            'credit': sum(vouchers.mapped('price_residual')),
-                            'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id.id else {}
-                        }),
-                        # credit line
-                        (0, 0, {
-                            'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
-                            'display_type': 'product',
-                            'account_id': payment_mothod.account_general.id,
-                            'debit': sum(vouchers.mapped('price_residual')),
-                            'credit': 0.0,
-                            'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id else {}
-                        }),
-                    ]
-                }
-                print(move_vals)
-                self.env['account.move'].create(move_vals)._post()
+                if vouchers:
+                    try:
+                        move_vals = {
+                            'ref': 'Voucher bán hết giá trị/ hết hạn ngày {90 ngày trước}',
+                            'date': now,
+                            'journal_id': payment_mothod.journal_id.id,
+                            'company_id': payment_mothod.company_id.id,
+                            'move_type': 'entry',
+                            'line_ids': [
+                                # credit line
+                                (0, 0, {
+                                    'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
+                                    'display_type': 'product',
+                                    'account_id': payment_mothod.account_other_income.id,
+                                    'debit': 0.0,
+                                    'credit': sum(vouchers.mapped('price_residual')),
+                                    'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id.id else {}
+                                }),
+                                # debit line
+                                (0, 0, {
+                                    'name': 'Write off giá trị còn lại của Voucher sử dụng một lần chưa hết giá trị',
+                                    'display_type': 'product',
+                                    'account_id': payment_mothod.account_general.id,
+                                    'debit': sum(vouchers.mapped('price_residual')),
+                                    'credit': 0.0,
+                                    'analytic_distribution': {d.center_expense_id.id: 100} if d.center_expense_id else {}
+                                }),
+                            ]
+                        }
+                        AccountMove.sudo().create(move_vals)._post()
+                    except Exception as e:
+                        _logger.info(e)
         else:
             _logger.info(f'Phương thức thanh toán không có hoặc chưa được cấu hình tài khoản!')
         return True
