@@ -85,7 +85,7 @@ class AccountMove(models.Model):
                 "IsPromotions": invoice_line.promotions,
                 "DocNo_PO": purchase_order.name,
                 "DeptCode": invoice_line.analytic_account_id.code,
-                "DocNo_WO": invoice_line.work_order,
+                "DocNo_WO": invoice_line.work_order.code,
                 "RowId": invoice_line.id
             })
             invoice_tax_ids = invoice_line.tax_ids
