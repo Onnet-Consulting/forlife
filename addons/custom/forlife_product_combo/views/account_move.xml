@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="account_move_forlife_combo_inherit">
+            <field name="name">account.move.forlife.combo.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='button_draft']" position="after">
+                    <button name="button_increase_decrease_invoice"
+                            type="object"
+                            string="Increase and Decrease Invoice"
+                            attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('payment_state', '!=', 'paid')]}"
+                            groups="account.group_account_invoice"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="inherit_invoice_form_view" model="ir.ui.view">
+            <field name="name">inherit.invoice.form.view</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="origin_invoice_id" invisible="1" />
+                    <field name="invoice_type" string="Tăng giảm hóa đơn"
+                           attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('origin_invoice_id', '=', False)]}"/>
+                </xpath>
+             </field>
+        </record>
+
+    </data>
+</odoo>
