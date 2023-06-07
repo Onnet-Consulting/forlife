@@ -140,14 +140,11 @@ class SplitProduct(models.Model):
                         'product_uom': rec.product_uom_split.id,
                         'product_uom_qty': rec.quantity,
                         'quantity_done': rec.quantity,
-                        'location_id': self.env.ref('forlife_splip_product.import_product_division', raise_if_not_found=False).id,
-                        'location_dest_id': rec.warehouse_in_id.lot_stock_id.id
                     }))
             pickings |= self.env['stock.picking'].with_company(company).create({
                 'other_import': True,
+                'state':'draft',
                 'picking_type_id': pk_type.id,
-                'location_id': self.env.ref('forlife_splip_product.import_product_division', raise_if_not_found=False).id,
-                'location_dest_id': record.warehouse_in_id.lot_stock_id.id,
                 'split_product_id': self.id,
                 'move_ids_without_package': data
             })
@@ -163,14 +160,11 @@ class SplitProduct(models.Model):
                 'product_uom': record.product_id.uom_id.id,
                 'product_uom_qty': record.product_quantity_out,
                 'quantity_done': record.product_quantity_out,
-                'location_id': record.warehouse_out_id.lot_stock_id.id,
-                'location_dest_id': self.env.ref('forlife_splip_product.export_product_division', raise_if_not_found=False).id
             })]
             pickings |= self.env['stock.picking'].with_company(company).create({
                 'other_export': True,
+                'state':'draft',
                 'picking_type_id': pk_type.id,
-                'location_id': record.warehouse_out_id.lot_stock_id.id,
-                'location_dest_id': self.env.ref('forlife_splip_product.export_product_division', raise_if_not_found=False).id,
                 'split_product_id': self.id,
                 'move_ids_without_package': data
             })
