@@ -30,10 +30,4 @@
               name="Purchase"
               parent="report_menu"
               sequence="4"/>
-
-    <menuitem id="attribute_code_config_menu"
-              parent="report_menu"
-              action="attribute_code_config_action"
-              sequence="100"/>
-
 </odoo>
