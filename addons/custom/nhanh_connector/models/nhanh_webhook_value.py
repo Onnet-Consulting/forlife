@@ -31,7 +31,7 @@ class NhanhWebhookValue(models.Model):
             self.action_order_delete(data)
 
     def action_order_add(self, data):
-        order = constant.get_order_from_nhanh(self, data.get('data', {}).get('orderId', 0))
+        order = constant.get_order_from_nhanh_id(self, data.get('data', {}).get('orderId', 0))
         if not order:
             self.write({
                 'error': f"{self.error if self.error else ''} \n Không lấy được thông tin đơn hàng từ Nhanh"
