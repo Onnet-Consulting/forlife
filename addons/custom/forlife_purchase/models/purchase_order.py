@@ -358,7 +358,7 @@ class PurchaseOrder(models.Model):
         for record in self:
             product_discount_tax = self.env.ref('forlife_purchase.product_discount_tax', raise_if_not_found=False)
             if product_discount_tax and any(line.product_id.id == product_discount_tax.id and line.price_unit > 0 for line in record.order_line):
-                raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
+                raise UserError("Giá CKTM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
             record.write({'custom_state': 'confirm'})
 
     def action_approved(self):
