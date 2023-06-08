@@ -11,13 +11,13 @@ class StockTransferRequest(models.Model):
         date_check = datetime.now() - relativedelta(days=7)
         stocks = self.search([('date_planned', '<=', date_check), ('state', '=', 'wait_confirm')])
 
-        user_ids = self.env.ref('purchase_request.admin_purchase_request_group').users
+        user_ids = self.env.ref('purchase_request.admin_purchase_request_group').users.search([('state', '=', 'active')])
 
         if stocks:
             mail_template = self.env.ref('forlife_product_combo.email_template_warning_unapproved_transfer_application', raise_if_not_found=False)
             for record in stocks:
                 for user in user_ids:
-                    email_to = user.parent_id.email
+                    email_to = user.email
                     if email_to:
                         mail_template.with_context(**{
                             'email_to': email_to
