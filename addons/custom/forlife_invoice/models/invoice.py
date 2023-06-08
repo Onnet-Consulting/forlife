@@ -752,21 +752,6 @@ class RespartnerVendor(models.Model):
     tax_percent_back = fields.Float(string='% Thuế')
     totals_back = fields.Float(string='Tổng tiền sau thuế', compute='compute_totals_back', store=1)
 
-
-
-    @api.constrains('vendor', 'code_tax', 'street_ven', 'company_id', 'invoice_reference', 'invoice_description')
-    def constrains_check_duplicate(self):
-        for record in self:
-            if record.vendor and record.street_ven and record.search_count(
-                    [('vendor', '=', record.vendor),
-                     ('code_tax', '=', record.code_tax),
-                     ('street_ven', '=', record.street_ven),
-                     ('company_id', '=', record.company_id.id),
-                     ('invoice_reference', '=', record.invoice_reference),
-                     ('invoice_description', '=', record.invoice_description),
-                     ('id', '!=', record.id)]) > 1:
-                raise ValidationError(_('Nhà cung cấp vãng lai đã tồn tại !!'))
-
     @api.constrains('price_subtotal_back')
     def constrains_check_less_than(self):
         for rec in self:
