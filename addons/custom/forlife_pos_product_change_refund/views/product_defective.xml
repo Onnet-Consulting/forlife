@@ -47,8 +47,6 @@
                                 <field name="defective_type_id" required="1"/>
                                 <field name="detail_defective"/>
                             </group>
-                            <group>
-                            </group>
                         </group>
                     </sheet>
                     <div class="oe_chatter">
