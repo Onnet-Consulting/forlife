@@ -152,7 +152,7 @@ class StockTransfer(models.Model):
             return self._create_move_given(pickking, location_dest_id, type_create='in')
         elif location_id.stock_location_type_id.id in [s_location_pos] and warehouse_dest_id in [warehouse_type_master] and location_id.id_deposit and location_id.account_stock_give:
             return self._create_move_given(pickking, location_id, type_create='out')
-        elif location_id.stock_location_type_id.id in [s_location_sell_ecommerce, s_location_pos] and location_dest_id in [s_location_sell_ecommerce, s_location_pos]:
+        elif location_id.stock_location_type_id.id in [s_location_sell_ecommerce, s_location_pos] and location_dest_id.stock_location_type_id.id in [s_location_sell_ecommerce, s_location_pos]:
             loc = location_id if location_id.id_deposit and location_id.account_stock_give else False
             loc_dest = location_dest_id if location_dest_id.id_deposit and location_dest_id.account_stock_give else False
             if not loc and not loc_dest:
