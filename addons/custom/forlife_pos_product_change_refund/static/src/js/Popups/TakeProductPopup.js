@@ -55,11 +55,8 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
                                     is_product_defective: true,
                                     product_defective_id: products_defective[i].product_defective_id
                                 }
-                                let options_old_line = {
-                                    quantity: line.quantity -1
-                                }
                                 OrderCurrent.set_orderline_options(line_new, options_line_new);
-                                OrderCurrent.set_orderline_options(line, options_old_line);
+                                line.quantity = line.quantity -1 ;
                                 OrderCurrent.add_orderline(line_new);
                             }
                         }
