@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-
+from odoo.tools.safe_eval import safe_eval
 from odoo.addons.nhanh_connector.models import constant
 from odoo import api, fields, models, _, exceptions
 import logging
@@ -22,7 +22,7 @@ class NhanhWebhookValue(models.Model):
     state = fields.Selection([('fail', 'Fail'), ('done', 'Done')], 'State', default='fail')
 
     def action_retry(self):
-        data = self.event_value
+        data = safe_eval(self.event_value)
         if self.event_type == 'order_add':
             self.action_order_add(data)
         elif self.event_type == 'order_update':
@@ -34,7 +34,7 @@ class NhanhWebhookValue(models.Model):
         order = constant.get_order_from_nhanh_id(self, data.get('data', {}).get('orderId', 0))
         if not order:
             self.write({
-                'error': f"{self.error if self.error else ''} \n Không lấy được thông tin đơn hàng từ Nhanh"
+                'error': f"Không lấy được thông tin đơn hàng từ Nhanh"
             })
             return
         try:
@@ -131,7 +131,7 @@ class NhanhWebhookValue(models.Model):
             self.self.env['sale.order'].sudo().create(value)
         except Exception as ex:
             self.write({
-                'error': f"{self.error if self.error else ''} \n {ex}"
+                'error': f"{ex}"
             })
             return
 
