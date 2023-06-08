@@ -16,8 +16,8 @@ class StockVLayer(models.Model):
             if not svl.with_company(svl.company_id).product_id.valuation == 'real_time':
                 continue
             if svl.currency_id.is_zero(svl.value):
-                if location_check_id and location_dest_check_id and svl.stock_move_id.picking_id.location_id.id != location_check_id and \
-                        svl.stock_move_id.picking_id.location_dest_id.id != location_dest_check_id and \
+                if location_check_id and location_dest_check_id and svl.stock_move_id.picking_id.location_id.id != location_check_id.id and \
+                        svl.stock_move_id.picking_id.location_dest_id.id != location_dest_check_id.id and \
                         svl.stock_move_id.picking_id.reason_type_id.id != reason_type_check or (svl.stock_move_id.picking_id.location_id.id == auto_import_check or svl.stock_move_id.picking_id.location_dest_id.id == auto_export_check):
                     continue
             move = svl.stock_move_id
