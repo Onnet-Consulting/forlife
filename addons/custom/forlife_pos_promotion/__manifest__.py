@@ -49,6 +49,7 @@
 
             'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/OrderDetail.xml',
             'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/CustomOrderline.xml',
+            'forlife_pos_promotion/static/src/xml/Screens/ProductScreen/OrderLineChangeRefund.xml',
             'forlife_pos_promotion/static/src/xml/Popup/ProgramSelectionPopup.xml',
             'forlife_pos_promotion/static/src/xml/Popup/ComboDetailsPopup.xml',
             'forlife_pos_promotion/static/src/xml/ControlButtons/CartPromotionButton.xml',
@@ -64,6 +65,8 @@
     },
 
     'data': [
+        # Data
+        'data/ir_cron_data.xml',
         # Security
         'security/ir.model.access.csv',
         # Wizards
@@ -76,6 +79,7 @@
         'views/promotion_campaign_views.xml',
         'views/promotion_pricelist_item_views.xml',
         'views/pos_order_line_usage_views.xml',
+        'views/condition_product_promotion_views.xml',
         # Menu
         'menu/menu_views.xml',
     ]

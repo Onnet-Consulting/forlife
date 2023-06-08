@@ -19,22 +19,40 @@ class BravoSyncAccountWizard(models.TransientModel):
 
     def sync(self):
         self.ensure_one()
-        companies = self.env['res.company'].search([])
+        companies = self.env['res.company'].search([('code', '!=', False)])
         bravo_accounts = self.get_bravo_accounts()
         for company in companies:
             self = self.with_company(company).sudo()
             self.install_coa()
             self.insert_accounts(bravo_accounts)
-            # self.archive_vn_template_accounts()
+            self.archive_vn_template_accounts()
         return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def install_coa(self):
         vn_account_chart_template = self.env.ref('l10n_vn.vn_template')
         vn_account_chart_template.try_loading(self.env.company, install_demo=False)
 
+    def update_end_year_earning_account(self, bravo_account_codes):
+        """
+        Only 1 account with type 'equity_unaffected' is allowed in a company,
+        so we must update this existing account code instead of insert new one
+        """
+        equity_unaffected_account = self.env['account.account'].search([
+            ('account_type', '=', 'equity_unaffected'),
+            ('company_id', '=', self.env.company.id)]
+        )
+        equity_unaffected_account_code = equity_unaffected_account.code
+        if not equity_unaffected_account_code:
+            return
+        for bravo_code in bravo_account_codes:
+            if bravo_code[:len(equity_unaffected_account_code)] == equity_unaffected_account_code:
+                equity_unaffected_account.write({'code': bravo_code})
+                return
+
     def insert_accounts(self, bravo_accounts):
         account_account = self.env['account.account']
-        bravo_account_codes = [ba['code'] for ba in bravo_accounts]
+        bravo_account_codes = [ba['code'] for ba in bravo_accounts if ba['code']]
+        self.update_end_year_earning_account(bravo_account_codes)
         exist_odoo_account_codes = account_account.search(
             [('code', 'in', bravo_account_codes), ('company_id', '=', self.env.company.id)]).mapped('code')
         newly_bravo_accounts = [ba for ba in bravo_accounts if ba['code'] not in exist_odoo_account_codes]
@@ -42,7 +60,13 @@ class BravoSyncAccountWizard(models.TransientModel):
         return True
 
     def archive_vn_template_accounts(self):
-        """Set all accounts in l10n_vn module to deprecated"""
+        """Don't archive any accounts"""
+        pass
+
+    def archive_vn_template_accounts_old(self):
+        """Set all accounts in l10n_vn module to deprecated.
+        This method is correct but Onnet don't understand this  correct solution :)
+        so we have to use the archive_vn_template_accounts function"""
         res_ids = self.env['ir.model.data'].sudo().search([
             ('model', '=', 'account.account'), ('module', '=', 'l10n_vn')
         ]).mapped('res_id')

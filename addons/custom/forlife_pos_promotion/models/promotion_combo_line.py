@@ -12,7 +12,10 @@ class PromotionComboLine(models.Model):
     _description = 'Promotion Combo Line'
 
     program_id = fields.Many2one('promotion.program')
-    product_ids = fields.Many2many('product.product', string='Products', domain="[('available_in_pos', '=', True)]")
+    name = fields.Char(realted='program_id.name')
+    product_ids = fields.Many2many(
+        'product.product', relation='product_product_promotion_combo_line_rel', string='Products',
+        domain="[('available_in_pos', '=', True)]")
     product_categ_ids = fields.Many2many('product.category', string='Product Categories')
     quantity = fields.Float()
     valid_product_ids = fields.Many2many('product.product', compute='_compute_valid_product_ids')
@@ -58,3 +61,27 @@ class PromotionComboLine(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id("product.product_normal_action_sell")
         action['domain'] = [('id', 'in', self.valid_product_ids.ids)]
         return action
+
+    def action_open_combo_line_product(self):
+        return {
+            'name': _('Combo Line Products') + ((self.name and _(' of %s') % self.name) or ''),
+            'domain': [('promotion_combo_line_id', '=', self.id)],
+            'res_model': 'promotion.combo.line.product',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'tree,form',
+            'context': {'default_promotion_combo_line_id': self.id}
+        }
+
+
+class PromotionComboLineProduct(models.Model):
+    _name = 'promotion.combo.line.product'
+    _description = 'Promotion Reward Product'
+    _table = 'product_product_promotion_combo_line_rel'
+
+    product_product_id = fields.Many2one('product.product', required=True, index=True, string='Product')
+    promotion_combo_line_id = fields.Many2one('promotion.combo.line', required=True, index=True, string='Combo Line')
+
+    def init(self):
+        self.env.cr.execute("""
+            ALTER TABLE product_product_promotion_combo_line_rel ADD COLUMN IF NOT EXISTS id SERIAL; """)

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="stock_warehouse_nhanh_id_form_inherit" model="ir.ui.view">
+        <field name="name">stock.warehouse.nhanh.id.form.inherit</field>
+        <field name="model">stock.warehouse</field>
+        <field name="inherit_id" ref="stock.view_warehouse"/>
+        <field name="arch" type="xml">
+            <field name="code" position="after">
+                <field name="nhanh_id" groups="base.group_no_one" />
+            </field>
+        </field>
+    </record>
+
+</odoo>

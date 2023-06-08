@@ -1,3 +1,3 @@
-from . import hr_team
-from . import res_users
-from . import product_product
+from . import forlife_other_in_out_request
+from . import stock_transfer_request
+from . import purchase_request

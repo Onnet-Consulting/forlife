@@ -6,17 +6,51 @@
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_view_invoice']" position="before">
+                    <button type="object"
+                        name="action_view_so_punish"
+                        class="oe_stat_button"
+                        icon="fa-gavel"
+                        attrs="{'invisible': [('x_order_punish_count', '=', 0)]}">
+                        <field name="x_order_punish_count" widget="statinfo" string="Đơn phạt"/>
+                    </button>
+
+                    <button type="object"
+                        name="action_view_so_return"
+                        class="oe_stat_button"
+                        icon="fa-folder-open-o"
+                        attrs="{'invisible': [('x_order_return_count', '=', 0)]}">
+                        <field name="x_order_return_count" widget="statinfo" string="Đơn trả"/>
+                    </button>
+                    <button type="object"
+                        name="action_view_so_exchange"
+                        class="oe_stat_button"
+                        icon="fa-rotate-right"
+                        attrs="{'invisible': [('x_is_exchange_count', '=', 0)]}">
+                        <field name="x_is_exchange_count" widget="statinfo" string="Đơn đổi"/>
+                    </button>
+                </xpath>
                 <xpath expr="//button[@name='action_quotation_send']" position="after">
                     <button name="action_create_picking"
                         string="Xác nhận" type="object" context="{'validate_analytic': True}"
-                        attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+                        attrs="{'invisible': ['|',('state', 'not in', ['draft']), ('x_is_return', '=', True)]}"/>
                 </xpath>
-                <xpath expr="//button[@name='action_cancel']" position="after">
+                <xpath expr="//button[@name='action_cancel']" position="before">
                     <button name="action_punish"
                         string="Phạt" type="object" context="{'validate_analytic': True}"/>
                 </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="before">
+                    <button name="action_return"
+                        string="Trả hàng" type="object" context="{'validate_analytic': True}"
+                        attrs="{'invisible': ['|', ('state', '!=', 'sale'), ('x_is_return', '=', True)]}"/>
+                    <button name="confirm_return_so" attrs="{'invisible':[('x_is_return','=',False)]}"
+                        string="Xác nhận trả hàng" type="object"/>
+                </xpath>
                 <xpath expr="//button[@name='action_confirm'][2]" position="attributes">
                     <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('state', '=', 'sale')]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='partner_shipping_id']" position="after">
                     <field name="x_sale_type"/>
@@ -25,20 +59,29 @@
                     <field name="x_occasion_code_ids" widget="many2many_tags"/>
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="before">
+                    <field name="x_origin" attrs="{'column_invisible': [('parent.x_is_return','=',False)]}"/>
+                    <field name="x_free_good"/>
                     <field name="x_cart_discount_fixed_price"/>
-                    <field name="x_location_id" domain="[('company_id','=',parent.company_id)]" required="1"/>
+                    <field name="x_location_id" domain="[('company_id','=',parent.company_id)]" attrs="{'required': [('parent.x_sale_type', '=', 'product')]}"/>
                     <field name="x_scheduled_date"/>
                     <field name="x_manufacture_order_code_id"/>
                     <field name="x_product_code_id"
-                           attrs="{'column_invisible': [('parent.x_sale_type','!=','service')]}"
+                           attrs="{'column_invisible': [('parent.x_sale_type','=','product')], 'required': [('parent.x_sale_type','=','asset')]}"
                            force_save="1"/>
                     <field name="x_account_analytic_id"/>
                     <field name="x_occasion_code_id"/>
                 </xpath>
                 <xpath expr="//field[@name='payment_term_id']" position="before">
                     <field name="x_process_punish"/>
-                    <field name="x_shipping_punish" force_save="1" readonly="1"/>
+                    <field name="x_shipping_punish" force_save="1" readonly="1" attrs="{'invisible': [('x_shipping_punish', '=', False)]}"/>
                     <field name="x_manufacture_order_code_id"/>
+                    <field name="x_is_return" force_save="1" readonly="1" attrs="{'invisible': [('x_is_return', '=', False)]}"/>
+                    <field name="x_is_exchange" force_save="1" readonly="1" attrs="{'invisible': [('x_is_exchange', '=', False)]}"/>
+                    <field name="x_origin"/>
+                    <field name="x_domain_pricelist" force_save="1" invisible="1"/>
+                </xpath>
+                <xpath expr="//field[@name='pricelist_id']" position="attributes">
+                    <attribute name="domain">[('id', 'in', x_domain_pricelist)]</attribute>
                 </xpath>
             </field>
         </record>

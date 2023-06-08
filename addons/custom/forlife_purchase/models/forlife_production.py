@@ -2,6 +2,7 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
+
 class ForlifeProduction(models.Model):
     _name = 'forlife.production'
     _inherit = ['portal.mixin', 'mail.thread', 'mail.activity.mixin']

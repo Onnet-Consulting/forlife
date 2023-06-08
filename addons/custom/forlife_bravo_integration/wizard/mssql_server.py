@@ -1,8 +1,11 @@
 # -*- coding:utf-8 -*-
 
 from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 import pyodbc
-from typing import Dict, List, Optional, Tuple, Union
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class MssqlServer(models.AbstractModel):
@@ -14,15 +17,19 @@ class MssqlServer(models.AbstractModel):
         """
         @param autocommit: https://github.com/mkleehammer/pyodbc/wiki/Database-Transaction-Management
         """
-        ir_config = self.env['ir.config_parameter'].sudo()
-        driver = ir_config.get_param("mssql.driver")
-        host = ir_config.get_param("mssql.host")
-        database = ir_config.get_param("mssql.database")
-        username = ir_config.get_param("mssql.username")
-        password = ir_config.get_param("mssql.password")
-        return pyodbc.connect(
-            f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};'
-            f'ENCRYPT={encrypt};CHARSET=UTF8;', autocommit=autocommit)
+        try:
+            ir_config = self.env['ir.config_parameter'].sudo()
+            driver = ir_config.get_param("mssql.driver")
+            host = ir_config.get_param("mssql.host")
+            database = ir_config.get_param("mssql.database")
+            username = ir_config.get_param("mssql.username")
+            password = ir_config.get_param("mssql.password")
+            return pyodbc.connect(
+                f'DRIVER={driver};SERVER={host};DATABASE={database};UID={username};PWD={password};'
+                f'ENCRYPT={encrypt};CHARSET=UTF8;', autocommit=autocommit, timeout=10)
+        except Exception as e:
+            raise ValidationError(
+                _("Cannot connect to SQL server, please recheck the SQL server configuration: %s!") % str(e))
 
     @api.model
     def _execute(self, query, params, autocommit=True):

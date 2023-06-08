@@ -235,19 +235,25 @@ class SalaryRecord(models.Model):
 
     def generate_account_moves(self):
         self.ensure_one()
+        self.generate_account_move_with_tc_options(True)
+        self.generate_account_move_with_tc_options(False)
+        return True
+
+    def generate_account_move_with_tc_options(self, is_tc_entry):
+        salary_accounting_ids = self.salary_accounting_ids.filtered(lambda l: l.is_tc_entry == is_tc_entry)
         accounting_values_by_entry = {}
         accounting_line_by_entry = {}
         entry_by_id = {}
-        for line in self.salary_accounting_ids:
+        for line in salary_accounting_ids:
             line_value = dict(
                 partner_id=line.partner_id.id,
                 account_id=line.account_id.id,
                 debit=line.debit,
                 credit=line.credit,
                 analytic_account_id=line.analytic_account_id.id,
-                project_code=line.project_code,
-                manufacture_order_code=line.manufacture_order_code,
-                internal_order_code=line.internal_order_code
+                asset_id=line.asset_id.id,
+                work_order=line.production_id.id,
+                occasion_code_id=line.occasion_code_id.id,
             )
             entry = line.entry_id
             entry_id = entry.id
@@ -266,6 +272,7 @@ class SalaryRecord(models.Model):
             'invoice_date': accounting_date,
             'narration': self.note,
             'ref': self.name,
+            'x_asset_fin': 'TC' if is_tc_entry else 'QT'
         }
 
         accounting_values_by_entry = self.group_accounting_data_by_entry_and_account(accounting_values_by_entry)
