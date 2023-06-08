@@ -8,10 +8,17 @@
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='action_quotation_send']" position="after">
                     <button type="object" name="check_sale_promotion" string="Check Promotion"
-                            attrs="{'invisible': [('state', 'not in', ['sale', 'check_promotion'])]}"/>
+                            attrs="{'invisible': [('state', 'not in', ['draft', 'sent', 'check_promotion'])]}"/>
                 </xpath>
-                <xpath expr="//button[@name='action_quotation_send']" position="attributes">
-                    <attribute name="states">sent,sale,check_promotion,done_sale</attribute>
+                <xpath expr="//button[@name='action_quotation_send']" position="after">
+                    <button name="action_quotation_send" string="Send by Email" type="object" states="check_promotion,done_sale" class="btn-primary" data-hotkey="g" context="{'validate_analytic': True}"/>
+                </xpath>
+
+
+                <xpath expr="//button[@name='action_confirm']" position="after">
+                    <button name="action_create_picking"
+                        string="Xác nhận" type="object" context="{'validate_analytic': True}"
+                        attrs="{'invisible': [('state', 'not in', ['check_promotion', 'done_sale'])]}"/>
                 </xpath>
 
                 <!--Them tam thoi đê test đơn hang nhanh-->
@@ -23,9 +30,9 @@
                     <attribute name="attrs">{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale','check_promotion','done_sale']), ('id', '=', False)]}</attribute>
                 </xpath>
 
-                <xpath expr="//button[@id='create_invoice_percentage']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|',('invoice_status', '!=', 'no'), ('state', 'not in', ['sale','check_promotion','done_sale'])]}</attribute>
-                </xpath>
+<!--                <xpath expr="//button[@id='create_invoice']" position="attributes">-->
+<!--                    <attribute name="attrs">{'invisible': [('invoice_status', '!=', 'to invoice'), ('state', 'not in', ['check_promotion', 'sale', 'done_sale'])]}</attribute>-->
+<!--                </xpath>-->
 
                  <xpath expr="//notebook/page[@name='customer_signature']" position="after">
                      <page string="Promotion" name="sale_promotion">
@@ -51,7 +58,7 @@
                 </xpath>
 
                 <xpath expr="//field[@name='state']" position="attributes">
-                    <attribute name="statusbar_visible">draft,sent,sale,check_promotion,done_sale</attribute>
+                    <attribute name="statusbar_visible">draft,check_promotion,done_sale,sent,sale</attribute>
                 </xpath>
 
             </field>

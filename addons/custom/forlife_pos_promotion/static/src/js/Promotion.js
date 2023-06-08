@@ -130,11 +130,13 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
             program.display_name = program.name
         };
         for (const item of this.promotionComboLines) {
-            let cl_valid_product_ids = JSON.parse(atob(item.json_valid_product_ids));
-            item.valid_product_ids = new Set(cl_valid_product_ids);
-            item.program_id = item.program_id[0];
-            item.program = this.promotion_program_by_id[item.program_id];
-            item.program.comboFormula.push(item);
+            if(item.json_valid_product_ids){
+                let cl_valid_product_ids = JSON.parse(atob(item.json_valid_product_ids));
+                item.valid_product_ids = new Set(cl_valid_product_ids);
+                item.program_id = item.program_id[0];
+                item.program = this.promotion_program_by_id[item.program_id];
+                item.program.comboFormula.push(item);
+            }
         };
         for (const reward of this.rewardLines) {
             this.reward_line_by_id[reward.id] = reward;
@@ -159,10 +161,10 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
 
             this._loadPromotionPriceListItem(promotionItems);
             page += 1;
+            if (this.get_order() && promotionItems.length > 0) {
+                this.get_order().assign_pricelist_item_to_orderline();
+            };
         } while(promotionItems.length > 0);
-        if (this.get_order() && promotionItems.length > 0) {
-            this.get_order().assign_pricelist_item_to_orderline();
-        };
     }
 
     _loadPromotionPriceListItem(promotionItems) {
@@ -200,7 +202,7 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         // Sản phẩm tặng phải có đơn giá nhỏ hơn sản phẩm điều kiện trong giỏ hàng có đơn giá lớn nhất
         // @return Array(product_id: int,...)
         let available_products = this.get_reward_product_ids(program);
-        let valid_products_in_order = this.env.pos.get_order().get_orderlines().filter(line => program.valid_product_ids.has(line.product.id)).map(l => l.product);
+        let valid_products_in_order = this.env.pos.get_order().get_orderlines_to_check().filter(line => program.valid_product_ids.has(line.product.id)).map(l => l.product);
         let ref_product = valid_products_in_order.sort((a,b) => b.lst_price - a.lst_price).at(0);
         let valid_rewards = available_products.filter(p => this.env.pos.db.get_product_by_id(p).lst_price < ref_product.lst_price);
         return valid_rewards
@@ -286,6 +288,18 @@ const PosPromotionOrderline = (Orderline) => class PosPromotionOrderline extends
         this.is_reward_line = json.is_reward_line;
         this.pricelist_item = json.pricelist_item ? this.pos.pro_pricelist_item_by_id[json.pricelist_item] : null;
         super.init_from_JSON(...arguments);
+    }
+
+    set_point(point) {
+        let old_point = this.point;
+        super.set_point(point);
+        if (!old_point && this.point) {
+            if (this.promotion_usage_ids !== undefined && this.promotion_usage_ids.length > 0) {
+                this.promotion_usage_ids = [];
+                this.reset_unit_price();
+                this.order._resetPromotionPrograms(false);
+            };
+        };
     }
 
     set_quantity(quantity, keep_price) {
@@ -657,7 +671,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     _isAppliedCartPromotion() {
-        for (let line of this.get_orderlines()) {
+        for (let line of this.get_orderlines_to_check()) {
             if (line.promotion_usage_ids.some(usage => this.pos.get_program_by_id(usage.str_id).promotion_type == 'cart')) {
                 return true;
             };
@@ -719,7 +733,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         result.push(...Array.from(this.activatedCodePrograms).map(proID => this.pos.promotion_program_by_id[proID]));
 //        result.push(...Array.from(this.activatedPricelistItem).map(proID => this.pos.pro_pricelist_item_by_id[proID]));
         if (this.validOnOrderPricelistItem) {
-            let products = new Set(this.get_orderlines().filter(l=>l.quantity > 0).map(l => l.product.id));
+            let products = new Set(this.get_orderlines_to_check().filter(l=>l.quantity > 0).map(l => l.product.id));
             let validPricelistItems = this.validOnOrderPricelistItem.filter(str_id => {
                     let pro = this.pos.pro_pricelist_item_by_id[str_id];
                     return pro && products.has(pro.product_id)
@@ -782,7 +796,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     get_orderlines_to_check() {
         return this.get_orderlines().filter(line => {
-            if (line.is_reward_line) {
+            if (line.is_reward_line || line.point || line.is_product_defective || line.discount) {
                 return false;
             };
             if (line.promotion_usage_ids) {
@@ -792,6 +806,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     line.reset_unit_price();
                     return true;
                 };
+            };
+            return true;
+        });
+    }
+
+    _filterToApplyPro(ols) {
+        return ols.filter(line => {
+            if (line.is_reward_line || line.point || line.is_product_defective || line.discount) {
+                return false;
             };
             return true;
         });
@@ -899,9 +922,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let result = [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
         var valid_product_ids = codeProgram.valid_product_ids;
 
-//        if (codeProgram.reward_type == "code_amount") {
-//            max_count = 1;
-//        }
+        // if (codeProgram.reward_type == "code_amount") {
+        //     max_count = 1;
+        // }
         // todo: consider to sort by 'lst_price' ASC for type code_buy_x_get_cheapest
         to_check_order_lines.sort((a,b) => (a.product.lst_price < b.product.lst_price) ? 1 : ((b.product.lst_price < a.product.lst_price) ? -1 : 0))
         var oneCombo = [];
@@ -919,15 +942,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (codeProgram.reward_type == "code_amount" && ((codeProgram.discount_apply_on == "order" && check_q >= valid_product_ids.size) || !valid_product_ids.size)) {
             for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id) || !valid_product_ids.size)) {
                 var ol_quantity = ol.quantity;
-//                number_product_apply += ol_quantity
-//                if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
-//                    ol_quantity = codeProgram.reward_quantity - number_product_apply + ol_quantity;
-//                    number_product_apply = codeProgram.reward_quantity;
-//                }
-//
-//                if (!ol_quantity) {
-//                    break;
-//                }
+                number_product_apply += ol_quantity
+                if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
+                    ol_quantity = codeProgram.reward_quantity - number_product_apply + ol_quantity;
+                    number_product_apply = codeProgram.reward_quantity;
+                }
+
+                if (!ol_quantity) {
+                    break;
+                }
 
                 to_discount_line_vals.push({
                     product: ol.product,
@@ -959,15 +982,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
             for (var i =0; i<quantity_combo; i++) {
                 var ol_quantity = min_quantity;
-//                number_product_apply += ol_quantity;
-//                if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
-//                    ol_quantity = codeProgram.reward_quantity - number_product_apply + ol_quantity;
-//                    number_product_apply = codeProgram.reward_quantity;
-//                }
-//
-//                if (!ol_quantity) {
-//                    break;
-//                }
+                number_product_apply += ol_quantity;
+                if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
+                    ol_quantity = codeProgram.reward_quantity - number_product_apply + ol_quantity;
+                    number_product_apply = codeProgram.reward_quantity;
+                }
+
+                if (!ol_quantity) {
+                    break;
+                }
 
                 to_discount_line_vals.push({
                     product: ol.product,
@@ -1009,15 +1032,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     var quantity = ol.quantity;
                     min_quantity_tmp -= ol.quantity;
                     total_quantity -= ol.quantity;
-//                    number_product_apply += quantity;
-//                    if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
-//                        quantity = codeProgram.reward_quantity - number_product_apply + quantity;
-//                        number_product_apply = codeProgram.reward_quantity;
-//                    }
-//
-//                    if (!quantity) {
-//                        break;
-//                    }
+                    number_product_apply += quantity;
+                    if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
+                        quantity = codeProgram.reward_quantity - number_product_apply + quantity;
+                        number_product_apply = codeProgram.reward_quantity;
+                    }
+
+                    if (!quantity) {
+                        break;
+                    }
                     to_discount_line_vals.push({
                         product: ol.product,
                         quantity:  quantity,
@@ -1042,15 +1065,15 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         if (codeProgram.reward_type == "code_percent" && codeProgram.discount_apply_on == "order" && count > 0) {
             for (const ol of to_check_order_lines.filter(ol => valid_product_ids.has(ol.product.id))) {
                 var ol_quantity = ol.quantity;
-//                number_product_apply += ol_quantity;
-//                if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
-//                    ol_quantity = codeProgram.reward_quantity - number_product_apply + ol_quantity;
-//                    number_product_apply = codeProgram.reward_quantity;
-//                }
-//
-//                if (!ol_quantity) {
-//                    break;
-//                }
+                number_product_apply += ol_quantity;
+                if (codeProgram.reward_quantity && number_product_apply >= codeProgram.reward_quantity) {
+                    ol_quantity = codeProgram.reward_quantity - number_product_apply + ol_quantity;
+                    number_product_apply = codeProgram.reward_quantity;
+                }
+
+                if (!ol_quantity) {
+                    break;
+                }
 
                 to_discount_line_vals.push({
                     product: ol.product,
@@ -1071,18 +1094,18 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             }
         }
 
-        var map_to_discount_line_vals = {};
-
-        for (const to_discount_line_val of to_discount_line_vals) {
-            var key = to_discount_line_val.product.id + '-' + to_discount_line_val.promotion_usage_ids.reduce((p, {str_id}) => p + '-' + str_id, '');
-            if (map_to_discount_line_vals[key]) {
-                map_to_discount_line_vals[key].quantity += to_discount_line_val.quantity;
-            } else {
-                map_to_discount_line_vals[key] = to_discount_line_val;
-            }
-        }
-
-        to_discount_line_vals = Object.values(map_to_discount_line_vals);
+//        var map_to_discount_line_vals = {};
+//
+//        for (const to_discount_line_val of to_discount_line_vals) {
+//            var key = to_discount_line_val.product.id + '-' + to_discount_line_val.promotion_usage_ids.reduce((p, {str_id}) => p + '-' + str_id, '');
+//            if (map_to_discount_line_vals[key]) {
+//                map_to_discount_line_vals[key].quantity += to_discount_line_val.quantity;
+//            } else {
+//                map_to_discount_line_vals[key] = to_discount_line_val;
+//            }
+//        }
+//
+//        to_discount_line_vals = Object.values(map_to_discount_line_vals);
 
         var total_price = to_discount_line_vals.reduce((p, {price, quantity}) => p + price*quantity, 0)
         for (const discount_line_val of to_discount_line_vals) {
@@ -1408,7 +1431,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 };
             }
             else if (program.promotion_type == 'pricelist') {
-                const inOrderProductsList = new Set(this.get_orderlines()
+                const inOrderProductsList = new Set(this.get_orderlines_to_check()
                             .filter(l => l.quantity > 0)
                             .filter(l => !l.promotion_usage_ids || l.promotion_usage_ids.length == 0 ? true : false)
                             .reduce((tmp, line) => {tmp.push(line.product.id); return tmp;}, []));
@@ -1504,6 +1527,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 quantity: qty_taken,
                 price: line.product.lst_price,
                 isNew: true,
+                is_reward_line: program.reward_type == 'cart_get_x_free',
                 promotion_usage_ids: [...line.promotion_usage_ids]
             });
         }
@@ -1760,12 +1784,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 disc_percent = remaining_amount * 100 / LineList.total_price;
             }
 
-            let quantity_discount = LineList.quantity;
-            if (CodeProgram.reward_quantity && CodeProgram.reward_quantity < LineList.quantity) {
-                quantity_discount = CodeProgram.reward_quantity;
-            }
-
-            let base_total_amount = quantity_discount*LineList.price;
+            let base_total_amount = LineList.quantity*LineList.price;
             let disc_total_amount = round_decimals(base_total_amount * disc_percent / 100, this.pos.currency.decimal_places);
 
             if (CodeProgram.discount_apply_on == "specific_products" && CodeProgram.disc_max_amount > 0) {
@@ -1776,7 +1795,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
             if (disc_total_amount > 0) {
                 let originalPrice = LineList.price;
-                let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, LineList.quantity*LineList.price, originalPrice, LineList.quantity);
+                let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, base_total_amount, originalPrice, LineList.quantity);
                 LineList.price = newPrice;
                 LineList.promotion_usage_ids.push(new PromotionUsageLine(CodeProgram.id, code, null,originalPrice, newPrice, discAmountInLine, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on));
                 if (discAmountInLine * LineList.quantity != disc_total_amount) {
@@ -2241,7 +2260,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             };
         };
         if (!new_ol) {
-            let to_check_orderlines = this.get_orderlines().filter(l => l.quantity > 0 && !l.is_applied_promotion() && l.pricelist_item);
+            let to_check_orderlines = this.get_orderlines_to_check().filter(l => l.quantity > 0 && !l.is_applied_promotion() && l.pricelist_item);
             for (let line of to_check_orderlines) {
                 if (this._programIsApplicableAutomatically(line.pricelist_item)) {
                     this.applyAPricelistProgramToLineVales(line.pricelist_item, [line]);

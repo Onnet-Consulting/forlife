@@ -36,17 +36,31 @@ class NextPayController(http.Controller):
         except Exception:
             return invalid_response
 
-        # search PoS by merchant ID
-        pos_config = request.env['pos.config'].sudo().search([('nextpay_merchant_id', '=', merchant_id)], limit=1)
-        if not pos_config:
+        # in case multiple POS have the same merchant ID, so the steps to get correct pos.config is:
+        # 0. search pos.config(s) by merchant ID
+        # 1. pick secret key from random pos.config
+        # 2. decode raw data
+        # 3. extract pos.config ID from orderID (the unique ID of payment line in POS)
+        # 4. filter pos.config to get exactly the POS we want
+        pos_configs = request.env['pos.config'].sudo().search([('nextpay_merchant_id', '=', merchant_id)])
+        if not pos_configs:
             return {
                 'resCode': '406',
                 'message': 'merchantID does not exist in Odoo',
             }
 
-        secret_key = pos_config.nextpay_secret_key
-        raw_data = request.env['pos.config'].sudo().aes_ecb_decrypt(secret_key, request_data)
-        return {
-            'raw_data': json.loads(raw_data),
-            'pos_config': pos_config
-        }
+        secret_key = pos_configs[0].nextpay_secret_key
+        try:
+            raw_data = request.env['pos.config'].sudo().aes_ecb_decrypt(secret_key, request_data)
+            raw_data = json.loads(raw_data)
+            order_id = raw_data.get('orderId')
+            pos_config_id = int(order_id.split('_')[0])
+            pos_config = pos_configs.filtered(lambda x: x.id == pos_config_id)
+            if pos_config:
+                return {
+                    'raw_data': raw_data,
+                    'pos_config': pos_config
+                }
+        except Exception:
+            pass
+        return invalid_response

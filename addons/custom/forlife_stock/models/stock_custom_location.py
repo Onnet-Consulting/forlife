@@ -1,5 +1,7 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import AccessError, ValidationError
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class Location(models.Model):
@@ -7,7 +9,8 @@ class Location(models.Model):
 
     # partner_id = fields.Many2one('res.partner', string='Công ty', required=True)
     code = fields.Char(string='Mã', required=True)
-    type_other = fields.Selection([('incoming', 'Nhập khác'), ('outcoming', 'Xuất khác')], string='Loại khác', required=True)
+    type_other = fields.Selection([('incoming', 'Nhập khác'), ('outcoming', 'Xuất khác')], string='Loại khác',
+                                  required=True)
     valuation_out_account = fields.Many2one("account.account", string="Tài khoản định giá tồn kho (xuất hàng)")
     valuation_in_account = fields.Many2one("account.account", string="Tài khoản định giá tồn kho (nhập hàng)")
     id_deposit = fields.Boolean(string='Kho hàng ký gửi?', default=False)
@@ -28,6 +31,22 @@ class Location(models.Model):
              "and into an internal location, instead of the generic Stock Output Account set on the product. "
              "This has no effect for internal locations.")
 
+    x_property_valuation_in_account_id = fields.Many2one(
+        'account.account', 'Stock Valuation Account (Incoming)',
+        domain=[], company_dependent=True,
+        help="Used for real-time inventory valuation. When set on a virtual location (non internal type), "
+             "this account will be used to hold the value of products being moved from an internal location "
+             "into this location, instead of the generic Stock Output Account set on the product. "
+             "This has no effect for internal locations.")
+
+    x_property_valuation_out_account_id = fields.Many2one(
+        'account.account', 'Stock Valuation Account (Outgoing)',
+        domain=[], company_dependent=True,
+        help="Used for real-time inventory valuation. When set on a virtual location (non internal type), "
+             "this account will be used to hold the value of products being moved out of this location "
+             "and into an internal location, instead of the generic Stock Output Account set on the product. "
+             "This has no effect for internal locations.")
+
     stock_custom_picking_id = fields.Many2one('stock.picking')
 
     is_price_unit = fields.Boolean(default=False)
@@ -38,7 +57,8 @@ class Location(models.Model):
     def contrainst_code(self):
         for rec in self:
             if rec.code:
-                check_code_if_exist = self.env['stock.location'].search([('code','=',rec.code),('company_id','=',rec.company_id.id)], limit=2)
+                check_code_if_exist = self.env['stock.location'].search(
+                    [('code', '=', rec.code), ('company_id', '=', rec.company_id.id)], limit=2)
                 if len(check_code_if_exist) > 1:
                     raise ValidationError(_('Mã địa điểm phải là duy nhất trong công ty này!'))
 
@@ -49,8 +69,6 @@ class Location(models.Model):
                 r.usage = 'supplier'
             elif r.type_other == 'outcoming':
                 r.usage = 'import/export'
-
-
 
 
 class StockMove(models.Model):
@@ -81,17 +99,29 @@ class StockMove(models.Model):
             cost = cost * self.purchase_line_id.order_id.exchange_rate
         debit_value = self.company_id.currency_id.round(cost)
         credit_value = debit_value
-
         valuation_partner_id = self._get_partner_id_for_valuation_lines()
         if self.picking_id.location_dest_id.type_other == 'outcoming':
-            debit_account_id = self.picking_id.location_dest_id.valuation_in_account_id.id
-            credit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
+            # xử lí tài khoản khi là kiểm kê kho location kí gửi
+            if self.picking_id.location_id.id_deposit and self.picking_id.location_id.account_stock_give:
+                credit_account_id = self.picking_id.location_id.account_stock_give.id
+                debit_account_id = self.picking_id.location_dest_id.with_company(self.picking_id.company_id).x_property_valuation_in_account_id.id
+            else:
+                debit_account_id = self.picking_id.location_dest_id.with_company(self.picking_id.company_id).x_property_valuation_in_account_id.id
+                credit_account_id = self.product_id.categ_id.with_company(self.picking_id.company_id).property_stock_valuation_account_id.id
         if self.picking_id.location_id.type_other == 'incoming':
-            credit_account_id = self.picking_id.location_id.valuation_out_account_id.id
-            debit_account_id = self.product_id.categ_id.property_stock_valuation_account_id.id
+            # xử lí tài khoản khi là đơn đổi trả từ pos
+            if self.picking_id.location_dest_id.id_deposit and self.picking_id.location_dest_id.account_stock_give:
+                debit_account_id = self.picking_id.location_dest_id.account_stock_give.id
+                credit_account_id = self.picking_id.location_id.x_property_valuation_out_account_id.id
+                if not credit_account_id or not debit_account_id:
+                    raise ValidationError (_('Vui lòng cấu hình tài khoản kho kí gửi của địa điểm này hoặc trường Stock Valuation Account (Outgoing) tại địa điểm Nhập trả lại hàng kí gửi!'))
+            else:
+                debit_account_id = self.product_id.categ_id.with_company(self.picking_id.company_id).property_stock_valuation_account_id.id
+                credit_account_id = self.picking_id.location_id.with_company(self.picking_id.company_id).x_property_valuation_out_account_id.id
             debit_value = credit_value = self.product_id.standard_price * self.quantity_done \
-                if not self.picking_id.location_id.is_price_unit else (self.amount_total/self.previous_qty) * self.quantity_done
-                # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
+                if not self.picking_id.location_id.is_price_unit else (
+                                                                                  self.amount_total / self.previous_qty) * self.quantity_done
+            # if not self.picking_id.location_id.is_price_unit else self.price_unit * self.quantity_done
         res = [(0, 0, line_vals) for line_vals in self._generate_valuation_lines_data(valuation_partner_id, qty, debit_value, credit_value,
                                                                                       debit_account_id, credit_account_id, svl_id, description).values()]
         return res
@@ -104,15 +134,17 @@ class StockMove(models.Model):
             valued_move_lines = move._get_in_move_lines()
             valued_quantity = 0
             for valued_move_line in valued_move_lines:
-                valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done, move.product_id.uom_id)
+                valued_quantity += valued_move_line.product_uom_id._compute_quantity(valued_move_line.qty_done,
+                                                                                     move.product_id.uom_id)
             unit_cost = move.product_id.standard_price
             if move.product_id.cost_method != 'standard':
                 unit_cost = abs(move._get_price_unit())  # May be negative (i.e. decrease an out move).
             if move.picking_id.other_import and move.picking_id.location_id.is_price_unit:
-                unit_cost = move.amount_total/move.previous_qty if move.previous_qty != 0 else 0
+                unit_cost = move.amount_total / move.previous_qty if move.previous_qty != 0 else 0
             svl_vals = move.product_id._prepare_in_svl_vals(forced_quantity or valued_quantity, unit_cost)
             svl_vals.update(move._prepare_common_svl_vals())
             if forced_quantity:
-                svl_vals['description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
+                svl_vals[
+                    'description'] = 'Correction of %s (modification of past move)' % move.picking_id.name or move.name
             svl_vals_list.append(svl_vals)
         return svl_vals_list

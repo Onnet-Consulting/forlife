@@ -3,4 +3,5 @@ access_vendor_back,vendor_back,model_vendor_back,,1,1,1,1
 access_invoice_cost_line,invoice_cost_line,model_invoice_cost_line,,1,1,1,1
 access_invoice_exchange_rate,invoice_exchange_rate,model_invoice_exchange_rate,,1,1,1,1
 access_e_invoice,e_invoice,model_e_invoice,,1,1,1,1
+access_forlife_invoice_synthetic,forlife_invoice_synthetic,model_forlife_invoice_synthetic,,1,1,1,1
 

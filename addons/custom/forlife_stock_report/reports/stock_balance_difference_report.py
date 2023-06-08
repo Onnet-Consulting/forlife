@@ -22,24 +22,9 @@ class StockBalanceDifferenceReport(models.TransientModel):
         for rec in self:
             rec.name = _('Stock Balance Difference Report %s - %s') % (rec.period_start.strftime('%d/%m/%Y'), rec.period_end.strftime('%d/%m/%Y'))
 
-    def create_valuation(self):
-        return {
-            valuation.product_id.id: valuation.ids
-            for valuation in self.env['stock.valuation.layer'].create({
-                'value': line.difference,
-                'unit_cost': 0,
-                'quantity': 0,
-                'remaining_qty': 0,
-                'description': self.name,
-                'product_id': line.product_id,
-                'company_id': self.env.company.id
-            } for line in self.line_ids)
-        }
-
     def _create_account_move(self):
-        valuation = self.create_valuation()
         moves = self.env['account.move'].create([{
-            'date': datetime.now(),
+            'date': self.period_end,
             'ref': self.name,
             'line_ids': [
                 (0, 0, {
@@ -58,8 +43,16 @@ class StockBalanceDifferenceReport(models.TransientModel):
                 }),
             ],
             'move_type': 'entry',
-            'stock_valuation_layer_ids': [(6, 0, valuation[line.product_id])]
-        } for line in self.line_ids])
+            'stock_valuation_layer_ids': [(0, 0, {
+                'value': line.difference if line.difference > 0 else -line.difference,
+                'unit_cost': 0,
+                'quantity': 0,
+                'remaining_qty': 0,
+                'description': self.name,
+                'product_id': line.product_id,
+                'company_id': self.env.company.id
+            })]
+        } for line in self.line_ids if line.difference != 0])
         moves._post()
 
     def _generate_details(self, period_start, period_end):

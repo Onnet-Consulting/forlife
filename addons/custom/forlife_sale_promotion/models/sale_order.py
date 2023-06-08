@@ -2,7 +2,7 @@
 from odoo import api, fields, models, _
 import re
 from odoo import fields, Command
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 # from bs4 import BeautifulSoup
 
 class SaleOrder(models.Model):
@@ -10,18 +10,38 @@ class SaleOrder(models.Model):
 
     promotion_ids = fields.One2many('sale.order.promotion', 'order_id', string="Promotion")
     state = fields.Selection(
-        selection_add=[('check_promotion', 'Check promotion'), ('done_sale', "Done sale")]
-    )
+        selection=[
+            ('draft', "Quotation"),
+            ('sent', "Quotation Sent"),
+            ('check_promotion', 'Check promotion'), #new item
+            ('done_sale', "Done sale"),#new item
+            ('sale', "Sales Order"),
+            ('done', "Locked"),
+            ('cancel', "Cancelled"),
+        ],
+        string="Status",
+        readonly=True, copy=False, index=True,
+        tracking=3,
+        default='draft')
 
     def get_oder_line_barcode(self, barcode):
+        line_product = []
         for line in self.order_line:
             if line.product_id.barcode == barcode and not line.is_reward_line:
-                return line
-        return False
+                line_product.append(line)
+        return line_product
+
+    def find_mn_index(self, note):
+        if note:
+            index_list = []
+            for m in re.finditer('#mn', note.lower()):
+                index_list.append(m.start())
+            return index_list
+        return []
 
     def check_sale_promotion(self):
         for rec in self:
-            if rec.order_line and rec.state in ["sale", "check_promotion"]:
+            if rec.order_line and rec.state in ["draft", 'sent', "check_promotion"]:
                 rec.promotion_ids = [Command.clear()]
                 if rec.x_sale_chanel == "online":
                     rec.write({"state": "check_promotion"})
@@ -30,72 +50,103 @@ class SaleOrder(models.Model):
                     # note = BeautifulSoup(rec.note, "lxml").text.replace('&nbsp;', '').strip()
                     # đơn hàng có tôn tại Lấy 3 ký tự đầu tiên của note thỏa với '#mn'
 
-                    line_gift_mn = []
-                    if note and note.lower().find('#mn') >= 0:
-                        barcode = note[note.lower().find('#mn') + 3:].strip().split(' ')[0]
-                        if len(rec.order_line) == 1 and not rec.order_line[0].is_reward_line:
-                            if rec.order_line[0].product_uom_qty == 1:
-                                rec.order_line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
-                            elif rec.order_line[0].product_uom_qty > 1:
-                                for i in range(int(rec.order_line[0].product_uom_qty)):
-                                    new_line = rec.order_line[0].copy({'order_id': rec.order_line[0].order_id.id, 'product_uom_qty': 1})
-                                    if i == 0:
-                                        new_line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
-                                rec.order_line[0].unlink()
-                        else:
-                            line = self.get_oder_line_barcode(barcode)
-                            if not line or len(line) == 0:
-                                rec.write({"state": "check_promotion"})
-                                raise UserError(_("Order note invalid!"))
-                            elif line.product_uom_qty == 1:
-                                line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
-                            elif line.product_uom_qty > 1:
-                                for i in range(int(line.product_uom_qty)):
-                                    new_line = line.copy({'order_id': line.order_id.id, 'product_uom_qty': 1})
-                                    if i == 0:
-                                        new_line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
-                                line.unlink()
+                    has_vip = False
+                    if len(self.find_mn_index(note)) >= 0:
+                        for mn in self.find_mn_index(note):
+                            barcode_str = note[mn + 3:].strip()
+                            barcode = re.split(' |,', barcode_str)[0]
+
+                            if len(rec.order_line) == 1 and rec.order_line[0].product_uom_qty == 1 and not rec.order_line[0].is_reward_line:
+                                rec.order_line.write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
+
+                            else:
+                                line = self.get_oder_line_barcode(barcode)
+                                if not line or len(line) == 0:
+                                    rec.write({"state": "check_promotion"})
+                                    action = self.env['ir.actions.actions']._for_xml_id(
+                                        'forlife_sale_promotion.action_check_promotion_wizard')
+                                    action['context'] = {'default_message': _("Order note '#MN' invalid!")}
+                                    return action
+                                elif len(line) >= 1:
+                                    if line[0].product_uom_qty == 1:
+                                        line[0].write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
+                                    elif line[0].product_uom_qty > 1:
+                                        line[0].write({
+                                            'product_uom_qty': line[0].product_uom_qty - 1,
+                                            'price_unit': line[0].price_unit
+                                        })
+                                        line[0].copy(
+                                            {'x_free_good': True, 'order_id': line[0].order_id.id,
+                                             'product_uom_qty': 1, 'price_unit': 0, 'odoo_price_unit': 0,
+                                             'x_cart_discount_fixed_price': 0}
+                                        )
                     if note and note.lower().find('#vip') >= 0:
                         vip_text = note[note.lower().find('#vip') + 4:]
                         vip_number_text = vip_text.strip()[:2]
-                        vip_number = re.sub("[^0-9]", "", vip_number_text)
-                        if vip_number and str(vip_number).isnumeric():
+                        vip_number = vip_number_text and str(vip_number_text[0]).isnumeric() and re.sub("[^0-9]", "", vip_number_text)
+                        if vip_number and str(vip_number).isnumeric() and int(vip_number) != 0:
                             for ln in rec.order_line:
                                 warehouse_code = ln.x_location_id.warehouse_id.code
                                 analytic_account_id = warehouse_code and self.env['account.analytic.account'].search(
                                     [('code', 'like', '%' + warehouse_code + '%')], limit=1)
                                 ghn_price_unit = ln.price_unit
                                 price_percent = int(vip_number) / 100 * ghn_price_unit * ln.product_uom_qty
+                                gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                promotion_account_id = ln.product_id.categ_id.promotion_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                                has_vip = True
+                                # Ưu tiên 3
                                 if not ln.x_free_good and not ln.is_reward_line and price_percent > 0:
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': ln.product_id.id,
                                         'value': price_percent,
-                                        'account_id': ln.product_id.categ_id and ln.product_id.categ_id.discount_account_id.id,
+                                        'account_id': promotion_account_id and promotion_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
-                                        'description': "Giảm giá từ CT làm giá"
+                                        'description': "Chiết khấu theo chính sách vip"
                                     })]
-
+                                # Ưu tiên 4
+                                if ln.x_cart_discount_fixed_price - price_percent > 0:
+                                    rec.promotion_ids = [(0, 0, {
+                                        'product_id': ln.product_id.id,
+                                        'value': ln.x_cart_discount_fixed_price - price_percent,
+                                        'account_id': discount_account_id and discount_account_id.id,
+                                        'analytic_account_id': analytic_account_id and analytic_account_id.id,
+                                        'description': "Chiết khấu giảm giá trực tiếp"
+                                    })]
+                        else:
+                            self.env.cr.rollback()
+                            rec.write({"state": "check_promotion"})
+                            action = self.env['ir.actions.actions']._for_xml_id(
+                                'forlife_sale_promotion.action_check_promotion_wizard')
+                            action['context'] = {'default_message': _("Order note '#VIP' invalid!")}
+                            return action
+                            # raise ValidationError(_("Order note '#VIP' invalid!"))
                     for ln in rec.order_line:
                         warehouse_code = ln.x_location_id.warehouse_id.code
                         analytic_account_id = warehouse_code and self.env['account.analytic.account'].search([('code', 'like', '%'+warehouse_code+'%')], limit=1)
                         odoo_price_unit = ln.odoo_price_unit
                         diff_price_unit = odoo_price_unit - ln.price_unit  # thay 0 thanhf don gia Nhanh khi co truong
                         diff_price = diff_price_unit * ln.product_uom_qty
-                        if ln.x_cart_discount_fixed_price > 0 and not ln.x_free_good and not ln.is_reward_line:
+                        gift_account_id = ln.product_id.categ_id.product_gift_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                        discount_account_id = ln.product_id.categ_id.discount_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                        promotion_account_id = ln.product_id.categ_id.promotion_account_id or ln.product_id.categ_id.property_account_expense_categ_id
+                        # Ưu tiên 4
+                        if not has_vip and ln.x_cart_discount_fixed_price > 0 and not ln.x_free_good and not ln.is_reward_line:
                             rec.promotion_ids = [(0, 0, {
                                 'product_id': ln.product_id.id,
                                 'value': ln.x_cart_discount_fixed_price,
-                                'account_id': ln.product_id.categ_id and ln.product_id.categ_id.discount_account_id.id,
+                                'account_id': discount_account_id and discount_account_id.id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
-                                'description': "Chiết khấu khuyến mãi"
+                                'description': "Chiết khấu giảm giá trực tiếp"
                             })]
+                        # Ưu tiên 2
                         if diff_price > 0 and not ln.x_free_good and not ln.is_reward_line:
                             rec.promotion_ids = [(0, 0, {
                                 'product_id': ln.product_id.id,
-                                'value': diff_price_unit,
-                                'account_id': ln.product_id.categ_id and ln.product_id.categ_id.discount_account_id.id,
+                                'value': diff_price,
+                                'account_id': promotion_account_id and promotion_account_id.id,
                                 'analytic_account_id': analytic_account_id and analytic_account_id.id,
-                                'description': "Chiết khấu khuyến mãi"
+                                'description': "Chiết khấu khuyến mãi theo CT giá"
                             })]
 
                 elif rec.x_sale_chanel == "wholesale":
@@ -109,13 +160,14 @@ class SaleOrder(models.Model):
 
                                 if line_promotion.product_id.filtered_domain(
                                         product_domain) and not line_promotion.x_free_good and not line_promotion.is_reward_line:
-                                    discount_amount = line_promotion.price_unit * (
-                                            1 - (line_promotion.discount or 0.0) / 100.0) * (
-                                                              line.reward_id.discount / 100)
+                                    discount_amount = line_promotion.price_unit * \
+                                                      line_promotion.product_uom_qty * \
+                                                      (line.reward_id.discount or 100) / 100
+                                    discount_account_id = line_promotion.product_id.categ_id.discount_account_id or line_promotion.product_id.categ_id.property_account_expense_categ_id
                                     rec.promotion_ids = [(0, 0, {
                                         'product_id': line_promotion.product_id.id,
                                         'value': discount_amount,
-                                        'account_id': line_promotion.product_id.categ_id and line_promotion.product_id.categ_id.discount_account_id.id,
+                                        'account_id': discount_account_id and discount_account_id.id,
                                         'analytic_account_id': analytic_account_id and analytic_account_id.id,
                                         'description': "Chiết khấu khuyến mãi"
                                     })]
@@ -129,7 +181,7 @@ class SaleOrder(models.Model):
             for line in rec.order_line:
                 if line.is_reward_line:
                     if line.reward_id.reward_type == "product":
-                        line.write({'x_free_good': True, 'price_unit': 0, 'x_cart_discount_fixed_price': 0})
+                        line.write({'x_free_good': True, 'price_unit': 0, 'odoo_price_unit': 0, 'x_cart_discount_fixed_price': 0})
             return res
 
 class SaleOrderLine(models.Model):

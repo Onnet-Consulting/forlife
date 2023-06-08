@@ -32,7 +32,11 @@
                         <td><t t-esc="line.nam_sx"/></td>
                         <td><t t-esc="line.bo_suu_tap"/></td>
                         <td><t t-esc="line.xuat_xu"/></td>
-                        <td><t t-esc="line.cac_thuoc_tinh"/></td>
+                        <td><t t-esc="line.subclass1"/></td>
+                        <td><t t-esc="line.subclass2"/></td>
+                        <td><t t-esc="line.subclass3"/></td>
+                        <td><t t-esc="line.subclass4"/></td>
+                        <td><t t-esc="line.subclass5"/></td>
                         <td><t t-esc="line.dv_tinh"/></td>
                         <td><t t-esc="line.nhap"/></td>
                         <td><t t-esc="line.xuat"/></td>

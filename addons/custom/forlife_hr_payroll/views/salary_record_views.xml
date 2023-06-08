@@ -121,7 +121,7 @@
             <field name="name">Salary Record</field>
             <field name="res_model">salary.record</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'search_default_type': 1}</field>
+            <field name="context" eval="{'search_default_type': 1}"/>
         </record>
     </data>
 </odoo>

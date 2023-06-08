@@ -24,7 +24,7 @@ class StockMove(models.Model):
         acc_src = self._get_src_account(accounts_data)
         acc_dest = self._get_dest_account(accounts_data)
 
-        if self.product_id.id in [line.x_free_good and line.product_id.id for line in self.picking_id.sale_id.order_line]:
+        if self.sale_line_id and self.sale_line_id.x_free_good:
             if self.product_id.categ_id.product_gift_account_id:
                 acc_dest = self.product_id.categ_id.product_gift_account_id.id
         elif self.picking_id.sale_id.x_sale_chanel == "online":

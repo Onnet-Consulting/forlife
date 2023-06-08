@@ -58,6 +58,7 @@ class AccountMove(models.Model):
         res = super(AccountMove, self).action_post()
         if self.promotion_ids:
             line_ids = []
+            journal_id = self.env['account.journal'].search([('is_promotion', '=', True)], limit=1)
             for pr in self.promotion_ids:
                 property_account_receivable_id = self.partner_id.property_account_receivable_id
                 account_debit_id = pr.value > 0 and pr.account_id or property_account_receivable_id
@@ -81,7 +82,7 @@ class AccountMove(models.Model):
                     })
             default_value = {
                 'date': self.invoice_date,
-                'journal_id': self.env.ref("forlife_sale_promotion.account_journal_promotion").id,
+                'journal_id': journal_id and journal_id.id or (self.journal_id and self.journal_id.id or False),
                 'move_id': self.id,
                 'move_type': 'entry',
                 'line_ids': [(0, 0, line_id) for line_id in line_ids]

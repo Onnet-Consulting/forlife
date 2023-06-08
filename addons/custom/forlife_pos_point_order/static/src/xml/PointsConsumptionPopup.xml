@@ -20,7 +20,8 @@
                                 <t t-foreach="props.product_valid_apply_all" t-as="line" t-key="line.id">
                                     <t t-foreach="[...Array(line.quantity).keys()]" t-as="num" t-key="num">
                                         <tr style="width:100%; border:1px solid black;">
-                                            <td style="border:1px solid black;"><t t-esc="line.product.display_name"/></td>
+                                            <td style="border:1px solid black;"
+                                                t-att-style="this._is_applied_promotion(line.id) ? 'color:orange' : ''"><t t-esc="line.product.display_name"/></td>
                                             <!--                                        <td style="border:1px solid black;"><t t-esc="state.point_last_remainder_apply_all"/></td>-->
                                             <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(line.price)"/></td>
                                             <td style="border:1px solid black;width:85px;">
@@ -36,7 +37,8 @@
                             <t t-else="">
                                 <t t-foreach="props.old_data_props" t-as="num" t-key="num.idx">
                                         <tr style="width:100%; border:1px solid black;">
-                                            <td style="border:1px solid black;"><t t-esc="num.display_name"/></td>
+                                            <td style="border:1px solid black;"
+                                                t-att-style="this._is_applied_promotion(num.id) ? 'color:orange' : ''"><t t-esc="num.display_name"/></td>
                                             <td style="border:1px solid black;width:130px;text-align: center;"><t t-esc="env.pos.format_currency(num.unit_price)"/></td>
                                             <td style="border:1px solid black;width:85px;">
                                                         <input style="width: 100%;text-align: center;"

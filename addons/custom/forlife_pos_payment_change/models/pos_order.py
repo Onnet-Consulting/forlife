@@ -161,7 +161,7 @@ class PosOrder(models.Model):
         if product_ids:
             if len(product_ids) == 1:
                 product_ids = str(tuple(product_ids))
-                product_ids = product_ids.replace(',','')
+                product_ids = product_ids.replace(',', '')
             else:
                 product_ids = tuple(product_ids)
         else:
@@ -169,7 +169,7 @@ class PosOrder(models.Model):
         if seri_list:
             if len(seri_list) == 1:
                 seri_list = str(tuple(seri_list))
-                seri_list = seri_list.replace(',','')
+                seri_list = seri_list.replace(',', '')
             else:
                 seri_list = tuple(seri_list)
         else:
@@ -189,8 +189,13 @@ class PosOrder(models.Model):
                     list_product_exits.append(r['product_id'])
                     if rec['count'] > 0 and rec['product_id'] == r['product_id'] and (r['quantity'] - r['reserved_quantity']) < rec['count']:
                         product_not_availabel.append(rec['product_name'])
+        sql_product_id = f"SELECT pp.id, pt.detailed_type FROM product_product as pp JOIN product_template as pt " \
+                         f"ON pp.product_tmpl_id = pt.id WHERE pp.id in {product_ids}"
+        self._cr.execute(sql_product_id)
+        product_types = self._cr.dictfetchall()
+        data_product_ids = [x['id'] for x in product_types] if product_types else []
         for rec in order_lines[0]:
-            if rec['product_id'] not in list_product_exits:
+            if rec['product_id'] not in list_product_exits and rec['product_id'] not in data_product_ids:
                 product_not_availabel.append(rec['product_name'])
         if len(product_not_availabel) > 0:
             message = f"Sản phẩm {', '.join(product_not_availabel)} không đủ tồn trong địa điểm {stock_location.name} kho {stock_location.warehouse_id.name}"

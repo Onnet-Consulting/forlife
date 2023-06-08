@@ -6,6 +6,7 @@
     "description": """Forlife Purchase Return""",
     "depends": [
         'forlife_purchase',
+        'forlife_stock',
         'purchase_request',
         'stock'
     ],
@@ -15,6 +16,7 @@
         'wizard/stock_return_picking.xml',
         'wizard/purchase_return_wizard.xml',
         'views/purchase_order_views.xml',
+        'views/stock_picking_type_views.xml'
     ],
     "assets": {
     },

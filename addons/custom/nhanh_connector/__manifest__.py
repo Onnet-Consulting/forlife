@@ -7,10 +7,15 @@
   "description":  """Nhanh Connector""",
   "depends":  ['sale', 'base', 'sale_management', 'forlife_pos_app_member','product'],
   "data":  [
+    'security/ir.model.access.csv',
     'data/cron.xml',
     'views/sale_order_view.xml',
     'views/res_partner_customer_view.xml',
-    'views/res_config_settings_views.xml'
+    # 'views/res_config_settings_views.xml',
+    'views/nhanh_brand_config.xml',
+    'views/nhanh_webhook_value.xml',
+    'views/stock_location.xml',
+    'views/stock_warehouse.xml',
   ],
   "application":  True,
   "installable":  True,
