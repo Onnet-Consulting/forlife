@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.addons.nhanh_connector.models import constant
 from odoo import api, fields, models, _, exceptions
-from odoo.tools import safe_eval
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -31,6 +31,9 @@ class NhanhWebhookValue(models.Model):
             self.action_order_delete(data)
 
     def action_order_add(self, data):
+        order = constant.get_order_from_nhanh(self, data.get('data', {}).get('orderId', 0))
+        if not order:
+            return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
         name_customer = False
         # Add customer if not existed
         nhanh_partner = self.env['res.partner'].sudo().search(
@@ -56,9 +59,9 @@ class NhanhWebhookValue(models.Model):
             }
             partner = self.env['res.partner'].sudo().create(partner_value)
         order_line = []
-        location_id = self.env['stock.location'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
+        location_id = self.env['stock.location'].search([('nhanh_id', '=', int(order['depotId']))], limit=1)
         for item in data['products']:
-            product = self.env['product.template'].sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
+            product = self.product_template_model().sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
             product_product = self.env['product.product'].sudo().search([('product_tmpl_id', '=', product.id)],
                                                                         limit=1)
             order_line.append((
@@ -84,13 +87,13 @@ class NhanhWebhookValue(models.Model):
             status = 'cancel'
 
         # nhân viên kinh doanh
-        user_id = self.env['res.users'].search([('partner_id.name', '=', data['saleName'])], limit=1)
+        user_id = self.env['res.users'].search([('partner_id.name', '=', order['saleName'])], limit=1)
         # đội ngũ bán hàng
-        team_id = self.env['crm.team'].search([('name', '=', data['trafficSourceName'])], limit=1)
+        team_id = self.env['crm.team'].search([('name', '=', order['trafficSourceName'])], limit=1)
         default_company_id = self.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
-        warehouse_id = self.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
-        if not warehouse_id:
-            warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
+        # warehouse_id = request.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
+        # if not warehouse_id:
+        #     warehouse_id = request.env['stock.warehouse'].search([('company_id', '=', default_company_id.id)], limit=1)
         value = {
             'nhanh_id': data['orderId'],
             'nhanh_status': data['status'],
@@ -102,17 +105,26 @@ class NhanhWebhookValue(models.Model):
             'state': status,
             'nhanh_order_status': data['status'].lower(),
             'name_customer': name_customer,
-            'note': data['privateDescription'],
+            'note': order['privateDescription'],
             'note_customer': data['description'],
             'x_sale_chanel': 'online',
-            'carrier_name': data['carrierName'],
+            'carrier_name': order['carrierName'],
             'user_id': user_id.id if user_id else None,
             'team_id': team_id.id if team_id else None,
             'company_id': default_company_id.id if default_company_id else None,
-            'warehouse_id': warehouse_id.id if warehouse_id else None,
+            'warehouse_id': location_id.warehouse_id.id if location_id and location_id.warehouse_id else None,
             'order_line': order_line
         }
-        self.env['sale.order'].sudo().create(value)
+        # đổi trả hàng
+        if order.get('returnFromOrderId', 0):
+            origin_order_id = self.env['sale.order'].sudo().search(
+                [('nhanh_id', '=', order.get('returnFromOrderId', 0))], limit=1)
+            value.update({
+                'x_is_return': True,
+                'x_origin': origin_order_id.id if origin_order_id else None,
+                'nhanh_origin_id': order.get('returnFromOrderId', 0)
+            })
+        self.self.env['sale.order'].sudo().create(value)
 
     def action_order_update(self, data):
         if data.get('status'):
