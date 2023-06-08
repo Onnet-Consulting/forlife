@@ -46,7 +46,8 @@
         'views/pos_reason_refund.xml',
         'views/product_category_view.xml',
         'views/product_defective.xml',
-        'views/defective_type.xml'
+        'views/defective_type.xml',
+        'wirards/reason_refuse.xml'
         # Menu
     ]
 }
