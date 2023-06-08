@@ -1057,7 +1057,10 @@ class PurchaseOrder(models.Model):
                 moves |= AccountMove.with_company(vals['company_id']).create(vals)
             for line in moves.invoice_line_ids:
                 if line.product_id:
-                    account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
+                    if line.product_id.property_account_expense_id:
+                        account_id = line.product_id.property_account_expense_id.id
+                    else:
+                        account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
                     line.account_id = account_id
             # 3.1) ẩn nút trả hàng khi hóa đơn của pnk đã tồn tại
             # if moves:
