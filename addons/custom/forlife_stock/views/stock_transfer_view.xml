@@ -70,7 +70,7 @@
                             <field name="reference_document" attrs="{'invisible':[('reference_document', '=', False)], 'readonly': [('state', '!=', 'draft')]}" string="Tài liệu gốc"/>
                             <field name="type" attrs="{'invisible':[('type', '=', False)]}"/>
                             <field name ="date_transfer"  attrs="{'invisible':[('state', 'in', ('draft','wait_approve','approved','cancel'))]}"  readonly="1"  />
-                            <field name="note" string="Ghi chú"/>
+                            <field name ="date_in_approve"/>
                         </group>
                         <group>
                             <field name="create_date" options='{"date_format": "dd/MM/yyyy"}' attrs="{'readonly': [('state', '!=', 'draft')]}"/>
@@ -82,6 +82,9 @@
                             <field name="total_package" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="total_weight" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                         </group>
+                    </group>
+                    <group string="Ghi chú">
+                        <field colspan="2" name="note" nolabel="1"/>
                     </group>
                     <notebook>
                         <page string="Product">
