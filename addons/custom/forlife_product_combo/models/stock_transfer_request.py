@@ -17,7 +17,7 @@ class StockTransferRequest(models.Model):
             mail_template = self.env.ref('forlife_product_combo.email_template_warning_unapproved_transfer_application', raise_if_not_found=False)
             for record in stocks:
                 for user in user_ids:
-                    email_to = user.email
+                    email_to = user.partner_id.email
                     if email_to:
                         mail_template.with_context(**{
                             'email_to': email_to
