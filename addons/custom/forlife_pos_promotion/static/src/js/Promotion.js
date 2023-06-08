@@ -1713,7 +1713,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 remaining_amount -= disc_total_amount;
             }
 
-            if (disc_total_amount > 0) {
+            if (disc_total_amount > 0 || LineList.is_not_discount) {
                 let originalPrice = LineList.price;
                 if (originalPrice*LineList.quantity <  disc_total_amount) {
                     disc_total_amount = originalPrice*LineList.quantity;
@@ -1753,7 +1753,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 }
             }
 
-            if (disc_total_amount > 0) {
+            if (disc_total_amount > 0 || LineList.is_not_discount) {
                 let originalPrice = LineList.price;
                 let [newPrice, discAmountInLine] = this._computeNewPriceForComboProgram(disc_total_amount, LineList.quantity*LineList.price, originalPrice, LineList.quantity);
                 LineList.price = newPrice;
