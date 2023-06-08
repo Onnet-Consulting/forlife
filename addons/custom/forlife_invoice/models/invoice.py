@@ -407,45 +407,43 @@ class AccountMove(models.Model):
                     or not self.env.ref('forlife_purchase.product_excise_tax_default').with_company(rec.company_id).property_account_expense_id:
                 raise ValidationError("Bạn chưa cấu hình tài khoản trong danh mục thuế tiêu thụ đặc biệt hoặc tài khoản chi phí kế toán của sản phẩm có tên là 'Thuế tiêu thụ đặc biệt'")
             for item in rec.exchange_rate_line:
-                if item.tax_amount > 0:
-                    account_credit_tnk = (0, 0, {
-                        'sequence': 99991,
-                        'account_id': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
-                            rec.company_id).property_account_expense_id.id,
-                        'name': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
-                            rec.company_id).property_account_expense_id.name,
-                        'debit': 0,
-                        'credit': item.tax_amount * self.exchange_rate,
-                    })
-                    account_debit_tnk = (0, 0, {
-                        'sequence': 9,
-                        'account_id': self.env.ref('forlife_purchase.product_import_tax_default').categ_id.with_company(
-                            rec.company_id).property_stock_account_input_categ_id.id,
-                        'name': item.product_id.name,
-                        'debit': item.tax_amount * self.exchange_rate,
-                        'credit': 0,
-                    })
-                    lines_tnk = [account_debit_tnk, account_credit_tnk]
-                    account_tnk.extend(lines_tnk)
-                if item.special_consumption_tax_amount > 0:
-                    account_credit_db = (0, 0, {
-                        'sequence': 99991,
-                        'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
-                            rec.company_id).property_account_expense_id.id,
-                        'name': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
-                            rec.company_id).property_account_expense_id.name,
-                        'debit': 0,
-                        'credit': item.special_consumption_tax_amount * self.exchange_rate,
-                    })
-                    account_debit_db = (0, 0, {
-                        'sequence': 9,
-                        'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
-                        'name': item.product_id.name,
-                        'debit': item.special_consumption_tax_amount * self.exchange_rate,
-                        'credit': 0,
-                    })
-                    lines_db = [account_debit_db, account_credit_db]
-                    account_db.extend(lines_db)
+                account_credit_tnk = (0, 0, {
+                    'sequence': 99991,
+                    'account_id': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
+                        rec.company_id).property_account_expense_id.id,
+                    'name': self.env.ref('forlife_purchase.product_import_tax_default').with_company(
+                        rec.company_id).property_account_expense_id.name,
+                    'debit': 0,
+                    'credit': item.tax_amount * self.exchange_rate,
+                })
+                account_debit_tnk = (0, 0, {
+                    'sequence': 9,
+                    'account_id': self.env.ref('forlife_purchase.product_import_tax_default').categ_id.with_company(
+                        rec.company_id).property_stock_account_input_categ_id.id,
+                    'name': item.product_id.name,
+                    'debit': item.tax_amount * self.exchange_rate,
+                    'credit': 0,
+                })
+                lines_tnk = [account_debit_tnk, account_credit_tnk]
+                account_tnk.extend(lines_tnk)
+                account_credit_db = (0, 0, {
+                    'sequence': 99991,
+                    'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
+                        rec.company_id).property_account_expense_id.id,
+                    'name': self.env.ref('forlife_purchase.product_excise_tax_default').with_company(
+                        rec.company_id).property_account_expense_id.name,
+                    'debit': 0,
+                    'credit': item.special_consumption_tax_amount * self.exchange_rate,
+                })
+                account_debit_db = (0, 0, {
+                    'sequence': 9,
+                    'account_id': self.env.ref('forlife_purchase.product_excise_tax_default').categ_id.with_company(rec.company_id).property_stock_account_input_categ_id.id,
+                    'name': item.product_id.name,
+                    'debit': item.special_consumption_tax_amount * self.exchange_rate,
+                    'credit': 0,
+                })
+                lines_db = [account_debit_db, account_credit_db]
+                account_db.extend(lines_db)
                 merged_records_tnk = {}
                 merged_records_db = {}
                 for tnk in account_tnk:
