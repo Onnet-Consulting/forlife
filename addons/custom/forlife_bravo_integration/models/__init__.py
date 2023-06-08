@@ -21,3 +21,4 @@ from . import stock_location
 from . import forlife_production
 from . import documents
 from . import warehouse_group
+from . import expense_item
