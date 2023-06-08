@@ -526,7 +526,7 @@ class StockTransferLine(models.Model):
             if quantity > self.qty_plan * (1 + (tolerance / 100)):
                 raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
         else:
-            start_transfer = self.env['stock.transfer'].search([('name', '=', self.stock_transfer_id.reference_document)])
+            start_transfer = self.env['stock.transfer'].search([('name', '=', self.stock_transfer_id.reference_document)], limit=1)
             other_transfer = self.env['stock.transfer'].search([('reference_document', '=', start_transfer.name)])
             quantity_old = sum([line.qty_out if type == 'out' else line.qty_in for line in other_transfer.stock_transfer_line.filtered(
                 lambda r: r.product_id == self.product_id)])
