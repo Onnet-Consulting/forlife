@@ -1,5 +1,5 @@
 from odoo import api, fields, models, _
-
+from contextlib import contextmanager
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
@@ -8,17 +8,24 @@ class AccountMove(models.Model):
     invoice_type = fields.Selection([('increase', 'Increase'), ('decrease', 'Decrease')], string='Type')
     origin_invoice_id = fields.Many2one('account.move', string='Origin Invoice', readonly=True, check_company=True)
 
+    def _post(self, soft=True):
+        for record in self:
+            if record.origin_invoice_id:
+                record.amount_total = abs(record.amount_total)
+        return super(AccountMove, self)._post(soft)
+
+
     def button_increase_decrease_invoice(self, default=None):
 
         self.ensure_one()
         default = dict(default or {})
         default.update({
             'invoice_type': False,
-            # 'move_type': 'entry',
+            # 'move_type': 'in_invoice',
             'origin_invoice_id': self.id
         })
         move_copy_id = self.copy(default)
-        move_copy_id.move_type = 'entry'
+        # move_copy_id.move_type = 'entry'
 
         return {
             'type': 'ir.actions.act_window',
@@ -73,3 +80,13 @@ class AccountMove(models.Model):
                             'credit': int(credit),
                             'balance': balance
                         })
+
+class AccountMoveLine(models.Model):
+    _inherit = 'account.move.line'
+
+    # @api.depends('balance', 'move_id.is_storno')
+    # def _compute_debit_credit(self):
+    #     res = super(AccountMoveLine, self)._compute_debit_credit()
+    #     for move in self.move_id:
+    #         move.onchange_view_invoice_type()
+    #     return res

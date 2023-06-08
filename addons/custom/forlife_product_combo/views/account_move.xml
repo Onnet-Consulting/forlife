@@ -9,7 +9,7 @@
                 <xpath expr="//button[@name='button_draft']" position="after">
                     <button name="button_increase_decrease_invoice"
                             type="object"
-                            string="Increase and Decrease Invoice"
+                            string="Tăng/Giảm hóa đơn"
                             attrs="{'invisible': ['|', ('state', '!=', 'posted'), ('payment_state', '!=', 'paid')]}"
                             groups="account.group_account_invoice"/>
                 </xpath>
@@ -26,6 +26,17 @@
                     <field name="invoice_type" string="Tăng giảm hóa đơn"
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('origin_invoice_id', '=', False)]}"/>
                 </xpath>
+
+<!--                <xpath expr="//field[@name='invoice_line_ids']" position="attributes">-->
+<!--                    <attribute name="attrs">{'invisible': [('origin_invoice_id', '=', False)]}</attribute>-->
+<!--                </xpath>-->
+                <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('origin_invoice_id', '=', False), ('is_check', '=', True)]}</attribute>
+                </xpath>
+                <xpath expr="//page[@id='invoice_tab']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('origin_invoice_id', '=', False), ('move_type', '=', 'entry')]}</attribute>
+                </xpath>
+
              </field>
         </record>
 
