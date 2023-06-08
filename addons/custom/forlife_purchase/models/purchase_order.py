@@ -116,7 +116,6 @@ class PurchaseOrder(models.Model):
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
-
     # def action_view_PO(self):
     #     for rec in self:
     #         list_origin = []
@@ -484,7 +483,6 @@ class PurchaseOrder(models.Model):
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
-
 
     def check_purchase_tool_and_equipment(self):
         # Kiểm tra xem có phải sp CCDC không (có category đc cấu hình trường tài khoản định giá tồn kho là 153)
@@ -1370,6 +1368,7 @@ class PurchaseOrder(models.Model):
         })
         return values
 
+
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
@@ -1798,7 +1797,7 @@ class PurchaseOrderLine(models.Model):
 
     def _prepare_account_move_line(self):
         if self.product_id.product_tmpl_id.is_trade_discount and self.price_unit > 0:
-            raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
+            raise UserError("Giá CKTM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
         return super(PurchaseOrderLine, self)._prepare_account_move_line()
 
 
