@@ -19,8 +19,8 @@ class StockPicking(models.Model):
         return res
 
     @api.model
-    def bravo_get_table(self):
-        picking_data = self.env.context.get(CONTEXT_PICKING_ACTION)
+    def bravo_get_table(self, **kwargs):
+        picking_data = kwargs.get(CONTEXT_PICKING_ACTION)
         bravo_table = 'DEFAULT'
         if picking_data == PICKING_PURCHASE_VALUE:
             bravo_table = "B30AccDocPurchase"

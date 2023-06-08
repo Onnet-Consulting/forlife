@@ -215,7 +215,7 @@ class StockPicking(models.Model):
 
     def bravo_get_picking_purchase_by_account_move_value(self, account_move, line_count):
         stock_move = account_move.stock_move_id
-        purchase_order_line = stock_move.purchase_order_line
+        purchase_order_line = stock_move.purchase_line_id
         product = stock_move.product_id
         purchase_order = purchase_order_line.order_id
         picking = stock_move.picking_id
