@@ -6,7 +6,7 @@ class StockVLayer(models.Model):
 
     def _validate_accounting_entries(self):
         am_vals = []
-        location_check_id = loc = self.env['stock.location'].sudo().search([('code', '=', 'N0202')], limit=1)
+        location_check_id = self.env['stock.location'].sudo().search([('code', '=', 'N0202')], limit=1)
         location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202')], limit=1)
         reason_type_check = self.env.ref('forlife_inventory.reason_type_import_return_product',
                                          raise_if_not_found=False).id
