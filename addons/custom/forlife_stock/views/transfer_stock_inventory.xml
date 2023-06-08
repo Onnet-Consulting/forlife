@@ -135,7 +135,7 @@
 
 
     <record id="transfer_stock_inventory_classify_action" model="ir.actions.act_window">
-        <field name="name">Phân loại hàng lỗi</field>
+        <field name="name">Xử lý hàng lỗi</field>
         <field name="res_model">transfer.stock.inventory</field>
         <field name="view_mode">tree,form</field>
         <field name="domain">[('x_classify', '=', True)]</field>
