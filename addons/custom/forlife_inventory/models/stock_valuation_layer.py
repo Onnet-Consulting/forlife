@@ -6,18 +6,20 @@ class StockVLayer(models.Model):
 
     def _validate_accounting_entries(self):
         am_vals = []
-        location_check_id = self.env.ref('forlife_stock.enter_inventory_balance_auto')
-        location_dest_check_id = self.env.ref('forlife_stock.export_inventory_balance_auto',
-                                              raise_if_not_found=False).id
+        location_check_id = loc = self.env['stock.location'].sudo().search([('code', '=', 'N0202')], limit=1)
+        location_dest_check_id = self.env['stock.location'].sudo().search([('code', '=', 'X0202')], limit=1)
         reason_type_check = self.env.ref('forlife_inventory.reason_type_import_return_product',
                                          raise_if_not_found=False).id
+        auto_import_check = self.env.ref('forlife_inventory.nhap_ki_gui_tu_dong').id
+        auto_export_check = self.env.ref('forlife_inventory.xuat_ki_gui_tu_dong').id
         for svl in self:
             if not svl.with_company(svl.company_id).product_id.valuation == 'real_time':
                 continue
-            if svl.currency_id.is_zero(
-                    svl.value) and svl.stock_move_id.picking_id.location_id.id != location_check_id and \
-                    svl.stock_move_id.picking_id.location_dest_id.id != location_dest_check_id and svl.stock_move_id.picking_id.reason_type_id.id != reason_type_check:
-                continue
+            if svl.currency_id.is_zero(svl.value):
+                if location_check_id and location_dest_check_id and svl.stock_move_id.picking_id.location_id.id != location_check_id.id and \
+                        svl.stock_move_id.picking_id.location_dest_id.id != location_dest_check_id.id and \
+                        svl.stock_move_id.picking_id.reason_type_id.id != reason_type_check or (svl.stock_move_id.picking_id.location_id.id == auto_import_check or svl.stock_move_id.picking_id.location_dest_id.id == auto_export_check):
+                    continue
             move = svl.stock_move_id
             if not move:
                 move = svl.stock_valuation_layer_id.stock_move_id

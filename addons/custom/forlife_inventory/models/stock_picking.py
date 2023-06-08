@@ -10,7 +10,9 @@ class StockPicking(models.Model):
         res = super(StockPicking, self).button_validate()
         if res is not True:
             return res
-        if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'outgoing' and not self.x_is_check_return and self.location_id.id_deposit:
+        ec_warehouse_id = self.env.ref('forlife_stock.sell_ecommerce', raise_if_not_found=False).id
+        if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'outgoing' and not self.x_is_check_return \
+            and self.location_id.stock_location_type_id.id == ec_warehouse_id:
             data = []
             if self.company_id.code == '1300':
                 location_mapping = self.env['stock.location.mapping'].sudo().search([('location_id', '=', self.location_id.id)])
@@ -41,7 +43,7 @@ class StockPicking(models.Model):
                     'move_ids_without_package': data,
                 })
                 orther_export.button_validate()
-        if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.id_deposit:
+        if self.sale_id.source_record and self.company_id.code == '1300' and self.picking_type_code == 'incoming' and self.x_is_check_return and self.location_dest_id.stock_location_type_id.id == ec_warehouse_id:
             data = []
             location_mapping = self.env['stock.location.mapping'].sudo().search(
                 [('location_id', '=', self.location_dest_id.id)])
