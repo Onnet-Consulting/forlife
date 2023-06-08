@@ -347,7 +347,7 @@ class PurchaseOrder(models.Model):
 
     def compute_count_invoice_inter_fix(self):
         for rec in self:
-            rec.count_invoice_inter_fix = self.env['account.move'].search_count([('reference', '=', rec.name), ('move_type', '=', 'in_invoice')])
+            rec.count_invoice_inter_fix = self.env['account.move'].search_count([('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice')])
 
     @api.onchange('trade_discount')
     def onchange_total_trade_discount(self):
@@ -753,7 +753,7 @@ class PurchaseOrder(models.Model):
     def action_view_invoice_new(self):
         for rec in self:
             data_search = self.env['account.move'].search(
-                [('reference', '=', rec.name), ('move_type', '=', 'in_invoice')]).ids
+                [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice')]).ids
         return {
             'name': 'Hóa đơn nhà cung cấp',
             'type': 'ir.actions.act_window',
@@ -1293,6 +1293,12 @@ class PurchaseOrder(models.Model):
                     if line.product_id:
                         account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
                         line.account_id = account_id
+                for line in move:
+                    reference = []
+                    for nine in line.purchase_order_product_id:
+                        reference.append(nine.name)
+                        ref_join = ', '.join(reference)
+                        line.reference = ref_join
             move.filtered(
                 lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
             created_moves.append(move)
