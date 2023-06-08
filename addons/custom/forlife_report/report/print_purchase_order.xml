@@ -1,0 +1,238 @@
+<odoo>
+    <data>
+        <record id="print_purchase_order" model="ir.actions.report">
+            <field name="name">Print Purchase Order</field>
+            <field name="model">purchase.order</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">forlife_report.print_purchase_order_template</field>
+            <field name="report_file">forlife_report.print_purchase_order_template</field>
+            <field name="print_report_name">'Purchase Order - %s' % (object.name).replace('/', '')</field>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="forlife_report.paperformat_purchase_order"/>
+        </record>
+
+        <template id="print_purchase_order_template">
+            <t t-call="web.basic_layout">
+                <t t-foreach="docs" t-as="o">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <style>
+                            .page {
+                            font-family: Times New Roman;
+                            font-size: 10px;
+                            page-break-before: always;
+                            }
+                            table {
+                            border: 1px solid black;
+                            }
+                            .x_title {
+                            font-size: 12px;
+                            }
+                            .x_bold {
+                            font-weight: bold;
+                            }
+                            .x_center {
+                            text-align: center;
+                            }
+                            .x_right {
+                            text-align: right;
+                            }
+                            .x_italic {
+                            font-style: italic;
+                            }
+                        </style>
+                        <div class="row">
+                            <table class="table table-bordered">
+                                <col style="width:30%"/>
+                                <col style="width:70%"/>
+                                <tbody>
+                                    <tr class="x_title x_bold x_center">
+                                        <td colspan="2">PURCHASE ORDER/ĐƠN ĐẶT HÀNG</td>
+                                    </tr>
+                                    <tr class="x_bold x_title">
+                                        <td>PURCHASE ORDER NO.</td>
+                                        <td>
+                                            <span t-field="o.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="x_bold">
+                                        <td colspan="2">Buyer</td>
+                                    </tr>
+                                    <tr class="x_bold">
+                                        <td>Công ty</td>
+                                        <td>
+                                            <span t-field="o.company_id.partner_id"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="x_bold">Địa chỉ</td>
+                                        <td>
+                                            <span t-field="o.company_id.partner_id.street"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="x_bold">MST</td>
+                                        <td>
+                                            <span t-field="o.company_id.partner_id.vat"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="x_bold">Điện thoại/Fax</td>
+                                        <td>
+                                            <span t-field="o.company_id.partner_id.phone"/>
+                                        </td>
+                                    </tr>
+                                    <t t-set="buyer_contact" t-value="o.company_id.partner_id.child_ids.filtered(lambda f: f.type == 'contact')"/>
+                                    <tr>
+                                        <td class="x_bold">Người đại diện</td>
+                                        <t t-if="len(buyer_contact) > 0">
+                                            <td>Đại diện:
+                                                <span t-field="buyer_contact[0].name"/>
+                                                <br/>
+                                                Chức vụ:
+                                                <span t-field="buyer_contact[0].function"/>
+                                            </td>
+                                        </t>
+                                        <t t-else="">
+                                            <td/>
+                                        </t>
+                                    </tr>
+                                    <tr class="x_bold">
+                                        <td colspan="2">Seller</td>
+                                    </tr>
+                                    <tr class="x_bold">
+                                        <td>Công ty</td>
+                                        <td>
+                                            <span t-field="o.partner_id"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="x_bold">Địa chỉ</td>
+                                        <td>
+                                            <span t-field="o.partner_id.street"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="x_bold">MST</td>
+                                        <td>
+                                            <span t-field="o.partner_id.vat"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="x_bold">Điện thoại/Fax</td>
+                                        <td>
+                                            <span t-field="o.partner_id.phone"/>
+                                        </td>
+                                    </tr>
+                                    <t t-set="seller_contact" t-value="o.partner_id.child_ids.filtered(lambda f: f.type == 'contact')"/>
+                                    <tr>
+                                        <td class="x_bold">Người đại diện</td>
+                                        <t t-if="len(seller_contact) > 0">
+                                            <td>Đại diện:
+                                                <span t-field="seller_contact[0].name"/>
+                                                <br/>
+                                                Chức vụ:
+                                                <span t-field="seller_contact[0].function"/>
+                                            </td>
+                                        </t>
+                                        <t t-else="">
+                                            <td/>
+                                        </t>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">Thời gian giao hàng:
+                                            <span t-field="o.date_planned" t-options='{"widget": "date"}'/>
+                                            <br/>Địa điểm giao hàng:
+                                            <span t-field="o.location_id"/>
+                                            <br/>
+                                            <span t-field="o.notes"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <table class="table table-bordered">
+                                <col style="width:5%"/>
+                                <col style="width:25%"/>
+                                <col style="width:23%"/>
+                                <col style="width:10%"/>
+                                <col style="width:9%"/>
+                                <col style="width:13%"/>
+                                <col style="width:15%"/>
+                                <tbody>
+                                    <tr class="x_bold x_center">
+                                        <td>STT</td>
+                                        <td>Tên sản phẩm</td>
+                                        <td>Mô tả chi tiết</td>
+                                        <td>ĐVT</td>
+                                        <td>SL</td>
+                                        <td>Đơn giá</td>
+                                        <td>Thành tiền</td>
+                                    </tr>
+                                    <t t-set="stt" t-value="1"/>
+                                    <t t-foreach="o.order_line" t-as="line">
+                                        <tr>
+                                            <td class="x_center">
+                                                <t t-esc="stt"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.product_id.name"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.description"/>
+                                            </td>
+                                            <td>
+                                                <span t-field="line.purchase_uom"/>
+                                            </td>
+                                            <td class="x_center">
+                                                <span t-field="line.purchase_quantity"/>
+                                            </td>
+                                            <td class="x_right">
+                                                <span t-field="line.vendor_price" t-options='{"widget": "integer"}'/>
+                                            </td>
+                                            <td class="x_right">
+                                                <t t-esc="line.purchase_quantity * line.vendor_price * (1 - line.discount / 100)" t-options='{"widget": "integer"}'/>
+                                            </td>
+                                        </tr>
+                                        <t t-set="stt" t-value="stt + 1"/>
+                                    </t>
+                                    <tr class="x_bold x_right">
+                                        <td colspan="6">Tổng tiền</td>
+                                        <td>
+                                            <span t-field="o.amount_untaxed"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="x_bold x_right">
+                                        <td colspan="6">VAT</td>
+                                        <td>
+                                            <span t-field="o.amount_tax"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="x_bold x_right">
+                                        <td colspan="6">Tổng sau thuế</td>
+                                        <td>
+                                            <span t-field="o.amount_total"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="x_bold x_italic">
+                                        <td colspan="7">Bằng chữ:
+                                            <t t-esc="o.currency_id.with_context(lang='vi_VN').amount_to_text(o.amount_total)"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-4 x_center x_title x_bold">ĐẠI DIỆN BÊN MUA</div>
+                            <div class="col-4"/>
+                            <div class="col-4 x_center x_title x_bold">ĐẠI DIỆN BÊN BÁN</div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>
+
