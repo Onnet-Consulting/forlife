@@ -115,7 +115,6 @@ class PurchaseOrder(models.Model):
     payment_term_id = fields.Many2one('account.payment.term', 'Chính sách thanh toán',
                                       domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]")
 
-
     # def action_view_PO(self):
     #     for rec in self:
     #         list_origin = []
@@ -483,7 +482,6 @@ class PurchaseOrder(models.Model):
                 self.supplier_sales_order(data, order_line, invoice_line_ids)
                 record.write(
                     {'custom_state': 'approved', 'inventory_status': 'incomplete', 'invoice_status_fake': 'no'})
-
 
     def check_purchase_tool_and_equipment(self):
         # Kiểm tra xem có phải sp CCDC không (có category đc cấu hình trường tài khoản định giá tồn kho là 153)
@@ -1231,6 +1229,7 @@ class PurchaseOrder(models.Model):
         })
         return values
 
+
 class PurchaseOrderLine(models.Model):
     _inherit = "purchase.order.line"
 
@@ -1288,9 +1287,8 @@ class PurchaseOrderLine(models.Model):
     currency_id = fields.Many2one('res.currency', related='order_id.currency_id')
     is_change_vendor = fields.Integer()
 
-    total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount' ,store=1)
+    total_vnd_amount = fields.Float('Tổng tiền VNĐ', compute='_compute_total_vnd_amount', store=1)
     total_value = fields.Float()
-
 
     @api.depends('price_subtotal', 'order_id.exchange_rate', 'order_id')
     def _compute_total_vnd_amount(self):
@@ -1657,7 +1655,7 @@ class PurchaseOrderLine(models.Model):
 
     def _prepare_account_move_line(self):
         if self.product_id.product_tmpl_id.is_trade_discount and self.price_unit > 0:
-            raise UserError("Giá CTKM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
+            raise UserError("Giá CKTM phải = 0. Người dùng vui lòng nhập đơn giá ở phần thông tin tổng chiết khấu thương mại.")
         return super(PurchaseOrderLine, self)._prepare_account_move_line()
 
 
@@ -1964,6 +1962,7 @@ class StockPicking(models.Model):
             xk_picking.write({'account_xk_id': account_move.id})
         record.write({'picking_xk_id': xk_picking.id})
         return xk_picking
+
 
 class Synthetic(models.Model):
     _name = 'forlife.synthetic'
