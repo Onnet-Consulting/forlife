@@ -2,7 +2,13 @@
 <templates id="template" xml:space="preserve">
 
     <t t-name="CustomOrderline" owl="1">
-        <li t-on-click="selectLine" class="orderline" t-att-class="addedClasses">
+        <t t-if="props.line.money_reduce_from_product_defective > 0">
+            <t t-set="color" t-value="'background-color:#FFA07A;'"/>
+        </t>
+        <t t-else="">
+            <t t-set="color" t-value="''"/>
+        </t>
+        <li t-on-click="selectLine" class="orderline" t-att-style="color" t-att-class="addedClasses">
             <ul class="custom-info-list">
                 <li class="product-name" style="width: 100%">
                     <t t-esc="props.line.get_full_product_name()"/>
