@@ -150,7 +150,7 @@
                             <field name="price_unit" force_save="1" required="1"/>
                             <field name="warehouse"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')]}"/>
-                            <field name="discount_percent"
+                            <field name="discount_percent" readonly="1"
                                    attrs="{'column_invisible': ['|',('parent.purchase_type', '!=', 'product'),('parent.move_type', '=', 'out_invoice')], 'readonly': [('readonly_discount_percent', '=', True)]}"/>
                             <field name="discount"
                                    attrs="{'column_invisible': [('parent.purchase_type', '!=', 'product')], 'readonly': [('readonly_discount', '=', True)]}"/>

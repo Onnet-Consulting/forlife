@@ -348,7 +348,7 @@ class PurchaseOrder(models.Model):
 
     def compute_count_invoice_inter_fix(self):
         for rec in self:
-            rec.count_invoice_inter_fix = self.env['account.move'].search_count([('reference', '=', rec.name), ('move_type', '=', 'in_invoice')])
+            rec.count_invoice_inter_fix = self.env['account.move'].search_count([('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice')])
 
     @api.onchange('trade_discount')
     def onchange_total_trade_discount(self):
@@ -777,7 +777,7 @@ class PurchaseOrder(models.Model):
     def action_view_invoice_new(self):
         for rec in self:
             data_search = self.env['account.move'].search(
-                [('reference', '=', rec.name), ('move_type', '=', 'in_invoice')]).ids
+                [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice')]).ids
         return {
             'name': 'Hóa đơn nhà cung cấp',
             'type': 'ir.actions.act_window',
@@ -1067,6 +1067,9 @@ class PurchaseOrder(models.Model):
                                                        and r.picking_type_id.code == 'incoming'
                                                        and r.ware_check == True
                                                        and r.x_is_check_return == False)
+                list_picking_in = []
+                for item in picking_incoming:
+                    list_picking_in.append(item.id)
                 for grouping_keys, invoices in groupby(invoice_vals_list, key=lambda x: (
                         x.get('company_id'), x.get('partner_id'), x.get('currency_id'))):
                     origins = set()
@@ -1090,7 +1093,7 @@ class PurchaseOrder(models.Model):
                         'type_inv': self.type_po_cost,
                         'move_type': 'in_invoice',
                         'purchase_order_product_id': [(6, 0, [self.id])],
-                        'receiving_warehouse_id': [(6, 0, picking_incoming.ids)],
+                        'receiving_warehouse_id': [(6, 0, list_picking_in)],
                         'is_check_invoice_tnk': True if self.env.ref('forlife_pos_app_member.partner_group_1') or self.type_po_cost else False,
                         'payment_reference': len(payment_refs) == 1 and payment_refs.pop() or False,
                     })
@@ -1321,6 +1324,12 @@ class PurchaseOrder(models.Model):
                     if line.product_id:
                         account_id = line.product_id.product_tmpl_id.categ_id.property_stock_account_input_categ_id
                         line.account_id = account_id
+                for line in move:
+                    reference = []
+                    for nine in line.purchase_order_product_id:
+                        reference.append(nine.name)
+                        ref_join = ', '.join(reference)
+                        line.reference = ref_join
             move.filtered(
                 lambda m: m.currency_id.round(m.amount_total) < 0).action_switch_invoice_into_refund_credit_note()
             created_moves.append(move)

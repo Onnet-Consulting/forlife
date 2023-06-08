@@ -619,7 +619,7 @@ class AccountMoveLine(models.Model):
     uom_id = fields.Many2one('uom.uom', string='Uom')
     warehouse = fields.Many2one('stock.location', string='Whs')
     discount_percent = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
-    discount = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
+    discount = fields.Float(string='Chiết khấu %', digits='Discount', default=0.0)
     tax_amount = fields.Monetary(string='Tiền thuế')
     taxes_id = fields.Many2one('account.tax',
                                string='Thuế %',
