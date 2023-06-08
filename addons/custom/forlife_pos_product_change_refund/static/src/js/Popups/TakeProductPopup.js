@@ -8,7 +8,7 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
     const Registries = require('point_of_sale.Registries');
     const {onMounted, useRef, useState} = owl;
     const {useBus} = require('@web/core/utils/hooks');
-
+    var field_utils = require('web.field_utils');
     class TakePriceProductPopup extends AbstractAwaitablePopup {
         setup() {
             super.setup();
@@ -56,7 +56,9 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProductPopup', function 
                                     product_defective_id: products_defective[i].product_defective_id
                                 }
                                 OrderCurrent.set_orderline_options(line_new, options_line_new);
-                                line.quantity = line.quantity -1 ;
+                                let quant = line.quantity -1;
+                                line.quantity = quant;
+                                line.quantityStr = field_utils.format.float(quant, { digits: [true, this.env.pos.dp['Product Unit of Measure']] });
                                 OrderCurrent.add_orderline(line_new);
                             }
                         }
