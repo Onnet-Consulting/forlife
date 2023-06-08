@@ -52,8 +52,10 @@ class StockTransfer(models.Model):
     total_weight = fields.Float(string='Total Weight (Kg)')
     reference_document = fields.Char()
     # approval_logs_ids = fields.One2many('approval.logs.stock', 'stock_transfer_id')
-    note = fields.Char("Ghi chú")
-    date_transfer = fields.Date("Ngày xác nhận xuất", default=date.today())
+    note = fields.Text("Ghi chú")
+    date_transfer = fields.Datetime("Ngày xác nhận xuất", default=datetime.now())
+    date_in_approve = fields.Datetime("Ngày xác nhận nhập", default=datetime.now())
+
     @api.onchange('work_from')
     def _onchange_work_from(self):
         self.stock_transfer_line.write({
@@ -258,11 +260,13 @@ class StockTransfer(models.Model):
         self.write({'state': 'done'})
         return self._action_in_approve_in_process()
 
-    def _create_stock_picking(self, data, location_id, location_dest_id, stock_picking_type):
+    def _create_stock_picking(self, data, location_id, location_dest_id, stock_picking_type, origin, date_done):
         for data_line in data:
             data_line[2].update({'location_id': location_id.id, 'location_dest_id': location_dest_id.id})
         stock_picking = self.env['stock.picking'].create({
             'transfer_id': self.id,
+            'origin': origin,
+            'date_done': date_done,
             'picking_type_id': stock_picking_type.id,
             'location_id': location_id.id,
             'location_dest_id': location_dest_id.id,
@@ -272,13 +276,15 @@ class StockTransfer(models.Model):
         stock_picking.button_validate()
         return stock_picking
 
-    def _create_stock_picking_with_ho(self, data, location_id, location_dest_id, stock_picking_type):
+    def _create_stock_picking_with_ho(self, data, location_id, location_dest_id, stock_picking_type, origin, date_done):
         location_ho = self.env.ref('forlife_stock.ho_location_stock')
         to_data = data
         for data_line in to_data:
             data_line[2].update({'location_id': location_id.id, 'location_dest_id': location_ho.id})
         stock_picking_to_ho = self.env['stock.picking'].create({
             'transfer_id': self.id,
+            'origin': origin,
+            'date_done': date_done,
             'picking_type_id': stock_picking_type.id,
             'location_id': location_id.id,
             'location_dest_id': location_ho.id,
@@ -302,6 +308,8 @@ class StockTransfer(models.Model):
         company_id = self.env.company.id
         pk_type = self.env['stock.picking.type'].sudo().search(
             [('company_id', '=', company_id), ('code', '=', 'internal')], limit=1)
+        origin = self.name
+        date_done = self.date_in_approve
         location_id = self.location_id
         location_dest_id = self.location_dest_id
         stock_picking_type = pk_type
@@ -351,11 +359,11 @@ class StockTransfer(models.Model):
                     'qty_in': product_quantity,
                 })
         if location_id.warehouse_id.state_id.id == location_dest_id.warehouse_id.state_id.id:
-            picking = self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type)
+            picking = self._create_stock_picking(data, location_id, location_dest_id, stock_picking_type, origin, date_done)
             # if picking.location_dest_id.id_deposit and picking.location_dest_id.account_stock_give:
             self._create_move_import_int(picking,location_id, location_dest_id)
         else:
-            self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type)
+            self._create_stock_picking_with_ho(data, location_id, location_dest_id, stock_picking_type, origin, date_done)
         self._create_stock_picking_other_import_and_export(data, location_id, location_dest_id)
         if diff_transfer:
             return {
@@ -420,7 +428,8 @@ class StockTransfer(models.Model):
     def create(self, vals):
         if vals.get('name', 'New') == 'New':
             warehouse = self.env['stock.location'].browse(vals.get('location_id')).code
-            vals['name'] = (self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'PXB') + str(
+            vals['name'] = (self.env['ir.sequence'].next_by_code('stock.transfer.sequence') or 'PXB') + (
+                warehouse if warehouse else '') + str(
                 datetime.now().year)
         return super(StockTransfer, self).create(vals)
 
