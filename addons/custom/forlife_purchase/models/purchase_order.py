@@ -348,7 +348,20 @@ class PurchaseOrder(models.Model):
 
     def compute_count_invoice_inter_fix(self):
         for rec in self:
-            rec.count_invoice_inter_fix = self.env['account.move'].search_count([('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice')])
+            picking_in = self.env['stock.picking'].search([('origin', '=', self.name),
+                                                           ('state', '=', 'done'),
+                                                           ('ware_check', '=', True),
+                                                           ('x_is_check_return', '=', False),
+                                                           ('picking_type_id.code', '=', 'incoming')
+                                                           ])
+            rec.count_invoice_inter_fix = self.env['account.move'].search_count(
+                [('purchase_order_product_id', 'in', rec.id), ('move_type', '=', 'in_invoice')])
+            ## check hóa đơn liên quan tới phiếu kho mà bị xóa thì cho phép tạo lại hóa đơn từ pnk đó
+            if rec.count_invoice_inter_fix:
+                break
+            else:
+                for line in picking_in:
+                    line.ware_check = False
 
     @api.onchange('trade_discount')
     def onchange_total_trade_discount(self):
@@ -955,8 +968,7 @@ class PurchaseOrder(models.Model):
                 # ('x_is_check_return', '=', False)
                 for order in self:
                     if order.custom_state != 'approved':
-                        raise UserError(
-                            _('Tạo hóa đơn không hợp lệ!'))
+                        raise UserError(_('Tạo hóa đơn không hợp lệ!'))
                     order = order.with_company(order.company_id)
                     pending_section = None
                     # Invoice values.
@@ -1059,7 +1071,7 @@ class PurchaseOrder(models.Model):
                                     sequence += 1
                             invoice_vals_list.append(invoice_vals)
                         else:
-                            raise UserError(_('Không thể tạo hóa đơn khi không còn phiếu nhập kho liên quan!'))
+                            raise UserError(_('Đơn mua đã có hóa đơn liên quan tương ứng với phiếu nhập kho!'))
                 # 2) group by (company_id, partner_id, currency_id) for batch creation
                 new_invoice_vals_list = []
                 picking_incoming = picking_in.filtered(lambda r: r.origin == order.name
