@@ -6,6 +6,6 @@
         <menuitem id="asset_transfer" parent="stock.menu_stock_warehouse_mgmt" action="forlife_stock.hr_asset_transfer_action" name="Asset Transfer" sequence="3"/>
         <menuitem id="asset_transfer_stock_inventory_menu" parent="stock.menu_stock_warehouse_mgmt" action="forlife_stock.transfer_stock_inventory_action" name="Nhập xuất tách mã-kiểm kê cân tồn" sequence="4"/>
         <menuitem id="other_in_out_request" parent="stock.menu_stock_warehouse_mgmt" action="forlife_stock.forlife_other_in_out_request_action" name="Other In Out Request" sequence="5"/>
-        <menuitem id="transfer_stock_inventory_classify_menu" parent="stock.menu_stock_warehouse_mgmt" action="forlife_stock.transfer_stock_inventory_classify_action" name="Phân loại hàng lỗi" sequence="6"/>
+        <menuitem id="transfer_stock_inventory_classify_menu" parent="stock.menu_stock_warehouse_mgmt" action="forlife_stock.transfer_stock_inventory_classify_action" name="Xử lý hàng lỗi" sequence="6"/>
     </data>
 </odoo>
