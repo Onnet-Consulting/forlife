@@ -18,6 +18,10 @@ odoo.define('forlife_pos_search_customer.PartnerListScreen', function(require) {
 
             let pos_search_customer = this.env.pos.config.pos_search_customer;
 
+            if (this.state.fieldName == 'phone' && this.state.query) {
+                this.state.query = this.state.query.replace(' ','');
+            }
+
             if ((this.state.query == "" || this.state.query === null) && pos_search_customer) {
                 return []
             }else{
