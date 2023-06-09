@@ -199,9 +199,10 @@ class StockPicking(models.Model):
     def bravo_get_picking_purchase_columns(self):
         return [
             "CompanyCode", "Stt", "DocCode", "DocNo", "DocDate", "CurrencyCode", "ExchangeRate", "CustomerCode",
-            "CustomerName", "Address", "EmployeeCode", "PriceUnit", "Discount", "OriginalUnitCost", "UnitCostCode",
-            "ItemCode", "ItemName", "WarehouseCode", "DocNo_PO", "RowId", "BuiltinOrder", 'DebitAccount',
-            'CreditAccount',
+            "CustomerName", "Address", "Description", "EmployeeCode", "IsTransfer", "CreditAccount", "PushDate",
+            "BuiltinOrder", "ItemCode", "ItemName", "UnitPurCode", "DebitAccount", "Quantity", "OriginalPriceUnit",
+            "PriceUnit", "OriginalDiscount", "Discount", "OriginalUnitCost", "UnitCost", "DocNo_PO", "WarehouseCode",
+            "JobCode", "RowId", "DocNo_WO", "DeptCode",
         ]
 
     def bravo_get_picking_purchase_value(self):
@@ -230,7 +231,7 @@ class StockPicking(models.Model):
 
         journal_value = {
             "CompanyCode": picking.company_id.code,
-            "Stt": picking.id,
+            "Stt": picking.name,
             "DocCode": "NK" if is_partner_group_1 else "NM",
             "DocNo": picking.name,
             "DocDate": picking.date_done,
@@ -239,6 +240,7 @@ class StockPicking(models.Model):
             "CustomerCode": partner.ref,
             "CustomerName": partner.name,
             "Address": partner.contact_address_complete,
+            "Description": picking.note,
             "EmployeeCode": picking.user_id.employee_id.code,
             "PriceUnit": line_price,
             "Discount": line_discount,
