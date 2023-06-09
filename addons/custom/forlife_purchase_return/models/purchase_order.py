@@ -106,7 +106,7 @@ class PurchaseOrder(models.Model):
         if len(self) > 1 or not self.is_return:
             #     result = self.create_multi_invoice_vendor()
             # elif not self.is_return:
-            return super(PurchaseOrder, self).action_create_invoice()_invoice()
+            return super(PurchaseOrder, self).action_create_invoice()
         else:
             if self.purchase_type in ('service', 'asset'):
                 precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
