@@ -89,12 +89,10 @@ def get_order_from_nhanh_id(self, order_id):
         url = f"{NHANH_BASE_URL}/order/index"
         data = {
             "version": 2.0,
-            "appID": nhanh_config.get('nhanh_connector.nhanh_app_id', 0),
-            "businessId": nhanh_config.get('nhanh_connector.nhanh_business_id', 0),
+            "appId": '%s' % nhanh_config.get('nhanh_connector.nhanh_app_id', 0),
+            "businessId": '%s' % nhanh_config.get('nhanh_connector.nhanh_business_id', 0),
             "accessToken": nhanh_config.get('nhanh_connector.nhanh_access_token', ''),
-            "data": {
-                "id": order_id
-            }
+            "data": '{"id": %s}' % (order_id)
         }
         try:
             res_server = requests.post(url, data=data)
@@ -105,8 +103,8 @@ def get_order_from_nhanh_id(self, order_id):
         if res['code'] == 0:
             _logger.info(f'Get order error {res["messages"]}')
             continue
-        if not res['data']['orders'].get(order_id):
+        if not res['data']['orders'].get(str(order_id)):
             continue
-        order_information = res['data']['orders'].get(order_id)
+        order_information = res['data']['orders'].get(str(order_id))
         break
-    return order_information
+    return order_information if order_information else res.get("messages", "")
