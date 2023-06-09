@@ -4,8 +4,6 @@ import json
 import logging
 from odoo import api, fields, models, _
 from odoo.addons.nhanh_connector.models import constant
-import datetime
-import requests
 
 event_type_mapping = {
     'orderAdd': 'order_add',
@@ -20,13 +18,6 @@ _logger = logging.getLogger(__name__)
 
 
 class MainController(http.Controller):
-    def __init__(self):
-        self.event_handlers = {
-            'orderAdd': self.handle_order,
-            'orderUpdate': self.handle_order,
-            'orderDelete': self.handle_order,
-            'webhooksEnabled': self.webhook_enable,
-        }
 
     @http.route('/nhanh/webhook/handler', type='http', auth='public', methods=['POST'], csrf=False)
     def nhanh_webhook_handler(self, **post):
@@ -38,23 +29,22 @@ class MainController(http.Controller):
                 'event_type': event_type_mapping.get(event_type, ''),
                 'event_value': value,
             })
-        handler = self.event_handlers.get(event_type)
-        result_requests = self.result_request(200, 0, _('Webhook to system odoo'))
         try:
-            if handler:
-                data = value.get('data')
-                result_requests = handler(event_type, data, webhook_value_id)
-                if webhook_value_id:
-                    webhook_value_id.update({
-                        'state': 'done'
-                    })
-            else:
-                result_requests = self.result_request(404, 0, _('Webhook to system odoo false'))
+            data = value.get('data')
+            result_requests = self.handle_order(event_type, data, webhook_value_id)
+            if result_requests.get('code') != 200 and webhook_value_id:
+                webhook_value_id.update({
+                    'error': result_requests.get('message')
+                })
+            elif result_requests.get('code') == 200 and webhook_value_id:
+                webhook_value_id.update({
+                    'state': 'done'
+                })
         except Exception as ex:
             _logger.info(f'Webhook to system odoo false{ex}')
             if webhook_value_id:
                 webhook_value_id.update({
-                    'error': webhook_value_id.error + ex
+                    'error': ex
                 })
             result_requests = self.result_request(404, 0, _('Webhook to system odoo false'))
         return request.make_response(json.dumps(result_requests),
@@ -65,11 +55,9 @@ class MainController(http.Controller):
         order = self.sale_order_model().sudo().search([('nhanh_id', '=', order_id)],
                                                       limit=1) if event_type != 'orderDelete' else False
         if event_type == 'orderAdd':
-            order = self.get_order_from_nhanh(order_id)
-            if webhook_value_id:
-                webhook_value_id.update({
-                    'error': order
-                })
+            order = constant.get_order_from_nhanh_id(request, order_id)
+            if not order:
+                return self.result_request(404, 1, _('Không lấy được thông tin đơn hàng từ Nhanh'))
             name_customer = False
             # Add customer if not existed
             nhanh_partner = self.partner_model().sudo().search(
@@ -95,11 +83,13 @@ class MainController(http.Controller):
                 }
                 partner = self.partner_model().sudo().create(partner_value)
             order_line = []
-            location_id = request.env['stock.location'].search([('nhanh_id', '=', int(order['depotId']))], limit=1)
+            location_id = request.env['stock.location'].sudo().search([('nhanh_id', '=', int(order['depotId']))], limit=1)
             for item in data['products']:
                 product = self.product_template_model().sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
                 product_product = self.product_product_model().sudo().search([('product_tmpl_id', '=', product.id)],
                                                                              limit=1)
+                if not product:
+                    raise ValueError('Không có sản phẩm có id nhanh là %s' % item.get('id'))
                 order_line.append((
                     0, 0, {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
                            'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
@@ -111,21 +101,21 @@ class MainController(http.Controller):
                                item.get('quantity')) if item.get('discount') else 0}))
 
             status = 'draft'
-            if data['status'] == 'confirmed':
+            if data['status'] == 'Confirmed':
                 status = 'draft'
             elif data['status'] in ['Packing', 'Pickup']:
                 status = 'sale'
             elif data['status'] in ['Shipping', 'Returning']:
                 status = 'sale'
-            elif data['status'] == 'success':
+            elif data['status'] == 'Success':
                 status = 'done'
-            elif data['status'] == 'canceled':
+            elif data['status'] == 'Canceled':
                 status = 'cancel'
 
             # nhân viên kinh doanh
-            user_id = request.env['res.users'].search([('partner_id.name', '=', order['saleName'])], limit=1)
+            user_id = request.env['res.users'].sudo().search([('partner_id.name', '=', order['saleName'])], limit=1)
             # đội ngũ bán hàng
-            team_id = request.env['crm.team'].search([('name', '=', order['trafficSourceName'])], limit=1)
+            team_id = request.env['crm.team'].sudo().search([('name', '=', order['trafficSourceName'])], limit=1)
             default_company_id = request.env['res.company'].sudo().search([('code', '=', '1300')], limit=1)
             # warehouse_id = request.env['stock.warehouse'].search([('nhanh_id', '=', int(data['depotId']))], limit=1)
             # if not warehouse_id:
@@ -165,15 +155,15 @@ class MainController(http.Controller):
         elif event_type == 'orderUpdate':
             if data.get('status'):
                 status = 'draft'
-                if data['status'] == 'confirmed':
+                if data['status'] == 'Confirmed':
                     status = 'draft'
                 elif data['status'] in ['Packing', 'Pickup']:
                     status = 'sale'
                 elif data['status'] in ['Shipping', 'Returning']:
                     status = 'sale'
-                elif data['status'] == 'success':
+                elif data['status'] == 'Success':
                     status = 'done'
-                elif data['status'] == 'canceled':
+                elif data['status'] == 'Canceled':
                     status = 'cancel'
                 order.sudo().write({
                     'state': status,
@@ -226,35 +216,3 @@ class MainController(http.Controller):
             'message': message
         }
         return result
-
-    def get_order_from_nhanh(self, order_id):
-        order_information = None
-        nhanh_configs = constant.get_nhanh_configs(request)
-        data = {
-            "id": order_id
-        }
-        for brand_id in request.env['res.brand'].sudo().search([]):
-            nhanh_config = nhanh_configs.get(brand_id.id, {})
-            if not nhanh_config:
-                continue
-            # Won't run if exist at least one empty param
-            if 'nhanh_connector.nhanh_app_id' not in nhanh_config or 'nhanh_connector.nhanh_business_id' not in nhanh_config \
-                    or 'nhanh_connector.nhanh_access_token' not in nhanh_config:
-                _logger.info(f'Nhanh configuration does not set')
-                continue
-            url = f"{NHANH_BASE_URL}/order/index?version=2.0&appId={nhanh_config.get('nhanh_connector.nhanh_app_id', '')}" \
-                  f"&businessId={nhanh_config.get('nhanh_connector.nhanh_business_id', '')}&accessToken={nhanh_config.get('nhanh_connector.nhanh_access_token', '')}"
-            try:
-                res_server = requests.post(url, json=json.dumps(data))
-                res = res_server.json()
-            except Exception as ex:
-                _logger.info(f'Get orders from NhanhVn error {ex}')
-                continue
-            if res['code'] == 0:
-                _logger.info(f'Get order error {res["messages"]}')
-                continue
-            if not res['data']['orders']:
-                continue
-            order_information = res['data']['orders']
-            break
-        return order_information
