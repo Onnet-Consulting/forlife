@@ -49,6 +49,7 @@ odoo.define('forlife_pos_product_change_refund.TakePriceProduct', function (requ
             }
 
             var response = await this.getProductDefective()
+            this.env.pos.selectedOrder.responseOfproductDefective = response
             const {confirmed, payload: data} = await this.showPopup('TakePriceProductPopup', {
                 response: response,
                 line_product_defective:line_product_defective,
