@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<odoo>
+    <record model="ir.ui.view" id="inherit_points_promotion_view_form">
+        <field name="name">inherit.points.promotion.view.form</field>
+        <field name="model">points.promotion</field>
+        <field name="inherit_id" ref="forlife_promotion.points_promotion_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='order_point']" position="before">
+                <group>
+                    <field name="is_state_registration"/>
+                </group>
+                <span attrs="{'invisible':[('is_state_registration', '!=', True)]}" style="padding-right: 17px;">
+                    <label for="state_registration_start" string="Registration Date" attrs="{'invisible':[('is_state_registration', '!=', True)]}"/>
+                </span>
+                <span attrs="{'invisible':[('is_state_registration', '!=', True)]}">
+                    <strong style="padding-right: 10px;">from</strong>
+                    <field name="state_registration_start"/>
+                    <strong style="padding-right: 10px;">to</strong>
+                    <field name="state_registration_end"/>
+                </span>
+            </xpath>
+
+            <xpath expr="//group/group[last()]" position="inside">
+                <field name="product_discount_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
