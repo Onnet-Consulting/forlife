@@ -505,7 +505,7 @@ class AccountMove(models.Model):
                                                       ], limit=1)
         account_vat = []
         if not account_tax:
-            raise ValidationError("Bạn chưa cấu hình thuế giá trị gia tăng nhập khẩu ở mục thuế!! Gợi ý mã mặc định của thuế giá trị gia tăng nhập khẩu: code = 'VATTNK'")
+            raise ValidationError(_("Bạn chưa cấu hình thuế giá trị gia tăng nhập khẩu ở mục thuế cho %s !! Gợi ý mã mặc định của thuế giá trị gia tăng nhập khẩu: code = 'VATTNK'") % self.company_id.name)
         else:
             if not self.env.ref('forlife_purchase.product_vat_tax').with_company(
                     self.company_id).property_account_expense_id:
@@ -619,7 +619,7 @@ class AccountMoveLine(models.Model):
     uom_id = fields.Many2one('uom.uom', string='Uom')
     warehouse = fields.Many2one('stock.location', string='Whs')
     discount_percent = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
-    discount = fields.Float(string='Chiết khấu', digits='Discount', default=0.0)
+    discount = fields.Float(string='Chiết khấu %', digits='Discount', default=0.0)
     tax_amount = fields.Monetary(string='Tiền thuế')
     taxes_id = fields.Many2one('account.tax',
                                string='Thuế %',

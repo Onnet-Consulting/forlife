@@ -327,7 +327,7 @@ class StockMove(models.Model):
     @api.onchange('product_id')
     def _onchange_product_id(self):
         self.name = self.product_id.name
-        self.amount_total = self.product_id.standard_price if not self.reason_id.is_price_unit else 0
+        self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
         if not self.reason_id:
             self.reason_id = self.picking_id.location_id.id \
                 if self.picking_id.other_import else self.picking_id.location_dest_id.id
@@ -358,8 +358,10 @@ class StockBackorderConfirmationInherit(models.TransientModel):
         for item in self:
             for rec in item.pick_ids:
                 data_pk = self.env['stock.picking'].search([('backorder_id', '=', rec.id)])
-                for pk in data_pk.move_line_ids_without_package:
+                for pk, pk_od in zip(data_pk.move_line_ids_without_package, rec.move_line_ids_without_package):
                     pk.write({
-                        'qty_done': pk.reserved_qty
+                        'qty_done': pk.reserved_qty,
+                        'quantity_change': pk_od.quantity_change,
+                        'quantity_purchase_done': pk.reserved_qty
                     })
         return res

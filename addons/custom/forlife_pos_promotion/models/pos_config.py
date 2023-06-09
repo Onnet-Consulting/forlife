@@ -33,15 +33,14 @@ class PosConfig(models.Model):
             value_programs[usage.program_id.id] += usage.order_line_id.qty
         for (program_id, qty) in value_programs.items():
             program = self.env['promotion.program'].browse(program_id)
-            if program.promotion_type in ['code', 'cart']:
+            if program.promotion_type in ['code', 'cart', 'pricelist']:
                 applied_number = len(usages.filtered(lambda u: u.program_id.id == program_id).mapped('order_id'))
             else:
                 applied_number = qty / program.qty_per_combo if program.qty_per_combo > 0 else qty
             result[program_id] = applied_number
 
         # Get history limit qty per program
-        combo_program_ids = input_program_ids.filtered(
-            lambda p: p.limit_usage_per_program and p.promotion_type in ('combo', 'code', 'cart'))
+        combo_program_ids = input_program_ids.filtered(lambda p: p.limit_usage_per_program)
         limited_program_usages = self.env['promotion.usage.line'].search([('program_id', 'in', combo_program_ids.ids)])
         all_usage_promotions = {}
         for program in combo_program_ids:

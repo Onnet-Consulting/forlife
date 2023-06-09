@@ -38,6 +38,7 @@
         'security/ir.model.access.csv',
         'data/mail_template_data.xml',
         # Wizards
+        'wirards/reason_refuse.xml',
         # View
         'views/handle_change_refund_views.xml',
         'views/store_views.xml',
@@ -46,7 +47,7 @@
         'views/pos_reason_refund.xml',
         'views/product_category_view.xml',
         'views/product_defective.xml',
-        'views/defective_type.xml'
+        'views/defective_type.xml',
         # Menu
     ]
 }
