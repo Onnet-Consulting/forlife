@@ -19,6 +19,7 @@ class SyncInfoRabbitmqCore(models.AbstractModel):
         data = [line.get_sync_info_value() for line in self]
         if data:
             self.push_message_to_rabbitmq(data, action, self._name)
+        return True
 
     def domain_record_sync_info(self):
         return self
@@ -74,13 +75,17 @@ class SyncInfoRabbitmqUpdate(models.AbstractModel):
     _description = 'Sync Info RabbitMQ Update'
     _update_action = 'update'
 
-    def check_update_info(self, values):
-        return [False, False]
+    def get_field_update(self):
+        return []
+
+    def check_update_info(self, list_field, values):
+        return any([1 for field in list_field if field in values.keys()])
 
     def write(self, values):
         res = super().write(values)
-        check, record = self.check_update_info(values)
-        if check:
+        check = self.check_update_info(self.get_field_update(), values)
+        record = self.domain_record_sync_info()
+        if check and record:
             record.sudo().with_delay(description="Update '%s'" % self._name, channel='root.RabbitMQ').action_sync_info_data(action=self._update_action)
         return res
 
@@ -121,12 +126,5 @@ class SyncAddressInfoRabbitmq(models.AbstractModel):
             'name': self.name
         }
 
-    def get_sync_create_data(self):
-        data = []
-        for address in self:
-            data.append(dict(address.get_sync_info_value()))
-        return data
-
-    def check_update_info(self, values):
-        field_check_update = ['code', 'name']
-        return any([field in field_check_update for field in values])
+    def get_field_update(self):
+        return ['code', 'name']
