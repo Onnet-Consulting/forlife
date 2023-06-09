@@ -817,6 +817,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
     _checkNumberOfCode(codeProgram, order_lines, to_discount_line_vals , count, max_count = false, to_apply_lines = {}) {
         let to_check_order_lines = this._filterOrderLinesToCheckCodePro(codeProgram, order_lines);
+        to_check_order_lines.sort((a, b) => a.cid.localeCompare(b.cid));
         count = count || 0;
         to_discount_line_vals = to_discount_line_vals || [];
         let result = [to_check_order_lines.filter((l)=>l.quantity > 0.0), to_discount_line_vals, count];
