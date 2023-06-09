@@ -27,6 +27,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             useListener('click-refund-order-uid', this._onClickRefundOrderUid);
             useListener('update-selected-orderline', this._onUpdateSelectedOrderline);
             useListener('do-refund', this._onDoRefund);
+            useListener('show-order-detail', this._onShowOrderDetail);
             NumberBuffer.use({
                 nonKeyboardInputEvent: 'numpad-click-input',
                 triggerAtInput: 'update-selected-orderline',
@@ -74,6 +75,11 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             Object.assign(this._state.ui.searchDetails, event.detail);
             this._state.syncedOrders.currentPage = 1;
             await this._fetchSyncedOrders();
+        }
+
+        _onShowOrderDetail({ detail: order }) {
+            const order_lines = order.orderlines;
+            this.showPopup('PosOrderRefundDetailPopup', { orderline: order_lines});
         }
 
         async _fetchSyncedOrders() {
