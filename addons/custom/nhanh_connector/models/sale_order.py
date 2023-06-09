@@ -30,6 +30,7 @@ class SaleOrderNhanh(models.Model):
     nhanh_customer_shipping_fee = fields.Float(string='Customer Shipping fee')
     nhanh_sale_channel_id = fields.Integer(string='Sale channel id')
     nhanh_order_status = fields.Selection([
+        ('new', 'New'),
         ('confirmed', 'Confirmed'),
         ('packing', 'Packing'),
         ('pickup', 'Pickup'),
