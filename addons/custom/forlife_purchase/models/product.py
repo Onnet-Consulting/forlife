@@ -40,8 +40,8 @@ class ProductTemplate(models.Model):
     x_type_cost_product = fields.Selection(
         selection=[
             ('internal_costs', 'Chi phí nội bộ'),
-            ('labor_costs', 'Chi phí nhân công'),
-        ], string="Sản phẩn là chi phí")
+            ('labor_costs', 'Chi phí thuê ngoài'),
+        ], string="Loại chi phí gia công")
 
     @api.model
     def default_get(self, default_fields):

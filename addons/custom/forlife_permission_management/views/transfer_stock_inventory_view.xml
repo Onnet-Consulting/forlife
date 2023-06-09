@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="transfer_stock_inventory_form_view_permission" model="ir.ui.view">
+            <field name="name">transfer_stock_inventory_form_view_permission</field>
+            <field name="model">transfer.stock.inventory</field>
+            <field name="inherit_id" ref="forlife_stock.transfer_stock_inventory_from_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_wait_confirm']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_inventory_check_send</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_approve']" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_inventory_check_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_stock.transfer_stock_inventory_wizard)d'][1]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_inventory_check_approve_reject</attribute>
+                </xpath>
+                <xpath expr="//button[@name='%(forlife_stock.transfer_stock_inventory_wizard)d'][2]" position="attributes">
+                    <attribute name="groups">forlife_permission_management.group_inventory_check_cancel</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
