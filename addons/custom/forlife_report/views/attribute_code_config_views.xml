@@ -20,5 +20,10 @@
             <field name="target">new</field>
         </record>
 
+        <menuitem id="attribute_code_config_menu"
+              parent="report_menu"
+              action="attribute_code_config_action"
+              sequence="100"/>
+
     </data>
 </odoo>
