@@ -18,6 +18,7 @@ class AccountMove(models.Model):
         else:
             return super(AccountMove, self)._get_unbalanced_moves(container)
 
+
     def button_increase_decrease_invoice(self, default=None):
 
         self.ensure_one()
@@ -83,6 +84,7 @@ class AccountMove(models.Model):
                             'credit': int(credit),
                             'balance': balance
                         })
+
             if rec.invoice_type == 'decrease':
                 self.env.context = self.with_context(noonchange=True).env.context
 
@@ -136,3 +138,4 @@ class AccountMoveLine(models.Model):
             if self.move_id[0].invoice_type != 'decrease' and not self.env.context.get('noonchange'):
                 return super(AccountMoveLine, self)._compute_debit_credit()
         return True
+
