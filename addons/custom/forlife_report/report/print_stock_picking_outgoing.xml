@@ -71,7 +71,7 @@
                         <p>
                             <div class="row">
                                 <div class="col-7">
-                                    <div>Kho nhập:
+                                    <div>Kho xuất:
                                         <span t-field="o.location_id"/>
                                     </div>
                                     <div>Khách hàng:
