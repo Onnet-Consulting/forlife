@@ -152,6 +152,9 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 if (orderline.quantity_canbe_refund <= 0) {
                     continue;
                 }
+                if (orderline.is_promotion) {
+                    continue;
+                }
                 const toRefundDetail = this._getToRefundDetail(orderline);
                 const refundableQty = toRefundDetail.orderline.qty - toRefundDetail.orderline.refundedQty;
                 toRefundDetail.qty = refundableQty;
@@ -542,7 +545,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
                 var today = new Date();
                 today.setHours(0, 0, 0, 0);
 
-                var check_button = (expire_change_refund_date < today) ? true: false;
+                var check_button = (expire_change_refund_date < today);
 
                 const newToRefundDetail = {
                     qty: 0,
@@ -583,7 +586,7 @@ odoo.define('forlife_pos_product_change_refund.OrderChangeRefundProductScreen', 
             return Object.values(this.env.pos.toRefundLines).filter(
                 ({ qty, orderline, destinationOrderUid }) =>
                     !this.env.pos.isProductQtyZero(qty) &&
-                    (partner ? orderline.orderPartnerId == partner.id : true) &&
+                    (partner ? orderline.orderPartnerId === partner.id : true) &&
                     !destinationOrderUid
             );
         }

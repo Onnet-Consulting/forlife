@@ -150,7 +150,7 @@ class StockTransfer(models.Model):
             return self._create_move_given(pickking, location_dest_id, type_create='in')
         elif location_id.stock_location_type_id.id in [s_location_pos] and warehouse_dest_id in [warehouse_type_master] and location_id.id_deposit and location_id.account_stock_give:
             return self._create_move_given(pickking, location_id, type_create='out')
-        elif location_id.stock_location_type_id.id in [s_location_sell_ecommerce, s_location_pos] and location_dest_id in [s_location_sell_ecommerce, s_location_pos]:
+        elif location_id.stock_location_type_id.id in [s_location_sell_ecommerce, s_location_pos] and location_dest_id.stock_location_type_id.id in [s_location_sell_ecommerce, s_location_pos]:
             loc = location_id if location_id.id_deposit and location_id.account_stock_give else False
             loc_dest = location_dest_id if location_dest_id.id_deposit and location_dest_id.account_stock_give else False
             if not loc and not loc_dest:
@@ -526,7 +526,7 @@ class StockTransferLine(models.Model):
             if quantity > self.qty_plan * (1 + (tolerance / 100)):
                 raise ValidationError('Sản phẩm %s không được nhập quá %s %% số lượng ban đầu' % (product.name, tolerance))
         else:
-            start_transfer = self.env['stock.transfer'].search([('name', '=', self.stock_transfer_id.reference_document)])
+            start_transfer = self.env['stock.transfer'].search([('name', '=', self.stock_transfer_id.reference_document)], limit=1)
             other_transfer = self.env['stock.transfer'].search([('reference_document', '=', start_transfer.name)])
             quantity_old = sum([line.qty_out if type == 'out' else line.qty_in for line in other_transfer.stock_transfer_line.filtered(
                 lambda r: r.product_id == self.product_id)])

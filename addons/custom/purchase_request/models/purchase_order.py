@@ -10,7 +10,7 @@ class PurchaseOrder(models.Model):
     request_id = fields.Many2one('purchase.request')
     purchase_request_ids = fields.Many2many('purchase.request')
     partner_id = fields.Many2one('res.partner', required=False)
-    production_id = fields.Many2one('forlife.production', string='Production Order')
+    production_id = fields.Many2many('forlife.production', string='Production Order')
     event_id = fields.Many2one('forlife.event', string='Event Program')
     has_contract_commerce = fields.Boolean(string='Có hóa đơn hay không?')
     rejection_reason = fields.Text()
@@ -80,16 +80,17 @@ class PurchaseOrder(models.Model):
             for item in rec.order_line:
                 production_order = self.env['production.order'].search(
                     [('product_id', '=', item.product_id.id), ('type', '=', 'normal')], limit=1)
-                for production_line in production_order.order_line_ids:
-                    self.env['purchase.order.line.material.line'].create({
-                        'purchase_order_line_id': item.id,
-                        'product_id': production_line.product_id.id,
-                        'uom': production_line.uom_id.id,
-                        'production_order_product_qty': production_order.product_qty,
-                        'production_line_product_qty': production_line.product_qty,
-                        'price_unit': production_line.price,
-                        'is_from_po': True,
-                    })
+                if not item.purchase_order_line_material_line_ids:
+                    for production_line in production_order.order_line_ids:
+                        self.env['purchase.order.line.material.line'].create({
+                            'purchase_order_line_id': item.id,
+                            'product_id': production_line.product_id.id,
+                            'uom': production_line.uom_id.id,
+                            'production_order_product_qty': production_order.product_qty,
+                            'production_line_product_qty': production_line.product_qty,
+                            'price_unit': production_line.price,
+                            'is_from_po': True,
+                        })
         return res
 
 
@@ -129,9 +130,9 @@ class PurchaseOrderLine(models.Model):
                     'price_unit': production_line.price,
                     'is_from_po': True,
                 }))
-            # self.write({
-            #     'purchase_order_line_material_line_ids': production_data
-            # })
+            self.write({
+                'purchase_order_line_material_line_ids': production_data
+            })
         view_id = self.env.ref('purchase_request.purchase_order_line_material_form_view').id
         return {
             'type': 'ir.actions.act_window',

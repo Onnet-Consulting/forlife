@@ -439,7 +439,7 @@ class PurchaseOrder(models.Model):
                 'res_model': 'account.move',
                 'view_id': False,
                 'view_mode': 'tree,form',
-                'domain': [('id', 'in', moves.ids), ('move_type', '=', 'out_invoice')],
+                'domain': [('id', 'in', moves.ids)],
             }
 
     def compute_count_invoice_inter_fix(self):
@@ -531,8 +531,9 @@ class PurchaseOrderLine(models.Model):
                                 if move.to_refund:
                                     total += move.product_uom._compute_quantity(move.product_uom_qty, line.product_uom, rounding_method='HALF-UP')
 
-                # return_line = self.env['purchase.order.line'].search([('origin_po_line_id', '=', line.id)])
-                # total += sum(return_line.mapped('qty_returned'))
+                # Include qty of PO return
+                return_line = line.return_line_ids.filtered(lambda rl: rl.order_id.inventory_status == 'done')
+                total += sum(return_line.mapped('qty_received'))
                 line.qty_returned = total
 
     @api.depends('move_ids.state', 'move_ids.product_uom_qty', 'move_ids.product_uom')

@@ -20,6 +20,13 @@ class ProductDefective(models.Model):
     defective_type_id = fields.Many2one('defective.type', 'Loại lỗi')
     detail_defective = fields.Char('Chi tiết lỗi')
     state = fields.Selection([('new', 'New'), ('waiting approve', 'Waiting Approve'), ('approved','Approved'),('refuse','Refuse')], string='Trạng thái', default='new')
+    is_already_in_use = fields.Boolean(default=False)
+
+    def unlink(self):
+        for rec in self:
+            if rec.is_already_in_use:
+                raise ValidationError(_(f"KHông thể hoàn thành thao tác, có hàng lỗi đã được thực hiện bán!"))
+        return super(ProductDefective, self).unlink()
 
     @api.depends('price', 'percent_reduce', 'money_reduce')
     def _compute_total_reduce(self):

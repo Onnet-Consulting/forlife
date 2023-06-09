@@ -4,7 +4,9 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
 
     const Registries = require('point_of_sale.Registries');
     var {Order, Orderline, PosGlobalState} = require('point_of_sale.models');
-
+    var core = require('web.core');
+    const _t = core._t;
+    var { Gui } = require('point_of_sale.Gui');
     const OrderGetPhone = (Order) => class extends Order {
 
         constructor(obj, options) {
@@ -129,6 +131,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.beStatus = this.beStatus || false;
             this.check_button = this.check_button || false;
             this.is_new_line = this.is_new_line || false;
+            this.is_promotion = this.is_promotion || false;
             this.handle_change_refund_id = this.handle_change_refund_id || undefined;
             this.money_is_reduced = this.money_is_reduced || 0;
             this.money_point_is_reduced = this.money_point_is_reduced || 0;
@@ -149,6 +152,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             this.beStatus = json.beStatus || false;
             this.check_button = json.check_button || false;
             this.is_new_line = json.is_new_line || false;
+            this.is_promotion = json.is_promotion || false;
             this.handle_change_refund_id = json.handle_change_refund_id || undefined;
             this.money_is_reduced = json.money_is_reduced || 0;
             this.money_point_is_reduced = json.money_point_is_reduced || 0;
@@ -169,6 +173,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             orderline.beStatus = this.beStatus;
             orderline.check_button = this.check_button;
             orderline.is_new_line = this.is_new_line;
+            orderline.is_promotion = this.is_promotion;
             orderline.handle_change_refund_id = this.handle_change_refund_id;
             orderline.money_is_reduced = this.money_is_reduced;
             orderline.money_point_is_reduced = this.money_point_is_reduced;
@@ -190,6 +195,7 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             json.beStatus = this.beStatus || false;
             json.check_button = this.check_button || false;
             json.is_new_line = this.is_new_line || false;
+            json.is_promotion = this.is_promotion || false;
             json.handle_change_refund_id = this.handle_change_refund_id || undefined;
             json.money_is_reduced = this.money_is_reduced || 0;
             json.money_point_is_reduced = this.money_point_is_reduced || 0;
@@ -222,14 +228,16 @@ odoo.define('forlife_pos_product_change_refund.models', function (require) {
             return res - total
         }
 
-        // get_display_price() {
-        //     var res = super.get_display_price()
-        //     var total = 0;
-        //     if (this.quantity_canbe_refund > 0) {
-        //         total += (this.money_is_reduced * Math.abs(this.get_quantity())) / this.quantity_canbe_refund;
-        //     }
-        //     return res + total
-        // }
+        set_quantity(quantity, keep_price){
+            if(this.is_product_defective && quantity > 1){
+                    Gui.showPopup('ErrorPopup', {
+                        title: _t('Warning'),
+                        body: _t('Hành động sửa số lượng trên sản phẩm này bị cấm !')
+                    });
+                    return;
+            }
+            return super.set_quantity(quantity, keep_price)
+        }
 
         get_price_with_tax() {
             var reduced = 0;
