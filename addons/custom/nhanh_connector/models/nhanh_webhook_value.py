@@ -3,6 +3,7 @@
 from odoo.tools.safe_eval import safe_eval
 from odoo.addons.nhanh_connector.models import constant
 from odoo import api, fields, models, _, exceptions
+from odoo.exceptions import ValidationError
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -65,15 +66,13 @@ class NhanhWebhookValue(models.Model):
             order_line = []
             location_id = self.env['stock.location'].sudo().search([('nhanh_id', '=', int(order['depotId']))], limit=1)
             for item in data['products']:
-                product = self.product_template_model().sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
-                product_product = self.env['product.product'].sudo().search([('product_tmpl_id', '=', product.id)],
-                                                                            limit=1)
-                if not product:
-                    raise ValueError('Không có sản phẩm có id nhanh là %s' % item.get('id'))
+                product_id = self.env['product.product'].sudo().search([('nhanh_id', '=', item.get('id'))], limit=1)
+                if not product_id:
+                    raise ValidationError('Không có sản phẩm có id nhanh là %s' % item.get('id'))
                 order_line.append((
-                    0, 0, {'product_template_id': product.id, 'product_id': product_product.id, 'name': product.name,
+                    0, 0, {'product_template_id': product_id.product_tmpl_id.id, 'product_id': product_id.id, 'name': product_id.name,
                            'product_uom_qty': item.get('quantity'), 'price_unit': item.get('price'),
-                           'product_uom': product.uom_id.id if product.uom_id else self.uom_unit(),
+                           'product_uom': product_id.uom_id.id if product_id.uom_id else self.uom_unit(),
                            'customer_lead': 0, 'sequence': 10, 'is_downpayment': False, 'x_location_id': location_id.id,
                            'discount': float(item.get('discount')) / float(item.get('price')) * 100 if item.get(
                                'discount') else 0,
