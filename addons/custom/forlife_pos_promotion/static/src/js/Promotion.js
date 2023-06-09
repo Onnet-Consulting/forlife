@@ -564,7 +564,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
 
         if (program.with_code) {
             if (this.activatedInputCodes) {
-                if (!this.activatedInputCodes.map(code => code.program_id).includes(program.id)) {return false;};
+                if (!this.activatedInputCodes.map(code => code.program_id).includes(program.program_id)) {return false;};
             } else {return false;};
         };
         const customer = this.partner;
@@ -833,7 +833,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     assign_pricelist_item_to_orderline() {
-        this.validOnOrderPricelistItem = [];
+//        this.validOnOrderPricelistItem = [];
         for (let line of this.get_orderlines()) {
             if (!line.pricelist_item) {
                 let priceItem = this._getPricelistItem(line.product);
@@ -849,8 +849,17 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         };
     }
 
-    _getPricelistItem(product) {
-        let programs = this.pos.promotionPrograms.filter(p => p.promotion_type == 'pricelist');
+    validate_code_pricelist(pro) {
+        for (let line of this.get_orderlines()) {
+            let priceItem = this._getPricelistItem(line.product, true);
+            if (priceItem && !this.validOnOrderPricelistItem.includes(priceItem.str_id)) {
+                this.validOnOrderPricelistItem.push(priceItem.str_id);
+            };
+        };
+    }
+
+    _getPricelistItem(product, check_with_code=false) {
+        let programs = this.pos.promotionPrograms.filter(p => p.promotion_type == 'pricelist' && (check_with_code ? p.with_code : !p.with_code));
         let pricelistItem;
         for (let program of programs) {
             pricelistItem = program.pricelistItems.find(item => item.product_id === product.id);
@@ -866,7 +875,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let result = {};
         for (let line of this.get_orderlines_to_check()) {
             for (let usage of line.promotion_usage_ids) {
-                if (['combo', 'code', 'cart'].includes(this.pos.promotion_program_by_id[usage.program_id].promotion_type)){
+                if (['combo', 'code', 'cart', 'pricelist'].includes(this.pos.promotion_program_by_id[usage.program_id].promotion_type)){
                     if (usage.program_id in result) {
                         result[usage.program_id] += line.quantity;
                     } else {
@@ -906,7 +915,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     if (l.price == 0 || l.is_reward_line) {return false}
                     if (l.promotion_usage_ids.some(p => p.str_id == pro.str_id)) {return false}
                     else {return true};
-//                    return l.promotion_usage_ids.some(p => p.promotion_type == 'pricelist' || (p.promotion_type == 'pricelist' && p.discount_based_on == 'unit_price')) ? true : false;
                 } else {return true};
             });
         };
@@ -1198,13 +1206,29 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
         let to_check_order_lines = this._filterOrderLinesToCheckPricelistPro(pricelistItem, orderLines);
         let qty = 0.0;
         let to_discount_line_vals = [];
+        let max_reward_qty = 0;
+        if (pricelistItem.reward_quantity > 0 && pricelistItem.with_code == true) {
+            let applied_this_order = (this._getNumberOfComboApplied()[pricelistItem.program_id] || 0.0);
+            max_reward_qty = pricelistItem.reward_quantity - applied_this_order;
+        };
         for (let line of to_check_order_lines) {
             if (line.quantity > 0) {
-                qty += line.quantity;
-                to_discount_line_vals.push(this.prepare_to_discount_line_val(line, line.quantity, line.product.lst_price));
-                line.quantity = 0;
-
-            }
+                // CT Làm giá sử dụng code được thiết lập SL giảm tối đa
+                if (max_reward_qty) {
+                    let qty_taken = Math.min(max_reward_qty, line.quantity);
+                    qty += qty_taken;
+                    to_discount_line_vals.push(this.prepare_to_discount_line_val(line, qty_taken, line.product.lst_price));
+                    line.quantity -= qty_taken;
+                    max_reward_qty -= qty_taken;
+                    if (max_reward_qty <= 0.0) break;
+                }
+                // CT Làm giá
+                else {
+                    qty += line.quantity;
+                    to_discount_line_vals.push(this.prepare_to_discount_line_val(line, line.quantity, line.product.lst_price));
+                    line.quantity = 0;
+                };
+            };
         };
         return [orderLines, to_discount_line_vals, qty]
     }
@@ -1232,13 +1256,13 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                     return [program, 'limit_usage_per_program', program.max_usage_per_program - historyUsed];
                 };
             };
-            if (['code', 'cart'].includes(program.promotion_type) && program.limit_usage_per_customer) {
+            if (['code', 'cart', 'pricelist'].includes(program.promotion_type) && program.limit_usage_per_customer) {
                 let historyUsed = (this.historyProgramUsages || {})[program.id] || 0;
                 if  (historyUsed >= program.max_usage_per_customer) {
                     return [program, 'limit_usage_per_customer', program.max_usage_per_customer - historyUsed];
                 };
             };
-            if (['code', 'cart'].includes(program.promotion_type) && program.limit_usage_per_program) {
+            if (['code', 'cart', 'pricelist'].includes(program.promotion_type) && program.limit_usage_per_program) {
                 let historyUsed = (this.historyProgramUsages.all_usage_promotions || {})[program.id] || 0;
                 if  (historyUsed >= program.max_usage_per_program) {
                     return [program, 'limit_usage_per_program', program.max_usage_per_program - historyUsed];
@@ -1382,14 +1406,6 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let NumberOfCombo = this._checkNumberOfCode(program, to_check_order_lines, [] , 0)[2];
                 if (NumberOfCombo >= 1) {
                     programIsVerified[program.id] = NumberOfCombo;
-//                    if (program.reward_type == 'code_buy_x_get_y' && !program.reward_product_id_selected) {
-//                        let reward_products = this.pos.get_valid_reward_code_promotion(program)
-//                                                        .map(product_id => this.pos.db.get_product_by_id(product_id))
-//                                                        .sort((a,b) => b.lst_price - a.lst_price);
-//                        if (reward_products.length > 0) {
-//                            program.reward_product_id_selected = reward_products.at(0).id;
-//                        };
-//                    };
                 };
             }
             else if (program.promotion_type == 'pricelist') {
@@ -2211,15 +2227,16 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
     }
 
     autoApplyPriceListProgram(new_ol) {
+        let is_with_code = (p) => p.with_code;
         if (new_ol && new_ol.quantity > 0 && !new_ol.is_applied_promotion() && new_ol.pricelist_item) {
-            if (this._programIsApplicableAutomatically(new_ol.pricelist_item)) {
+            if (this._programIsApplicableAutomatically(new_ol.pricelist_item) && !is_with_code(new_ol.pricelist_item)) {
                 this.applyAPricelistProgramToLineVales(new_ol.pricelist_item, [new_ol]);
             };
         };
         if (!new_ol) {
             let to_check_orderlines = this.get_orderlines_to_check().filter(l => l.quantity > 0 && !l.is_applied_promotion() && l.pricelist_item);
             for (let line of to_check_orderlines) {
-                if (this._programIsApplicableAutomatically(line.pricelist_item)) {
+                if (this._programIsApplicableAutomatically(line.pricelist_item) && !is_with_code(line.pricelist_item)) {
                     this.applyAPricelistProgramToLineVales(line.pricelist_item, [line]);
                 };
             };
@@ -2265,6 +2282,9 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
             let codeProgram = this.pos.promotionPrograms.find(p => p.id == codeObj.program_id);
             codeProgram.reward_for_referring = codeObj.reward_for_referring;
             codeProgram.codes[this.access_token] = codeObj;
+            if (codeProgram.promotion_type == 'pricelist') {
+                this.validate_code_pricelist(codeProgram);
+            };
             await this._updateActivatedPromotionPrograms();
         } else {
             return payload.error_message;
