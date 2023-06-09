@@ -1,9 +1,7 @@
 from odoo import api, fields, models, _
-from contextlib import contextmanager
 
 class AccountMove(models.Model):
     _inherit = 'account.move'
-
 
     invoice_type = fields.Selection([('increase', 'Increase'), ('decrease', 'Decrease')], string='Type')
     origin_invoice_id = fields.Many2one('account.move', string='Origin Invoice', readonly=True, check_company=True)

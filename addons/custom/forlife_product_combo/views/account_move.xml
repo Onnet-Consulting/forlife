@@ -27,9 +27,6 @@
                            attrs="{'readonly': [('state', '=', 'posted')], 'invisible': [('origin_invoice_id', '=', False)]}"/>
                 </xpath>
 
-<!--                <xpath expr="//field[@name='invoice_line_ids']" position="attributes">-->
-<!--                    <attribute name="attrs">{'invisible': [('origin_invoice_id', '=', False)]}</attribute>-->
-<!--                </xpath>-->
                 <xpath expr="//field[@name='invoice_line_ids']" position="attributes">
                     <attribute name="attrs">{'readonly': [('origin_invoice_id', '=', False), ('is_check', '=', True)]}</attribute>
                 </xpath>
