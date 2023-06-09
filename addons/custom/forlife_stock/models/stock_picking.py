@@ -327,7 +327,7 @@ class StockMove(models.Model):
     @api.onchange('product_id')
     def _onchange_product_id(self):
         self.name = self.product_id.name
-        self.amount_total = self.product_id.standard_price if not self.reason_id.is_price_unit else 0
+        self.amount_total = self.product_id.standard_price * self.product_uom_qty if not self.reason_id.is_price_unit else 0
         if not self.reason_id:
             self.reason_id = self.picking_id.location_id.id \
                 if self.picking_id.other_import else self.picking_id.location_dest_id.id
