@@ -38,6 +38,27 @@ odoo.define('forlife_pos_product_change_refund.ProductScreen', function (require
             today.setHours(0, 0, 0, 0);
 
             const order = this.env.pos.get_order();
+            let check_defective = false;
+            if (order.hasOwnProperty("responseOfproductDefective")){
+                order.responseOfproductDefective.forEach(function(product){
+                    let quantity_of_line = 0;
+                    order.orderlines.forEach(function(line){
+                        if(product.product_id == line.product.id && line.is_product_defective){
+                            quantity_of_line += line.quantity
+                        }
+                    })
+                    if (quantity_of_line > product.quantity){
+                        check_defective = true;
+                    }
+                })
+            }
+            if(check_defective){
+                self.showPopup('ErrorPopup', {
+                    title: self.env._t('Warning'),
+                    body: _.str.sprintf(self.env._t('Số lượng sản phẩm lỗi vượt quá số lượng có trong kho!')),
+                });
+                return;
+            }
             const orderLines = order.get_orderlines().filter(line => !line.beStatus && line.expire_change_refund_date);
             if (orderLines.length > 0) {
                 for (let i = 0; i < orderLines.length; i++) {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-inherit="forlife_pos_payment_change.POSOrderRow" t-inherit-mode="extension" owl="1">
+        <xpath expr="//div[hasclass('order-row')]" position="inside">
+            <div class="col very-info">
+                <button class="pos-sale-detail" t-on-click.stop="() => this.trigger('pos-sale-detail', props.order)">
+                    <span class="info-icon">
+                        <i class="fa fa-info-circle" style="font-size:12px;"/>
+                    </span>
+                </button>
+            </div>
+        </xpath>
+    </t>
+
+</templates>

@@ -33,6 +33,21 @@
             <field name="sequence">20</field>
         </record>
 
+        <record id="group_stock" model="res.groups">
+            <field name="name">Kho</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
+        <record id="group_mer" model="res.groups">
+            <field name="name">MER</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
+        <record id="group_inventory" model="res.groups">
+            <field name="name">Kiểm kê</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
         <record id="group_request_stock_transfer_cancel" model="res.groups">
             <field name="name">Phiếu yêu cầu điều chuyển Nút Cancel</field>
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
@@ -139,6 +154,21 @@
             <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
         </record>
 
+        <record id="group_approved_first" model="res.groups">
+            <field name="name">Phiếu kiểm kê kho Nút Xác nhận lần 1</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
+        <record id="group_approved_second" model="res.groups">
+            <field name="name">Phiếu kiểm kê kho Nút Xác nhận lần 2</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
+        <record id="group_inventory_cancel" model="res.groups">
+            <field name="name">Phiếu kiểm kê kho Nút Cancel</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_inventory"/>
+        </record>
+
         <!--Group chức năng POS-->
 
         <record model="ir.module.category" id="module_category_pos">
@@ -148,6 +178,21 @@
 
         <record id="group_refund_approve_refuse" model="res.groups">
             <field name="name">Xử lý đổi trả Nút Approve + Refuse</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_pos"/>
+        </record>
+
+        <record id="group_refund" model="res.groups">
+            <field name="name">Đơn hàng nút Trả hàng</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_pos"/>
+        </record>
+
+        <record id="group_product_defective_approve_refuse" model="res.groups">
+            <field name="name">Xử lý hàng lỗi Nút Approve + Refuse</field>
+            <field name="category_id" ref="forlife_permission_management.module_category_pos"/>
+        </record>
+
+        <record id="group_print_stamps_barcode_approve" model="res.groups">
+            <field name="name">In mã vạch nút Duyệt</field>
             <field name="category_id" ref="forlife_permission_management.module_category_pos"/>
         </record>
 
@@ -236,7 +281,7 @@
             <field name="category_id" ref="forlife_permission_management.module_category_concurrently"/>
         </record>
 
-        <!--Group chức năng Sale-->
+        <!--Group chức năng Accounting-->
 
         <record model="ir.module.category" id="module_category_accounting">
             <field name="name">Function Accounting</field>
