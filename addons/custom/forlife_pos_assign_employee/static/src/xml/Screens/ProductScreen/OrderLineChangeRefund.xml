@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-inherit="forlife_pos_layout.OrderlineChangeRefund" t-inherit-mode="extension" owl="1">
+        <xpath expr="//ul[hasclass('custom-info-list')]" position="inside">
+            <t t-if="props.line.employee_id">
+                <li class="info orderline-note">
+                    <i class="fa fa-male" role="img" aria-label="Employee" title="Employee"/>
+                    <t t-esc="env.pos.assignable_employee_by_id[props.line.employee_id]"/>
+                </li>
+            </t>
+        </xpath>
+    </t>
+</templates>

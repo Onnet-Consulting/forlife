@@ -62,7 +62,8 @@ const PosPromotionGlobalState = (PosGlobalState) => class PosPromotionGlobalStat
         this.hourData = loadedData['hour.data'] || [];
         this.promotionPricelistItems = [];
         this._loadPromotionData();
-        this.loadPromotionPriceListItemBackground();
+//        this.loadPromotionPriceListItemBackground();
+        this._loadPromotionPriceListItem(loadedData['promotion.pricelist.item']);
     }
     _loadPromotionData() {
         this.promotion_program_by_id = {};
@@ -1839,6 +1840,7 @@ const PosPromotionOrder = (Order) => class PosPromotionOrder extends Order {
                 let originalPrice = LineList.product.lst_price ;
                 let discAmountInLine = LineList.product.lst_price
                 LineList.price = 0.0;
+                LineList.is_reward_line = true;
                 let newUsage = new PromotionUsageLine(CodeProgram.id, code, null, originalPrice, 0.0, discAmountInLine, CodeProgram.str_id, CodeProgram.promotion_type, CodeProgram.discount_based_on)
                 LineList.promotion_usage_ids.push(newUsage);
                 LineList.isCheapest = false;
