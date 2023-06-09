@@ -15,8 +15,8 @@ NHANH_BASE_URL = 'https://open.nhanh.vn/api'
 class SaleOrderNhanh(models.Model):
     _inherit = 'sale.order'
 
-    nhanh_id = fields.Integer(string='Id Nhanh.vn')
-    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn')
+    nhanh_id = fields.Integer(string='Id Nhanh.vn', copy=False)
+    nhanh_origin_id = fields.Integer(string='Id đơn gốc Nhanh.vn', copy=False)
     numb_action_confirm = fields.Integer(default=0)
     source_record = fields.Boolean(string="Đơn hàng từ nhanh", default=False)
     code_coupon = fields.Char(string="Mã coupon")
