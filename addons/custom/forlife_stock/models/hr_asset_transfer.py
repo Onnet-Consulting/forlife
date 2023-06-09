@@ -43,7 +43,8 @@ class HrAssetTransfer(models.Model):
 
     def action_wait_approve(self):
         for record in self:
-            record.check_asset_code()
+            for item in record.hr_asset_transfer_line_ids:
+                item.check_asset_code()
             record.write({'state': 'wait_approve'})
 
     def action_approved(self):
